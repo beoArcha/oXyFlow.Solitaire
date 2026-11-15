@@ -61,10 +61,12 @@ gh workflow run release.yml --ref release
    - a dev tag at this commit without a Release (a previous run stopped before publishing) is
      published again on the same tag.
 4. `build` makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
-   `x86_64-unknown-linux-gnu`, `x86_64-unknown-linux-musl` (`musl-tools`), `x86_64-apple-darwin`
-   and `aarch64-apple-darwin`. Each is archived as `oxysol-<tag>-<target>` with `oxysol` (or
-   `oxysol.exe`), `README.md` and `LICENSE`: `.zip` on Windows, `.tar.gz` elsewhere. Archives are
-   workflow artifacts named `archive-<target>`.
+   `x86_64-unknown-linux-musl` (`musl-tools`), `aarch64-unknown-linux-musl` (`musl-tools`)
+   and `aarch64-apple-darwin`. Each target produces two archives: a normal archive
+   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md` and `LICENSE`) and a
+   portable archive `oxysol-<tag>-<target>-portable` with the same files plus `oxysol.portable`:
+   `.zip` on Windows, `.tar.gz` elsewhere. Archives are workflow artifacts named
+   `archive-<target>`.
 5. `publish` writes `SHA256SUMS`, creates the tag on the tested commit and a GitHub Release with
    every archive and `SHA256SUMS`. It is a pre-release unless `stable` is set.
 6. `site` builds `docs/site` with a pinned mdBook (v0.4.52, SHA-256 checked), inserts the tag and the
