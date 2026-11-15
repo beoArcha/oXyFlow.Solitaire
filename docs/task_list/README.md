@@ -62,12 +62,12 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | U-01 | Decisions, master prompt, repository | User | — | DONE |
 | P0-01 | Repository skeleton and workspace | Haiku | U-01 | DONE |
 | P0-02 | Master prompt in English with amendments | Haiku | P0-01 | DONE |
-| P0-03 | CI: pull requests, main, promotion | Haiku | P0-01 | TODO |
-| P0-04 | Release workflow: build, tag, publish, site | Haiku | P0-03 | TODO |
-| P1-01 | Engine domain model | Sonnet | P0-01 | TODO |
-| P1-02 | Game contract and session | Sonnet | P1-01 | TODO |
-| F-01 | Checkpoint: engine contract | Opus | P1-02 | TODO |
-| P1-03 | Comment lint and phase 1 gate | Haiku | P1-02, P0-03, M-01…M-06 | TODO |
+| P0-03 | CI: pull requests, main, promotion | Haiku | P0-01 | DONE |
+| P0-04 | Release workflow: build, tag, publish, site | Haiku | P0-03 | DONE |
+| P1-01 | Engine domain model | Sonnet | P0-01 | DONE |
+| P1-02 | Game contract and session | Sonnet | P1-01 | DONE |
+| F-01 | Checkpoint: engine contract | Opus | P1-02 | DONE |
+| P1-03 | Comment lint and phase 1 gate | Haiku | P1-02, P0-03, M-01…M-06 | DONE |
 | P2-01 | Klondike | Sonnet | F-01 | TODO |
 | P2-02 | Spider | Sonnet | P2-01 | TODO |
 | P2-03 | FreeCell | Haiku | P2-01 | TODO |

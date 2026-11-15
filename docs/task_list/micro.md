@@ -9,21 +9,21 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-01 | Lint rule: file length | Beo | P0-01 | DONE |
 | M-02 | Lint rule: nesting depth | Oxy | P0-01 | DONE |
 | M-03 | Lint rule: empty `Err` arms | Son | P0-01 | DONE |
-| M-04 | Lint rule: vague error types | Beo | P0-01 | READY |
-| M-05 | Metadata sync | Oxy | P0-01 | READY |
-| M-06 | Architecture tests | Son | P0-01 | READY |
+| M-04 | Lint rule: vague error types | Beo | P0-01 | DONE |
+| M-05 | Metadata sync | Oxy | P0-01 | DONE |
+| M-06 | Architecture tests | Son | P0-01 | DONE |
 | M-07 | Wiki: Klondike rules | Beo | P0-01 | READY |
 | M-08 | Wiki: Spider rules | Oxy | P0-01 | READY |
 | M-09 | Wiki: FreeCell rules | Son | P0-01 | READY |
 | M-10 | Wiki: Pyramid rules | Beo | P0-01 | READY |
 | M-11 | Theme: Light palette | Beo | P3-01 | DRAFT |
 | M-12 | Theme: High Contrast palette | Oxy | P3-01 | DRAFT |
-| M-13 | RGB to 256-color conversion | Oxy | P0-01 | READY |
-| M-14 | Contrast ratio helper | Son | P0-01 | READY |
+| M-13 | RGB to 256-color conversion | Oxy | P0-01 | DONE |
+| M-14 | Contrast ratio helper | Son | P0-01 | DONE |
 | M-15 | Terminal capability detection | Beo | P0-01 | READY |
 | M-16 | Title logo | Oxy | P0-01 | READY |
 | M-17 | Polish translation, part 1 | Son | P3-03 | DRAFT |
-| M-18 | Command-line parser | Son | P0-01 | READY |
+| M-18 | Command-line parser | Son | P0-01 | DONE |
 | M-19 | Artwork: International suits | Beo | P5-01 | DRAFT |
 | M-20 | Artwork: German suits | Oxy | P5-01 | DRAFT |
 | M-21 | Artwork: Italian suits | Son | P5-01 | DRAFT |
