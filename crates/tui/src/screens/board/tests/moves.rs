@@ -43,7 +43,7 @@ fn a_legal_move_is_picked_then_dropped() {
         vec![Move::Transfer { from, to, count: 1 }]
     );
     assert!(board(&h).marks().targets.is_empty());
-    assert_eq!(status(&h), None);
+    assert_eq!(status(&h), Some("board.status.moved"));
     assert!(cues(&h).contains(&SoundCue::CardPlace));
     assert_eq!(cursor(&h).0, to);
 }
@@ -92,7 +92,10 @@ fn a_drop_on_a_pile_that_refuses_shows_the_engine_message() {
     put_cursor(&mut h, refusing);
     h.press(KeyCode::Enter);
     assert_eq!(status(&h), Some("board.error.target_rejects"));
-    assert!(h.text().contains("The cards cannot go there."));
+    assert!(
+        h.text()
+            .contains("Illegal move: the cards cannot go there.")
+    );
     assert_eq!(moves_made(&h), 0);
     assert!(board(&h).marks().selected.is_some());
     assert_eq!(cues(&h), vec![SoundCue::CardPick, SoundCue::Illegal]);
@@ -148,12 +151,12 @@ fn an_empty_stock_is_a_message_not_a_log() {
     let mut h = start(Variant::Spider(SuitCount::One), 14);
     for _ in 0..5 {
         h.type_char('s');
-        assert_eq!(status(&h), None);
+        assert_eq!(status(&h), Some("board.status.dealt"));
     }
     assert_eq!(pile_len(&h, PileRef::Stock), 0);
     h.type_char('s');
     assert_eq!(status(&h), Some("board.error.stock_empty"));
-    assert!(h.text().contains("The stock is empty."));
+    assert!(h.text().contains("Illegal move: the stock is empty."));
     assert_eq!(cues(&h).last(), Some(&SoundCue::Illegal));
     assert_eq!(moves_made(&h), 5);
 }

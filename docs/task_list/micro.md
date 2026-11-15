@@ -254,8 +254,11 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 ### M-25, M-26, M-27 — Sound styles and music
 
-- **Status:** DRAFT · **Finalized by:** P6-03 (score notation, cue list, length limits)
+- **Status:** READY · **Finalized by:** P6-03
 - **Branch:** `feat/M-XX-sound-<style>` · **Files:** `assets/audio/<style>/{style.toml,scores/*.txt,*.mid}`
+- **Notation:** header lines `tempo <bpm>` and `program <n>` (0–127), then whitespace-separated tokens `<note>:<length>` (e.g. `C4:8 E4:8 G4:4`; notes C D E F G A B with optional `#` or `b`, octave -1…9; length 1, 2, 4, 8, 16, 32, optional trailing `.` for dotted), rests `R:4`, chords `C4+E4+G4:2`. Lines starting with `#` are comments.
+- **Cue list:** pick, place, flip, deal, illegal, undo, hint, win, menu move, menu select.
+- **Length limits:** sound cues under 1.0 s (win cue under 3.0 s); looping music track at most 60 s.
 - **Cards:** M-25 and M-26 — one sound style each: a score for every cue (pick, place, flip, deal,
   illegal, undo, hint, win, menu move, menu select) and the timbres in `style.toml`. M-27 — one
   looping music track of at most 60 seconds for each style.

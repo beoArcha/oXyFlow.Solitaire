@@ -161,7 +161,9 @@ impl BoardScreen {
                 self.cue(SoundCue::CardFlip);
             }
         }
-        self.settle()
+        let effect = self.settle();
+        self.announce_event(status::done_of(mv));
+        effect
     }
 
     /// Runs after every change of the session: clears what the change made stale, keeps the
@@ -175,7 +177,7 @@ impl BoardScreen {
         self.persist();
         if self.is_won() {
             self.cue(SoundCue::Win);
-            return Effect::Open(Modal::Win);
+            return Effect::Open(Modal::win());
         }
         let stuck = self
             .session

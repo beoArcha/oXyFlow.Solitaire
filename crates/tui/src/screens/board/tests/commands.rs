@@ -124,7 +124,7 @@ fn no_legal_moves_gives_a_message_and_no_hint() {
     assert_eq!(status(&h), Some(status::NO_HINT));
     assert_eq!(cues(&h), vec![SoundCue::Illegal]);
     h.type_char('u');
-    assert_eq!(status(&h), None);
+    assert_eq!(status(&h), Some("board.status.undone"));
 }
 
 #[test]
@@ -244,11 +244,11 @@ fn the_last_move_wins_the_game() {
         None => drag(&mut h, first, first),
     }
     assert!(session(&h).game().is_won());
-    assert_eq!(h.app.modal(), Some(&Modal::Win));
+    assert_eq!(h.app.modal(), Some(&Modal::win()));
     assert_eq!(cues(&h).last(), Some(&SoundCue::Win));
     assert!(!board(&h).clock_running());
     h.advance(100);
-    h.press(KeyCode::Enter);
+    h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     assert!(!board(&h).clock_running());
     h.type_char('s');

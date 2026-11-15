@@ -38,7 +38,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
       - name: Full check
         run: cargo xtask check
@@ -56,7 +56,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       STABLE: ${{ github.event_name == 'workflow_dispatch' && inputs.stable == true }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: Swatinem/rust-cache@v2
@@ -100,12 +100,11 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             musl: true
-          - os: macos-latest
-            target: x86_64-apple-darwin
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+            musl: true
           - os: macos-latest
             target: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
@@ -117,7 +116,7 @@ jobs:
       TAG: ${{ needs.tag.outputs.tag }}
       TARGET: ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install musl tools
         if: matrix.musl
         run: |
@@ -137,6 +136,15 @@ jobs:
           mkdir -p "dist/$name"
           cp "target/$TARGET/release/oxysol" README.md LICENSE "dist/$name/"
           tar -C dist -czf "dist/$name.tar.gz" "$name"
+
+          pname="oxysol-$TAG-$TARGET-portable"
+          mkdir -p "dist/$pname"
+          cp "target/$TARGET/release/oxysol" README.md LICENSE "dist/$pname/"
+          printf '%s\n' \
+            'This copy of oXySol is portable: it keeps its database and log in the "data" folder next to the program.' \
+            'Delete this file to use the system data folder instead.' \
+            > "dist/$pname/oxysol.portable"
+          tar -C dist -czf "dist/$pname.tar.gz" "$pname"
       - name: Archive (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -145,7 +153,17 @@ jobs:
           New-Item -ItemType Directory -Force -Path "dist/$name" | Out-Null
           Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE" -Destination "dist/$name"
           Compress-Archive -Path "dist/$name" -DestinationPath "dist/$name.zip"
-      - uses: actions/upload-artifact@v4
+
+          $pname = "oxysol-$env:TAG-$env:TARGET-portable"
+          New-Item -ItemType Directory -Force -Path "dist/$pname" | Out-Null
+          Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE" -Destination "dist/$pname"
+          $lines = @(
+            'This copy of oXySol is portable: it keeps its database and log in the "data" folder next to the program.',
+            'Delete this file to use the system data folder instead.'
+          )
+          Set-Content -Path "dist/$pname/oxysol.portable" -Value $lines -Encoding Ascii
+          Compress-Archive -Path "dist/$pname" -DestinationPath "dist/$pname.zip"
+      - uses: actions/upload-artifact@v7
         with:
           name: archive-${{ matrix.target }}
           path: |
@@ -165,7 +183,7 @@ jobs:
       TAG: ${{ needs.tag.outputs.tag }}
       STABLE: ${{ needs.tag.outputs.stable }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: archive-*
           merge-multiple: true
@@ -199,7 +217,7 @@ jobs:
       MDBOOK_VERSION: v0.4.52
       MDBOOK_SHA256: c0b903f01dd8f4edc644372ad2b80b1fdddd12552d37b6a098657cbd8eddd768
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install mdBook
         run: |
           set -eu
@@ -219,9 +237,9 @@ jobs:
           cp "$RUNNER_TEMP/index.md" docs/site/src/index.md
       - name: Build the site
         run: mdbook build docs/site
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: docs/site/book
       - name: Deploy to GitHub Pages
         id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

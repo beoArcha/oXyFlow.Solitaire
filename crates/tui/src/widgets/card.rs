@@ -2,8 +2,8 @@
 //! the International style. Style-driven rendering arrives in P5-02.
 //!
 //! The rank and suit sit in the top border row, so a card overlapped by the next card of its
-//! column still shows them. Focus, selection, target and hint change the border shape and add a
-//! marker symbol: none of them depends on color.
+//! column still shows them. Focus and selection change the border shape; focus, selection, target
+//! and hint each add a marker symbol. None of them depends on color. The Unicode borders are WGL4.
 
 use oxysol_core::{Card, Color as CardColor, Rank};
 use ratatui::buffer::Buffer;
@@ -51,7 +51,7 @@ impl Mark {
         [
             (self.selected, glyphs.selected),
             (self.focus, glyphs.focus_left),
-            (self.target, "+"),
+            (self.target, glyphs.target),
             (self.hint, "?"),
         ]
         .into_iter()
@@ -90,8 +90,8 @@ const UNICODE_EDGES: EdgeSets = EdgeSets {
     normal: edges(["┌", "┐", "└", "┘"], "─", "│"),
     selected: edges(["╒", "╕", "╘", "╛"], "═", "│"),
     focus: edges(["╔", "╗", "╚", "╝"], "═", "║"),
-    target: edges(["╓", "╖", "╙", "╜"], "─", "║"),
-    hint: edges(["░", "░", "░", "░"], "░", "░"),
+    target: edges(["┌", "┐", "└", "┘"], "─", "│"),
+    hint: edges(["┌", "┐", "└", "┘"], "─", "│"),
 };
 
 const ASCII_EDGES: EdgeSets = EdgeSets {

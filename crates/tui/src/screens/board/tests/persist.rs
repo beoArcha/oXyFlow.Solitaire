@@ -50,7 +50,7 @@ fn a_won_game_is_recorded_as_won_and_its_save_removed() {
         Some(second) => drag(&mut h, first, second),
         None => drag(&mut h, first, first),
     }
-    assert_eq!(h.app.modal(), Some(&Modal::Win));
+    assert_eq!(h.app.modal(), Some(&Modal::win()));
     let storage = h.storage.borrow();
     assert!(storage.game.is_none());
     let finished = storage.history[0].finished;
