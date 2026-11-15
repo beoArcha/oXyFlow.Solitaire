@@ -240,7 +240,7 @@ pub struct NullAudio;                                    // always unavailable a
 ## Application (`oxysol`)
 
 - **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
-  (`OXYSOL_HOME` overrides). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
+  (`OXYSOL_HOME` overrides; an `oxysol.portable` file beside the executable selects `data/` beside it, R-21). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
   started_at, finished_at, outcome, elapsed_ms) and `saved_game` (one row: game id, `SessionRecord`
   as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version`; a version newer than
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
