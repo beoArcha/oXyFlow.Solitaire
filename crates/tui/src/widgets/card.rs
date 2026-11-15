@@ -87,11 +87,11 @@ struct EdgeSets {
 }
 
 const UNICODE_EDGES: EdgeSets = EdgeSets {
-    normal: edges(["╭", "╮", "╰", "╯"], "─", "│"),
-    selected: edges(["┏", "┓", "┗", "┛"], "━", "┃"),
+    normal: edges(["┌", "┐", "└", "┘"], "─", "│"),
+    selected: edges(["╒", "╕", "╘", "╛"], "═", "│"),
     focus: edges(["╔", "╗", "╚", "╝"], "═", "║"),
-    target: edges(["┌", "┐", "└", "┘"], "┄", "┆"),
-    hint: edges(["┌", "┐", "└", "┘"], "╌", "╎"),
+    target: edges(["╓", "╖", "╙", "╜"], "─", "║"),
+    hint: edges(["░", "░", "░", "░"], "░", "░"),
 };
 
 const ASCII_EDGES: EdgeSets = EdgeSets {

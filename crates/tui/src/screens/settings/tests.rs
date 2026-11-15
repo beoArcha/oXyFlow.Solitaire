@@ -240,7 +240,7 @@ fn escape_returns_to_the_main_menu() {
 #[test]
 fn the_focused_row_is_marked_without_color() {
     let mut h = open_settings();
-    assert!(h.text().contains("▶ Language:"));
+    assert!(h.text().contains("► Language:"));
     let mut ascii = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
     move_down(&mut ascii, SETTINGS_ITEM);
     ascii.press(KeyCode::Enter);

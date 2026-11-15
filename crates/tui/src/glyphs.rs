@@ -4,6 +4,9 @@
 use oxysol_core::Suit;
 use ratatui::widgets::BorderType;
 
+pub mod wgl4;
+pub use wgl4::is_wgl4;
+
 use crate::settings::GlyphMode;
 
 /// The symbols one glyph mode draws with.
@@ -21,11 +24,11 @@ pub struct Glyphs {
 const UNICODE: Glyphs = Glyphs {
     unicode: true,
     suits: ["♣", "♦", "♥", "♠"],
-    focus_left: "▶",
-    focus_right: "◀",
+    focus_left: "►",
+    focus_right: "◄",
     selected: "●",
     face_down: "▒",
-    border: BorderType::Rounded,
+    border: BorderType::Plain,
 };
 
 const ASCII: Glyphs = Glyphs {
