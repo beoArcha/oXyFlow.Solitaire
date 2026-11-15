@@ -1,0 +1,5 @@
+# illegal: low dissonant double
+tempo 150
+program 2
+
+Eb3:16 D3:8

@@ -1,0 +1,5 @@
+# undo: descending figure
+tempo 160
+program 0
+
+G5:16 E5:16 D5:16 C5:8

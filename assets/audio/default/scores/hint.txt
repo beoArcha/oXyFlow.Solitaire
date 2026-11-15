@@ -1,0 +1,5 @@
+# hint: two bright high notes
+tempo 160
+program 0
+
+E6:16 B6:8
