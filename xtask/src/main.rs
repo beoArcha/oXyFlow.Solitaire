@@ -4,6 +4,7 @@ mod affected;
 mod check;
 mod error;
 mod lint;
+mod midi;
 mod sync_metadata;
 mod version;
 
@@ -15,7 +16,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | sync-metadata [--check] | version [--tag [--stable]]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | midi <style> | sync-metadata [--check] | version [--tag [--stable]]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -41,6 +42,7 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
         "check" => check::run(parse_check(flags)?),
         "affected" => affected::run(&check::workspace_root()?, &parse_base(flags)?),
         "lint" if flags.is_empty() => lint::run(&check::workspace_root()?),
+        "midi" => Ok(midi::run(&check::workspace_root()?, &parse_midi(flags)?)?),
         "sync-metadata" => Ok(sync_metadata::run(parse_flag(flags, "--check")?)?),
         "version" => version::run(parse_version_flags(flags)?),
         _ => Err(usage()),
@@ -63,6 +65,13 @@ fn parse_check(flags: &[String]) -> Result<Mode, XtaskError> {
         [] => Ok(Mode::Full),
         [flag] if flag == "--quick" => Ok(Mode::Quick),
         [flag, base] if flag == "--pr" => Ok(Mode::Pr(base.clone())),
+        _ => Err(usage()),
+    }
+}
+
+fn parse_midi(flags: &[String]) -> Result<String, XtaskError> {
+    match flags {
+        [style] => Ok(style.clone()),
         _ => Err(usage()),
     }
 }

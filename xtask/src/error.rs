@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 
+use crate::midi::MidiError;
 use crate::sync_metadata::SyncMetadataError;
 
 #[derive(Debug, thiserror::Error)]
@@ -55,4 +56,6 @@ pub enum XtaskError {
     },
     #[error(transparent)]
     SyncMetadata(#[from] SyncMetadataError),
+    #[error(transparent)]
+    Midi(#[from] MidiError),
 }
