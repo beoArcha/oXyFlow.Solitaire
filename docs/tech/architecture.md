@@ -296,6 +296,13 @@ pub struct NullClipboard;                                // every copy fails wit
   16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly.
   `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
   `ThemeId::contrast_target()` (4.5, High Contrast 7.0).
+- **Large card faces (P3-13):** `widgets/card/` is a module (`mod.rs` drawing and labels, `frame.rs`
+  borders, `paint.rs` clipped painting, `face.rs` centre layout, `art.rs` suit pictograms, `rank_font.rs`
+  pixel font). A face-up card whose interior is big enough draws a three-row rank (a 3x5 pixel font in
+  half blocks, `^ _ #` in ASCII, taken from the localized rank label; a character without a shape falls
+  back to plain text) above a suit pictogram: 7x4 cells at 13x11, 5x3 at 11x9, 5x2 at 9x7. 7x5 keeps the
+  single suit symbol. Unicode art uses only WGL4 block characters, ASCII art only printable ASCII; the
+  four shapes differ in both sets, and the art uses the suit color token, so nothing depends on color.
 - **Card rendering:** front style and back style are selected independently. Each is drawn in one of
   three glyph modes — `Font` (Private Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` —
   described by the style's `style.toml`. `Font` is opt-in through the graphics-check screen.
