@@ -7,7 +7,7 @@ use oxysol_core::{DrawCount, Move, PileRef, Session, Suit, Variant};
 use ratatui::crossterm::event::KeyCode;
 
 use crate::announce::pile_name;
-use crate::glyphs::Glyphs;
+use crate::glyphs::{Glyphs, is_wgl4};
 use crate::screens::Effect;
 use crate::settings::GlyphMode;
 use crate::storage::memory::MemoryStorage;
@@ -17,44 +17,8 @@ const ARROWS: [KeyCode; 4] = [KeyCode::Up, KeyCode::Down, KeyCode::Left, KeyCode
 
 const SUITS: [Suit; 4] = [Suit::Clubs, Suit::Diamonds, Suit::Hearts, Suit::Spades];
 
-/// The WGL4 code points that the Unicode glyph set may draw, beyond ASCII and Latin-1.
-const WGL4: &[(u32, u32)] = &[
-    (0x2500, 0x2502),
-    (0x250C, 0x250C),
-    (0x2510, 0x2510),
-    (0x2514, 0x2514),
-    (0x2518, 0x2518),
-    (0x251C, 0x251C),
-    (0x2524, 0x2524),
-    (0x252C, 0x252C),
-    (0x2534, 0x2534),
-    (0x253C, 0x253C),
-    (0x2550, 0x256C),
-    (0x2580, 0x2580),
-    (0x2584, 0x2584),
-    (0x2588, 0x2588),
-    (0x258C, 0x258C),
-    (0x2590, 0x2593),
-    (0x25A0, 0x25A1),
-    (0x25AA, 0x25AC),
-    (0x25B2, 0x25B2),
-    (0x25BA, 0x25BA),
-    (0x25BC, 0x25BC),
-    (0x25C4, 0x25C4),
-    (0x25CA, 0x25CB),
-    (0x25CF, 0x25CF),
-    (0x25D8, 0x25D9),
-    (0x25E6, 0x25E6),
-    (0x2660, 0x2660),
-    (0x2663, 0x2663),
-    (0x2665, 0x2666),
-];
-
 fn is_wgl4_or_ascii(symbol: char) -> bool {
-    let code = u32::from(symbol);
-    symbol.is_ascii()
-        || (0xA0..=0xFF).contains(&code)
-        || WGL4.iter().any(|&(low, high)| (low..=high).contains(&code))
+    symbol.is_ascii() || is_wgl4(symbol)
 }
 
 fn count(lines: &[String], symbol: &str) -> usize {

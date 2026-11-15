@@ -5,6 +5,9 @@
 use oxysol_core::Suit;
 use ratatui::widgets::BorderType;
 
+pub mod wgl4;
+pub use wgl4::is_wgl4;
+
 use crate::settings::GlyphMode;
 
 /// The symbols one glyph mode draws with.
