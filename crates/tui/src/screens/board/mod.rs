@@ -1,26 +1,56 @@
-//! The board screen: the running game and its clock. Stub: P3-02 draws the board (`view.rs`) and
-//! P3-03 adds the controller (cursor, picking, commands); until then Esc leads back to the menu.
+//! The board screen: the running game, its clock and the controller — the cursor, picking and
+//! dropping, and the commands. The drawing is in `view.rs`; every rule comes from the engine
+//! through `Session`, the screen only turns keys into moves.
 
+mod choices;
+mod commands;
+mod cursor;
+mod marks;
+mod moves;
+mod status;
+#[cfg(test)]
+mod tests;
 mod view;
 
 use std::time::{Duration, Instant};
 
-use oxysol_core::Session;
+use oxysol_core::{Move, PileRef, Session};
 use ratatui::Frame;
 use ratatui::crossterm::event::KeyEvent;
 use ratatui::layout::Rect;
 
+use self::choices::Choice;
+use self::cursor::Cursor;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
-use crate::app::Screen;
+use crate::audio::SoundCue;
 use crate::clock::GameClock;
+use crate::i18n::t;
 use crate::storage::GameId;
+use crate::widgets::pile::Marks;
 
-/// The game being played, its history id and its clock.
+const DEFAULT_SCREEN: Rect = Rect::new(0, 0, 120, 40);
+
+/// Cards picked up, waiting for a target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Pick {
+    source: PileRef,
+    count: u8,
+    choices: Vec<Choice>,
+}
+
+/// The game being played, its history id, its clock and the state of the controller.
 pub struct BoardScreen {
     session: Option<Session>,
     game_id: Option<GameId>,
     clock: GameClock,
+    cursor: Cursor,
+    pick: Option<Pick>,
+    hint: Option<Move>,
+    status: Option<&'static str>,
+    cues: Vec<SoundCue>,
+    screen: Rect,
+    covered: bool,
 }
 
 impl Default for BoardScreen {
@@ -29,6 +59,16 @@ impl Default for BoardScreen {
             session: None,
             game_id: None,
             clock: GameClock::stopped(Duration::ZERO),
+            cursor: Cursor {
+                pile: PileRef::Stock,
+                depth: 1,
+            },
+            pick: None,
+            hint: None,
+            status: None,
+            cues: Vec::new(),
+            screen: DEFAULT_SCREEN,
+            covered: false,
         }
     }
 }
@@ -41,10 +81,25 @@ impl BoardScreen {
 
     /// Takes over `session`, continuing from `elapsed`, and starts the clock at `now`.
     pub fn begin(&mut self, session: Session, id: Option<GameId>, elapsed: Duration, now: Instant) {
+        self.cursor = Cursor::initial(&session.game().piles());
         self.session = Some(session);
         self.game_id = id;
         self.clock = GameClock::stopped(elapsed);
         self.clock.resume(now);
+        self.cues.clear();
+        self.settle();
+    }
+
+    /// Back to the dealt position of the same seed with an empty history and a zeroed clock.
+    pub fn restart(&mut self, now: Instant) {
+        let Some(session) = self.session.as_mut() else {
+            return;
+        };
+        session.restart();
+        self.cursor = Cursor::initial(&session.game().piles());
+        self.clock = GameClock::stopped(Duration::ZERO);
+        self.clock.resume(now);
+        self.settle();
     }
 
     /// The running session, if a game was started.
@@ -72,28 +127,65 @@ impl BoardScreen {
         self.clock.pause(now);
     }
 
-    /// Continues the clock (the modal closed) when a game is running.
+    /// Continues the clock (the modal closed) while a game is running and not yet won.
     pub fn resume_clock(&mut self, now: Instant) {
-        if self.session.is_some() {
+        if self.session.is_some() && !self.is_won() {
             self.clock.resume(now);
         }
     }
 
-    /// Handles a key press mapped to `action`.
+    /// Tells the board how large the terminal is; cursor movement follows the drawn geometry.
+    pub fn resize(&mut self, width: u16, height: u16) {
+        self.screen = Rect::new(0, 0, width, height);
+    }
+
+    /// Hides the cards while the game is paused.
+    pub fn set_covered(&mut self, covered: bool) {
+        self.covered = covered;
+    }
+
+    /// The sound cues emitted since the last call, oldest first.
+    pub fn take_cues(&mut self) -> Vec<SoundCue> {
+        std::mem::take(&mut self.cues)
+    }
+
+    /// The localization key of the status message, if one is shown.
+    pub fn status_key(&self) -> Option<&'static str> {
+        self.status
+    }
+
+    /// The highlights of the cursor, the picked run and its targets, and the hint.
+    pub fn marks(&self) -> Marks {
+        let Some(session) = &self.session else {
+            return Marks::default();
+        };
+        marks::build(
+            &session.game().piles(),
+            &self.cursor,
+            self.pick.as_ref(),
+            self.hint,
+        )
+    }
+
+    fn status_text(&self) -> String {
+        self.status
+            .map(|key| t(key).into_owned())
+            .unwrap_or_default()
+    }
+
+    /// Handles a key press mapped to `action`; the effect is for the application to apply.
     pub fn handle(
         &mut self,
         _key: &KeyEvent,
         action: Option<Action>,
         _ctx: &ViewCtx<'_>,
     ) -> Effect {
-        match action {
-            Some(Action::Back | Action::Menu) => Effect::Goto(Screen::MainMenu),
-            _ => Effect::None,
-        }
+        action.map_or(Effect::None, |action| self.dispatch(action))
     }
 
     /// Draws the board screen.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        self.screen = area;
         view::draw(frame, area, self, ctx);
     }
 }

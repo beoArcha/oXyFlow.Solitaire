@@ -155,6 +155,16 @@ impl Session {
         true
     }
 
+    /// Whether [`Session::undo`] has a move to step back over.
+    pub fn can_undo(&self) -> bool {
+        self.cursor > 0
+    }
+
+    /// Whether [`Session::redo`] has an undone move to re-apply.
+    pub fn can_redo(&self) -> bool {
+        self.cursor < self.moves.len()
+    }
+
     /// Back to the dealt position of the same seed with an empty history.
     pub fn restart(&mut self) {
         self.game = (self.dealer)(self.variant, self.seed);

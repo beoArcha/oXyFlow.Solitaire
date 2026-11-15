@@ -41,6 +41,8 @@ pub enum Effect {
     },
     /// Restore the saved game.
     Resume,
+    /// Deal the running game again from its seed, with an empty history.
+    Restart,
     /// Replace the settings; the application applies and saves them.
     Apply(Settings),
     Open(Modal),
