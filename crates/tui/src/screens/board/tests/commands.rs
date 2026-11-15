@@ -244,11 +244,11 @@ fn the_last_move_wins_the_game() {
         None => drag(&mut h, first, first),
     }
     assert!(session(&h).game().is_won());
-    assert_eq!(h.app.modal(), Some(&Modal::Win));
+    assert_eq!(h.app.modal(), Some(&Modal::win()));
     assert_eq!(cues(&h).last(), Some(&SoundCue::Win));
     assert!(!board(&h).clock_running());
     h.advance(100);
-    h.press(KeyCode::Enter);
+    h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     assert!(!board(&h).clock_running());
     h.type_char('s');

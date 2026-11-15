@@ -1,8 +1,9 @@
 [group]
 navigation = "Navigation"
-board = "Board"
+board = "Moves"
 game = "Game"
-general = "General"
+general = "App"
+mouse = "Mouse"
 
 [action]
 up = "Up"
@@ -25,3 +26,24 @@ restart = "Restart"
 new_game = "New game"
 pause = "Pause"
 menu = "Menu"
+
+[mouse_keys]
+click_card = "Click a card"
+click_stock = "Click stock"
+double_click = "Double-click"
+right_click = "Right-click"
+drag = "Drag"
+
+[mouse]
+click_card = "Pick up, then drop on a target"
+click_stock = "Draw from the stock"
+double_click = "Quick move to a target"
+right_click = "Cancel the pick"
+drag = "Move a card onto its target"
+
+[overlay]
+continue = "Continue"
+new_game = "New game"
+menu = "Menu"
+win_time = "Time: {time}"
+help_footer = "Esc or Enter closes this window."

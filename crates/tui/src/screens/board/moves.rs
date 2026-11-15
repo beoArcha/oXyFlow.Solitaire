@@ -175,7 +175,7 @@ impl BoardScreen {
         self.persist();
         if self.is_won() {
             self.cue(SoundCue::Win);
-            return Effect::Open(Modal::Win);
+            return Effect::Open(Modal::win());
         }
         let stuck = self
             .session
