@@ -19,10 +19,11 @@ pub enum Field {
     Cues,
     Music,
     Volume,
+    GuidePanel,
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 10] = [
+pub const FIELDS: [Field; 11] = [
     Field::Language,
     Field::Theme,
     Field::FrontStyle,
@@ -33,6 +34,7 @@ pub const FIELDS: [Field; 10] = [
     Field::Cues,
     Field::Music,
     Field::Volume,
+    Field::GuidePanel,
 ];
 
 /// Which way a change moves through the options.
@@ -80,6 +82,7 @@ impl Field {
             Field::Cues => "settings.row.cues",
             Field::Music => "settings.row.music",
             Field::Volume => "settings.row.volume",
+            Field::GuidePanel => "settings.row.guide_panel",
         }
     }
 }
@@ -138,6 +141,7 @@ pub fn value_text(field: Field, settings: &Settings) -> String {
         Field::Cues => switch_text(settings.cues),
         Field::Music => switch_text(settings.music),
         Field::Volume => format!("{}%", settings.volume),
+        Field::GuidePanel => switch_text(settings.guide_panel),
     }
 }
 
@@ -198,6 +202,7 @@ pub fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
         Field::Cues => next.cues = !settings.cues,
         Field::Music => next.music = !settings.music,
         Field::Volume => next.volume = volume_step(settings.volume, step),
+        Field::GuidePanel => next.guide_panel = !settings.guide_panel,
     }
     next
 }

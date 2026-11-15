@@ -87,7 +87,8 @@ const fn suit_key(suit: Suit) -> &'static str {
     }
 }
 
-fn look_text(look: Look) -> String {
+/// The localized words for what a position shows: `empty`, `face-down card`, or the card.
+pub fn look_text(look: Look) -> String {
     match look {
         Look::Empty => t("board.name.empty").into_owned(),
         Look::FaceDown => t("board.name.face_down").into_owned(),
@@ -105,7 +106,8 @@ fn selection_text(look: Look, count: u8) -> String {
     tf("board.announce.selected", &[("what", &look_text(look))])
 }
 
-fn targets_text(targets: usize) -> String {
+/// The localized count of targets: `1 target`, `3 targets`.
+pub fn targets_text(targets: usize) -> String {
     if targets == 1 {
         return t("board.announce.targets_one").into_owned();
     }

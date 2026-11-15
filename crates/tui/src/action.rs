@@ -13,6 +13,7 @@ pub enum Action {
     ForceQuit,
     Help,
     Rules,
+    Guide,
     Stock,
     QuickMove,
     RunMore,
@@ -28,7 +29,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 21] = [
+    pub const ALL: [Action; 22] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -42,6 +43,7 @@ impl Action {
         Action::Undo,
         Action::Redo,
         Action::Hint,
+        Action::Guide,
         Action::Restart,
         Action::NewGame,
         Action::Pause,
@@ -65,6 +67,7 @@ impl Action {
             Action::ForceQuit => "help.action.force_quit",
             Action::Help => "help.action.help",
             Action::Rules => "help.action.rules",
+            Action::Guide => "help.action.guide",
             Action::Stock => "help.action.stock",
             Action::QuickMove => "help.action.quick_move",
             Action::RunMore => "help.action.run_more",

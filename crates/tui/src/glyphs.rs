@@ -20,6 +20,14 @@ pub struct Glyphs {
     pub selected: &'static str,
     pub target: &'static str,
     pub face_down: &'static str,
+    /// Halo around the focused card.
+    pub aura_focus: &'static str,
+    /// Halo around the picked-up run.
+    pub aura_carry: &'static str,
+    /// Weaker halo around a valid drop target.
+    pub aura_target: &'static str,
+    /// Vertical line that separates a side panel from the board.
+    pub edge: &'static str,
     pub border: BorderType,
 }
 
@@ -31,6 +39,10 @@ const UNICODE: Glyphs = Glyphs {
     selected: "●",
     target: "+",
     face_down: "▒",
+    aura_focus: "░",
+    aura_carry: "▓",
+    aura_target: "·",
+    edge: "│",
     border: BorderType::Plain,
 };
 
@@ -42,6 +54,10 @@ const ASCII: Glyphs = Glyphs {
     selected: "*",
     target: "%",
     face_down: "#",
+    aura_focus: ":",
+    aura_carry: "=",
+    aura_target: ".",
+    edge: "|",
     border: BorderType::Plain,
 };
 
@@ -78,6 +94,10 @@ mod tests {
             &glyphs.selected,
             &glyphs.target,
             &glyphs.face_down,
+            &glyphs.aura_focus,
+            &glyphs.aura_carry,
+            &glyphs.aura_target,
+            &glyphs.edge,
         ]);
         for text in all {
             assert!(text.is_ascii(), "{text}");
@@ -95,6 +115,20 @@ mod tests {
             seen.sort_unstable();
             seen.dedup();
             assert_eq!(seen.len(), 4);
+        }
+    }
+
+    #[test]
+    fn the_three_auras_differ_in_both_sets() {
+        for mode in [GlyphMode::Unicode, GlyphMode::Ascii] {
+            let glyphs = Glyphs::new(mode);
+            let auras = [glyphs.aura_focus, glyphs.aura_carry, glyphs.aura_target];
+            for (index, aura) in auras.iter().enumerate() {
+                assert!(!aura.is_empty());
+                assert!(auras[index + 1..].iter().all(|other| other != aura));
+                assert_ne!(*aura, glyphs.face_down);
+                assert_ne!(*aura, glyphs.selected);
+            }
         }
     }
 

@@ -60,7 +60,7 @@ fn every_variant_draws_every_visible_card_label_at_both_sizes() {
             let mut h = started(variant, TRUE_COLOR, width, height);
             let lines = h.lines();
             let piles = deal(variant, 42).piles();
-            let body = chrome(Rect::new(0, 0, width, height)).body;
+            let body = chrome_with(Rect::new(0, 0, width, height), true).body;
             let labels = visible_labels(&piles, &compute(variant, &piles, body));
             assert!(labels.len() >= 7, "{variant:?} {width}x{height}");
             for (pile, rect, text) in labels {

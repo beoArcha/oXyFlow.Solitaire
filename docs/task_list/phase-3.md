@@ -166,3 +166,26 @@ Rules for the whole phase:
   for larger ones. Finalize micro cards M-30…M-34. Update the Status columns.
 - **Acceptance:** review report; the full path menu → game → settings → quit exercised for every
   game, by test or by hand (say which); `cargo xtask check` passes.
+
+### P3-11 — Board guidance: focus aura, action line and guide panel
+
+- **Owner:** Sonnet
+- **Depends on:** P3-06, P3-08, P3-10
+- **Files:** `crates/tui/src/{widgets,screens/board,screens/settings,layout,theme}/**`,
+  `crates/tui/src/{action,input,settings,glyphs,announce}.rs`, `locales/*/{board,help,settings}.toml`,
+  `tests/integration/`, `docs/tech/architecture.md`
+- **Scope:**
+  - Focus aura: a one-cell halo (`aura_focus`, `aura_carry` tokens in every palette, covered by the
+    contrast tests; a distinct symbol per halo) around the focused card or run and the carried run,
+    a weaker halo around valid drop targets; drawn on free cells only, so the layout does not move.
+  - Action line under the board: `Now:` (what is in progress) and `Possible:` (the actions of this
+    exact state with their keys), built from the controller, `Session` and `KEY_TABLE`. It absorbs
+    the first-steps hint of P3-10; the announcer message stays.
+  - Guide panel at the right (30 columns): goal, key groups from `KEY_TABLE` with the usable keys
+    marked, mouse gestures. `Settings::guide_panel` (default on), a row in Settings, key `g` and a
+    click on the title toggle it; hidden when the board would drop below 100 columns.
+  - New texts in `en-US` and `pl-PL`.
+- **Acceptance:** tests for the aura of every variant (present at the focus, absent elsewhere), the
+  aura without color, the action line (browsing, carrying, no moves, won), the panel (shown at
+  140 × 40, hidden at 100 × 30 and when off), the setting through storage and an old value without
+  it, WGL4/ASCII glyphs only; `cargo xtask check --quick` passes.

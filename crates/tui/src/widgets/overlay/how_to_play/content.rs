@@ -6,6 +6,7 @@ use super::state::Rules;
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::{binding_for, primary_key};
+pub use crate::widgets::text::wrap;
 
 /// Rows of text visible at once.
 pub const VIEW_ROWS: usize = 20;
@@ -31,21 +32,6 @@ pub struct Row {
     pub lead: String,
     pub text: String,
     pub kind: Kind,
-}
-
-/// Words of `text` packed into rows of at most `width` columns; a longer word gets a row of its own.
-pub fn wrap(text: &str, width: usize) -> Vec<String> {
-    let mut lines: Vec<String> = Vec::new();
-    for word in text.split_whitespace() {
-        match lines.last_mut() {
-            Some(line) if line.chars().count() + 1 + word.chars().count() <= width => {
-                line.push(' ');
-                line.push_str(word);
-            }
-            _ => lines.push(word.to_owned()),
-        }
-    }
-    lines
 }
 
 fn placeholders() -> Vec<(&'static str, String)> {

@@ -1,7 +1,8 @@
 //! Controller tests: key sequences on fixed seeds, driven through `App` on a `TestBackend`.
 
+mod aura;
 mod commands;
-mod first_steps;
+mod guidance;
 mod mouse;
 mod moves;
 mod navigation;

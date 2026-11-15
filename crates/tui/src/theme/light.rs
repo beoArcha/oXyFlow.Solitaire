@@ -29,5 +29,7 @@ pub fn palette() -> Palette {
         target: swatch(255, 214, 102, Color::Yellow),
         selection: swatch(80, 200, 255, Color::LightCyan),
         hint: swatch(255, 165, 50, Color::LightYellow),
+        aura_focus: swatch(255, 236, 140, Color::Yellow),
+        aura_carry: swatch(172, 240, 255, Color::LightCyan),
     }
 }
