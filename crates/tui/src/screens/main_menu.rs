@@ -106,7 +106,10 @@ impl MainMenu {
                 let step = field.handle_key(key);
                 self.after_seed(step)
             }
-            Stage::Variants { picker, .. } => picker.handle(key, action, ctx),
+            Stage::Variants { picker, .. } => {
+                let effect = picker.handle(key, action, ctx);
+                self.leave_variants_on_start(effect)
+            }
         }
     }
 
@@ -125,8 +128,18 @@ impl MainMenu {
                 let step = field.handle_mouse(event);
                 self.after_seed(step)
             }
-            Stage::Variants { picker, .. } => picker.handle_mouse(event, ctx),
+            Stage::Variants { picker, .. } => {
+                let effect = picker.handle_mouse(event, ctx);
+                self.leave_variants_on_start(effect)
+            }
         }
+    }
+
+    fn leave_variants_on_start(&mut self, effect: Effect) -> Effect {
+        if matches!(effect, Effect::Start { .. }) {
+            self.stage = Stage::Items;
+        }
+        effect
     }
 
     fn handle_items(&mut self, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {

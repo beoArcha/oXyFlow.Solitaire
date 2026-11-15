@@ -234,3 +234,18 @@ fn the_seed_parser_accepts_digits_and_names_each_refusal() {
         Err(SeedError::OutOfRange)
     );
 }
+
+#[test]
+fn the_menu_shows_its_items_again_after_a_game_from_a_seed() {
+    let mut h = Harness::new();
+    open_seed_entry(&mut h);
+    type_text(&mut h, "7");
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Board);
+    h.press(KeyCode::Esc);
+    assert_eq!(h.app.screen(), Screen::MainMenu);
+    let text = h.text();
+    assert!(text.contains("New game from seed"), "{text}");
+    assert!(!text.contains("Choose a game for seed 7"), "{text}");
+}
