@@ -890,9 +890,11 @@ name = "oxysol"
 version = "0.1.0"
 dependencies = [
  "directories",
+ "midly",
  "oxysol-core",
  "oxysol-tui",
  "rusqlite",
+ "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
