@@ -31,17 +31,22 @@ package. Changes under `docs/` and to `*.md` select none.
 |---|---|---|
 | `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu; a newer push cancels the older run of the same PR |
 | `.github/workflows/main.yml` | push to `main`, manual dispatch | `cargo xtask check` on Ubuntu, Windows and macOS; then `promote` (main only) |
-| `.github/workflows/release.yml` | push to `release`, manual dispatch with input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
+| `.github/workflows/release.yml` | manual dispatch only (R-20), input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
 
 `promote` runs one at a time and is never cancelled. It stops when `release` already contains the
 commit. Otherwise it pushes the tested commit to `release` over SSH with the deploy key from the
 secret `RELEASE_DEPLOY_KEY`, as a plain push (no force), so an old run cannot move `release`
-backwards. It then runs `gh workflow run release.yml --ref release`. The push itself also starts
-`release.yml`, so two runs can exist for one commit; they never overlap (see below).
+backwards. It starts no release: building and publishing is the owner's decision (R-20).
 
 If the secret is empty, `promote` fails with a message that points here.
 
 ## Release workflow
+
+Start it from the Actions tab ("Release", "Run workflow", branch `release`) or with:
+
+```sh
+gh workflow run release.yml --ref release
+```
 
 `release.yml` runs one at a time (`concurrency: release`, never cancelled). Its jobs:
 
@@ -52,8 +57,7 @@ If the secret is empty, `promote` fails with a message that points here.
    - a stable tag that exists fails the run;
    - a dev tag that exists at a different commit fails the run;
    - a dev tag at this commit with a GitHub Release already present is a notice, and the run ends
-     without publishing (this is the second run of the same commit, started by the promotion push
-     and by `promote`);
+     without publishing (the same commit was already released);
    - a dev tag at this commit without a Release (a previous run stopped before publishing) is
      published again on the same tag.
 4. `build` makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
@@ -68,7 +72,7 @@ If the secret is empty, `promote` fails with a message that points here.
 
 Tags: dev `v<version>-dev.<n>`, stable `v<version>`, both from `metadata.toml` (T-21).
 
-A stable release is started by hand from the `release` branch:
+A stable release adds the input `stable`:
 
 ```sh
 gh workflow run release.yml --ref release -f stable=true
@@ -79,9 +83,9 @@ the site keeps the content of the last successful run.
 
 ## Versions (T-21)
 
-`metadata.toml` holds the next stable version. Each automatic `release.yml` run publishes a
-pre-release `v<version>-dev.<n>`, where `n` is `git rev-list --count HEAD`. A manual dispatch with
-`stable: true` publishes `v<version>` and fails if that tag already exists.
+`metadata.toml` holds the next stable version. Each `release.yml` run publishes a
+pre-release `v<version>-dev.<n>`, where `n` is `git rev-list --count HEAD`. With
+`stable: true` it publishes `v<version>` and fails if that tag already exists.
 
 ## One-time setup (repository owner)
 
