@@ -31,15 +31,51 @@ package. Changes under `docs/` and to `*.md` select none.
 |---|---|---|
 | `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu; a newer push cancels the older run of the same PR |
 | `.github/workflows/main.yml` | push to `main`, manual dispatch | `cargo xtask check` on Ubuntu, Windows and macOS; then `promote` (main only) |
-| `.github/workflows/release.yml` | push to `release`, manual dispatch | full check, builds, tag, GitHub Release, site (P0-04, not yet present) |
+| `.github/workflows/release.yml` | push to `release`, manual dispatch with input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
 
 `promote` runs one at a time and is never cancelled. It stops when `release` already contains the
 commit. Otherwise it pushes the tested commit to `release` over SSH with the deploy key from the
 secret `RELEASE_DEPLOY_KEY`, as a plain push (no force), so an old run cannot move `release`
-backwards. It then runs `gh workflow run release.yml --ref release`. While `release.yml` does not
-exist, that step prints a notice and nothing is dispatched.
+backwards. It then runs `gh workflow run release.yml --ref release`. The push itself also starts
+`release.yml`, so two runs can exist for one commit; they never overlap (see below).
 
 If the secret is empty, `promote` fails with a message that points here.
+
+## Release workflow
+
+`release.yml` runs one at a time (`concurrency: release`, never cancelled). Its jobs:
+
+1. `guard` fails unless the ref is `refs/heads/release`.
+2. `check` runs `cargo xtask check` on Ubuntu, Windows and macOS.
+3. `tag` computes the tag with `cargo xtask version --tag` (or `--tag --stable`) and checks whether
+   it already exists:
+   - a stable tag that exists fails the run;
+   - a dev tag that exists at a different commit fails the run;
+   - a dev tag at this commit with a GitHub Release already present is a notice, and the run ends
+     without publishing (this is the second run of the same commit, started by the promotion push
+     and by `promote`);
+   - a dev tag at this commit without a Release (a previous run stopped before publishing) is
+     published again on the same tag.
+4. `build` makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
+   `x86_64-unknown-linux-gnu`, `x86_64-unknown-linux-musl` (`musl-tools`), `x86_64-apple-darwin`
+   and `aarch64-apple-darwin`. Each is archived as `oxysol-<tag>-<target>` with `oxysol` (or
+   `oxysol.exe`), `README.md` and `LICENSE`: `.zip` on Windows, `.tar.gz` elsewhere. Archives are
+   workflow artifacts named `archive-<target>`.
+5. `publish` writes `SHA256SUMS`, creates the tag on the tested commit and a GitHub Release with
+   every archive and `SHA256SUMS`. It is a pre-release unless `stable` is set.
+6. `site` builds `docs/site` with a pinned mdBook (v0.4.52, SHA-256 checked), inserts the tag and the
+   release link, and deploys GitHub Pages.
+
+Tags: dev `v<version>-dev.<n>`, stable `v<version>`, both from `metadata.toml` (T-21).
+
+A stable release is started by hand from the `release` branch:
+
+```sh
+gh workflow run release.yml --ref release -f stable=true
+```
+
+When the run is skipped at `tag` or fails before `publish`, `publish` and `site` do not run, so
+the site keeps the content of the last successful run.
 
 ## Versions (T-21)
 
