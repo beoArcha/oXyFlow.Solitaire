@@ -10,7 +10,7 @@ mod tests;
 
 use crate::card::{Card, Suit};
 use crate::deck;
-use crate::game::{Game, SuitCount};
+use crate::game::{Game, StockStatus, SuitCount};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot};
@@ -111,5 +111,14 @@ impl Game for Spider {
         piles
             .extend(columns.map(|(i, c)| snapshot(PileRef::Tableau(index_ref(i)), &c.down, &c.up)));
         piles
+    }
+
+    fn stock_status(&self) -> Option<StockStatus> {
+        let deals_left = u32::try_from(self.stock.len().div_ceil(COLUMNS)).unwrap_or(u32::MAX);
+        Some(StockStatus {
+            recycles: 0,
+            recycles_left: Some(0),
+            deals_left: Some(deals_left),
+        })
     }
 }

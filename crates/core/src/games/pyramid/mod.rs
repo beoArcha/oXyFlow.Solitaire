@@ -11,7 +11,7 @@ mod tests;
 
 use crate::card::{Card, Rank};
 use crate::deck;
-use crate::game::{Game, PyramidRules};
+use crate::game::{Game, PyramidRules, StockStatus};
 use crate::games::index_ref;
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot, TableCard};
@@ -169,5 +169,14 @@ impl Game for Pyramid {
             }
         }
         piles
+    }
+
+    fn stock_status(&self) -> Option<StockStatus> {
+        let allowed = passes(self.rules).saturating_sub(1);
+        Some(StockStatus {
+            recycles: u32::from(allowed.saturating_sub(self.recycles_left)),
+            recycles_left: Some(u32::from(self.recycles_left)),
+            deals_left: None,
+        })
     }
 }

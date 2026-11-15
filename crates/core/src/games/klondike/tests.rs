@@ -3,6 +3,7 @@
 mod deal;
 mod hints;
 mod rules;
+mod stock;
 
 use super::{Column, Klondike};
 use crate::card::{Card, CardId, Rank, Suit};
