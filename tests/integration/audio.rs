@@ -10,7 +10,7 @@ use oxysol::audio::output::OutputError;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::storage::memory::MemoryStorage;
-use oxysol_tui::{App, Audio, Deps, Input};
+use oxysol_tui::{App, Audio, AudioStatus, Deps, Input};
 #[cfg(feature = "audio")]
 use oxysol_tui::{AudioSettings, SoundCue};
 
@@ -40,6 +40,7 @@ fn app_with(audio: Box<dyn Audio>) -> App {
         caps: LOCAL,
         seeds: Box::new(|| 7),
         start_seed: None,
+        sound_styles: Vec::new(),
     })
 }
 
@@ -60,6 +61,7 @@ fn play_menu_and_quit(app: &mut App) {
 #[test]
 fn a_remote_session_runs_without_sound() {
     let audio = audio::create(&REMOTE);
+    assert_eq!(audio.status(), AudioStatus::RemoteSession);
     assert!(!audio.available());
     let mut app = app_with(audio);
     play_menu_and_quit(&mut app);
@@ -69,6 +71,7 @@ fn a_remote_session_runs_without_sound() {
 #[test]
 fn a_failing_device_runs_without_sound() {
     let audio = audio::device_or_silence(Err(OutputError::NoDevice));
+    assert_eq!(audio.status(), AudioStatus::NoDevice);
     assert!(!audio.available());
     let mut app = app_with(audio);
     play_menu_and_quit(&mut app);

@@ -10,8 +10,8 @@ use oxysol_core::{DrawCount, PileSnapshot, Session, Variant};
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::{
-    App, Deps, GameId, Input, Modal, NullAudio, Outcome, SavedGame, Screen, Settings, Storage,
-    StorageError,
+    App, AudioStatus, Deps, GameId, Input, Modal, NullAudio, Outcome, SavedGame, Screen, Settings,
+    Storage, StorageError,
 };
 use rusqlite::Connection;
 use tempfile::TempDir;
@@ -54,10 +54,11 @@ fn connect(paths: &AppPaths) -> Connection {
 fn launch(storage: Box<dyn Storage>) -> Player {
     let app = App::new(Deps {
         storage,
-        audio: Box::new(NullAudio),
+        audio: Box::new(NullAudio::new(AudioStatus::NotBuilt)),
         caps: CAPS,
         seeds: Box::new(|| SEED),
         start_seed: None,
+        sound_styles: Vec::new(),
     });
     Player {
         app,

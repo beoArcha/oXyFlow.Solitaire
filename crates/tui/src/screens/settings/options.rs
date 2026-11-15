@@ -1,7 +1,8 @@
 //! The options of the settings screen: their order, what each row shows, and how one step changes
-//! [`Settings`]. Style lists are fixed to the ids that exist today; real style lists arrive with
-//! P5 and P6.
+//! [`Settings`]. Front and back styles are fixed to the ids that exist today; the sound styles are the
+//! list the application passes in.
 
+use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{ColorMode, GlyphMode, Settings};
 use crate::theme::ThemeId;
@@ -48,8 +49,6 @@ pub enum Step {
 pub const FRONT_STYLES: [&str; 1] = ["international"];
 /// Back style ids offered today.
 pub const BACK_STYLES: [&str; 1] = ["default"];
-/// Sound style ids offered today.
-pub const SOUND_STYLES: [&str; 1] = ["default"];
 
 const GLYPH_MODES: [GlyphMode; 3] = [GlyphMode::Font, GlyphMode::Unicode, GlyphMode::Ascii];
 const COLOR_MODES: [ColorMode; 4] = [
@@ -128,8 +127,27 @@ fn switch_text(on: bool) -> String {
     t(key).into_owned()
 }
 
+/// Localization key of the reason why sound is unavailable; `None` when it is available.
+pub const fn unavailable_reason_key(status: AudioStatus) -> Option<&'static str> {
+    match status {
+        AudioStatus::Ready => None,
+        AudioStatus::RemoteSession => Some("settings.audio.remote"),
+        AudioStatus::NotBuilt => Some("settings.audio.not_built"),
+        AudioStatus::NoDevice => Some("settings.audio.no_device"),
+        AudioStatus::StyleFailed => Some("settings.audio.style_failed"),
+    }
+}
+
+/// The name of a sound style: the name its `style.toml` gives, or its id when the list lacks it.
+pub fn sound_style_name<'a>(sound_styles: &'a [StyleInfo], id: &'a str) -> &'a str {
+    sound_styles
+        .iter()
+        .find(|style| style.id == id)
+        .map_or(id, |style| style.name.as_str())
+}
+
 /// The value of a row as the player reads it.
-pub fn value_text(field: Field, settings: &Settings) -> String {
+pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo]) -> String {
     match field {
         Field::Language => t(locale_key(settings.locale)).into_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
@@ -137,7 +155,7 @@ pub fn value_text(field: Field, settings: &Settings) -> String {
         Field::BackStyle => settings.back_style.clone(),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
-        Field::SoundStyle => settings.sound_style.clone(),
+        Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
         Field::Music => switch_text(settings.music),
         Field::Volume => format!("{}%", settings.volume),
@@ -146,8 +164,13 @@ pub fn value_text(field: Field, settings: &Settings) -> String {
 }
 
 /// The text of a row: `label: value`, with a marker on sound rows when sound is unavailable.
-pub fn line(field: Field, settings: &Settings, audio_available: bool) -> String {
-    let mut value = value_text(field, settings);
+pub fn line(
+    field: Field,
+    settings: &Settings,
+    audio_available: bool,
+    sound_styles: &[StyleInfo],
+) -> String {
+    let mut value = value_text(field, settings, sound_styles);
     if field.is_audio() && !audio_available {
         value = format!("{value} ({})", t("settings.value.unavailable"));
     }
@@ -183,7 +206,12 @@ fn volume_step(volume: u8, step: Step) -> u8 {
 }
 
 /// The settings after one step on `field`. Everything else stays as it was.
-pub fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
+pub fn changed(
+    field: Field,
+    settings: &Settings,
+    step: Step,
+    sound_styles: &[StyleInfo],
+) -> Settings {
     let mut next = settings.clone();
     match field {
         Field::Language => next.locale = cycle(&Locale::ALL, settings.locale, step),
@@ -197,7 +225,8 @@ pub fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
         Field::Glyphs => next.glyph_mode = cycle(&GLYPH_MODES, settings.glyph_mode, step),
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
         Field::SoundStyle => {
-            next.sound_style = cycle_str(&SOUND_STYLES, &settings.sound_style, step);
+            let ids: Vec<&str> = sound_styles.iter().map(|style| style.id.as_str()).collect();
+            next.sound_style = cycle_str(&ids, &settings.sound_style, step);
         }
         Field::Cues => next.cues = !settings.cues,
         Field::Music => next.music = !settings.music,

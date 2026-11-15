@@ -9,7 +9,7 @@ use ratatui::layout::Rect;
 use ratatui::widgets::Block;
 
 use crate::action::Action;
-use crate::audio::Audio;
+use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
 use crate::i18n;
@@ -19,7 +19,7 @@ use crate::screens::game_select::GameSelect;
 use crate::screens::main_menu::MainMenu;
 use crate::screens::settings::SettingsScreen;
 use crate::screens::{Effect, ViewCtx};
-use crate::settings::Settings;
+use crate::settings::{DEFAULT_SOUND_STYLE, Settings};
 use crate::storage::{SavedGame, Storage, StorageError};
 use crate::theme::Theme;
 use crate::widgets::overlay;
@@ -36,6 +36,8 @@ pub struct Deps {
     pub seeds: Box<dyn FnMut() -> u64>,
     /// A seed from the command line: the main menu opens on the games dealt from it.
     pub start_seed: Option<u64>,
+    /// The sound styles the settings offer, in order; the binary embeds them.
+    pub sound_styles: Vec<StyleInfo>,
 }
 
 /// The screen behind the modal layer.
@@ -54,7 +56,8 @@ macro_rules! view_ctx {
             glyphs: &$app.glyphs,
             settings: &$app.settings,
             caps: &$app.caps,
-            audio_available: $app.audio.available(),
+            audio_status: $app.audio.status(),
+            sound_styles: &$app.sound_styles,
             has_saved_game: $app.saved.is_some(),
             now: $app.now,
         }
@@ -67,6 +70,7 @@ pub struct App {
     audio: Box<dyn Audio>,
     seeds: Box<dyn FnMut() -> u64>,
     caps: TerminalCaps,
+    sound_styles: Vec<StyleInfo>,
     settings: Settings,
     theme: Theme,
     glyphs: Glyphs,
@@ -94,6 +98,7 @@ impl App {
             caps,
             seeds,
             start_seed,
+            sound_styles,
         } = deps;
         let settings = Settings::for_caps(&caps);
         let mut app = Self {
@@ -101,6 +106,7 @@ impl App {
             audio,
             seeds,
             caps,
+            sound_styles,
             theme: Theme::new(settings.theme, settings.color_depth(&caps)),
             glyphs: Glyphs::new(settings.glyph_mode),
             settings,
@@ -117,8 +123,20 @@ impl App {
             quit: false,
         };
         app.load_stored_state();
+        app.fit_sound_style();
         app.refresh_view();
         app
+    }
+
+    /// A saved sound style that no longer exists falls back to the default style.
+    fn fit_sound_style(&mut self) {
+        let known = self
+            .sound_styles
+            .iter()
+            .any(|style| style.id == self.settings.sound_style);
+        if !known {
+            self.settings.sound_style = DEFAULT_SOUND_STYLE.to_owned();
+        }
     }
 
     fn load_stored_state(&mut self) {

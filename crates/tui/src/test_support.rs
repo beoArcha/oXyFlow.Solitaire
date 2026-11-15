@@ -13,7 +13,7 @@ use ratatui::crossterm::event::{
 };
 
 use crate::app::{App, Deps};
-use crate::audio::{Audio, AudioSettings, SoundCue};
+use crate::audio::{Audio, AudioSettings, AudioStatus, SoundCue, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::input::Input;
 use crate::settings::Settings;
@@ -78,8 +78,8 @@ pub struct AudioLog {
 pub struct RecordingAudio(pub Rc<RefCell<AudioLog>>);
 
 impl Audio for RecordingAudio {
-    fn available(&self) -> bool {
-        true
+    fn status(&self) -> AudioStatus {
+        AudioStatus::Ready
     }
 
     fn configure(&mut self, settings: &AudioSettings) {
@@ -89,6 +89,17 @@ impl Audio for RecordingAudio {
     fn play(&mut self, cue: SoundCue) {
         self.0.borrow_mut().cues.push(cue);
     }
+}
+
+/// The sound styles of the application in tests: the two embedded ones, in their order.
+pub fn sound_styles() -> Vec<StyleInfo> {
+    [("default", "Default"), ("retro", "Retro")]
+        .into_iter()
+        .map(|(id, name)| StyleInfo {
+            id: id.to_owned(),
+            name: name.to_owned(),
+        })
+        .collect()
 }
 
 pub struct Harness {
@@ -132,6 +143,7 @@ impl Harness {
                 next_seed
             }),
             start_seed,
+            sound_styles: sound_styles(),
         });
         Self {
             app,

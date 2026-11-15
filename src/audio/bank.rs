@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::str::Utf8Error;
 use std::sync::Arc;
 
-use oxysol_tui::SoundCue;
+use oxysol_tui::{SoundCue, StyleInfo};
 use thiserror::Error;
 
 use super::sequence::{Sequence, SequenceError};
@@ -125,6 +125,28 @@ impl Bank {
 
     pub fn programs(&self) -> &Programs {
         &self.programs
+    }
+}
+
+/// Every embedded sound style, in folder order, named by the `name` of its `style.toml`. A style whose
+/// name is missing or unreadable is listed by its id; selecting it reports the failure.
+pub fn style_list() -> Vec<StyleInfo> {
+    EMBEDDED_STYLES
+        .iter()
+        .map(|style| style_info(style.id, style.file(MANIFEST)))
+        .collect()
+}
+
+fn style_info(id: &str, manifest: Option<&[u8]>) -> StyleInfo {
+    let name = manifest
+        .and_then(|bytes| std::str::from_utf8(bytes).ok())
+        .and_then(|text| Style::parse(text).ok())
+        .and_then(|parsed| parsed.name)
+        .filter(|name| !name.trim().is_empty())
+        .unwrap_or_else(|| id.to_owned());
+    StyleInfo {
+        id: id.to_owned(),
+        name,
     }
 }
 

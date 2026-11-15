@@ -11,7 +11,7 @@ use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use self::options::{FIELDS, Step, changed, line};
+use self::options::{FIELDS, Step, changed, line, unavailable_reason_key};
 use super::{Effect, ViewCtx};
 use crate::action::Action;
 use crate::app::Screen;
@@ -32,17 +32,15 @@ fn change_row(index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
     let Some(field) = FIELDS.get(index).copied() else {
         return Effect::None;
     };
-    if field.is_audio() && !ctx.audio_available {
+    if field.is_audio() && !ctx.audio_status.is_ready() {
         return Effect::None;
     }
-    Effect::Apply(changed(field, ctx.settings, step))
+    Effect::Apply(changed(field, ctx.settings, step, ctx.sound_styles))
 }
 
 fn draw_reason(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
-    let key = if ctx.caps.remote {
-        "settings.audio.remote"
-    } else {
-        "settings.audio.no_device"
+    let Some(key) = unavailable_reason_key(ctx.audio_status) else {
+        return;
     };
     let style = ctx.theme.style(Token::TextMuted, Token::Background);
     let text = Line::styled(t(key).into_owned(), style);
@@ -99,12 +97,17 @@ impl SettingsScreen {
         );
         let labels: Vec<String> = FIELDS
             .iter()
-            .map(|field| line(*field, ctx.settings, ctx.audio_available))
+            .map(|field| {
+                line(
+                    *field,
+                    ctx.settings,
+                    ctx.audio_status.is_ready(),
+                    ctx.sound_styles,
+                )
+            })
             .collect();
         self.list.draw(frame, list_area, &labels, ctx);
-        if !ctx.audio_available {
-            draw_reason(frame, reason_area, ctx);
-        }
+        draw_reason(frame, reason_area, ctx);
         footer::draw(frame, footer_area, &FOOTER, ctx);
     }
 }

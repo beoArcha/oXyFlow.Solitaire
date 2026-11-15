@@ -138,6 +138,7 @@ pub struct Deps {
     pub caps: TerminalCaps,
     pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed seed bypasses it
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
+    pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings }
@@ -175,18 +176,21 @@ pub struct MemoryStorage { pub settings, pub game, pub history, pub failing }   
 
 pub enum SoundCue { CardPick, CardPlace, CardFlip, StockDeal, Illegal, Undo, Hint, Win, MenuMove, MenuSelect }
 pub struct AudioSettings { pub style: String, pub volume: u8, pub cues: bool, pub music: bool }
+pub enum AudioStatus { Ready, RemoteSession, NotBuilt, NoDevice, StyleFailed }   // why sound is or is not available
+pub struct StyleInfo { pub id: String, pub name: String }                        // a sound style the settings offer
 pub trait Audio {
-    fn available(&self) -> bool;
+    fn status(&self) -> AudioStatus;                     // the only status that plays is `Ready`
+    fn available(&self) -> bool;                         // provided: `status() == Ready`
     fn configure(&mut self, settings: &AudioSettings);   // style, volume, cues on/off, music on/off
     fn play(&mut self, cue: SoundCue);
 }
-pub struct NullAudio;                                    // always unavailable and silent
+pub struct NullAudio { status: AudioStatus }             // silent; reports the status it was built with (`NullAudio::new`)
 ```
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
   `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
-  settings, caps, clock instant) and never change shared state or call `Storage` themselves.
+  settings, caps, `audio_status`, `sound_styles`, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
@@ -294,10 +298,16 @@ pub struct NullAudio;                                    // always unavailable a
   game takes a fresh seed. The board header shows the seed; the menu offers "New game from seed".
 - **Audio:** `src/audio/` implements `Audio`: MIDI sequencing and a built-in synthesizer as pure
   code (`render` is testable without a device), a pure mixer of cues and music, plus `cpal` output
-  (`output.rs`, feature `audio`). Sound styles are embedded from `assets/audio/` at build time. A
-  `NullAudio` is used when the feature is off, no device exists, or the session is remote. `available()`
-  is true only while the device runs and the selected style loads. Linux release builds are made with
-  `--no-default-features` and are silent (T-18).
+  (`output.rs`, feature `audio`). Sound styles are embedded from `assets/audio/` at build time.
+  `bank::style_list()` gives the binary's `Deps::sound_styles`: every embedded style in folder order,
+  named by the `name` of its `style.toml` (the id when the name is missing). The settings offer that
+  list, and `App` maps a saved style that is not in it back to `default` (`fit_sound_style`).
+  The reason sound is unavailable is decided once, in this order: remote session (`RemoteSession`),
+  feature off (`NotBuilt`), no working device (`NoDevice`), selected style does not load
+  (`StyleFailed`), otherwise `Ready`. A `NullAudio` carries the reason. The settings show the reason
+  text from `settings.audio.*`. Changing the style builds the new `Mixer` before the output lock is
+  taken and swaps it in under the lock (`Output::replace_mixer`). Linux release builds are made with
+  `--no-default-features` and report `NotBuilt` (T-18).
 
 ## Errors and logging
 

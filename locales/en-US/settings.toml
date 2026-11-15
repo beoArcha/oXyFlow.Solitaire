@@ -40,5 +40,7 @@ ansi256 = "256 colors"
 true_color = "True color"
 
 [audio]
-no_device = "Sound is unavailable: no audio device was found."
+no_device = "Sound is unavailable: no working audio device was found."
 remote = "Sound is unavailable: this is a remote session."
+not_built = "Sound is not included in this build."
+style_failed = "Sound is unavailable: the selected sound style cannot be loaded."

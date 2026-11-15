@@ -40,5 +40,7 @@ ansi256 = "256 colors"
 true_color = "True color"
 
 [audio]
-no_device = "Sound is unavailable: no audio device was found."
-remote = "Sound is unavailable: this is a remote session."
+no_device = "Dźwięk jest niedostępny: nie znaleziono działającego urządzenia audio."
+remote = "Dźwięk jest niedostępny: to zdalna sesja."
+not_built = "Dźwięk nie jest dołączony do tej wersji programu."
+style_failed = "Dźwięk jest niedostępny: wybranego stylu dźwięku nie można wczytać."

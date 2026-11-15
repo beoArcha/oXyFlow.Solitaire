@@ -93,6 +93,7 @@ pub const fn is_wgl4(c: char) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::audio::AudioStatus;
     use crate::glyphs::Glyphs;
     use crate::layout::{chrome, compute};
     use crate::screens::ViewCtx;
@@ -129,7 +130,8 @@ mod tests {
             glyphs,
             settings,
             caps: &TRUE_COLOR,
-            audio_available: false,
+            audio_status: AudioStatus::NoDevice,
+            sound_styles: &[],
             has_saved_game: false,
             now: Instant::now(),
         }
