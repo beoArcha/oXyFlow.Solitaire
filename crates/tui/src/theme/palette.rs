@@ -52,11 +52,15 @@ pub enum Token {
     Selection,
     /// Highlight of a hinted card, on `Table`.
     Hint,
+    /// Halo around the focused card, on `Table`.
+    AuraFocus,
+    /// Halo around the picked-up run, on `Table`.
+    AuraCarry,
 }
 
 impl Token {
     /// Every token.
-    pub const ALL: [Token; 22] = [
+    pub const ALL: [Token; 24] = [
         Token::Background,
         Token::Surface,
         Token::Text,
@@ -79,6 +83,8 @@ impl Token {
         Token::Target,
         Token::Selection,
         Token::Hint,
+        Token::AuraFocus,
+        Token::AuraCarry,
     ];
 }
 
@@ -111,7 +117,7 @@ impl Swatch {
 }
 
 /// Text on background pairs that are drawn together; each must reach the theme's contrast target.
-pub const TEXT_PAIRS: [(Token, Token); 13] = [
+pub const TEXT_PAIRS: [(Token, Token); 15] = [
     (Token::Text, Token::Background),
     (Token::Text, Token::Surface),
     (Token::TextMuted, Token::Background),
@@ -125,6 +131,8 @@ pub const TEXT_PAIRS: [(Token, Token); 13] = [
     (Token::CardRed, Token::CardFace),
     (Token::CardBlack, Token::CardFace),
     (Token::CardBackMark, Token::CardBack),
+    (Token::AuraFocus, Token::Table),
+    (Token::AuraCarry, Token::Table),
 ];
 
 /// Every token of one theme.
@@ -152,6 +160,8 @@ pub struct Palette {
     pub target: Swatch,
     pub selection: Swatch,
     pub hint: Swatch,
+    pub aura_focus: Swatch,
+    pub aura_carry: Swatch,
 }
 
 impl Palette {
@@ -180,6 +190,8 @@ impl Palette {
             Token::Target => self.target,
             Token::Selection => self.selection,
             Token::Hint => self.hint,
+            Token::AuraFocus => self.aura_focus,
+            Token::AuraCarry => self.aura_carry,
         }
     }
 }

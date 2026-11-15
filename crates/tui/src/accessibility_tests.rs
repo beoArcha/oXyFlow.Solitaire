@@ -156,7 +156,7 @@ fn every_settings_row_is_reached_by_keyboard() {
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);
-    assert_eq!(rows.len(), 10, "{rows:?}");
+    assert_eq!(rows.len(), 11, "{rows:?}");
 }
 
 #[test]

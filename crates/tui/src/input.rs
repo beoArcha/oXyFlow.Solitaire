@@ -86,7 +86,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 21] = [
+pub const KEY_TABLE: [Binding; 22] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -132,6 +132,7 @@ pub const KEY_TABLE: [Binding; 21] = [
         &[KeySpec::ch('r'), KeySpec::ctrl('y')],
     ),
     bind(Action::Hint, HelpGroup::Board, &[KeySpec::ch('h')]),
+    bind(Action::Guide, HelpGroup::Board, &[KeySpec::ch('g')]),
     bind(Action::Restart, HelpGroup::Game, &[KeySpec::ch('R')]),
     bind(Action::NewGame, HelpGroup::Game, &[KeySpec::ch('n')]),
     bind(Action::Pause, HelpGroup::Game, &[KeySpec::ch('p')]),
@@ -239,6 +240,17 @@ mod tests {
         assert_eq!(
             binding_for(Action::Rules).map(|binding| binding.group),
             Some(HelpGroup::General)
+        );
+    }
+
+    #[test]
+    fn the_guide_key_is_g_and_is_listed_with_the_board_moves() {
+        let key = press(KeyCode::Char('g'), KeyModifiers::NONE);
+        assert_eq!(action_for_key(&key), Some(Action::Guide));
+        assert_eq!(primary_key(Action::Guide).as_deref(), Some("g"));
+        assert_eq!(
+            binding_for(Action::Guide).map(|binding| binding.group),
+            Some(HelpGroup::Board)
         );
     }
 

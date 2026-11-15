@@ -5,6 +5,7 @@
 mod choices;
 mod commands;
 mod cursor;
+mod guidance;
 mod marks;
 mod mouse;
 mod moves;
@@ -29,6 +30,7 @@ use crate::announce;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
 use crate::i18n::t;
+use crate::settings::Settings;
 use crate::storage::GameId;
 use crate::widgets::pile::Marks;
 
@@ -51,12 +53,20 @@ pub struct BoardScreen {
     pick: Option<Pick>,
     hint: Option<Move>,
     status: Option<&'static str>,
-    first_steps: bool,
+    guide_panel: bool,
     cues: Vec<SoundCue>,
     dirty: bool,
     screen: Rect,
     covered: bool,
     pointer: Pointer,
+}
+
+/// The request to show the guide panel when it is hidden and to hide it when it is shown.
+fn toggle_guide(ctx: &ViewCtx<'_>) -> Effect {
+    Effect::Apply(Settings {
+        guide_panel: !ctx.settings.guide_panel,
+        ..ctx.settings.clone()
+    })
 }
 
 impl Default for BoardScreen {
@@ -72,7 +82,7 @@ impl Default for BoardScreen {
             pick: None,
             hint: None,
             status: None,
-            first_steps: false,
+            guide_panel: true,
             cues: Vec::new(),
             dirty: false,
             screen: DEFAULT_SCREEN,
@@ -91,7 +101,6 @@ impl BoardScreen {
     /// Takes over `session`, continuing from `elapsed`, and starts the clock at `now`.
     pub fn begin(&mut self, session: Session, id: Option<GameId>, elapsed: Duration, now: Instant) {
         self.cursor = Cursor::initial(&session.game().piles());
-        self.first_steps = !session.can_undo();
         self.session = Some(session);
         self.game_id = id;
         self.clock = GameClock::stopped(elapsed);
@@ -187,26 +196,24 @@ impl BoardScreen {
 
     fn status_text(&self) -> String {
         let focus = self.focus_text();
-        let event = match self.status {
-            Some(key) => t(key).into_owned(),
-            None => self.fitted_first_steps(&focus, usize::from(self.screen.width)),
-        };
-        announce::announce(&focus, &event)
+        let event = self.status.map(|key| t(key).into_owned());
+        announce::announce(&focus, event.as_deref().unwrap_or_default())
     }
 
     /// Handles a key press mapped to `action`; the effect is for the application to apply.
-    pub fn handle(
-        &mut self,
-        _key: &KeyEvent,
-        action: Option<Action>,
-        _ctx: &ViewCtx<'_>,
-    ) -> Effect {
-        action.map_or(Effect::None, |action| self.dispatch(action))
+    pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
+        self.guide_panel = ctx.settings.guide_panel;
+        match action {
+            Some(Action::Guide) => toggle_guide(ctx),
+            Some(action) => self.dispatch(action),
+            None => Effect::None,
+        }
     }
 
     /// Draws the board screen.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         self.screen = area;
+        self.guide_panel = ctx.settings.guide_panel;
         view::draw(frame, area, self, ctx);
     }
 }

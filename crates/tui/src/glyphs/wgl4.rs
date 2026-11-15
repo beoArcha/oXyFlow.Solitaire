@@ -155,6 +155,16 @@ mod tests {
         for ch in glyphs.face_down.chars() {
             assert!(is_wgl4(ch), "face_down has non-WGL4 char {ch:?}");
         }
+        for (name, symbol) in [
+            ("aura_focus", glyphs.aura_focus),
+            ("aura_carry", glyphs.aura_carry),
+            ("aura_target", glyphs.aura_target),
+            ("edge", glyphs.edge),
+        ] {
+            for ch in symbol.chars() {
+                assert!(is_wgl4(ch), "{name} has non-WGL4 char {ch:?}");
+            }
+        }
     }
 
     #[test]

@@ -6,12 +6,17 @@ use std::collections::{HashSet, VecDeque};
 use oxysol_core::{DrawCount, Move, PileRef, Session, Suit, Variant};
 use ratatui::crossterm::event::KeyCode;
 
+use ratatui::layout::{Position, Rect};
+
 use crate::announce::pile_name;
 use crate::glyphs::{Glyphs, is_wgl4};
+use crate::layout;
 use crate::screens::Effect;
 use crate::settings::GlyphMode;
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
+use crate::widgets::aura;
+use crate::widgets::pile::CardPos;
 
 const ARROWS: [KeyCode; 4] = [KeyCode::Up, KeyCode::Down, KeyCode::Left, KeyCode::Right];
 
@@ -161,6 +166,92 @@ fn every_pile_of_every_variant_is_reached_with_the_arrow_keys() {
                 reached.iter().any(|focus| focus.starts_with(&prefix)),
                 "{variant:?}: {name} is not reached; reached {reached:?}"
             );
+        }
+    }
+}
+
+fn halo_symbols(h: &mut Harness, pos: CardPos) -> Vec<String> {
+    let lines = h.lines();
+    let area = Rect::new(0, 0, 120, 40);
+    let body = layout::chrome(area).body;
+    let Some(session) = h.app.board().session() else {
+        unreachable!("a game is running")
+    };
+    let geometry = layout::compute(session.variant(), &session.game().piles(), body);
+    let Some(rect) = aura::run_rect(&geometry, pos) else {
+        unreachable!("the focused pile has a rectangle")
+    };
+    let taken = |x: u16, y: u16| {
+        let at = Position::new(x, y);
+        geometry
+            .piles
+            .iter()
+            .any(|placed| placed.cards.iter().any(|card| card.contains(at)))
+    };
+    aura::ring(rect, body)
+        .filter(|(x, y)| !taken(*x, *y))
+        .map(|(x, y)| {
+            lines[usize::from(y)]
+                .chars()
+                .nth(usize::from(x))
+                .map(String::from)
+                .unwrap_or_default()
+        })
+        .collect()
+}
+
+#[test]
+fn the_halo_of_the_focus_and_of_a_carried_run_read_without_color() {
+    let Some(seed) = klondike_seed() else {
+        unreachable!("a seed with a movable first column and all four suits exists")
+    };
+    for caps in [TRUE_COLOR, PLAIN] {
+        let glyphs = Glyphs::new(if caps.unicode {
+            GlyphMode::Unicode
+        } else {
+            GlyphMode::Ascii
+        });
+        let auras = [glyphs.aura_focus, glyphs.aura_carry, glyphs.aura_target];
+        assert_eq!(auras.iter().collect::<HashSet<_>>().len(), 3, "told apart");
+        assert!(!auras.contains(&glyphs.face_down) && !auras.contains(&glyphs.selected));
+
+        let mut h = klondike(caps, seed);
+        let Some(focus) = h.app.board().marks().focus else {
+            unreachable!("a started board has a focus")
+        };
+        let around = halo_symbols(&mut h, focus);
+        assert!(!around.is_empty(), "free cells around the focus");
+        assert!(around.iter().all(|symbol| symbol == glyphs.aura_focus));
+
+        h.press(KeyCode::Enter);
+        let Some(selected) = h.app.board().marks().selected else {
+            unreachable!("the first column can be picked up")
+        };
+        let around = halo_symbols(&mut h, selected);
+        assert!(!around.is_empty(), "free cells around the carried run");
+        assert!(around.iter().all(|symbol| symbol == glyphs.aura_carry));
+    }
+}
+
+#[test]
+fn the_guide_panel_adds_only_wgl4_or_ascii_symbols() {
+    let Some(seed) = klondike_seed() else {
+        unreachable!("a seed with a movable first column and all four suits exists")
+    };
+    for caps in [TRUE_COLOR, PLAIN] {
+        let mut h = Harness::with(MemoryStorage::new(), caps, 140, 40);
+        h.app.apply(Effect::Start {
+            variant: Variant::Klondike(DrawCount::One),
+            seed: Some(seed),
+        });
+        h.press(KeyCode::Enter);
+        let text = h.text();
+        assert!(text.contains("Guide"), "the panel is drawn");
+        for ch in text.chars().filter(|ch| *ch != '\n') {
+            assert!(is_wgl4_or_ascii(ch), "{ch:?} is outside WGL4");
+            if !caps.unicode {
+                assert!(ch.is_ascii(), "{ch:?} in ASCII mode");
+            }
         }
     }
 }
