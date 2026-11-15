@@ -1,0 +1,64 @@
+name = "Retro"
+
+[cues]
+card_pick = "card_pick.mid"
+card_place = "card_place.mid"
+card_flip = "card_flip.mid"
+stock_deal = "stock_deal.mid"
+illegal = "illegal.mid"
+undo = "undo.mid"
+hint = "hint.mid"
+win = "win.mid"
+menu_move = "menu_move.mid"
+menu_select = "menu_select.mid"
+
+[music]
+file = "music.mid"
+
+[programs.0]
+waveform = "square"
+attack = 0.002
+decay = 0.04
+sustain = 0.5
+release = 0.02
+gain = 0.30
+
+[programs.1]
+waveform = "square"
+attack = 0.001
+decay = 0.02
+sustain = 0.1
+release = 0.01
+gain = 0.25
+
+[programs.2]
+waveform = "square"
+attack = 0.003
+decay = 0.08
+sustain = 0.6
+release = 0.04
+gain = 0.32
+
+[programs.3]
+waveform = "triangle"
+attack = 0.002
+decay = 0.06
+sustain = 0.4
+release = 0.05
+gain = 0.35
+
+[programs.4]
+waveform = "square"
+attack = 0.005
+decay = 0.08
+sustain = 0.7
+release = 0.08
+gain = 0.28
+
+[programs.5]
+waveform = "square"
+attack = 0.005
+decay = 0.04
+sustain = 0.4
+release = 0.03
+gain = 0.18
