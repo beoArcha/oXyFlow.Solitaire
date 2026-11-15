@@ -1,6 +1,6 @@
 use super::*;
 use crate::card::{Card, CardId, Rank, Suit};
-use crate::game::DrawCount;
+use crate::game::{DrawCount, StockStatus};
 use crate::pile::{PileRef, PileSnapshot, TableCard};
 
 const LIMIT: u16 = 6;
@@ -50,6 +50,10 @@ impl Game for Counter {
             pile: PileRef::Waste,
             cards,
         }]
+    }
+
+    fn stock_status(&self) -> Option<StockStatus> {
+        None
     }
 }
 

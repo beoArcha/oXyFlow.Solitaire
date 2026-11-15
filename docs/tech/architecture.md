@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.2 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance). Later tasks may refine it.
+Status: contract v0.2 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -74,12 +74,19 @@ pub enum DrawCount { One, Three }
 pub enum SuitCount { One, Two, Four }
 pub enum PyramidRules { Relaxed, Classic }
 
+/// Stock counters (P2-06). `recycles` counts waste turned back into the stock (Klondike, Pyramid;
+/// Spider is always 0). The first traversal is pass 1, so the pass in progress is `recycles + 1`.
+/// `recycles_left`: `None` unlimited (Klondike), `Some(0)` no recycle possible (Spider) or the last
+/// one made (Pyramid; Relaxed starts at 2, Classic at 0). `deals_left`: Spider row deals in the stock.
+pub struct StockStatus { pub recycles: u32, pub recycles_left: Option<u32>, pub deals_left: Option<u32> }
+
 pub trait Game {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError>;
     fn legal_moves(&self) -> Vec<Move>;
     fn hint(&self) -> Option<Move>;
     fn is_won(&self) -> bool;
     fn piles(&self) -> Vec<PileSnapshot>;
+    fn stock_status(&self) -> Option<StockStatus>;       // None for FreeCell (no stock)
 }
 pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game>;    // the only place that knows all games
 ```
@@ -95,6 +102,8 @@ Rules of the `Game` contract:
 - `MoveError` is an expected validation result, not a system error.
 - Game modules are `pub(crate)`; the outside world sees only `Game`, `Variant`, `deal` and `Session`.
 - `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.
+- `stock_status` is read-only and derived from the game state, so undo, redo, restart and restore
+  report the counters of the rebuilt game. Its shape is not serialized: no save format changes.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`.
 
 The session implements history by replaying the move log from the seed (decision T-03):

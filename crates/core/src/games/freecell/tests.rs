@@ -5,6 +5,7 @@ mod deal;
 mod hints;
 mod legal;
 mod rules;
+mod stock;
 
 use super::FreeCell;
 use crate::card::{Card, CardId, Rank, Suit};
