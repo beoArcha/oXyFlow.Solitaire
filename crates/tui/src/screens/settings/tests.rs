@@ -227,7 +227,12 @@ fn a_language_change_switches_the_locale_at_once() {
     let mut h = open_settings();
     h.press(KeyCode::Right);
     assert_eq!(locale(), Locale::PlPl);
-    assert!(h.text().contains("Language: Polski"));
+    let expected = format!(
+        "{}: {}",
+        t("settings.row.language"),
+        t("settings.locale.pl_pl")
+    );
+    assert!(h.text().contains(&expected));
     set_locale(Locale::EnUs);
 }
 
