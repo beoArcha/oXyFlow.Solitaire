@@ -1,1 +1,43 @@
-# Strings of the settings area.
+# Strings of the settings area. Copied from en-US until the translation (M-34).
+
+[row]
+language = "Language"
+theme = "Theme"
+front_style = "Front style"
+back_style = "Back style"
+glyphs = "Symbols"
+colors = "Colors"
+sound_style = "Sound style"
+cues = "Sound cues"
+music = "Music"
+volume = "Volume"
+line = "{label}: {value}"
+
+[value]
+on = "On"
+off = "Off"
+unavailable = "unavailable"
+
+[locale]
+en_us = "English"
+pl_pl = "Polski"
+
+[theme]
+dark = "Dark"
+light = "Light"
+high_contrast = "High contrast"
+
+[glyph]
+font = "Font"
+unicode = "Unicode"
+ascii = "ASCII"
+
+[color]
+auto = "Auto"
+ansi16 = "16 colors"
+ansi256 = "256 colors"
+true_color = "True color"
+
+[audio]
+no_device = "Sound is unavailable: no audio device was found."
+remote = "Sound is unavailable: this is a remote session."

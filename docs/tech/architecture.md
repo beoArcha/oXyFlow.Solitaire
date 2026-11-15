@@ -200,9 +200,13 @@ pub struct NullAudio;                                    // always unavailable a
 - **Board interaction is shared by all games:** after a source is picked, the TUI filters
   `legal_moves()` by `Move::source()`, highlights targets and applies the matching move. A move with
   no target (a king in Pyramid) applies immediately.
-- **Geometry:** `layout::compute(...) -> BoardGeometry` returns rectangles for piles and cards. The
-  same result drives rendering and mouse hit-testing. Two layouts: columns (Klondike, Spider,
-  FreeCell) and pyramid. Card size is the largest step that fits the window.
+- **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
+  and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
+  header, `body`, status line and footer. The same result drives rendering and hit-testing. Two layouts:
+  columns (Klondike, Spider, FreeCell) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
+  that fits the window (a column of a king-to-ace run plus a margin must fit); a column compresses
+  face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.
+  Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).
 - **Themes:** `ThemeId { Dark, Light, HighContrast }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
   `Token`; `Theme::new(id, depth)` resolves it: true color emits the RGB, 256 colors use `rgb_to_ansi256`,
   16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly.

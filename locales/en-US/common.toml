@@ -23,7 +23,6 @@ pyramid_classic = "Pyramid, Classic"
 
 [settings]
 title = "Settings"
-placeholder = "The settings screen is not available yet."
 
 [board]
 header = "{variant} | seed {seed} | {time}"

@@ -9,6 +9,7 @@ pub mod clock;
 pub mod glyphs;
 pub mod i18n;
 pub mod input;
+pub mod layout;
 pub mod mouse;
 pub mod screens;
 pub mod settings;
