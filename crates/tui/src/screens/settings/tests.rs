@@ -279,3 +279,17 @@ fn the_row_text_uses_the_line_format() {
     assert_eq!(line(Field::Volume, &base, true), "Volume: 70%");
     assert_eq!(t("settings.row.line"), "{label}: {value}");
 }
+
+#[test]
+fn a_click_on_a_row_reaches_the_settings_through_the_app() {
+    let mut h = open_settings();
+    let found = h.find("Theme:");
+    assert!(found.is_some());
+    let (column, row) = found.unwrap_or_default();
+    h.click(column, row);
+    assert_eq!(h.app.settings().theme, ThemeId::Light);
+    assert_eq!(
+        h.storage.borrow().settings.as_ref().map(|s| s.theme),
+        Some(ThemeId::Light)
+    );
+}
