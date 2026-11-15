@@ -140,7 +140,7 @@ pub struct Deps {
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings }
-pub enum Modal { Help, Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win }
+pub enum Modal { Help, Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
 
 impl App {
     pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
@@ -213,7 +213,7 @@ pub struct NullAudio;                                    // always unavailable a
   new game and quit ask through `Modal::Confirm` (`Effect::Restart`, `Effect::Start`, `Effect::Quit`).
   The screen collects `SoundCue`s and `App` plays them after each input (`BoardScreen::take_cues`);
   `persist()` raises a flag after every session change; `App` reads it (`BoardScreen::take_dirty`)
-  at the end of each `apply` and saves (see Autosave below). A win opens `Modal::Win`; a
+  at the end of each `apply` and saves (see Autosave below). A win opens `Modal::win()` (help, pause, win and dialogs are drawn by `widgets/overlay/`); a
   position without legal moves shows a status message. `Modal::Pause` hides the cards
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles

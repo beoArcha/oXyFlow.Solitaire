@@ -243,6 +243,19 @@ impl App {
             .modal
             .as_mut()
             .and_then(|modal| overlay::handle(modal, key, action));
+        self.finish_modal(outcome)
+    }
+
+    fn on_modal_mouse(&mut self, event: &MouseEvent) -> Effect {
+        let area = self.screen_rect();
+        let outcome = self
+            .modal
+            .as_mut()
+            .and_then(|modal| overlay::handle_mouse(modal, area, &self.board, self.now, event));
+        self.finish_modal(outcome)
+    }
+
+    fn finish_modal(&mut self, outcome: Option<Effect>) -> Effect {
         match outcome {
             Some(effect) => {
                 self.close_modal();
@@ -252,9 +265,18 @@ impl App {
         }
     }
 
+    fn screen_rect(&self) -> Rect {
+        self.area.map_or(Rect::default(), |(width, height)| {
+            Rect::new(0, 0, width, height)
+        })
+    }
+
     fn on_mouse(&mut self, event: &MouseEvent) -> Effect {
-        if self.modal.is_some() || self.too_small() {
+        if self.too_small() {
             return Effect::None;
+        }
+        if self.modal.is_some() {
+            return self.on_modal_mouse(event);
         }
         let ctx = view_ctx!(self);
         match self.screen {
@@ -283,7 +305,7 @@ impl App {
             Screen::Settings => self.settings_screen.draw(frame, area, &ctx),
         }
         if let Some(modal) = &self.modal {
-            overlay::draw(frame, area, modal, &ctx);
+            overlay::draw(frame, area, modal, &self.board, &ctx);
         }
     }
 }
