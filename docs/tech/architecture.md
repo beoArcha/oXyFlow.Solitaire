@@ -21,9 +21,10 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 metadata.toml            canonical metadata (name, version, license, URL)
 src/                     main.rs lib.rs cli.rs paths.rs storage.rs logging.rs panic_hook.rs error.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
-crates/core/src/games/   klondike/ spider/ freecell/ pyramid/   (each: mod.rs rules.rs moves.rs tests.rs)
-                         stub.rs (phase 1 placeholder shared by the four stubs, removed in phase 2)
+crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/
+                         (each: mod.rs rules.rs moves.rs tests.rs and tests/)
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
+                         flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
 crates/tui/src/          lib.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs i18n.rs
                          settings.rs storage.rs audio.rs announce.rs
                          theme/ layout/ widgets/ screens/
@@ -65,7 +66,7 @@ pub enum Move {
 impl Move { pub fn source(&self) -> Option<PileRef>; pub fn target(&self) -> Option<PileRef>; }
 
 pub enum MoveError { /* rejection reasons: Unsupported, NoSuchPile, EmptySource, FaceDown,
-                        InvalidSequence, TargetRejects, StockEmpty, … */ }
+                        InvalidSequence, TargetRejects, StockEmpty, EmptyColumnBlocksDeal, … */ }
 
 pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules) }
 impl Variant { pub const ALL: [Variant; 8]; }               // every concrete variant, menu order
@@ -87,7 +88,10 @@ Rules of the `Game` contract:
 
 - `apply` validates, executes and performs automatic effects (flip a card, remove a completed run).
   On `Err` the state is unchanged. No input may panic.
-- `legal_moves()` returns exactly the set of moves that `apply` accepts.
+- `legal_moves()` returns exactly the set of moves that `apply` accepts, up to the order of a
+  Pyramid pair: `legal_moves()` lists each pair once, `apply` accepts both orders.
+- Once `is_won()` is true the game is closed: `legal_moves()` is empty, `hint()` is `None` and
+  `apply` returns `MoveError::Unsupported`.
 - `MoveError` is an expected validation result, not a system error.
 - Game modules are `pub(crate)`; the outside world sees only `Game`, `Variant`, `deal` and `Session`.
 - `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.

@@ -10,8 +10,9 @@ mod tests;
 use crate::card::Card;
 use crate::deck;
 use crate::game::{DrawCount, Game};
+use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
-use crate::pile::{PileRef, PileSnapshot, TableCard};
+use crate::pile::{PileRef, PileSnapshot};
 
 const COLUMNS: usize = 7;
 const FOUNDATIONS: usize = 4;
@@ -62,32 +63,25 @@ impl Klondike {
     }
 }
 
-fn snapshot(pile: PileRef, down: &[Card], up: &[Card]) -> PileSnapshot {
-    let face = |face_up| move |&card| TableCard { card, face_up };
-    PileSnapshot {
-        pile,
-        cards: down
-            .iter()
-            .map(face(false))
-            .chain(up.iter().map(face(true)))
-            .collect(),
-    }
-}
-
-fn index_ref(index: usize) -> u8 {
-    u8::try_from(index).unwrap_or(u8::MAX)
-}
-
 impl Game for Klondike {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError> {
+        if self.is_won() {
+            return Err(MoveError::Unsupported);
+        }
         self.execute(mv)
     }
 
     fn legal_moves(&self) -> Vec<Move> {
+        if self.is_won() {
+            return Vec::new();
+        }
         self.enumerate_moves()
     }
 
     fn hint(&self) -> Option<Move> {
+        if self.is_won() {
+            return None;
+        }
         self.suggest()
     }
 

@@ -36,7 +36,7 @@ fn a_pyramid_card_with_the_stock_is_hinted_before_a_stock_pair() {
 
 #[test]
 fn a_stock_and_waste_pair_is_hinted_before_the_stock_move() {
-    let game = with_bottom_row(". . . . . . .", "6S", "7H");
+    let game = with_bottom_row(". . . . . . 9C", "6S", "7H");
     assert_eq!(
         game.hint(),
         Some(remove(PileRef::Stock, Some(PileRef::Waste)))
@@ -45,7 +45,7 @@ fn a_stock_and_waste_pair_is_hinted_before_the_stock_move() {
 
 #[test]
 fn the_stock_move_is_the_fallback() {
-    let game = with_bottom_row(". . . . . . .", "AS 2S", "");
+    let game = with_bottom_row(". . . . . . 9C", "AS 2S", "");
     assert_eq!(game.hint(), Some(Move::Stock));
 }
 

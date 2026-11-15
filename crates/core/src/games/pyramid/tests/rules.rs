@@ -17,8 +17,18 @@ fn base_table() -> Pyramid {
     table(PyramidRules::Relaxed, rows, "", "")
 }
 
+const INERT_ROW: &str = ". . . . . . 9C";
+
+/// A table whose pyramid keeps one nine that pairs with none of the stock or waste cards used in
+/// these tests, so that a Relaxed game is not already won.
 fn stock_table(rules: PyramidRules, stock: &str, waste: &str) -> Pyramid {
-    table(rules, EMPTY_ROWS, stock, waste)
+    let mut rows = EMPTY_ROWS;
+    rows[6] = INERT_ROW;
+    table(rules, rows, stock, waste)
+}
+
+fn cleared_table(stock: &str) -> Pyramid {
+    table(PyramidRules::Relaxed, EMPTY_ROWS, stock, "")
 }
 
 #[test]
@@ -203,7 +213,7 @@ fn classic_has_no_recycle() {
 
 #[test]
 fn relaxed_is_won_when_the_pyramid_is_empty() {
-    let game = stock_table(PyramidRules::Relaxed, "AS", "");
+    let game = cleared_table("AS");
     assert!(game.is_won());
     assert!(!base_table().is_won());
 }
@@ -215,4 +225,15 @@ fn classic_is_won_when_all_52_cards_are_on_the_foundation() {
     assert!(game.is_won());
     game.foundation.pop();
     assert!(!game.is_won());
+}
+
+#[test]
+fn a_won_game_accepts_no_moves() {
+    let game = cleared_table("KS");
+    assert!(game.is_won());
+    assert!(game.legal_moves().is_empty());
+    assert_eq!(game.hint(), None);
+    assert_rejected(&game, Move::Stock, MoveError::Unsupported);
+    let king = remove(PileRef::Stock, None);
+    assert_rejected(&game, king, MoveError::Unsupported);
 }

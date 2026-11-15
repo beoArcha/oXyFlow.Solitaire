@@ -3,6 +3,7 @@
 use super::rules::run_len;
 use super::{COLUMNS, Column, Spider, index_ref};
 use crate::card::Card;
+use crate::games::transfer_parts;
 use crate::moves::Move;
 use crate::pile::PileRef;
 use crate::rules;
@@ -19,13 +20,6 @@ const HINT_RULES: [HintRule; 4] = [
 
 fn columns() -> impl Iterator<Item = PileRef> {
     (0..COLUMNS).map(|i| PileRef::Tableau(index_ref(i)))
-}
-
-fn transfer_parts(mv: Move) -> Option<(PileRef, PileRef, u8)> {
-    match mv {
-        Move::Transfer { from, to, count } => Some((from, to, count)),
-        Move::Stock | Move::Remove { .. } => None,
-    }
 }
 
 impl Spider {

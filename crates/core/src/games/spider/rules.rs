@@ -7,10 +7,6 @@ use crate::moves::{Move, MoveError};
 use crate::pile::PileRef;
 use crate::rules;
 
-/// Why a stock deal is refused while a column is empty. The shared vocabulary has no variant of
-/// its own for it, so the columns refuse the dealt cards as a target.
-pub(super) const DEAL_BLOCKED_BY_EMPTY_COLUMN: MoveError = MoveError::TargetRejects;
-
 /// Length of the longest same-suit descending tail of `up`: the cards that may move together.
 pub(super) fn run_len(up: &[Card]) -> usize {
     let linked = up
@@ -38,13 +34,14 @@ impl Spider {
         }
     }
 
-    /// Whether [`Move::Stock`] is allowed: the stock has cards and every column holds one.
+    /// Whether [`Move::Stock`] is allowed: the stock has cards and every column holds one. Errors:
+    /// an empty stock is `StockEmpty`, an empty column is `EmptyColumnBlocksDeal`.
     pub(super) fn check_deal(&self) -> Result<(), MoveError> {
         if self.stock.is_empty() {
             return Err(MoveError::StockEmpty);
         }
         if self.columns.iter().any(|column| column.up.is_empty()) {
-            return Err(DEAL_BLOCKED_BY_EMPTY_COLUMN);
+            return Err(MoveError::EmptyColumnBlocksDeal);
         }
         Ok(())
     }

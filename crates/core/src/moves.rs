@@ -60,6 +60,8 @@ pub enum MoveError {
     TargetRejects,
     #[error("the stock is empty")]
     StockEmpty,
+    #[error("a row cannot be dealt while a column is empty")]
+    EmptyColumnBlocksDeal,
     #[error("no more passes through the stock are allowed")]
     PassesExhausted,
     #[error("{count} cards cannot be moved here")]
@@ -133,6 +135,11 @@ mod tests {
     #[test]
     fn errors_have_messages() {
         assert_eq!(MoveError::StockEmpty.to_string(), "the stock is empty");
+        assert!(
+            MoveError::EmptyColumnBlocksDeal
+                .to_string()
+                .contains("column is empty")
+        );
         assert!(MoveError::EmptySource(FROM).to_string().contains("Waste"));
     }
 }

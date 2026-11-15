@@ -1,7 +1,8 @@
 //! Move generation and the hint of Pyramid.
 
-use super::{Pyramid, ROWS, TARGET_SUM, small, value};
+use super::{Pyramid, ROWS, TARGET_SUM, value};
 use crate::card::{Card, Rank};
+use crate::games::index_ref;
 use crate::moves::Move;
 use crate::pile::PileRef;
 
@@ -37,8 +38,8 @@ impl Pyramid {
             .filter(|&(row, index)| !self.covered(row, index))
             .filter_map(|(row, index)| {
                 let pile = PileRef::Pyramid {
-                    row: small(row),
-                    index: small(index),
+                    row: index_ref(row),
+                    index: index_ref(index),
                 };
                 self.slot(row, index).map(|card| (pile, card))
             });
