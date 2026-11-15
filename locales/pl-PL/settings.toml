@@ -11,6 +11,7 @@ sound_style = "Sound style"
 cues = "Sound cues"
 music = "Music"
 volume = "Volume"
+guide_panel = "Panel przewodnika"
 line = "{label}: {value}"
 
 [value]

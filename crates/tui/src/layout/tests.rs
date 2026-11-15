@@ -286,7 +286,30 @@ fn chrome_leaves_the_rest_to_the_body() {
     let parts = chrome(Rect::new(0, 0, 100, 30));
     assert_eq!(
         (parts.header.y, parts.body.y, parts.body.height),
-        (0, 1, 27)
+        (0, 1, 25)
     );
-    assert_eq!((parts.status.y, parts.footer.y), (28, 29));
+    assert_eq!(
+        (
+            parts.status.y,
+            parts.now.y,
+            parts.possible.y,
+            parts.footer.y
+        ),
+        (26, 27, 28, 29)
+    );
+    assert_eq!((parts.guide, parts.body.width), (None, 100));
+}
+
+#[test]
+fn the_guide_takes_the_right_edge_only_when_the_board_keeps_its_width() {
+    let wide = chrome_with(Rect::new(0, 0, 140, 40), true);
+    assert_eq!(wide.guide, Some(Rect::new(110, 1, GUIDE_WIDTH, 35)));
+    assert_eq!(wide.body, Rect::new(0, 1, 110, 35));
+    let edge = chrome_with(Rect::new(0, 0, BOARD_MIN_WIDTH + GUIDE_WIDTH, 30), true);
+    assert!(edge.guide.is_some());
+    assert_eq!(edge.body.width, BOARD_MIN_WIDTH);
+    let narrow = chrome_with(Rect::new(0, 0, BOARD_MIN_WIDTH + GUIDE_WIDTH - 1, 30), true);
+    assert_eq!(narrow.guide, None);
+    assert_eq!(narrow.body.width, BOARD_MIN_WIDTH + GUIDE_WIDTH - 1);
+    assert_eq!(chrome_with(Rect::new(0, 0, 140, 40), false).guide, None);
 }

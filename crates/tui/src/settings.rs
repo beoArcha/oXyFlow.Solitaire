@@ -42,6 +42,8 @@ pub struct Settings {
     pub music: bool,
     /// Volume in percent, `0..=100`.
     pub volume: u8,
+    /// Whether the board shows the guide panel beside it (when the terminal is wide enough).
+    pub guide_panel: bool,
 }
 
 impl Default for Settings {
@@ -57,6 +59,7 @@ impl Default for Settings {
             cues: true,
             music: false,
             volume: 70,
+            guide_panel: true,
         }
     }
 }
@@ -123,6 +126,27 @@ mod tests {
     fn missing_fields_take_defaults() {
         let parsed = toml::from_str::<Settings>("volume = 10");
         assert!(matches!(parsed, Ok(ref s) if s.volume == 10 && s.cues));
+    }
+
+    #[test]
+    fn the_guide_panel_is_on_by_default_and_old_values_without_it_keep_it_on() {
+        assert!(Settings::default().guide_panel);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if s.guide_panel));
+        let off = toml::from_str::<Settings>("guide_panel = false");
+        assert!(matches!(off, Ok(ref s) if !s.guide_panel));
+    }
+
+    #[test]
+    fn the_guide_panel_round_trips() {
+        let settings = Settings {
+            guide_panel: false,
+            ..Settings::default()
+        };
+        let text = toml::to_string(&settings);
+        assert!(text.is_ok());
+        let back = text.map(|t| toml::from_str::<Settings>(&t));
+        assert!(matches!(back, Ok(Ok(ref s)) if *s == settings && !s.guide_panel));
     }
 
     #[test]

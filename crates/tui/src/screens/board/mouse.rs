@@ -9,12 +9,15 @@ use std::time::{Duration, Instant};
 
 use oxysol_core::{CardId, PileRef, PileSnapshot};
 use ratatui::crossterm::event::MouseEvent;
+use ratatui::layout::Position;
 
-use super::BoardScreen;
 use super::cursor::{Cursor, focusable};
+use super::{BoardScreen, toggle_guide};
 use crate::action::Action;
+use crate::layout;
 use crate::mouse::{left_press, left_release, right_press};
 use crate::screens::{Effect, ViewCtx};
+use crate::widgets::guide;
 
 const DOUBLE_CLICK: Duration = Duration::from_millis(400);
 
@@ -63,7 +66,11 @@ impl BoardScreen {
         if self.session.is_none() {
             return Effect::None;
         }
+        self.guide_panel = ctx.settings.guide_panel;
         if let Some(cell) = left_press(event) {
+            if self.on_guide_title(cell) {
+                return toggle_guide(ctx);
+            }
             return self.press(cell, ctx.now);
         }
         if let Some(cell) = left_release(event) {
@@ -73,6 +80,13 @@ impl BoardScreen {
             return self.dispatch(Action::Back);
         }
         Effect::None
+    }
+
+    fn on_guide_title(&self, cell: (u16, u16)) -> bool {
+        layout::chrome_with(self.screen, self.guide_panel)
+            .guide
+            .map(guide::title_row)
+            .is_some_and(|row| row.contains(Position::new(cell.0, cell.1)))
     }
 
     fn press(&mut self, cell: (u16, u16), now: Instant) -> Effect {
