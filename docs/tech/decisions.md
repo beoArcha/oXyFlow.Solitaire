@@ -1,6 +1,6 @@
 # Decisions
 
-Updated 2026-11-10. This file overrides `master_prompt.md` where they differ.
+Updated 2026-11-15. This file overrides `master_prompt.md` where they differ.
 
 ## Open — owner: user
 
@@ -37,12 +37,23 @@ else gets the Unicode or ASCII rendering. The app cannot install or select a fon
 | R-12 | The repository is public and lives at `github.com/beoArcha/oXyFlow.Solitare`. The name `oXyFlow` is taken on GitHub by an unrelated personal account, so no organization of that name is used; `oXyFlow` remains the project group name. | §2, §18 |
 | R-13 | The default deck style is International (♣ ♦ ♥ ♠ with A, K, Q, J). French, German, Italian and any later style are skins of the same 52 cards. | §9 |
 
+## Resolved by the user (2026-11-15) — process, CI, seeds, storage
+
+| ID | Decision | Supersedes |
+|---|---|---|
+| R-14 | Roles: Claude Opus 5.5 is orchestrator and reviewer — it splits work, reviews every PR, runs the checkpoints F-01…F-03 and the phase gates. Sonnet 5.5 and Haiku 5.5 implement. Fable only by exception (a contract question Opus cannot settle). Antigravity Beo, Oxy, Son, Dad keep the micro tasks. | R-09 (roles) |
+| R-15 | Pull requests are small: one logical piece of functionality, always compiling, always leaving a working program, with its tests (unit, integration, E2E, architecture — whichever apply) in the same PR. | — |
+| R-16 | A pull request is checked when it is opened, reopened and on every new commit: formatting, Clippy, project lint, the full architecture and E2E suites, and unit and integration tests **incrementally** — only for the packages the diff touches and the packages that depend on them. | R-08 |
+| R-17 | `main` runs the full check on Windows, Linux and macOS. When it is green and `release` differs, `release` is fast-forwarded to it automatically. `release` runs the full check on every update and on manual dispatch; that run ends by building the game for Windows, Linux and macOS, tagging the version, publishing a GitHub Release with the artifacts and updating the documentation site. | R-07 (manual deploy) |
+| R-18 | Every deal has a seed (`u64`). The same seed gives the same deal on every platform and app version. The seed is shown to the player, a game can be started from a typed seed (menu and `--seed`), and every dealt seed is recorded in the database with variant, start and end time and outcome. | — |
+| R-19 | Persistence uses SQLite: one database file holds settings, the saved game and the game history. Diagnostics go to a full plain-text log file. | T-02 |
+
 ## Technical decisions — owner: architect
 
 | ID | Decision | Rationale |
 |---|---|---|
 | T-01 | Workspace: `oxysol-core` (engine plus four games as modules), `oxysol-tui`, root package `oxysol` (lib + bin), tooling crate `xtask`. No separate `games` crate. | Cargo enforces the engine/TUI boundary at compile time. A games crate adds nothing over `pub(crate)` modules. |
-| T-02 | Persistence in JSON (`serde_json`), atomic writes (temp file + rename). | One player, one save slot, settings; no queries. SQLite needs a C build and complicates three-OS builds. Revisit for statistics or multiple slots. |
+| T-02 | **Revised by R-19.** SQLite through `rusqlite` with feature `bundled` (compiled from source, no system library). One file `oxysol.db` in the data directory; schema version in `PRAGMA user_version` with forward-only migrations in code; every write in a transaction. Structured values (`Settings`, `SessionRecord`) are stored as JSON text (`serde_json`) in columns. | Game history and seeds need queries; the bundled build works on all CI runners, musl included (`musl-tools`). Transactions replace temp-file-and-rename. |
 | T-03 | A saved game is variant + seed + move log + history cursor + elapsed time. State is rebuilt by replaying the log; the same mechanism implements undo, redo and resume. | One mechanism instead of three, no inverse moves, tiny files. Cost: a change to rules or shuffling invalidates old saves — guarded by golden-deal tests and the `format` field. |
 | T-04 | Own SplitMix64 generator and Fisher–Yates shuffle in `core::rng`. | A seed must give the same deal on every platform and app version (needed by T-03). About 30 lines, no dependency. |
 | T-05 | A shared command vocabulary (`Move`, `PileRef`) and a small `Game` trait; rules of each game in its own module. | The TUI drives all games with one interaction code path while mechanics stay separate. |
@@ -52,12 +63,16 @@ else gets the Unicode or ASCII rendering. The app cannot install or select a fon
 | T-09 | Error types via `thiserror`, no `anyhow`. CRITICAL = `tracing::error!` with target `oxysol::critical`. | Precise types at every boundary; `tracing` has no CRITICAL level. |
 | T-10 | Windows: default console subsystem, no `AttachConsole`/`AllocConsole`, no `windows_subsystem`. | A console app started from a terminal uses that console; started by double-click it gets its own window from the OS. No code, no `unsafe`. Verified manually in U-03. |
 | T-11 | Minimum grid 100 × 30 cells; below that a notice screen. | 854 × 480 px at an 8 × 16 px cell is 106 × 30; 100 columns leaves margin for other fonts. |
-| T-12 | E2E tests run in-process: `App` + `TestBackend` + real `JsonStorage` in a temp dir, plus a binary smoke test. | Pseudo-terminal tests differ per OS and are flaky. |
+| T-12 | E2E tests run in-process: `App` + `TestBackend` + real `SqliteStorage` in a temp dir, plus a binary smoke test. | Pseudo-terminal tests differ per OS and are flaky. |
 | T-13 | Scaling means card size, spacing and margins in cells. | The user's terminal controls the font size. |
 | T-14 | Clock and seed generation live outside the engine. | The engine stays deterministic and free of I/O. |
 | T-15 | Dependencies are added only by phase tasks on the Claude lane. Micro tasks never touch `Cargo.toml` or `Cargo.lock`. | No merge conflicts, controlled dependency list. |
 | T-16 | **Graphics (proposed, pending X-01):** SVG sources are compiled into a card font whose glyphs sit in the Unicode Private Use Area. Three render modes: Font, Unicode, ASCII. The font cannot be detected, so Font mode is enabled by the player in a graphics-check screen; the default is Unicode. Single-cell glyphs (suits, emblems, back tiles) are the MVP scope; multi-cell card illustrations and a patched full monospace font for terminals without font fallback depend on the spike. Raster protocols (Kitty, Sixel, iTerm2) are post-MVP and would use the same SVGs. | A standard terminal draws only font glyphs. Fonts stay sharp at any size and work over SSH because rendering happens on the player's machine. |
 | T-17 | **Audio:** `.mid` files per sound style, parsed with `midly`, played by a small built-in polyphonic synthesizer (oscillators and envelopes; timbres defined in `style.toml`), output through `cpal`, behind cargo feature `audio`. No audio device, or an SSH session, means audio is off and the game is unaffected. No SoundFont in MVP. The TUI `Audio` trait keeps cues and music separate so an external music source can replace music later. | A SoundFont adds megabytes and licensing review; a built-in synth keeps sound styles small, text-defined and authorable by agents. The sound is deliberately simple. |
 | T-18 | Linux ships two artifacts: a glibc build with audio and a static musl build without audio. | Servers reached over SSH often lack ALSA; a binary linked to it would not start there. |
-| T-19 | CI: `pr.yml` runs `cargo xtask check --quick` on Linux. `main.yml` runs the full check on Linux, Windows and macOS, then fast-forwards `release`. `deploy.yml` is manual, runs only on `release`, and builds, tags, publishes the GitHub Release (binaries and fonts) and updates GitHub Pages. | Implements R-07 and R-08 within the free plan. |
+| T-19 | **Revised by R-16, R-17.** `pr.yml` (Linux) runs `cargo xtask check --pr <base>`: fmt, Clippy, lint, the architecture and E2E suites, and unit/integration tests of affected packages only. `main.yml` runs `cargo xtask check` on Linux, Windows and macOS, then a `promote` job fast-forwards `release` and dispatches `release.yml`. `release.yml` (push to `release`, `workflow_dispatch`) runs the full check on three systems, builds, tags, publishes the GitHub Release and deploys GitHub Pages. | The repository is public, so Actions minutes on standard runners are free and PRs can afford the E2E and architecture suites. |
+| T-21 | Release versions: an automatic `release.yml` run publishes a pre-release `v<version>-dev.<n>`, `n` = `git rev-list --count HEAD`; a manual dispatch with `stable: true` publishes `v<version>` and fails if that tag exists. `<version>` comes from `metadata.toml` and names the next stable version. | Every promotion yields a downloadable, correctly ordered build without a version-bump PR; stable releases stay deliberate. |
+| T-22 | Affected packages: `cargo xtask affected --base <ref>` maps changed paths to workspace packages and adds reverse dependents (`oxysol-core` → `oxysol-tui` → `oxysol`; `xtask` alone). A change to `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, `clippy.toml`, `.cargo/`, `.github/`, `locales/` or `assets/` selects every package; a change only under `docs/` or to `*.md` selects none. | Deterministic, no extra tool, testable as a pure function. |
+| T-23 | Promotion credential: the `promote` job pushes to `release` with a write deploy key (secret `RELEASE_DEPLOY_KEY`), the only bypass actor of the `release` ruleset. It then starts `release.yml` by `workflow_dispatch`, so the run never depends on push events. | `GITHUB_TOKEN` cannot bypass a ruleset on a personal repository, and its pushes start no workflows. |
+| T-24 | Logging: `tracing` to `oxysol.log`, default level `info`, `OXYSOL_LOG` overrides. Every deal (variant, seed), resume, outcome and storage error is logged; moves at `debug`. | "Full" text logs that reproduce a session together with the seed. |
 | T-20 | Task status lives in the index of `docs/task_list/README.md` and is updated by phase gates, not by executors. | Fewer steps for small models and no status-only merge conflicts. |

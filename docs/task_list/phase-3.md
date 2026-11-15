@@ -59,7 +59,7 @@ Rules for the whole phase:
   - Card widget v1: front (rank and suit in the corners) in the International style, back, empty slot,
     focus and selection states. Style-driven rendering arrives in P5-02.
   - Klondike Draw 3: up to three top waste cards fanned horizontally.
-  - Board screen: header (game, variant, time), board, status line, footer with key hints.
+  - Board screen: header (game, variant, seed, time), board, status line, footer with key hints.
 - **Acceptance:** for every variant at 100 × 30 and 160 × 50: all rectangles inside the area, top
   cards fully visible, ranks of face-up cards never covered; a larger window yields a larger card
   step; a worst-case Spider column test.
@@ -90,13 +90,15 @@ Rules for the whole phase:
 - **Owner:** Haiku
 - **Depends on:** P3-01
 - **Files:** `crates/tui/src/screens/{main_menu.rs,game_select.rs}`, `locales/*/menu.toml`
-- **Scope:** main menu: Resume (only when a save exists), New game, Settings, Help, Quit. Game and
+- **Scope:** main menu: Resume (only when a save exists), New game, New game from seed (a numeric
+  input field, then the game selection), Settings, Help, Quit. Game and
   variant selection: Klondike (Draw 1, Draw 3), Spider (1, 2, 4 suits), FreeCell, Pyramid (Relaxed,
   Classic). The logo
   from `widgets/logo.rs`. Arrows and `j`/`k`, Enter, Esc; click selects, wheel scrolls. Centered
   layout that scales with the window.
 - **Acceptance:** tests: visiting every item by keyboard and by mouse, Resume hidden without a
-  save, every variant creates a session with the right `Variant`, rendering in both locales and in ASCII.
+  save, every variant creates a session with the right `Variant`, a typed seed reaches `Session`,
+  a non-numeric seed is rejected with a message, rendering in both locales and in ASCII.
 
 ### P3-05 — Settings screen
 

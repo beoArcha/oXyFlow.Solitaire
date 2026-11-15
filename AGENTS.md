@@ -10,7 +10,7 @@ with Klondike, Spider, FreeCell and Pyramid. Do not rename anything.
 
 - **Micro task** (Antigravity instances Beo, Oxy, Son, Dad): this file and your card in
   `docs/task_list/micro.md`. Nothing else unless the card names it.
-- **Phase task** (Claude Sonnet or Haiku): this file, `docs/tech/architecture.md`, and your card in
+- **Phase task** (Claude Sonnet or Haiku, dispatched and reviewed by Opus): this file, `docs/tech/architecture.md`, and your card in
   `docs/task_list/phase-N.md`.
 - If sources disagree: `docs/tech/decisions.md` overrides `docs/tech/master_prompt.md`.
 
@@ -48,6 +48,7 @@ with Klondike, Spider, FreeCell and Pyramid. Do not rename anything.
 
 - One task = one branch from current `main`, named `<type>/<ID>-<slug>` with type `feat`, `fix`,
   `refactor`, `chore`, `docs`, `test` or `ci`. Example: `feat/M-02-lint-nesting`.
+- Keep a PR small: one logical piece of functionality that compiles and leaves a working program.
 - Open a pull request to `main`. Title: `<type>(<scope>): <summary> [<ID>]`. PRs are squash-merged.
   Never push to `main` or `release`.
 - Change only the files listed in your card. If you need anything else — including a new
