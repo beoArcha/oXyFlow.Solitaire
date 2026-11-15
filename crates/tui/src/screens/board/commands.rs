@@ -138,7 +138,7 @@ impl BoardScreen {
             .session
             .as_mut()
             .is_some_and(|session| session.can_undo() && session.undo());
-        self.after_history(done, status::NOTHING_TO_UNDO)
+        self.after_history(done, status::NOTHING_TO_UNDO, status::UNDONE)
     }
 
     fn redo(&mut self) -> Effect {
@@ -146,17 +146,24 @@ impl BoardScreen {
             .session
             .as_mut()
             .is_some_and(|session| session.can_redo() && session.redo());
-        self.after_history(done, status::NOTHING_TO_REDO)
+        self.after_history(done, status::NOTHING_TO_REDO, status::REDONE)
     }
 
-    fn after_history(&mut self, done: bool, refusal: &'static str) -> Effect {
+    fn after_history(
+        &mut self,
+        done: bool,
+        refusal: &'static str,
+        success: &'static str,
+    ) -> Effect {
         if !done {
             self.status = Some(refusal);
             self.cue(SoundCue::Illegal);
             return Effect::None;
         }
         self.cue(SoundCue::Undo);
-        self.settle()
+        let effect = self.settle();
+        self.announce_event(success);
+        effect
     }
 
     fn hint(&mut self) -> Effect {

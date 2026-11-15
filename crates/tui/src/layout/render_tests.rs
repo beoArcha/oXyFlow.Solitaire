@@ -232,10 +232,10 @@ fn a_selected_run_marks_every_card_from_the_picked_one() {
         .unwrap_or_default();
     let lines: Vec<String> = card_rows(&buf, Rect::new(0, 0, 100, 30));
     let corner = |index: usize| symbols_at(&lines, placed[index].x, placed[index].y, 1);
-    assert_eq!(corner(2), "╭");
-    assert_eq!(corner(3), "┏");
-    assert_eq!(corner(4), "┏");
-    assert_eq!(corner(5), "┏");
+    assert_eq!(corner(2), "┌");
+    assert_eq!(corner(3), "╒");
+    assert_eq!(corner(4), "╒");
+    assert_eq!(corner(5), "╒");
 }
 
 #[test]

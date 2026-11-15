@@ -1,6 +1,10 @@
-//! Localized messages of the board status line.
+//! Localized messages of the board status line, and the description of the focus the line starts
+//! with.
 
-use oxysol_core::MoveError;
+use oxysol_core::{Move, MoveError, PileSnapshot};
+
+use super::BoardScreen;
+use crate::announce::{self, Focus, Held, Look};
 
 /// Localization key of the message for a rejected move. Every [`MoveError`] has one; the match is
 /// exhaustive on purpose, so a new variant cannot be forgotten.
@@ -31,3 +35,65 @@ pub(super) const HINT: &str = "board.status.hint";
 pub(super) const HINT_STOCK: &str = "board.status.hint_stock";
 pub(super) const NO_MOVES: &str = "board.status.no_moves";
 pub(super) const SOLVED: &str = "board.status.solved";
+pub(super) const MOVED: &str = "board.status.moved";
+pub(super) const DEALT: &str = "board.status.dealt";
+pub(super) const REMOVED: &str = "board.status.removed";
+pub(super) const UNDONE: &str = "board.status.undone";
+pub(super) const REDONE: &str = "board.status.redone";
+pub(super) const RESTARTED: &str = "board.status.restarted";
+
+/// Localization key of the event announced after a move was played.
+pub(super) const fn done_of(mv: Move) -> &'static str {
+    match mv {
+        Move::Stock => DEALT,
+        Move::Transfer { .. } => MOVED,
+        Move::Remove { .. } => REMOVED,
+    }
+}
+
+/// What a position shows: nothing, a face-down card, or the card itself. `depth` counts from the
+/// top of the pile, as the cursor does.
+fn look_at(snapshot: &PileSnapshot, depth: usize) -> Look {
+    let len = snapshot.cards.len();
+    match snapshot.cards.get(len.saturating_sub(depth)) {
+        Some(table) if table.face_up => Look::Up(table.card),
+        Some(_) => Look::FaceDown,
+        None => Look::Empty,
+    }
+}
+
+impl BoardScreen {
+    /// The description of the focus that starts the status line. Empty without a game and while
+    /// the board is covered, so a paused game shows no card.
+    pub(super) fn focus_text(&self) -> String {
+        let Some(session) = self.session.as_ref().filter(|_| !self.covered) else {
+            return String::new();
+        };
+        let piles = session.game().piles();
+        let look = piles
+            .iter()
+            .find(|snapshot| snapshot.pile == self.cursor.pile)
+            .map_or(Look::Empty, |snapshot| look_at(snapshot, self.cursor.depth));
+        let held = self.pick.as_ref().map(|pick| Held {
+            source: pick.source,
+            count: pick.count,
+            targets: pick
+                .choices
+                .iter()
+                .filter(|choice| choice.target.is_some())
+                .count(),
+        });
+        announce::focus(&Focus {
+            pile: self.cursor.pile,
+            look,
+            held,
+        })
+    }
+
+    /// Records the event of the last action, unless the board already says why it stopped.
+    pub(super) fn announce_event(&mut self, key: &'static str) {
+        if self.status.is_none() {
+            self.status = Some(key);
+        }
+    }
+}

@@ -19,7 +19,7 @@ fn starts_on_the_main_menu_with_the_stub_items() {
 #[test]
 fn focus_is_marked_by_a_symbol_without_color() {
     let mut unicode = Harness::new();
-    assert!(unicode.text().contains("▶ New game"));
+    assert!(unicode.text().contains("► New game"));
     let mut ascii = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
     let text = ascii.text();
     assert!(text.contains("> New game"));
@@ -27,7 +27,7 @@ fn focus_is_marked_by_a_symbol_without_color() {
 }
 
 fn focus_item(h: &mut Harness, label: &str) {
-    let marked = format!("▶ {label}");
+    let marked = format!("► {label}");
     for _ in 0..8 {
         if h.text().contains(&marked) {
             return;
@@ -39,11 +39,11 @@ fn focus_item(h: &mut Harness, label: &str) {
 #[test]
 fn focus_marker_follows_the_cursor() {
     let mut h = Harness::new();
-    assert!(h.text().contains("▶ New game"));
+    assert!(h.text().contains("► New game"));
     focus_item(&mut h, "Settings");
     let text = h.text();
-    assert!(text.contains("▶ Settings"));
-    assert!(!text.contains("▶ New game from seed"));
+    assert!(text.contains("► Settings"));
+    assert!(!text.contains("► New game from seed"));
 }
 
 #[test]

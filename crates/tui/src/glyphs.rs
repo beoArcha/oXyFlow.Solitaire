@@ -1,5 +1,6 @@
 //! Symbols for markers and card suits in the Unicode and ASCII sets. `Font` mode (the oXySol
-//! card font) uses the Unicode set until the font exists.
+//! card font) uses the Unicode set until the font exists. The Unicode set uses only WGL4 symbols,
+//! which every common terminal font draws.
 
 use oxysol_core::Suit;
 use ratatui::widgets::BorderType;
@@ -14,6 +15,7 @@ pub struct Glyphs {
     pub focus_left: &'static str,
     pub focus_right: &'static str,
     pub selected: &'static str,
+    pub target: &'static str,
     pub face_down: &'static str,
     pub border: BorderType,
 }
@@ -21,11 +23,12 @@ pub struct Glyphs {
 const UNICODE: Glyphs = Glyphs {
     unicode: true,
     suits: ["♣", "♦", "♥", "♠"],
-    focus_left: "▶",
-    focus_right: "◀",
+    focus_left: "►",
+    focus_right: "◄",
     selected: "●",
+    target: "+",
     face_down: "▒",
-    border: BorderType::Rounded,
+    border: BorderType::Plain,
 };
 
 const ASCII: Glyphs = Glyphs {
@@ -34,6 +37,7 @@ const ASCII: Glyphs = Glyphs {
     focus_left: ">",
     focus_right: "<",
     selected: "*",
+    target: "%",
     face_down: "#",
     border: BorderType::Plain,
 };
@@ -69,6 +73,7 @@ mod tests {
             &glyphs.focus_left,
             &glyphs.focus_right,
             &glyphs.selected,
+            &glyphs.target,
             &glyphs.face_down,
         ]);
         for text in all {
@@ -96,5 +101,13 @@ mod tests {
             Glyphs::new(GlyphMode::Font),
             Glyphs::new(GlyphMode::Unicode)
         );
+    }
+
+    #[test]
+    fn unicode_set_has_no_rounded_heavy_or_dashed_lines() {
+        let glyphs = Glyphs::new(GlyphMode::Unicode);
+        assert_eq!(glyphs.border, BorderType::Plain);
+        assert_ne!(glyphs.focus_left, "▶");
+        assert_ne!(glyphs.focus_right, "◀");
     }
 }
