@@ -69,7 +69,7 @@ fn is_ascii_or_wgl4(symbol: char) -> bool {
 #[test]
 fn the_menu_item_opens_klondike_by_keyboard() {
     let mut h = harness(TRUE_COLOR);
-    for _ in 0..3 {
+    for _ in 0..4 {
         h.press(KeyCode::Down);
     }
     h.press(KeyCode::Enter);

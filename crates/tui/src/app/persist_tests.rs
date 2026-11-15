@@ -103,6 +103,34 @@ fn dealing_another_game_over_a_save_abandons_it() {
 }
 
 #[test]
+fn an_abandoned_game_records_its_moves_with_undo_taking_a_move_back() {
+    let mut h = started();
+    h.type_char('s');
+    h.type_char('s');
+    h.type_char('s');
+    h.type_char('u');
+    h.app.apply(Effect::Start {
+        variant: Variant::FreeCell,
+        seed: Some(3),
+    });
+    let storage = h.storage.borrow();
+    assert_eq!(storage.history[0].moves, Some(2));
+    assert!(storage.history[0].undo_allowed);
+    assert!(storage.history[1].undo_allowed);
+    assert_eq!(storage.history[1].moves, None);
+}
+
+#[test]
+fn a_game_without_moves_is_abandoned_with_a_move_count_of_zero() {
+    let mut h = started();
+    h.app.apply(Effect::Start {
+        variant: Variant::FreeCell,
+        seed: Some(3),
+    });
+    assert_eq!(h.storage.borrow().history[0].moves, Some(0));
+}
+
+#[test]
 fn a_saved_game_from_an_earlier_run_is_abandoned_by_a_new_game() {
     let record = Session::new(KLONDIKE, 9).record();
     let storage = MemoryStorage {
@@ -111,12 +139,7 @@ fn a_saved_game_from_an_earlier_run_is_abandoned_by_a_new_game() {
             record,
             elapsed_ms: 4_000,
         }),
-        history: vec![HistoryRow {
-            id: GameId(1),
-            variant: KLONDIKE,
-            seed: 9,
-            finished: None,
-        }],
+        history: vec![HistoryRow::open(1, KLONDIKE, 9)],
         ..MemoryStorage::new()
     };
     let mut h = Harness::with(storage, TRUE_COLOR, 120, 40);
@@ -182,12 +205,7 @@ fn an_unrestorable_save_is_removed_and_closed_in_the_history() {
             record,
             elapsed_ms: 8_000,
         }),
-        history: vec![HistoryRow {
-            id: GameId(1),
-            variant: Variant::FreeCell,
-            seed: 99,
-            finished: None,
-        }],
+        history: vec![HistoryRow::open(1, Variant::FreeCell, 99)],
         ..MemoryStorage::new()
     };
     let mut h = Harness::with(storage, TRUE_COLOR, 120, 40);

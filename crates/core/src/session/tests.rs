@@ -142,6 +142,20 @@ fn can_undo_and_can_redo_follow_the_cursor() {
 }
 
 #[test]
+fn moves_made_counts_applied_moves_and_follows_undo_and_redo() {
+    let mut session = session(0);
+    assert_eq!(session.moves_made(), 0);
+    play(&mut session, 3);
+    assert_eq!(session.moves_made(), 3);
+    assert!(session.undo());
+    assert_eq!(session.moves_made(), 2);
+    assert!(session.redo());
+    assert_eq!(session.moves_made(), 3);
+    session.restart();
+    assert_eq!(session.moves_made(), 0);
+}
+
+#[test]
 fn a_restored_session_reports_its_history() {
     let restored = Session::restore_with(record(3, 1), counter_deal);
     assert!(

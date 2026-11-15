@@ -23,12 +23,7 @@ fn almost_won(last: &mut Option<Move>) -> Harness {
             record: session.record(),
             elapsed_ms: 30_000,
         }),
-        history: vec![HistoryRow {
-            id: GameId(1),
-            variant: PYRAMID,
-            seed: 2,
-            finished: None,
-        }],
+        history: vec![HistoryRow::open(1, PYRAMID, 2)],
         ..MemoryStorage::default()
     };
     let mut h = Harness::with(storage, TRUE_COLOR, 120, 40);
@@ -53,6 +48,10 @@ fn a_won_game_is_recorded_as_won_and_its_save_removed() {
     assert_eq!(h.app.modal(), Some(&Modal::win()));
     let storage = h.storage.borrow();
     assert!(storage.game.is_none());
+    assert_eq!(
+        storage.history[0].moves,
+        u32::try_from(hint_moves(PYRAMID, 2).len()).ok()
+    );
     let finished = storage.history[0].finished;
     assert!(
         matches!(finished, Some((Outcome::Won, ms)) if (45_000..46_000).contains(&ms)),

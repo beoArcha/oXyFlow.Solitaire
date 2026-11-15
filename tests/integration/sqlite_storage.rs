@@ -72,7 +72,7 @@ fn settings_round_trip_and_replace() {
 fn game_round_trip_replace_and_clear() {
     let (_dir, paths) = temp_paths();
     let mut storage = open(&paths);
-    let id = storage.start_game(KLONDIKE, 7);
+    let id = storage.start_game(KLONDIKE, 7, true);
     assert!(id.is_ok());
     let Ok(id) = id else {
         return;
@@ -98,15 +98,23 @@ fn history_keeps_exact_seeds_variants_and_outcomes() {
     let seeds = [0, 1, u64::from(u32::MAX), 1 << 63, u64::MAX];
     let mut ids = Vec::new();
     for seed in seeds {
-        let id = storage.start_game(KLONDIKE, seed);
+        let id = storage.start_game(KLONDIKE, seed, true);
         assert!(id.is_ok());
         if let Ok(id) = id {
             ids.push(id);
         }
     }
-    assert!(storage.start_game(Variant::FreeCell, 99).is_ok());
-    assert!(storage.finish_game(ids[4], Outcome::Won, 61_000).is_ok());
-    assert!(storage.finish_game(ids[0], Outcome::Abandoned, 5).is_ok());
+    assert!(storage.start_game(Variant::FreeCell, 99, true).is_ok());
+    assert!(
+        storage
+            .finish_game(ids[4], Outcome::Won, 61_000, 87)
+            .is_ok()
+    );
+    assert!(
+        storage
+            .finish_game(ids[0], Outcome::Abandoned, 5, 0)
+            .is_ok()
+    );
 
     let rows = storage.history();
     assert!(rows.is_ok());
@@ -118,6 +126,9 @@ fn history_keeps_exact_seeds_variants_and_outcomes() {
     assert_eq!(rows[5].variant, Variant::FreeCell);
     assert_eq!(rows[4].outcome, Some(Outcome::Won));
     assert_eq!(rows[4].elapsed_ms, Some(61_000));
+    assert_eq!(rows[4].moves, Some(87));
+    assert_eq!(rows[1].moves, None);
+    assert!(rows.iter().all(|row| row.undo_allowed));
     assert_eq!(rows[0].outcome, Some(Outcome::Abandoned));
     assert_eq!(rows[1].outcome, None);
     assert!(rows[1].finished_at_ms.is_none());
@@ -140,14 +151,18 @@ fn reopening_keeps_everything() {
     {
         let mut storage = open(&paths);
         assert!(storage.save_settings(&settings).is_ok());
-        let id = storage.start_game(KLONDIKE, u64::MAX);
+        let id = storage.start_game(KLONDIKE, u64::MAX, true);
         assert!(id.is_ok());
         let Ok(id) = id else {
             return;
         };
         saved = saved_game(id, u64::MAX, 4_200);
         assert!(storage.save_game(&saved).is_ok());
-        assert!(storage.finish_game(id, Outcome::Abandoned, 4_200).is_ok());
+        assert!(
+            storage
+                .finish_game(id, Outcome::Abandoned, 4_200, 3)
+                .is_ok()
+        );
     }
 
     let storage = open(&paths);
@@ -164,7 +179,7 @@ fn reopening_keeps_everything() {
 fn finishing_an_unknown_game_is_an_error() {
     let (_dir, paths) = temp_paths();
     let mut storage = open(&paths);
-    let result = storage.finish_game(GameId(404), Outcome::Won, 1);
+    let result = storage.finish_game(GameId(404), Outcome::Won, 1, 1);
     assert!(matches!(result, Err(StorageError::Corrupt { .. })));
 }
 
@@ -247,7 +262,7 @@ fn a_damaged_saved_game_is_corrupt_without_losing_the_rest() {
     let mut storage = open(&paths);
     let settings = Settings::default();
     assert!(storage.save_settings(&settings).is_ok());
-    let id = storage.start_game(KLONDIKE, 5);
+    let id = storage.start_game(KLONDIKE, 5, true);
     assert!(id.is_ok());
     drop(storage);
     {

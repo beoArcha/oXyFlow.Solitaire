@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use oxysol_core::{Session, Variant};
 
+use super::persist::UNDO_ALLOWED;
 use super::{App, Modal, Screen};
 use crate::screens::Effect;
 use crate::settings::Settings;
@@ -20,6 +21,7 @@ impl App {
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
             Effect::HowToPlay => self.open_how_to_play(),
+            Effect::CopySeed(seed) => self.copy_seed(seed),
             Effect::Quit => {
                 self.save_board();
                 self.quit = true;
@@ -33,11 +35,37 @@ impl App {
             self.save_board();
         }
         self.screen = screen;
+        if screen == Screen::Stats {
+            self.refresh_stats();
+        }
         if screen == Screen::Board && self.modal.is_none() {
             self.board.resume_clock(self.now);
         } else {
             self.board.pause_clock(self.now);
         }
+    }
+
+    fn refresh_stats(&mut self) {
+        match self.storage.history() {
+            Ok(records) => self.stats.show(records),
+            Err(error) => {
+                tracing::warn!(%error, "the game history could not be read");
+                self.stats.show_failure();
+            }
+        }
+    }
+
+    /// Copies a seed to the clipboard and announces the result on the statistics screen. A failure
+    /// is logged here, once per attempt, and the seed stays visible as text.
+    pub(crate) fn copy_seed(&mut self, seed: u64) {
+        let copied = match self.clipboard.copy(&seed.to_string()) {
+            Ok(()) => true,
+            Err(error) => {
+                tracing::warn!(%error, "the seed could not be copied");
+                false
+            }
+        };
+        self.stats.announce_copy(seed, copied);
     }
 
     pub(super) fn open_modal(&mut self, modal: Modal) {
@@ -68,7 +96,7 @@ impl App {
         self.abandon_saved();
         let seed = seed.unwrap_or_else(|| (self.seeds)());
         tracing::info!(?variant, seed, "new game dealt");
-        let recorded = self.storage.start_game(variant, seed);
+        let recorded = self.storage.start_game(variant, seed, UNDO_ALLOWED);
         let id = recorded.as_ref().ok().copied();
         self.board
             .begin(Session::new(variant, seed), id, Duration::ZERO, self.now);
@@ -80,6 +108,7 @@ impl App {
         let Some(saved) = self.saved.clone() else {
             return;
         };
+        let moves = u32::try_from(saved.record.cursor).unwrap_or(u32::MAX);
         let (id, elapsed_ms) = (saved.id, saved.elapsed_ms);
         match Session::restore(saved.record) {
             Ok(session) => {
@@ -89,7 +118,7 @@ impl App {
             }
             Err(error) => {
                 tracing::warn!(%error, "the saved game could not be restored; removing it");
-                self.discard_unusable_save(Some((id, elapsed_ms)));
+                self.discard_unusable_save(Some((id, elapsed_ms, moves)));
                 self.open_modal(Modal::alert("common.error.resume"));
             }
         }

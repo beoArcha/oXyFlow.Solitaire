@@ -13,7 +13,7 @@ use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
 use crate::theme::ThemeId;
 
 /// Position of Settings in the main menu without a saved game.
-const SETTINGS_ITEM: usize = 2;
+const SETTINGS_ITEM: usize = 3;
 
 fn open_settings() -> Harness {
     let mut h = Harness::new();

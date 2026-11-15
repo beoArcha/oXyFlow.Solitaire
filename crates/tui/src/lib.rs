@@ -5,6 +5,7 @@ pub mod announce;
 pub mod app;
 pub mod audio;
 pub mod caps;
+pub mod clipboard;
 pub mod clock;
 pub mod glyphs;
 pub mod i18n;
@@ -25,9 +26,10 @@ mod test_support;
 
 pub use app::{App, Deps, Modal, Screen};
 pub use audio::{Audio, AudioSettings, NullAudio, SoundCue};
+pub use clipboard::{Clipboard, ClipboardError, NullClipboard};
 pub use input::Input;
 /// The terminal event types of [`Input`], so that callers can build input without their own dependency.
 pub use ratatui::crossterm;
 pub use settings::Settings;
-pub use storage::{GameId, Outcome, SavedGame, Storage, StorageError};
+pub use storage::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 pub use terminal::{TuiError, restore_terminal, run};

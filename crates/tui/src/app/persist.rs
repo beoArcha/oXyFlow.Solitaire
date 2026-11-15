@@ -8,9 +8,19 @@ use crate::storage::{GameId, Outcome, SavedGame, StorageError};
 
 const WRITE_FAILED_ALERT: &str = "common.error.storage";
 
+/// Undo is always available until a "no undo" mode exists.
+pub(super) const UNDO_ALLOWED: bool = true;
+
 fn millis(elapsed: Duration) -> u64 {
     u64::try_from(elapsed.as_millis()).unwrap_or(u64::MAX)
 }
+
+fn move_count(moves: usize) -> u32 {
+    u32::try_from(moves).unwrap_or(u32::MAX)
+}
+
+/// The game that could not be restored: its id, playing time and move count.
+pub(super) type Unusable = (GameId, u64, u32);
 
 impl App {
     /// Saves or finishes the game after the board reported a change of the session.
@@ -52,7 +62,13 @@ impl App {
             return;
         }
         let elapsed_ms = millis(self.board.elapsed(self.now));
-        let finished = self.storage.finish_game(id, Outcome::Won, elapsed_ms);
+        let moves = self
+            .board
+            .session()
+            .map_or(0, |s| move_count(s.moves_made()));
+        let finished = self
+            .storage
+            .finish_game(id, Outcome::Won, elapsed_ms, moves);
         self.note_write(finished, "the won game could not be recorded");
         let cleared = self.storage.clear_game();
         self.note_write(cleared, "the saved game could not be removed");
@@ -64,9 +80,10 @@ impl App {
         let Some(saved) = self.saved.take() else {
             return;
         };
-        let finished = self
-            .storage
-            .finish_game(saved.id, Outcome::Abandoned, saved.elapsed_ms);
+        let moves = move_count(saved.record.cursor);
+        let finished =
+            self.storage
+                .finish_game(saved.id, Outcome::Abandoned, saved.elapsed_ms, moves);
         self.note_write(finished, "the abandoned game could not be recorded");
         let cleared = self.storage.clear_game();
         self.note_write(cleared, "the saved game could not be removed");
@@ -74,10 +91,13 @@ impl App {
 
     /// Drops a save that cannot be used. The caller alerts the player; a failure here is only
     /// logged, once, because there is nothing left to protect.
-    pub(super) fn discard_unusable_save(&mut self, id: Option<(GameId, u64)>) {
+    pub(super) fn discard_unusable_save(&mut self, game: Option<Unusable>) {
         self.saved = None;
-        let finished = match id {
-            Some((id, elapsed_ms)) => self.storage.finish_game(id, Outcome::Abandoned, elapsed_ms),
+        let finished = match game {
+            Some((id, elapsed_ms, moves)) => {
+                self.storage
+                    .finish_game(id, Outcome::Abandoned, elapsed_ms, moves)
+            }
             None => Ok(()),
         };
         let result = finished.and(self.storage.clear_game());

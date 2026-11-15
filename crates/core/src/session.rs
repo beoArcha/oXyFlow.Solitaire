@@ -165,6 +165,12 @@ impl Session {
         self.cursor < self.moves.len()
     }
 
+    /// How many moves are applied now: every executed move counts once, an undo takes one back
+    /// and a redo puts it again, so it equals the history cursor.
+    pub fn moves_made(&self) -> usize {
+        self.cursor
+    }
+
     /// Back to the dealt position of the same seed with an empty history.
     pub fn restart(&mut self) {
         self.game = (self.dealer)(self.variant, self.seed);
