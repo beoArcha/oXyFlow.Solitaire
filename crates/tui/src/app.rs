@@ -282,7 +282,7 @@ impl App {
         match self.screen {
             Screen::MainMenu => self.menu.handle_mouse(event, &ctx),
             Screen::GameSelect => self.select.handle_mouse(event, &ctx),
-            Screen::Board => Effect::None,
+            Screen::Board => self.board.handle_mouse(event, &ctx),
             Screen::Settings => self.settings_screen.handle_mouse(event, &ctx),
         }
     }

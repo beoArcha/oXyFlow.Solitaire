@@ -1,5 +1,6 @@
-//! Translation of mouse events into the actions the keyboard produces. Stub: P3-06 adds the board
-//! gestures through `BoardGeometry::hit`; lists and menus already use these two helpers.
+//! Translation of mouse events into the actions the keyboard produces. Lists and menus use the
+//! helpers here directly; the board reads its gestures through `BoardGeometry::hit` (see
+//! `screens/board/mouse.rs`).
 
 use ratatui::crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 use ratatui::layout::Rect;
@@ -10,6 +11,22 @@ use crate::action::Action;
 pub fn left_press(event: &MouseEvent) -> Option<(u16, u16)> {
     match event.kind {
         MouseEventKind::Down(MouseButton::Left) => Some((event.column, event.row)),
+        _ => None,
+    }
+}
+
+/// The cell of a left-button release, if the event is one.
+pub fn left_release(event: &MouseEvent) -> Option<(u16, u16)> {
+    match event.kind {
+        MouseEventKind::Up(MouseButton::Left) => Some((event.column, event.row)),
+        _ => None,
+    }
+}
+
+/// The cell of a right-button press, if the event is one.
+pub fn right_press(event: &MouseEvent) -> Option<(u16, u16)> {
+    match event.kind {
+        MouseEventKind::Down(MouseButton::Right) => Some((event.column, event.row)),
         _ => None,
     }
 }
@@ -53,6 +70,30 @@ mod tests {
         );
         assert_eq!(
             left_press(&event(MouseEventKind::Up(MouseButton::Left), 3, 4)),
+            None
+        );
+    }
+
+    #[test]
+    fn releases_and_right_presses_are_recognized_alone() {
+        assert_eq!(
+            left_release(&event(MouseEventKind::Up(MouseButton::Left), 1, 2)),
+            Some((1, 2))
+        );
+        assert_eq!(
+            left_release(&event(MouseEventKind::Down(MouseButton::Left), 1, 2)),
+            None
+        );
+        assert_eq!(
+            right_press(&event(MouseEventKind::Down(MouseButton::Right), 5, 6)),
+            Some((5, 6))
+        );
+        assert_eq!(
+            right_press(&event(MouseEventKind::Up(MouseButton::Right), 5, 6)),
+            None
+        );
+        assert_eq!(
+            right_press(&event(MouseEventKind::Down(MouseButton::Left), 5, 6)),
             None
         );
     }
