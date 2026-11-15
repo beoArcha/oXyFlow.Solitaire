@@ -226,8 +226,10 @@ impl App {
         if self.modal.is_some() {
             return self.on_modal_key(&key, action);
         }
-        if action == Some(Action::Help) {
-            return Effect::Open(Modal::Help);
+        match action {
+            Some(Action::Help) => return Effect::Open(Modal::Help),
+            Some(Action::Rules) => return Effect::HowToPlay,
+            _ => {}
         }
         let ctx = view_ctx!(self);
         match self.screen {

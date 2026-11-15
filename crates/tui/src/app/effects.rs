@@ -7,6 +7,7 @@ use oxysol_core::{Session, Variant};
 use super::{App, Modal, Screen};
 use crate::screens::Effect;
 use crate::settings::Settings;
+use crate::widgets::overlay::{HowToPlay, Rules};
 
 impl App {
     pub(crate) fn apply(&mut self, effect: Effect) {
@@ -18,6 +19,7 @@ impl App {
             Effect::Restart => self.board.restart(self.now),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
+            Effect::HowToPlay => self.open_how_to_play(),
             Effect::Quit => {
                 self.save_board();
                 self.quit = true;
@@ -42,6 +44,16 @@ impl App {
         self.board.pause_clock(self.now);
         self.board.set_covered(modal == Modal::Pause);
         self.modal = Some(modal);
+    }
+
+    fn open_how_to_play(&mut self) {
+        let rules = self
+            .board
+            .session()
+            .map_or(HowToPlay::new(Rules::Klondike), |session| {
+                HowToPlay::for_variant(session.variant())
+            });
+        self.open_modal(Modal::HowToPlay(rules));
     }
 
     pub(super) fn close_modal(&mut self) {

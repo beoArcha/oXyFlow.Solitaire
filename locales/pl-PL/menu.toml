@@ -15,3 +15,6 @@ keys = "Cyfry wpisują ziarno   Backspace Usuń   Enter Dalej   Esc Wstecz"
 error_empty = "Najpierw wpisz ziarno."
 error_not_numeric = "Ziarno jest liczbą całkowitą: używaj tylko cyfr od 0 do 9."
 error_out_of_range = "To ziarno jest za duże. Największe dopuszczalne ziarno to 18446744073709551615."
+
+[how_to_play]
+label = "Jak grać"

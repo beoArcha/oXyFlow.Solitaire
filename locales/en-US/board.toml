@@ -91,3 +91,11 @@ blocked = "Illegal move: that card is covered by other cards."
 restart = "Deal this game again from the beginning?"
 new_game = "Give up this game and deal a new one?"
 quit = "Quit oXySol?"
+
+[first_steps]
+arrows = "Arrows: move"
+select = "{key}: pick up / drop"
+stock = "{key}: stock"
+help = "{key}: keys"
+rules = "{key}: how to play"
+separator = " | "

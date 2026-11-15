@@ -99,7 +99,7 @@ fn every_action_has_a_key_and_a_help_line() {
 #[test]
 fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
     let labels = rows(&mut Harness::new());
-    assert_eq!(labels.len(), 5, "{labels:?}");
+    assert_eq!(labels.len(), 6, "{labels:?}");
     for index in 0..labels.len() {
         let mut h = menu_at(index);
         h.press(KeyCode::Enter);
@@ -111,7 +111,8 @@ fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
                 assert!(h.text().contains("42"), "seed field takes digits");
             }
             2 => assert_eq!(h.app.screen(), Screen::Settings),
-            3 => assert!(matches!(h.app.modal(), Some(Modal::Help))),
+            3 => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
+            4 => assert!(matches!(h.app.modal(), Some(Modal::Help))),
             _ => assert!(h.app.should_quit()),
         }
     }
@@ -167,6 +168,10 @@ fn every_dialog_closes_and_confirm_takes_yes_by_keyboard() {
     });
     h.type_char('?');
     assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    h.type_char('i');
+    assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     h.type_char('p');

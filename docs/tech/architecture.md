@@ -140,7 +140,7 @@ pub struct Deps {
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings }
-pub enum Modal { Help, Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
+pub enum Modal { Help, HowToPlay(HowToPlay), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
 
 impl App {
     pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
@@ -184,13 +184,25 @@ pub struct NullAudio;                                    // always unavailable a
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `Apply(Settings)`, `Open(Modal)`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
+  `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
+- **How to play (P3-10):** `Modal::HowToPlay(HowToPlay { rules, scroll })` is the rules window
+  (`widgets/overlay/how_to_play/`): tabs for Klondike, Spider, FreeCell and Pyramid, sections Goal, Layout,
+  Moves, Controls and Tips from `locales/*/rules.toml`, a fixed 80 × 26 box that scrolls its text. The
+  Controls keys are read from `KEY_TABLE`; texts name keys through placeholders such as `{hint}`. It opens
+  through `Effect::HowToPlay` (main-menu item "How to play", and `Action::Rules`, key `i`, handled by `App`
+  on every screen like `Action::Help`); `App` picks the game of the board's session, else Klondike.
+  Keys: Left/Right/Tab switch games, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close
+  close; arrows, tabs and Close are clickable.
+- **First steps:** from the deal of a game without moves until its first action (anything but cursor
+  movement), the board status line shows `board.first_steps.*` (arrows, `Select`, `Stock` when the game has
+  a stock, `Help`, `Rules` keys from `KEY_TABLE`) after the focus text; parts are dropped, least useful first,
+  when the line would be wider than the screen.
 - **Storage failures:** a failing load or save is logged once in `App` and shown as an `Alert`; settings
   hold for the session, a game that could not be recorded is still played.
 - **Too small:** below 100 × 30 cells (T-11) only a notice with the current and required size is drawn;

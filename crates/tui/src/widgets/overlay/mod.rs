@@ -1,9 +1,10 @@
-//! The modal layer: help, pause, win, confirmation and alert dialogs. [`draw`] paints the open
+//! The modal layer: help, how to play, pause, win, confirmation and alert dialogs. [`draw`] paints the open
 //! dialog over the screen; [`handle`] and [`handle_mouse`] turn input into the [`Effect`] that
 //! closes it. Every dialog sizes itself to its content and is centered in the area it is given.
 
 mod dialog;
 mod help;
+mod how_to_play;
 mod pause;
 #[cfg(test)]
 mod render_tests;
@@ -19,6 +20,7 @@ use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Clear};
 
 use self::dialog::{Button, Geometry, Text};
+pub use self::how_to_play::{HowToPlay, Rules};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
 use crate::i18n::t;
@@ -29,7 +31,7 @@ use crate::screens::{Effect, ViewCtx};
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
-        Modal::Help => None,
+        Modal::Help | Modal::HowToPlay(_) => None,
         Modal::Pause => Some(pause::text()),
         Modal::Win { menu_focused } => Some(win::text(board.elapsed(now), *menu_focused)),
         Modal::Confirm {
@@ -62,9 +64,10 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
 }
 
 fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geometry {
-    match text_of(modal, board, now) {
-        Some(text) => text.geometry(area),
-        None => help::geometry(area),
+    match (modal, text_of(modal, board, now)) {
+        (_, Some(text)) => text.geometry(area),
+        (Modal::HowToPlay(_), None) => how_to_play::geometry(area),
+        (_, None) => help::geometry(area),
     }
 }
 
@@ -76,12 +79,13 @@ pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, c
         frame.render_widget(Clear, body);
         frame.render_widget(Block::new().style(ctx.theme.base()), body);
     }
-    match text_of(modal, board, ctx.now) {
-        Some(text) => {
+    match (modal, text_of(modal, board, ctx.now)) {
+        (_, Some(text)) => {
             let geometry = text.geometry(area);
             text.draw(frame, &geometry, ctx);
         }
-        None => help::draw(frame, area, ctx),
+        (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
+        (_, None) => help::draw(frame, area, ctx),
     }
 }
 
@@ -119,7 +123,10 @@ fn press(modal: &Modal, index: usize) -> Effect {
 
 /// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
 /// then applies `effect` (`Effect::None` just closes).
-pub fn handle(modal: &mut Modal, _key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+pub fn handle(modal: &mut Modal, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+    if let Modal::HowToPlay(state) = modal {
+        return how_to_play::handle(state, key, action);
+    }
     let action = action?;
     if matches!(
         action,
@@ -145,6 +152,9 @@ pub fn handle_mouse(
     now: Instant,
     event: &MouseEvent,
 ) -> Option<Effect> {
+    if let Modal::HowToPlay(state) = modal {
+        return how_to_play::handle_mouse(state, area, event);
+    }
     let cell = mouse::left_press(event)?;
     let index = dialog::button_at(&geometry(area, modal, board, now), cell)?;
     Some(press(modal, index))

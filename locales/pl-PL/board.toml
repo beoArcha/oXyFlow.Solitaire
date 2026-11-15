@@ -91,3 +91,11 @@ blocked = "Niedozwolony ruch: ta karta jest przykryta innymi kartami."
 restart = "Rozdać tę grę ponownie od początku?"
 new_game = "Poddać tę grę i rozdać nową?"
 quit = "Wyjść z oXySol?"
+
+[first_steps]
+arrows = "Strzałki: ruch"
+select = "{key}: weź / połóż"
+stock = "{key}: talia"
+help = "{key}: klawisze"
+rules = "{key}: jak grać"
+separator = " | "

@@ -1,6 +1,7 @@
 //! Controller tests: key sequences on fixed seeds, driven through `App` on a `TestBackend`.
 
 mod commands;
+mod first_steps;
 mod mouse;
 mod moves;
 mod navigation;
