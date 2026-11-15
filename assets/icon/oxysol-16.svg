@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>oXySol 16</title>
+  <rect width="16" height="16" rx="3" fill="#178650"/>
+  <g transform="rotate(-24 8 14)">
+    <rect x="3" y="2" width="8" height="11" rx="1" fill="#c9e6d6"/>
+  </g>
+  <g transform="rotate(24 8 14)">
+    <rect x="5" y="2" width="8" height="11" rx="1" fill="#c9e6d6"/>
+  </g>
+  <g shape-rendering="crispEdges">
+    <rect x="5" y="2" width="8" height="13" fill="#0a3f2a" fill-opacity="0.4"/>
+    <rect x="4" y="2" width="8" height="12" fill="#ffffff"/>
+  </g>
+  <path d="M5 5 L11 11 M11 5 L5 11" stroke="#d6303a" stroke-width="2.200" stroke-linecap="round" fill="none"/>
+  <circle cx="8" cy="8" r="2" fill="#ffc22e" stroke="#e8870f" stroke-width="0.700"/>
+</svg>

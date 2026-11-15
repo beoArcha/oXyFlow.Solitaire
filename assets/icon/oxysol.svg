@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <title>oXySol</title>
+  <defs>
+    <linearGradient id="felt" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#34a96b"/>
+      <stop offset="1" stop-color="#0c4a35"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6ebf0"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.4" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#fff0a0"/>
+      <stop offset="0.55" stop-color="#ffc730"/>
+      <stop offset="1" stop-color="#f08a12"/>
+    </radialGradient>
+    <linearGradient id="cross" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0584a"/>
+      <stop offset="1" stop-color="#c2262e"/>
+    </linearGradient>
+    <path id="heart" d="M0 14 C-13 4 -14 -6 -7 -9 C-3 -10.500 0 -8 0 -5 C0 -8 3 -10.500 7 -9 C14 -6 13 4 0 14 Z"/>
+    <path id="spade" d="M0 -14 C-13 -4 -14 5 -7 8 C-4 9 -1 8 0 5 C0 9 -1 12 -4 14 L4 14 C1 12 0 9 0 5 C1 8 4 9 7 8 C14 5 13 -4 0 -14 Z"/>
+    <rect id="card" x="78" y="46" width="100" height="146" rx="12"/>
+  </defs>
+
+  <rect x="4" y="4" width="248" height="248" rx="56" fill="url(#felt)"/>
+  <rect x="7" y="7" width="242" height="242" rx="53" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="3"/>
+  <ellipse cx="128" cy="222" rx="74" ry="9" fill="#02281d" fill-opacity="0.35"/>
+
+  <g transform="rotate(-24 128 212)">
+    <use href="#card" transform="translate(0 4)" fill="#02281d" fill-opacity="0.28"/>
+    <use href="#card" fill="url(#paper)" stroke="#16372b" stroke-opacity="0.45" stroke-width="2"/>
+    <use href="#heart" transform="translate(96 72) scale(1.05)" fill="#d6303a"/>
+  </g>
+  <g transform="rotate(24 128 212)">
+    <use href="#card" transform="translate(0 4)" fill="#02281d" fill-opacity="0.28"/>
+    <use href="#card" fill="url(#paper)" stroke="#16372b" stroke-opacity="0.45" stroke-width="2"/>
+    <use href="#spade" transform="translate(160 72) scale(1.05)" fill="#1d2733"/>
+  </g>
+
+  <use href="#card" transform="translate(0 4)" fill="#02281d" fill-opacity="0.3"/>
+  <use href="#card" fill="url(#paper)" stroke="#16372b" stroke-opacity="0.5" stroke-width="2"/>
+  <path d="M95 87 L161 153 M161 87 L95 153" stroke="url(#cross)" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <path d="M128 69 V77 M128 163 V171 M85 120 H93 M163 120 H171" stroke="#f5a623" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <circle cx="128" cy="120" r="27" fill="url(#sun)" stroke="#d8860c" stroke-width="3"/>
+  <circle cx="128" cy="120" r="14" fill="none" stroke="#fff6c4" stroke-opacity="0.55" stroke-width="3"/>
+</svg>
