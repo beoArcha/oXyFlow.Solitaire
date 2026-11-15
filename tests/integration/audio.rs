@@ -39,6 +39,7 @@ fn app_with(audio: Box<dyn Audio>) -> App {
         audio,
         caps: LOCAL,
         seeds: Box::new(|| 7),
+        start_seed: None,
     })
 }
 

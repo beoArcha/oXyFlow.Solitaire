@@ -99,6 +99,22 @@ impl MainMenu {
         Self::default()
     }
 
+    /// A menu that opens on the games dealt from `seed`, as if the seed had just been submitted.
+    pub fn for_seed(seed: u64) -> Self {
+        Self {
+            list: MenuList::new(),
+            stage: Stage::Variants {
+                seed,
+                picker: GameSelect::for_seed(seed),
+            },
+        }
+    }
+
+    /// Whether the seed field is open, so that typed characters are text.
+    pub fn captures_text(&self) -> bool {
+        matches!(self.stage, Stage::Seed(_))
+    }
+
     /// Handles a key press mapped to `action`.
     pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         if action == Some(Action::Back) && !matches!(self.stage, Stage::Items) {
