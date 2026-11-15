@@ -22,6 +22,8 @@ metadata.toml            canonical metadata (name, version, license, URL)
 src/                     main.rs lib.rs cli.rs paths.rs storage.rs logging.rs panic_hook.rs error.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
 crates/core/src/games/   klondike/ spider/ freecell/ pyramid/   (each: mod.rs rules.rs moves.rs tests.rs)
+                         stub.rs (phase 1 placeholder shared by the four stubs, removed in phase 2)
+crates/core/tests/       playout.rs (random playouts over Variant::ALL)
 crates/tui/src/          lib.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs i18n.rs
                          settings.rs storage.rs audio.rs announce.rs
                          theme/ layout/ widgets/ screens/
@@ -66,6 +68,7 @@ pub enum MoveError { /* rejection reasons: Unsupported, NoSuchPile, EmptySource,
                         InvalidSequence, TargetRejects, StockEmpty, … */ }
 
 pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules) }
+impl Variant { pub const ALL: [Variant; 8]; }               // every concrete variant, menu order
 pub enum DrawCount { One, Three }
 pub enum SuitCount { One, Two, Four }
 pub enum PyramidRules { Relaxed, Classic }
@@ -87,11 +90,17 @@ Rules of the `Game` contract:
 - `legal_moves()` returns exactly the set of moves that `apply` accepts.
 - `MoveError` is an expected validation result, not a system error.
 - Game modules are `pub(crate)`; the outside world sees only `Game`, `Variant`, `deal` and `Session`.
+- `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.
+- Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`.
 
 The session implements history by replaying the move log from the seed (decision T-03):
 
 ```rust
 pub struct SessionRecord { pub variant: Variant, pub seed: u64, pub moves: Vec<Move>, pub cursor: usize }
+pub enum RestoreError {
+    CursorBeyondMoves { cursor: usize, len: usize },
+    MoveRejected { index: usize, source: MoveError },        // replay of the log failed at `index`
+}
 
 impl Session {
     pub fn new(variant: Variant, seed: u64) -> Self;
@@ -106,6 +115,11 @@ impl Session {
     pub fn seed(&self) -> u64;
 }
 ```
+
+`restore` validates the whole log, including the redo tail after `cursor`. A rejected `apply` changes
+neither the game nor the history. `undo` replays `moves[..cursor - 1]` from the seed; `redo` applies
+the next move to the live game. Tests inject a toy game through crate-private constructors that take a
+deal function; the public API only offers `new` and `restore`, which use `deal`.
 
 Serialized types (`SessionRecord`, `Move`, `PileRef`, `Variant`) have stable serde names.
 
