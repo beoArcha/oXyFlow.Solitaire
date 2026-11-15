@@ -29,13 +29,11 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-      actions: write
     concurrency:
       group: promote-release
       cancel-in-progress: false
     env:
       REPO: ${{ github.repository }}
-      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,12 +70,3 @@ jobs:
         env:
           GIT_SSH_COMMAND: ssh -i ~/.ssh/release_deploy -o IdentitiesOnly=yes
         run: git push "git@github.com:${REPO}.git" "$GITHUB_SHA:refs/heads/release"
-
-      - name: Start release.yml
-        if: env.PROMOTE == '1'
-        run: |
-          if [ -f .github/workflows/release.yml ]; then
-            gh workflow run release.yml --repo "$REPO" --ref release
-          else
-            echo "::notice::release.yml does not exist yet; nothing dispatched"
-          fi
