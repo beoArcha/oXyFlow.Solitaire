@@ -26,7 +26,8 @@ pub enum SuitCount {
     Four,
 }
 
-/// Pyramid rule set: `Relaxed` allows pairs from the waste, `Classic` is stricter.
+/// Pyramid rule set (R-11): `Relaxed` allows 3 passes through the stock and is won when the pyramid
+/// is empty; `Classic` allows 1 pass and is won when all 52 cards are removed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PyramidRules {
