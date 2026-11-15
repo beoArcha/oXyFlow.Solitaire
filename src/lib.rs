@@ -1,7 +1,9 @@
-//! Application layer of oXySol: arguments, paths, persistence, audio output, logging, panic hook.
+//! Application layer of oXySol: arguments, paths, persistence, audio output, clipboard, logging,
+//! panic hook.
 
 pub mod audio;
 pub mod cli;
+pub mod clipboard;
 pub mod console;
 pub mod error;
 pub mod logging;

@@ -1,0 +1,216 @@
+//! Drawing the statistics screen and remembering where its rows and buttons are for the mouse.
+
+use ratatui::Frame;
+use ratatui::layout::{Alignment, Constraint, Layout, Rect};
+use ratatui::style::Style;
+use ratatui::text::{Line, Span};
+use ratatui::widgets::Paragraph;
+
+use super::format::{history_header, history_row, summary_lines};
+use super::{Button, Notice, StatsScreen};
+use crate::i18n::{t, tf};
+use crate::screens::ViewCtx;
+use crate::theme::Token;
+
+/// Rows of the summary table that are drawn; the rest does not fit next to the list.
+const MAX_SUMMARY_ROWS: usize = 8;
+const BUTTON_GAP: u16 = 3;
+const MARKER_COLUMNS: u16 = 4;
+
+fn centered(frame: &mut Frame, area: Rect, text: String, style: Style) {
+    frame.render_widget(
+        Paragraph::new(Line::styled(text, style)).alignment(Alignment::Center),
+        area,
+    );
+}
+
+fn text_width(text: &str) -> u16 {
+    u16::try_from(text.chars().count()).unwrap_or(u16::MAX)
+}
+
+fn block_x(area: Rect, width: u16) -> u16 {
+    area.x + area.width.saturating_sub(width) / 2
+}
+
+impl StatsScreen {
+    fn summary_height(&self) -> u16 {
+        if self.summaries.is_empty() {
+            return 0;
+        }
+        let rows = self.summaries.len().min(MAX_SUMMARY_ROWS) + 1;
+        u16::try_from(rows).unwrap_or(0)
+    }
+
+    /// Draws the title, the summary, the history, the buttons, the status line and the key line.
+    pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        let [
+            title_area,
+            _,
+            summary_area,
+            _,
+            heading_area,
+            header_area,
+            list_area,
+            buttons_area,
+            status_area,
+            footer_area,
+        ] = Layout::vertical([
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(self.summary_height()),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Fill(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ])
+        .areas(area);
+        let accent = ctx.theme.style(Token::Accent, Token::Background);
+        let muted = ctx.theme.style(Token::TextMuted, Token::Background);
+        centered(frame, title_area, t("stats.title").into_owned(), accent);
+        self.rows.clear();
+        if self.records.is_empty() {
+            self.draw_empty(frame, list_area, ctx);
+        } else {
+            if summary_area.height > 0 {
+                self.draw_summary(frame, summary_area, ctx);
+            }
+            self.draw_history(frame, [heading_area, header_area, list_area], ctx);
+        }
+        self.draw_buttons(frame, buttons_area, ctx);
+        self.draw_status(frame, status_area, ctx);
+        centered(frame, footer_area, t("stats.footer").into_owned(), muted);
+    }
+
+    fn draw_empty(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        let (key, token) = if self.load_failed {
+            ("stats.load_failed", Token::Error)
+        } else {
+            ("stats.empty", Token::Text)
+        };
+        let style = ctx.theme.style(token, Token::Background);
+        centered(
+            frame,
+            Rect { height: 1, ..area },
+            t(key).into_owned(),
+            style,
+        );
+    }
+
+    fn draw_summary(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        let lines = summary_lines(&self.summaries, self.show_modes);
+        let width = lines.first().map_or(0, |line| text_width(line));
+        let x = block_x(area, width);
+        for (offset, line) in lines.into_iter().take(MAX_SUMMARY_ROWS + 1).enumerate() {
+            let Ok(row) = u16::try_from(offset) else {
+                break;
+            };
+            let style = if offset == 0 {
+                ctx.theme.style(Token::Accent, Token::Background)
+            } else {
+                ctx.theme.base()
+            };
+            let cell = Rect::new(x, area.y + row, width.min(area.width), 1);
+            frame.render_widget(Paragraph::new(Line::styled(line, style)), cell);
+        }
+    }
+
+    fn draw_history(&mut self, frame: &mut Frame, areas: [Rect; 3], ctx: &ViewCtx<'_>) {
+        let [heading_area, header_area, list_area] = areas;
+        let position = tf(
+            "stats.position",
+            &[
+                ("current", &(self.list.selected() + 1).to_string()),
+                ("total", &self.records.len().to_string()),
+            ],
+        );
+        let heading = format!("{}   {position}", t("stats.history.title"));
+        let accent = ctx.theme.style(Token::Accent, Token::Background);
+        centered(frame, heading_area, heading, accent);
+        let header = history_header();
+        let width = text_width(&header) + MARKER_COLUMNS;
+        let x = block_x(list_area, width);
+        let header_cell = Rect::new(x, header_area.y, width.min(header_area.width), 1);
+        let muted = ctx.theme.style(Token::TextMuted, Token::Background);
+        let header_line = Line::styled(format!("  {header}  "), muted);
+        frame.render_widget(Paragraph::new(header_line), header_cell);
+        let window = self
+            .list
+            .visible(usize::from(list_area.height), self.records.len());
+        for (offset, index) in window.enumerate() {
+            let (Some(record), Ok(row)) = (self.records.get(index), u16::try_from(offset)) else {
+                break;
+            };
+            let focused = index == self.list.selected();
+            let (left, right) = if focused {
+                (ctx.glyphs.focus_left, ctx.glyphs.focus_right)
+            } else {
+                (" ", " ")
+            };
+            let style = if focused {
+                ctx.theme.focus()
+            } else {
+                ctx.theme.base()
+            };
+            let cell = Rect::new(x, list_area.y + row, width.min(list_area.width), 1);
+            let text = format!("{left} {} {right}", history_row(record));
+            frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
+            self.rows.push((index, cell));
+        }
+    }
+
+    fn draw_buttons(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        let mut labels = Vec::new();
+        if !self.records.is_empty() {
+            labels.push((Button::Replay, t("stats.button.replay").into_owned()));
+            labels.push((Button::Copy, t("stats.button.copy").into_owned()));
+        }
+        labels.push((Button::Back, t("stats.button.back").into_owned()));
+        let labels: Vec<(Button, String)> = labels
+            .into_iter()
+            .map(|(button, label)| (button, format!("[ {label} ]")))
+            .collect();
+        let gaps = BUTTON_GAP * u16::try_from(labels.len().saturating_sub(1)).unwrap_or(0);
+        let total: u16 = labels
+            .iter()
+            .map(|(_, label)| text_width(label))
+            .sum::<u16>()
+            + gaps;
+        let mut x = block_x(area, total);
+        self.buttons.clear();
+        let mut spans = Vec::new();
+        for (index, (button, label)) in labels.into_iter().enumerate() {
+            let width = text_width(&label);
+            if index > 0 {
+                spans.push(Span::raw(" ".repeat(usize::from(BUTTON_GAP))));
+                x += BUTTON_GAP;
+            }
+            self.buttons.push((button, Rect::new(x, area.y, width, 1)));
+            spans.push(Span::styled(label, ctx.theme.base()));
+            x += width;
+        }
+        frame.render_widget(
+            Paragraph::new(Line::from(spans)).alignment(Alignment::Center),
+            area,
+        );
+    }
+
+    fn draw_status(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        let Some(notice) = self.notice else {
+            return;
+        };
+        let (text, token) = match notice {
+            Notice::Copied(seed) => (
+                tf("stats.copied", &[("seed", &seed.to_string())]),
+                Token::Accent,
+            ),
+            Notice::CopyFailed(seed) => (
+                tf("stats.copy_failed", &[("seed", &seed.to_string())]),
+                Token::Error,
+            ),
+        };
+        centered(frame, area, text, ctx.theme.style(token, Token::Background));
+    }
+}

@@ -5,7 +5,8 @@ use rusqlite::Connection;
 use super::error::Fault;
 
 /// Forward-only migrations; the index plus one is the schema version they produce.
-pub(super) const MIGRATIONS: &[&str] = &["
+pub(super) const MIGRATIONS: &[&str] = &[
+    "
     CREATE TABLE settings (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         json TEXT NOT NULL
@@ -26,7 +27,12 @@ pub(super) const MIGRATIONS: &[&str] = &["
         elapsed_ms INTEGER NOT NULL,
         app_version TEXT NOT NULL
     );
-"];
+",
+    "
+    ALTER TABLE games ADD COLUMN moves INTEGER;
+    ALTER TABLE games ADD COLUMN undo_allowed INTEGER NOT NULL DEFAULT 1;
+",
+];
 
 /// The schema version this build writes.
 pub(super) fn supported_version() -> u32 {

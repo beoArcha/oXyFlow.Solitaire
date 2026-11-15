@@ -16,8 +16,8 @@ use rusqlite::Connection;
 
 use crate::paths::AppPaths;
 
-pub use history::GameRecord;
 pub use open::quarantine_path;
+pub use oxysol_tui::GameRecord;
 
 /// The persistent storage behind one open database file.
 #[derive(Debug)]
@@ -36,11 +36,6 @@ impl SqliteStorage {
     pub fn open_file(file: &Path) -> Result<Self, StorageError> {
         let conn = open::open_database(file)?;
         Ok(Self { conn })
-    }
-
-    /// Every dealt game in start order: the seed history of R-18.
-    pub fn history(&self) -> Result<Vec<GameRecord>, StorageError> {
-        Ok(history::read_all(&self.conn)?)
     }
 
     /// The schema version this build reads and writes.

@@ -25,6 +25,14 @@ pub(super) fn millis_from_column(value: i64) -> Result<u64, Fault> {
     u64::try_from(value).map_err(|_| Fault::invalid(format!("negative duration {value}")))
 }
 
+pub(super) fn count_to_column(value: u32) -> i64 {
+    i64::from(value)
+}
+
+pub(super) fn count_from_column(value: i64) -> Result<u32, Fault> {
+    u32::try_from(value).map_err(|_| Fault::invalid(format!("move count {value} out of range")))
+}
+
 /// Current UTC time as Unix milliseconds.
 pub(super) fn now_millis() -> i64 {
     let elapsed = SystemTime::now()

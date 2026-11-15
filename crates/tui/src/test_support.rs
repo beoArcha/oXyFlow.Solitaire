@@ -15,10 +15,11 @@ use ratatui::crossterm::event::{
 use crate::app::{App, Deps};
 use crate::audio::{Audio, AudioSettings, SoundCue};
 use crate::caps::{ColorDepth, TerminalCaps};
+use crate::clipboard::{Clipboard, ClipboardError};
 use crate::input::Input;
 use crate::settings::Settings;
 use crate::storage::memory::MemoryStorage;
-use crate::storage::{GameId, Outcome, SavedGame, Storage, StorageError};
+use crate::storage::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 
 pub const TRUE_COLOR: TerminalCaps = TerminalCaps {
     color: ColorDepth::TrueColor,
@@ -55,8 +56,13 @@ impl Storage for SharedStorage {
         self.0.borrow_mut().clear_game()
     }
 
-    fn start_game(&mut self, variant: Variant, seed: u64) -> Result<GameId, StorageError> {
-        self.0.borrow_mut().start_game(variant, seed)
+    fn start_game(
+        &mut self,
+        variant: Variant,
+        seed: u64,
+        undo_allowed: bool,
+    ) -> Result<GameId, StorageError> {
+        self.0.borrow_mut().start_game(variant, seed, undo_allowed)
     }
 
     fn finish_game(
@@ -64,8 +70,15 @@ impl Storage for SharedStorage {
         id: GameId,
         outcome: Outcome,
         elapsed_ms: u64,
+        moves: u32,
     ) -> Result<(), StorageError> {
-        self.0.borrow_mut().finish_game(id, outcome, elapsed_ms)
+        self.0
+            .borrow_mut()
+            .finish_game(id, outcome, elapsed_ms, moves)
+    }
+
+    fn history(&self) -> Result<Vec<GameRecord>, StorageError> {
+        self.0.borrow().history()
     }
 }
 
@@ -91,11 +104,31 @@ impl Audio for RecordingAudio {
     }
 }
 
+#[derive(Debug, Default)]
+pub struct ClipboardLog {
+    pub copies: Vec<String>,
+    pub failing: bool,
+}
+
+pub struct RecordingClipboard(pub Rc<RefCell<ClipboardLog>>);
+
+impl Clipboard for RecordingClipboard {
+    fn copy(&mut self, text: &str) -> Result<(), ClipboardError> {
+        let mut log = self.0.borrow_mut();
+        if log.failing {
+            return Err(ClipboardError::Unavailable);
+        }
+        log.copies.push(text.to_owned());
+        Ok(())
+    }
+}
+
 pub struct Harness {
     pub app: App,
     pub terminal: Terminal<TestBackend>,
     pub storage: Rc<RefCell<MemoryStorage>>,
     pub audio: Rc<RefCell<AudioLog>>,
+    pub clipboard: Rc<RefCell<ClipboardLog>>,
     pub now: Instant,
 }
 
@@ -122,10 +155,12 @@ impl Harness {
     ) -> Self {
         let storage = Rc::new(RefCell::new(storage));
         let audio = Rc::new(RefCell::new(AudioLog::default()));
+        let clipboard = Rc::new(RefCell::new(ClipboardLog::default()));
         let mut next_seed = 41_u64;
         let app = App::new(Deps {
             storage: Box::new(SharedStorage(Rc::clone(&storage))),
             audio: Box::new(RecordingAudio(Rc::clone(&audio))),
+            clipboard: Box::new(RecordingClipboard(Rc::clone(&clipboard))),
             caps,
             seeds: Box::new(move || {
                 next_seed += 1;
@@ -139,6 +174,7 @@ impl Harness {
                 .unwrap_or_else(|never| match never {}),
             storage,
             audio,
+            clipboard,
             now: Instant::now(),
         }
     }

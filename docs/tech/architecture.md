@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.2 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -9,7 +9,7 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 |---|---|---|---|
 | `oxysol-core` | `crates/core` | cards, decks, shuffling, rules of four games, session (undo/redo, replay) | `serde`, `thiserror` |
 | `oxysol-tui` | `crates/tui` | rendering, layout, input, themes, localization, screens, accessibility | `oxysol-core`, `ratatui` (Crossterm via `ratatui::crossterm`), `serde`, `toml`, `thiserror`, `tracing` |
-| `oxysol` | `src/` (lib + bin) | entry point, arguments, paths, SQLite persistence, audio output, logging, panic hook | both above, `rusqlite` (`bundled`), `serde_json`, `directories`, `midly`, `cpal`, `tracing`, `tracing-subscriber`, `thiserror` |
+| `oxysol` | `src/` (lib + bin) | entry point, arguments, paths, SQLite persistence, audio output, clipboard, logging, panic hook | both above, `rusqlite` (`bundled`), `serde_json`, `directories`, `midly`, `cpal`, `arboard` (default features off), `tracing`, `tracing-subscriber`, `thiserror` |
 | `xtask` | `xtask/` | `check`, `affected`, `lint`, `sync-metadata`, `fonts`, `midi`, `version` | `syn`, `proc-macro2`, `toml`, `toml_edit`, `thiserror`, `ra-ap-rustc_lexer` |
 
 `oxysol` → `oxysol-tui` → `oxysol-core`. The engine uses no `std::fs`, `std::io`, `std::env`,
@@ -19,16 +19,17 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 
 ```text
 metadata.toml            canonical metadata (name, version, license, URL)
-src/                     main.rs lib.rs cli.rs paths.rs storage.rs logging.rs panic_hook.rs error.rs audio/
+src/                     main.rs lib.rs cli.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
 crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/)
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
 crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
-                         i18n.rs settings.rs storage.rs (+ storage/memory.rs) audio.rs announce.rs
+                         i18n.rs settings.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml audio.toml
+                         rules.toml stats.toml
 assets/cards/fronts/<style>/   style.toml glyphs/*.svg
 assets/cards/backs/<style>/    style.toml glyphs/*.svg
 assets/cards/codepoints.toml   glyph → code point registry
@@ -128,6 +129,7 @@ impl Session {
     pub fn game(&self) -> &dyn Game;
     pub fn variant(&self) -> Variant;
     pub fn seed(&self) -> u64;
+    pub fn moves_made(&self) -> usize;                            // applied moves = the cursor; undo takes one back
 }
 ```
 
@@ -144,12 +146,13 @@ Serialized types (`SessionRecord`, `Move`, `PileRef`, `Variant`) have stable ser
 pub struct Deps {
     pub storage: Box<dyn Storage>,
     pub audio: Box<dyn Audio>,
+    pub clipboard: Box<dyn Clipboard>,
     pub caps: TerminalCaps,
     pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed seed bypasses it
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
-pub enum Screen { MainMenu, GameSelect, Board, Settings }
+pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
 pub enum Modal { Help, HowToPlay(HowToPlay), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
 
 impl App {
@@ -168,11 +171,19 @@ pub trait Storage {
     fn load_game(&self) -> Result<Option<SavedGame>, StorageError>;
     fn save_game(&mut self, game: &SavedGame) -> Result<(), StorageError>;
     fn clear_game(&mut self) -> Result<(), StorageError>;
-    fn start_game(&mut self, variant: Variant, seed: u64) -> Result<GameId, StorageError>;  // history row
-    fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64) -> Result<(), StorageError>;
+    fn start_game(&mut self, variant: Variant, seed: u64, undo_allowed: bool) -> Result<GameId, StorageError>;  // history row
+    fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64, moves: u32) -> Result<(), StorageError>;
+    fn history(&self) -> Result<Vec<GameRecord>, StorageError>;   // every row, oldest first
 }
 pub struct GameId(pub i64);
 pub enum Outcome { Won, Abandoned }
+pub struct GameRecord {                   // one history row
+    pub id: GameId, pub variant: Variant, pub seed: u64,
+    pub started_at_ms: i64, pub finished_at_ms: Option<i64>,        // UTC, Unix milliseconds
+    pub outcome: Option<Outcome>, pub elapsed_ms: Option<u64>,      // None while the game is open
+    pub moves: Option<u32>,               // None for rows written before schema v2
+    pub undo_allowed: bool,               // always true until a "no undo" mode exists
+}
 pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64 }
 pub enum StorageError {
     Io(std::io::Error),                              // file-level failure
@@ -190,11 +201,17 @@ pub trait Audio {
     fn play(&mut self, cue: SoundCue);
 }
 pub struct NullAudio;                                    // always unavailable and silent
+
+pub trait Clipboard {
+    fn copy(&mut self, text: &str) -> Result<(), ClipboardError>;
+}
+pub enum ClipboardError { Unavailable, Io(std::io::Error) }
+pub struct NullClipboard;                                // every copy fails with Unavailable
 ```
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
+  `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `CopySeed(u64)`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
@@ -228,6 +245,19 @@ pub struct NullAudio;                                    // always unavailable a
   as `true`) switches it; `Action::Guide`, key `g`, and a click on the panel title toggle it through
   `Effect::Apply`. `layout::chrome_with(area, guide)` returns the panel only when the screen is at
   least `BOARD_MIN_WIDTH + GUIDE_WIDTH` = 130 columns wide, so the board always keeps 100 columns.
+- **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
+  selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
+  when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
+  A summary per variant and undo mode (games played, won, win rate, best winning time, fewest moves in a win,
+  current and longest streak; only finished games count, an abandoned game ends a streak, wins without a move
+  count are skipped for "fewest moves") sits above the history list, newest first: UTC date and time (the
+  standard library cannot convert to local time and no dependency was added), game, seed, result, playing
+  time, moves. Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed
+  (`Effect::CopySeed`); both are buttons too, as is Back; Up/Down/PgUp/PgDn/Home/End and the wheel move the
+  selection; the selected row is marked with the focus glyphs. `App::copy_seed` calls `Clipboard::copy` and tells
+  the screen, which announces "Seed N copied" or "Could not copy the seed — it is shown here: N" on its status
+  line; the seed is always visible as text. Move count rule: a game's `moves` is `Session::moves_made()` when it
+  ends — each executed move counts once, an undo takes one back, a redo puts it again, a restart resets it.
 - **Storage failures:** a failing load or save is logged once in `App` and shown as an `Alert`; settings
   hold for the session, a game that could not be recorded is still played.
 - **Too small:** below 100 × 30 cells (T-11) only a notice with the current and required size is drawn;
@@ -291,8 +321,8 @@ pub struct NullAudio;                                    // always unavailable a
 
 - **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
   (`OXYSOL_HOME` overrides; an `oxysol.portable` file beside the executable selects `data/` beside it, R-21). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
-  started_at, finished_at, outcome, elapsed_ms) and `saved_game` (one row: game id, `SessionRecord`
-  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version`; a version newer than
+  started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed) and `saved_game` (one row: game id, `SessionRecord`
+  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
@@ -301,6 +331,9 @@ pub struct NullAudio;                                    // always unavailable a
   (`Deps::start_seed`) opens the main menu on the game selection for that seed, the stage that
   "New game from seed" reaches after a typed seed; the chosen variant starts the deal. Every other new
   game takes a fresh seed. The board header shows the seed; the menu offers "New game from seed".
+- **Clipboard (T-27):** `src/clipboard.rs` implements `Clipboard` with `SystemClipboard`: the native clipboard
+  through `arboard` (kept alive between copies), else, or when the session is remote, the OSC 52 escape
+  sequence written to standard output. A terminal does not answer OSC 52, so that path reports "sent".
 - **Audio:** `src/audio/` implements `Audio`: MIDI sequencing and a built-in synthesizer as pure
   code (`render` is testable without a device), a pure mixer of cues and music, plus `cpal` output
   (`output.rs`, feature `audio`). Sound styles are embedded from `assets/audio/` at build time. A

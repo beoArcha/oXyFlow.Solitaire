@@ -21,6 +21,7 @@ audio = ["dep:cpal"]
 [dependencies]
 oxysol-core.workspace = true
 oxysol-tui.workspace = true
+arboard.workspace = true
 cpal = { workspace = true, optional = true }
 directories.workspace = true
 midly.workspace = true
@@ -68,6 +69,7 @@ ra-ap-rustc_lexer = "0.184.0"
 tempfile = "3.27.0"
 midly = "0.5.3"
 cpal = "0.18.2"
+arboard = { version = "3.7.0", default-features = false }
 resvg = { version = "0.50.0", default-features = false }
 winresource = "0.1.34"
 

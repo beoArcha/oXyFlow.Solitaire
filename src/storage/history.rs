@@ -1,27 +1,13 @@
 //! The game history: every dealt seed with its variant, times and outcome (R-18).
 
-use oxysol_core::Variant;
-use oxysol_tui::{GameId, Outcome};
+use oxysol_tui::{GameId, GameRecord};
 use rusqlite::{Connection, Row};
 
 use super::convert::{
-    millis_from_column, outcome_from_column, seed_from_column, variant_from_column,
+    count_from_column, millis_from_column, outcome_from_column, seed_from_column,
+    variant_from_column,
 };
 use super::error::Fault;
-
-/// One dealt game as recorded in the history.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct GameRecord {
-    pub id: GameId,
-    pub variant: Variant,
-    pub seed: u64,
-    /// UTC, Unix milliseconds.
-    pub started_at_ms: i64,
-    /// UTC, Unix milliseconds; `None` while the game is open.
-    pub finished_at_ms: Option<i64>,
-    pub outcome: Option<Outcome>,
-    pub elapsed_ms: Option<u64>,
-}
 
 struct RawRow {
     id: i64,
@@ -31,6 +17,8 @@ struct RawRow {
     finished_at: Option<i64>,
     outcome: Option<String>,
     elapsed_ms: Option<i64>,
+    moves: Option<i64>,
+    undo_allowed: i64,
 }
 
 impl RawRow {
@@ -43,6 +31,8 @@ impl RawRow {
             finished_at: row.get(4)?,
             outcome: row.get(5)?,
             elapsed_ms: row.get(6)?,
+            moves: row.get(7)?,
+            undo_allowed: row.get(8)?,
         })
     }
 
@@ -59,13 +49,15 @@ impl RawRow {
                 .map(outcome_from_column)
                 .transpose()?,
             elapsed_ms: self.elapsed_ms.map(millis_from_column).transpose()?,
+            moves: self.moves.map(count_from_column).transpose()?,
+            undo_allowed: self.undo_allowed != 0,
         })
     }
 }
 
 pub(super) fn read_all(conn: &Connection) -> Result<Vec<GameRecord>, Fault> {
     let mut statement = conn.prepare(
-        "SELECT id, variant, seed, started_at, finished_at, outcome, elapsed_ms
+        "SELECT id, variant, seed, started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed
          FROM games ORDER BY id",
     )?;
     let rows = statement.query_map([], RawRow::read)?;
