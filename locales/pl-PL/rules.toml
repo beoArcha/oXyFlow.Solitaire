@@ -1,0 +1,86 @@
+# Teksty okna "Jak grać". Symbole zastępcze, na przykład {hint}, są zamieniane na klawisz przypisany
+# do danej akcji w tabeli klawiszy, więc tekst nigdy nie podaje klawisza, który może się zmienić.
+
+[game]
+klondike = "Klondike"
+spider = "Pająk"
+freecell = "FreeCell"
+pyramid = "Piramida"
+
+[section]
+goal = "Cel"
+layout = "Układ"
+moves = "Ruchy"
+controls = "Sterowanie"
+tips = "Wskazówki"
+
+[control]
+navigate = "Przesuwa kursor. Góra i dół wybierają też kartę w kolumnie."
+select = "Bierze karty spod kursora. Naciśnij ponownie na stosie docelowym, aby je położyć."
+select_pair = "Wybierz wolną kartę, a potem drugą wolną kartę, aby usunąć parę."
+back = "Anuluje wybrane karty albo opuszcza grę."
+stock = "Dobiera kartę z talii."
+deal = "Rozdaje nowy rząd kart z talii."
+run = "Bierze więcej lub mniej kart z kolumny."
+quick_move = "Przenosi karty spod kursora na najlepszy cel."
+undo = "Cofa ostatni ruch."
+hint = "Podświetla możliwy ruch."
+mouse = "Myszą: kliknij kartę, a potem jej cel; dwukrotne kliknięcie przenosi kartę na najlepszy cel; kliknięcie talii dobiera kartę."
+
+[klondike]
+goal = "Przenieś wszystkie 52 karty na cztery stosy końcowe. Każdy stos budujesz kolorami, od asa do króla."
+layout_1 = "Siedem kolumn zawiera od 1 do 7 kart. Tylko górna karta każdej kolumny jest odkryta."
+layout_2 = "Pozostałe 24 karty tworzą talię. Karty dobrane z talii trafiają na stos odrzuconych."
+layout_3 = "W trybie Draw 1 dobierasz po jednej karcie, w trybie Draw 3 po trzy, a zagrać można tylko górną kartę stosu odrzuconych."
+moves_1 = "Kolumny buduj malejąco, naprzemiennie kolorami, na przykład czerwoną szóstkę na czarnej siódemce."
+moves_2 = "Ciąg odkrytych kart w kolejności przenosi się razem. Na pustą kolumnę trafia tylko król albo ciąg zaczynający się od króla."
+moves_3 = "As zaczyna stos końcowy. Po nim kładziesz kolejną kartę tego samego koloru."
+moves_4 = "Zakryta karta odwraca się, gdy tylko zostanie odsłonięta."
+moves_5 = "Gdy talia jest pusta, stos odrzuconych wraca do talii. Można to powtarzać bez ograniczeń."
+tips_1 = "Najpierw odsłaniaj zakryte karty. Ukrywają karty, których potrzebujesz."
+tips_2 = "Asy i dwójki przenoś na stosy końcowe wcześnie, ale zostaw karty, które nadal pomagają budować kolumny."
+tips_3 = "Opróżniaj kolumnę tylko wtedy, gdy masz króla gotowego do przeniesienia."
+tips_4 = "Utknąłeś? Naciśnij {hint}, aby zobaczyć podpowiedź, albo {undo}, aby cofnąć ruch."
+
+[spider]
+goal = "Ułóż osiem kompletnych ciągów w jednym kolorze, od króla do asa. Każdy gotowy ciąg znika z kolumn i trafia na stos końcowy."
+layout_1 = "Dziesięć kolumn zawiera po 5 lub 6 kart. Tylko górna karta każdej kolumny jest odkryta."
+layout_2 = "Pozostałe 50 kart tworzy talię."
+layout_3 = "Pająk używa 104 kart w 1, 2 lub 4 kolorach. Im mniej kolorów, tym łatwiejsza gra."
+moves_1 = "Kolumny buduj malejąco według rangi, w dowolnym kolorze, na przykład szóstkę kier na siódemce pik."
+moves_2 = "Jako grupa przenosi się tylko ciąg w jednym kolorze, w kolejności malejącej."
+moves_3 = "Pusta kolumna przyjmuje dowolną kartę lub ciąg."
+moves_4 = "Kompletny ciąg od króla do asa sam znika z kolumny."
+moves_5 = "Talia rozdaje po jednej karcie na każdą kolumnę. Nie można z niej korzystać, gdy któraś kolumna jest pusta."
+tips_1 = "Trzymaj ciągi w jednym kolorze, gdy się da. Mieszany ciąg nie przenosi się jako grupa."
+tips_2 = "Opróżnij kolumnę jak najwcześniej. To najprzydatniejsze narzędzie w Pająku."
+tips_3 = "Zapełnij każdą pustą kolumnę, zanim rozdasz karty z talii klawiszem {stock}."
+tips_4 = "Szukaj innych ruchów, zanim rozdasz karty. Rozdanie przykrywa każdą kolumnę."
+
+[freecell]
+goal = "Przenieś wszystkie 52 karty na cztery stosy końcowe. Każdy stos budujesz kolorami, od asa do króla."
+layout_1 = "Wszystkie 52 karty leżą odkryte w ośmiu kolumnach, więc widzisz każdą z nich."
+layout_2 = "Cztery wolne pola mieszczą po jednej karcie. Nie ma talii."
+moves_1 = "Kolumny buduj malejąco, naprzemiennie kolorami."
+moves_2 = "Odłóż kartę na wolne pole, aby zeszła z drogi, i zabierz ją stamtąd, gdy będzie pasować."
+moves_3 = "Stosy końcowe rosną kolorami od asa. Karty nie mogą z nich wracać."
+moves_4 = "Aby przenieść kilka kart naraz, potrzebujesz wolnych pól lub pustych kolumn. Im ich więcej, tym dłuższy ciąg przeniesiesz."
+moves_5 = "Pusta kolumna przyjmuje dowolną kartę lub ciąg."
+tips_1 = "Planuj z wyprzedzeniem. Prawie każde rozdanie da się wygrać."
+tips_2 = "Staraj się nie zapełniać wszystkich czterech wolnych pól. To twoja przestrzeń robocza."
+tips_3 = "Pusta kolumna jest warta więcej niż wolne pole."
+tips_4 = "Użyj {undo}, aby cofnąć ruch, który się nie udał."
+
+[pyramid]
+goal = "Usuwaj karty, łącząc dwie, których wartości dają razem 13. Król ma wartość 13 sam w sobie."
+layout_1 = "28 kart tworzy piramidę o siedmiu rzędach. Karta jest wolna dopiero wtedy, gdy obie karty ją zakrywające zniknęły."
+layout_2 = "Pozostałe 24 karty tworzą talię. Karty dobrane z talii trafiają na stos odrzuconych."
+layout_3 = "Wartości: as 1, walet 11, dama 12, król 13, każda inna karta ma wartość swojej liczby."
+layout_4 = "Wariant Relaxed pozwala przejść przez talię 3 razy i kończy się, gdy piramida jest pusta. Wariant Classic pozwala na 1 przejście i kończy się, gdy usuniesz wszystkie 52 karty."
+moves_1 = "Wolne karty to odsłonięte karty piramidy, górna karta talii i górna karta stosu odrzuconych."
+moves_2 = "Wybierz wolną kartę, a potem drugą wolną kartę, tak aby ich wartości dawały razem 13. Obie karty znikają."
+moves_3 = "Wolny król znika sam: wystarczy go wybrać."
+moves_4 = "Gdy nie ma już żadnej pary, dobierz kartę z talii."
+tips_1 = "Najpierw czyść dolne rzędy, aby więcej kart piramidy stało się wolnych."
+tips_2 = "Zanim usuniesz kartę, sprawdź, czy jej partner nie jest potrzebny do innej pary."
+tips_3 = "Naciśnij {hint}, aby zobaczyć dostępną parę lub dobranie."

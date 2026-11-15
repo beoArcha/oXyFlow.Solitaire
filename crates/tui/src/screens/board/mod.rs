@@ -49,6 +49,7 @@ pub struct BoardScreen {
     pick: Option<Pick>,
     hint: Option<Move>,
     status: Option<&'static str>,
+    first_steps: bool,
     cues: Vec<SoundCue>,
     dirty: bool,
     screen: Rect,
@@ -68,6 +69,7 @@ impl Default for BoardScreen {
             pick: None,
             hint: None,
             status: None,
+            first_steps: false,
             cues: Vec::new(),
             dirty: false,
             screen: DEFAULT_SCREEN,
@@ -85,6 +87,7 @@ impl BoardScreen {
     /// Takes over `session`, continuing from `elapsed`, and starts the clock at `now`.
     pub fn begin(&mut self, session: Session, id: Option<GameId>, elapsed: Duration, now: Instant) {
         self.cursor = Cursor::initial(&session.game().piles());
+        self.first_steps = !session.can_undo();
         self.session = Some(session);
         self.game_id = id;
         self.clock = GameClock::stopped(elapsed);
@@ -177,11 +180,12 @@ impl BoardScreen {
     }
 
     fn status_text(&self) -> String {
-        let event = self
-            .status
-            .map(|key| t(key).into_owned())
-            .unwrap_or_default();
-        announce::announce(&self.focus_text(), &event)
+        let focus = self.focus_text();
+        let event = match self.status {
+            Some(key) => t(key).into_owned(),
+            None => self.fitted_first_steps(&focus, usize::from(self.screen.width)),
+        };
+        announce::announce(&focus, &event)
     }
 
     /// Handles a key press mapped to `action`; the effect is for the application to apply.

@@ -46,6 +46,8 @@ pub enum Effect {
     /// Replace the settings; the application applies and saves them.
     Apply(Settings),
     Open(Modal),
+    /// Open the "How to play" window on the game being played, or on Klondike.
+    HowToPlay,
     Quit,
 }
 

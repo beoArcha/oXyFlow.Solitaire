@@ -1,4 +1,4 @@
-//! The main menu: Resume (when a save exists), the new-game entries, Settings, Help and Quit.
+//! The main menu: Resume (when a save exists), the new-game entries, Settings, How to play, Help and Quit.
 //! "New game from seed" asks for a seed, then lists the games dealt from it; the menu keeps that
 //! flow to itself, so the seed travels in the `Effect::Start` it returns.
 
@@ -27,12 +27,13 @@ enum Item {
     NewGame,
     NewGameFromSeed,
     Settings,
+    HowToPlay,
     Help,
     Quit,
 }
 
 fn items(has_saved_game: bool) -> Vec<Item> {
-    let mut items = Vec::with_capacity(6);
+    let mut items = Vec::with_capacity(7);
     if has_saved_game {
         items.push(Item::Resume);
     }
@@ -40,6 +41,7 @@ fn items(has_saved_game: bool) -> Vec<Item> {
         Item::NewGame,
         Item::NewGameFromSeed,
         Item::Settings,
+        Item::HowToPlay,
         Item::Help,
         Item::Quit,
     ]);
@@ -54,6 +56,7 @@ fn label_key(item: Item) -> &'static str {
         Item::NewGame => "common.menu.new_game",
         Item::NewGameFromSeed => "menu.new_game_from_seed",
         Item::Settings => "common.menu.settings",
+        Item::HowToPlay => "menu.how_to_play.label",
         Item::Help => "menu.help",
         Item::Quit => "common.menu.quit",
     }
@@ -65,6 +68,7 @@ fn effect_of(item: Item) -> Effect {
         Item::NewGame => Effect::Goto(Screen::GameSelect),
         Item::NewGameFromSeed => Effect::None,
         Item::Settings => Effect::Goto(Screen::Settings),
+        Item::HowToPlay => Effect::HowToPlay,
         Item::Help => Effect::Open(Modal::Help),
         Item::Quit => Effect::Quit,
     }

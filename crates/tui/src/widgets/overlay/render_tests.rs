@@ -6,7 +6,7 @@ use ratatui::backend::TestBackend;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::style::Modifier;
 
-use super::draw;
+use super::{HowToPlay, Rules, draw};
 use crate::app::Modal;
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
@@ -23,6 +23,7 @@ const FORBIDDEN_UNICODE: [char; 6] = ['▶', '◀', '╭', '╮', '╰', '╯'];
 fn all_modals() -> Vec<Modal> {
     vec![
         Modal::Help,
+        Modal::HowToPlay(HowToPlay::new(Rules::Klondike)),
         Modal::Pause,
         Modal::win(),
         Modal::confirm("board.confirm.quit", Effect::Quit),
@@ -114,7 +115,10 @@ fn assert_renders_cleanly(modal: &Modal, locale: Locale, unicode: bool, size: (u
             assert!(!text.contains(glyph), "{context}: {glyph}");
         }
     } else {
-        assert!(text.is_ascii(), "{context}");
+        assert!(
+            text.chars().all(|c| c.is_ascii() || c.is_alphabetic()),
+            "{context}"
+        );
     }
 }
 

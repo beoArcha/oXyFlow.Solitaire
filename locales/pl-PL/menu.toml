@@ -15,3 +15,6 @@ keys = "Digits type the seed   Backspace Delete   Enter Continue   Esc Back"
 error_empty = "Type a seed first."
 error_not_numeric = "A seed is a whole number: use the digits 0 to 9 only."
 error_out_of_range = "This seed is too large. The largest seed is 18446744073709551615."
+
+[how_to_play]
+label = "Jak grać"

@@ -2,8 +2,8 @@ use super::*;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-const AREAS: [&str; 8] = [
-    "common", "menu", "board", "settings", "help", "cards", "cli", "audio",
+const AREAS: [&str; 9] = [
+    "common", "menu", "board", "settings", "help", "cards", "cli", "audio", "rules",
 ];
 
 fn key_set(locale: Locale) -> BTreeSet<String> {

@@ -1,11 +1,14 @@
 //! The modal layer's state: which dialog is open and what confirming it does.
 
 use crate::screens::Effect;
+use crate::widgets::overlay::HowToPlay;
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Modal {
     Help,
+    /// The rules of one game, with tabs for the others.
+    HowToPlay(HowToPlay),
     Pause,
     /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
     Confirm {

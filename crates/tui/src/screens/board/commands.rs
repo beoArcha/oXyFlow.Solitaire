@@ -18,6 +18,17 @@ impl BoardScreen {
                 _ => Effect::None,
             };
         }
+        if !matches!(
+            action,
+            Action::Up
+                | Action::Down
+                | Action::Left
+                | Action::Right
+                | Action::RunMore
+                | Action::RunLess
+        ) {
+            self.first_steps = false;
+        }
         match action {
             Action::Up | Action::Down | Action::Left | Action::Right => {
                 self.navigate(action);
@@ -41,7 +52,7 @@ impl BoardScreen {
             }
             Action::NewGame => self.confirm_new_game(),
             Action::Quit => Effect::Open(Modal::confirm("board.confirm.quit", Effect::Quit)),
-            Action::ForceQuit | Action::Help => Effect::None,
+            Action::ForceQuit | Action::Help | Action::Rules => Effect::None,
         }
     }
 

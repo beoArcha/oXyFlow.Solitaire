@@ -86,7 +86,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 20] = [
+pub const KEY_TABLE: [Binding; 21] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -143,6 +143,7 @@ pub const KEY_TABLE: [Binding; 20] = [
         HelpGroup::General,
         &[KeySpec::ch('?'), KeySpec::plain(KeyCode::F(1))],
     ),
+    bind(Action::Rules, HelpGroup::General, &[KeySpec::ch('i')]),
 ];
 
 /// The action bound to a key press, if any. Key releases never map to an action.
@@ -172,6 +173,8 @@ pub fn primary_key(action: Action) -> Option<String> {
 mod tests {
     use super::*;
     use std::collections::HashSet;
+
+    use crate::action::HelpGroup;
 
     fn press(code: KeyCode, modifiers: KeyModifiers) -> KeyEvent {
         KeyEvent::new(code, modifiers)
@@ -220,6 +223,17 @@ mod tests {
                 "{code:?}"
             );
         }
+    }
+
+    #[test]
+    fn the_rules_key_is_i_and_is_listed_with_the_general_help() {
+        let key = press(KeyCode::Char('i'), KeyModifiers::NONE);
+        assert_eq!(action_for_key(&key), Some(Action::Rules));
+        assert_eq!(primary_key(Action::Rules).as_deref(), Some("i"));
+        assert_eq!(
+            binding_for(Action::Rules).map(|binding| binding.group),
+            Some(HelpGroup::General)
+        );
     }
 
     #[test]

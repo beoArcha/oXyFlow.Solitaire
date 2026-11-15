@@ -1,0 +1,75 @@
+//! The "How to play" window: the rules of one game in short sections (goal, layout, moves,
+//! controls, tips), with tabs to switch between the four games and a scrollable text. Left and
+//! Right (or Tab) change the game, Up, Down, PageUp, PageDown, Home, End and the mouse wheel
+//! scroll, Esc, Enter or the Close button close it. The controls are read from the key table.
+
+mod content;
+mod pages;
+#[cfg(test)]
+mod render_tests;
+mod state;
+#[cfg(test)]
+mod tests;
+mod view;
+
+use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
+use ratatui::layout::Rect;
+
+pub use self::state::{HowToPlay, Rules};
+pub use self::view::{draw, geometry};
+use super::dialog;
+use crate::action::Action;
+use crate::mouse;
+use crate::screens::Effect;
+
+const PAGE_LINES: i32 = 19;
+const WHEEL_LINES: i32 = 3;
+
+/// Handles a key while the window is open. `None` keeps it open; `Some(effect)` closes it.
+pub fn handle(state: &mut HowToPlay, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+    match key.code {
+        KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
+        KeyCode::PageDown => state.scroll_by(PAGE_LINES),
+        KeyCode::Home => state.scroll_to(false),
+        KeyCode::End => state.scroll_to(true),
+        KeyCode::Tab => state.switch(true),
+        KeyCode::BackTab => state.switch(false),
+        _ => match action? {
+            Action::Up => state.scroll_by(-1),
+            Action::Down => state.scroll_by(1),
+            Action::Left => state.switch(false),
+            Action::Right => state.switch(true),
+            Action::Select | Action::Back => return Some(Effect::None),
+            _ => {}
+        },
+    }
+    None
+}
+
+/// Handles a mouse event: the wheel scrolls, a click on an arrow or a tab switches the game, a
+/// click on Close closes the window (`Some`). `area` is the whole screen.
+pub fn handle_mouse(state: &mut HowToPlay, area: Rect, event: &MouseEvent) -> Option<Effect> {
+    match mouse::wheel_action(event) {
+        Some(Action::Up) => state.scroll_by(-WHEEL_LINES),
+        Some(Action::Down) => state.scroll_by(WHEEL_LINES),
+        _ => {}
+    }
+    let cell = mouse::left_press(event)?;
+    let geometry = geometry(area);
+    if dialog::button_at(&geometry, cell).is_some() {
+        return Some(Effect::None);
+    }
+    let placed = view::tabs(view::parts(geometry.body).tabs);
+    if mouse::contains(placed.previous, cell) {
+        state.switch(false);
+    } else if mouse::contains(placed.next, cell) {
+        state.switch(true);
+    } else if let Some((rules, _)) = placed
+        .games
+        .iter()
+        .find(|(_, rect)| mouse::contains(*rect, cell))
+    {
+        state.show(*rules);
+    }
+    None
+}

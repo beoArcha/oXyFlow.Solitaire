@@ -1,10 +1,13 @@
 //! Localized messages of the board status line, and the description of the focus the line starts
 //! with.
 
-use oxysol_core::{Move, MoveError, PileSnapshot};
+use oxysol_core::{Move, MoveError, PileRef, PileSnapshot};
 
 use super::BoardScreen;
+use crate::action::Action;
 use crate::announce::{self, Focus, Held, Look};
+use crate::i18n::{t, tf};
+use crate::input::primary_key;
 
 /// Localization key of the message for a rejected move. Every [`MoveError`] has one; the match is
 /// exhaustive on purpose, so a new variant cannot be forgotten.
@@ -62,6 +65,21 @@ fn look_at(snapshot: &PileSnapshot, depth: usize) -> Look {
     }
 }
 
+/// One item of the first-steps hint; the part with the highest `drop_order` goes first when the
+/// line is too wide.
+struct HintPart {
+    text: String,
+    drop_order: u8,
+}
+
+fn join(parts: &[HintPart]) -> String {
+    parts
+        .iter()
+        .map(|part| part.text.as_str())
+        .collect::<Vec<_>>()
+        .join(&t("board.first_steps.separator"))
+}
+
 impl BoardScreen {
     /// The description of the focus that starts the status line. Empty without a game and while
     /// the board is covered, so a paused game shows no card.
@@ -88,6 +106,63 @@ impl BoardScreen {
             look,
             held,
         })
+    }
+
+    /// The parts of the hint that starts a new game, in display order: how to move, pick up and
+    /// drop, and where to find the stock, the key list and the rules. Empty once the player acted,
+    /// for a resumed game with moves, and while covered. The keys come from the key table; the
+    /// stock is mentioned only when the game has one.
+    fn first_steps_parts(&self) -> Vec<HintPart> {
+        let Some(session) = self
+            .session
+            .as_ref()
+            .filter(|_| self.first_steps && !self.covered)
+        else {
+            return Vec::new();
+        };
+        let has_stock = session
+            .game()
+            .piles()
+            .iter()
+            .any(|snapshot| snapshot.pile == PileRef::Stock);
+        let keyed = [
+            (Action::Select, "board.first_steps.select", 1, true),
+            (Action::Stock, "board.first_steps.stock", 4, has_stock),
+            (Action::Help, "board.first_steps.help", 3, true),
+            (Action::Rules, "board.first_steps.rules", 0, true),
+        ];
+        let mut parts = vec![HintPart {
+            text: t("board.first_steps.arrows").into_owned(),
+            drop_order: 2,
+        }];
+        parts.extend(keyed.into_iter().filter(|(.., shown)| *shown).map(
+            |(action, key, drop_order, _)| HintPart {
+                text: tf(key, &[("key", &primary_key(action).unwrap_or_default())]),
+                drop_order,
+            },
+        ));
+        parts
+    }
+
+    /// The first-steps hint cut down to fit a status line of `width` columns after `focus`: parts
+    /// are dropped, least useful first, until the whole line fits. Empty when none is due.
+    pub(super) fn fitted_first_steps(&self, focus: &str, width: usize) -> String {
+        let mut parts = self.first_steps_parts();
+        while !parts.is_empty() {
+            let hint = join(&parts);
+            if announce::announce(focus, &hint).chars().count() <= width {
+                return hint;
+            }
+            let least = parts
+                .iter()
+                .enumerate()
+                .max_by_key(|(_, part)| part.drop_order)
+                .map(|(index, _)| index);
+            if let Some(index) = least {
+                parts.remove(index);
+            }
+        }
+        String::new()
     }
 
     /// Records the event of the last action, unless the board already says why it stopped.
