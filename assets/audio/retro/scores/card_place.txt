@@ -1,0 +1,5 @@
+# Place: short falling blip
+tempo 200
+program 0
+
+G5:16 E5:16 C5:16

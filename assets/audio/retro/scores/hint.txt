@@ -1,0 +1,5 @@
+# Hint: high double ping
+tempo 240
+program 3
+
+E6:16 R:16 E6:8

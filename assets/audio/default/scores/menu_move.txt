@@ -1,0 +1,5 @@
+# menu_move: very short soft tick
+tempo 240
+program 1
+
+C5:16

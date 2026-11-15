@@ -1,0 +1,5 @@
+# stock_deal: fast three-note run
+tempo 200
+program 0
+
+C5:16 E5:16 G5:16

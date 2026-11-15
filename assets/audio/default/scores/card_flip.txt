@@ -1,0 +1,5 @@
+# card_flip: quick single tick
+tempo 200
+program 1
+
+C6:16

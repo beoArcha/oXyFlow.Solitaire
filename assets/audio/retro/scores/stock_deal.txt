@@ -1,0 +1,5 @@
+# Stock deal: fast rising run
+tempo 200
+program 0
+
+C4:32 E4:32 G4:32 C5:32 E5:32 G5:32 C6:16

@@ -1,0 +1,5 @@
+# Flip: single quick tick
+tempo 200
+program 1
+
+A5:32

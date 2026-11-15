@@ -1,0 +1,40 @@
+name = "Default"
+
+[cues]
+card_pick = "card_pick.mid"
+card_place = "card_place.mid"
+card_flip = "card_flip.mid"
+stock_deal = "stock_deal.mid"
+illegal = "illegal.mid"
+undo = "undo.mid"
+hint = "hint.mid"
+win = "win.mid"
+menu_move = "menu_move.mid"
+menu_select = "menu_select.mid"
+
+[music]
+file = "music.mid"
+
+[programs.0]
+waveform = "sine"
+attack = 0.005
+decay = 0.15
+sustain = 0.1
+release = 0.15
+gain = 0.30
+
+[programs.1]
+waveform = "triangle"
+attack = 0.008
+decay = 0.18
+sustain = 0.15
+release = 0.12
+gain = 0.28
+
+[programs.2]
+waveform = "triangle"
+attack = 0.010
+decay = 0.20
+sustain = 0.1
+release = 0.15
+gain = 0.25

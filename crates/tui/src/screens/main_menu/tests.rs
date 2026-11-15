@@ -229,8 +229,12 @@ fn seed_entry_renders_in_polish_and_in_ascii() {
     let mut h = Harness::with(storage, PLAIN, 120, 40);
     open_seed_entry(&mut h);
     let text = h.text();
-    assert!(text.contains("New game from seed"));
-    assert!(text.is_ascii());
+    let title = crate::i18n::t("menu.new_game_from_seed");
+    assert!(text.contains(&*title));
+    assert!(
+        text.chars()
+            .all(|ch| ch.is_ascii() || crate::glyphs::is_wgl4(ch))
+    );
 }
 
 #[test]

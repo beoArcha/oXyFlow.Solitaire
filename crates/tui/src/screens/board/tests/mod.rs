@@ -2,6 +2,7 @@
 
 mod commands;
 mod first_steps;
+mod mouse;
 mod moves;
 mod navigation;
 mod persist;

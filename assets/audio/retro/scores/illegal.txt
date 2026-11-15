@@ -1,0 +1,5 @@
+# Illegal: low buzzy two-note drop
+tempo 150
+program 2
+
+Eb3:8 C3:8

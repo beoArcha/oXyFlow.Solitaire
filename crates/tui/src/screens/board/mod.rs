@@ -6,6 +6,7 @@ mod choices;
 mod commands;
 mod cursor;
 mod marks;
+mod mouse;
 mod moves;
 mod status;
 #[cfg(test)]
@@ -21,6 +22,7 @@ use ratatui::layout::Rect;
 
 use self::choices::Choice;
 use self::cursor::Cursor;
+use self::mouse::Pointer;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
 use crate::announce;
@@ -54,6 +56,7 @@ pub struct BoardScreen {
     dirty: bool,
     screen: Rect,
     covered: bool,
+    pointer: Pointer,
 }
 
 impl Default for BoardScreen {
@@ -74,6 +77,7 @@ impl Default for BoardScreen {
             dirty: false,
             screen: DEFAULT_SCREEN,
             covered: false,
+            pointer: Pointer::default(),
         }
     }
 }
@@ -93,6 +97,7 @@ impl BoardScreen {
         self.clock = GameClock::stopped(elapsed);
         self.clock.resume(now);
         self.cues.clear();
+        self.pointer = Pointer::default();
         self.settle();
     }
 
@@ -103,6 +108,7 @@ impl BoardScreen {
         };
         session.restart();
         self.cursor = Cursor::initial(&session.game().piles());
+        self.pointer = Pointer::default();
         self.clock = GameClock::stopped(Duration::ZERO);
         self.clock.resume(now);
         self.settle();

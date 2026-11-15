@@ -1,0 +1,5 @@
+# menu_select: confirming two-note up step
+tempo 180
+program 1
+
+G5:16 C6:8
