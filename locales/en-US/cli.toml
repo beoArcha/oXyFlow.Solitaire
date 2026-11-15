@@ -20,3 +20,4 @@ terminal_failed = "oXySol stopped because the terminal failed. The details are i
 output_failed = "oXySol cannot write to the terminal."
 log_unavailable = "oXySol cannot write its log file {path}. It continues without a log."
 panic = "oXySol stopped unexpectedly at {location}. The details are in {path}."
+press_enter = "Press Enter to close this window."
