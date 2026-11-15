@@ -5,8 +5,6 @@ use std::env;
 use std::process::ExitCode;
 
 const ICON_PATH: &str = "assets/icon/generated/oxysol.ico";
-const PRODUCT_NAME: &str = "oXySol";
-const FILE_DESCRIPTION: &str = "oXySol - terminal solitaire";
 
 fn main() -> ExitCode {
     println!("cargo:rerun-if-changed=build.rs");
@@ -25,6 +23,8 @@ fn main() -> ExitCode {
 
 #[cfg(windows)]
 fn embed_windows_resources() -> Result<(), std::io::Error> {
+    const PRODUCT_NAME: &str = "oXySol";
+    const FILE_DESCRIPTION: &str = "oXySol - terminal solitaire";
     let mut resource = winresource::WindowsResource::new();
     resource
         .set_icon(ICON_PATH)
