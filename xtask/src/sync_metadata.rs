@@ -83,7 +83,11 @@ pub fn sync(cargo_toml: &str, metadata_toml: &str) -> Result<String, SyncMetadat
     let license = project_string(project, "license")?;
     let repository = project_string(project, "repository_url")?;
 
-    let mut cargo_doc: DocumentMut = cargo_toml.parse().map_err(SyncMetadataError::ParseCargo)?;
+    let uses_crlf = cargo_toml.contains("\r\n");
+    let mut cargo_doc: DocumentMut = cargo_toml
+        .replace("\r\n", "\n")
+        .parse()
+        .map_err(SyncMetadataError::ParseCargo)?;
 
     let ws = cargo_doc
         .entry("workspace")
@@ -103,8 +107,8 @@ pub fn sync(cargo_toml: &str, metadata_toml: &str) -> Result<String, SyncMetadat
     update_table_key(pkg, "repository", repository);
 
     let output = cargo_doc.to_string();
-    if output == cargo_toml {
-        Ok(cargo_toml.to_owned())
+    if uses_crlf {
+        Ok(output.replace('\n', "\r\n"))
     } else {
         Ok(output)
     }
@@ -213,6 +217,14 @@ repository = "https://github.com/old/repo"
             Err(err) => panic!("resync failed: {err:?}"),
         };
         assert_eq!(first_pass, second_pass);
+    }
+
+    #[test]
+    fn test_crlf_input_keeps_crlf_and_stays_in_sync() {
+        let lf = sync(CARGO_SAMPLE, METADATA_SAMPLE).unwrap();
+        let crlf_input = lf.replace('\n', "\r\n");
+        let crlf_output = sync(&crlf_input, METADATA_SAMPLE).unwrap();
+        assert_eq!(crlf_output, crlf_input);
     }
 
     #[test]
