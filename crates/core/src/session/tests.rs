@@ -120,6 +120,40 @@ fn undo_at_start_and_redo_at_end_do_nothing() {
 }
 
 #[test]
+fn can_undo_and_can_redo_follow_the_cursor() {
+    let mut session = session(0);
+    assert!(!session.can_undo());
+    assert!(!session.can_redo());
+    play(&mut session, 2);
+    assert!(session.can_undo());
+    assert!(!session.can_redo());
+    assert!(session.undo());
+    assert!(session.can_undo());
+    assert!(session.can_redo());
+    assert!(session.undo());
+    assert!(!session.can_undo());
+    assert!(session.can_redo());
+    assert!(session.redo());
+    assert!(session.redo());
+    assert!(!session.can_redo());
+    session.restart();
+    assert!(!session.can_undo());
+    assert!(!session.can_redo());
+}
+
+#[test]
+fn a_restored_session_reports_its_history() {
+    let restored = Session::restore_with(record(3, 1), counter_deal);
+    assert!(
+        restored
+            .as_ref()
+            .is_ok_and(|s| s.can_undo() && s.can_redo())
+    );
+    let at_end = Session::restore_with(record(3, 3), counter_deal);
+    assert!(at_end.as_ref().is_ok_and(|s| s.can_undo() && !s.can_redo()));
+}
+
+#[test]
 fn a_new_move_truncates_the_redo_tail() {
     let mut session = session(0);
     play(&mut session, 3);

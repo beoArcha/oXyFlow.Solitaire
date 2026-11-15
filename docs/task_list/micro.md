@@ -22,7 +22,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-14 | Contrast ratio helper | Son | P0-01 | DONE |
 | M-15 | Terminal capability detection | Beo | P0-01 | READY |
 | M-16 | Title logo | Oxy | P0-01 | READY |
-| M-17 | Polish translation, part 1 | Son | P3-03 | DRAFT |
+| M-17 | Polish translation, part 1 | Son | P3-03, P3-04 | READY |
 | M-18 | Command-line parser | Son | P0-01 | DONE |
 | M-19 | Artwork: International suits | Beo | P5-01 | DRAFT |
 | M-20 | Artwork: German suits | Oxy | P5-01 | DRAFT |
@@ -220,9 +220,14 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 ### M-17, M-34 — Polish translation
 
-- **Status:** DRAFT · **Finalized by:** P3-03 (part 1), P3-09 (part 2)
+- **Status:** M-17 READY (finalized by P3-03), M-34 DRAFT (finalized by P3-09)
 - **Branch:** `docs/M-XX-pl-translation` · **Files:** part 1 — `locales/pl-PL/{common,menu,board}.toml`;
   part 2 — the remaining `locales/pl-PL/*.toml`
+- **M-17 keys:** `common.toml` (all tables); `board.toml`: `[status]`, `[error]` and `[confirm]` (move
+  rejections, hints, undo/redo messages, confirmation prompts); keep the structure of `[header] format`;
+  `[rank]` uses the Polish letters (`W` jack, `D` queen; `A`, `K` and the digits stay, which is the
+  one allowed exception to "no value identical to English"); `menu.toml` is filled by P3-04, which
+  must be merged before this card starts.
 - **Do:** translate every value from the matching `locales/en-US/` file into natural Polish. Keep
   keys, placeholders such as `{name}` and key order unchanged. Avoid wording that needs a plural
   form of a number.

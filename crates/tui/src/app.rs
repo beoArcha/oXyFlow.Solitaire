@@ -25,6 +25,8 @@ use crate::theme::Theme;
 use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
 
+pub use modal::Modal;
+
 /// Everything the application needs from the outside world.
 pub struct Deps {
     pub storage: Box<dyn Storage>,
@@ -41,40 +43,6 @@ pub enum Screen {
     GameSelect,
     Board,
     Settings,
-}
-
-/// A dialog over the current screen. While one is open it takes all input and the clock stops.
-#[derive(Debug, Clone, PartialEq)]
-pub enum Modal {
-    Help,
-    Pause,
-    /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
-    Confirm {
-        prompt: &'static str,
-        on_yes: Box<Effect>,
-        yes_focused: bool,
-    },
-    /// A notice with one button; `message` is a localization key.
-    Alert {
-        message: &'static str,
-    },
-    Win,
-}
-
-impl Modal {
-    /// A notice showing the text of the localization key `message`.
-    pub fn alert(message: &'static str) -> Self {
-        Modal::Alert { message }
-    }
-
-    /// A question showing the text of the localization key `prompt`.
-    pub fn confirm(prompt: &'static str, on_yes: Effect) -> Self {
-        Modal::Confirm {
-            prompt,
-            on_yes: Box::new(on_yes),
-            yes_focused: false,
-        }
-    }
 }
 
 macro_rules! view_ctx {
@@ -194,6 +162,11 @@ impl App {
         &self.board
     }
 
+    #[cfg(test)]
+    pub(crate) fn board_mut(&mut self) -> &mut BoardScreen {
+        &mut self.board
+    }
+
     /// Whether the player asked to quit; the event loop ends when this is true.
     pub fn should_quit(&self) -> bool {
         self.quit
@@ -212,11 +185,19 @@ impl App {
             Input::Mouse(event) => self.on_mouse(&event),
             Input::Resize(width, height) => {
                 self.area = Some((width, height));
+                self.board.resize(width, height);
                 Effect::None
             }
             Input::Tick => Effect::None,
         };
         self.apply(effect);
+        self.play_board_cues();
+    }
+
+    fn play_board_cues(&mut self) {
+        for cue in self.board.take_cues() {
+            self.audio.play(cue);
+        }
     }
 
     fn on_key(&mut self, key: KeyEvent) -> Effect {
@@ -300,6 +281,7 @@ impl App {
 }
 
 mod effects;
+mod modal;
 
 #[cfg(test)]
 mod tests;

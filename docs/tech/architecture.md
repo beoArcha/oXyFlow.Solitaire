@@ -113,6 +113,8 @@ impl Session {
     pub fn apply(&mut self, mv: Move) -> Result<(), MoveError>;   // truncates the redo tail
     pub fn undo(&mut self) -> bool;
     pub fn redo(&mut self) -> bool;
+    pub fn can_undo(&self) -> bool;                               // cursor > 0
+    pub fn can_redo(&self) -> bool;                               // cursor < moves.len()
     pub fn restart(&mut self);                                    // same deal, empty history
     pub fn game(&self) -> &dyn Game;
     pub fn variant(&self) -> Variant;
@@ -182,10 +184,11 @@ pub struct NullAudio;                                    // always unavailable a
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Apply(Settings)`, `Open(Modal)`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
+  `Restart`, `Apply(Settings)`, `Open(Modal)`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
+  `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
 - **Storage failures:** a failing load or save is logged once in `App` and shown as an `Alert`; settings
@@ -199,7 +202,19 @@ pub struct NullAudio;                                    // always unavailable a
   `"<area>.…"` literal in the sources exists.
 - **Board interaction is shared by all games:** after a source is picked, the TUI filters
   `legal_moves()` by `Move::source()`, highlights targets and applies the matching move. A move with
-  no target (a king in Pyramid) applies immediately.
+  no target (a king in Pyramid) applies immediately. A Pyramid pair is picked from either card.
+- **Board controller** (`screens/board/`): the cursor is a pile plus a depth (cards from the top; only a
+  column has more than one). Left/Right/Up/Down go to the nearest pile in that direction by
+  `BoardGeometry` (a row counts twice a column, off-axis piles are penalized); Up/Down first change the
+  depth inside a column (`+`/`-` change it too). Empty Pyramid positions are skipped. Enter/Space on a
+  pile picks, on a target drops, on the stock draws; a drop on a pile that is not a target is tried
+  against the engine and shows its `MoveError` message. Esc cancels a pick, otherwise leaves for the
+  menu. Every `MoveError` has a key `board.error.*`; other messages are `board.status.*`; restart,
+  new game and quit ask through `Modal::Confirm` (`Effect::Restart`, `Effect::Start`, `Effect::Quit`).
+  The screen collects `SoundCue`s and `App` plays them after each input (`BoardScreen::take_cues`);
+  `persist()` is called after every session change (P4-03 saves there). A win opens `Modal::Win`; a
+  position without legal moves shows a status message. `Modal::Pause` hides the cards
+  (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
   and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
   header, `body`, status line and footer. The same result drives rendering and hit-testing. Two layouts:

@@ -36,6 +36,7 @@ pub(super) struct Scene<'a> {
     pub elapsed: Duration,
     pub marks: &'a Marks,
     pub status: &'a str,
+    pub covered: bool,
 }
 
 fn header(session: &Session, elapsed: Duration) -> String {
@@ -75,7 +76,7 @@ pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &Vie
         Block::new().style(ctx.theme.style(Token::TableText, Token::Table)),
         parts.body,
     );
-    if let Some(session) = scene.session {
+    if let Some(session) = scene.session.filter(|_| !scene.covered) {
         draw_board(frame, parts.body, session, scene.marks, ctx);
     }
     frame.render_widget(
@@ -89,8 +90,9 @@ pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &Vie
     let scene = Scene {
         session: board.session(),
         elapsed: board.elapsed(ctx.now),
-        marks: &Marks::default(),
-        status: "",
+        marks: &board.marks(),
+        status: &board.status_text(),
+        covered: board.covered,
     };
     render(frame, area, &scene, ctx);
 }

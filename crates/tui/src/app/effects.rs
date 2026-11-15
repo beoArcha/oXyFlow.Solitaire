@@ -15,6 +15,7 @@ impl App {
             Effect::Goto(screen) => self.goto(screen),
             Effect::Start { variant, seed } => self.start_game(variant, seed),
             Effect::Resume => self.resume_game(),
+            Effect::Restart => self.board.restart(self.now),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
             Effect::Quit => self.quit = true,
@@ -32,11 +33,13 @@ impl App {
 
     fn open_modal(&mut self, modal: Modal) {
         self.board.pause_clock(self.now);
+        self.board.set_covered(modal == Modal::Pause);
         self.modal = Some(modal);
     }
 
     pub(super) fn close_modal(&mut self) {
         self.modal = None;
+        self.board.set_covered(false);
         if self.screen == Screen::Board {
             self.board.resume_clock(self.now);
         }
