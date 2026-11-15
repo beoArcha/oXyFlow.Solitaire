@@ -151,3 +151,47 @@ fn core_lib_does_not_contain_pub_mod_games() {
         "crates/core/src/lib.rs must not contain `pub mod games`"
     );
 }
+
+fn read_manifest(relative: &str) -> (String, toml::Table) {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(relative);
+    let content = std::fs::read_to_string(&path);
+    assert!(content.is_ok(), "failed to read {}", path.display());
+    let content = content.unwrap_or_default();
+    let parsed = toml::from_str::<toml::Table>(&content);
+    assert!(parsed.is_ok(), "failed to parse {}", path.display());
+    (content, parsed.unwrap_or_default())
+}
+
+fn declares(table: Option<&toml::Value>, dependency: &str) -> bool {
+    table
+        .and_then(toml::Value::as_table)
+        .is_some_and(|deps| deps.contains_key(dependency))
+}
+
+#[test]
+fn rusqlite_is_declared_only_by_the_root_package() {
+    let (_, root) = read_manifest("Cargo.toml");
+    assert!(
+        declares(root.get("dependencies"), "rusqlite"),
+        "the root package must depend on rusqlite"
+    );
+    assert!(
+        declares(
+            root.get("workspace").and_then(|w| w.get("dependencies")),
+            "rusqlite"
+        ),
+        "rusqlite must be a workspace dependency"
+    );
+
+    for member in [
+        "crates/core/Cargo.toml",
+        "crates/tui/Cargo.toml",
+        "xtask/Cargo.toml",
+    ] {
+        let (content, _) = read_manifest(member);
+        assert!(
+            !content.contains("rusqlite"),
+            "{member} must not mention rusqlite"
+        );
+    }
+}
