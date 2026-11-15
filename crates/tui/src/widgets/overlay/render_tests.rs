@@ -114,7 +114,11 @@ fn assert_renders_cleanly(modal: &Modal, locale: Locale, unicode: bool, size: (u
             assert!(!text.contains(glyph), "{context}: {glyph}");
         }
     } else {
-        assert!(text.is_ascii(), "{context}");
+        assert!(
+            text.chars()
+                .all(|ch| ch.is_ascii() || crate::glyphs::is_wgl4(ch)),
+            "{context}"
+        );
     }
 }
 
@@ -193,8 +197,10 @@ fn focused_button_is_marked_and_styled_without_color() {
         yes_focused: true,
     };
     let terminal = render(&focused_yes, caps(false), Locale::PlPl, (100, 30), now);
-    assert!(text_of(&terminal).contains(&focused(false, "Yes")));
-    assert!(text_of(&terminal).contains("  No  "));
+    let yes = i18n::t("common.dialog.yes");
+    let no = i18n::t("common.dialog.no");
+    assert!(text_of(&terminal).contains(&focused(false, &yes)));
+    assert!(text_of(&terminal).contains(&format!("  {no}  ")));
     i18n::set_locale(Locale::EnUs);
 }
 
