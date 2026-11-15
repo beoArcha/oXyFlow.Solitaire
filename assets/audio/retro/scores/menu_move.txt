@@ -1,0 +1,5 @@
+# Menu move: tiny tick
+tempo 240
+program 1
+
+F#5:32

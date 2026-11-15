@@ -1,0 +1,5 @@
+# Win: bright rising fanfare ending on a chord
+tempo 160
+program 4
+
+C4:16 E4:16 G4:16 C5:16 G4:16 C5:16 E5:8 G5:8 C5+E5+G5+C6:2
