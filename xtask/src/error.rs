@@ -27,6 +27,8 @@ pub enum XtaskError {
         step: &'static str,
         code: Option<i32>,
     },
+    #[error("`git diff --name-only {base}...HEAD` failed (exit code {code:?}); is `{base}` a ref?")]
+    GitDiff { base: String, code: Option<i32> },
     #[error("`{path}` is not valid TOML")]
     Exceptions {
         path: PathBuf,

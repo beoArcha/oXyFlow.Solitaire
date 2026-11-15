@@ -1,5 +1,6 @@
 //! `cargo xtask`: development tooling for the oXySol workspace.
 
+mod affected;
 mod check;
 mod error;
 mod lint;
@@ -9,10 +10,10 @@ use std::env;
 use std::error::Error;
 use std::process::ExitCode;
 
+use check::Mode;
 use error::XtaskError;
 
-const USAGE: &str =
-    "usage: cargo xtask <check [--quick] | lint | sync-metadata [--check] | version>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | sync-metadata [--check] | version>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -35,13 +36,30 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
         return Err(usage());
     };
     match command.as_str() {
-        "check" => check::run(parse_flag(flags, "--quick")?),
+        "check" => check::run(parse_check(flags)?),
+        "affected" => affected::run(&check::workspace_root()?, &parse_base(flags)?),
         "lint" if flags.is_empty() => lint::run(&check::workspace_root()?),
         "sync-metadata" => Ok(sync_metadata::run(parse_flag(flags, "--check")?)?),
         "version" if flags.is_empty() => {
             println!("version: not implemented yet");
             Ok(())
         }
+        _ => Err(usage()),
+    }
+}
+
+fn parse_check(flags: &[String]) -> Result<Mode, XtaskError> {
+    match flags {
+        [] => Ok(Mode::Full),
+        [flag] if flag == "--quick" => Ok(Mode::Quick),
+        [flag, base] if flag == "--pr" => Ok(Mode::Pr(base.clone())),
+        _ => Err(usage()),
+    }
+}
+
+fn parse_base(flags: &[String]) -> Result<String, XtaskError> {
+    match flags {
+        [flag, base] if flag == "--base" => Ok(base.clone()),
         _ => Err(usage()),
     }
 }
