@@ -26,13 +26,24 @@ fn focus_is_marked_by_a_symbol_without_color() {
     assert!(text.is_ascii());
 }
 
+fn focus_item(h: &mut Harness, label: &str) {
+    let marked = format!("▶ {label}");
+    for _ in 0..8 {
+        if h.text().contains(&marked) {
+            return;
+        }
+        h.press(KeyCode::Down);
+    }
+}
+
 #[test]
 fn focus_marker_follows_the_cursor() {
     let mut h = Harness::new();
-    h.press(KeyCode::Down);
+    assert!(h.text().contains("▶ New game"));
+    focus_item(&mut h, "Settings");
     let text = h.text();
     assert!(text.contains("▶ Settings"));
-    assert!(!text.contains("▶ New game"));
+    assert!(!text.contains("▶ New game from seed"));
 }
 
 #[test]
@@ -56,8 +67,7 @@ fn ctrl_c_quits_from_anywhere() {
 #[test]
 fn the_quit_item_quits() {
     let mut h = Harness::new();
-    h.press(KeyCode::Down);
-    h.press(KeyCode::Down);
+    focus_item(&mut h, "Quit");
     h.press(KeyCode::Enter);
     assert!(h.app.should_quit());
 }
@@ -122,7 +132,7 @@ fn menu_leads_to_game_selection_and_back() {
 #[test]
 fn menu_leads_to_settings_and_back() {
     let mut h = Harness::new();
-    h.press(KeyCode::Down);
+    focus_item(&mut h, "Settings");
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Esc);
