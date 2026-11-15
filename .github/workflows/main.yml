@@ -1,0 +1,83 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - name: Full check
+        run: cargo xtask check
+
+  promote:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: write
+    concurrency:
+      group: promote-release
+      cancel-in-progress: false
+    env:
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Stop if release already has this commit
+        run: |
+          if git ls-remote --exit-code --heads origin release > /dev/null; then
+            git fetch --no-tags origin release
+            if git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD; then
+              echo "::notice::release already up to date"
+              exit 0
+            fi
+          fi
+          echo "PROMOTE=1" >> "$GITHUB_ENV"
+
+      - name: Load the release deploy key
+        if: env.PROMOTE == '1'
+        env:
+          RELEASE_DEPLOY_KEY: ${{ secrets.RELEASE_DEPLOY_KEY }}
+        run: |
+          if [ -z "$RELEASE_DEPLOY_KEY" ]; then
+            echo "::error::secret RELEASE_DEPLOY_KEY is empty; set it up as described in docs/tech/workflow.md"
+            exit 1
+          fi
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$RELEASE_DEPLOY_KEY" > "$HOME/.ssh/release_deploy"
+          chmod 600 "$HOME/.ssh/release_deploy"
+          ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts"
+
+      - name: Fast-forward release to this commit
+        if: env.PROMOTE == '1'
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/release_deploy -o IdentitiesOnly=yes
+        run: git push "git@github.com:${REPO}.git" "$GITHUB_SHA:refs/heads/release"
+
+      - name: Start release.yml
+        if: env.PROMOTE == '1'
+        run: |
+          if [ -f .github/workflows/release.yml ]; then
+            gh workflow run release.yml --repo "$REPO" --ref release
+          else
+            echo "::notice::release.yml does not exist yet; nothing dispatched"
+          fi

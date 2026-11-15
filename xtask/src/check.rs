@@ -4,8 +4,15 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use crate::affected::{self, Affected, ROOT};
 use crate::error::XtaskError;
 use crate::{lint, sync_metadata};
+
+pub enum Mode {
+    Full,
+    Quick,
+    Pr(String),
+}
 
 pub fn workspace_root() -> Result<PathBuf, XtaskError> {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -14,7 +21,7 @@ pub fn workspace_root() -> Result<PathBuf, XtaskError> {
         .ok_or(XtaskError::WorkspaceRoot)
 }
 
-pub fn run(quick: bool) -> Result<(), XtaskError> {
+pub fn run(mode: Mode) -> Result<(), XtaskError> {
     let root = workspace_root()?;
     let cargo = env::var("CARGO").unwrap_or_else(|_| "cargo".to_owned());
     run_step(&cargo, &root, "fmt", &["fmt", "--all", "--", "--check"])?;
@@ -33,25 +40,87 @@ pub fn run(quick: bool) -> Result<(), XtaskError> {
     )?;
     println!("==> lint");
     lint::run(&root)?;
-    let tests: &[&str] = if quick {
+    match mode {
+        Mode::Full => {
+            run_step(&cargo, &root, "test", &["test", "--workspace"])?;
+            println!("==> sync-metadata --check");
+            sync_metadata::run(true)?;
+        }
+        Mode::Quick => run_quick_tests(&cargo, &root)?,
+        Mode::Pr(base) => run_pr_tests(&cargo, &root, &base)?,
+    }
+    println!("check passed");
+    Ok(())
+}
+
+fn run_quick_tests(cargo: &str, root: &Path) -> Result<(), XtaskError> {
+    run_step(
+        cargo,
+        root,
+        "test",
+        &["test", "--workspace", "--exclude", ROOT, "--tests"],
+    )?;
+    run_step(
+        cargo,
+        root,
+        "test",
+        &[
+            "test",
+            "-p",
+            ROOT,
+            "--lib",
+            "--bins",
+            "--test",
+            "integration",
+        ],
+    )
+}
+
+fn run_pr_tests(cargo: &str, root: &Path, base: &str) -> Result<(), XtaskError> {
+    run_step(
+        cargo,
+        root,
+        "test",
         &[
             "test",
             "--workspace",
+            "--test",
+            "architecture",
+            "--test",
+            "e2e",
+        ],
+    )?;
+    let paths = affected::changed_paths(root, base)?;
+    match affected::select(paths.iter().map(String::as_str)) {
+        Affected::All => {
+            println!("==> every package is affected by changes since {base}");
+            run_quick_tests(cargo, root)
+        }
+        Affected::Packages(packages) => {
+            println!("==> affected packages since {base}: {packages:?}");
+            for package in packages {
+                run_package_tests(cargo, root, package)?;
+            }
+            Ok(())
+        }
+    }
+}
+
+fn run_package_tests(cargo: &str, root: &Path, package: &str) -> Result<(), XtaskError> {
+    let args: &[&str] = if package == ROOT {
+        &[
+            "test",
+            "-p",
+            package,
             "--lib",
             "--bins",
             "--test",
             "integration",
         ]
     } else {
-        &["test", "--workspace"]
+        &["test", "-p", package, "--tests"]
     };
-    run_step(&cargo, &root, "test", tests)?;
-    if !quick {
-        println!("==> sync-metadata --check");
-        sync_metadata::run(true)?;
-    }
-    println!("check passed");
-    Ok(())
+    run_step(cargo, root, "test", args)
 }
 
 fn run_step(cargo: &str, root: &Path, step: &'static str, args: &[&str]) -> Result<(), XtaskError> {
