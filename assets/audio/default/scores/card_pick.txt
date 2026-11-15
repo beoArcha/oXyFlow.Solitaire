@@ -1,0 +1,5 @@
+# card_pick: short rising pair
+tempo 180
+program 0
+
+E5:16 G5:8

@@ -1,0 +1,27 @@
+# music: calm looping background track (48s seamless loop)
+tempo 80
+program 1
+
+# Phrase 1: C - G/B - Am - Em
+C5:8 E5:8 G5:8 C6:8 E6:8 D6:8 C6:4
+B5:8 D6:8 G5:8 B5:8 D6:8 C6:8 B5:4
+A5:8 C6:8 E5:8 A5:8 C6:8 B5:8 A5:4
+G5:8 B5:8 E5:8 G5:8 B5:4 G5:4
+
+# Phrase 2: F - C/E - Dm - G
+A5:8 C6:8 F5:8 A5:8 C6:8 D6:8 C6:4
+G5:8 C6:8 E5:8 G5:8 C6:4 G5:4
+F5:8 A5:8 D5:8 F5:8 A5:8 G5:8 F5:4
+G5:8 B5:8 D6:8 B5:8 G5:2
+
+# Phrase 3: C - Am - F - C
+E6:8 G5:8 C6:8 E6:8 D6:8 C6:8 G5:4
+C6:8 E5:8 A5:8 C6:8 B5:8 A5:8 E5:4
+A5:8 C6:8 F5:8 A5:8 G5:8 F5:8 C5:4
+E5:8 G5:8 C6:8 E6:8 D6:4 C6:4
+
+# Phrase 4: Dm - Em - F - G (resolving back into C5)
+F5:8 A5:8 D6:8 F6:8 E6:8 D6:8 A5:4
+G5:8 B5:8 E6:8 G6:8 F#6:8 E6:8 B5:4
+A5:8 C6:8 F6:8 E6:8 D6:8 C6:8 A5:4
+B5:8 D6:8 G5:8 B5:8 D6:4 B5:4

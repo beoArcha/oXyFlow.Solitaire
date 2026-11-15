@@ -1,0 +1,5 @@
+# win: cheerful rising arpeggio ending on a chord
+tempo 150
+program 0
+
+C5:16 E5:16 G5:16 C6:16 E6:16 G6:16 C5+E5+G5+C6:2

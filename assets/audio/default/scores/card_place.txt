@@ -1,0 +1,5 @@
+# card_place: short falling pair
+tempo 180
+program 0
+
+G5:16 E5:8
