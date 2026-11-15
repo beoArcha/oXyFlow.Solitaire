@@ -1,1 +1,22 @@
 # Strings of the cli area.
+
+version = "oXySol {version}"
+help = """
+oXySol: najlepszy biurowy pasjans w terminalu
+
+Użycie: oxysol [opcje]
+
+Opcje:
+  --version                    wypisz wersję i zakończ
+  --help                       wypisz tę pomoc i zakończ
+  --ascii                      rysuj karty wyłącznie znakami ASCII
+  --colors <16|256|truecolor>  głębia kolorów terminala
+  --seed <u64>                 zacznij od razu nową grę z tym ziarnem
+"""
+usage_error = "oxysol: {error}\nSpróbuj `oxysol --help`, aby zobaczyć listę opcji."
+paths_failed = "oXySol nie może znaleźć katalogu na swoje pliki. Ustaw OXYSOL_HOME na katalog z prawem zapisu."
+storage_failed = "oXySol nie może otworzyć swojej bazy danych. Szczegóły są w pliku dziennika."
+terminal_failed = "oXySol zakończył działanie, bo terminal zawiódł. Szczegóły są w pliku dziennika."
+output_failed = "oXySol nie może pisać do terminala."
+log_unavailable = "oXySol nie może zapisywać dziennika w {path}. Działa bez dziennika."
+panic = "oXySol niespodziewanie zakończył działanie w {location}. Szczegóły są w {path}."

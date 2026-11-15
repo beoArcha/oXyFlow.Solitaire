@@ -195,3 +195,43 @@ fn rusqlite_is_declared_only_by_the_root_package() {
         );
     }
 }
+
+fn read_source(relative: &str) -> String {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(relative);
+    let content = std::fs::read_to_string(&path);
+    assert!(content.is_ok(), "failed to read {}", path.display());
+    content.unwrap_or_default()
+}
+
+#[test]
+fn main_installs_the_panic_hook_before_the_terminal_starts() {
+    let main = read_source("src/main.rs");
+    let hook = main.find("panic_hook::install(");
+    let run = main.find("oxysol_tui::run(");
+    assert!(hook.is_some(), "src/main.rs must install the panic hook");
+    assert!(run.is_some(), "src/main.rs must call oxysol_tui::run");
+    assert!(
+        hook < run,
+        "the panic hook must be installed before oxysol_tui::run"
+    );
+}
+
+#[test]
+fn the_binary_uses_the_console_subsystem_and_no_console_api() {
+    let mut files = Vec::new();
+    collect_rs_files(
+        &Path::new(env!("CARGO_MANIFEST_DIR")).join("src"),
+        &mut files,
+    );
+    assert!(!files.is_empty());
+    for file in files {
+        let text = std::fs::read_to_string(&file).unwrap_or_default();
+        for forbidden in ["windows_subsystem", "AttachConsole", "AllocConsole"] {
+            assert!(
+                !text.contains(forbidden),
+                "{} must not mention {forbidden} (decision T-10)",
+                file.display()
+            );
+        }
+    }
+}
