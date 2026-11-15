@@ -5,3 +5,4 @@ mod common;
 mod golden;
 mod record;
 mod scenario;
+mod stock;

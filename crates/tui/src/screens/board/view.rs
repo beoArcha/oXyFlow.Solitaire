@@ -1,5 +1,6 @@
-//! Drawing of the board screen: header (game, seed, time), the board, a status line and the key
-//! hints. Geometry comes from [`layout`], so the mouse sees the same board that is drawn.
+//! Drawing of the board screen: header (game, seed, time), the board with its auras, the guide
+//! panel, the status line, the two rows of the action line and the key hints. Geometry comes from
+//! [`layout`], so the mouse sees the same board that is drawn.
 
 use std::time::Duration;
 
@@ -10,14 +11,16 @@ use ratatui::text::Line;
 use ratatui::widgets::{Block, Paragraph};
 
 use super::BoardScreen;
+use super::guidance::Guidance;
 use crate::action::Action;
 use crate::clock::format_elapsed;
 use crate::i18n::{t, tf};
 use crate::layout;
 use crate::screens::{ViewCtx, variant_label_key};
 use crate::theme::Token;
-use crate::widgets::footer;
+use crate::widgets::guide::{self, Guide};
 use crate::widgets::pile::{self, Marks};
+use crate::widgets::{aura, footer};
 
 const FOOTER: [Action; 8] = [
     Action::Select,
@@ -37,6 +40,8 @@ pub(super) struct Scene<'a> {
     pub marks: &'a Marks,
     pub status: &'a str,
     pub covered: bool,
+    pub guidance: Option<&'a Guidance>,
+    pub guide: bool,
 }
 
 fn header(session: &Session, elapsed: Duration) -> String {
@@ -56,6 +61,12 @@ fn draw_board(frame: &mut Frame, body: Rect, session: &Session, marks: &Marks, c
     for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
         pile::draw(frame.buffer_mut(), snapshot, placed, marks, ctx);
     }
+    aura::draw(frame.buffer_mut(), body, &geometry, marks, ctx);
+}
+
+fn action_row(frame: &mut Frame, area: Rect, text: String, ctx: &ViewCtx<'_>) {
+    let style = ctx.theme.style(Token::Text, Token::Background);
+    frame.render_widget(Paragraph::new(Line::styled(text, style)), area);
 }
 
 fn centered_line(text: String, style: ratatui::style::Style) -> Paragraph<'static> {
@@ -64,7 +75,7 @@ fn centered_line(text: String, style: ratatui::style::Style) -> Paragraph<'stati
 
 /// Draws the whole board screen into `area`.
 pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_>) {
-    let parts = layout::chrome(area);
+    let parts = layout::chrome_with(area, scene.guide);
     let background = ctx.theme.style(Token::Text, Token::Background);
     let accent = ctx.theme.style(Token::Accent, Token::Background);
     let title = scene
@@ -83,16 +94,32 @@ pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &Vie
         centered_line(scene.status.to_owned(), background),
         parts.status,
     );
+    let width = usize::from(area.width);
+    if let Some(guidance) = scene.guidance {
+        action_row(frame, parts.now, guidance.now_line(width), ctx);
+        action_row(frame, parts.possible, guidance.possible_line(width), ctx);
+    }
+    if let (Some(rect), Some(session)) = (parts.guide, scene.session) {
+        let usable = scene.guidance.map_or(&[][..], |guidance| &guidance.usable);
+        let panel = Guide {
+            variant: session.variant(),
+            usable,
+        };
+        guide::draw(frame.buffer_mut(), rect, &panel, ctx);
+    }
     footer::draw(frame, parts.footer, &FOOTER, ctx);
 }
 
 pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &ViewCtx<'_>) {
+    let guidance = board.guidance();
     let scene = Scene {
         session: board.session(),
         elapsed: board.elapsed(ctx.now),
         marks: &board.marks(),
         status: &board.status_text(),
         covered: board.covered,
+        guidance: guidance.as_ref(),
+        guide: ctx.settings.guide_panel,
     };
     render(frame, area, &scene, ctx);
 }

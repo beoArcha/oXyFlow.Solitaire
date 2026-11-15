@@ -9,7 +9,7 @@ mod tests;
 
 use crate::card::Card;
 use crate::deck;
-use crate::game::Game;
+use crate::game::{Game, StockStatus};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot};
@@ -102,5 +102,9 @@ impl Game for FreeCell {
             .enumerate()
             .map(|(i, cards)| snapshot(PileRef::Tableau(index_ref(i)), &[], cards));
         foundations.chain(cells).chain(columns).collect()
+    }
+
+    fn stock_status(&self) -> Option<StockStatus> {
+        None
     }
 }

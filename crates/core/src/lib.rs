@@ -11,7 +11,7 @@ pub mod rules;
 pub mod session;
 
 pub use card::{Card, CardId, Color, Rank, Suit};
-pub use game::{DrawCount, Game, PyramidRules, SuitCount, Variant, deal};
+pub use game::{DrawCount, Game, PyramidRules, StockStatus, SuitCount, Variant, deal};
 pub use moves::{Move, MoveError};
 pub use pile::{PileRef, PileSnapshot, TableCard};
 pub use rng::SplitMix64;

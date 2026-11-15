@@ -1,5 +1,6 @@
 use ratatui::crossterm::event::KeyCode;
 
+mod guide;
 mod screen;
 
 use super::options::{
@@ -200,7 +201,7 @@ fn left_and_right_step_the_focused_row() {
 #[test]
 fn volume_is_adjusted_with_the_arrows_and_clamped() {
     let mut h = open_settings();
-    move_down(&mut h, FIELDS.len() - 1);
+    move_down(&mut h, FIELDS.len() - 2);
     for _ in 0..10 {
         h.press(KeyCode::Left);
     }

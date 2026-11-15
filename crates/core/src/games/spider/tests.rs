@@ -4,6 +4,7 @@ mod auto;
 mod deal;
 mod hints;
 mod rules;
+mod stock;
 
 use super::{Column, Spider};
 use crate::card::{Card, CardId, Rank, Suit};

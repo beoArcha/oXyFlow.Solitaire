@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P4-04 added history reads, schema v2 and the clipboard). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -75,12 +75,19 @@ pub enum DrawCount { One, Three }
 pub enum SuitCount { One, Two, Four }
 pub enum PyramidRules { Relaxed, Classic }
 
+/// Stock counters (P2-06). `recycles` counts waste turned back into the stock (Klondike, Pyramid;
+/// Spider is always 0). The first traversal is pass 1, so the pass in progress is `recycles + 1`.
+/// `recycles_left`: `None` unlimited (Klondike), `Some(0)` no recycle possible (Spider) or the last
+/// one made (Pyramid; Relaxed starts at 2, Classic at 0). `deals_left`: Spider row deals in the stock.
+pub struct StockStatus { pub recycles: u32, pub recycles_left: Option<u32>, pub deals_left: Option<u32> }
+
 pub trait Game {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError>;
     fn legal_moves(&self) -> Vec<Move>;
     fn hint(&self) -> Option<Move>;
     fn is_won(&self) -> bool;
     fn piles(&self) -> Vec<PileSnapshot>;
+    fn stock_status(&self) -> Option<StockStatus>;       // None for FreeCell (no stock)
 }
 pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game>;    // the only place that knows all games
 ```
@@ -96,6 +103,8 @@ Rules of the `Game` contract:
 - `MoveError` is an expected validation result, not a system error.
 - Game modules are `pub(crate)`; the outside world sees only `Game`, `Variant`, `deal` and `Session`.
 - `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.
+- `stock_status` is read-only and derived from the game state, so undo, redo, restart and restore
+  report the counters of the rebuilt game. Its shape is not serialized: no save format changes.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`.
 
 The session implements history by replaying the move log from the seed (decision T-03):
@@ -219,10 +228,23 @@ pub struct NullClipboard;                                // every copy fails wit
   on every screen like `Action::Help`); `App` picks the game of the board's session, else Klondike.
   Keys: Left/Right/Tab switch games, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close
   close; arrows, tabs and Close are clickable.
-- **First steps:** from the deal of a game without moves until its first action (anything but cursor
-  movement), the board status line shows `board.first_steps.*` (arrows, `Select`, `Stock` when the game has
-  a stock, `Help`, `Rules` keys from `KEY_TABLE`) after the focus text; parts are dropped, least useful first,
-  when the line would be wider than the screen.
+- **Board guidance (P3-11):** the board tells the player what is going on and what is possible.
+  *Aura:* `widgets/aura.rs` draws a one-cell halo around the focused card or run (`Token::AuraFocus`,
+  `Glyphs::aura_focus`), the picked-up run (`Token::AuraCarry`, `aura_carry`) and, weaker, every drop
+  target (`Token::Target`, `aura_target`). It paints only free table cells, never a card, so the layout
+  does not change and hit tests are unaffected; the three halos use three different symbols, so they
+  read without color. The two aura tokens are in `TEXT_PAIRS` against `Table`. *Action line:* two rows
+  under the status line, `Now:` (browsing / carrying with the target count / no legal moves / game won)
+  and `Possible:` (the actions of this exact state with their keys from `KEY_TABLE`; parts are dropped,
+  least useful first, when the row is wider than the screen). `screens/board/guidance.rs` builds both
+  from the controller state and `Session` (`legal_moves`, `hint`, `can_undo`/`can_redo`); no rule is
+  decided in the TUI. It replaces the first-steps hint; the announcer line (focus and last event) stays.
+  *Guide panel:* `widgets/guide.rs`, a 30-column panel at the right of the board (goal of the game, the
+  key groups generated from `KEY_TABLE`, the mouse gestures); the keys usable now carry a marker symbol
+  and bold type. `Settings::guide_panel` (default `true`; an older saved value without the field loads
+  as `true`) switches it; `Action::Guide`, key `g`, and a click on the panel title toggle it through
+  `Effect::Apply`. `layout::chrome_with(area, guide)` returns the panel only when the screen is at
+  least `BOARD_MIN_WIDTH + GUIDE_WIDTH` = 130 columns wide, so the board always keeps 100 columns.
 - **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
   selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
@@ -263,7 +285,8 @@ pub struct NullClipboard;                                // every copy fails wit
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
   and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
-  header, `body`, status line and footer. The same result drives rendering and hit-testing. Two layouts:
+  header, `body`, status line, the two rows of the action line and footer; `chrome_with(area, guide)` also
+  reserves the guide panel at the right (see Board guidance). The same result drives rendering and hit-testing. Two layouts:
   columns (Klondike, Spider, FreeCell) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
   that fits the window (a column of a king-to-ace run plus a margin must fit); a column compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.

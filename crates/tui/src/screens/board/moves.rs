@@ -10,7 +10,7 @@ use crate::audio::SoundCue;
 use crate::screens::Effect;
 
 /// Why the cards under the cursor cannot be picked up.
-enum Refusal {
+pub(super) enum Refusal {
     Error(MoveError),
     NoTargets,
     Probe(Move),
@@ -78,7 +78,11 @@ impl BoardScreen {
         }
     }
 
-    fn candidates(&self, pile: PileRef, depth: usize) -> Result<(u8, Vec<Choice>), Refusal> {
+    pub(super) fn candidates(
+        &self,
+        pile: PileRef,
+        depth: usize,
+    ) -> Result<(u8, Vec<Choice>), Refusal> {
         let session = self
             .session
             .as_ref()

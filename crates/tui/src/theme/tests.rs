@@ -97,3 +97,19 @@ fn theme_ids_serialize_as_snake_case() {
     )]));
     assert!(matches!(text, Ok(ref t) if t.contains("high_contrast")));
 }
+
+#[test]
+fn the_aura_pairs_are_checked_for_contrast_and_differ() {
+    assert!(TEXT_PAIRS.contains(&(Token::AuraFocus, Token::Table)));
+    assert!(TEXT_PAIRS.contains(&(Token::AuraCarry, Token::Table)));
+    for id in ThemeId::ALL {
+        let palette = id.palette();
+        assert_ne!(palette.aura_focus.rgb, palette.aura_carry.rgb, "{id:?} rgb");
+        assert_ne!(
+            palette.aura_focus.ansi16, palette.aura_carry.ansi16,
+            "{id:?} ansi16"
+        );
+        assert_ne!(palette.aura_focus.ansi16, palette.table.ansi16, "{id:?}");
+        assert_ne!(palette.aura_carry.ansi16, palette.table.ansi16, "{id:?}");
+    }
+}
