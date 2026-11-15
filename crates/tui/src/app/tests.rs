@@ -1,6 +1,8 @@
 use super::*;
+use crate::screens::Effect;
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
+use oxysol_core::Variant;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 #[test]
@@ -147,4 +149,78 @@ fn a_click_activates_a_menu_item() {
     let (column, row) = found.unwrap_or_default();
     h.click(column, row);
     assert_eq!(h.app.screen(), Screen::Settings);
+}
+
+#[test]
+fn a_command_line_seed_opens_the_games_of_that_seed() {
+    let mut h = Harness::starting_at_seed(77);
+    assert_eq!(h.app.screen(), Screen::MainMenu);
+    assert!(h.text().contains("Choose a game for seed 77"));
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Board);
+    let first = Variant::ALL[0];
+    assert!(
+        h.app
+            .board()
+            .session()
+            .is_some_and(|s| s.variant() == first && s.seed() == 77)
+    );
+    assert_eq!(h.storage.borrow().history[0].seed, 77);
+}
+
+#[test]
+fn a_later_new_game_draws_a_fresh_seed_not_the_command_line_one() {
+    let mut h = Harness::starting_at_seed(77);
+    h.app.apply(Effect::Start {
+        variant: Variant::ALL[0],
+        seed: None,
+    });
+    assert!(h.app.board().session().is_some_and(|s| s.seed() == 42));
+}
+
+#[test]
+fn escape_from_the_games_of_a_command_line_seed_returns_to_the_seed_field() {
+    let mut h = Harness::starting_at_seed(77);
+    h.press(KeyCode::Esc);
+    assert!(h.text().contains("Type a seed:"));
+    assert!(h.text().contains("77_"));
+    h.press(KeyCode::Esc);
+    assert!(!h.text().contains("Type a seed:"));
+    assert_eq!(h.app.screen(), Screen::MainMenu);
+}
+
+#[test]
+fn help_and_rules_keys_open_their_overlays_outside_a_text_field() {
+    let mut h = Harness::new();
+    h.type_char('?');
+    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    h.press(KeyCode::Esc);
+    h.type_char('i');
+    assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
+}
+
+#[test]
+fn help_and_rules_keys_are_typed_into_the_seed_field() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Enter);
+    h.type_char('1');
+    h.type_char('?');
+    h.type_char('i');
+    assert!(h.app.modal().is_none());
+    assert!(h.text().contains("1?i_"));
+    h.press(KeyCode::Enter);
+    assert!(h.text().contains("A seed is a whole number"));
+    h.press(KeyCode::Esc);
+    h.type_char('?');
+    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+}
+
+#[test]
+fn f1_opens_help_while_a_seed_is_typed() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::F(1));
+    assert!(matches!(h.app.modal(), Some(Modal::Help)));
 }

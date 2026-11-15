@@ -104,7 +104,22 @@ impl Harness {
         Self::with(MemoryStorage::new(), TRUE_COLOR, 120, 40)
     }
 
+    /// A harness whose application was started with the command-line seed `seed`.
+    pub fn starting_at_seed(seed: u64) -> Self {
+        Self::build(MemoryStorage::new(), TRUE_COLOR, 120, 40, Some(seed))
+    }
+
     pub fn with(storage: MemoryStorage, caps: TerminalCaps, width: u16, height: u16) -> Self {
+        Self::build(storage, caps, width, height, None)
+    }
+
+    fn build(
+        storage: MemoryStorage,
+        caps: TerminalCaps,
+        width: u16,
+        height: u16,
+        start_seed: Option<u64>,
+    ) -> Self {
         let storage = Rc::new(RefCell::new(storage));
         let audio = Rc::new(RefCell::new(AudioLog::default()));
         let mut next_seed = 41_u64;
@@ -116,6 +131,7 @@ impl Harness {
                 next_seed += 1;
                 next_seed
             }),
+            start_seed,
         });
         Self {
             app,

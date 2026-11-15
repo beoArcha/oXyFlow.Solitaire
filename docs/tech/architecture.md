@@ -136,7 +136,8 @@ pub struct Deps {
     pub storage: Box<dyn Storage>,
     pub audio: Box<dyn Audio>,
     pub caps: TerminalCaps,
-    pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed or `--seed` seed bypasses it
+    pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed seed bypasses it
+    pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings }
@@ -188,6 +189,8 @@ pub struct NullAudio;                                    // always unavailable a
   settings, caps, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
+  A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
+  character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
@@ -271,9 +274,10 @@ pub struct NullAudio;                                    // always unavailable a
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
 - **Seeds (R-18):** the binary supplies fresh seeds through `Deps::seeds` (from
-  `std::collections::hash_map::RandomState` mixed with the clock — no new dependency); `--seed <u64>`
-  starts straight into a game with that seed. The board header shows the seed; the menu offers
-  "New game from seed".
+  `std::collections::hash_map::RandomState` mixed with the clock — no new dependency). `--seed <u64>`
+  (`Deps::start_seed`) opens the main menu on the game selection for that seed, the stage that
+  "New game from seed" reaches after a typed seed; the chosen variant starts the deal. Every other new
+  game takes a fresh seed. The board header shows the seed; the menu offers "New game from seed".
 - **Audio:** `src/audio/` implements `Audio`: MIDI sequencing and a built-in synthesizer as pure
   code (`render` is testable without a device), plus `cpal` output. Sound styles are embedded from
   `assets/audio/` at build time. Feature `audio` can be disabled; a `NullAudio` is used when the

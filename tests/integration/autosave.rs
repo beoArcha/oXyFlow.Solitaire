@@ -57,6 +57,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
         audio: Box::new(NullAudio),
         caps: CAPS,
         seeds: Box::new(|| SEED),
+        start_seed: None,
     });
     Player {
         app,

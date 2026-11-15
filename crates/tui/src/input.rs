@@ -157,6 +157,12 @@ pub fn action_for_key(key: &KeyEvent) -> Option<Action> {
         .map(|binding| binding.action)
 }
 
+/// Whether a key press types a character: a character key without Ctrl. Such a key is text for a
+/// text field, so it must not reach the global shortcuts.
+pub fn is_text_key(key: &KeyEvent) -> bool {
+    matches!(key.code, KeyCode::Char(_)) && !key.modifiers.contains(KeyModifiers::CONTROL)
+}
+
 /// The binding of an action in the key table.
 pub fn binding_for(action: Action) -> Option<&'static Binding> {
     KEY_TABLE.iter().find(|binding| binding.action == action)
@@ -234,6 +240,19 @@ mod tests {
             binding_for(Action::Rules).map(|binding| binding.group),
             Some(HelpGroup::General)
         );
+    }
+
+    #[test]
+    fn typed_characters_are_text_and_control_keys_are_not() {
+        assert!(is_text_key(&press(KeyCode::Char('?'), KeyModifiers::NONE)));
+        assert!(is_text_key(&press(KeyCode::Char('I'), KeyModifiers::SHIFT)));
+        assert!(!is_text_key(&press(
+            KeyCode::Char('c'),
+            KeyModifiers::CONTROL
+        )));
+        assert!(!is_text_key(&press(KeyCode::Enter, KeyModifiers::NONE)));
+        assert!(!is_text_key(&press(KeyCode::F(1), KeyModifiers::NONE)));
+        assert!(!is_text_key(&press(KeyCode::Backspace, KeyModifiers::NONE)));
     }
 
     #[test]

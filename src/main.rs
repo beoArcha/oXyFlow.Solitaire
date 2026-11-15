@@ -60,7 +60,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         "oXySol starting"
     );
     if let Some(seed) = args.seed {
-        tracing::info!(seed, "new game seed given on the command line");
+        tracing::info!(seed, "seed given on the command line");
     }
     panic_hook::panic_if_requested();
     let storage = SqliteStorage::open(&paths).map_err(|error| {
@@ -71,7 +71,8 @@ fn start(args: &Cli) -> Result<(), AppError> {
         storage: Box::new(storage),
         audio: Box::new(NullAudio),
         caps: terminal_caps(args),
-        seeds: Box::new(seed::source(args.seed)),
+        seeds: Box::new(seed::fresh),
+        start_seed: args.seed,
     };
     oxysol_tui::run(deps).map_err(|error| {
         tracing::error!(%error, "the terminal interface stopped");

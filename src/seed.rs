@@ -1,5 +1,5 @@
-//! Seeds of new games (decision R-18): fresh seeds without a new dependency, and the interim
-//! `--seed` override.
+//! Seeds of new games (decision R-18): fresh seeds without a new dependency. A seed given on the
+//! command line is not drawn here; it opens the game selection of the main menu.
 
 use std::collections::hash_map::RandomState;
 use std::hash::{BuildHasher, Hasher};
@@ -15,29 +15,12 @@ pub fn fresh() -> u64 {
     hasher.finish()
 }
 
-/// The source for `Deps::seeds`: the `--seed` value for the first new game, fresh seeds afterwards.
-pub fn source(first: Option<u64>) -> impl FnMut() -> u64 {
-    let mut first = first;
-    move || first.take().unwrap_or_else(fresh)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn the_command_line_seed_comes_first_then_fresh_seeds() {
-        let mut next = source(Some(42));
-        assert_eq!(next(), 42);
-        let second = next();
-        let third = next();
-        assert_ne!(second, 42);
-        assert_ne!(second, third);
-    }
-
-    #[test]
-    fn without_a_command_line_seed_every_seed_is_fresh() {
-        let mut next = source(None);
-        assert_ne!(next(), next());
+    fn consecutive_fresh_seeds_differ() {
+        assert_ne!(fresh(), fresh());
     }
 }
