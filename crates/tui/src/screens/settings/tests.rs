@@ -12,9 +12,12 @@ use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
 use crate::theme::ThemeId;
 
+/// Position of Settings in the main menu without a saved game.
+const SETTINGS_ITEM: usize = 2;
+
 fn open_settings() -> Harness {
     let mut h = Harness::new();
-    h.press(KeyCode::Down);
+    move_down(&mut h, SETTINGS_ITEM);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h
@@ -239,7 +242,7 @@ fn the_focused_row_is_marked_without_color() {
     let mut h = open_settings();
     assert!(h.text().contains("▶ Language:"));
     let mut ascii = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
-    ascii.press(KeyCode::Down);
+    move_down(&mut ascii, SETTINGS_ITEM);
     ascii.press(KeyCode::Enter);
     let text = ascii.text();
     assert!(text.contains("> Language:"));
@@ -258,7 +261,7 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
         Some(&Modal::alert("common.error.settings_load"))
     );
     h.press(KeyCode::Enter);
-    h.press(KeyCode::Down);
+    move_down(&mut h, SETTINGS_ITEM);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Enter);

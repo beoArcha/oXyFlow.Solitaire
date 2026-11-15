@@ -1,5 +1,5 @@
-//! Game and variant selection. Stub: a flat list of every variant; P3-04 groups it by game and
-//! adds the typed-seed flow.
+//! Game and variant selection. Enter or a click starts the focused variant; with a seed (from
+//! "New game from seed") the variant is dealt from that seed.
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
@@ -10,7 +10,7 @@ use ratatui::widgets::Paragraph;
 use super::{Effect, ViewCtx, variant_label_key};
 use crate::action::Action;
 use crate::app::Screen;
-use crate::i18n::t;
+use crate::i18n::{t, tf};
 use crate::theme::Token;
 use crate::widgets::footer;
 use crate::widgets::menu_list::MenuList;
@@ -18,25 +18,34 @@ use oxysol_core::Variant;
 
 const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
 
-fn start(index: usize) -> Effect {
-    Variant::ALL
-        .get(index)
-        .map_or(Effect::None, |variant| Effect::Start {
-            variant: *variant,
-            seed: None,
-        })
-}
-
 /// State of the game selection screen.
 #[derive(Debug, Default)]
 pub struct GameSelect {
     list: MenuList,
+    seed: Option<u64>,
 }
 
 impl GameSelect {
-    /// A list focused on the first variant.
+    /// A list focused on the first variant; the variants are dealt from fresh seeds.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// A list whose variants are dealt from `seed`.
+    pub fn for_seed(seed: u64) -> Self {
+        Self {
+            list: MenuList::new(),
+            seed: Some(seed),
+        }
+    }
+
+    fn start(&self, index: usize) -> Effect {
+        Variant::ALL
+            .get(index)
+            .map_or(Effect::None, |variant| Effect::Start {
+                variant: *variant,
+                seed: self.seed,
+            })
     }
 
     /// Handles a key press mapped to `action`: Enter starts the focused variant, Esc goes back.
@@ -51,7 +60,7 @@ impl GameSelect {
             Some(action) => self
                 .list
                 .on_action(action, Variant::ALL.len())
-                .map_or(Effect::None, start),
+                .map_or(Effect::None, |index| self.start(index)),
             None => Effect::None,
         }
     }
@@ -60,7 +69,14 @@ impl GameSelect {
     pub fn handle_mouse(&mut self, event: &MouseEvent, _ctx: &ViewCtx<'_>) -> Effect {
         self.list
             .on_mouse(event, Variant::ALL.len())
-            .map_or(Effect::None, start)
+            .map_or(Effect::None, |index| self.start(index))
+    }
+
+    fn title(&self) -> String {
+        match self.seed {
+            Some(seed) => tf("menu.select_seed", &[("seed", &seed.to_string())]),
+            None => t("common.select.title").into_owned(),
+        }
     }
 
     /// Draws the title, the variants and the key hints.
@@ -75,7 +91,7 @@ impl GameSelect {
         ])
         .areas(area);
         let title = Line::styled(
-            t("common.select.title").into_owned(),
+            self.title(),
             ctx.theme.style(Token::Accent, Token::Background),
         );
         frame.render_widget(
