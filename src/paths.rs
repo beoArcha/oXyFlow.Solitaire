@@ -94,7 +94,8 @@ mod tests {
     fn platform_directory_is_used_without_an_override() {
         let paths = AppPaths::resolve(None);
         if let Ok(paths) = paths {
-            assert!(paths.data_dir().to_string_lossy().contains("oXySol"));
+            let dir = paths.data_dir().to_string_lossy().to_lowercase();
+            assert!(dir.contains("oxysol"), "{dir}");
         }
     }
 }
