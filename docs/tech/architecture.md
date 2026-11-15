@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.1 (2026-11-15: SQLite, seeds, CI — R-16…R-19), written before implementation. Tasks P1-01, P1-02 and P3-01 may refine it.
+Status: contract v0.2 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -25,8 +25,8 @@ crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ 
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/)
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
-crates/tui/src/          lib.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs i18n.rs
-                         settings.rs storage.rs audio.rs announce.rs
+crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
+                         i18n.rs settings.rs storage.rs (+ storage/memory.rs) audio.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml audio.toml
 assets/cards/fronts/<style>/   style.toml glyphs/*.svg
@@ -137,15 +137,18 @@ pub struct Deps {
     pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed or `--seed` seed bypasses it
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
+pub enum Screen { MainMenu, GameSelect, Board, Settings }
+pub enum Modal { Help, Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win }
 
 impl App {
-    pub fn new(deps: Deps) -> Self;
+    pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
     pub fn handle(&mut self, input: Input, now: Instant);
     pub fn draw(&mut self, frame: &mut Frame);
     pub fn should_quit(&self) -> bool;
 }
-pub fn run(deps: Deps) -> Result<(), TuiError>;   // terminal setup, event loop, restore
-pub fn restore_terminal();                        // best effort; also called from the panic hook
+pub fn run(deps: Deps) -> Result<(), TuiError>;   // terminal.rs: raw mode, alternate screen, mouse, event loop
+pub fn restore_terminal();                        // best effort; a Drop guard calls it on every exit path of `run`
+pub enum TuiError { Io(std::io::Error) }
 
 pub trait Storage {
     fn load_settings(&self) -> Result<Option<Settings>, StorageError>;
@@ -159,25 +162,52 @@ pub trait Storage {
 pub struct GameId(pub i64);
 pub enum Outcome { Won, Abandoned }
 pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64 }
+pub enum StorageError {
+    Io(std::io::Error),                              // file-level failure
+    Corrupt { reason: String },                      // unreadable data (the app renames the file)
+    Incompatible { found: u32, supported: u32 },     // schema newer than this build
+    Backend { message: String },                     // any other backend failure, e.g. a rusqlite error
+}
+pub struct MemoryStorage { pub settings, pub game, pub history, pub failing }   // test double and fallback
 
 pub enum SoundCue { CardPick, CardPlace, CardFlip, StockDeal, Illegal, Undo, Hint, Win, MenuMove, MenuSelect }
+pub struct AudioSettings { pub style: String, pub volume: u8, pub cues: bool, pub music: bool }
 pub trait Audio {
     fn available(&self) -> bool;
     fn configure(&mut self, settings: &AudioSettings);   // style, volume, cues on/off, music on/off
     fn play(&mut self, cue: SoundCue);
 }
+pub struct NullAudio;                                    // always unavailable and silent
 ```
 
-- **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` updates UI state or calls
-  `Session`. The key table in `input.rs` is the single source for mapping, the help overlay and the footer.
+- **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
+  current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
+  `Apply(Settings)`, `Open(Modal)`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
+  settings, caps, clock instant) and never change shared state or call `Storage` themselves.
+  The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
+  `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
+- **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
+  returns `None` (stay open) or `Some(effect)` (close, then apply).
+- **Storage failures:** a failing load or save is logged once in `App` and shown as an `Alert`; settings
+  hold for the session, a game that could not be recorded is still played.
+- **Too small:** below 100 × 30 cells (T-11) only a notice with the current and required size is drawn;
+  only `q` and Ctrl+C work.
+- **Localization:** `i18n::t(key)` and `tf(key, params)`; the locale is a per-thread setting
+  (`set_locale`). A key is `<area>.<table path>.<name>`, the area being the file name under
+  `locales/<lang>/` (`common.menu.new_game` is `[menu] new_game` in `common.toml`). Fallback is
+  `en-US`, then the key. Tests keep the key sets of all locales identical and check that every
+  `"<area>.…"` literal in the sources exists.
 - **Board interaction is shared by all games:** after a source is picked, the TUI filters
   `legal_moves()` by `Move::source()`, highlights targets and applies the matching move. A move with
   no target (a king in Pyramid) applies immediately.
 - **Geometry:** `layout::compute(...) -> BoardGeometry` returns rectangles for piles and cards. The
   same result drives rendering and mouse hit-testing. Two layouts: columns (Klondike, Spider,
   FreeCell) and pyramid. Card size is the largest step that fits the window.
-- **Themes:** `Theme` is a set of semantic tokens resolved for (`ThemeId`, `ColorDepth`). Components
-  never use colors directly.
+- **Themes:** `ThemeId { Dark, Light, HighContrast }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
+  `Token`; `Theme::new(id, depth)` resolves it: true color emits the RGB, 256 colors use `rgb_to_ansi256`,
+  16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly.
+  `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
+  `ThemeId::contrast_target()` (4.5, High Contrast 7.0).
 - **Card rendering:** front style and back style are selected independently. Each is drawn in one of
   three glyph modes — `Font` (Private Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` —
   described by the style's `style.toml`. `Font` is opt-in through the graphics-check screen.

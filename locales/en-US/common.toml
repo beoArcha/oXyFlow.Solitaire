@@ -1,0 +1,54 @@
+[app]
+title = "oXySol"
+tagline = "Ultimate Office Solitaire for the terminal"
+
+[menu]
+title = "Main menu"
+new_game = "New game"
+settings = "Settings"
+quit = "Quit"
+
+[select]
+title = "Choose a game"
+
+[variant]
+klondike_one = "Klondike, Draw 1"
+klondike_three = "Klondike, Draw 3"
+spider_one = "Spider, 1 suit"
+spider_two = "Spider, 2 suits"
+spider_four = "Spider, 4 suits"
+free_cell = "FreeCell"
+pyramid_relaxed = "Pyramid, Relaxed"
+pyramid_classic = "Pyramid, Classic"
+
+[settings]
+title = "Settings"
+placeholder = "The settings screen is not available yet."
+
+[board]
+header = "{variant} | seed {seed} | {time}"
+placeholder = "The board is not available yet."
+
+[size]
+title = "Terminal too small"
+current = "Current size: {width} x {height}"
+required = "Required size: {width} x {height}"
+hint = "Enlarge the window or reduce the font size."
+
+[dialog]
+ok = "OK"
+yes = "Yes"
+no = "No"
+help_title = "Help"
+help_body = "The key list is not available yet."
+pause_title = "Paused"
+pause_body = "Press Esc to continue."
+win_title = "You won"
+win_body = "The game is solved."
+alert_title = "Notice"
+confirm_title = "Please confirm"
+
+[error]
+storage = "Saving to the database failed. The game continues without saving."
+settings_load = "Stored settings could not be read. Defaults are used."
+resume = "The saved game could not be restored."

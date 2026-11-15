@@ -16,8 +16,8 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-08 | Wiki: Spider rules | Oxy | P0-01 | DONE |
 | M-09 | Wiki: FreeCell rules | Son | P0-01 | DONE |
 | M-10 | Wiki: Pyramid rules | Beo | P0-01 | DONE |
-| M-11 | Theme: Light palette | Beo | P3-01 | DRAFT |
-| M-12 | Theme: High Contrast palette | Oxy | P3-01 | DRAFT |
+| M-11 | Theme: Light palette | Beo | P3-01 | READY |
+| M-12 | Theme: High Contrast palette | Oxy | P3-01 | READY |
 | M-13 | RGB to 256-color conversion | Oxy | P0-01 | DONE |
 | M-14 | Contrast ratio helper | Son | P0-01 | DONE |
 | M-15 | Terminal capability detection | Beo | P0-01 | READY |
@@ -188,13 +188,33 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 ### M-11, M-12 — Theme palettes: Light, High Contrast
 
-- **Status:** DRAFT · **Finalized by:** P3-01 (token list, constructor signature, pairs to test)
-- **Branch:** `feat/M-1X-theme-<name>` · **File:** `crates/tui/src/theme/<name>.rs`
-- **Do:** fill every token of the theme for true color, and its 16-color variant using only the
-  named ANSI colors. Light: dark text on a light surface. High Contrast: maximum separation, no
-  mid-tones for text.
-- **Done when:** the test listed by P3-01 passes: `contrast_ratio` of every text/background pair is
-  at least 4.5 (Light) or 7.0 (High Contrast); red and black card colors differ in both variants.
+- **Status:** READY · **Finalized by:** P3-01
+- **Branch:** `feat/M-11-theme-light` (Light) · `feat/M-12-theme-high-contrast` (High Contrast)
+- **File:** `crates/tui/src/theme/light.rs` (M-11) or `crates/tui/src/theme/high_contrast.rs` (M-12) only
+- **Interface:** the file already exists and holds `pub fn palette() -> Palette` returning the Dark
+  palette as a placeholder. Replace its body with a full `Palette { … }` literal; copy the shape of
+  `crates/tui/src/theme/dark.rs`. Each field is `swatch(r, g, b, Color::<Named>)`: the RGB value for
+  true color (256-color terminals are derived from it) and one named ANSI color from
+  `ratatui::style::Color` (`Black`, `Red`, `Green`, `Yellow`, `Blue`, `Magenta`, `Cyan`, `Gray`,
+  `DarkGray`, `LightRed`, `LightGreen`, `LightYellow`, `LightBlue`, `LightMagenta`, `LightCyan`,
+  `White`) for 16-color terminals. Never use `Color::Rgb`, `Color::Indexed` or `Color::Reset`.
+- **Tokens (22), all must be set:** `background` (screen), `surface` (dialogs), `text`, `text_muted`,
+  `accent`, `border`, `border_focus`, `focus_fg` / `focus_bg` (the focused list item), `error`,
+  `success`, `table` (playing field), `table_text`, `slot` (empty pile outline, on `table`),
+  `card_face`, `card_back`, `card_back_mark` (pattern on `card_back`), `card_red`, `card_black`
+  (rank and suit on `card_face`), `target` (legal move), `selection` (selected card), `hint`
+  (hinted card; the last three are drawn on `table`). Light: dark text on light surfaces. High
+  Contrast: maximum separation, no mid-tones for text.
+- **Pairs that must pass** (`theme::palette::TEXT_PAIRS`, foreground on background):
+  `text`/`background`, `text`/`surface`, `text_muted`/`background`, `text_muted`/`surface`,
+  `accent`/`background`, `accent`/`surface`, `focus_fg`/`focus_bg`, `error`/`surface`,
+  `success`/`surface`, `table_text`/`table`, `card_red`/`card_face`, `card_black`/`card_face`,
+  `card_back_mark`/`card_back`. Ratio at least 4.5 (Light) or 7.0 (High Contrast).
+- **Do not touch** any other file. The tests already exist in `crates/tui/src/theme/tests.rs`.
+- **Done when:** `cargo test -p oxysol-tui theme` passes. It checks every pair above against the
+  `ThemeId::contrast_target()` of the theme (4.5 or 7.0), that `card_red` differs from `card_black`
+  (RGB and 16-color), that `focus_bg` differs from `background` (RGB and 16-color), and that every
+  16-color value is a named color.
 
 ## Translation
 

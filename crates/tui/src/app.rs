@@ -1,0 +1,307 @@
+//! The application shell: screens, the modal layer, settings and the services behind `Deps`.
+//! Screens never change shared state themselves; they return an [`Effect`] and `App` applies it.
+
+use std::time::Instant;
+
+use ratatui::Frame;
+use ratatui::crossterm::event::{KeyEvent, KeyEventKind, MouseEvent};
+use ratatui::layout::Rect;
+use ratatui::widgets::Block;
+
+use crate::action::Action;
+use crate::audio::Audio;
+use crate::caps::TerminalCaps;
+use crate::glyphs::Glyphs;
+use crate::i18n;
+use crate::input::{Input, action_for_key};
+use crate::screens::board::BoardScreen;
+use crate::screens::game_select::GameSelect;
+use crate::screens::main_menu::MainMenu;
+use crate::screens::settings::SettingsScreen;
+use crate::screens::{Effect, ViewCtx};
+use crate::settings::Settings;
+use crate::storage::{SavedGame, Storage};
+use crate::theme::Theme;
+use crate::widgets::overlay;
+use crate::widgets::too_small::{self, is_too_small};
+
+/// Everything the application needs from the outside world.
+pub struct Deps {
+    pub storage: Box<dyn Storage>,
+    pub audio: Box<dyn Audio>,
+    pub caps: TerminalCaps,
+    /// Fresh seed for "New game"; a typed or `--seed` seed bypasses it.
+    pub seeds: Box<dyn FnMut() -> u64>,
+}
+
+/// The screen behind the modal layer.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Screen {
+    MainMenu,
+    GameSelect,
+    Board,
+    Settings,
+}
+
+/// A dialog over the current screen. While one is open it takes all input and the clock stops.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Modal {
+    Help,
+    Pause,
+    /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
+    Confirm {
+        prompt: &'static str,
+        on_yes: Box<Effect>,
+        yes_focused: bool,
+    },
+    /// A notice with one button; `message` is a localization key.
+    Alert {
+        message: &'static str,
+    },
+    Win,
+}
+
+impl Modal {
+    /// A notice showing the text of the localization key `message`.
+    pub fn alert(message: &'static str) -> Self {
+        Modal::Alert { message }
+    }
+
+    /// A question showing the text of the localization key `prompt`.
+    pub fn confirm(prompt: &'static str, on_yes: Effect) -> Self {
+        Modal::Confirm {
+            prompt,
+            on_yes: Box::new(on_yes),
+            yes_focused: false,
+        }
+    }
+}
+
+macro_rules! view_ctx {
+    ($app:expr) => {
+        ViewCtx {
+            theme: &$app.theme,
+            glyphs: &$app.glyphs,
+            settings: &$app.settings,
+            caps: &$app.caps,
+            audio_available: $app.audio.available(),
+            has_saved_game: $app.saved.is_some(),
+            now: $app.now,
+        }
+    };
+}
+
+/// The whole application state.
+pub struct App {
+    storage: Box<dyn Storage>,
+    audio: Box<dyn Audio>,
+    seeds: Box<dyn FnMut() -> u64>,
+    caps: TerminalCaps,
+    settings: Settings,
+    theme: Theme,
+    glyphs: Glyphs,
+    saved: Option<SavedGame>,
+    screen: Screen,
+    modal: Option<Modal>,
+    menu: MainMenu,
+    select: GameSelect,
+    settings_screen: SettingsScreen,
+    board: BoardScreen,
+    area: Option<(u16, u16)>,
+    now: Instant,
+    quit: bool,
+}
+
+impl App {
+    /// Builds the application: loads the settings and the saved game from storage, applies the
+    /// settings to the theme, the language and the audio. A storage failure opens an alert and
+    /// the defaults are used.
+    pub fn new(deps: Deps) -> Self {
+        let Deps {
+            storage,
+            audio,
+            caps,
+            seeds,
+        } = deps;
+        let settings = Settings::for_caps(&caps);
+        let mut app = Self {
+            storage,
+            audio,
+            seeds,
+            caps,
+            theme: Theme::new(settings.theme, settings.color_depth(&caps)),
+            glyphs: Glyphs::new(settings.glyph_mode),
+            settings,
+            saved: None,
+            screen: Screen::MainMenu,
+            modal: None,
+            menu: MainMenu::new(),
+            select: GameSelect::new(),
+            settings_screen: SettingsScreen::new(),
+            board: BoardScreen::new(),
+            area: None,
+            now: Instant::now(),
+            quit: false,
+        };
+        app.load_stored_state();
+        app.refresh_view();
+        app
+    }
+
+    fn load_stored_state(&mut self) {
+        match self.storage.load_settings() {
+            Ok(Some(stored)) => self.settings = stored,
+            Ok(None) => {}
+            Err(error) => {
+                tracing::warn!(%error, "stored settings could not be loaded; using defaults");
+                self.modal = Some(Modal::alert("common.error.settings_load"));
+            }
+        }
+        match self.storage.load_game() {
+            Ok(saved) => self.saved = saved,
+            Err(error) => {
+                tracing::warn!(%error, "saved game could not be loaded");
+                self.modal
+                    .get_or_insert(Modal::alert("common.error.resume"));
+            }
+        }
+    }
+
+    fn refresh_view(&mut self) {
+        self.theme = Theme::new(self.settings.theme, self.settings.color_depth(&self.caps));
+        self.glyphs = Glyphs::new(self.settings.glyph_mode);
+        i18n::set_locale(self.settings.locale);
+        self.audio.configure(&self.settings.audio());
+    }
+
+    /// The screen behind the modal layer.
+    pub fn screen(&self) -> Screen {
+        self.screen
+    }
+
+    /// The open modal, if any.
+    pub fn modal(&self) -> Option<&Modal> {
+        self.modal.as_ref()
+    }
+
+    /// The settings in effect.
+    pub fn settings(&self) -> &Settings {
+        &self.settings
+    }
+
+    /// The board screen, with the running session and the clock.
+    pub fn board(&self) -> &BoardScreen {
+        &self.board
+    }
+
+    /// Whether the player asked to quit; the event loop ends when this is true.
+    pub fn should_quit(&self) -> bool {
+        self.quit
+    }
+
+    fn too_small(&self) -> bool {
+        self.area
+            .is_some_and(|(width, height)| is_too_small(Rect::new(0, 0, width, height)))
+    }
+
+    /// Handles one input event. `now` drives the clock; the application never reads the time.
+    pub fn handle(&mut self, input: Input, now: Instant) {
+        self.now = now;
+        let effect = match input {
+            Input::Key(key) => self.on_key(key),
+            Input::Mouse(event) => self.on_mouse(&event),
+            Input::Resize(width, height) => {
+                self.area = Some((width, height));
+                Effect::None
+            }
+            Input::Tick => Effect::None,
+        };
+        self.apply(effect);
+    }
+
+    fn on_key(&mut self, key: KeyEvent) -> Effect {
+        if key.kind == KeyEventKind::Release {
+            return Effect::None;
+        }
+        let action = action_for_key(&key);
+        if action == Some(Action::ForceQuit) {
+            return Effect::Quit;
+        }
+        if self.too_small() {
+            return if action == Some(Action::Quit) {
+                Effect::Quit
+            } else {
+                Effect::None
+            };
+        }
+        if self.modal.is_some() {
+            return self.on_modal_key(&key, action);
+        }
+        if action == Some(Action::Help) {
+            return Effect::Open(Modal::Help);
+        }
+        let ctx = view_ctx!(self);
+        match self.screen {
+            Screen::MainMenu => self.menu.handle(&key, action, &ctx),
+            Screen::GameSelect => self.select.handle(&key, action, &ctx),
+            Screen::Board => self.board.handle(&key, action, &ctx),
+            Screen::Settings => self.settings_screen.handle(&key, action, &ctx),
+        }
+    }
+
+    fn on_modal_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
+        let outcome = self
+            .modal
+            .as_mut()
+            .and_then(|modal| overlay::handle(modal, key, action));
+        match outcome {
+            Some(effect) => {
+                self.close_modal();
+                effect
+            }
+            None => Effect::None,
+        }
+    }
+
+    fn on_mouse(&mut self, event: &MouseEvent) -> Effect {
+        if self.modal.is_some() || self.too_small() {
+            return Effect::None;
+        }
+        let ctx = view_ctx!(self);
+        match self.screen {
+            Screen::MainMenu => self.menu.handle_mouse(event, &ctx),
+            Screen::GameSelect => self.select.handle_mouse(event, &ctx),
+            Screen::Board | Screen::Settings => Effect::None,
+        }
+    }
+
+    /// Draws the current screen, then the modal on top. Below the minimum size only the notice
+    /// is drawn.
+    pub fn draw(&mut self, frame: &mut Frame) {
+        let area = frame.area();
+        self.area = Some((area.width, area.height));
+        let ctx = view_ctx!(self);
+        frame.render_widget(Block::new().style(ctx.theme.base()), area);
+        if is_too_small(area) {
+            too_small::draw(frame, area, &ctx);
+            return;
+        }
+        match self.screen {
+            Screen::MainMenu => self.menu.draw(frame, area, &ctx),
+            Screen::GameSelect => self.select.draw(frame, area, &ctx),
+            Screen::Board => self.board.draw(frame, area, &ctx),
+            Screen::Settings => self.settings_screen.draw(frame, area, &ctx),
+        }
+        if let Some(modal) = &self.modal {
+            overlay::draw(frame, area, modal, &ctx);
+        }
+    }
+}
+
+mod effects;
+
+#[cfg(test)]
+mod tests;
+
+#[cfg(test)]
+mod effect_tests;
