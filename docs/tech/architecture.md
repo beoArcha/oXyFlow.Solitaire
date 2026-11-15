@@ -275,9 +275,11 @@ pub struct NullAudio;                                    // always unavailable a
   starts straight into a game with that seed. The board header shows the seed; the menu offers
   "New game from seed".
 - **Audio:** `src/audio/` implements `Audio`: MIDI sequencing and a built-in synthesizer as pure
-  code (`render` is testable without a device), plus `cpal` output. Sound styles are embedded from
-  `assets/audio/` at build time. Feature `audio` can be disabled; a `NullAudio` is used when the
-  feature is off, no device exists, or the session is remote.
+  code (`render` is testable without a device), a pure mixer of cues and music, plus `cpal` output
+  (`output.rs`, feature `audio`). Sound styles are embedded from `assets/audio/` at build time. A
+  `NullAudio` is used when the feature is off, no device exists, or the session is remote. `available()`
+  is true only while the device runs and the selected style loads. Linux release builds are made with
+  `--no-default-features` and are silent (T-18).
 
 ## Errors and logging
 

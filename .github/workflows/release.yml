@@ -40,6 +40,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
+      - name: Install the ALSA development package for the audio feature
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev
       - name: Full check
         run: cargo xtask check
 
@@ -102,9 +107,11 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             musl: true
+            features: "--no-default-features"
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-musl
             musl: true
+            features: "--no-default-features"
           - os: macos-latest
             target: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
@@ -128,7 +135,9 @@ jobs:
         with:
           key: ${{ matrix.target }}
       - name: Release build
-        run: cargo build --release --locked --target "$TARGET" -p oxysol
+        env:
+          FEATURES: ${{ matrix.features }}
+        run: cargo build --release --locked $FEATURES --target "$TARGET" -p oxysol
       - name: Archive (Unix)
         if: runner.os != 'Windows'
         run: |
