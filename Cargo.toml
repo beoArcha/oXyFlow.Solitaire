@@ -56,6 +56,7 @@ proc-macro2 = { version = "1.0.107", features = ["span-locations"] }
 toml_edit = "0.25.19"
 ra-ap-rustc_lexer = "0.184.0"
 tempfile = "3.27.0"
+midly = "0.5.3"
 
 [workspace.lints.rust]
 unsafe_code = "deny"

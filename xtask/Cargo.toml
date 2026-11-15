@@ -8,6 +8,7 @@ repository.workspace = true
 publish = false
 
 [dependencies]
+midly.workspace = true
 proc-macro2.workspace = true
 ra-ap-rustc_lexer.workspace = true
 syn.workspace = true
