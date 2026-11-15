@@ -11,7 +11,7 @@ Opcje:
   --help                       wypisz tę pomoc i zakończ
   --ascii                      rysuj karty wyłącznie znakami ASCII
   --colors <16|256|truecolor>  głębia kolorów terminala
-  --seed <u64>                 zacznij od razu nową grę z tym ziarnem
+  --seed <u64>                 od razu wybierz grę dla tego ziarna
 """
 usage_error = "oxysol: {error}\nSpróbuj `oxysol --help`, aby zobaczyć listę opcji."
 paths_failed = "oXySol nie może znaleźć katalogu na swoje pliki. Ustaw OXYSOL_HOME na katalog z prawem zapisu."

@@ -13,7 +13,7 @@ use crate::audio::Audio;
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
 use crate::i18n;
-use crate::input::{Input, action_for_key};
+use crate::input::{Input, action_for_key, is_text_key};
 use crate::screens::board::BoardScreen;
 use crate::screens::game_select::GameSelect;
 use crate::screens::main_menu::MainMenu;
@@ -32,8 +32,10 @@ pub struct Deps {
     pub storage: Box<dyn Storage>,
     pub audio: Box<dyn Audio>,
     pub caps: TerminalCaps,
-    /// Fresh seed for "New game"; a typed or `--seed` seed bypasses it.
+    /// Fresh seed for "New game"; a typed seed bypasses it.
     pub seeds: Box<dyn FnMut() -> u64>,
+    /// A seed from the command line: the main menu opens on the games dealt from it.
+    pub start_seed: Option<u64>,
 }
 
 /// The screen behind the modal layer.
@@ -91,6 +93,7 @@ impl App {
             audio,
             caps,
             seeds,
+            start_seed,
         } = deps;
         let settings = Settings::for_caps(&caps);
         let mut app = Self {
@@ -105,7 +108,7 @@ impl App {
             write_failed: false,
             screen: Screen::MainMenu,
             modal: None,
-            menu: MainMenu::new(),
+            menu: start_seed.map_or_else(MainMenu::new, MainMenu::for_seed),
             select: GameSelect::new(),
             settings_screen: SettingsScreen::new(),
             board: BoardScreen::new(),
@@ -226,10 +229,12 @@ impl App {
         if self.modal.is_some() {
             return self.on_modal_key(&key, action);
         }
-        match action {
-            Some(Action::Help) => return Effect::Open(Modal::Help),
-            Some(Action::Rules) => return Effect::HowToPlay,
-            _ => {}
+        if !self.types_text(&key) {
+            match action {
+                Some(Action::Help) => return Effect::Open(Modal::Help),
+                Some(Action::Rules) => return Effect::HowToPlay,
+                _ => {}
+            }
         }
         let ctx = view_ctx!(self);
         match self.screen {
@@ -238,6 +243,19 @@ impl App {
             Screen::Board => self.board.handle(&key, action, &ctx),
             Screen::Settings => self.settings_screen.handle(&key, action, &ctx),
         }
+    }
+
+    /// Whether the active screen is typing into a text field.
+    fn captures_text(&self) -> bool {
+        match self.screen {
+            Screen::MainMenu => self.menu.captures_text(),
+            Screen::GameSelect | Screen::Board | Screen::Settings => false,
+        }
+    }
+
+    /// Whether `key` is typed text for the active screen, so that it is not a global shortcut.
+    fn types_text(&self, key: &KeyEvent) -> bool {
+        self.captures_text() && is_text_key(key)
     }
 
     fn on_modal_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {

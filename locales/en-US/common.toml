@@ -24,10 +24,6 @@ pyramid_classic = "Pyramid, Classic"
 [settings]
 title = "Settings"
 
-[board]
-header = "{variant} | seed {seed} | {time}"
-placeholder = "The board is not available yet."
-
 [size]
 title = "Terminal too small"
 current = "Current size: {width} x {height}"
@@ -39,7 +35,6 @@ ok = "OK"
 yes = "Yes"
 no = "No"
 help_title = "Help"
-help_body = "The key list is not available yet."
 pause_title = "Paused"
 pause_body = "Press Esc to continue."
 win_title = "You won"

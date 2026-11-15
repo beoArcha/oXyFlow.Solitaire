@@ -11,7 +11,7 @@ Options:
   --help                       print this help and exit
   --ascii                      draw cards with ASCII characters only
   --colors <16|256|truecolor>  color depth of the terminal
-  --seed <u64>                 start straight into a new game with this seed
+  --seed <u64>                 choose a game for this seed at once
 """
 usage_error = "oxysol: {error}\nTry `oxysol --help` for the list of options."
 paths_failed = "oXySol cannot find a folder for its files. Set OXYSOL_HOME to a writable folder."
