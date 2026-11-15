@@ -5,6 +5,7 @@ mod check;
 mod error;
 mod lint;
 mod sync_metadata;
+mod version;
 
 use std::env;
 use std::error::Error;
@@ -12,8 +13,9 @@ use std::process::ExitCode;
 
 use check::Mode;
 use error::XtaskError;
+use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | sync-metadata [--check] | version>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | sync-metadata [--check] | version [--tag [--stable]]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -40,9 +42,17 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
         "affected" => affected::run(&check::workspace_root()?, &parse_base(flags)?),
         "lint" if flags.is_empty() => lint::run(&check::workspace_root()?),
         "sync-metadata" => Ok(sync_metadata::run(parse_flag(flags, "--check")?)?),
-        "version" if flags.is_empty() => {
-            println!("version: not implemented yet");
-            Ok(())
+        "version" => version::run(parse_version_flags(flags)?),
+        _ => Err(usage()),
+    }
+}
+
+fn parse_version_flags(flags: &[String]) -> Result<Output, XtaskError> {
+    match flags {
+        [] => Ok(Output::Version),
+        [flag] if flag == "--tag" => Ok(Output::Tag { stable: false }),
+        [flag, stable] if flag == "--tag" && stable == "--stable" => {
+            Ok(Output::Tag { stable: true })
         }
         _ => Err(usage()),
     }

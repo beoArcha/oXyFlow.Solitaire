@@ -37,6 +37,22 @@ pub enum XtaskError {
     },
     #[error("lint found {count} error(s)")]
     LintFailed { count: usize },
+    #[error("`{path}` is not valid TOML")]
+    Metadata {
+        path: PathBuf,
+        #[source]
+        source: toml::de::Error,
+    },
+    #[error("`{path}` has no string `version` in `[project]`")]
+    MissingVersion { path: PathBuf },
+    #[error("`git rev-list --count HEAD` failed (exit code {code:?})")]
+    GitRevList { code: Option<i32> },
+    #[error("`git rev-list --count HEAD` printed `{output}`, which is not a number")]
+    CommitCount {
+        output: String,
+        #[source]
+        source: std::num::ParseIntError,
+    },
     #[error(transparent)]
     SyncMetadata(#[from] SyncMetadataError),
 }

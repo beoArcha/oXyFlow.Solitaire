@@ -1,0 +1,229 @@
+name: Release
+
+on:
+  push:
+    branches: [release]
+  workflow_dispatch:
+    inputs:
+      stable:
+        description: "Publish the stable release v<version> instead of a pre-release"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Refuse any ref but release
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$REF" != "refs/heads/release" ]; then
+            echo "::error::release.yml runs only on refs/heads/release, not on $REF"
+            exit 1
+          fi
+
+  check:
+    needs: guard
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - name: Full check
+        run: cargo xtask check
+
+  tag:
+    needs: [guard, check]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      tag: ${{ steps.compute.outputs.tag }}
+      stable: ${{ steps.compute.outputs.stable }}
+      skip: ${{ steps.compute.outputs.skip }}
+    env:
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+      STABLE: ${{ github.event_name == 'workflow_dispatch' && inputs.stable == true }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: Swatinem/rust-cache@v2
+      - name: Compute the tag and stop if this commit is already published
+        id: compute
+        run: |
+          set -eu
+          if [ "$STABLE" = "true" ]; then
+            TAG=$(cargo xtask version --tag --stable)
+          else
+            TAG=$(cargo xtask version --tag)
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "stable=$STABLE" >> "$GITHUB_OUTPUT"
+          skip=false
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
+            if [ "$STABLE" = "true" ]; then
+              echo "::error::tag $TAG already exists; a stable version is published only once"
+              exit 1
+            fi
+            git fetch --no-tags --force origin "refs/tags/$TAG:refs/tags/$TAG"
+            TAG_COMMIT=$(git rev-parse "refs/tags/$TAG^{commit}")
+            if [ "$TAG_COMMIT" != "$GITHUB_SHA" ]; then
+              echo "::error::tag $TAG already exists at $TAG_COMMIT, not at $GITHUB_SHA"
+              exit 1
+            fi
+            if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+              echo "::notice::release $TAG already exists for this commit; nothing to publish"
+              skip=true
+            fi
+          fi
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: [check, tag]
+    if: needs.tag.outputs.skip != 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            musl: true
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    env:
+      TAG: ${{ needs.tag.outputs.tag }}
+      TARGET: ${{ matrix.target }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install musl tools
+        if: matrix.musl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+      - name: Add the Rust target
+        run: rustup target add "$TARGET"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Release build
+        run: cargo build --release --locked --target "$TARGET" -p oxysol
+      - name: Archive (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          name="oxysol-$TAG-$TARGET"
+          mkdir -p "dist/$name"
+          cp "target/$TARGET/release/oxysol" README.md LICENSE "dist/$name/"
+          tar -C dist -czf "dist/$name.tar.gz" "$name"
+      - name: Archive (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $name = "oxysol-$env:TAG-$env:TARGET"
+          New-Item -ItemType Directory -Force -Path "dist/$name" | Out-Null
+          Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE" -Destination "dist/$name"
+          Compress-Archive -Path "dist/$name" -DestinationPath "dist/$name.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: archive-${{ matrix.target }}
+          path: |
+            dist/*.zip
+            dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: [tag, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.tag.outputs.tag }}
+      STABLE: ${{ needs.tag.outputs.stable }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: archive-*
+          merge-multiple: true
+          path: release
+      - name: Write SHA256SUMS
+        working-directory: release
+        run: |
+          sha256sum oxysol-* > SHA256SUMS
+          cat SHA256SUMS
+      - name: Create the tag and the GitHub Release on the tested commit
+        run: |
+          args=(--target "$GITHUB_SHA" --title "oXySol $TAG" --generate-notes)
+          if [ "$STABLE" != "true" ]; then
+            args+=(--prerelease)
+          fi
+          gh release create "$TAG" --repo "$REPO" "${args[@]}" release/*
+
+  site:
+    needs: [tag, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      TAG: ${{ needs.tag.outputs.tag }}
+      REPO: ${{ github.repository }}
+      MDBOOK_VERSION: v0.4.52
+      MDBOOK_SHA256: c0b903f01dd8f4edc644372ad2b80b1fdddd12552d37b6a098657cbd8eddd768
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mdBook
+        run: |
+          set -eu
+          dir="$RUNNER_TEMP/mdbook"
+          mkdir -p "$dir"
+          curl -fsSL -o "$dir/mdbook.tar.gz" "https://github.com/rust-lang/mdBook/releases/download/${MDBOOK_VERSION}/mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          echo "${MDBOOK_SHA256}  $dir/mdbook.tar.gz" | sha256sum -c -
+          tar -xzf "$dir/mdbook.tar.gz" -C "$dir"
+          echo "$dir" >> "$GITHUB_PATH"
+      - name: Insert the version and the release link
+        run: |
+          set -eu
+          sed \
+            -e "s|{{VERSION}}|$TAG|g" \
+            -e "s|{{RELEASE_URL}}|https://github.com/$REPO/releases/tag/$TAG|g" \
+            docs/site/src/index.md > "$RUNNER_TEMP/index.md"
+          cp "$RUNNER_TEMP/index.md" docs/site/src/index.md
+      - name: Build the site
+        run: mdbook build docs/site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/site/book
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
