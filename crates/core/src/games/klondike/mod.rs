@@ -1,45 +1,112 @@
-//! Klondike. Phase 1 stub: a real shuffled deal, every card in the stock, drawn to the waste.
+//! Klondike: seven columns, a stock drawn to the waste one or three cards at a time, four
+//! foundations. The module follows the shared layout of the games: state and deal here, validation
+//! and execution in `rules`, move generation and the hint in `moves`.
 
+mod moves;
+mod rules;
+#[cfg(test)]
+mod tests;
+
+use crate::card::Card;
 use crate::deck;
 use crate::game::{DrawCount, Game};
-use crate::games::stub::StockStub;
 use crate::moves::{Move, MoveError};
-use crate::pile::{PileRef, PileSnapshot};
+use crate::pile::{PileRef, PileSnapshot, TableCard};
 
+const COLUMNS: usize = 7;
+const FOUNDATIONS: usize = 4;
+const DECK_SIZE: usize = 52;
+
+/// One tableau column. `up` is always a descending, alternating run; `up` is empty only when
+/// `down` is empty too, because a face-down card is turned over as soon as it is exposed.
+#[derive(Debug, Clone, Default)]
+struct Column {
+    down: Vec<Card>,
+    up: Vec<Card>,
+}
+
+/// A Klondike game. The top card of every pile is the last element of its vector.
+#[derive(Debug, Clone)]
 pub(crate) struct Klondike {
-    table: StockStub,
+    draw: DrawCount,
+    stock: Vec<Card>,
+    waste: Vec<Card>,
+    foundations: [Vec<Card>; FOUNDATIONS],
+    columns: [Column; COLUMNS],
 }
 
 impl Klondike {
-    pub(crate) fn deal(draw: DrawCount, seed: u64) -> Self {
-        let per_draw = match draw {
-            DrawCount::One => 1,
-            DrawCount::Three => 3,
-        };
+    fn empty(draw: DrawCount) -> Self {
         Self {
-            table: StockStub::new(deck::standard(), seed, PileRef::Waste, per_draw),
+            draw,
+            stock: Vec::new(),
+            waste: Vec::new(),
+            foundations: Default::default(),
+            columns: Default::default(),
         }
     }
+
+    /// Deals a shuffled deck from `seed`: column *i* gets *i*+1 cards with the last one face up,
+    /// the remaining 24 form the stock.
+    pub(crate) fn deal(draw: DrawCount, seed: u64) -> Self {
+        let mut cards = deck::standard();
+        deck::shuffle_with_seed(&mut cards, seed);
+        let mut game = Self::empty(draw);
+        let mut rest = cards.into_iter();
+        for (index, column) in game.columns.iter_mut().enumerate() {
+            column.down = rest.by_ref().take(index + 1).collect();
+            column.up.extend(column.down.pop());
+        }
+        game.stock = rest.collect();
+        game
+    }
+}
+
+fn snapshot(pile: PileRef, down: &[Card], up: &[Card]) -> PileSnapshot {
+    let face = |face_up| move |&card| TableCard { card, face_up };
+    PileSnapshot {
+        pile,
+        cards: down
+            .iter()
+            .map(face(false))
+            .chain(up.iter().map(face(true)))
+            .collect(),
+    }
+}
+
+fn index_ref(index: usize) -> u8 {
+    u8::try_from(index).unwrap_or(u8::MAX)
 }
 
 impl Game for Klondike {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError> {
-        self.table.apply(mv)
+        self.execute(mv)
     }
 
     fn legal_moves(&self) -> Vec<Move> {
-        self.table.legal_moves()
+        self.enumerate_moves()
     }
 
     fn hint(&self) -> Option<Move> {
-        self.table.hint()
+        self.suggest()
     }
 
     fn is_won(&self) -> bool {
-        self.table.is_won()
+        self.foundations.iter().map(Vec::len).sum::<usize>() == DECK_SIZE
     }
 
     fn piles(&self) -> Vec<PileSnapshot> {
-        self.table.piles()
+        let foundations = self.foundations.iter().enumerate();
+        let columns = self.columns.iter().enumerate();
+        let mut piles = vec![
+            snapshot(PileRef::Stock, &self.stock, &[]),
+            snapshot(PileRef::Waste, &[], &self.waste),
+        ];
+        piles.extend(
+            foundations.map(|(i, cards)| snapshot(PileRef::Foundation(index_ref(i)), &[], cards)),
+        );
+        piles
+            .extend(columns.map(|(i, c)| snapshot(PileRef::Tableau(index_ref(i)), &c.down, &c.up)));
+        piles
     }
 }
