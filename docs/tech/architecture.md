@@ -235,7 +235,9 @@ pub struct NullAudio;                                    // always unavailable a
   settings and arguments. `remote` (an SSH session) switches audio off.
 - **Accessibility:** every `Action` has a key binding and a mouse path. `announce` produces a
   one-line plain-text description of the focus and the last event ("Tableau 3: seven of hearts
-  selected, 2 targets") shown in the status area. Sound cues duplicate, never replace, visible feedback.
+  selected, 2 targets") shown in the status area, followed by the last event. The `Unicode` glyph set
+  uses only WGL4 symbols (no `▶ ◀`, rounded, heavy, dashed or dotted lines). Sound cues duplicate,
+  never replace, visible feedback.
 - **Clock:** `GameClock` computes elapsed time from a passed-in `Instant`; pause and modals stop it.
 
 - **Autosave (P4-03):** `app/persist.rs`. A new game calls `Storage::start_game` and logs the deal at

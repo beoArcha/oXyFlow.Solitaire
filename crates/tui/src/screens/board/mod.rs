@@ -23,6 +23,7 @@ use self::choices::Choice;
 use self::cursor::Cursor;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
+use crate::announce;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
 use crate::i18n::t;
@@ -102,6 +103,7 @@ impl BoardScreen {
         self.clock = GameClock::stopped(Duration::ZERO);
         self.clock.resume(now);
         self.settle();
+        self.announce_event(status::RESTARTED);
     }
 
     /// The running session, if a game was started.
@@ -175,9 +177,11 @@ impl BoardScreen {
     }
 
     fn status_text(&self) -> String {
-        self.status
+        let event = self
+            .status
             .map(|key| t(key).into_owned())
-            .unwrap_or_default()
+            .unwrap_or_default();
+        announce::announce(&self.focus_text(), &event)
     }
 
     /// Handles a key press mapped to `action`; the effect is for the application to apply.

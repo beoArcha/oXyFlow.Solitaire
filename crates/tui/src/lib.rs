@@ -19,6 +19,8 @@ pub mod theme;
 pub mod widgets;
 
 #[cfg(test)]
+mod accessibility_tests;
+#[cfg(test)]
 mod test_support;
 
 pub use app::{App, Deps, Modal, Screen};

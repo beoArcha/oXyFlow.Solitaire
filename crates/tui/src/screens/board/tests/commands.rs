@@ -124,7 +124,7 @@ fn no_legal_moves_gives_a_message_and_no_hint() {
     assert_eq!(status(&h), Some(status::NO_HINT));
     assert_eq!(cues(&h), vec![SoundCue::Illegal]);
     h.type_char('u');
-    assert_eq!(status(&h), None);
+    assert_eq!(status(&h), Some("board.status.undone"));
 }
 
 #[test]
