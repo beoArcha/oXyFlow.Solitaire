@@ -1,17 +1,17 @@
 # Strings of the menu area: the main menu, the seed entry and the game selection.
 # Items shared with the rest of the interface (New game, Settings, Quit, the variant names)
 # live in common.toml.
-resume = "Resume"
-new_game_from_seed = "New game from seed"
-help = "Help"
-select_seed = "Choose a game for seed {seed}"
+resume = "Wznów"
+new_game_from_seed = "Nowa gra z ziarna"
+help = "Pomoc"
+select_seed = "Wybierz grę dla ziarna {seed}"
 
 [seed]
-title = "New game from seed"
-prompt = "Type a seed: a whole number from 0 to 18446744073709551615."
-continue = "Continue"
-back = "Back"
-keys = "Digits type the seed   Backspace Delete   Enter Continue   Esc Back"
-error_empty = "Type a seed first."
-error_not_numeric = "A seed is a whole number: use the digits 0 to 9 only."
-error_out_of_range = "This seed is too large. The largest seed is 18446744073709551615."
+title = "Nowa gra z ziarna"
+prompt = "Wpisz ziarno: liczbę całkowitą od 0 do 18446744073709551615."
+continue = "Dalej"
+back = "Wstecz"
+keys = "Cyfry wpisują ziarno   Backspace Usuń   Enter Dalej   Esc Wstecz"
+error_empty = "Najpierw wpisz ziarno."
+error_not_numeric = "Ziarno jest liczbą całkowitą: używaj tylko cyfr od 0 do 9."
+error_out_of_range = "To ziarno jest za duże. Największe dopuszczalne ziarno to 18446744073709551615."

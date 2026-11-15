@@ -105,7 +105,7 @@ fn lookup_falls_back_to_the_key() {
 fn lookup_uses_the_selected_locale() {
     set_locale(Locale::PlPl);
     assert_eq!(locale(), Locale::PlPl);
-    assert_eq!(t("common.menu.quit"), "Quit");
+    assert_eq!(t("common.menu.quit"), "Zakończ");
     set_locale(Locale::EnUs);
 }
 

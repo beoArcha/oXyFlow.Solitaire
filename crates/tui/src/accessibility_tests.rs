@@ -205,12 +205,12 @@ fn every_theme_meets_its_contrast_target_for_the_text_pairs() {
 fn every_rejection_and_board_event_is_announced_in_both_locales() {
     for locale in Locale::ALL {
         set_locale(locale);
+        let prefix = match locale {
+            Locale::EnUs => "Illegal move: ",
+            Locale::PlPl => "Niedozwolony ruch: ",
+        };
         for key in REJECTIONS {
-            assert!(
-                t(key).starts_with("Illegal move: "),
-                "{locale:?} {key}: {}",
-                t(key)
-            );
+            assert!(t(key).starts_with(prefix), "{locale:?} {key}: {}", t(key));
         }
         for key in EVENTS {
             assert_ne!(t(key), key, "{locale:?} {key}");
