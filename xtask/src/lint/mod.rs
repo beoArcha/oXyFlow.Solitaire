@@ -1,11 +1,6 @@
 //! Source lint runner. Rule modules return findings; this module collects the sources, applies
 //! `lint-exceptions.toml` and prints the result.
 
-#![allow(
-    dead_code,
-    reason = "the lint types are populated by the rule modules, which are stubs for now"
-)]
-
 pub mod comments;
 pub mod err_arms;
 pub mod err_types;
