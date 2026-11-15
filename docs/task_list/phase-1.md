@@ -15,6 +15,8 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
   - `rng.rs`: SplitMix64, unbiased `below(n)` (rejection sampling), Fisher–Yates shuffle.
   - `pile.rs`, `moves.rs`: `PileRef`, `TableCard`, `PileSnapshot`, `Move` with `source()`/`target()`,
     `MoveError` (`thiserror`) with the rejection reasons the four games need.
+  - Seeds (R-18): the same seed must give the same deal on every platform and version; `rng.rs`
+    uses only integer arithmetic with explicit wrapping, no `usize`-width or float dependence.
   - `rules.rs`: shared predicates — descending alternating colors, descending same suit, descending
     by rank, building a foundation up from the ace.
   - Stable serde names on serialized types.
@@ -25,16 +27,13 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
 
 - **Owner:** Sonnet
 - **Depends on:** P1-01
-- **Files:** `crates/core/src/{game.rs,session.rs}`, `crates/core/src/games/**` (stubs), `crates/core/tests/playout.rs`, `xtask/src/check.rs`
+- **Files:** `crates/core/src/{game.rs,session.rs}`, `crates/core/src/games/**` (stubs), `crates/core/tests/playout.rs`
 - **Scope:**
   - `game.rs`: trait `Game`, `Variant` (with `Variant::ALL`), `DrawCount`, `SuitCount`, `deal(variant, seed)`.
   - Stubs for the four games with final type names and `deal` constructors, compiling and lint-clean,
     so phase 2 fills them in without touching `game.rs`.
   - `session.rs`: `Session`, `SessionRecord`, `RestoreError`; undo, redo, `restart` and `restore` by
     replaying the log from the seed.
-  - `xtask/src/check.rs`: `check --quick` currently runs only `--lib --bins --test integration`.
-    Make it run every test target except `architecture` and `e2e`, so engine integration tests
-    (`playout`, later `flows`) are part of the quick check.
   - `tests/playout.rs`: one shared test over every `Variant` and seeds 0..50 — a random playout
     drawn from `legal_moves()` checking:
     1. every move from `legal_moves()` is accepted by `apply`;
@@ -48,7 +47,7 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
 
 ### F-01 — Checkpoint: engine contract
 
-- **Owner:** Fable
+- **Owner:** Opus (Fable only if Opus cannot settle a contract question — R-14)
 - **Depends on:** P1-02
 - **Scope:** read `game.rs`, `session.rs`, `moves.rs`, `pile.rs` and the playout test — not the whole
   diff. Confirm the contract can express all four games and the shared TUI interaction, or change it
@@ -59,7 +58,7 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
 ### P1-03 — Comment lint and phase 1 gate
 
 - **Owner:** Haiku
-- **Depends on:** P1-02, M-01…M-06
+- **Depends on:** P1-02, P0-03, M-01…M-06
 - **Files:** `xtask/src/lint/comments.rs`, fixes in files of M-01…M-06
 - **Scope:**
   - `comments`: tokenize with `ra_ap_rustc_lexer`; take function-body ranges from `syn`

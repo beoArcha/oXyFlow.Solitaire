@@ -6,9 +6,9 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 | ID | Card | Lane | Needs | Status |
 |---|---|---|---|---|
-| M-01 | Lint rule: file length | Beo | P0-01 | READY |
-| M-02 | Lint rule: nesting depth | Oxy | P0-01 | READY |
-| M-03 | Lint rule: empty `Err` arms | Son | P0-01 | READY |
+| M-01 | Lint rule: file length | Beo | P0-01 | DONE |
+| M-02 | Lint rule: nesting depth | Oxy | P0-01 | DONE |
+| M-03 | Lint rule: empty `Err` arms | Son | P0-01 | DONE |
 | M-04 | Lint rule: vague error types | Beo | P0-01 | READY |
 | M-05 | Metadata sync | Oxy | P0-01 | READY |
 | M-06 | Architecture tests | Son | P0-01 | READY |
@@ -101,7 +101,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 - **Do:** four tests reading files relative to `env!("CARGO_MANIFEST_DIR")`:
   1. `[dependencies]` of `crates/core/Cargo.toml` contains nothing but `serde` and `thiserror`;
   2. `[dependencies]` of `crates/tui/Cargo.toml` contains none of `oxysol`, `serde_json`,
-     `directories`, `cpal`, `midly`;
+     `directories`, `cpal`, `midly`, `rusqlite`;
   3. no `.rs` file under `crates/core/src` contains `std::fs`, `std::io`, `std::env`, `std::time`,
      `std::net`, `std::process`, `std::thread`, `println!` or `eprintln!`;
   4. `crates/core/src/lib.rs` does not contain `pub mod games`.
@@ -115,15 +115,16 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
   ```rust
   pub enum ColorArg { Ansi16, Ansi256, TrueColor }
-  pub struct Cli { pub show_version: bool, pub show_help: bool, pub ascii: bool, pub colors: Option<ColorArg> }
+  pub struct Cli { pub show_version: bool, pub show_help: bool, pub ascii: bool, pub colors: Option<ColorArg>, pub seed: Option<u64> }
   pub enum CliError { UnknownArgument(String), MissingValue(&'static str), InvalidValue { flag: &'static str, value: String } }
   pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError>;
   ```
 
-  Flags: `--version`, `--help`, `--ascii`, `--colors <16|256|truecolor>`. `CliError` derives
+  Flags: `--version`, `--help`, `--ascii`, `--colors <16|256|truecolor>`, `--seed <u64>` (decimal). `CliError` derives
   `thiserror::Error`. `args` excludes the program name.
 - **Done when:** tests pass for no arguments, each flag, all three color values, `--colors` without
-  a value, `--colors 8`, and an unknown argument.
+  a value, `--colors 8`, `--seed 42`, `--seed 18446744073709551615`, `--seed -1`, `--seed abc`,
+  `--seed` without a value, and an unknown argument.
 
 ## Wiki: rules
 

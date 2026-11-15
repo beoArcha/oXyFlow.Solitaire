@@ -70,23 +70,57 @@ shared file already has its final shape so later tasks do not collide.
 - **Acceptance:** every original section present; every amendment applied exactly once and
   traceable; no statement contradicts `decisions.md`.
 
-### P0-03 — CI, branch protection, promotion
+### P0-03 — CI: pull requests, main, promotion
 
 - **Owner:** Haiku
 - **Depends on:** P0-01
-- **Files:** `.github/workflows/{pr.yml,main.yml}`, `docs/tech/workflow.md`
-- **Scope:**
-  - `pr.yml`: on pull requests to `main`; one Ubuntu job; toolchain from `rust-toolchain.toml`,
-    cache, `cargo xtask check --quick`.
-  - `main.yml`: on push to `main`; matrix Ubuntu, Windows, macOS running `cargo xtask check`; then a
-    `promote` job that fast-forwards `release` to the tested commit. A stale run must not move
-    `release` backwards (fast-forward only, one run at a time).
-  - Branch rules: `main` — pull request required, `pr.yml` check required, squash merge only, no
-    force-push or deletion. `release` — updated only by the promotion job, no force-push or deletion.
-    Work out which credential the promotion job needs to pass the `release` rule and document it.
-  - `workflow.md`: branch naming, PR title format, the three workflows, the secrets and settings the
-    user must create by hand.
-- **Acceptance:** a throwaway PR shows `pr.yml` running and blocking merge when a test fails; after
-  merge `main.yml` goes green and `release` points at the same commit; a direct push to `main` is
-  rejected. Report exactly which of these were observed on GitHub and which were not.
-- **Out of scope:** deployment (`deploy.yml` is P7-02).
+- **Files:** `xtask/src/{main.rs,check.rs,affected.rs,error.rs}`, `.github/workflows/{pr.yml,main.yml}`, `docs/tech/workflow.md`
+- **Scope (R-16, R-17, T-19, T-22, T-23):**
+  - `check --quick`: run every test target except `architecture` and `e2e` (today it runs only
+    `--lib --bins --test integration`, so tests under `crates/*/tests` are skipped).
+  - `affected.rs`: a pure function from changed paths to `Affected` (`All`, or a set of package
+    names) implementing T-22, and `cargo xtask affected --base <ref>`, which takes the paths from
+    `git diff --name-only <ref>...HEAD` and prints one package per line (`*` for all).
+  - `check --pr <base>`: fmt, Clippy, lint, `cargo test --workspace --test architecture --test e2e`,
+    then the unit and integration tests of each affected package (all its targets except those two);
+    no package tests when none is affected.
+  - `pr.yml`: `pull_request` to `main` (`opened`, `synchronize`, `reopened`); Ubuntu;
+    `fetch-depth: 0`; toolchain from `rust-toolchain.toml`; `Swatinem/rust-cache`;
+    `cargo xtask check --pr origin/${{ github.base_ref }}`; superseded runs of the same PR cancelled.
+  - `main.yml`: push to `main` and `workflow_dispatch`; matrix Ubuntu, Windows, macOS running
+    `cargo xtask check`; then `promote` (needs the matrix; `concurrency` one at a time, never
+    cancelled): stop if `release` already contains the commit; otherwise push the tested SHA to
+    `release` over SSH with secret `RELEASE_DEPLOY_KEY` as a plain (non-force) push, so a stale run
+    cannot move `release` backwards; then `gh workflow run release.yml --ref release`, skipped with a
+    notice while `release.yml` does not exist.
+  - `workflow.md`: branch naming, PR title format, the three workflows and what each runs, versions
+    (T-21), the deploy key, rulesets and Pages settings, and how to reproduce each CI step locally.
+- **Acceptance:** unit tests for `affected` (docs only → none; `crates/core/src/x.rs` → core, tui,
+  oxysol; `crates/tui/…` → tui, oxysol; `src/…` and `tests/…` → oxysol; `xtask/…` → xtask;
+  `Cargo.lock` → all; mixed input); workflows are valid YAML; the PR's own `pr.yml` run is green.
+- **Done by Opus after merge:** deploy key and secret, rulesets for `main` and `release`, Pages source.
+
+### P0-04 — Release workflow: build, tag, publish, site
+
+- **Owner:** Haiku
+- **Depends on:** P0-03
+- **Files:** `.github/workflows/release.yml`, `xtask/src/{main.rs,version.rs}`, `docs/site/**`, `docs/tech/workflow.md`
+- **Scope (R-17, T-18, T-21):**
+  - `cargo xtask version` prints the version from `metadata.toml`; `cargo xtask version --tag
+    [--stable]` prints the T-21 tag. The tag is computed by a pure function of version, commit
+    count and `stable`.
+  - `release.yml`: on push to `release` and `workflow_dispatch` (boolean input `stable`, default
+    false); refuses any ref but `release`; one run at a time.
+    1. full check on Ubuntu, Windows, macOS;
+    2. release builds for `x86_64-pc-windows-msvc`, `x86_64-unknown-linux-gnu`,
+       `x86_64-unknown-linux-musl` (`musl-tools`), `x86_64-apple-darwin`, `aarch64-apple-darwin`;
+       each archived (`.zip` on Windows, `.tar.gz` elsewhere) with `README.md` and `LICENSE` as
+       `oxysol-<tag>-<target>`, uploaded as workflow artifacts;
+    3. compute the tag; fail clearly if it exists; create it on the tested SHA;
+    4. a GitHub Release with every archive and a `SHA256SUMS` file; `prerelease` unless `stable`;
+    5. build the site from `docs/site/` with mdBook (prebuilt binary or action, no Rust
+       dependency added), insert version and release link, deploy with `actions/deploy-pages`.
+  - `docs/site/`: `book.toml`, `SUMMARY.md`, `index.md` (what oXySol is, status: pre-release,
+    download link to the latest release, link to the repository). P7-02 grows it into the player wiki.
+- **Acceptance:** tests for `version` and the tag function; workflow is valid; after merge Opus
+  states whether the first promotion produced a pre-release with five archives and an updated page.

@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0, written before implementation. Tasks P1-01, P1-02 and P3-01 may refine it.
+Status: contract v0.1 (2026-11-15: SQLite, seeds, CI — R-16…R-19), written before implementation. Tasks P1-01, P1-02 and P3-01 may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -9,8 +9,8 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 |---|---|---|---|
 | `oxysol-core` | `crates/core` | cards, decks, shuffling, rules of four games, session (undo/redo, replay) | `serde`, `thiserror` |
 | `oxysol-tui` | `crates/tui` | rendering, layout, input, themes, localization, screens, accessibility | `oxysol-core`, `ratatui` (Crossterm via `ratatui::crossterm`), `serde`, `toml`, `thiserror`, `tracing` |
-| `oxysol` | `src/` (lib + bin) | entry point, arguments, paths, JSON persistence, audio output, logging, panic hook | both above, `serde_json`, `directories`, `midly`, `cpal`, `tracing`, `tracing-subscriber`, `thiserror` |
-| `xtask` | `xtask/` | `check`, `lint`, `sync-metadata`, `fonts`, `midi`, `version` | `syn`, `proc-macro2`, `toml`, `toml_edit`, `thiserror`, `ra-ap-rustc_lexer` |
+| `oxysol` | `src/` (lib + bin) | entry point, arguments, paths, SQLite persistence, audio output, logging, panic hook | both above, `rusqlite` (`bundled`), `serde_json`, `directories`, `midly`, `cpal`, `tracing`, `tracing-subscriber`, `thiserror` |
+| `xtask` | `xtask/` | `check`, `affected`, `lint`, `sync-metadata`, `fonts`, `midi`, `version` | `syn`, `proc-macro2`, `toml`, `toml_edit`, `thiserror`, `ra-ap-rustc_lexer` |
 
 `oxysol` → `oxysol-tui` → `oxysol-core`. The engine uses no `std::fs`, `std::io`, `std::env`,
 `std::time`, `std::net`, `std::process`, `std::thread` and no printing macros.
@@ -30,10 +30,10 @@ assets/cards/fronts/<style>/   style.toml glyphs/*.svg
 assets/cards/backs/<style>/    style.toml glyphs/*.svg
 assets/cards/codepoints.toml   glyph → code point registry
 assets/audio/<style>/          style.toml *.mid (optional scores/*.txt)
-xtask/src/               main.rs sync_metadata.rs lint/ fonts.rs midi.rs
+xtask/src/               main.rs check.rs affected.rs version.rs sync_metadata.rs lint/ fonts.rs midi.rs
 tests/                   architecture/ integration/ e2e/   (each with main.rs)
-docs/                    wiki/ tech/ task_list/
-.github/workflows/       pr.yml main.yml deploy.yml
+docs/                    site/ wiki/ tech/ task_list/
+.github/workflows/       pr.yml main.yml release.yml
 ```
 
 ## Engine (`oxysol-core`)
@@ -116,7 +116,7 @@ pub struct Deps {
     pub storage: Box<dyn Storage>,
     pub audio: Box<dyn Audio>,
     pub caps: TerminalCaps,
-    pub seeds: Box<dyn FnMut() -> u64>,
+    pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed or `--seed` seed bypasses it
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 
@@ -135,8 +135,12 @@ pub trait Storage {
     fn load_game(&self) -> Result<Option<SavedGame>, StorageError>;
     fn save_game(&mut self, game: &SavedGame) -> Result<(), StorageError>;
     fn clear_game(&mut self) -> Result<(), StorageError>;
+    fn start_game(&mut self, variant: Variant, seed: u64) -> Result<GameId, StorageError>;  // history row
+    fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64) -> Result<(), StorageError>;
 }
-pub struct SavedGame { pub record: SessionRecord, pub elapsed_ms: u64 }
+pub struct GameId(pub i64);
+pub enum Outcome { Won, Abandoned }
+pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64 }
 
 pub enum SoundCue { CardPick, CardPlace, CardFlip, StockDeal, Illegal, Undo, Hint, Win, MenuMove, MenuSelect }
 pub trait Audio {
@@ -168,10 +172,17 @@ pub trait Audio {
 
 ## Application (`oxysol`)
 
-- **Persistence:** `JsonStorage` implements `Storage`. `settings.json` (config dir) and
-  `savegame.json` (data dir) use the envelope `{ "format": 1, "app_version": "…", "data": … }`.
-  A missing file is `Ok(None)`; a corrupt or incompatible file is a concrete `StorageError`. The TUI
-  decides how to react (alert, defaults) and logs there.
+- **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
+  (`OXYSOL_HOME` overrides). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
+  started_at, finished_at, outcome, elapsed_ms) and `saved_game` (one row: game id, `SessionRecord`
+  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version`; a version newer than
+  the app knows is `StorageError::Incompatible`; a file that is not a readable database is
+  `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
+  how to react (alert, defaults) and logs there.
+- **Seeds (R-18):** the binary supplies fresh seeds through `Deps::seeds` (from
+  `std::collections::hash_map::RandomState` mixed with the clock — no new dependency); `--seed <u64>`
+  starts straight into a game with that seed. The board header shows the seed; the menu offers
+  "New game from seed".
 - **Audio:** `src/audio/` implements `Audio`: MIDI sequencing and a built-in synthesizer as pure
   code (`render` is testable without a device), plus `cpal` output. Sound styles are embedded from
   `assets/audio/` at build time. Feature `audio` can be disabled; a `NullAudio` is used when the
@@ -192,8 +203,9 @@ Logs go only to `oxysol.log`; nothing is written to stdout or stderr while the T
 
 | Command | Steps | Where |
 |---|---|---|
-| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint`, unit and integration tests | locally before a PR; `pr.yml` |
-| `cargo xtask check` | the above plus architecture and E2E tests and `sync-metadata --check` | `main.yml` on three systems |
+| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint`, every test target except `architecture` and `e2e` | locally before a PR |
+| `cargo xtask check --pr <base>` | fmt, Clippy, lint, the `architecture` and `e2e` suites, unit and integration tests of the packages that `affected --base <base>` selects | `pr.yml` (Linux) |
+| `cargo xtask check` | everything: all test targets and `sync-metadata --check` | `main.yml` and `release.yml` on three systems |
 
 Definitions used by `xtask lint`:
 

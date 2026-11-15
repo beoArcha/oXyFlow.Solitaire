@@ -28,7 +28,7 @@ confirmed by spike X-01 before any production work.
 
 ### F-02 — Checkpoint: graphics delivery
 
-- **Owner:** Fable
+- **Owner:** Opus (Fable only on escalation — R-14)
 - **Depends on:** X-01
 - **Scope:** decide D-06 with the user from the spike report: the delivery method, the code point
   range, the glyph box and metrics, single-cell versus mosaic scope, the build tool. Record it in
