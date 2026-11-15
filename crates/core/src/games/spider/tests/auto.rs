@@ -1,5 +1,5 @@
 use super::*;
-use crate::moves::MoveError::{InvalidSequence, StockEmpty, TargetRejects};
+use crate::moves::MoveError::{EmptyColumnBlocksDeal, InvalidSequence, StockEmpty};
 
 const ALMOST_SPADES: &str = "KS QS JS 10S 9S 8S 7S 6S 5S 4S 3S 2S";
 const ALMOST_HEARTS: &str = "KH QH JH 10H 9H 8H 7H 6H 5H 4H 3H 2H";
@@ -126,6 +126,6 @@ fn the_stock_is_refused_while_a_column_is_empty() {
     fill_empty_columns(&mut game);
     game.columns[4] = Column::default();
     game.stock = cards(TEN_CARDS);
-    assert_rejected(&game, Move::Stock, TargetRejects);
+    assert_rejected(&game, Move::Stock, EmptyColumnBlocksDeal);
     assert_eq!(game.stock.len(), 10);
 }

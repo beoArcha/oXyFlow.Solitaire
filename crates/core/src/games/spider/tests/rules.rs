@@ -164,3 +164,15 @@ fn the_last_move_wins_the_game() {
     assert_accepted(&mut game, transfer(tab(1), tab(0), 1));
     assert!(game.is_won());
 }
+
+#[test]
+fn a_won_game_accepts_no_moves() {
+    let mut game = table();
+    for foundation in &mut game.foundations {
+        *foundation = cards(SPADES_RUN);
+    }
+    assert!(game.legal_moves().is_empty());
+    assert_eq!(game.hint(), None);
+    assert_rejected(&game, Move::Stock, Unsupported);
+    assert_rejected(&game, transfer(tab(0), tab(1), 1), Unsupported);
+}

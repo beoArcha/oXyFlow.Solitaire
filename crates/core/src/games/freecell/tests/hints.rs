@@ -71,3 +71,11 @@ fn no_cards_means_no_hint() {
     assert_eq!(game.legal_moves(), Vec::new());
     assert_hint(&game, None);
 }
+
+#[test]
+fn a_whole_run_is_never_hinted_to_an_empty_column() {
+    let mut game = table();
+    game.columns[0] = cards("8S 7H");
+    assert!(game.legal_moves().contains(&transfer(tab(0), tab(1), 2)));
+    assert_hint(&game, Some(transfer(tab(0), tab(1), 1)));
+}

@@ -12,6 +12,7 @@ mod tests;
 use crate::card::{Card, Rank};
 use crate::deck;
 use crate::game::{Game, PyramidRules};
+use crate::games::index_ref;
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot, TableCard};
 
@@ -93,10 +94,6 @@ pub(super) fn value(card: Card) -> u8 {
     }
 }
 
-fn small(n: usize) -> u8 {
-    u8::try_from(n).unwrap_or(u8::MAX)
-}
-
 fn face_up(card: Card) -> TableCard {
     TableCard {
         card,
@@ -106,14 +103,23 @@ fn face_up(card: Card) -> TableCard {
 
 impl Game for Pyramid {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError> {
+        if self.is_won() {
+            return Err(MoveError::Unsupported);
+        }
         self.execute(mv)
     }
 
     fn legal_moves(&self) -> Vec<Move> {
+        if self.is_won() {
+            return Vec::new();
+        }
         self.enumerate_moves()
     }
 
     fn hint(&self) -> Option<Move> {
+        if self.is_won() {
+            return None;
+        }
         self.suggest()
     }
 
@@ -155,8 +161,8 @@ impl Game for Pyramid {
             for (index, slot) in slots.iter().enumerate() {
                 piles.push(PileSnapshot {
                     pile: PileRef::Pyramid {
-                        row: small(row),
-                        index: small(index),
+                        row: index_ref(row),
+                        index: index_ref(index),
                     },
                     cards: slot.iter().copied().map(face_up).collect(),
                 });

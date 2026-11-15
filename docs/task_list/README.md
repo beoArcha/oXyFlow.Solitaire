@@ -68,11 +68,11 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | P1-02 | Game contract and session | Sonnet | P1-01 | DONE |
 | F-01 | Checkpoint: engine contract | Opus | P1-02 | DONE |
 | P1-03 | Comment lint and phase 1 gate | Haiku | P1-02, P0-03, M-01…M-06 | DONE |
-| P2-01 | Klondike | Sonnet | F-01 | TODO |
-| P2-02 | Spider | Sonnet | P2-01 | TODO |
-| P2-03 | FreeCell | Haiku | P2-01 | TODO |
-| P2-04 | Pyramid (Relaxed, Classic) | Haiku | P2-01 | TODO |
-| P2-05 | Gate: game rules and flow tests | Sonnet | P2-01…P2-04 | TODO |
+| P2-01 | Klondike | Sonnet | F-01 | DONE |
+| P2-02 | Spider | Sonnet | P2-01 | DONE |
+| P2-03 | FreeCell | Haiku | P2-01 | DONE |
+| P2-04 | Pyramid (Relaxed, Classic) | Haiku | P2-01 | DONE |
+| P2-05 | Gate: game rules and flow tests | Sonnet | P2-01…P2-04 | DONE |
 | P3-01 | TUI foundation | Sonnet | P1-02 | TODO |
 | P3-02 | Board geometry and rendering | Sonnet | P3-01, P2-01 | TODO |
 | P3-03 | Board controller | Sonnet | P3-02 | TODO |

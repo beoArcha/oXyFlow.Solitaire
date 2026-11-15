@@ -199,3 +199,13 @@ fn the_last_card_wins_the_game() {
     assert_accepted(&mut game, transfer(cell(0), found(3), 1));
     assert!(game.is_won());
 }
+
+#[test]
+fn a_won_game_accepts_no_moves() {
+    let mut game = table();
+    full_foundations(&mut game);
+    assert!(game.legal_moves().is_empty());
+    assert_eq!(game.hint(), None);
+    assert_rejected(&game, transfer(found(3), tab(0), 1), Unsupported);
+    assert_rejected(&game, transfer(tab(0), cell(0), 1), Unsupported);
+}

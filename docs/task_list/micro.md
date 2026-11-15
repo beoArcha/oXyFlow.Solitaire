@@ -12,10 +12,10 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-04 | Lint rule: vague error types | Beo | P0-01 | DONE |
 | M-05 | Metadata sync | Oxy | P0-01 | DONE |
 | M-06 | Architecture tests | Son | P0-01 | DONE |
-| M-07 | Wiki: Klondike rules | Beo | P0-01 | READY |
-| M-08 | Wiki: Spider rules | Oxy | P0-01 | READY |
-| M-09 | Wiki: FreeCell rules | Son | P0-01 | READY |
-| M-10 | Wiki: Pyramid rules | Beo | P0-01 | READY |
+| M-07 | Wiki: Klondike rules | Beo | P0-01 | DONE |
+| M-08 | Wiki: Spider rules | Oxy | P0-01 | DONE |
+| M-09 | Wiki: FreeCell rules | Son | P0-01 | DONE |
+| M-10 | Wiki: Pyramid rules | Beo | P0-01 | DONE |
 | M-11 | Theme: Light palette | Beo | P3-01 | DRAFT |
 | M-12 | Theme: High Contrast palette | Oxy | P3-01 | DRAFT |
 | M-13 | RGB to 256-color conversion | Oxy | P0-01 | DONE |

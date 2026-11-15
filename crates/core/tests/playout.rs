@@ -54,12 +54,29 @@ fn probe(rng: &mut SplitMix64, pool: &[PileRef]) -> Option<Move> {
     }
 }
 
+fn swapped(mv: Move) -> Move {
+    match mv {
+        Move::Remove {
+            first,
+            second: Some(second),
+        } => Move::Remove {
+            first: second,
+            second: Some(first),
+        },
+        other => other,
+    }
+}
+
+fn is_listed(legal: &[Move], mv: Move) -> bool {
+    legal.contains(&mv) || legal.contains(&swapped(mv))
+}
+
 fn illegal_probes(session: &Session, legal: &[Move], rng: &mut SplitMix64) -> Vec<Move> {
     let mut pool: Vec<PileRef> = session.game().piles().iter().map(|p| p.pile).collect();
     pool.extend(MISSING);
     (0..PROBES_DRAWN)
         .filter_map(|_| probe(rng, &pool))
-        .filter(|mv| !legal.contains(mv))
+        .filter(|&mv| !is_listed(legal, mv))
         .take(PROBES_KEPT)
         .collect()
 }

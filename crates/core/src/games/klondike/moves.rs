@@ -1,6 +1,7 @@
 //! Move generation and the hint of Klondike.
 
 use super::{COLUMNS, FOUNDATIONS, Klondike, index_ref};
+use crate::games::transfer_parts;
 use crate::moves::Move;
 use crate::pile::PileRef;
 
@@ -26,13 +27,6 @@ fn targets() -> impl Iterator<Item = PileRef> {
     let foundations = (0..FOUNDATIONS).map(|i| PileRef::Foundation(index_ref(i)));
     let columns = (0..COLUMNS).map(|i| PileRef::Tableau(index_ref(i)));
     foundations.chain(columns)
-}
-
-fn transfer_parts(mv: Move) -> Option<(PileRef, PileRef, u8)> {
-    match mv {
-        Move::Transfer { from, to, count } => Some((from, to, count)),
-        Move::Stock | Move::Remove { .. } => None,
-    }
 }
 
 impl Klondike {

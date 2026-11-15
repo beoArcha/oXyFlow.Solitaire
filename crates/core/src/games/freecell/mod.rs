@@ -10,8 +10,9 @@ mod tests;
 use crate::card::Card;
 use crate::deck;
 use crate::game::Game;
+use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
-use crate::pile::{PileRef, PileSnapshot, TableCard};
+use crate::pile::{PileRef, PileSnapshot};
 
 const COLUMNS: usize = 8;
 const CELLS: usize = 4;
@@ -58,33 +59,25 @@ impl FreeCell {
     }
 }
 
-fn snapshot(pile: PileRef, cards: &[Card]) -> PileSnapshot {
-    PileSnapshot {
-        pile,
-        cards: cards
-            .iter()
-            .map(|&card| TableCard {
-                card,
-                face_up: true,
-            })
-            .collect(),
-    }
-}
-
-fn index_ref(index: usize) -> u8 {
-    u8::try_from(index).unwrap_or(u8::MAX)
-}
-
 impl Game for FreeCell {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError> {
+        if self.is_won() {
+            return Err(MoveError::Unsupported);
+        }
         self.execute(mv)
     }
 
     fn legal_moves(&self) -> Vec<Move> {
+        if self.is_won() {
+            return Vec::new();
+        }
         self.enumerate_moves()
     }
 
     fn hint(&self) -> Option<Move> {
+        if self.is_won() {
+            return None;
+        }
         self.suggest()
     }
 
@@ -97,17 +90,17 @@ impl Game for FreeCell {
             .foundations
             .iter()
             .enumerate()
-            .map(|(i, cards)| snapshot(PileRef::Foundation(index_ref(i)), cards));
+            .map(|(i, cards)| snapshot(PileRef::Foundation(index_ref(i)), &[], cards));
         let cells = self
             .cells
             .iter()
             .enumerate()
-            .map(|(i, cards)| snapshot(PileRef::Cell(index_ref(i)), cards));
+            .map(|(i, cards)| snapshot(PileRef::Cell(index_ref(i)), &[], cards));
         let columns = self
             .columns
             .iter()
             .enumerate()
-            .map(|(i, cards)| snapshot(PileRef::Tableau(index_ref(i)), cards));
+            .map(|(i, cards)| snapshot(PileRef::Tableau(index_ref(i)), &[], cards));
         foundations.chain(cells).chain(columns).collect()
     }
 }

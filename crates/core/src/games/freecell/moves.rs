@@ -2,6 +2,7 @@
 
 use super::{CELLS, COLUMNS, FOUNDATIONS, FreeCell, index_ref};
 use crate::card::Card;
+use crate::games::transfer_parts;
 use crate::moves::Move;
 use crate::pile::PileRef;
 
@@ -29,13 +30,6 @@ fn targets() -> impl Iterator<Item = PileRef> {
     foundations.chain(cells).chain(columns)
 }
 
-fn transfer_parts(mv: Move) -> Option<(PileRef, PileRef, u8)> {
-    match mv {
-        Move::Transfer { from, to, count } => Some((from, to, count)),
-        Move::Stock | Move::Remove { .. } => None,
-    }
-}
-
 impl FreeCell {
     /// Every move [`FreeCell::execute`] accepts: each valid transfer of every count from a cell or
     /// column onto every foundation, cell and column.
@@ -58,8 +52,8 @@ impl FreeCell {
     }
 
     /// The best legal move: a card to a foundation, a column move onto a non-empty column, a cell
-    /// to a column, a column to an empty column, then a column to a cell. Never a column's only
-    /// card to another empty column.
+    /// to a column, a column to an empty column, then a column to a cell. Never a whole column
+    /// (a lone card included) to an empty column: that only swaps two columns.
     pub(super) fn suggest(&self) -> Option<Move> {
         let moves = self.enumerate_moves();
         HINT_RULES.into_iter().find_map(|rule| {
@@ -80,8 +74,9 @@ impl FreeCell {
         self.column(pile).is_some_and(<[Card]>::is_empty)
     }
 
-    fn column_has_one_card(&self, pile: PileRef) -> bool {
-        self.column(pile).is_some_and(|cards| cards.len() == 1)
+    fn moves_whole_column(&self, pile: PileRef, count: u8) -> bool {
+        self.column(pile)
+            .is_some_and(|cards| cards.len() == usize::from(count))
     }
 
     fn to_foundation(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
@@ -99,10 +94,10 @@ impl FreeCell {
         matches!(from, PileRef::Cell(_)) && matches!(to, PileRef::Tableau(_))
     }
 
-    fn column_to_empty_column(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
+    fn column_to_empty_column(&self, from: PileRef, to: PileRef, count: u8) -> bool {
         matches!(from, PileRef::Tableau(_))
             && self.column_is_empty(to)
-            && !self.column_has_one_card(from)
+            && !self.moves_whole_column(from, count)
     }
 
     fn column_to_cell(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
