@@ -93,3 +93,59 @@ C4:8 E4:8 G4:8 C5:4.
 R:8
 C4+E4+G4+C5:2
 ```
+
+## `style.toml` Schema
+
+`style.toml` is parsed by `src/audio/style.rs`. Unknown top-level keys (for example `name`) are ignored;
+unknown keys inside `[music]` and `[programs.<n>]` are errors. File names are relative to the style folder.
+
+```toml
+name = "Default"
+
+[cues]
+card_pick = "card_pick.mid"
+win = "win.mid"
+
+[music]
+file = "music.mid"
+
+[programs.0]
+waveform = "square"
+attack = 0.005
+decay = 0.05
+sustain = 0.7
+release = 0.05
+gain = 0.5
+```
+
+### `[cues]`
+
+Maps a sound cue to a `.mid` file. A cue that is not listed is silent. The keys are:
+`card_pick`, `card_place`, `card_flip`, `stock_deal`, `illegal`, `undo`, `hint`, `win`, `menu_move`,
+`menu_select`. Any other key is an error.
+
+### `[music]` (optional)
+
+`file`: one `.mid` file that loops while music is enabled. Without the table there is no music.
+
+### `[programs.<n>]`
+
+Defines the timbre of MIDI program `<n>` (0 to 127). A note plays with the timbre of the program in effect on
+its channel; a program that is not defined uses the defaults below.
+
+| Key | Meaning | Range | Default |
+|---|---|---|---|
+| `waveform` | oscillator: `sine`, `square`, `saw` or `triangle` | — | `sine` |
+| `attack` | seconds from silence to full level | 0 to 10 | 0.005 |
+| `decay` | seconds from full level to `sustain` | 0 to 10 | 0.05 |
+| `sustain` | level held while the note is down | 0 to 1 | 0.7 |
+| `release` | seconds from note off to silence | 0 to 10 | 0.05 |
+| `gain` | volume of the program | 0 to 1 | 0.5 |
+
+## Playback Model
+
+`src/audio/sequence.rs` reads a Standard MIDI File (format 0 or 1, ticks per quarter note timing) into note
+events positioned in samples, honoring every tempo change. Format 2 files and SMPTE timecode timing are
+rejected. Note On with velocity 0 is a Note Off. All channels are treated alike. `src/audio/synth.rs` plays a
+sequence through a pool of voices (16 by default; the oldest voice is stolen when all are busy) and a soft
+limiter, so output always stays within -1 and 1. Output is mono; the device layer spreads it over channels.
