@@ -20,7 +20,7 @@ use crate::screens::main_menu::MainMenu;
 use crate::screens::settings::SettingsScreen;
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
-use crate::storage::{SavedGame, Storage};
+use crate::storage::{SavedGame, Storage, StorageError};
 use crate::theme::Theme;
 use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
@@ -69,6 +69,7 @@ pub struct App {
     theme: Theme,
     glyphs: Glyphs,
     saved: Option<SavedGame>,
+    write_failed: bool,
     screen: Screen,
     modal: Option<Modal>,
     menu: MainMenu,
@@ -101,6 +102,7 @@ impl App {
             glyphs: Glyphs::new(settings.glyph_mode),
             settings,
             saved: None,
+            write_failed: false,
             screen: Screen::MainMenu,
             modal: None,
             menu: MainMenu::new(),
@@ -131,6 +133,12 @@ impl App {
                 tracing::warn!(%error, "saved game could not be loaded");
                 self.modal
                     .get_or_insert(Modal::alert("common.error.resume"));
+                if matches!(
+                    error,
+                    StorageError::Corrupt { .. } | StorageError::Incompatible { .. }
+                ) {
+                    self.discard_unusable_save(None);
+                }
             }
         }
     }
@@ -235,6 +243,19 @@ impl App {
             .modal
             .as_mut()
             .and_then(|modal| overlay::handle(modal, key, action));
+        self.finish_modal(outcome)
+    }
+
+    fn on_modal_mouse(&mut self, event: &MouseEvent) -> Effect {
+        let area = self.screen_rect();
+        let outcome = self
+            .modal
+            .as_mut()
+            .and_then(|modal| overlay::handle_mouse(modal, area, &self.board, self.now, event));
+        self.finish_modal(outcome)
+    }
+
+    fn finish_modal(&mut self, outcome: Option<Effect>) -> Effect {
         match outcome {
             Some(effect) => {
                 self.close_modal();
@@ -244,9 +265,18 @@ impl App {
         }
     }
 
+    fn screen_rect(&self) -> Rect {
+        self.area.map_or(Rect::default(), |(width, height)| {
+            Rect::new(0, 0, width, height)
+        })
+    }
+
     fn on_mouse(&mut self, event: &MouseEvent) -> Effect {
-        if self.modal.is_some() || self.too_small() {
+        if self.too_small() {
             return Effect::None;
+        }
+        if self.modal.is_some() {
+            return self.on_modal_mouse(event);
         }
         let ctx = view_ctx!(self);
         match self.screen {
@@ -275,16 +305,20 @@ impl App {
             Screen::Settings => self.settings_screen.draw(frame, area, &ctx),
         }
         if let Some(modal) = &self.modal {
-            overlay::draw(frame, area, modal, &ctx);
+            overlay::draw(frame, area, modal, &self.board, &ctx);
         }
     }
 }
 
 mod effects;
 mod modal;
+mod persist;
 
 #[cfg(test)]
 mod tests;
 
 #[cfg(test)]
 mod effect_tests;
+
+#[cfg(test)]
+mod persist_tests;

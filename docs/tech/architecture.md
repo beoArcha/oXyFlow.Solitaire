@@ -140,7 +140,7 @@ pub struct Deps {
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings }
-pub enum Modal { Help, Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win }
+pub enum Modal { Help, Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
 
 impl App {
     pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
@@ -212,7 +212,8 @@ pub struct NullAudio;                                    // always unavailable a
   menu. Every `MoveError` has a key `board.error.*`; other messages are `board.status.*`; restart,
   new game and quit ask through `Modal::Confirm` (`Effect::Restart`, `Effect::Start`, `Effect::Quit`).
   The screen collects `SoundCue`s and `App` plays them after each input (`BoardScreen::take_cues`);
-  `persist()` is called after every session change (P4-03 saves there). A win opens `Modal::Win`; a
+  `persist()` raises a flag after every session change; `App` reads it (`BoardScreen::take_dirty`)
+  at the end of each `apply` and saves (see Autosave below). A win opens `Modal::win()` (help, pause, win and dialogs are drawn by `widgets/overlay/`); a
   position without legal moves shows a status message. `Modal::Pause` hides the cards
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
@@ -237,10 +238,19 @@ pub struct NullAudio;                                    // always unavailable a
   selected, 2 targets") shown in the status area. Sound cues duplicate, never replace, visible feedback.
 - **Clock:** `GameClock` computes elapsed time from a passed-in `Instant`; pause and modals stop it.
 
+- **Autosave (P4-03):** `app/persist.rs`. A new game calls `Storage::start_game` and logs the deal at
+  `info`. After every session change, when leaving the board and on quit, `App` writes
+  `SavedGame { id, record, elapsed_ms }` and keeps a copy in memory (the Resume item reads it). A won
+  game calls `finish_game(Won)` and `clear_game`; dealing over a save calls `finish_game(Abandoned)`
+  first; quitting keeps the save. A corrupt or incompatible save at startup, or one that
+  `Session::restore` rejects, gives one alert, `clear_game` (and `Abandoned` for a known id) and the
+  menu. A failed write is logged once and alerts once per session; the game goes on. `oxysol-tui`
+  re-exports `ratatui::crossterm` so that callers can build `Input` without their own dependency.
+
 ## Application (`oxysol`)
 
 - **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
-  (`OXYSOL_HOME` overrides). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
+  (`OXYSOL_HOME` overrides; an `oxysol.portable` file beside the executable selects `data/` beside it, R-21). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
   started_at, finished_at, outcome, elapsed_ms) and `saved_game` (one row: game id, `SessionRecord`
   as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version`; a version newer than
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is

@@ -175,7 +175,7 @@ impl BoardScreen {
         self.persist();
         if self.is_won() {
             self.cue(SoundCue::Win);
-            return Effect::Open(Modal::Win);
+            return Effect::Open(Modal::win());
         }
         let stuck = self
             .session
@@ -187,8 +187,11 @@ impl BoardScreen {
         Effect::None
     }
 
-    /// Called after every change of the session; P4-03 saves the game here.
-    fn persist(&mut self) {}
+    /// Called after every change of the session; the application saves the game when it sees
+    /// the flag (see [`BoardScreen::take_dirty`]).
+    fn persist(&mut self) {
+        self.dirty = true;
+    }
 }
 
 fn face_down(piles: &[PileSnapshot]) -> usize {

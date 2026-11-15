@@ -17,13 +17,23 @@ pub enum Modal {
     Alert {
         message: &'static str,
     },
-    Win,
+    /// The win screen; `menu_focused` picks which of its two buttons has the focus.
+    Win {
+        menu_focused: bool,
+    },
 }
 
 impl Modal {
     /// A notice showing the text of the localization key `message`.
     pub fn alert(message: &'static str) -> Self {
         Modal::Alert { message }
+    }
+
+    /// The win screen, with focus on "New game".
+    pub fn win() -> Self {
+        Modal::Win {
+            menu_focused: false,
+        }
     }
 
     /// A question showing the text of the localization key `prompt`.

@@ -18,20 +18,27 @@ impl App {
             Effect::Restart => self.board.restart(self.now),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
-            Effect::Quit => self.quit = true,
+            Effect::Quit => {
+                self.save_board();
+                self.quit = true;
+            }
         }
+        self.sync_board();
     }
 
-    fn goto(&mut self, screen: Screen) {
+    pub(super) fn goto(&mut self, screen: Screen) {
+        if self.screen == Screen::Board && screen != Screen::Board {
+            self.save_board();
+        }
         self.screen = screen;
-        if screen == Screen::Board {
+        if screen == Screen::Board && self.modal.is_none() {
             self.board.resume_clock(self.now);
         } else {
             self.board.pause_clock(self.now);
         }
     }
 
-    fn open_modal(&mut self, modal: Modal) {
+    pub(super) fn open_modal(&mut self, modal: Modal) {
         self.board.pause_clock(self.now);
         self.board.set_covered(modal == Modal::Pause);
         self.modal = Some(modal);
@@ -46,34 +53,31 @@ impl App {
     }
 
     fn start_game(&mut self, variant: Variant, seed: Option<u64>) {
+        self.abandon_saved();
         let seed = seed.unwrap_or_else(|| (self.seeds)());
-        let id = match self.storage.start_game(variant, seed) {
-            Ok(id) => Some(id),
-            Err(error) => {
-                tracing::warn!(%error, ?variant, seed, "the new game could not be recorded");
-                None
-            }
-        };
+        tracing::info!(?variant, seed, "new game dealt");
+        let recorded = self.storage.start_game(variant, seed);
+        let id = recorded.as_ref().ok().copied();
         self.board
             .begin(Session::new(variant, seed), id, Duration::ZERO, self.now);
-        self.goto(Screen::Board);
-        if id.is_none() {
-            self.open_modal(Modal::alert("common.error.storage"));
-        }
+        self.enter_board();
+        self.note_write(recorded.map(drop), "the new game could not be recorded");
     }
 
     fn resume_game(&mut self) {
-        let Some(saved) = self.saved.take() else {
+        let Some(saved) = self.saved.clone() else {
             return;
         };
+        let (id, elapsed_ms) = (saved.id, saved.elapsed_ms);
         match Session::restore(saved.record) {
             Ok(session) => {
-                let elapsed = Duration::from_millis(saved.elapsed_ms);
-                self.board.begin(session, Some(saved.id), elapsed, self.now);
-                self.goto(Screen::Board);
+                let elapsed = Duration::from_millis(elapsed_ms);
+                self.board.begin(session, Some(id), elapsed, self.now);
+                self.enter_board();
             }
             Err(error) => {
-                tracing::warn!(%error, "the saved game could not be restored");
+                tracing::warn!(%error, "the saved game could not be restored; removing it");
+                self.discard_unusable_save(Some((id, elapsed_ms)));
                 self.open_modal(Modal::alert("common.error.resume"));
             }
         }

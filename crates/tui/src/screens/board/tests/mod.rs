@@ -3,6 +3,7 @@
 mod commands;
 mod moves;
 mod navigation;
+mod persist;
 mod pyramid;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
