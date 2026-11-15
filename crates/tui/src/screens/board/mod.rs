@@ -49,6 +49,7 @@ pub struct BoardScreen {
     hint: Option<Move>,
     status: Option<&'static str>,
     cues: Vec<SoundCue>,
+    dirty: bool,
     screen: Rect,
     covered: bool,
 }
@@ -67,6 +68,7 @@ impl Default for BoardScreen {
             hint: None,
             status: None,
             cues: Vec::new(),
+            dirty: false,
             screen: DEFAULT_SCREEN,
             covered: false,
         }
@@ -147,6 +149,11 @@ impl BoardScreen {
     /// The sound cues emitted since the last call, oldest first.
     pub fn take_cues(&mut self) -> Vec<SoundCue> {
         std::mem::take(&mut self.cues)
+    }
+
+    /// Whether the session changed since the last call; the application then saves the game.
+    pub fn take_dirty(&mut self) -> bool {
+        std::mem::take(&mut self.dirty)
     }
 
     /// The localization key of the status message, if one is shown.

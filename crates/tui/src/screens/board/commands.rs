@@ -65,7 +65,8 @@ impl BoardScreen {
         self.cues.push(cue);
     }
 
-    pub(super) fn is_won(&self) -> bool {
+    /// Whether the running game is solved.
+    pub fn is_won(&self) -> bool {
         self.session
             .as_ref()
             .is_some_and(|session| session.game().is_won())

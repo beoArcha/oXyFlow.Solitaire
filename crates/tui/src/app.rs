@@ -20,7 +20,7 @@ use crate::screens::main_menu::MainMenu;
 use crate::screens::settings::SettingsScreen;
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
-use crate::storage::{SavedGame, Storage};
+use crate::storage::{SavedGame, Storage, StorageError};
 use crate::theme::Theme;
 use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
@@ -69,6 +69,7 @@ pub struct App {
     theme: Theme,
     glyphs: Glyphs,
     saved: Option<SavedGame>,
+    write_failed: bool,
     screen: Screen,
     modal: Option<Modal>,
     menu: MainMenu,
@@ -101,6 +102,7 @@ impl App {
             glyphs: Glyphs::new(settings.glyph_mode),
             settings,
             saved: None,
+            write_failed: false,
             screen: Screen::MainMenu,
             modal: None,
             menu: MainMenu::new(),
@@ -131,6 +133,12 @@ impl App {
                 tracing::warn!(%error, "saved game could not be loaded");
                 self.modal
                     .get_or_insert(Modal::alert("common.error.resume"));
+                if matches!(
+                    error,
+                    StorageError::Corrupt { .. } | StorageError::Incompatible { .. }
+                ) {
+                    self.discard_unusable_save(None);
+                }
             }
         }
     }
@@ -282,9 +290,13 @@ impl App {
 
 mod effects;
 mod modal;
+mod persist;
 
 #[cfg(test)]
 mod tests;
 
 #[cfg(test)]
 mod effect_tests;
+
+#[cfg(test)]
+mod persist_tests;
