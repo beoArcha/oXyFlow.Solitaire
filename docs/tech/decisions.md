@@ -48,6 +48,7 @@ else gets the Unicode or ASCII rendering. The app cannot install or select a fon
 | R-18 | Every deal has a seed (`u64`). The same seed gives the same deal on every platform and app version. The seed is shown to the player, a game can be started from a typed seed (menu and `--seed`), and every dealt seed is recorded in the database with variant, start and end time and outcome. | — |
 | R-19 | Persistence uses SQLite: one database file holds settings, the saved game and the game history. Diagnostics go to a full plain-text log file. | T-02 |
 | R-20 | (2026-11-15) Building and publishing a release is started only by the user: `release.yml` runs on manual dispatch, never on a push. `main` still fast-forwards `release` automatically after a green full check, so `release` always holds the latest tested commit ready to be released. | R-17 (automatic release run) |
+| R-21 | Every release platform also ships a **portable** archive. A portable copy keeps all its files (`oxysol.db`, `oxysol.log`) in a `data` folder next to the executable and writes nothing to system folders. A copy is portable when a file named `oxysol.portable` exists in the same directory as the executable. | — |
 
 ## Technical decisions — owner: architect
 
