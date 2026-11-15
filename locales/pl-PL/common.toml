@@ -24,10 +24,6 @@ pyramid_classic = "Pyramid, klasyczny"
 [settings]
 title = "Ustawienia"
 
-[board]
-header = "{variant} | ziarno {seed} | {time}"
-placeholder = "Plansza nie jest jeszcze dostępna."
-
 [size]
 title = "Zbyt mały terminal"
 current = "Bieżący rozmiar: {width} x {height}"
@@ -39,7 +35,6 @@ ok = "Dobrze"
 yes = "Tak"
 no = "Nie"
 help_title = "Pomoc"
-help_body = "Lista klawiszy nie jest jeszcze dostępna."
 pause_title = "Pauza"
 pause_body = "Naciśnij Esc, aby kontynuować."
 win_title = "Wygrana"
