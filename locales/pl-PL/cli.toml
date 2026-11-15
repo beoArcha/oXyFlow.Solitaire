@@ -20,3 +20,4 @@ terminal_failed = "oXySol zakończył działanie, bo terminal zawiódł. Szczeg�
 output_failed = "oXySol nie może pisać do terminala."
 log_unavailable = "oXySol nie może zapisywać dziennika w {path}. Działa bez dziennika."
 panic = "oXySol niespodziewanie zakończył działanie w {location}. Szczegóły są w {path}."
+press_enter = "Naciśnij Enter, aby zamknąć to okno."

@@ -5,6 +5,7 @@ use std::io::{self, Write};
 use std::process::ExitCode;
 
 use oxysol::cli::{self, Cli, ColorArg};
+use oxysol::console;
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
 use oxysol::storage::SqliteStorage;
@@ -20,7 +21,13 @@ fn main() -> ExitCode {
         .and_then(launch);
     match outcome {
         Ok(()) => ExitCode::SUCCESS,
-        Err(error) => report(&error),
+        Err(error) => {
+            let code = report(&error);
+            if console::should_pause(true, console::owns_window(), console::stdin_is_terminal()) {
+                console::wait_for_enter();
+            }
+            code
+        }
     }
 }
 
@@ -165,6 +172,7 @@ mod tests {
             "cli.output_failed",
             "cli.log_unavailable",
             "cli.panic",
+            "cli.press_enter",
         ];
         for locale in Locale::ALL {
             i18n::set_locale(locale);
