@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <title>oXySol 32</title>
+  <defs>
+    <linearGradient id="felt" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#2fa163"/>
+      <stop offset="1" stop-color="#0f5037"/>
+    </linearGradient>
+    <path id="heart" d="M0 14 C-13 4 -14 -6 -7 -9 C-3 -10.500 0 -8 0 -5 C0 -8 3 -10.500 7 -9 C14 -6 13 4 0 14 Z"/>
+    <path id="spade" d="M0 -14 C-13 -4 -14 5 -7 8 C-4 9 -1 8 0 5 C0 9 -1 12 -4 14 L4 14 C1 12 0 9 0 5 C1 8 4 9 7 8 C14 5 13 -4 0 -14 Z"/>
+  </defs>
+
+  <rect width="32" height="32" rx="7" fill="url(#felt)"/>
+
+  <g transform="rotate(-22 16 29)">
+    <rect x="9.500" y="4.500" width="13" height="21" rx="2" fill="#ffffff" stroke="#0a3a29"/>
+    <use href="#heart" transform="translate(13.500 9) scale(0.3)" fill="#d6303a"/>
+  </g>
+  <g transform="rotate(22 16 29)">
+    <rect x="9.500" y="4.500" width="13" height="21" rx="2" fill="#ffffff" stroke="#0a3a29"/>
+    <use href="#spade" transform="translate(18.500 9) scale(0.3)" fill="#1d2733"/>
+  </g>
+  <rect x="9.500" y="3.500" width="13" height="23" rx="2" fill="#ffffff" stroke="#0a3a29"/>
+  <path d="M11 10 L21 20 M21 10 L11 20" stroke="#d6303a" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="16" cy="15" r="4" fill="#ffc22e" stroke="#e08a10" stroke-width="1"/>
+  <circle cx="14.500" cy="13.500" r="1.200" fill="#fff3b0" fill-opacity="0.85"/>
+</svg>

@@ -6,7 +6,7 @@ use std::process::Command;
 
 use crate::affected::{self, Affected, ROOT};
 use crate::error::XtaskError;
-use crate::{lint, sync_metadata};
+use crate::{icon, lint, sync_metadata};
 
 pub enum Mode {
     Full,
@@ -45,6 +45,8 @@ pub fn run(mode: Mode) -> Result<(), XtaskError> {
             run_step(&cargo, &root, "test", &["test", "--workspace"])?;
             println!("==> sync-metadata --check");
             sync_metadata::run(true)?;
+            println!("==> icon --check");
+            icon::run(&root, true)?;
         }
         Mode::Quick => run_quick_tests(&cargo, &root)?,
         Mode::Pr(base) => run_pr_tests(&cargo, &root, &base)?,
