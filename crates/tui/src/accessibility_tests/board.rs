@@ -83,9 +83,10 @@ fn focus_selection_targets_face_down_cards_and_suits_read_without_color() {
 
         assert!(count(&resting, glyphs.focus_left) >= 1, "focus");
         assert_eq!(count(&resting, glyphs.selected), 0, "nothing selected");
-        assert_eq!(count(&resting, glyphs.target), 0, "no targets at rest");
+        let target_mark = if caps.unicode { glyphs.target } else { "~" };
+        assert_eq!(count(&resting, target_mark), 0, "no targets at rest");
         assert!(count(&held, glyphs.selected) >= 1, "selection");
-        assert!(count(&held, glyphs.target) >= 1, "legal targets");
+        assert!(count(&held, target_mark) >= 1, "legal targets");
         assert!(count(&resting, glyphs.face_down) >= 1, "face-down cards");
         assert_ne!(resting, held, "picking up changes the drawing");
         if caps.unicode {

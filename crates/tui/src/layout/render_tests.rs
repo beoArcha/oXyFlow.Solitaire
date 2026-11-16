@@ -14,7 +14,7 @@ use crate::settings::{GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
 use crate::theme::{Theme, ThemeId};
-use crate::widgets::card::{self, Face, Mark, label};
+use crate::widgets::card::{self, Face, Hint, Mark, label};
 use crate::widgets::pile::{self, CardPos, Marks};
 
 fn started(variant: Variant, caps: TerminalCaps, width: u16, height: u16) -> Harness {
@@ -85,7 +85,7 @@ fn ascii_mode_draws_only_ascii_and_keeps_suits_apart() {
         .iter()
         .map(|s| glyphs.suit(*s))
         .collect();
-    assert_eq!(suits, ["C", "D", "H", "S"]);
+    assert_eq!(suits, ["c", "d", "h", "s"]);
 }
 
 #[test]
@@ -188,7 +188,7 @@ fn focus_selection_target_and_hint_change_the_card_without_color() {
                 ..Mark::default()
             },
             Mark {
-                hint: true,
+                hint: Some(Hint::Source),
                 ..Mark::default()
             },
         ];
@@ -226,7 +226,7 @@ fn a_selected_run_marks_every_card_from_the_picked_one() {
     };
     let mut buf = Buffer::empty(Rect::new(0, 0, 100, 30));
     for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
-        pile::draw(&mut buf, snapshot, placed, &marks, &ctx);
+        pile::draw(&mut buf, snapshot, placed, &marks, false, &ctx);
     }
     let placed = geometry
         .pile(column)
@@ -258,7 +258,7 @@ fn an_empty_slot_can_be_focused_and_a_target_pile_is_marked() {
     };
     let mut buf = Buffer::empty(Rect::new(0, 0, 100, 30));
     for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
-        pile::draw(&mut buf, snapshot, placed, &marks, &ctx);
+        pile::draw(&mut buf, snapshot, placed, &marks, false, &ctx);
     }
     let lines = card_rows(&buf, Rect::new(0, 0, 100, 30));
     let slot = geometry.pile(cell).map(|p| p.slot).unwrap_or_default();
