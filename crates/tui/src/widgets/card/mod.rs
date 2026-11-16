@@ -27,8 +27,8 @@ use self::frame::{edges_for, paint_frame, paint_patterned_top, paint_target_corn
 pub use self::mark::{Hint, Mark};
 use self::paint::{Painter, centered};
 use self::rows::{badge_text, paint_bottom_row, paint_top_row};
-use self::slot::paint_slot;
 pub use self::slot::Placeholder;
+use self::slot::paint_slot;
 use crate::glyphs::Glyphs;
 use crate::i18n::t;
 use crate::screens::ViewCtx;
@@ -152,7 +152,8 @@ pub fn draw_back_row(buf: &mut Buffer, area: Rect, mark: Mark, ctx: &ViewCtx<'_>
 }
 
 /// Draws a card of a fan that the next card covers from `visible` columns on: the whole card, then
-/// its bottom row blank over the visible strip, so no fragment of the bottom border peeks out.
+/// the rows under its top row blank over the visible strip, so that only the border and the
+/// corner label show and no piece of the centre or of the bottom border peeks out.
 pub fn draw_fanned(
     buf: &mut Buffer,
     area: Rect,
@@ -161,9 +162,18 @@ pub fn draw_fanned(
     ctx: &ViewCtx<'_>,
 ) {
     draw(buf, area, face, mark, None, ctx);
-    let strip = Rect::new(area.x, area.bottom().saturating_sub(1), visible, 1).intersection(area);
+    let fill = look(face, mark, ctx).fill;
+    let inner = Rect::new(
+        area.x + 1,
+        area.y + 1,
+        visible.saturating_sub(1),
+        area.height.saturating_sub(2),
+    );
+    let mut painter = Painter { buf, clip: area };
+    painter.fill(inner, " ", fill);
+    let bottom = Rect::new(area.x, area.bottom().saturating_sub(1), visible, 1);
     let table = ctx.theme.style(Token::TableText, Token::Table);
-    Painter { buf, clip: strip }.fill(strip, " ", table);
+    painter.fill(bottom, " ", table);
 }
 
 /// Draws the one-row stand-in for `count` collapsed face-down cards.

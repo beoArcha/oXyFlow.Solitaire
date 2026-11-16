@@ -28,7 +28,11 @@ pub(super) fn scale_for(interior: Rect) -> Option<Scale> {
 }
 
 fn text_row(card: Card, glyphs: &Glyphs, interior: Rect) -> String {
-    let spaces = if interior.width >= WIDE_INTERIOR { 2 } else { 1 };
+    let spaces = if interior.width >= WIDE_INTERIOR {
+        2
+    } else {
+        1
+    };
     format!(
         "{}{}{}",
         rank_text(card.rank),

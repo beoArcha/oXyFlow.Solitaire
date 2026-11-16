@@ -44,6 +44,11 @@ pub(super) fn paint_slot(
         (text(placeholder, glyphs), muted)
     };
     if let Some(shown) = shown {
-        painter.text(centered(area, &shown), area.y + area.height / 2, &shown, style);
+        painter.text(
+            centered(area, &shown),
+            area.y + area.height / 2,
+            &shown,
+            style,
+        );
     }
 }

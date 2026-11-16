@@ -74,7 +74,9 @@ fn spider_face_down_columns_differ_from_empty_slots_at_both_screen_sizes() {
             let empty_top = text_at(&lines, slot, 0, slot.width);
             let mut columns = 0;
             for pile in &placed.piles {
-                let PileRef::Tableau(_) = pile.pile else { continue };
+                let PileRef::Tableau(_) = pile.pile else {
+                    continue;
+                };
                 let first = pile.cards[0];
                 let top = text_at(&lines, first, 0, first.width);
                 assert_ne!(top, empty_top, "{size:?} {:?}", pile.pile);
@@ -104,19 +106,35 @@ fn the_waste_fan_shows_two_covered_cards_by_their_label_and_no_bottom_fragments(
     let Some(waste) = geometry(&h, size).pile(PileRef::Waste).cloned() else {
         unreachable!("Klondike has a waste")
     };
-    let shown: Vec<Rect> = waste.cards.iter().copied().skip(waste.cards.len() - 3).collect();
+    let shown: Vec<Rect> = waste
+        .cards
+        .iter()
+        .copied()
+        .skip(waste.cards.len() - 3)
+        .collect();
     assert_eq!(shown.len(), 3);
     for pair in shown.windows(2) {
         let visible = pair[1].x - pair[0].x;
-        assert!(visible == 3 || visible == 4, "label width plus one, got {visible}");
+        assert!(
+            visible == 3 || visible == 4,
+            "label width plus one, got {visible}"
+        );
         let bottom = text_at(&lines, pair[0], pair[0].height - 1, visible);
         assert!(bottom.trim().is_empty(), "no fragment: {bottom:?}");
         let top = text_at(&lines, pair[0], 0, visible);
-        assert!(top[top.char_indices().nth(1).map_or(0, |(i, _)| i)..].chars().next().is_some());
+        assert!(
+            top[top.char_indices().nth(1).map_or(0, |(i, _)| i)..]
+                .chars()
+                .next()
+                .is_some()
+        );
     }
     let last = shown[2];
     let bottom = text_at(&lines, last, last.height - 1, last.width);
-    assert!(bottom.contains('┘'), "the playable card keeps its bottom index: {bottom}");
+    assert!(
+        bottom.contains('┘'),
+        "the playable card keeps its bottom index: {bottom}"
+    );
 }
 
 #[test]

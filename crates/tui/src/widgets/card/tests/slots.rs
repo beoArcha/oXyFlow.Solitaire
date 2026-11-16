@@ -12,12 +12,7 @@ fn middle(lines: &[String]) -> String {
 }
 
 fn slot(mode: GlyphMode, size: (u16, u16), placeholder: Placeholder) -> Vec<String> {
-    render_face(
-        mode,
-        size,
-        Face::Slot(placeholder),
-        (Mark::default(), None),
-    )
+    render_face(mode, size, Face::Slot(placeholder), (Mark::default(), None))
 }
 
 #[test]
@@ -33,7 +28,11 @@ fn placeholders_name_what_an_empty_slot_is_for() {
             for size in SIZES {
                 let found = [GlyphMode::Unicode, GlyphMode::Ascii]
                     .map(|mode| middle(&slot(mode, size, placeholder)));
-                assert_eq!(found, [unicode, ascii], "{locale:?} {placeholder:?} {size:?}");
+                assert_eq!(
+                    found,
+                    [unicode, ascii],
+                    "{locale:?} {placeholder:?} {size:?}"
+                );
             }
         }
     });
@@ -66,7 +65,10 @@ fn the_stock_badge_is_a_count_with_a_prefix_so_it_is_not_read_as_a_rank() {
         for size in SIZES {
             let lines = render_face(mode, size, Face::Down, (Mark::default(), Some(18)));
             let bottom = &lines[lines.len() - 1];
-            assert!(bottom.ends_with(&format!("x18{expected}")), "{mode:?} {bottom}");
+            assert!(
+                bottom.ends_with(&format!("x18{expected}")),
+                "{mode:?} {bottom}"
+            );
         }
     }
 }
@@ -84,22 +86,39 @@ fn a_covered_face_down_card_draws_the_back_pattern_in_its_visible_row() {
     assert_eq!(back_row(GlyphMode::Unicode, Mark::default()), "┌▒▒▒▒▒┐");
     assert_eq!(back_row(GlyphMode::Ascii, Mark::default()), "+#####+");
     for mode in MODES {
-        let empty = render_face(mode, (7, 5), Face::Slot(Placeholder::None), (Mark::default(), None));
+        let empty = render_face(
+            mode,
+            (7, 5),
+            Face::Slot(Placeholder::None),
+            (Mark::default(), None),
+        );
         assert_ne!(back_row(mode, Mark::default()), empty[0]);
     }
 }
 
 #[test]
-fn a_fanned_card_leaves_no_bottom_row_fragment_in_its_visible_strip() {
+fn a_fanned_card_shows_only_its_border_and_label_in_the_visible_strip() {
     for mode in MODES {
-        let fixture = Fixture::new(mode);
-        let area = Rect::new(0, 0, 7, 5);
-        let mut buf = Buffer::empty(area);
-        let face = Face::Up(card(Rank::Queen, Suit::Hearts));
-        draw_fanned(&mut buf, area, 3, (face, Mark::default()), &fixture.ctx());
-        let lines = rows(&buf, area);
-        assert_eq!(&lines[4][..3], "   ", "{mode:?}");
-        assert_ne!(lines[4][3..].trim(), "", "{mode:?}");
-        assert!(lines[0].contains("Q"), "the label stays visible");
+        for size in SIZES {
+            let fixture = Fixture::new(mode);
+            let area = Rect::new(0, 0, size.0, size.1);
+            let mut buf = Buffer::empty(area);
+            let face = Face::Up(card(Rank::Queen, Suit::Hearts));
+            draw_fanned(&mut buf, area, 3, (face, Mark::default()), &fixture.ctx());
+            let lines = rows(&buf, area);
+            let strip = |row: usize| lines[row].chars().take(3).collect::<String>();
+            assert!(strip(0).contains('Q'), "{mode:?} {size:?}: the label stays");
+            for row in 1..lines.len() - 1 {
+                let inner: String = strip(row).chars().skip(1).collect();
+                assert_eq!(inner, "  ", "{mode:?} {size:?} row {row}");
+            }
+            assert_eq!(strip(lines.len() - 1), "   ", "{mode:?} {size:?} bottom");
+            let beyond: String = lines[lines.len() - 1].chars().skip(3).collect();
+            assert_ne!(
+                beyond.trim(),
+                "",
+                "{mode:?} {size:?}: the rest of the card stays"
+            );
+        }
     }
 }

@@ -195,15 +195,10 @@ fn the_text_row_is_followed_by_air_and_the_pictogram_without_a_pixel_rank() {
     for mode in MODES {
         for (size, art_top, art_height) in layouts {
             let lines = render(mode, size, card(Rank::King, Suit::Spades));
-            assert!(!is_blank(&lines[1]), "{size:?} text row");
-            for row in 2..art_top {
-                assert!(is_blank(&lines[row]), "{size:?} row {row}: {}", lines[row]);
-            }
-            for row in art_top..art_top + art_height {
-                assert!(!is_blank(&lines[row]), "{size:?} row {row}");
-            }
-            for row in art_top + art_height..lines.len() - 1 {
-                assert!(is_blank(&lines[row]), "{size:?} row {row}: {}", lines[row]);
+            let art_end = art_top + art_height;
+            for (row, line) in lines.iter().enumerate().take(lines.len() - 1).skip(1) {
+                let expected_blank = row != 1 && !(art_top..art_end).contains(&row);
+                assert_eq!(is_blank(line), expected_blank, "{size:?} row {row}: {line}");
             }
         }
     }
