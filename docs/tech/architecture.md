@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -236,6 +236,16 @@ pub struct NullClipboard;                                // every copy fails wit
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
+- **Focus (P3-17):** `Action::FocusNext` (Tab) and `Action::FocusPrevious` (Shift+Tab, `KeyCode::BackTab`) are
+  rows of `KEY_TABLE` (group Navigation), so the help window lists them. Every screen and dialog owns a focus
+  ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
+  Rings: main menu items; seed entry field, Continue, Back; game selection list, then the undo toggle; settings
+  rows; statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
+  Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
+  (Tab toggles the two-button dialogs). The help window keeps Tab and Shift+Tab for its own tabs. Enter and Space
+  press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
+  digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in
+  ASCII) directly before its label and, for buttons, reverse video; `MenuList` draws the marker next to the label.
 - **How to play (P3-10, O-14, O-15):** `Modal::Help` (the keys table), `Modal::HowToPlay(HowToPlay { rules, scroll })`
   (the rules pages) and `Modal::CommandLine(CommandLine { scroll })` (the options of `oxysol --help`) form the help
   window (`widgets/overlay/`): three top tabs ("Keys", "Rules" and "Command line") switch between them by

@@ -6,6 +6,8 @@ mod command_line;
 #[cfg(test)]
 mod command_line_tests;
 mod dialog;
+#[cfg(test)]
+mod focus_tests;
 mod help;
 #[cfg(test)]
 mod help_rules_tests;
@@ -35,6 +37,7 @@ use crate::i18n::t;
 use crate::layout::chrome;
 use crate::mouse;
 use crate::screens::board::BoardScreen;
+use crate::screens::focus::tab_forward;
 use crate::screens::{Effect, ViewCtx};
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
@@ -221,11 +224,11 @@ pub fn handle_for(
         };
     }
     let action = action?;
-    if matches!(
+    let moves_focus = matches!(
         action,
         Action::Left | Action::Right | Action::Up | Action::Down
-    ) && toggle_focus(modal)
-    {
+    ) || tab_forward(action).is_some();
+    if moves_focus && toggle_focus(modal) {
         return None;
     }
     match action {

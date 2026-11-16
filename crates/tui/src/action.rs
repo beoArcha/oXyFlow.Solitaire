@@ -7,6 +7,8 @@ pub enum Action {
     Down,
     Left,
     Right,
+    FocusNext,
+    FocusPrevious,
     Select,
     Back,
     Quit,
@@ -30,11 +32,13 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 23] = [
+    pub const ALL: [Action; 25] = [
         Action::Up,
         Action::Down,
         Action::Left,
         Action::Right,
+        Action::FocusNext,
+        Action::FocusPrevious,
         Action::Select,
         Action::Back,
         Action::Stock,
@@ -63,6 +67,8 @@ impl Action {
             Action::Down => "help.action.down",
             Action::Left => "help.action.left",
             Action::Right => "help.action.right",
+            Action::FocusNext => "help.action.focus_next",
+            Action::FocusPrevious => "help.action.focus_previous",
             Action::Select => "help.action.select",
             Action::Back => "help.action.back",
             Action::Quit => "help.action.quit",

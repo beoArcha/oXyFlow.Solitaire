@@ -4,6 +4,7 @@
 //! The tests live inside the crate because they drive `App` through the test harness.
 
 mod board;
+mod focus;
 
 use oxysol_core::{DrawCount, Variant};
 use ratatui::crossterm::event::KeyCode;
@@ -13,6 +14,7 @@ use crate::app::{Modal, Screen};
 use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, set_locale, t};
 use crate::input::{binding_for, primary_key};
+use crate::screens::focus::marked_text;
 use crate::settings::GlyphMode;
 use crate::test_support::Harness;
 use crate::theme::contrast::contrast_ratio;
@@ -47,15 +49,12 @@ const EVENTS: [&str; 6] = [
 
 fn focused(h: &mut Harness) -> Option<String> {
     let glyphs = Glyphs::new(GlyphMode::Unicode);
-    h.lines().iter().find_map(|line| {
-        let after = line.split(glyphs.focus_left).nth(1)?;
-        Some(after.split(glyphs.focus_right).next()?.trim().to_owned())
-    })
+    marked_text(&h.lines(), glyphs.focus_left)
 }
 
-/// The labels of a list in the order the arrow keys visit them; the list wraps, so the walk ends
-/// where it began.
-fn rows(h: &mut Harness) -> Vec<String> {
+/// The labels of a list in the order `key` visits them; the list wraps, so the walk ends where it
+/// began.
+fn walk(h: &mut Harness, key: KeyCode) -> Vec<String> {
     let mut labels: Vec<String> = Vec::new();
     while labels.len() < MAX_ROWS {
         let Some(label) = focused(h) else { break };
@@ -63,9 +62,17 @@ fn rows(h: &mut Harness) -> Vec<String> {
             break;
         }
         labels.push(label);
-        h.press(KeyCode::Down);
+        h.press(key);
     }
     labels
+}
+
+fn rows(h: &mut Harness) -> Vec<String> {
+    walk(h, KeyCode::Down)
+}
+
+fn rows_by_tab(h: &mut Harness) -> Vec<String> {
+    walk(h, KeyCode::Tab)
 }
 
 fn menu_at(index: usize) -> Harness {
@@ -158,6 +165,14 @@ fn every_settings_row_is_reached_by_keyboard() {
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);
     assert_eq!(rows.len(), 11, "{rows:?}");
+}
+
+#[test]
+fn every_main_menu_item_and_settings_row_is_also_reached_by_tab() {
+    assert_eq!(rows_by_tab(&mut Harness::new()), rows(&mut Harness::new()));
+    let mut h = menu_at(3);
+    h.press(KeyCode::Enter);
+    assert_eq!(rows_by_tab(&mut h).len(), 11);
 }
 
 #[test]

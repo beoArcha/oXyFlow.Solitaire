@@ -1,5 +1,6 @@
 use ratatui::crossterm::event::KeyCode;
 
+mod focus;
 mod guide;
 mod screen;
 mod styles;
