@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -19,7 +19,7 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 
 ```text
 metadata.toml            canonical metadata (name, version, license, URL)
-src/                     main.rs lib.rs cli.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs audio/
+src/                     main.rs lib.rs cli.rs new_window.rs console.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
 crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/)
@@ -225,14 +225,17 @@ pub struct NullClipboard;                                // every copy fails wit
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
-- **How to play (P3-10, O-14):** `Modal::Help` (the keys table) and `Modal::HowToPlay(HowToPlay { rules, scroll })`
-  (the rules pages) form the help window (`widgets/overlay/`): two top tabs ("Keys" and "Rules") switch
-  between them by Tab / Left-Right on the tab row and mouse clicks. The rules tab (`widgets/overlay/how_to_play/`)
+- **How to play (P3-10, O-14, O-15):** `Modal::Help` (the keys table), `Modal::HowToPlay(HowToPlay { rules, scroll })`
+  (the rules pages) and `Modal::CommandLine(CommandLine { scroll })` (the options of `oxysol --help`) form the help
+  window (`widgets/overlay/`): three top tabs ("Keys", "Rules" and "Command line") switch between them by
+  Tab / Shift+Tab (all tabs, wrapping), Left-Right (Keys and Command line), `?` and `i` and mouse clicks.
+  The Command line tab (`overlay/command_line.rs`) shows the `cli.help` text, the same key `--help` prints, so
+  the two cannot differ; it scrolls by Up/Down/PgUp/PgDn/Home/End and the wheel inside the box of the Keys tab. The rules tab (`widgets/overlay/how_to_play/`)
   provides tabs for Klondike, Spider, FreeCell and Pyramid, sections Goal, Layout, Moves, Controls and Tips from
   `locales/*/rules.toml`, scrolling its text inside the dialog box. The Controls keys are read from `KEY_TABLE`;
   texts name keys through placeholders such as `{hint}`. It opens through `Effect::HowToPlay` (main-menu item
   "How to play", and `Action::Rules`, key `i`, handled by `App` on every screen like `Action::Help`); `App`
-  picks the game of the board's session, else Klondike. Keys: Tab switches Keys/Rules, Left/Right switches
+  picks the game of the board's session, else Klondike. Keys: Tab cycles the tabs, Left/Right switches
   games in Rules, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close close; arrows, tabs and
   Close are clickable.
 - **Board guidance (P3-11):** the board tells the player what is going on and what is possible.
@@ -362,6 +365,12 @@ pub struct NullClipboard;                                // every copy fails wit
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
+- **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed` and
+  `--new-window` / `-n` by hand (`Cli::new_window`). With `--new-window`, `main` starts only the log and calls
+  `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
+  with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS
+  (`HostOs`), executable, working directory, forwarded arguments (`forwarded` removes the flag), `OXYSOL_HOME` /
+  `OXYSOL_LOG` and `$TERMINAL`; the plans are pure and unit-tested, only the spawn is not.
 - **Seeds (R-18):** the binary supplies fresh seeds through `Deps::seeds` (from
   `std::collections::hash_map::RandomState` mixed with the clock — no new dependency). `--seed <u64>`
   (`Deps::start_seed`) opens the main menu on the game selection for that seed, the stage that
