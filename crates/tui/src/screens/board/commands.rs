@@ -18,6 +18,7 @@ impl BoardScreen {
                 _ => Effect::None,
             };
         }
+        self.copy_note = None;
         match action {
             Action::Up | Action::Down | Action::Left | Action::Right => {
                 self.navigate(action);
@@ -40,6 +41,10 @@ impl BoardScreen {
                 Effect::Open(Modal::confirm("board.confirm.restart", Effect::Restart))
             }
             Action::NewGame => self.confirm_new_game(),
+            Action::CopySeed => self
+                .session
+                .as_ref()
+                .map_or(Effect::None, |session| Effect::CopySeed(session.seed())),
             Action::Quit => Effect::Open(Modal::confirm("board.confirm.quit", Effect::Quit)),
             Action::ForceQuit | Action::Help | Action::Rules | Action::Guide => Effect::None,
         }
@@ -134,7 +139,16 @@ impl BoardScreen {
         Effect::Goto(Screen::MainMenu)
     }
 
+    fn undo_refused(&mut self) -> Effect {
+        self.status = Some(status::UNDO_OFF);
+        self.cue(SoundCue::Illegal);
+        Effect::None
+    }
+
     fn undo(&mut self) -> Effect {
+        if !self.undo_allowed {
+            return self.undo_refused();
+        }
         let done = self
             .session
             .as_mut()
@@ -143,6 +157,9 @@ impl BoardScreen {
     }
 
     fn redo(&mut self) -> Effect {
+        if !self.undo_allowed {
+            return self.undo_refused();
+        }
         let done = self
             .session
             .as_mut()
@@ -195,6 +212,7 @@ impl BoardScreen {
             Effect::Start {
                 variant: session.variant(),
                 seed: None,
+                undo_allowed: self.undo_allowed,
             },
         ))
     }

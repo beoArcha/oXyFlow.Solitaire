@@ -8,9 +8,6 @@ use crate::storage::{GameId, Outcome, SavedGame, StorageError};
 
 const WRITE_FAILED_ALERT: &str = "common.error.storage";
 
-/// Undo is always available until a "no undo" mode exists.
-pub(super) const UNDO_ALLOWED: bool = true;
-
 fn millis(elapsed: Duration) -> u64 {
     u64::try_from(elapsed.as_millis()).unwrap_or(u64::MAX)
 }
@@ -48,6 +45,7 @@ impl App {
             id,
             record: session.record(),
             elapsed_ms: millis(self.board.elapsed(self.now)),
+            undo_allowed: self.board.undo_allowed(),
         };
         let result = self.storage.save_game(&game);
         self.saved = Some(game);

@@ -25,11 +25,12 @@ pub enum Action {
     NewGame,
     Pause,
     Menu,
+    CopySeed,
 }
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 22] = [
+    pub const ALL: [Action; 23] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -48,6 +49,7 @@ impl Action {
         Action::NewGame,
         Action::Pause,
         Action::Menu,
+        Action::CopySeed,
         Action::Quit,
         Action::ForceQuit,
         Action::Help,
@@ -79,6 +81,7 @@ impl Action {
             Action::NewGame => "help.action.new_game",
             Action::Pause => "help.action.pause",
             Action::Menu => "help.action.menu",
+            Action::CopySeed => "help.action.copy_seed",
         }
     }
 }

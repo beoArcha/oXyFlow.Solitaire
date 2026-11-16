@@ -187,6 +187,7 @@ mod tests {
             id: GameId(1),
             record: Session::new(variant, 7).record(),
             elapsed_ms: 1_500,
+            undo_allowed: false,
         };
         assert!(storage.save_game(&saved).is_ok());
         assert!(matches!(storage.load_game(), Ok(Some(ref g)) if *g == saved));

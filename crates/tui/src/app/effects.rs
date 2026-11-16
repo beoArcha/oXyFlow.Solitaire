@@ -4,9 +4,9 @@ use std::time::Duration;
 
 use oxysol_core::{Session, Variant};
 
-use super::persist::UNDO_ALLOWED;
 use super::{App, Modal, Screen};
 use crate::screens::Effect;
+use crate::screens::board::Start;
 use crate::settings::Settings;
 use crate::widgets::overlay::{HowToPlay, Rules};
 
@@ -15,7 +15,11 @@ impl App {
         match effect {
             Effect::None => {}
             Effect::Goto(screen) => self.goto(screen),
-            Effect::Start { variant, seed } => self.start_game(variant, seed),
+            Effect::Start {
+                variant,
+                seed,
+                undo_allowed,
+            } => self.start_game(variant, seed, undo_allowed),
             Effect::Resume => self.resume_game(),
             Effect::Restart => self.board.restart(self.now),
             Effect::Apply(settings) => self.apply_settings(settings),
@@ -66,6 +70,7 @@ impl App {
             }
         };
         self.stats.announce_copy(seed, copied);
+        self.board.announce_copy(seed, copied);
     }
 
     pub(super) fn open_modal(&mut self, modal: Modal) {
@@ -92,14 +97,19 @@ impl App {
         }
     }
 
-    fn start_game(&mut self, variant: Variant, seed: Option<u64>) {
+    fn start_game(&mut self, variant: Variant, seed: Option<u64>, undo_allowed: bool) {
         self.abandon_saved();
         let seed = seed.unwrap_or_else(|| (self.seeds)());
         tracing::info!(?variant, seed, "new game dealt");
-        let recorded = self.storage.start_game(variant, seed, UNDO_ALLOWED);
+        let recorded = self.storage.start_game(variant, seed, undo_allowed);
         let id = recorded.as_ref().ok().copied();
+        let start = Start {
+            id,
+            elapsed: Duration::ZERO,
+            undo_allowed,
+        };
         self.board
-            .begin(Session::new(variant, seed), id, Duration::ZERO, self.now);
+            .begin(Session::new(variant, seed), start, self.now);
         self.enter_board();
         self.note_write(recorded.map(drop), "the new game could not be recorded");
     }
@@ -113,7 +123,12 @@ impl App {
         match Session::restore(saved.record) {
             Ok(session) => {
                 let elapsed = Duration::from_millis(elapsed_ms);
-                self.board.begin(session, Some(id), elapsed, self.now);
+                let start = Start {
+                    id: Some(id),
+                    elapsed,
+                    undo_allowed: saved.undo_allowed,
+                };
+                self.board.begin(session, start, self.now);
                 self.enter_board();
             }
             Err(error) => {

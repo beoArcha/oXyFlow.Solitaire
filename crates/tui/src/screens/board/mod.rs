@@ -4,8 +4,10 @@
 
 mod choices;
 mod commands;
+mod counters;
 mod cursor;
 mod guidance;
+mod header;
 mod marks;
 mod mouse;
 mod moves;
@@ -29,7 +31,7 @@ use crate::action::Action;
 use crate::announce;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
-use crate::i18n::t;
+use crate::i18n::{t, tf};
 use crate::settings::Settings;
 use crate::storage::GameId;
 use crate::widgets::pile::Marks;
@@ -44,6 +46,15 @@ struct Pick {
     choices: Vec<Choice>,
 }
 
+/// How a game is taken over by [`BoardScreen::begin`]: its history id, the playing time so far and
+/// its undo mode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Start {
+    pub id: Option<GameId>,
+    pub elapsed: Duration,
+    pub undo_allowed: bool,
+}
+
 /// The game being played, its history id, its clock and the state of the controller.
 pub struct BoardScreen {
     session: Option<Session>,
@@ -53,6 +64,8 @@ pub struct BoardScreen {
     pick: Option<Pick>,
     hint: Option<Move>,
     status: Option<&'static str>,
+    copy_note: Option<(u64, bool)>,
+    undo_allowed: bool,
     guide_panel: bool,
     cues: Vec<SoundCue>,
     dirty: bool,
@@ -82,6 +95,8 @@ impl Default for BoardScreen {
             pick: None,
             hint: None,
             status: None,
+            copy_note: None,
+            undo_allowed: true,
             guide_panel: true,
             cues: Vec::new(),
             dirty: false,
@@ -99,7 +114,13 @@ impl BoardScreen {
     }
 
     /// Takes over `session`, continuing from `elapsed`, and starts the clock at `now`.
-    pub fn begin(&mut self, session: Session, id: Option<GameId>, elapsed: Duration, now: Instant) {
+    /// `undo_allowed` is the undo mode of the game: `false` rejects undo and redo.
+    pub fn begin(&mut self, session: Session, start: Start, now: Instant) {
+        let Start {
+            id,
+            elapsed,
+            undo_allowed,
+        } = start;
         self.cursor = Cursor::initial(&session.game().piles());
         self.session = Some(session);
         self.game_id = id;
@@ -107,7 +128,19 @@ impl BoardScreen {
         self.clock.resume(now);
         self.cues.clear();
         self.pointer = Pointer::default();
+        self.copy_note = None;
+        self.undo_allowed = undo_allowed;
         self.settle();
+    }
+
+    /// Whether undo and redo are allowed in the running game.
+    pub fn undo_allowed(&self) -> bool {
+        self.undo_allowed
+    }
+
+    /// Records how copying the seed ended, for the status line, until the next action.
+    pub fn announce_copy(&mut self, seed: u64, copied: bool) {
+        self.copy_note = Some((seed, copied));
     }
 
     /// Back to the dealt position of the same seed with an empty history and a zeroed clock.
@@ -196,7 +229,11 @@ impl BoardScreen {
 
     fn status_text(&self) -> String {
         let focus = self.focus_text();
-        let event = self.status.map(|key| t(key).into_owned());
+        let event = match self.copy_note {
+            Some((seed, true)) => Some(tf("board.status.seed_copied", &[("seed", &seed.to_string())])),
+            Some((seed, false)) => Some(tf("board.status.seed_copy_failed", &[("seed", &seed.to_string())])),
+            None => self.status.map(|key| t(key).into_owned()),
+        };
         announce::announce(&focus, event.as_deref().unwrap_or_default())
     }
 

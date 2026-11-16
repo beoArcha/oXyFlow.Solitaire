@@ -38,16 +38,23 @@ pub struct GameRecord {
     pub outcome: Option<Outcome>,
     pub elapsed_ms: Option<u64>,
     pub moves: Option<u32>,
-    /// Whether undo was available in this game; always `true` until a "no undo" mode exists.
+    /// Whether undo and redo were available in this game.
     pub undo_allowed: bool,
 }
 
-/// The game that resumes on the next start.
+const fn undo_allowed_by_default() -> bool {
+    true
+}
+
+/// The game that resumes on the next start. `undo_allowed` is the undo mode the game was dealt
+/// with; a save written before the mode existed loads as `true`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SavedGame {
     pub id: GameId,
     pub record: SessionRecord,
     pub elapsed_ms: u64,
+    #[serde(default = "undo_allowed_by_default")]
+    pub undo_allowed: bool,
 }
 
 /// Why a storage operation failed. A missing value is `Ok(None)`, never an error.
