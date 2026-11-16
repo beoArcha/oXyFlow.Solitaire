@@ -2,6 +2,7 @@
 
 mod aura;
 mod commands;
+mod counters;
 mod guidance;
 mod mouse;
 mod moves;
@@ -26,6 +27,16 @@ pub(super) fn start(variant: Variant, seed: u64) -> Harness {
         variant,
         seed: Some(seed),
         undo_allowed: true,
+    });
+    h
+}
+
+pub(super) fn start_no_undo(variant: Variant, seed: u64) -> Harness {
+    let mut h = Harness::new();
+    h.app.apply(Effect::Start {
+        variant,
+        seed: Some(seed),
+        undo_allowed: false,
     });
     h
 }

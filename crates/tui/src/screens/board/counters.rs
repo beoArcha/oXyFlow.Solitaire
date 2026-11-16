@@ -41,18 +41,32 @@ pub(super) fn stock_text(session: &Session) -> Option<String> {
     Some(stock_text_of(&status, len))
 }
 
-/// Where `text` fits beside the stock: the row under the halo of the stock card, when no pile or
-/// card occupies it and it lies inside `body`. `None` means there is no room, and the counter is
-/// shown in the action line instead.
+fn with_halo(rect: Rect) -> Rect {
+    Rect::new(
+        rect.x.saturating_sub(1),
+        rect.y.saturating_sub(1),
+        rect.width.saturating_add(2),
+        rect.height.saturating_add(2),
+    )
+}
+
+/// Where `text` fits beside the stock: the row under the halo of the stock card, when neither a
+/// card nor the halo of any pile can reach it, and it lies inside `body`. A column layout leaves
+/// no such row (the halo of the first column starts right under the halo of the stock), a pyramid
+/// board does when the window is taller than the board. `None` means there is no room, and the
+/// counter is shown in the action line instead.
 pub(super) fn beside_stock(geometry: &BoardGeometry, body: Rect, text: &str) -> Option<Rect> {
     let stock = geometry.pile(PileRef::Stock)?.slot;
     let width = u16::try_from(text.chars().count()).unwrap_or(u16::MAX);
     let row = Rect::new(stock.x, stock.bottom().saturating_add(1), width, 1);
     let room = body.contains(Position::new(row.x, row.y));
     let free = geometry.piles.iter().all(|pile| {
-        !pile.area.intersects(row)
-            && !pile.slot.intersects(row)
-            && pile.cards.iter().all(|card| !card.intersects(row))
+        !with_halo(pile.area).intersects(row)
+            && !with_halo(pile.slot).intersects(row)
+            && pile
+                .cards
+                .iter()
+                .all(|card| !with_halo(*card).intersects(row))
     });
     (room && free).then(|| row.intersection(body))
 }

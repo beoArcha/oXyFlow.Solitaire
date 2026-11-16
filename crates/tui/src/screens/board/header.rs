@@ -44,7 +44,11 @@ fn text_of(session: &Session, elapsed: Duration, undo_allowed: bool) -> String {
 /// Character index of the seed in `text`, searched after the game name so that a digit in the name
 /// is not taken for the seed.
 fn seed_start(text: &str, variant: &str, seed: &str) -> usize {
-    let skipped = text.strip_prefix(variant).map_or(0, str::len);
+    let skipped = if text.starts_with(variant) {
+        variant.len()
+    } else {
+        0
+    };
     let found = text.get(skipped..).and_then(|rest| rest.find(seed));
     let byte = skipped + found.unwrap_or(0);
     text.get(..byte).map_or(0, |head| head.chars().count())
@@ -66,9 +70,10 @@ impl Header {
         self.text.chars().count()
     }
 
+    /// Where the line starts: the same rule the renderer uses to center it.
     fn left(&self, area: Rect) -> u16 {
-        let spare = usize::from(area.width).saturating_sub(self.width());
-        area.x + u16::try_from(spare / 2).unwrap_or(0)
+        let offset = (usize::from(area.width) / 2).saturating_sub(self.width() / 2);
+        area.x + u16::try_from(offset).unwrap_or(0)
     }
 
     /// The cells of the seed when the header is centered in `area`.
