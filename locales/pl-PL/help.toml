@@ -56,3 +56,8 @@ title = "Jak grać"
 close = "Zamknij"
 footer = "{left}/{right}: gra   {up}/{down}/PgUp/PgDn: przewijanie   {back}: zamknij"
 position = "{from}-{to} / {total}"
+
+[tab]
+keys = "Klawisze"
+rules = "Zasady"
+

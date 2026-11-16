@@ -4,10 +4,13 @@
 
 mod dialog;
 mod help;
+#[cfg(test)]
+mod help_rules_tests;
 mod how_to_play;
 mod pause;
 #[cfg(test)]
 mod render_tests;
+mod tabs;
 #[cfg(test)]
 mod tests;
 mod win;
@@ -15,12 +18,13 @@ mod win;
 use std::time::Instant;
 
 use ratatui::Frame;
-use ratatui::crossterm::event::{KeyEvent, MouseEvent};
+use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Clear};
 
 use self::dialog::{Button, Geometry, Text};
-pub use self::how_to_play::{HowToPlay, Rules};
+pub use self::how_to_play::{HowToPlay, Rules, set_active_rules};
+pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
 use crate::i18n::t;
@@ -127,7 +131,25 @@ fn press(modal: &Modal, index: usize) -> Effect {
 /// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
 /// then applies `effect` (`Effect::None` just closes).
 pub fn handle(modal: &mut Modal, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+    if *modal == Modal::Help {
+        if matches!(key.code, KeyCode::Tab | KeyCode::BackTab)
+            || matches!(action, Some(Action::Left | Action::Right | Action::Rules))
+        {
+            *modal = Modal::HowToPlay(HowToPlay::new(how_to_play::active_rules()));
+            return None;
+        }
+        if matches!(key.code, KeyCode::Esc | KeyCode::Enter)
+            || matches!(action, Some(Action::Select | Action::Back))
+        {
+            return Some(Effect::None);
+        }
+        return None;
+    }
     if let Modal::HowToPlay(state) = modal {
+        if matches!(key.code, KeyCode::Tab | KeyCode::BackTab) || action == Some(Action::Help) {
+            *modal = Modal::Help;
+            return None;
+        }
         return how_to_play::handle(state, key, action);
     }
     let action = action?;
@@ -155,7 +177,38 @@ pub fn handle_mouse(
     now: Instant,
     event: &MouseEvent,
 ) -> Option<Effect> {
+    if *modal == Modal::Help {
+        let cell = mouse::left_press(event)?;
+        let geometry = help::geometry(area);
+        if dialog::button_at(&geometry, cell).is_some() {
+            return Some(Effect::None);
+        }
+        let [top_tab_row, _, _] = ratatui::layout::Layout::vertical([
+            ratatui::layout::Constraint::Length(1),
+            ratatui::layout::Constraint::Fill(1),
+            ratatui::layout::Constraint::Length(1),
+        ])
+        .areas(geometry.body);
+        let top = tabs::top_tabs(top_tab_row);
+        if mouse::contains(top.rules, cell) {
+            let default_rules = board
+                .session()
+                .map_or(how_to_play::active_rules(), |s| Rules::of(s.variant()));
+            how_to_play::set_active_rules(default_rules);
+            *modal = Modal::HowToPlay(HowToPlay::new(default_rules));
+        }
+        return None;
+    }
     if let Modal::HowToPlay(state) = modal {
+        if let Some(cell) = mouse::left_press(event) {
+            let geometry = how_to_play::geometry(area);
+            let parts = how_to_play::parts(geometry.body);
+            let top = tabs::top_tabs(parts.top_tabs);
+            if mouse::contains(top.keys, cell) {
+                *modal = Modal::Help;
+                return None;
+            }
+        }
         return how_to_play::handle_mouse(state, area, event);
     }
     let cell = mouse::left_press(event)?;

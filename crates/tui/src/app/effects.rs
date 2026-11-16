@@ -76,6 +76,13 @@ impl App {
     pub(super) fn open_modal(&mut self, modal: Modal) {
         self.board.pause_clock(self.now);
         self.board.set_covered(modal == Modal::Pause);
+        if modal == Modal::Help {
+            let rules = self
+                .board
+                .session()
+                .map_or(Rules::Klondike, |session| Rules::of(session.variant()));
+            crate::widgets::overlay::set_active_rules(rules);
+        }
         self.modal = Some(modal);
     }
 
@@ -86,6 +93,7 @@ impl App {
             .map_or(HowToPlay::new(Rules::Klondike), |session| {
                 HowToPlay::for_variant(session.variant())
             });
+        crate::widgets::overlay::set_active_rules(rules.rules);
         self.open_modal(Modal::HowToPlay(rules));
     }
 

@@ -86,10 +86,8 @@ fn keys_scroll_switch_and_close() {
     assert_eq!(press(&mut state, KeyCode::Left), None);
     assert_eq!(press(&mut state, KeyCode::Left), None);
     assert_eq!(state.rules, Rules::Pyramid);
-    assert_eq!(press(&mut state, KeyCode::Tab), None);
+    assert_eq!(press(&mut state, KeyCode::Right), None);
     assert_eq!(state.rules, Rules::Klondike);
-    assert_eq!(press(&mut state, KeyCode::BackTab), None);
-    assert_eq!(state.rules, Rules::Pyramid);
 
     for code in [KeyCode::Esc, KeyCode::Enter, KeyCode::Char(' ')] {
         assert_eq!(press(&mut state, code), Some(Effect::None), "{code:?}");

@@ -56,3 +56,8 @@ title = "How to play"
 close = "Close"
 footer = "{left}/{right}: game   {up}/{down}/PgUp/PgDn: scroll   {back}: close"
 position = "{from}-{to} / {total}"
+
+[tab]
+keys = "Keys"
+rules = "Rules"
+

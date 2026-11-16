@@ -1,8 +1,24 @@
 //! State of the "How to play" window: which game it explains and how far it is scrolled.
 
+use std::cell::Cell;
+
 use oxysol_core::Variant;
 
 use super::content;
+
+thread_local! {
+    static ACTIVE_RULES: Cell<Rules> = const { Cell::new(Rules::Klondike) };
+}
+
+/// The game to start on when opening or switching to Rules.
+pub fn active_rules() -> Rules {
+    ACTIVE_RULES.with(Cell::get)
+}
+
+/// Sets the game to start on when opening or switching to Rules.
+pub fn set_active_rules(rules: Rules) {
+    ACTIVE_RULES.with(|cell| cell.set(rules));
+}
 
 /// The four games the window explains. Variants of one game share a page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -82,6 +98,7 @@ impl HowToPlay {
 
     /// Shows `rules` from the top.
     pub fn show(&mut self, rules: Rules) {
+        set_active_rules(rules);
         *self = Self::new(rules);
     }
 

@@ -76,7 +76,8 @@ fn the_menu_item_opens_klondike_by_keyboard() {
     h.press(KeyCode::Enter);
     assert_eq!(shown(&h), Some(HowToPlay::new(Rules::Klondike)));
     let text = h.text();
-    assert!(text.contains("How to play"));
+    assert!(text.contains("Help"));
+    assert!(text.contains("[Rules]"));
     assert!(text.contains("[Klondike]"));
     assert!(text.contains("Goal"));
 }
