@@ -60,4 +60,7 @@ position = "{from}-{to} / {total}"
 [tab]
 keys = "Keys"
 rules = "Rules"
+command_line = "Command line"
 
+[command_line]
+footer = "Tab: next tab   {up}/{down}/PgUp/PgDn: scroll   {back}: close"

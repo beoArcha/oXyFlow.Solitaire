@@ -9,15 +9,36 @@ Użycie: oxysol [opcje]
 Opcje:
   --version                    wypisz wersję i zakończ
   --help                       wypisz tę pomoc i zakończ
+
+Wygląd:
   --ascii                      rysuj karty wyłącznie znakami ASCII
   --colors <16|256|truecolor>  głębia kolorów terminala
+
+Gra:
   --seed <u64>                 od razu wybierz grę dla tego ziarna
+
+Okno:
+  -n, --new-window             otwórz grę w nowym oknie konsoli i od razu
+                               wróć do wiersza poleceń
+
+Dwuklik czy konsola:
+  Dwuklik otwiera grę we własnym oknie konsoli, które zamyka się po
+  zakończeniu gry. Uruchomiona z konsoli, gra działa w tej konsoli,
+  chyba że podano --new-window. Po błędzie przy starcie okno czeka na
+  Enter.
+
+Pliki:
+  OXYSOL_HOME      katalog na bazę danych i dziennik (zawsze wygrywa)
+  oxysol.portable  plik obok programu: pliki leżą wtedy w katalogu
+                   data obok niego
+  OXYSOL_LOG       poziom dziennika: error, warn, info, debug lub trace
 """
 usage_error = "oxysol: {error}\nSpróbuj `oxysol --help`, aby zobaczyć listę opcji."
 paths_failed = "oXySol nie może znaleźć katalogu na swoje pliki. Ustaw OXYSOL_HOME na katalog z prawem zapisu."
 storage_failed = "oXySol nie może otworzyć swojej bazy danych. Szczegóły są w pliku dziennika."
 terminal_failed = "oXySol zakończył działanie, bo terminal zawiódł. Szczegóły są w pliku dziennika."
 output_failed = "oXySol nie może pisać do terminala."
+new_window_failed = "oXySol nie może otworzyć nowego okna konsoli (próbowano: {tried}). Uruchom go bez --new-window."
 log_unavailable = "oXySol nie może zapisywać dziennika w {path}. Działa bez dziennika."
 panic = "oXySol niespodziewanie zakończył działanie w {location}. Szczegóły są w {path}."
 press_enter = "Naciśnij Enter, aby zamknąć to okno."

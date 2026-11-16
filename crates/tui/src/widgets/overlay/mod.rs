@@ -2,6 +2,9 @@
 //! dialog over the screen; [`handle`] and [`handle_mouse`] turn input into the [`Effect`] that
 //! closes it. Every dialog sizes itself to its content and is centered in the area it is given.
 
+mod command_line;
+#[cfg(test)]
+mod command_line_tests;
 mod dialog;
 mod help;
 #[cfg(test)]
@@ -22,6 +25,7 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Clear};
 
+pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
 pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
@@ -35,7 +39,7 @@ use crate::screens::{Effect, ViewCtx};
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
-        Modal::Help | Modal::HowToPlay(_) => None,
+        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) => None,
         Modal::Pause => Some(pause::text()),
         Modal::Win { menu_focused } => {
             let moves = board.session().map_or(0, |session| session.moves_made());
@@ -92,6 +96,7 @@ pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, c
             text.draw(frame, &geometry, ctx);
         }
         (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
+        (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),
         (_, None) => help::draw(frame, area, ctx),
     }
 }
@@ -128,6 +133,61 @@ fn press(modal: &Modal, index: usize) -> Effect {
     }
 }
 
+fn tab_of(modal: &Modal) -> Option<HelpTab> {
+    match modal {
+        Modal::Help => Some(HelpTab::Keys),
+        Modal::HowToPlay(_) => Some(HelpTab::Rules),
+        Modal::CommandLine(_) => Some(HelpTab::CommandLine),
+        _ => None,
+    }
+}
+
+fn modal_for(tab: HelpTab, rules: Rules) -> Modal {
+    match tab {
+        HelpTab::Keys => Modal::Help,
+        HelpTab::Rules => Modal::HowToPlay(HowToPlay::new(rules)),
+        HelpTab::CommandLine => Modal::CommandLine(CommandLine::new()),
+    }
+}
+
+/// The tab a key switches to from `tab`: Tab and Shift+Tab step through the tabs. Left and Right
+/// step too, except on Rules where they pick the game. The Help and Rules keys jump to their tabs.
+fn tab_target(tab: HelpTab, key: &KeyEvent, action: Option<Action>) -> Option<HelpTab> {
+    match key.code {
+        KeyCode::Tab => return Some(tab.next()),
+        KeyCode::BackTab => return Some(tab.previous()),
+        _ => {}
+    }
+    match (tab, action?) {
+        (HelpTab::Rules, Action::Help) | (HelpTab::CommandLine, Action::Help) => {
+            Some(HelpTab::Keys)
+        }
+        (HelpTab::Keys | HelpTab::CommandLine, Action::Rules) => Some(HelpTab::Rules),
+        (HelpTab::Keys | HelpTab::CommandLine, Action::Right) => Some(tab.next()),
+        (HelpTab::Keys | HelpTab::CommandLine, Action::Left) => Some(tab.previous()),
+        _ => None,
+    }
+}
+
+fn close_help(key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+    let closes = matches!(key.code, KeyCode::Esc | KeyCode::Enter)
+        || matches!(action, Some(Action::Select | Action::Back));
+    closes.then_some(Effect::None)
+}
+
+fn clicked_tab(current: HelpTab, area: Rect, event: &MouseEvent) -> Option<HelpTab> {
+    let cell = mouse::left_press(event)?;
+    let row = tabs::top_row(help::geometry(area).body);
+    tabs::top_tabs(row)
+        .tab_at(cell)
+        .filter(|tab| *tab != current)
+}
+
+fn click_help_button(area: Rect, event: &MouseEvent) -> Option<Effect> {
+    let cell = mouse::left_press(event)?;
+    dialog::button_at(&help::geometry(area), cell).map(|_| Effect::None)
+}
+
 /// The game the Rules tab opens on: the one on the board, Klondike without a game.
 pub fn rules_of(board: &BoardScreen) -> Rules {
     board
@@ -149,26 +209,16 @@ pub fn handle_for(
     action: Option<Action>,
     rules: Rules,
 ) -> Option<Effect> {
-    if *modal == Modal::Help {
-        if matches!(key.code, KeyCode::Tab | KeyCode::BackTab)
-            || matches!(action, Some(Action::Left | Action::Right | Action::Rules))
-        {
-            *modal = Modal::HowToPlay(HowToPlay::new(rules));
+    if let Some(tab) = tab_of(modal) {
+        if let Some(target) = tab_target(tab, key, action) {
+            *modal = modal_for(target, rules);
             return None;
         }
-        if matches!(key.code, KeyCode::Esc | KeyCode::Enter)
-            || matches!(action, Some(Action::Select | Action::Back))
-        {
-            return Some(Effect::None);
-        }
-        return None;
-    }
-    if let Modal::HowToPlay(state) = modal {
-        if matches!(key.code, KeyCode::Tab | KeyCode::BackTab) || action == Some(Action::Help) {
-            *modal = Modal::Help;
-            return None;
-        }
-        return how_to_play::handle(state, key, action);
+        return match modal {
+            Modal::HowToPlay(state) => how_to_play::handle(state, key, action),
+            Modal::CommandLine(state) => command_line::handle(state, key, action),
+            _ => close_help(key, action),
+        };
     }
     let action = action?;
     if matches!(
@@ -195,35 +245,16 @@ pub fn handle_mouse(
     now: Instant,
     event: &MouseEvent,
 ) -> Option<Effect> {
-    if *modal == Modal::Help {
-        let cell = mouse::left_press(event)?;
-        let geometry = help::geometry(area);
-        if dialog::button_at(&geometry, cell).is_some() {
-            return Some(Effect::None);
+    if let Some(tab) = tab_of(modal) {
+        if let Some(target) = clicked_tab(tab, area, event) {
+            *modal = modal_for(target, rules_of(board));
+            return None;
         }
-        let [top_tab_row, _, _] = ratatui::layout::Layout::vertical([
-            ratatui::layout::Constraint::Length(1),
-            ratatui::layout::Constraint::Fill(1),
-            ratatui::layout::Constraint::Length(1),
-        ])
-        .areas(geometry.body);
-        let top = tabs::top_tabs(top_tab_row);
-        if mouse::contains(top.rules, cell) {
-            *modal = Modal::HowToPlay(HowToPlay::new(rules_of(board)));
-        }
-        return None;
-    }
-    if let Modal::HowToPlay(state) = modal {
-        if let Some(cell) = mouse::left_press(event) {
-            let geometry = how_to_play::geometry(area);
-            let parts = how_to_play::parts(geometry.body);
-            let top = tabs::top_tabs(parts.top_tabs);
-            if mouse::contains(top.keys, cell) {
-                *modal = Modal::Help;
-                return None;
-            }
-        }
-        return how_to_play::handle_mouse(state, area, event);
+        return match modal {
+            Modal::HowToPlay(state) => how_to_play::handle_mouse(state, area, event),
+            Modal::CommandLine(state) => command_line::handle_mouse(state, area, event),
+            _ => click_help_button(area, event),
+        };
     }
     let cell = mouse::left_press(event)?;
     let index = dialog::button_at(&geometry(area, modal, board, now), cell)?;
