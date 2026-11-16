@@ -214,9 +214,12 @@ fn win_shows_the_time_and_both_buttons_in_both_locales() {
         for unicode in [true, false] {
             let terminal = render(&Modal::win(), caps(unicode), locale, (100, 30), now);
             let text = text_of(&terminal);
-            assert!(text.contains("Time: 1:15"), "{}", locale.id());
-            assert!(text.contains(&focused(unicode, "New game")));
-            assert!(text.contains("Menu"));
+            let time_line = i18n::tf("help.overlay.win_time", &[("time", "1:15")]);
+            let new_game = i18n::t("help.overlay.new_game");
+            let menu = i18n::t("help.overlay.menu");
+            assert!(text.contains(&*time_line), "{}", locale.id());
+            assert!(text.contains(&focused(unicode, &new_game)));
+            assert!(text.contains(&*menu));
         }
     }
     i18n::set_locale(Locale::EnUs);

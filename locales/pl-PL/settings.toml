@@ -1,43 +1,43 @@
-# Strings of the settings area. Copied from en-US until the translation (M-34).
+# Strings of the settings area.
 
 [row]
-language = "Language"
-theme = "Theme"
-front_style = "Front style"
-back_style = "Back style"
-glyphs = "Symbols"
-colors = "Colors"
-sound_style = "Sound style"
-cues = "Sound cues"
-music = "Music"
-volume = "Volume"
+language = "Język"
+theme = "Motyw"
+front_style = "Styl awersów"
+back_style = "Styl rewersów"
+glyphs = "Symbole"
+colors = "Kolory"
+sound_style = "Styl dźwięku"
+cues = "Efekty dźwiękowe"
+music = "Muzyka"
+volume = "Głośność"
 guide_panel = "Panel przewodnika"
 line = "{label}: {value}"
 
 [value]
-on = "On"
-off = "Off"
-unavailable = "unavailable"
+on = "Włączone"
+off = "Wyłączone"
+unavailable = "niedostępne"
 
 [locale]
-en_us = "English"
+en_us = "Angielski"
 pl_pl = "Polski"
 
 [theme]
-dark = "Dark"
-light = "Light"
-high_contrast = "High contrast"
+dark = "Ciemny"
+light = "Jasny"
+high_contrast = "Wysoki kontrast"
 
 [glyph]
-font = "Font"
+font = "Czcionka"
 unicode = "Unicode"
 ascii = "ASCII"
 
 [color]
-auto = "Auto"
-ansi16 = "16 colors"
-ansi256 = "256 colors"
-true_color = "True color"
+auto = "Automatycznie"
+ansi16 = "16 kolorów"
+ansi256 = "256 kolorów"
+true_color = "Pełny kolor"
 
 [audio]
 no_device = "Dźwięk jest niedostępny: nie znaleziono działającego urządzenia audio."

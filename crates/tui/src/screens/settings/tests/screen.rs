@@ -225,6 +225,11 @@ fn every_row_is_drawn_in_both_locales() {
     };
     let fixture = Fixture::new(polish, TRUE_COLOR);
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
-    assert!(lines.iter().any(|text| text.contains("Language: Polski")));
+    let expected = format!(
+        "{}: {}",
+        t("settings.row.language"),
+        t("settings.locale.pl_pl")
+    );
+    assert!(lines.iter().any(|text| text.contains(&expected)));
     set_locale(Locale::EnUs);
 }
