@@ -2,6 +2,7 @@
 
 mod auto;
 mod deal;
+mod finish;
 mod hints;
 mod rules;
 mod stock;

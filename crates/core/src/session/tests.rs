@@ -31,6 +31,11 @@ impl Game for Counter {
         self.legal_moves().into_iter().next()
     }
 
+    fn forced_finish(&self) -> Option<Vec<Move>> {
+        let left = usize::from(LIMIT.saturating_sub(self.count));
+        (left > 0).then(|| vec![Move::Stock; left])
+    }
+
     fn is_won(&self) -> bool {
         self.count == LIMIT
     }
@@ -281,4 +286,17 @@ fn the_public_constructors_use_the_real_games() {
     assert_eq!(session.apply(Move::Stock), Ok(()));
     let restored = Session::restore(session.record());
     assert!(restored.is_ok());
+}
+
+#[test]
+fn forced_finish_delegates_and_playing_it_records_every_move() {
+    let mut session = session(0);
+    let moves = session.forced_finish().expect("a finish");
+    assert_eq!(moves.len(), usize::from(LIMIT));
+    for mv in moves {
+        assert_eq!(session.apply(mv), Ok(()));
+    }
+    assert!(session.game().is_won());
+    assert_eq!(session.moves_made(), usize::from(LIMIT));
+    assert_eq!(session.forced_finish(), None);
 }

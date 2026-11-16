@@ -4,6 +4,7 @@
 //! follows the shared layout of the games: state and deal here, validation and execution in
 //! `rules`, move generation and the hint in `moves`.
 
+mod finish;
 mod moves;
 mod rules;
 #[cfg(test)]
@@ -178,5 +179,9 @@ impl Game for Pyramid {
             recycles_left: Some(u32::from(self.recycles_left)),
             deals_left: None,
         })
+    }
+
+    fn forced_finish(&self) -> Option<Vec<Move>> {
+        self.finishing_moves()
     }
 }

@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -88,6 +88,7 @@ pub trait Game {
     fn is_won(&self) -> bool;
     fn piles(&self) -> Vec<PileSnapshot>;
     fn stock_status(&self) -> Option<StockStatus>;       // None for FreeCell (no stock)
+    fn forced_finish(&self) -> Option<Vec<Move>>;        // moves that finish a certain win, else None
 }
 pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game>;    // the only place that knows all games
 ```
@@ -105,6 +106,16 @@ Rules of the `Game` contract:
 - `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.
 - `stock_status` is read-only and derived from the game state, so undo, redo, restart and restore
   report the counters of the rebuilt game. Its shape is not serialized: no save format changes.
+- `forced_finish` (P2-07) is pure, deterministic and cheap: it returns the moves that finish the game
+  when the rest is a certain win and `None` otherwise (also for a won game). Applied in order through
+  `apply` they are all legal and end in `is_won()`; each sequence is replayed on a clone before it is
+  returned (`games/finish.rs`), so a bug can only give `None`. The rules are conservative, a winnable
+  position outside them gives `None`: Klondike — stock and waste empty and no face-down card, then
+  cards go to the foundations; FreeCell — the closure of foundation moves from cells and column tops
+  empties the table; Spider — stock empty and every column one same-suit run, then whole runs are joined
+  onto the run they continue; Pyramid — a depth-first search over removals only (no draw, no recycle)
+  with a budget of 5000 positions. `Session::forced_finish` delegates; nothing is applied until the
+  caller plays the moves through `Session::apply`.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`.
 
 The session implements history by replaying the move log from the seed (decision T-03):

@@ -2,6 +2,7 @@
 //! pyramid position is written as `"."`.
 
 mod deal;
+mod finish;
 mod hints;
 mod legal;
 mod rules;
