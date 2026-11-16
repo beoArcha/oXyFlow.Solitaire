@@ -16,7 +16,7 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 pub use self::state::{HowToPlay, Rules};
-pub use self::view::{draw, geometry};
+pub use self::view::{draw, geometry, parts};
 use super::dialog;
 use crate::action::Action;
 use crate::mouse;
@@ -32,8 +32,6 @@ pub fn handle(state: &mut HowToPlay, key: &KeyEvent, action: Option<Action>) -> 
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
         KeyCode::Home => state.scroll_to(false),
         KeyCode::End => state.scroll_to(true),
-        KeyCode::Tab => state.switch(true),
-        KeyCode::BackTab => state.switch(false),
         _ => match action? {
             Action::Up => state.scroll_by(-1),
             Action::Down => state.scroll_by(1),
@@ -59,7 +57,7 @@ pub fn handle_mouse(state: &mut HowToPlay, area: Rect, event: &MouseEvent) -> Op
     if dialog::button_at(&geometry, cell).is_some() {
         return Some(Effect::None);
     }
-    let placed = view::tabs(view::parts(geometry.body).tabs);
+    let placed = view::tabs(view::parts(geometry.body).game_tabs);
     if mouse::contains(placed.previous, cell) {
         state.switch(false);
     } else if mouse::contains(placed.next, cell) {

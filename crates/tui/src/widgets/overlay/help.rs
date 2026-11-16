@@ -9,6 +9,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Button, Geometry};
+use super::tabs::{HelpTab, draw_top_tabs};
 use crate::action::HelpGroup;
 use crate::i18n::t;
 use crate::input::{KEY_TABLE, KeySpec};
@@ -18,7 +19,9 @@ use crate::theme::Token;
 const GAP: u16 = 4;
 const KEY_PADDING: usize = 2;
 const LEFT_TOPICS: usize = 2;
-const EXTRA_ROWS: u16 = 2;
+const BODY_ROWS: u16 = 23;
+const DIALOG_MIN_WIDTH: u16 = 80;
+
 const GESTURES: [(&str, &str); 5] = [
     ("help.mouse_keys.click_card", "help.mouse.click_card"),
     ("help.mouse_keys.click_stock", "help.mouse.click_stock"),
@@ -111,12 +114,6 @@ impl Columns {
         u16::try_from(self.key_width + text).unwrap_or(u16::MAX)
     }
 
-    fn rows_of(sections: &[Section]) -> u16 {
-        let rows: usize = sections.iter().map(|section| section.rows.len() + 1).sum();
-        let gaps = sections.len().saturating_sub(1);
-        u16::try_from(rows + gaps).unwrap_or(u16::MAX)
-    }
-
     fn lines(&self, sections: &[Section], ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
         let mut lines = Vec::new();
         for (index, section) in sections.iter().enumerate() {
@@ -141,9 +138,9 @@ impl Columns {
     }
 }
 
-fn buttons() -> Vec<Button> {
+pub(crate) fn buttons() -> Vec<Button> {
     vec![Button {
-        label: t("common.dialog.ok").into_owned(),
+        label: t("help.rules.close").into_owned(),
         focused: true,
     }]
 }
@@ -151,9 +148,9 @@ fn buttons() -> Vec<Button> {
 /// The box of the help window, centered in `area`.
 pub fn geometry(area: Rect) -> Geometry {
     let columns = Columns::new();
-    let width = columns.width_of(&columns.left) + GAP + columns.width_of(&columns.right) + 4;
-    let rows = Columns::rows_of(&columns.left).max(Columns::rows_of(&columns.right)) + EXTRA_ROWS;
-    dialog::boxed(area, width, rows, &buttons())
+    let width = (columns.width_of(&columns.left) + GAP + columns.width_of(&columns.right) + 4)
+        .max(DIALOG_MIN_WIDTH);
+    dialog::boxed(area, width, BODY_ROWS, &buttons())
 }
 
 /// Draws the help window over `area`.
@@ -161,8 +158,13 @@ pub fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let columns = Columns::new();
-    let [body, footer] =
-        Layout::vertical([Constraint::Fill(1), Constraint::Length(1)]).areas(geometry.body);
+    let [top_tab_row, body, footer] = Layout::vertical([
+        Constraint::Length(1),
+        Constraint::Fill(1),
+        Constraint::Length(1),
+    ])
+    .areas(geometry.body);
+    draw_top_tabs(frame, top_tab_row, HelpTab::Keys, ctx);
     let [left, _, right] = Layout::horizontal([
         Constraint::Length(columns.width_of(&columns.left)),
         Constraint::Length(GAP),

@@ -18,15 +18,15 @@ use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::overlay::dialog::{self, Button, Geometry};
 
-const DIALOG_WIDTH: u16 = 80;
-const CHROME_ROWS: u16 = 2;
+const CHROME_ROWS: u16 = 3;
 const ARROW_COLUMNS: u16 = 3;
 const TAB_PADDING: u16 = 2;
 const TAB_GAP: u16 = 1;
 
-/// The three bands inside the box: tabs, text and footer.
+/// The four bands inside the box: top tabs, game tabs, text and footer.
 pub struct Parts {
-    pub tabs: Rect,
+    pub top_tabs: Rect,
+    pub game_tabs: Rect,
     pub text: Rect,
     pub footer: Rect,
 }
@@ -48,19 +48,26 @@ fn buttons() -> Vec<Button> {
 /// The box of the window, centered in `area`. Its size does not depend on the text: the text
 /// scrolls inside a fixed number of rows, and the box fits the smallest supported terminal.
 pub fn geometry(area: Rect) -> Geometry {
+    let width = crate::widgets::overlay::help::geometry(area).frame.width;
     let rows = u16::try_from(VIEW_ROWS).unwrap_or(u16::MAX) + CHROME_ROWS;
-    dialog::boxed(area, DIALOG_WIDTH, rows, &buttons())
+    dialog::boxed(area, width, rows, &buttons())
 }
 
-/// Splits the box body into the tab row, the text rows and the footer row.
+/// Splits the box body into top tabs, game tabs, text rows and the footer row.
 pub fn parts(body: Rect) -> Parts {
-    let [tabs, text, footer] = Layout::vertical([
+    let [top_tabs, game_tabs, text, footer] = Layout::vertical([
+        Constraint::Length(1),
         Constraint::Length(1),
         Constraint::Fill(1),
         Constraint::Length(1),
     ])
     .areas(body);
-    Parts { tabs, text, footer }
+    Parts {
+        top_tabs,
+        game_tabs,
+        text,
+        footer,
+    }
 }
 
 fn columns_of(text: &str) -> u16 {
@@ -182,9 +189,15 @@ fn draw_footer(frame: &mut Frame, row: Rect, shown: (usize, usize, usize), ctx: 
 /// Draws the window over `area`.
 pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) {
     let geometry = geometry(area);
-    dialog::draw_box(frame, &geometry, &t("help.rules.title"), ctx);
+    dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let parts = parts(geometry.body);
-    draw_tabs(frame, parts.tabs, state, ctx);
+    crate::widgets::overlay::tabs::draw_top_tabs(
+        frame,
+        parts.top_tabs,
+        crate::widgets::overlay::tabs::HelpTab::Rules,
+        ctx,
+    );
+    draw_tabs(frame, parts.game_tabs, state, ctx);
     let rows = content::rows(state.rules);
     let first = usize::from(state.scroll);
     let lines: Vec<Line> = rows

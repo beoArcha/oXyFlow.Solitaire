@@ -225,14 +225,16 @@ pub struct NullClipboard;                                // every copy fails wit
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
-- **How to play (P3-10):** `Modal::HowToPlay(HowToPlay { rules, scroll })` is the rules window
-  (`widgets/overlay/how_to_play/`): tabs for Klondike, Spider, FreeCell and Pyramid, sections Goal, Layout,
-  Moves, Controls and Tips from `locales/*/rules.toml`, a fixed 80 × 26 box that scrolls its text. The
-  Controls keys are read from `KEY_TABLE`; texts name keys through placeholders such as `{hint}`. It opens
-  through `Effect::HowToPlay` (main-menu item "How to play", and `Action::Rules`, key `i`, handled by `App`
-  on every screen like `Action::Help`); `App` picks the game of the board's session, else Klondike.
-  Keys: Left/Right/Tab switch games, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close
-  close; arrows, tabs and Close are clickable.
+- **How to play (P3-10, O-14):** `Modal::Help` (the keys table) and `Modal::HowToPlay(HowToPlay { rules, scroll })`
+  (the rules pages) form the help window (`widgets/overlay/`): two top tabs ("Keys" and "Rules") switch
+  between them by Tab / Left-Right on the tab row and mouse clicks. The rules tab (`widgets/overlay/how_to_play/`)
+  provides tabs for Klondike, Spider, FreeCell and Pyramid, sections Goal, Layout, Moves, Controls and Tips from
+  `locales/*/rules.toml`, scrolling its text inside the dialog box. The Controls keys are read from `KEY_TABLE`;
+  texts name keys through placeholders such as `{hint}`. It opens through `Effect::HowToPlay` (main-menu item
+  "How to play", and `Action::Rules`, key `i`, handled by `App` on every screen like `Action::Help`); `App`
+  picks the game of the board's session, else Klondike. Keys: Tab switches Keys/Rules, Left/Right switches
+  games in Rules, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close close; arrows, tabs and
+  Close are clickable.
 - **Board guidance (P3-11):** the board tells the player what is going on and what is possible.
   *Aura:* `widgets/aura.rs` draws a one-cell halo around the focused card or run (`Token::AuraFocus`,
   `Glyphs::aura_focus`), the picked-up run (`Token::AuraCarry`, `aura_carry`) and, weaker, every drop
