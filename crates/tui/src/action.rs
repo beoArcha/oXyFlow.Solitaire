@@ -21,6 +21,7 @@ pub enum Action {
     Undo,
     Redo,
     Hint,
+    Finish,
     Restart,
     NewGame,
     Pause,
@@ -30,7 +31,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 23] = [
+    pub const ALL: [Action; 24] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -44,6 +45,7 @@ impl Action {
         Action::Undo,
         Action::Redo,
         Action::Hint,
+        Action::Finish,
         Action::Guide,
         Action::Restart,
         Action::NewGame,
@@ -77,6 +79,7 @@ impl Action {
             Action::Undo => "help.action.undo",
             Action::Redo => "help.action.redo",
             Action::Hint => "help.action.hint",
+            Action::Finish => "help.action.finish",
             Action::Restart => "help.action.restart",
             Action::NewGame => "help.action.new_game",
             Action::Pause => "help.action.pause",
