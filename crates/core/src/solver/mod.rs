@@ -97,7 +97,8 @@ fn unknown() -> Searched {
 
 /// The unverified search of a deal; `Unknown` work when the dealt piles are not understood.
 fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
-    let piles = deal(variant, seed).piles();
+    let game = deal(variant, seed);
+    let piles = game.piles();
     let finish = |moves: &[Move]| finishing_tail(variant, seed, moves);
     match variant {
         Variant::Klondike(draw) => match klondike::Position::from_piles(draw, &piles) {
@@ -112,7 +113,13 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
             Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
             None => unknown(),
         },
-        Variant::Pyramid(_) => unknown(),
+        Variant::Pyramid(rules) => {
+            let recycles = game.stock_status().and_then(|status| status.recycles_left);
+            match pyramid::Position::from_piles(rules, &piles, recycles.unwrap_or(0)) {
+                Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
+                None => unknown(),
+            }
+        }
     }
 }
 
