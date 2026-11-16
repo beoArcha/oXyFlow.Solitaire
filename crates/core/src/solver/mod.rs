@@ -104,7 +104,15 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
             Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
             None => unknown(),
         },
-        _ => unknown(),
+        Variant::FreeCell => match freecell::Position::from_piles(&piles) {
+            Some(start) => search::run(Strategy::BestFirst, &start, budget.nodes, &finish),
+            None => unknown(),
+        },
+        Variant::Spider(_) => match spider::Position::from_piles(&piles) {
+            Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
+            None => unknown(),
+        },
+        Variant::Pyramid(_) => unknown(),
     }
 }
 
