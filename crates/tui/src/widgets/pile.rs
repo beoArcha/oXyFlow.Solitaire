@@ -3,7 +3,7 @@
 use oxysol_core::{PileRef, PileSnapshot};
 use ratatui::buffer::Buffer;
 
-use super::card::{self, Face, Mark};
+use super::card::{self, Face, Hint, Mark, Placeholder};
 use crate::layout::PileGeometry;
 use crate::screens::ViewCtx;
 
@@ -23,7 +23,8 @@ pub struct Marks {
     pub selected: Option<CardPos>,
     /// Piles that accept the picked run; the top card or the empty slot is highlighted.
     pub targets: Vec<PileRef>,
-    /// Hinted cards; a hinted target pile is its top card, or `index: 0` when empty.
+    /// Hinted cards, the moved ones first and the destination last; a hinted target pile is its
+    /// top card, or `index: 0` when empty. A hint that names one pile has only a source.
     pub hints: Vec<CardPos>,
 }
 
@@ -37,32 +38,66 @@ impl Marks {
                 .selected
                 .is_some_and(|picked| picked.pile == pile && index >= picked.index),
             target: top && self.targets.contains(&pile),
-            hint: self.hints.contains(&here),
+            hint: self.hint_role(here),
         }
+    }
+
+    fn hint_role(&self, here: CardPos) -> Option<Hint> {
+        if !self.hints.contains(&here) {
+            return None;
+        }
+        let last = self.hints.last()?;
+        let moves_between_piles = self.hints.iter().any(|card| card.pile != last.pile);
+        let target = moves_between_piles && *last == here;
+        Some(if target { Hint::Target } else { Hint::Source })
+    }
+}
+
+fn placeholder(pile: PileRef, recycle: bool) -> Placeholder {
+    match pile {
+        PileRef::Foundation(_) => Placeholder::Ace,
+        PileRef::Stock if recycle => Placeholder::Recycle,
+        PileRef::Stock => Placeholder::Spent,
+        _ => Placeholder::None,
+    }
+}
+
+/// How the next card of a pile lies over a card.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Cover {
+    Free,
+    /// The next card starts this many columns to the right (a fanned waste).
+    Beside(u16),
+    /// The next card starts one row lower: only the top row shows.
+    OneRow,
+}
+
+fn cover(geometry: &PileGeometry, index: usize) -> Cover {
+    let rect = geometry.cards[index];
+    match geometry.cards.get(index + 1) {
+        Some(next) if next.y == rect.y && next.x > rect.x => Cover::Beside(next.x - rect.x),
+        Some(next) if next.x == rect.x && next.y == rect.y + 1 => Cover::OneRow,
+        _ => Cover::Free,
     }
 }
 
 /// Draws `snapshot` where `geometry` puts it. Cards covered by an identical rectangle are skipped.
-/// An empty pyramid position draws nothing; any other empty pile draws its slot.
+/// An empty pyramid position draws nothing; any other empty pile draws its slot. `recycle` tells
+/// whether an empty stock can be turned over again.
 pub fn draw(
     buf: &mut Buffer,
     snapshot: &PileSnapshot,
     geometry: &PileGeometry,
     marks: &Marks,
+    recycle: bool,
     ctx: &ViewCtx<'_>,
 ) {
     let pile = snapshot.pile;
     let len = snapshot.cards.len();
     if len == 0 {
         if !matches!(pile, PileRef::Pyramid { .. }) {
-            card::draw(
-                buf,
-                geometry.slot,
-                Face::Slot,
-                marks.mark(pile, 0, 0),
-                None,
-                ctx,
-            );
+            let face = Face::Slot(placeholder(pile, recycle));
+            card::draw(buf, geometry.slot, face, marks.mark(pile, 0, 0), None, ctx);
         }
         return;
     }
@@ -80,14 +115,14 @@ pub fn draw(
         } else {
             Face::Down
         };
-        let shown_badge = badge.filter(|_| index + 1 == len);
-        card::draw(
-            buf,
-            rect,
-            face,
-            marks.mark(pile, index, len),
-            shown_badge,
-            ctx,
-        );
+        let mark = marks.mark(pile, index, len);
+        match cover(geometry, index) {
+            Cover::OneRow if !table_card.face_up => card::draw_back_row(buf, rect, mark, ctx),
+            Cover::Beside(visible) => card::draw_fanned(buf, rect, visible, (face, mark), ctx),
+            _ => {
+                let shown_badge = badge.filter(|_| index + 1 == len);
+                card::draw(buf, rect, face, mark, shown_badge, ctx);
+            }
+        }
     }
 }

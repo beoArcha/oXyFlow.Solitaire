@@ -60,8 +60,9 @@ fn draw_board(
 ) -> bool {
     let piles = session.game().piles();
     let geometry = layout::compute(session.variant(), &piles, body);
+    let recycle = counters::can_recycle(session);
     for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
-        pile::draw(frame.buffer_mut(), snapshot, placed, marks, ctx);
+        pile::draw(frame.buffer_mut(), snapshot, placed, marks, recycle, ctx);
     }
     aura::draw(frame.buffer_mut(), body, &geometry, marks, ctx);
     let Some((text, row)) = counter

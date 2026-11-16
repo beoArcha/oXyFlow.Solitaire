@@ -18,7 +18,16 @@ pub struct Glyphs {
     pub focus_left: &'static str,
     pub focus_right: &'static str,
     pub selected: &'static str,
+    /// Drawn in both top corners of a drop target and in the middle of an empty target slot.
     pub target: &'static str,
+    /// Top-row marker of the card a hint moves.
+    pub hint_source: &'static str,
+    /// Top-row marker of the pile a hint moves to.
+    pub hint_target: &'static str,
+    /// Placeholder of an empty stock that can be turned over again.
+    pub recycle: &'static str,
+    /// Placeholder of an empty stock with no pass left.
+    pub spent: &'static str,
     pub face_down: &'static str,
     /// Halo around the focused card.
     pub aura_focus: &'static str,
@@ -38,6 +47,10 @@ const UNICODE: Glyphs = Glyphs {
     focus_right: "◄",
     selected: "●",
     target: "+",
+    hint_source: "?→",
+    hint_target: "→?",
+    recycle: "↑",
+    spent: "x",
     face_down: "▒",
     aura_focus: "░",
     aura_carry: "▓",
@@ -48,11 +61,15 @@ const UNICODE: Glyphs = Glyphs {
 
 const ASCII: Glyphs = Glyphs {
     unicode: false,
-    suits: ["C", "D", "H", "S"],
+    suits: ["c", "d", "h", "s"],
     focus_left: ">",
     focus_right: "<",
     selected: "*",
-    target: "%",
+    target: "+",
+    hint_source: "?>",
+    hint_target: ">?",
+    recycle: "^",
+    spent: "x",
     face_down: "#",
     aura_focus: ":",
     aura_carry: "=",
@@ -93,6 +110,10 @@ mod tests {
             &glyphs.focus_right,
             &glyphs.selected,
             &glyphs.target,
+            &glyphs.hint_source,
+            &glyphs.hint_target,
+            &glyphs.recycle,
+            &glyphs.spent,
             &glyphs.face_down,
             &glyphs.aura_focus,
             &glyphs.aura_carry,
@@ -129,6 +150,32 @@ mod tests {
                 assert_ne!(*aura, glyphs.face_down);
                 assert_ne!(*aura, glyphs.selected);
             }
+        }
+    }
+
+    #[test]
+    fn ascii_suits_are_lowercase_so_no_rank_letter_is_a_suit_letter() {
+        let glyphs = Glyphs::new(GlyphMode::Ascii);
+        assert_eq!(glyphs.suits, ["c", "d", "h", "s"]);
+    }
+
+    #[test]
+    fn the_card_marks_differ_in_both_sets() {
+        for mode in [GlyphMode::Unicode, GlyphMode::Ascii] {
+            let glyphs = Glyphs::new(mode);
+            let marks = [
+                glyphs.selected,
+                glyphs.focus_left,
+                glyphs.target,
+                glyphs.hint_source,
+                glyphs.hint_target,
+            ];
+            for (index, mark) in marks.iter().enumerate() {
+                assert!(!mark.is_empty());
+                assert!(marks[index + 1..].iter().all(|other| other != mark));
+            }
+            assert_eq!(glyphs.hint_source.chars().count(), 2);
+            assert_eq!(glyphs.hint_target.chars().count(), 2);
         }
     }
 

@@ -41,6 +41,22 @@ pub(super) fn stock_text(session: &Session) -> Option<String> {
     Some(stock_text_of(&status, len))
 }
 
+/// Whether the waste can be turned back into an empty stock: the waste has cards and the game
+/// still allows a pass (`recycles_left` is not `Some(0)`, the engine's word for "no recycle").
+pub(super) fn can_recycle(session: &Session) -> bool {
+    let waste = session
+        .game()
+        .piles()
+        .iter()
+        .find(|snapshot| snapshot.pile == PileRef::Waste)
+        .is_some_and(|snapshot| !snapshot.cards.is_empty());
+    let passes_left = session
+        .game()
+        .stock_status()
+        .is_some_and(|status| status.recycles_left != Some(0));
+    waste && passes_left
+}
+
 fn with_halo(rect: Rect) -> Rect {
     Rect::new(
         rect.x.saturating_sub(1),
