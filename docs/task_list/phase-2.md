@@ -120,3 +120,29 @@ pattern the other three follow.
   - Check wiki pages M-07…M-10 against the implemented rules.
   - Update the Status column in `README.md` and `micro.md`.
 - **Acceptance:** review report; `cargo xtask check` passes; `architecture.md` matches the code.
+
+### P2-07 — Forced-win detection and the finishing moves
+
+- **Owner:** Sonnet
+- **Depends on:** P2-06
+- **Files:** `crates/core/src/games/**`, `crates/core/src/game.rs`, tests
+- **Scope:** a `Game` method that reports when the rest of the game is a certain win and returns the
+  sequence of moves that finishes it (e.g. Klondike: stock and waste empty and every card face up; FreeCell
+  and Spider: a greedy finish that provably reaches the foundations; Pyramid where it applies). Pure,
+  deterministic and fast (no search beyond a small bound). Owner request 2026-11-16: the game should know it
+  is won and finish laying out the cards by itself (as an option, see P3-19).
+- **Acceptance:** tests per game on positions that are and are not forced wins; the returned moves are
+  legal and end in `is_won()`; no false positives on golden deals.
+
+### P2-08 — Solver for winnable deals
+
+- **Owner:** Sonnet (Fable may be consulted for the search design)
+- **Depends on:** P2-07
+- **Files:** `crates/core/src/solver/**` (new), tests, `docs/tech/decisions.md`
+- **Scope:** a bounded solver per game that answers "winnable", "unwinnable" or "unknown within the budget"
+  for a deal, with a node/time budget passed in (core stays clock-free: the budget is a node count).
+  Klondike (draw 1 and 3), FreeCell, Spider (1, 2, 4 suits) and Pyramid; use well-known techniques (move
+  ordering, state hashing, safe auto-moves to foundations) and document the limits. Used by P3-20 to offer
+  winnable deals only.
+- **Acceptance:** known winnable and unwinnable deals per game answered correctly; the budget respected;
+  determinism; a benchmark note in the PR (typical time per deal on this machine).
