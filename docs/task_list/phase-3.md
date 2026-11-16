@@ -230,6 +230,9 @@ Rules for the whole phase:
   face did (D looks like 0, W like H); the bottom area mixes game information with controls; the guide
   panel has no frame; zoom is not documented or reachable by keyboard; Tab does not move between
   buttons. The review refines P3-14…P3-17 and O-16 before they start and may add cards.
+  Owner priority (2026-11-16): readability first, then ease and intuitiveness of use — a newcomer
+  must see at once what is on the board, what is selected and what to do next, without reading help.
+  Also covers P3-18…P3-21 (guide panel on smaller screens, auto-finish, winnable deals, aura options).
 - **Acceptance:** `docs/tech/ui-review.md` with ranked findings and a recommended layout per screen
   size class; the cards it refines are updated; owner sign-off.
 
@@ -310,3 +313,59 @@ Rules for the whole phase:
   once in the status line.
 - **Acceptance:** the setting and flag parsed and remembered; the per-terminal decision unit-tested;
   verified by hand in the classic console and Windows Terminal (say which); help text in both locales.
+
+### P3-18 — Guide panel on screens slightly too small
+
+- **Owner:** Sonnet
+- **Depends on:** U-04, P3-15
+- **Files:** `crates/tui/src/layout/**`, `crates/tui/src/widgets/guide.rs`, `crates/tui/src/screens/board/**`, tests
+- **Scope:** owner feedback: below 130 columns the guide panel silently disappears even when it is on.
+  Offer what U-04 recommends, for example: a compact panel (narrower, abbreviated) between 100 and 130
+  columns, the panel as a collapsible strip at the bottom, or switchable views (board / guide) with a key
+  and a visible hint; when the panel cannot be shown, say so once and how to show it. Never hide a
+  setting's effect without telling the player.
+- **Acceptance:** renders at 100 × 30, 115 × 35 and 130 × 40 with the panel on; the hint when it does not
+  fit; tests for the chosen fallback.
+
+### P3-19 — Auto-finish a won game
+
+- **Owner:** Haiku
+- **Depends on:** P2-07
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/settings.rs` and the settings screen, locales, tests
+- **Scope:** when the engine reports that the rest of the game is a forced win (P2-07), the board says so
+  ("Game solved — finishing") and plays the remaining moves to the foundations one by one at a readable
+  pace (each move animated or stepped by the clock, interruptible by any key), then shows the win dialog.
+  A setting "Auto-finish" (on by default) and a key to finish at once when it is off. Statistics count
+  the game as won with the moves actually played plus the finishing moves.
+- **Acceptance:** tests on fixed deals that reach a forced win (Klondike with every card face up and the
+  stock empty, FreeCell, Spider where P2-07 supports it); interruption; the setting off; the win recorded.
+
+### P3-20 — Winnable deals only
+
+- **Owner:** Sonnet
+- **Depends on:** P2-08
+- **Files:** `crates/tui/src/screens/game_select*`, `crates/tui/src/settings.rs`, `crates/tui/src/app/**`,
+  `src/` (seed search off the UI thread), locales, tests
+- **Scope:** an option in the game selection (remembered) "Winnable deals only": a new game draws seeds
+  until the solver (P2-08) proves one winnable within its budget, showing progress and allowing cancel;
+  the deal is marked as winnable in the header and in the history. Typed seeds and replays are never
+  replaced; the header says whether a typed seed is known winnable, unknown or unwinnable. The search
+  must not freeze the interface (a worker thread or chunked steps).
+- **Acceptance:** tests with a stub solver (accepts the n-th seed); cancel; the marker in the header and
+  history; a typed seed kept as typed.
+
+### P3-21 — Aura options and reshuffle
+
+- **Owner:** Haiku
+- **Depends on:** U-04
+- **Files:** `crates/tui/src/widgets/aura.rs`, `crates/tui/src/screens/board/**`, `crates/tui/src/settings.rs`
+  and the settings screen, `crates/tui/src/input.rs`, locales, tests
+- **Scope:** (1) a setting to show only the aura of the focused card and its position, hiding the carry
+  and drop-target auras (targets keep their non-color marker, so the information is not lost), or the
+  finer choice U-04 recommends. (2) "Reshuffle": deal the current game again with a new seed in one step
+  (one key and a menu entry, with confirmation when moves were made, offered in the action line). Ask the
+  owner first whether "przetasuj ponownie" also means reshuffling the remaining stock inside a running game
+  (a house rule some players use); implement that only if confirmed, as an option off by default.
+- **Acceptance:** tests for the aura setting (focus aura present, others absent, markers kept) and its
+  persistence; reshuffle starts the same variant and undo mode with a new seed and records the abandoned
+  game; help lists the key.

@@ -125,7 +125,7 @@ the PR descriptions; cards that exist are in the phase files.
 | O-12 | Selectable sound styles and clearer sound status in Settings | P6-02, P3-11 | DONE |
 | O-13 | Sync task list statuses with `main` | — | DONE |
 | O-14 | Game rules as a tab of the help window | O-13, P3-10 | DONE |
-| O-17 | Task cards for the owner's interface feedback of 2026-11-16 | — | IN PROGRESS |
+| O-17 | Task cards for the owner's interface feedback of 2026-11-16 | — | DONE |
 | O-15 | `--new-window` flag and the command-line options in Help | O-05, O-14 | IN PROGRESS |
 | O-16 | Full-screen (borderless window) option: setting and `--fullscreen` | U-04 | TODO |
 | U-04 | Interface review for usability and readability (Fable with Opus) | P3-12, P3-13, O-14 | TODO |
@@ -133,6 +133,13 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-15 | Screen layout: game information apart from controls; framed guide panel | U-04 | TODO |
 | P3-16 | Zoom: card size by keyboard, console font on Windows, terminal zoom in Help | U-04 | TODO |
 | P3-17 | Tab and Shift+Tab move the focus through menus, buttons and dialogs | U-04 | TODO |
+| O-18 | Task cards for the owner's feedback of 2026-11-16 (second round) | — | DONE |
+| P3-18 | Guide panel on screens slightly too small (compact panel or switchable views) | U-04, P3-15 | TODO |
+| P3-19 | Auto-finish a won game (option) | P2-07 | TODO |
+| P3-20 | Winnable deals only (option) | P2-08 | TODO |
+| P3-21 | Aura options (focus only) and reshuffle | U-04 | TODO |
+| P2-07 | Forced-win detection and the finishing moves | P2-06 | TODO |
+| P2-08 | Solver for winnable deals | P2-07 | TODO |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
 | P3-10 | How-to-play overlay and first-steps hint | P3-07 | DONE |
 | P3-11 | Board guidance: focus aura, action line and guide panel | P3-06, P3-08, P3-10 | DONE |
