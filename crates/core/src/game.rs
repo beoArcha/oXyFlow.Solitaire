@@ -95,6 +95,13 @@ pub trait Game {
 
     /// The stock counters, or `None` for a game without a stock (FreeCell).
     fn stock_status(&self) -> Option<StockStatus>;
+
+    /// The moves that finish the game when the rest of it is a certain win, otherwise `None`.
+    /// Applied one after another through [`Game::apply`] they are all legal and the last one makes
+    /// [`Game::is_won`] true. Pure and deterministic: a fixed greedy rule per game, never a search
+    /// beyond a small documented bound, and every sequence is verified on a clone before it is
+    /// returned. `None` also for a game that is already won.
+    fn forced_finish(&self) -> Option<Vec<Move>>;
 }
 
 /// Deals `variant` from `seed`. The same pair always gives the same deal.

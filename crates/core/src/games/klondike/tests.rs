@@ -1,6 +1,7 @@
 //! Shared helpers for the Klondike tests. Cards are written as `"AS"`, `"10H"`, `"KD"`.
 
 mod deal;
+mod finish;
 mod hints;
 mod rules;
 mod stock;

@@ -183,6 +183,13 @@ impl Session {
         self.game.as_ref()
     }
 
+    /// The moves that finish the current game when it is a certain win, see
+    /// [`Game::forced_finish`]. Nothing is applied: the caller plays them through
+    /// [`Session::apply`], so each one is recorded in the history.
+    pub fn forced_finish(&self) -> Option<Vec<Move>> {
+        self.game.forced_finish()
+    }
+
     /// The variant being played.
     pub fn variant(&self) -> Variant {
         self.variant

@@ -2,6 +2,7 @@
 //! module follows the shared layout of the games: state and deal here, validation and execution in
 //! `rules`, move generation and the hint in `moves`.
 
+mod finish;
 mod moves;
 mod rules;
 #[cfg(test)]
@@ -106,5 +107,9 @@ impl Game for FreeCell {
 
     fn stock_status(&self) -> Option<StockStatus> {
         None
+    }
+
+    fn forced_finish(&self) -> Option<Vec<Move>> {
+        self.finishing_moves()
     }
 }

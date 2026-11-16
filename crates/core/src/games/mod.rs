@@ -1,5 +1,6 @@
 //! Rules of the four games. Internal: callers reach them only through [`crate::deal`].
 
+pub(crate) mod finish;
 pub(crate) mod freecell;
 pub(crate) mod klondike;
 pub(crate) mod pyramid;

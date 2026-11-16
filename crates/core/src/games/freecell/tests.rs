@@ -2,6 +2,7 @@
 
 mod capacity;
 mod deal;
+mod finish;
 mod hints;
 mod legal;
 mod rules;

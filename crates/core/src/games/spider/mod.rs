@@ -3,6 +3,7 @@
 //! games: state and deal here, validation and execution in `rules`, move generation and the hint
 //! in `moves`.
 
+mod finish;
 mod moves;
 mod rules;
 #[cfg(test)]
@@ -120,5 +121,9 @@ impl Game for Spider {
             recycles_left: Some(0),
             deals_left: Some(deals_left),
         })
+    }
+
+    fn forced_finish(&self) -> Option<Vec<Move>> {
+        self.finishing_moves()
     }
 }
