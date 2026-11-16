@@ -16,6 +16,7 @@ pub struct Cli {
     pub show_version: bool,
     pub show_help: bool,
     pub ascii: bool,
+    pub new_window: bool,
     pub colors: Option<ColorArg>,
     pub seed: Option<u64>,
 }
@@ -48,6 +49,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
         show_version: false,
         show_help: false,
         ascii: false,
+        new_window: false,
         colors: None,
         seed: None,
     };
@@ -57,6 +59,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
             "--version" => cli.show_version = true,
             "--help" => cli.show_help = true,
             "--ascii" => cli.ascii = true,
+            "--new-window" | "-n" => cli.new_window = true,
             "--colors" => {
                 let val = it.next().ok_or(CliError::MissingValue("--colors"))?;
                 let color = parse_colors(&val).ok_or(CliError::InvalidValue {
@@ -96,6 +99,7 @@ mod tests {
                 show_version: false,
                 show_help: false,
                 ascii: false,
+                new_window: false,
                 colors: None,
                 seed: None,
             }
@@ -118,6 +122,18 @@ mod tests {
     fn test_ascii_flag() {
         let parsed = parse(to_args(&["--ascii"])).unwrap();
         assert!(parsed.ascii);
+    }
+
+    #[test]
+    fn test_new_window_flag_long_and_short_keep_the_other_flags() {
+        for flag in ["--new-window", "-n"] {
+            let parsed = parse(to_args(&["--ascii", flag, "--seed", "5", "--colors", "256"])).unwrap();
+            assert!(parsed.new_window);
+            assert!(parsed.ascii);
+            assert_eq!(parsed.seed, Some(5));
+            assert_eq!(parsed.colors, Some(ColorArg::Ansi256));
+        }
+        assert!(!parse(to_args(&["--ascii"])).unwrap().new_window);
     }
 
     #[test]

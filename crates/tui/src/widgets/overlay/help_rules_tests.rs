@@ -77,6 +77,8 @@ fn switching_between_keys_and_rules_by_key_and_mouse() {
     assert!(h.text().contains("[Klondike]"));
 
     h.press(KeyCode::Tab);
+    assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
+    h.press(KeyCode::Tab);
     assert_eq!(h.app.modal(), Some(&Modal::Help));
     assert!(h.text().contains("[Keys]"));
 
@@ -154,7 +156,7 @@ fn i_and_menu_item_show_rules_and_can_switch_to_keys() {
     h.type_char('i');
     assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
     assert!(h.text().contains("[Rules]"));
-    h.press(KeyCode::Tab);
+    h.press(KeyCode::BackTab);
     assert_eq!(h.app.modal(), Some(&Modal::Help));
     assert!(h.text().contains("[Keys]"));
     h.press(KeyCode::Esc);
@@ -163,7 +165,7 @@ fn i_and_menu_item_show_rules_and_can_switch_to_keys() {
     click_text(&mut h, "How to play");
     assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
     assert!(h.text().contains("[Rules]"));
-    h.press(KeyCode::Tab);
+    h.press(KeyCode::BackTab);
     assert_eq!(h.app.modal(), Some(&Modal::Help));
     assert!(h.text().contains("[Keys]"));
 }

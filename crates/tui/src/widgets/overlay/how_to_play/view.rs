@@ -4,7 +4,7 @@
 //! WGL4 or ASCII characters.
 
 use ratatui::Frame;
-use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
+use ratatui::layout::{Constraint, Layout, Margin, Rect};
 use ratatui::style::Modifier;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
@@ -17,6 +17,7 @@ use crate::input::primary_key;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::overlay::dialog::{self, Button, Geometry};
+use crate::widgets::overlay::tabs::{HelpTab, draw_footer, draw_top_tabs};
 
 const CHROME_ROWS: u16 = 3;
 const ARROW_COLUMNS: u16 = 3;
@@ -153,8 +154,8 @@ fn key_name(action: Action) -> String {
     primary_key(action).unwrap_or_default()
 }
 
-fn draw_footer(frame: &mut Frame, row: Rect, shown: (usize, usize, usize), ctx: &ViewCtx<'_>) {
-    let hints = tf(
+fn footer_hints() -> String {
+    tf(
         "help.rules.footer",
         &[
             ("left", &key_name(Action::Left)),
@@ -163,27 +164,7 @@ fn draw_footer(frame: &mut Frame, row: Rect, shown: (usize, usize, usize), ctx: 
             ("down", &key_name(Action::Down)),
             ("back", &key_name(Action::Back)),
         ],
-    );
-    let (from, to, total) = shown;
-    let position = tf(
-        "help.rules.position",
-        &[
-            ("from", &from.to_string()),
-            ("to", &to.to_string()),
-            ("total", &total.to_string()),
-        ],
-    );
-    let [left, right] = Layout::horizontal([
-        Constraint::Fill(1),
-        Constraint::Length(columns_of(&position)),
-    ])
-    .areas(row.inner(Margin::new(1, 0)));
-    let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
-    frame.render_widget(Paragraph::new(Line::styled(hints, muted)), left);
-    frame.render_widget(
-        Paragraph::new(Line::styled(position, muted)).alignment(Alignment::Right),
-        right,
-    );
+    )
 }
 
 /// Draws the window over `area`.
@@ -191,12 +172,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let parts = parts(geometry.body);
-    crate::widgets::overlay::tabs::draw_top_tabs(
-        frame,
-        parts.top_tabs,
-        crate::widgets::overlay::tabs::HelpTab::Rules,
-        ctx,
-    );
+    draw_top_tabs(frame, parts.top_tabs, HelpTab::Rules, ctx);
     draw_tabs(frame, parts.game_tabs, state, ctx);
     let rows = content::rows(state.rules);
     let first = usize::from(state.scroll);
@@ -214,6 +190,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     draw_footer(
         frame,
         parts.footer,
+        footer_hints(),
         (first + 1, first + shown, rows.len()),
         ctx,
     );

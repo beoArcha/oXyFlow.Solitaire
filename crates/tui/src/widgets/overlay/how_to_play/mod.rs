@@ -16,7 +16,7 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 pub use self::state::{HowToPlay, Rules};
-pub use self::view::{draw, geometry, parts};
+pub use self::view::{draw, geometry};
 use super::dialog;
 use crate::action::Action;
 use crate::mouse;

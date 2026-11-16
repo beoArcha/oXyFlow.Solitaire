@@ -183,11 +183,14 @@ fn help_topics_follow_the_help_groups_and_end_with_the_mouse() {
 }
 
 #[test]
-fn help_switches_to_rules_on_tab_or_right_and_back_on_tab() {
+fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
     let mut modal = Modal::Help;
     let tab_key = KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE);
     assert_eq!(handle(&mut modal, &tab_key, None), None);
     assert_eq!(modal, Modal::HowToPlay(HowToPlay::new(Rules::Klondike)));
+
+    assert_eq!(handle(&mut modal, &tab_key, None), None);
+    assert_eq!(modal, Modal::CommandLine(CommandLine::new()));
 
     assert_eq!(handle(&mut modal, &tab_key, None), None);
     assert_eq!(modal, Modal::Help);

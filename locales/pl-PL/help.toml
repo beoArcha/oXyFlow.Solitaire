@@ -60,4 +60,7 @@ position = "{from}-{to} / {total}"
 [tab]
 keys = "Klawisze"
 rules = "Zasady"
+command_line = "Wiersz poleceń"
 
+[command_line]
+footer = "Tab: następna karta   {up}/{down}/PgUp/PgDn: przewijanie   {back}: zamknij"

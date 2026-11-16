@@ -7,6 +7,7 @@ use oxysol_tui::{StorageError, TuiError};
 use thiserror::Error;
 
 use crate::cli::CliError;
+use crate::new_window::NewWindowError;
 use crate::paths::PathsError;
 
 /// Every failure that ends the application before or during play.
@@ -14,6 +15,8 @@ use crate::paths::PathsError;
 pub enum AppError {
     #[error("invalid command-line arguments")]
     Arguments(#[from] CliError),
+    #[error("no new console window could be opened")]
+    NewWindow(#[from] NewWindowError),
     #[error("no folder for the application files")]
     Paths(#[from] PathsError),
     #[error("the database cannot be opened")]
@@ -25,10 +28,11 @@ pub enum AppError {
 }
 
 impl AppError {
-    /// `2` for a usage error, `1` for every runtime failure.
+    /// `2` for a usage or environment error (arguments, no console window), `1` for every runtime
+    /// failure.
     pub fn exit_code(&self) -> ExitCode {
         match self {
-            Self::Arguments(_) => ExitCode::from(2),
+            Self::Arguments(_) | Self::NewWindow(_) => ExitCode::from(2),
             Self::Paths(_) | Self::Storage(_) | Self::Terminal(_) | Self::Output(_) => {
                 ExitCode::FAILURE
             }
@@ -44,6 +48,11 @@ mod tests {
     fn usage_errors_exit_with_two_and_runtime_failures_with_one() {
         let usage = AppError::from(CliError::UnknownArgument("--x".to_owned()));
         assert_eq!(usage.exit_code(), ExitCode::from(2));
+        let no_window = AppError::from(NewWindowError::Unavailable {
+            tried: Vec::new(),
+            last: None,
+        });
+        assert_eq!(no_window.exit_code(), ExitCode::from(2));
         let runtime = AppError::from(PathsError);
         assert_eq!(runtime.exit_code(), ExitCode::FAILURE);
     }

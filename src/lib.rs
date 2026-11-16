@@ -7,6 +7,7 @@ pub mod clipboard;
 pub mod console;
 pub mod error;
 pub mod logging;
+pub mod new_window;
 pub mod panic_hook;
 pub mod paths;
 pub mod seed;

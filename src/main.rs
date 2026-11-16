@@ -1,6 +1,7 @@
 //! Entry point of the `oxysol` binary: arguments, paths, logging, the panic hook, storage, and
 //! then the terminal interface.
 
+use std::fs::File;
 use std::io::{self, Write};
 use std::process::ExitCode;
 
@@ -11,16 +12,17 @@ use oxysol::console;
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
 use oxysol::storage::SqliteStorage;
-use oxysol::{logging, panic_hook, seed};
+use oxysol::{logging, new_window, panic_hook, seed};
 use oxysol_tui::Deps;
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
 use oxysol_tui::i18n::{self, Locale};
 
 fn main() -> ExitCode {
     i18n::set_locale(locale_from_env());
-    let outcome = cli::parse(std::env::args().skip(1))
+    let raw: Vec<String> = std::env::args().skip(1).collect();
+    let outcome = cli::parse(raw.iter().cloned())
         .map_err(AppError::from)
-        .and_then(launch);
+        .and_then(|args| launch(&args, &raw));
     match outcome {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
@@ -33,7 +35,7 @@ fn main() -> ExitCode {
     }
 }
 
-fn launch(args: Cli) -> Result<(), AppError> {
+fn launch(args: &Cli, raw: &[String]) -> Result<(), AppError> {
     if args.show_help {
         return print_stdout(&i18n::t("cli.help"));
     }
@@ -41,20 +43,37 @@ fn launch(args: Cli) -> Result<(), AppError> {
         let text = i18n::tf("cli.version", &[("version", env!("CARGO_PKG_VERSION"))]);
         return print_stdout(&text);
     }
-    start(&args)
+    if args.new_window {
+        return relaunch(raw);
+    }
+    start(args)
 }
 
-fn start(args: &Cli) -> Result<(), AppError> {
+fn relaunch(raw: &[String]) -> Result<(), AppError> {
     let paths = AppPaths::detect()?;
     let level = std::env::var(logging::LEVEL_VARIABLE).ok();
-    let diagnostics = match logging::start(&paths, level.as_deref()) {
+    let _log = start_logging(&paths, level.as_deref());
+    let context = new_window::Context::current(raw)?;
+    tracing::info!(exe = %context.exe.display(), "opening oXySol in a new console window");
+    new_window::open(&context)?;
+    Ok(())
+}
+
+fn start_logging(paths: &AppPaths, level: Option<&str>) -> Option<File> {
+    match logging::start(paths, level) {
         Ok(file) => Some(file),
         Err(_) => {
             let path = paths.log_file().display().to_string();
             write_stderr(&i18n::tf("cli.log_unavailable", &[("path", path.as_str())]));
             None
         }
-    };
+    }
+}
+
+fn start(args: &Cli) -> Result<(), AppError> {
+    let paths = AppPaths::detect()?;
+    let level = std::env::var(logging::LEVEL_VARIABLE).ok();
+    let diagnostics = start_logging(&paths, level.as_deref());
     panic_hook::install(paths.log_file(), diagnostics);
     tracing::info!(
         version = env!("CARGO_PKG_VERSION"),
@@ -146,6 +165,10 @@ fn report(error: &AppError) -> ExitCode {
             let detail = cause.to_string();
             i18n::tf("cli.usage_error", &[("error", detail.as_str())])
         }
+        AppError::NewWindow(cause) => {
+            let tried = cause.tried();
+            i18n::tf("cli.new_window_failed", &[("tried", tried.as_str())])
+        }
         AppError::Paths(_) => i18n::t("cli.paths_failed").into_owned(),
         AppError::Storage(_) => i18n::t("cli.storage_failed").into_owned(),
         AppError::Terminal(_) => i18n::t("cli.terminal_failed").into_owned(),
@@ -176,6 +199,7 @@ mod tests {
             "cli.storage_failed",
             "cli.terminal_failed",
             "cli.output_failed",
+            "cli.new_window_failed",
             "cli.log_unavailable",
             "cli.panic",
             "cli.press_enter",
