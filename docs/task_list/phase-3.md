@@ -214,3 +214,99 @@ Rules for the whole phase:
   game; a no-undo game (rejection, hidden hints, save and resume, `undo_allowed = false` in storage); the
   toggle by key and mouse and the remembered setting; the copy key and the header click against the
   clipboard double; 100 × 30 in both locales with WGL4/ASCII glyphs only; `cargo xtask check --quick` passes.
+
+### U-04 — Interface review: usability and readability
+
+- **Owner:** Fable with Opus (owner request, 2026-11-16)
+- **Depends on:** P3-12, P3-13, O-14
+- **Files:** `docs/tech/ui-review.md` (new)
+- **Scope:** review the whole interface for maximum usability and readability on an old laptop with
+  a small screen, at low and at high resolution (from 80 × 24 / 100 × 30 up to 200 × 60 and more cells,
+  small and large fonts, the classic Windows console, Windows Terminal, a Linux and a macOS terminal).
+  Cover the board (card faces, focus and aura, counters, header, action line, footer, guide panel),
+  menus, game selection, settings, statistics, help and dialogs, both locales and both glyph modes.
+  Name each problem with a screenshot or text render, its cause and a concrete fix, ranked by impact.
+  The owner's findings of 2026-11-16 are inputs: the large block-art rank reads worse than the small
+  face did (D looks like 0, W like H); the bottom area mixes game information with controls; the guide
+  panel has no frame; zoom is not documented or reachable by keyboard; Tab does not move between
+  buttons. The review refines P3-14…P3-17 and O-16 before they start and may add cards.
+- **Acceptance:** `docs/tech/ui-review.md` with ranked findings and a recommended layout per screen
+  size class; the cards it refines are updated; owner sign-off.
+
+### P3-14 — Readable card faces
+
+- **Owner:** Sonnet
+- **Depends on:** U-04
+- **Files:** `crates/tui/src/widgets/card/**`, `crates/tui/src/layout/size.rs`, tests
+- **Scope:** owner feedback: the block-art rank of P3-13 is less readable than the small face (D and 0,
+  W and H look alike; the shapes are blurry). Replace it with what U-04 recommends, for example: corner
+  indices that are larger and always visible (rank and suit on their own cells, bold, on every size),
+  the centre showing the rank as plain text next to the suit (doubled or with spacing on large cards)
+  and the suit pictogram only where it stays crisp. Rank letters must never be confusable (D/0, W/H,
+  10/1O, 8/B); check every rank in both locales. Keep WGL4 and an ASCII equivalent.
+- **Acceptance:** renders of every rank and suit at every size in both locales and glyph modes,
+  reviewed by the owner; a test that no two ranks render the same at any size; existing render tests
+  pass.
+
+### P3-15 — Screen layout: game information apart from controls
+
+- **Owner:** Sonnet
+- **Depends on:** U-04
+- **Files:** `crates/tui/src/layout/**`, `crates/tui/src/screens/board/{view,header,status,guidance}.rs`,
+  `crates/tui/src/widgets/{guide,footer}*`, locales, tests
+- **Scope:** owner feedback: the bottom area is overloaded. Put game information in one place (game and
+  variant, seed, time, moves, stock counters, undo mode, the focused card, short statistics such as the
+  best time for this game) and the interface in another (the `Now:` / `Possible:` guidance and the key
+  footer), with no fact shown twice (the announcer line repeats the focus that `Now:` already shows).
+  The guide panel gets a frame or clear separators from the header, the board and the bottom area. Use
+  the layout per screen size class from U-04, so a small screen keeps the board first and a large one
+  uses the room.
+- **Acceptance:** renders at 100 × 30, 130 × 40 and 200 × 60 in both locales; no duplicated fact; the
+  guide panel framed; existing guidance, footer and accessibility tests updated.
+
+### P3-16 — Zoom: card size by keyboard and console font
+
+- **Owner:** Sonnet
+- **Depends on:** U-04
+- **Files:** `crates/tui/src/{input,action,settings}.rs`, `crates/tui/src/layout/**`, `src/` (console
+  font on Windows), help locales, tests
+- **Scope:** owner decision 2026-11-16: both. (1) In-game zoom: keys (e.g. Ctrl+Plus / Ctrl+Minus and
+  a plain-key alternative for terminals that swallow Ctrl+Plus) step the card size up and down within
+  what fits, with "auto" (largest that fits) as the default; the choice is a setting. (2) In the classic
+  Windows console, the same keys may also change the real console font size (`GetCurrentConsoleFontEx`
+  / `SetCurrentConsoleFontEx`; needs an approved dependency such as `windows-sys` and a justified
+  `unsafe`; record a decision). Windows Terminal, Linux and macOS terminals cannot be resized by the
+  program: Help explains their own zoom (Ctrl+mouse wheel, Ctrl+Plus/Minus/0). Zoom keys appear in the
+  key table, the help window and the guide panel.
+- **Acceptance:** tests for stepping, the "auto" default, the limit when nothing larger fits and the
+  remembered setting; the console font change verified by hand on Windows (say where); help text in
+  both locales.
+
+### P3-17 — Tab moves the focus
+
+- **Owner:** Haiku
+- **Depends on:** U-04
+- **Files:** `crates/tui/src/screens/**`, `crates/tui/src/widgets/overlay/**`, `crates/tui/src/input.rs`, tests
+- **Scope:** Tab and Shift+Tab move the focus through every focusable element of the current screen or
+  dialog in reading order (menu items, toggles, buttons such as Back, Copy seed, Close), wrapping at the
+  ends; Enter or Space activates the focused element. Where Tab already has a meaning (the help tabs,
+  how-to-play), keep it consistent with U-04's recommendation. The focus is visible without color.
+- **Acceptance:** tests per screen and dialog for the Tab order, wrap-around, Shift+Tab and activation;
+  help lists Tab; accessibility tests updated.
+
+### O-16 — Full-screen option
+
+- **Owner:** Sonnet
+- **Depends on:** U-04
+- **Files:** `src/` (a new module), `src/cli.rs`, `crates/tui/src/settings.rs` and the settings screen,
+  locales, docs
+- **Scope:** owner decision 2026-11-16: "borderless" means the game window fills the whole screen with no
+  frame or title bar. A setting "Full screen" and a flag `--fullscreen`. Classic Windows console: switch
+  the console to full screen (`SetConsoleDisplayMode` or the Alt+Enter equivalent; record the approved
+  dependency and `unsafe` in a decision). Windows Terminal: relaunch through `wt.exe --fullscreen` when
+  the game was started by double-click, or tell the player to press F11 / Alt+Enter. Linux and macOS:
+  the xterm window-manipulation sequence (`CSI 10 ; 1 t`) where the terminal supports it, otherwise a
+  hint with the terminal's own shortcut. Never fail the start when full screen is unavailable; say so
+  once in the status line.
+- **Acceptance:** the setting and flag parsed and remembered; the per-terminal decision unit-tested;
+  verified by hand in the classic console and Windows Terminal (say which); help text in both locales.
