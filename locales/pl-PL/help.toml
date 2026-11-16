@@ -28,6 +28,7 @@ restart = "Od nowa"
 new_game = "Nowa gra"
 pause = "Pauza"
 menu = "Menu"
+copy_seed = "Kopiuj ziarno"
 
 [mouse_keys]
 click_card = "Kliknięcie karty"

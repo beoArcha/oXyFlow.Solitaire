@@ -25,6 +25,7 @@ use ratatui::layout::Rect;
 
 use self::choices::Choice;
 use self::cursor::Cursor;
+use self::header::Header;
 use self::mouse::Pointer;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
@@ -227,11 +228,22 @@ impl BoardScreen {
         )
     }
 
+    fn header(&self, now: Instant) -> Option<Header> {
+        let session = self.session.as_ref()?;
+        Some(Header::new(session, self.elapsed(now), self.undo_allowed))
+    }
+
     fn status_text(&self) -> String {
         let focus = self.focus_text();
         let event = match self.copy_note {
-            Some((seed, true)) => Some(tf("board.status.seed_copied", &[("seed", &seed.to_string())])),
-            Some((seed, false)) => Some(tf("board.status.seed_copy_failed", &[("seed", &seed.to_string())])),
+            Some((seed, true)) => Some(tf(
+                "board.status.seed_copied",
+                &[("seed", &seed.to_string())],
+            )),
+            Some((seed, false)) => Some(tf(
+                "board.status.seed_copy_failed",
+                &[("seed", &seed.to_string())],
+            )),
             None => self.status.map(|key| t(key).into_owned()),
         };
         announce::announce(&focus, event.as_deref().unwrap_or_default())

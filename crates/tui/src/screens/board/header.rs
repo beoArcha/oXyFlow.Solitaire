@@ -86,10 +86,7 @@ impl Header {
         let piece = |from: usize, to: usize| chars[from..to].iter().collect::<String>();
         Line::from(vec![
             Span::styled(piece(0, start), style),
-            Span::styled(
-                piece(start, end),
-                style.add_modifier(Modifier::UNDERLINED),
-            ),
+            Span::styled(piece(start, end), style.add_modifier(Modifier::UNDERLINED)),
             Span::styled(piece(end, chars.len()), style),
         ])
         .centered()

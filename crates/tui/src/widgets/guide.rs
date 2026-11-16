@@ -31,6 +31,10 @@ const MOUSE_RIGHT: &str = "board.guide.mouse.right_click";
 pub struct Guide<'a> {
     pub variant: Variant,
     pub usable: &'a [Action],
+    /// Whether the game allows undo and redo; they are not listed when it does not.
+    pub undo_allowed: bool,
+    /// The stock counter, for a game that has one.
+    pub stock: Option<&'a str>,
 }
 
 struct Entry {
@@ -42,7 +46,7 @@ const fn entry(actions: &'static [Action], label: &'static str) -> Entry {
     Entry { actions, label }
 }
 
-fn entries(variant: Variant) -> Vec<Entry> {
+fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
     let pyramid = matches!(variant, Variant::Pyramid(_));
     let mut rows = vec![
         entry(
@@ -71,9 +75,15 @@ fn entries(variant: Variant) -> Vec<Entry> {
         Variant::Spider(_) => rows.push(entry(&[Action::Stock], "board.guide.deal_row")),
         _ => rows.push(entry(&[Action::Stock], "board.guide.stock")),
     }
+    if undo_allowed {
+        rows.push(entry(
+            &[Action::Undo, Action::Redo],
+            "board.guide.undo_redo",
+        ));
+    }
     rows.extend([
-        entry(&[Action::Undo, Action::Redo], "board.guide.undo_redo"),
         entry(&[Action::Hint], "board.guide.hint"),
+        entry(&[Action::CopySeed], "board.guide.copy_seed"),
         entry(&[Action::Rules], "board.guide.rules"),
         entry(&[Action::Help], "board.guide.help"),
     ]);
@@ -183,9 +193,15 @@ pub fn lines(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Line<'st
             .into_iter()
             .map(|text| Line::styled(text, plain)),
     );
+    if let Some(stock) = guide.stock {
+        lines.push(Line::styled(
+            clip(stock, width),
+            plain.add_modifier(Modifier::BOLD),
+        ));
+    }
     lines.push(Line::raw(String::new()));
     lines.push(heading("board.guide.keys_title", ctx));
-    let rows = entries(guide.variant);
+    let rows = entries(guide.variant, guide.undo_allowed);
     let key_width = rows
         .iter()
         .map(|entry| keys_text(entry.actions).chars().count())

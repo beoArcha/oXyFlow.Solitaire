@@ -91,6 +91,7 @@ impl StatsScreen {
             .map_or(Effect::None, |record| Effect::Start {
                 variant: record.variant,
                 seed: Some(record.seed),
+                undo_allowed: record.undo_allowed,
             })
     }
 

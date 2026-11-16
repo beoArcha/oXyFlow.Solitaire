@@ -10,6 +10,10 @@ quit = "Zakończ"
 
 [select]
 title = "Wybierz grę"
+undo = "[ Cofanie: {state} ]"
+undo_on = "włączone"
+undo_off = "wyłączone"
+undo_hint = "{key} lub kliknięcie włącza i wyłącza cofanie w następnej grze"
 
 [variant]
 klondike_one = "Klondike, 1 karta"
@@ -39,6 +43,7 @@ pause_title = "Pauza"
 pause_body = "Naciśnij Esc, aby kontynuować."
 win_title = "Wygrana"
 win_body = "Pasjans został ułożony."
+win_moves = "Ruchy: {moves}"
 alert_title = "Uwaga"
 confirm_title = "Potwierdzenie"
 

@@ -24,6 +24,7 @@ fn sized(variant: Variant, width: u16, height: u16) -> Harness {
     h.app.apply(Effect::Start {
         variant,
         seed: Some(5),
+        undo_allowed: true,
     });
     h
 }

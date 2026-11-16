@@ -174,6 +174,7 @@ fn a_later_new_game_draws_a_fresh_seed_not_the_command_line_one() {
     h.app.apply(Effect::Start {
         variant: Variant::ALL[0],
         seed: None,
+        undo_allowed: true,
     });
     assert!(h.app.board().session().is_some_and(|s| s.seed() == 42));
 }

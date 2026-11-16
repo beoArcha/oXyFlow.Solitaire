@@ -38,6 +38,7 @@ fn saved_game(id: GameId, seed: u64, elapsed_ms: u64) -> SavedGame {
         id,
         record: session.record(),
         elapsed_ms,
+        undo_allowed: true,
     }
 }
 

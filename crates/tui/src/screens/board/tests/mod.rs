@@ -25,6 +25,7 @@ pub(super) fn start(variant: Variant, seed: u64) -> Harness {
     h.app.apply(Effect::Start {
         variant,
         seed: Some(seed),
+        undo_allowed: true,
     });
     h
 }
@@ -39,6 +40,7 @@ pub(super) fn resumed(variant: Variant, seed: u64, moves: &[Move]) -> Harness {
             id: GameId(1),
             record: session.record(),
             elapsed_ms: 0,
+            undo_allowed: true,
         }),
         ..MemoryStorage::default()
     };

@@ -64,9 +64,9 @@ fn draw_board(
         pile::draw(frame.buffer_mut(), snapshot, placed, marks, ctx);
     }
     aura::draw(frame.buffer_mut(), body, &geometry, marks, ctx);
-    let Some((text, row)) = counter.and_then(|text| {
-        counters::beside_stock(&geometry, body, text).map(|row| (text, row))
-    }) else {
+    let Some((text, row)) = counter
+        .and_then(|text| counters::beside_stock(&geometry, body, text).map(|row| (text, row)))
+    else {
         return false;
     };
     let style = ctx.theme.style(Token::TableText, Token::Table);
@@ -127,7 +127,12 @@ pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &Vie
         };
         guide::draw(frame.buffer_mut(), rect, &panel, ctx);
     }
-    footer::draw(frame, parts.footer, &footer_actions(scene.undo_allowed), ctx);
+    footer::draw(
+        frame,
+        parts.footer,
+        &footer_actions(scene.undo_allowed),
+        ctx,
+    );
 }
 
 pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &ViewCtx<'_>) {

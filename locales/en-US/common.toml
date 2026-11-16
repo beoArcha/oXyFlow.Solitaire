@@ -10,6 +10,10 @@ quit = "Quit"
 
 [select]
 title = "Choose a game"
+undo = "[ Undo: {state} ]"
+undo_on = "on"
+undo_off = "off"
+undo_hint = "{key} or a click switches undo on or off for the next game"
 
 [variant]
 klondike_one = "Klondike, Draw 1"
@@ -39,6 +43,7 @@ pause_title = "Paused"
 pause_body = "Press Esc to continue."
 win_title = "You won"
 win_body = "The game is solved."
+win_moves = "Moves: {moves}"
 alert_title = "Notice"
 confirm_title = "Please confirm"
 

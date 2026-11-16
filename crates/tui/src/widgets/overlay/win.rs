@@ -1,4 +1,4 @@
-//! The win screen: the solved game, its elapsed time and the choice of "New game" or "Menu".
+//! The win screen: the solved game, its elapsed time, its move count and the choice of "New game" or "Menu".
 
 use std::time::Duration;
 
@@ -7,7 +7,7 @@ use crate::clock::format_elapsed;
 use crate::i18n::{t, tf};
 
 /// The win screen. `menu_focused` moves the focus from "New game" to "Menu".
-pub fn text(elapsed: Duration, menu_focused: bool) -> Text {
+pub fn text(elapsed: Duration, moves: usize, menu_focused: bool) -> Text {
     Text {
         title: t("common.dialog.win_title").into_owned(),
         lines: vec![
@@ -16,6 +16,7 @@ pub fn text(elapsed: Duration, menu_focused: bool) -> Text {
                 "help.overlay.win_time",
                 &[("time", &format_elapsed(elapsed))],
             ),
+            tf("common.dialog.win_moves", &[("moves", &moves.to_string())]),
         ],
         buttons: vec![
             Button {

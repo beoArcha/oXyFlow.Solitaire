@@ -12,8 +12,12 @@ use crate::i18n::{t, tf};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 
-/// Rows of the summary table that are drawn; the rest does not fit next to the list.
-const MAX_SUMMARY_ROWS: usize = 8;
+/// Rows of the screen that are not the summary or the history list: title, two gaps, the history
+/// heading and column header, the buttons, the status line and the key line.
+const FIXED_ROWS: u16 = 8;
+/// History rows that always stay visible. With every game in both undo modes the summary needs
+/// 17 rows (header and 16 groups), which leaves exactly this many at the minimum height of 30.
+const MIN_LIST_ROWS: u16 = 5;
 const BUTTON_GAP: u16 = 3;
 const MARKER_COLUMNS: u16 = 4;
 
@@ -33,12 +37,12 @@ fn block_x(area: Rect, width: u16) -> u16 {
 }
 
 impl StatsScreen {
-    fn summary_height(&self) -> u16 {
+    fn summary_height(&self, screen: u16) -> u16 {
         if self.summaries.is_empty() {
             return 0;
         }
-        let rows = self.summaries.len().min(MAX_SUMMARY_ROWS) + 1;
-        u16::try_from(rows).unwrap_or(0)
+        let rows = u16::try_from(self.summaries.len() + 1).unwrap_or(u16::MAX);
+        rows.min(screen.saturating_sub(FIXED_ROWS + MIN_LIST_ROWS))
     }
 
     /// Draws the title, the summary, the history, the buttons, the status line and the key line.
@@ -57,7 +61,7 @@ impl StatsScreen {
         ] = Layout::vertical([
             Constraint::Length(1),
             Constraint::Length(1),
-            Constraint::Length(self.summary_height()),
+            Constraint::Length(self.summary_height(area.height)),
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
@@ -103,7 +107,7 @@ impl StatsScreen {
         let lines = summary_lines(&self.summaries, self.show_modes);
         let width = lines.first().map_or(0, |line| text_width(line));
         let x = block_x(area, width);
-        for (offset, line) in lines.into_iter().take(MAX_SUMMARY_ROWS + 1).enumerate() {
+        for (offset, line) in lines.into_iter().take(usize::from(area.height)).enumerate() {
             let Ok(row) = u16::try_from(offset) else {
                 break;
             };
