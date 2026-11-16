@@ -23,7 +23,7 @@ use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Clear};
 
 use self::dialog::{Button, Geometry, Text};
-pub use self::how_to_play::{HowToPlay, Rules, set_active_rules};
+pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
@@ -128,14 +128,32 @@ fn press(modal: &Modal, index: usize) -> Effect {
     }
 }
 
-/// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
-/// then applies `effect` (`Effect::None` just closes).
+/// The game the Rules tab opens on: the one on the board, Klondike without a game.
+pub fn rules_of(board: &BoardScreen) -> Rules {
+    board
+        .session()
+        .map_or(Rules::Klondike, |session| Rules::of(session.variant()))
+}
+
+/// Handles a key while `modal` is open, with Klondike as the game of the Rules tab.
+#[cfg(test)]
 pub fn handle(modal: &mut Modal, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+    handle_for(modal, key, action, Rules::Klondike)
+}
+
+/// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
+/// then applies `effect` (`Effect::None` just closes). `rules` is the game the Rules tab opens on.
+pub fn handle_for(
+    modal: &mut Modal,
+    key: &KeyEvent,
+    action: Option<Action>,
+    rules: Rules,
+) -> Option<Effect> {
     if *modal == Modal::Help {
         if matches!(key.code, KeyCode::Tab | KeyCode::BackTab)
             || matches!(action, Some(Action::Left | Action::Right | Action::Rules))
         {
-            *modal = Modal::HowToPlay(HowToPlay::new(how_to_play::active_rules()));
+            *modal = Modal::HowToPlay(HowToPlay::new(rules));
             return None;
         }
         if matches!(key.code, KeyCode::Esc | KeyCode::Enter)
@@ -191,11 +209,7 @@ pub fn handle_mouse(
         .areas(geometry.body);
         let top = tabs::top_tabs(top_tab_row);
         if mouse::contains(top.rules, cell) {
-            let default_rules = board
-                .session()
-                .map_or(how_to_play::active_rules(), |s| Rules::of(s.variant()));
-            how_to_play::set_active_rules(default_rules);
-            *modal = Modal::HowToPlay(HowToPlay::new(default_rules));
+            *modal = Modal::HowToPlay(HowToPlay::new(rules_of(board)));
         }
         return None;
     }

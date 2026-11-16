@@ -274,10 +274,11 @@ impl App {
     }
 
     fn on_modal_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
+        let rules = overlay::rules_of(&self.board);
         let outcome = self
             .modal
             .as_mut()
-            .and_then(|modal| overlay::handle(modal, key, action));
+            .and_then(|modal| overlay::handle_for(modal, key, action, rules));
         self.finish_modal(outcome)
     }
 

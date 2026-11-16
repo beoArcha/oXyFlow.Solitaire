@@ -15,7 +15,7 @@ mod view;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
-pub use self::state::{HowToPlay, Rules, active_rules, set_active_rules};
+pub use self::state::{HowToPlay, Rules};
 pub use self::view::{draw, geometry, parts};
 use super::dialog;
 use crate::action::Action;
