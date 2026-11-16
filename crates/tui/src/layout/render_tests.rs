@@ -6,6 +6,7 @@ use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::Rect;
 
 use super::*;
+use crate::audio::AudioStatus;
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
 use crate::screens::ViewCtx;
@@ -142,7 +143,8 @@ impl Fixture {
             glyphs: &self.glyphs,
             settings: &self.settings,
             caps: &self.caps,
-            audio_available: false,
+            audio_status: AudioStatus::NoDevice,
+            sound_styles: &[],
             has_saved_game: false,
             now: Instant::now(),
         }

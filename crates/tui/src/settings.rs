@@ -8,6 +8,9 @@ use crate::caps::{ColorDepth, TerminalCaps};
 use crate::i18n::Locale;
 use crate::theme::ThemeId;
 
+/// The sound style used when none is saved or the saved one no longer exists.
+pub const DEFAULT_SOUND_STYLE: &str = "default";
+
 /// How cards and markers are drawn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -58,7 +61,7 @@ impl Default for Settings {
             back_style: "default".to_owned(),
             glyph_mode: GlyphMode::Unicode,
             color_mode: ColorMode::Auto,
-            sound_style: "default".to_owned(),
+            sound_style: DEFAULT_SOUND_STYLE.to_owned(),
             cues: true,
             music: false,
             volume: 70,

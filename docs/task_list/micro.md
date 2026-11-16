@@ -16,13 +16,13 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-08 | Wiki: Spider rules | Oxy | P0-01 | DONE |
 | M-09 | Wiki: FreeCell rules | Son | P0-01 | DONE |
 | M-10 | Wiki: Pyramid rules | Beo | P0-01 | DONE |
-| M-11 | Theme: Light palette | Beo | P3-01 | READY |
-| M-12 | Theme: High Contrast palette | Oxy | P3-01 | READY |
+| M-11 | Theme: Light palette | Beo | P3-01 | DONE |
+| M-12 | Theme: High Contrast palette | Oxy | P3-01 | DONE |
 | M-13 | RGB to 256-color conversion | Oxy | P0-01 | DONE |
 | M-14 | Contrast ratio helper | Son | P0-01 | DONE |
-| M-15 | Terminal capability detection | Beo | P0-01 | READY |
-| M-16 | Title logo | Oxy | P0-01 | READY |
-| M-17 | Polish translation, part 1 | Son | P3-03, P3-04 | READY |
+| M-15 | Terminal capability detection | Beo | P0-01 | DONE |
+| M-16 | Title logo | Oxy | P0-01 | DONE |
+| M-17 | Polish translation, part 1 | Son | P3-03, P3-04 | DONE |
 | M-18 | Command-line parser | Son | P0-01 | DONE |
 | M-19 | Artwork: International suits | Beo | P5-01 | DRAFT |
 | M-20 | Artwork: German suits | Oxy | P5-01 | DRAFT |
@@ -30,16 +30,16 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-22 | Artwork: court emblems | Beo | P5-01 | DRAFT |
 | M-23 | Artwork: back style 1 | Oxy | P5-01 | DRAFT |
 | M-24 | Artwork: back style 2 | Son | P5-01 | DRAFT |
-| M-25 | Sound style 1: cues | Beo | P6-03 | DRAFT |
-| M-26 | Sound style 2: cues | Oxy | P6-03 | DRAFT |
-| M-27 | Music loops | Son | P6-03 | DRAFT |
+| M-25 | Sound style 1: cues | Beo | P6-03 | DONE |
+| M-26 | Sound style 2: cues | Oxy | P6-03 | DONE |
+| M-27 | Music loops | Son | P6-03 | DONE |
 | M-28 | E2E: Spider and FreeCell | Beo | P7-01 | DRAFT |
 | M-29 | E2E: Pyramid and settings | Oxy | P7-01 | DRAFT |
 | M-30 | Wiki: installation and requirements | Son | P3-09 | DRAFT |
 | M-31 | Wiki: controls | Beo | P3-09 | DRAFT |
 | M-32 | Wiki: decks, themes, sound | Oxy | P5-02, P6-02 | DRAFT |
 | M-33 | Wiki: accessibility and FAQ | Son | P3-09 | DRAFT |
-| M-34 | Polish translation, part 2 | Beo | P5-02, P6-02 | DRAFT |
+| M-34 | Polish translation, part 2 | Beo | P5-02, P6-02 | IN PROGRESS |
 
 ## Tooling
 

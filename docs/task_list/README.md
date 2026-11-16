@@ -1,6 +1,6 @@
 # oXySol task list (MVP)
 
-Started 2026-11-10. Revised 2026-11-15 for R-14…R-19 (roles, CI, seeds, SQLite).
+Started 2026-11-10. Revised 2026-11-15 for R-14…R-19 (roles, CI, seeds, SQLite). Statuses synced with `main` on 2026-11-15.
 Contract behind the cards: `docs/tech/architecture.md`. Decisions: `docs/tech/decisions.md`.
 
 ## Roles
@@ -73,26 +73,26 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | P2-03 | FreeCell | Haiku | P2-01 | DONE |
 | P2-04 | Pyramid (Relaxed, Classic) | Haiku | P2-01 | DONE |
 | P2-05 | Gate: game rules and flow tests | Sonnet | P2-01…P2-04 | DONE |
-| P3-01 | TUI foundation | Sonnet | P1-02 | TODO |
-| P3-02 | Board geometry and rendering | Sonnet | P3-01, P2-01 | TODO |
-| P3-03 | Board controller | Sonnet | P3-02 | TODO |
-| P3-04 | Menus and game selection | Haiku | P3-01 | TODO |
-| P3-05 | Settings screen | Haiku | P3-01 | TODO |
-| P3-06 | Mouse | Haiku | P3-03 | TODO |
-| P3-07 | Overlays: help, pause, win, dialogs | Haiku | P3-03 | TODO |
-| P3-08 | Accessibility: announcer and tests | Haiku | P3-03 | TODO |
+| P3-01 | TUI foundation | Sonnet | P1-02 | DONE |
+| P3-02 | Board geometry and rendering | Sonnet | P3-01, P2-01 | DONE |
+| P3-03 | Board controller | Sonnet | P3-02 | DONE |
+| P3-04 | Menus and game selection | Haiku | P3-01 | DONE |
+| P3-05 | Settings screen | Haiku | P3-01 | DONE |
+| P3-06 | Mouse | Haiku | P3-03 | DONE |
+| P3-07 | Overlays: help, pause, win, dialogs | Haiku | P3-03 | DONE |
+| P3-08 | Accessibility: announcer and tests | Haiku | P3-03 | DONE |
 | P3-09 | Gate: TUI | Sonnet | P3-04…P3-08, P4-03 | TODO |
-| P4-01 | SQLite persistence | Sonnet | P3-01 | TODO |
-| P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | TODO |
-| P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | TODO |
+| P4-01 | SQLite persistence | Sonnet | P3-01 | DONE |
+| P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | DONE |
+| P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | DONE |
 | X-01 | Spike: card font in real terminals | Sonnet + User | P0-01 | TODO |
 | F-02 | Checkpoint: graphics delivery | Opus | X-01 | TODO |
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | TODO |
 | P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05 | TODO |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
-| P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | TODO |
-| P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | TODO |
-| P6-03 | Score-to-MIDI tool | Haiku | P0-01 | TODO |
+| P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
+| P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
+| P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
 | P7-01 | E2E harness and core scenarios | Haiku | P3-09, P4-02 | TODO |
 | P7-02 | Player site and stable release procedure | Haiku | P0-04, P5-01, M-30…M-33 | TODO |
 | P7-03 | Technical documentation and README | Haiku | P3-09 | TODO |
@@ -103,6 +103,33 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | P8-03 | Release 0.1.0 | Haiku + User | F-03, P7-02 | TODO |
 
 Micro tasks M-01…M-34: see `micro.md`.
+
+### Follow-up tasks
+
+Added after the plan was written: owner feedback, review follow-ups and fixes. Their briefs live in
+the PR descriptions; cards that exist are in the phase files.
+
+| ID | Task | Depends on | Status |
+|---|---|---|---|
+| O-01 | Record roles, CI, seed and SQLite decisions (R-14…R-19) | U-01 | DONE |
+| O-02 | Phase 2 gate follow-ups | P2-05 | DONE |
+| O-03 | CI actions on Node 24 | P0-03 | DONE |
+| O-04 | Release builds only by manual dispatch | P0-04 | DONE |
+| O-05 | Keep a double-clicked console open after a startup error | P4-02 | DONE |
+| O-06 | Unicode glyphs within WGL4 for the Windows console | P3-02 | DONE |
+| O-07 | Portable mode: data next to the executable | P4-01 | DONE |
+| O-08 | Release targets: Windows x64, Linux x64/arm64 musl, macOS arm64 | O-04 | DONE |
+| O-09 | Application icon for the Windows executable | P0-01 | DONE |
+| O-10 | Remove unused common locale keys | M-17 | DONE |
+| O-11 | `--seed` starts the game directly; typed keys stay in text fields | P3-10 | DONE |
+| O-12 | Selectable sound styles and clearer sound status in Settings | P6-02, P3-11 | IN PROGRESS |
+| O-13 | Sync task list statuses with `main` | — | IN PROGRESS |
+| P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
+| P3-10 | How-to-play overlay and first-steps hint | P3-07 | DONE |
+| P3-11 | Board guidance: focus aura, action line and guide panel | P3-06, P3-08, P3-10 | DONE |
+| P3-12 | Move counter, no-undo mode, seed copy and stock counters on the board | P3-11, P4-04, P2-06 | TODO |
+| P3-13 | Large card faces: big suit and rank on medium and large cards | P3-11 | IN PROGRESS |
+| P4-04 | Statistics, game history and seed copying | P4-03 | IN PROGRESS |
 
 ## Start prompts
 

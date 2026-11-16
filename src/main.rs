@@ -77,6 +77,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         caps,
         seeds: Box::new(seed::fresh),
         start_seed: args.seed,
+        sound_styles: audio::bank::style_list(),
     };
     oxysol_tui::run(deps).map_err(|error| {
         tracing::error!(%error, "the terminal interface stopped");

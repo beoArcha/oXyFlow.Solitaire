@@ -132,6 +132,7 @@ impl Programs {
 /// A parsed `style.toml`.
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Style {
+    pub name: Option<String>,
     pub cues: HashMap<SoundCue, String>,
     pub music: Option<String>,
     pub programs: Programs,
@@ -139,6 +140,7 @@ pub struct Style {
 
 #[derive(Deserialize)]
 struct RawStyle {
+    name: Option<String>,
     #[serde(default)]
     cues: BTreeMap<String, String>,
     music: Option<RawMusic>,
@@ -163,6 +165,7 @@ impl Style {
             .transpose()?;
         let programs = convert_programs(raw.programs)?;
         Ok(Self {
+            name: raw.name,
             cues,
             music,
             programs,

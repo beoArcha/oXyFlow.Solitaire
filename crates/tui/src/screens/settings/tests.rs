@@ -2,16 +2,27 @@ use ratatui::crossterm::event::KeyCode;
 
 mod guide;
 mod screen;
+mod styles;
 
-use super::options::{
-    BACK_STYLES, FIELDS, FRONT_STYLES, Field, SOUND_STYLES, Step, changed, line, value_text,
-};
+use super::options::{FIELDS, Field, Step, line, value_text};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
 use crate::settings::{ColorMode, GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
-use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
+use crate::test_support::{Harness, PLAIN, TRUE_COLOR, sound_styles};
 use crate::theme::ThemeId;
+
+fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
+    super::options::changed(field, settings, step, &sound_styles())
+}
+
+fn row(field: Field, settings: &Settings, audio_available: bool) -> String {
+    line(field, settings, audio_available, &sound_styles())
+}
+
+fn value(field: Field, settings: &Settings) -> String {
+    value_text(field, settings, &sound_styles())
+}
 
 /// Position of Settings in the main menu without a saved game.
 const SETTINGS_ITEM: usize = 3;
@@ -42,15 +53,6 @@ fn every_row_with_several_choices_changes_the_settings_when_stepped() {
     let base = Settings::default();
     for field in FIELDS.into_iter().filter(|field| !is_style(*field)) {
         assert_ne!(changed(field, &base, Step::Next), base, "{field:?}");
-    }
-}
-
-#[test]
-fn style_rows_keep_their_only_choice_until_more_styles_exist() {
-    let base = Settings::default();
-    for field in [Field::FrontStyle, Field::BackStyle, Field::SoundStyle] {
-        assert_eq!(changed(field, &base, Step::Next), base, "{field:?}");
-        assert_eq!(changed(field, &base, Step::Previous), base, "{field:?}");
     }
 }
 
@@ -101,36 +103,6 @@ fn glyph_and_color_modes_cycle() {
 }
 
 #[test]
-fn unknown_style_ids_move_to_the_first_offer() {
-    let settings = Settings {
-        front_style: "custom".to_owned(),
-        back_style: "custom".to_owned(),
-        sound_style: "custom".to_owned(),
-        ..Settings::default()
-    };
-    assert_eq!(
-        changed(Field::FrontStyle, &settings, Step::Next).front_style,
-        FRONT_STYLES[0]
-    );
-    assert_eq!(
-        changed(Field::BackStyle, &settings, Step::Next).back_style,
-        BACK_STYLES[0]
-    );
-    assert_eq!(
-        changed(Field::SoundStyle, &settings, Step::Next).sound_style,
-        SOUND_STYLES[0]
-    );
-}
-
-#[test]
-fn the_default_styles_are_offered() {
-    let base = Settings::default();
-    assert!(FRONT_STYLES.contains(&base.front_style.as_str()));
-    assert!(BACK_STYLES.contains(&base.back_style.as_str()));
-    assert!(SOUND_STYLES.contains(&base.sound_style.as_str()));
-}
-
-#[test]
 fn volume_moves_in_tens_and_stays_between_0_and_100() {
     let at = |volume: u8| Settings {
         volume,
@@ -154,18 +126,18 @@ fn cues_and_music_toggle() {
 #[test]
 fn values_name_the_theme_locale_and_volume() {
     let base = Settings::default();
-    assert_eq!(value_text(Field::Language, &base), "English");
-    assert_eq!(value_text(Field::Theme, &base), "Dark");
-    assert_eq!(value_text(Field::Volume, &base), "70%");
-    assert_eq!(value_text(Field::Cues, &base), "On");
+    assert_eq!(value(Field::Language, &base), "English");
+    assert_eq!(value(Field::Theme, &base), "Dark");
+    assert_eq!(value(Field::Volume, &base), "70%");
+    assert_eq!(value(Field::Cues, &base), "On");
 }
 
 #[test]
 fn unavailable_sound_rows_say_so_in_their_text() {
     let base = Settings::default();
-    assert!(line(Field::Music, &base, false).ends_with("(unavailable)"));
-    assert!(!line(Field::Music, &base, true).contains("unavailable"));
-    assert!(!line(Field::Theme, &base, false).contains("unavailable"));
+    assert!(row(Field::Music, &base, false).ends_with("(unavailable)"));
+    assert!(!row(Field::Music, &base, true).contains("unavailable"));
+    assert!(!row(Field::Theme, &base, false).contains("unavailable"));
 }
 
 #[test]
@@ -227,7 +199,12 @@ fn a_language_change_switches_the_locale_at_once() {
     let mut h = open_settings();
     h.press(KeyCode::Right);
     assert_eq!(locale(), Locale::PlPl);
-    assert!(h.text().contains("Language: Polski"));
+    let expected = format!(
+        "{}: {}",
+        t("settings.row.language"),
+        t("settings.locale.pl_pl")
+    );
+    assert!(h.text().contains(&expected));
     set_locale(Locale::EnUs);
 }
 
@@ -280,7 +257,7 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
 #[test]
 fn the_row_text_uses_the_line_format() {
     let base = Settings::default();
-    assert_eq!(line(Field::Volume, &base, true), "Volume: 70%");
+    assert_eq!(row(Field::Volume, &base, true), "Volume: 70%");
     assert_eq!(t("settings.row.line"), "{label}: {value}");
 }
 

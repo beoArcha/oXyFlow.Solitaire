@@ -76,6 +76,14 @@ impl Output {
         update(&mut mixer)
     }
 
+    /// Puts `mixer` in place of the current one and returns the current one. The lock is held only for
+    /// the swap, so the caller drops the returned mixer, and any allocation it implies, after the lock
+    /// is released.
+    pub fn replace_mixer(&self, mixer: Mixer) -> Mixer {
+        let mut current = self.mixer.lock().unwrap_or_else(PoisonError::into_inner);
+        std::mem::replace(&mut *current, mixer)
+    }
+
     /// Starts a cue without waiting. If the audio callback holds the mixer at that moment the cue is
     /// dropped, which is inaudible in practice.
     pub fn try_play(&self, cue: SoundCue) -> Result<(), SynthError> {
