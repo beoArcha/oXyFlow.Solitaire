@@ -60,6 +60,7 @@ fn klondike(caps: crate::caps::TerminalCaps, seed: u64) -> Harness {
     h.app.apply(Effect::Start {
         variant: Variant::Klondike(DrawCount::One),
         seed: Some(seed),
+        undo_allowed: true,
     });
     h
 }
@@ -129,6 +130,7 @@ fn focus_after(variant: Variant, path: &[KeyCode], names: &[String]) -> Option<S
     h.app.apply(Effect::Start {
         variant,
         seed: Some(1),
+        undo_allowed: true,
     });
     for key in path {
         h.press(*key);
@@ -243,6 +245,7 @@ fn the_guide_panel_adds_only_wgl4_or_ascii_symbols() {
         h.app.apply(Effect::Start {
             variant: Variant::Klondike(DrawCount::One),
             seed: Some(seed),
+            undo_allowed: true,
         });
         h.press(KeyCode::Enter);
         let text = h.text();

@@ -1,5 +1,6 @@
 [header]
-format = "{variant} | ziarno {seed} | {time}"
+format = "{variant} | ziarno {seed} | {time} | Ruchy: {moves}"
+no_undo = "Bez cofania"
 
 [rank]
 ace = "A"
@@ -64,6 +65,10 @@ no_hint = "Brak podpowiedzi."
 hint = "Podpowiedź: podświetlone karty mogą się poruszyć."
 hint_stock = "Podpowiedź: dobierz kartę z talii."
 no_moves = "Brak dostępnych ruchów. Cofnij ruch, zacznij od nowa lub rozpocznij nową grę."
+no_moves_no_undo = "Brak dostępnych ruchów. Zacznij od nowa lub rozpocznij nową grę."
+undo_off = "Cofanie jest wyłączone w tej grze."
+seed_copied = "Skopiowano ziarno {seed}"
+seed_copy_failed = "Nie udało się skopiować ziarna — widać je tutaj: {seed}"
 solved = "Gra ukończona. Rozpocznij nową grę lub wróć do menu."
 moved = "Karty przeniesione."
 dealt = "Rozdano z talii."
@@ -121,6 +126,13 @@ restart = "{key}: od nowa"
 new_game = "{key}: nowa gra"
 menu = "{key}: menu"
 
+[counter]
+turned_over = "Przełożono: {count}"
+pass = "Przejście {pass} z {total}"
+last_pass = "Ostatnie przejście ({pass} z {total})"
+no_passes = "Brak przejść"
+deals_left = "Rozdań: {count}"
+
 [guide]
 title = "Przewodnik ({key}: ukryj)"
 goal_title = "Cel"
@@ -136,6 +148,7 @@ run = "wielkość ciągu"
 stock = "dobierz z talii"
 deal_row = "rozdaj rząd"
 undo_redo = "cofnij / ponów"
+copy_seed = "kopiuj ziarno"
 hint = "podpowiedź"
 rules = "jak grać"
 help = "wszystkie klawisze"

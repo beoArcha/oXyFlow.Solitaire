@@ -97,9 +97,14 @@ fn run_part(drop_order: u8) -> Part {
 }
 
 impl Guidance {
-    /// The `Now:` row cut to `width` columns.
-    pub(super) fn now_line(&self, width: usize) -> String {
-        clip(&tf("board.action.now", &[("text", &self.now)]), width)
+    /// The `Now:` row cut to `width` columns. `counter` is the stock counter when it has no room
+    /// beside the stock; it follows the text.
+    pub(super) fn now_line(&self, width: usize, counter: Option<&str>) -> String {
+        let text = match counter {
+            Some(counter) => format!("{}{}{counter}", self.now, t("board.action.separator")),
+            None => self.now.clone(),
+        };
+        clip(&tf("board.action.now", &[("text", &text)]), width)
     }
 
     /// The `Possible:` row: the parts that fit `width` columns, least useful dropped first.
@@ -143,10 +148,10 @@ fn won() -> Guidance {
     )
 }
 
-fn stuck(session: &Session) -> Guidance {
+fn stuck(session: &Session, undo_allowed: bool) -> Guidance {
     let mut possible = Vec::new();
     let mut usable = Vec::new();
-    if session.can_undo() {
+    if undo_allowed && session.can_undo() {
         possible.push(part(Action::Undo, "board.action.undo", 3));
         usable.push(Action::Undo);
     }
@@ -167,7 +172,7 @@ impl BoardScreen {
         }
         let legal = game.legal_moves();
         if legal.is_empty() {
-            return Some(stuck(session));
+            return Some(stuck(session, self.undo_allowed));
         }
         let piles = game.piles();
         Some(match &self.pick {
@@ -213,7 +218,7 @@ impl BoardScreen {
             possible.push(part(Action::Hint, "board.action.hint", 3));
             usable.push(Action::Hint);
         }
-        if session.can_undo() {
+        if self.undo_allowed && session.can_undo() {
             possible.push(part(Action::Undo, "board.action.undo", 4));
             usable.push(Action::Undo);
         }
@@ -222,7 +227,7 @@ impl BoardScreen {
         }
         usable.extend(deeper.then_some(Action::RunMore));
         usable.extend(shallower.then_some(Action::RunLess));
-        if session.can_redo() {
+        if self.undo_allowed && session.can_redo() {
             possible.push(part(Action::Redo, "board.action.redo", 7));
             usable.push(Action::Redo);
         }

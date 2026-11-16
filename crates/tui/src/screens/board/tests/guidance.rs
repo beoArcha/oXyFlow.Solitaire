@@ -24,6 +24,7 @@ fn sized(variant: Variant, width: u16, height: u16) -> Harness {
     h.app.apply(Effect::Start {
         variant,
         seed: Some(5),
+        undo_allowed: true,
     });
     h
 }
@@ -72,7 +73,8 @@ fn browsing_names_the_place_and_the_actions_of_this_state() {
     put_cursor(&mut h, from);
     let card = top_card(&h, from);
     let now = row(&mut h, "Now:");
-    assert_eq!(now, format!("Now: Browsing {}, {card}", pile_name(from)));
+    let expected = format!("Now: Browsing {}, {card}", pile_name(from));
+    assert!(now.starts_with(&expected), "{now}");
     let possible = row(&mut h, "Possible:");
     assert!(
         possible.starts_with("Possible: Enter: pick up"),
@@ -119,7 +121,7 @@ fn carrying_names_the_cards_the_source_and_the_targets() {
             pile_name(from),
             targets_text(targets)
         );
-        assert_eq!(now, expected);
+        assert!(now.starts_with(&expected), "{now}");
     } else {
         assert!(now.starts_with("Now: Carrying "), "{now}");
     }
@@ -151,7 +153,7 @@ fn a_position_without_moves_offers_undo_restart_and_a_new_game() {
         unreachable!("some classic pyramid deal ends without moves")
     };
     let mut h = resumed(variant, seed, &moves);
-    assert_eq!(row(&mut h, "Now:"), "Now: No legal moves");
+    assert!(row(&mut h, "Now:").starts_with("Now: No legal moves"));
     let possible = row(&mut h, "Possible:");
     assert!(
         possible.starts_with("Possible: u: undo | R: restart | n: new game"),
@@ -165,7 +167,7 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     let moves = hint_moves(variant, 2);
     let mut h = resumed(variant, 2, &moves);
     assert!(session(&h).game().is_won());
-    assert_eq!(row(&mut h, "Now:"), "Now: Game won");
+    assert!(row(&mut h, "Now:").starts_with("Now: Game won"));
     let possible = row(&mut h, "Possible:");
     assert!(
         possible.starts_with("Possible: n: new game | m: menu"),

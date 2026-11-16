@@ -22,6 +22,7 @@ fn almost_won(last: &mut Option<Move>) -> Harness {
             id: GameId(1),
             record: session.record(),
             elapsed_ms: 30_000,
+            undo_allowed: true,
         }),
         history: vec![HistoryRow::open(1, PYRAMID, 2)],
         ..MemoryStorage::default()

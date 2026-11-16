@@ -28,6 +28,7 @@ restart = "Restart"
 new_game = "New game"
 pause = "Pause"
 menu = "Menu"
+copy_seed = "Copy seed"
 
 [mouse_keys]
 click_card = "Click a card"

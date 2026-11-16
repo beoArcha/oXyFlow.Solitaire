@@ -86,7 +86,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 22] = [
+pub const KEY_TABLE: [Binding; 23] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -137,6 +137,7 @@ pub const KEY_TABLE: [Binding; 22] = [
     bind(Action::NewGame, HelpGroup::Game, &[KeySpec::ch('n')]),
     bind(Action::Pause, HelpGroup::Game, &[KeySpec::ch('p')]),
     bind(Action::Menu, HelpGroup::Game, &[KeySpec::ch('m')]),
+    bind(Action::CopySeed, HelpGroup::Game, &[KeySpec::ch('c')]),
     bind(Action::Quit, HelpGroup::General, &[KeySpec::ch('q')]),
     bind(Action::ForceQuit, HelpGroup::General, &[KeySpec::ctrl('c')]),
     bind(
@@ -220,7 +221,12 @@ mod tests {
                 Some(Action::Restart),
             ),
             (KeyCode::Char('?'), KeyModifiers::SHIFT, Some(Action::Help)),
-            (KeyCode::Char('c'), KeyModifiers::NONE, None),
+            (
+                KeyCode::Char('c'),
+                KeyModifiers::NONE,
+                Some(Action::CopySeed),
+            ),
+            (KeyCode::Char('C'), KeyModifiers::SHIFT, None),
             (KeyCode::Char('q'), KeyModifiers::CONTROL, None),
         ];
         for (code, modifiers, expected) in cases {
@@ -251,6 +257,15 @@ mod tests {
         assert_eq!(
             binding_for(Action::Guide).map(|binding| binding.group),
             Some(HelpGroup::Board)
+        );
+    }
+
+    #[test]
+    fn the_copy_seed_key_is_c_and_is_listed_with_the_game_keys() {
+        assert_eq!(primary_key(Action::CopySeed).as_deref(), Some("c"));
+        assert_eq!(
+            binding_for(Action::CopySeed).map(|binding| binding.group),
+            Some(HelpGroup::Game)
         );
     }
 

@@ -30,6 +30,7 @@ fn playing(variant: Variant) -> Harness {
     h.app.apply(Effect::Start {
         variant,
         seed: Some(7),
+        undo_allowed: true,
     });
     h
 }

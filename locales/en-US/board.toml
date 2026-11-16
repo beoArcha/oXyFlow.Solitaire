@@ -1,5 +1,6 @@
 [header]
-format = "{variant} | seed {seed} | {time}"
+format = "{variant} | seed {seed} | {time} | Moves: {moves}"
+no_undo = "No undo"
 
 [rank]
 ace = "A"
@@ -64,6 +65,10 @@ no_hint = "There is no hint."
 hint = "Hint: the highlighted cards can move."
 hint_stock = "Hint: draw from the stock."
 no_moves = "No moves left. Undo, restart or start a new game."
+no_moves_no_undo = "No moves left. Restart or start a new game."
+undo_off = "Undo is off in this game."
+seed_copied = "Seed {seed} copied"
+seed_copy_failed = "Could not copy the seed — it is shown here: {seed}"
 solved = "The game is solved. Start a new game or go back to the menu."
 moved = "Cards moved."
 dealt = "Dealt from the stock."
@@ -121,6 +126,13 @@ restart = "{key}: restart"
 new_game = "{key}: new game"
 menu = "{key}: menu"
 
+[counter]
+turned_over = "Turned over: {count}"
+pass = "Pass {pass} of {total}"
+last_pass = "Last pass ({pass} of {total})"
+no_passes = "No passes left"
+deals_left = "Deals left: {count}"
+
 [guide]
 title = "Guide ({key}: hide)"
 goal_title = "Goal"
@@ -136,6 +148,7 @@ run = "run size"
 stock = "turn stock"
 deal_row = "deal a row"
 undo_redo = "undo / redo"
+copy_seed = "copy seed"
 hint = "hint"
 rules = "how to play"
 help = "all keys"

@@ -13,6 +13,7 @@ fn with_save() -> MemoryStorage {
             id: crate::storage::GameId(3),
             record: Session::new(Variant::FreeCell, 5).record(),
             elapsed_ms: 1_000,
+            undo_allowed: true,
         }),
         ..MemoryStorage::new()
     }

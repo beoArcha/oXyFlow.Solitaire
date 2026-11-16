@@ -12,7 +12,7 @@ use crate::audio::AudioStatus;
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
 use crate::i18n::{self, Locale};
-use crate::screens::board::BoardScreen;
+use crate::screens::board::{BoardScreen, Start};
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
@@ -35,7 +35,12 @@ fn all_modals() -> Vec<Modal> {
 fn timed_board(now: Instant) -> BoardScreen {
     let mut board = BoardScreen::new();
     let session = Session::new(Variant::Klondike(DrawCount::One), 42);
-    board.begin(session, None, Duration::from_secs(75), now);
+    let start = Start {
+        id: None,
+        elapsed: Duration::from_secs(75),
+        undo_allowed: true,
+    };
+    board.begin(session, start, now);
     board
 }
 

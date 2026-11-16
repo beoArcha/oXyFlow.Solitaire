@@ -33,7 +33,10 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
         Modal::Help | Modal::HowToPlay(_) => None,
         Modal::Pause => Some(pause::text()),
-        Modal::Win { menu_focused } => Some(win::text(board.elapsed(now), *menu_focused)),
+        Modal::Win { menu_focused } => {
+            let moves = board.session().map_or(0, |session| session.moves_made());
+            Some(win::text(board.elapsed(now), moves, *menu_focused))
+        }
         Modal::Confirm {
             prompt,
             yes_focused,

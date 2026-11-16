@@ -131,3 +131,53 @@ fn the_summary_names_the_undo_mode_once_two_modes_exist_and_still_fits() {
         );
     }
 }
+
+#[test]
+fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
+    for locale in Locale::ALL {
+        let mut history = Vec::new();
+        for (index, variant) in Variant::ALL.into_iter().enumerate() {
+            let id = i64::try_from(index).unwrap_or(0) * 2 + 1;
+            history.push(row(id, variant, Won, 61_000));
+            history.push(HistoryRow {
+                undo_allowed: false,
+                ..row(id + 1, variant, Won, 62_000)
+            });
+        }
+        let storage = MemoryStorage {
+            history,
+            settings: Some(Settings {
+                locale,
+                ..Settings::default()
+            }),
+            ..MemoryStorage::new()
+        };
+        let mut h = open_stats(storage, 100, 30);
+        let lines = h.lines();
+        let no_undo = match locale {
+            Locale::EnUs => "(no undo)",
+            Locale::PlPl => "(bez cofania)",
+        };
+        let summarized = lines.iter().filter(|line| line.contains(no_undo)).count();
+        assert_eq!(summarized, Variant::ALL.len(), "{}", lines.join("\n"));
+        let widest = lines
+            .iter()
+            .map(|line| line.trim_end().chars().count())
+            .max();
+        assert!(widest.is_some_and(|width| width <= 100));
+        let names = ["Best streak", "Maks. seria"];
+        assert!(
+            lines
+                .iter()
+                .any(|line| names.iter().any(|name| line.contains(name)))
+        );
+        let text = lines.join("\n");
+        assert!(
+            text.contains("Game 1 of 16") || text.contains("Gra 1 z 16"),
+            "{text}"
+        );
+        assert!(text.contains("Back") || text.contains("Wstecz"), "{text}");
+        h.press(KeyCode::End);
+        assert!(h.text().contains("16 of 16") || h.text().contains("16 z 16"));
+    }
+}

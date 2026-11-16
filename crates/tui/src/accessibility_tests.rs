@@ -166,6 +166,7 @@ fn every_dialog_closes_and_confirm_takes_yes_by_keyboard() {
     h.app.apply(crate::screens::Effect::Start {
         variant: Variant::Klondike(DrawCount::One),
         seed: Some(3),
+        undo_allowed: true,
     });
     h.type_char('?');
     assert!(matches!(h.app.modal(), Some(Modal::Help)));

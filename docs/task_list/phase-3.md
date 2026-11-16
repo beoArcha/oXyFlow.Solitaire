@@ -189,3 +189,28 @@ Rules for the whole phase:
   aura without color, the action line (browsing, carrying, no moves, won), the panel (shown at
   140 × 40, hidden at 100 × 30 and when off), the setting through storage and an old value without
   it, WGL4/ASCII glyphs only; `cargo xtask check --quick` passes.
+
+### P3-12 — Board counters, the no-undo mode and copying the seed
+
+- **Owner:** Sonnet
+- **Depends on:** P3-11, P4-04, P2-06
+- **Files:** `crates/tui/src/{action,input,settings,storage}.rs`, `crates/tui/src/app/**`,
+  `crates/tui/src/screens/{board,game_select,stats,mod}.rs`, `crates/tui/src/screens/{board,game_select,stats}/**`,
+  `crates/tui/src/widgets/{guide.rs,overlay/{mod,win}.rs}`, `locales/*/{board,common,help,stats}.toml`,
+  `src/storage/sqlite.rs`, `tests/integration/`, `docs/tech/architecture.md`
+- **Scope:**
+  - Header `Moves: N` (from `Session::moves_made()`; also in the win dialog next to the time).
+  - Stock counters from `Game::stock_status`: Klondike "Turned over: N", Pyramid "Pass N of M" / "Last
+    pass" / "No passes left", Spider "Deals left: N", nothing for FreeCell. Beside the stock when a free
+    row exists, else in the `Now:` line; always in the guide panel.
+  - No-undo mode: `undo_allowed` in `Effect::Start`, `Settings` (last choice, serde default `true`),
+    `SavedGame` (serde default `true`) and `Storage::start_game`; a toggle (`u` or a click) in the game
+    selection; replay from the statistics uses the row's mode; undo and redo are rejected with a message,
+    hidden from the action line, footer and guide panel, and the header shows a "No undo" badge.
+  - Key `c` (`Action::CopySeed`) and a click on the seed in the header copy the seed through
+    `Effect::CopySeed`; the board announces "Seed N copied" or the failure with the seed shown.
+  - The statistics summary is no longer capped at 8 rows; it grows to the 16 groups (8 games × 2 modes).
+- **Acceptance:** tests for the counters after moves, undo, redo and restart; the stock counter of every
+  game; a no-undo game (rejection, hidden hints, save and resume, `undo_allowed = false` in storage); the
+  toggle by key and mouse and the remembered setting; the copy key and the header click against the
+  clipboard double; 100 × 30 in both locales with WGL4/ASCII glyphs only; `cargo xtask check --quick` passes.

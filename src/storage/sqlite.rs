@@ -39,15 +39,17 @@ impl SqliteStorage {
     }
 
     fn read_game(&self) -> Result<Option<SavedGame>, Fault> {
-        let row: Option<(i64, String, i64)> = self
+        let row: Option<(i64, String, i64, Option<i64>)> = self
             .conn
             .query_row(
-                "SELECT game_id, record, elapsed_ms FROM saved_game WHERE id = 1",
+                "SELECT s.game_id, s.record, s.elapsed_ms, g.undo_allowed
+                 FROM saved_game s LEFT JOIN games g ON g.id = s.game_id
+                 WHERE s.id = 1",
                 [],
-                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
             )
             .optional()?;
-        let Some((id, record, elapsed_ms)) = row else {
+        let Some((id, record, elapsed_ms, undo_allowed)) = row else {
             return Ok(None);
         };
         let record: SessionRecord = serde_json::from_str(&record)?;
@@ -55,9 +57,12 @@ impl SqliteStorage {
             id: GameId(id),
             record,
             elapsed_ms: millis_from_column(elapsed_ms)?,
+            undo_allowed: undo_allowed.is_none_or(|flag| flag != 0),
         }))
     }
 
+    /// The undo mode of a saved game is the one of its `games` row, written when the game was
+    /// dealt, so the saved record needs no column of its own.
     fn write_game(&mut self, game: &SavedGame) -> Result<(), Fault> {
         let record = serde_json::to_string(&game.record)?;
         let tx = self.conn.transaction()?;

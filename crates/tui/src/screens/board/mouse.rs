@@ -71,6 +71,9 @@ impl BoardScreen {
             if self.on_guide_title(cell) {
                 return toggle_guide(ctx);
             }
+            if self.on_seed(cell, ctx.now) {
+                return self.dispatch(Action::CopySeed);
+            }
             return self.press(cell, ctx.now);
         }
         if let Some(cell) = left_release(event) {
@@ -80,6 +83,14 @@ impl BoardScreen {
             return self.dispatch(Action::Back);
         }
         Effect::None
+    }
+
+    fn on_seed(&self, cell: (u16, u16), now: Instant) -> bool {
+        let header = layout::chrome_with(self.screen, self.guide_panel).header;
+        self.header(now).is_some_and(|text| {
+            text.seed_cells(header)
+                .contains(Position::new(cell.0, cell.1))
+        })
     }
 
     fn on_guide_title(&self, cell: (u16, u16)) -> bool {

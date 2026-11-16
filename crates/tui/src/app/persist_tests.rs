@@ -86,6 +86,7 @@ fn dealing_another_game_over_a_save_abandons_it() {
     h.app.apply(Effect::Start {
         variant: Variant::FreeCell,
         seed: Some(3),
+        undo_allowed: true,
     });
     let storage = h.storage.borrow();
     assert_eq!(storage.history.len(), 2);
@@ -112,6 +113,7 @@ fn an_abandoned_game_records_its_moves_with_undo_taking_a_move_back() {
     h.app.apply(Effect::Start {
         variant: Variant::FreeCell,
         seed: Some(3),
+        undo_allowed: true,
     });
     let storage = h.storage.borrow();
     assert_eq!(storage.history[0].moves, Some(2));
@@ -126,6 +128,7 @@ fn a_game_without_moves_is_abandoned_with_a_move_count_of_zero() {
     h.app.apply(Effect::Start {
         variant: Variant::FreeCell,
         seed: Some(3),
+        undo_allowed: true,
     });
     assert_eq!(h.storage.borrow().history[0].moves, Some(0));
 }
@@ -138,6 +141,7 @@ fn a_saved_game_from_an_earlier_run_is_abandoned_by_a_new_game() {
             id: GameId(1),
             record,
             elapsed_ms: 4_000,
+            undo_allowed: true,
         }),
         history: vec![HistoryRow::open(1, KLONDIKE, 9)],
         ..MemoryStorage::new()
@@ -146,6 +150,7 @@ fn a_saved_game_from_an_earlier_run_is_abandoned_by_a_new_game() {
     h.app.apply(Effect::Start {
         variant: KLONDIKE,
         seed: Some(1),
+        undo_allowed: true,
     });
     let stored = h.storage.borrow();
     assert_eq!(
@@ -204,6 +209,7 @@ fn an_unrestorable_save_is_removed_and_closed_in_the_history() {
             id: GameId(1),
             record,
             elapsed_ms: 8_000,
+            undo_allowed: true,
         }),
         history: vec![HistoryRow::open(1, Variant::FreeCell, 99)],
         ..MemoryStorage::new()

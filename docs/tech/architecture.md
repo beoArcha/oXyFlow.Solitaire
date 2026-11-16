@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -183,9 +183,9 @@ pub struct GameRecord {                   // one history row
     pub started_at_ms: i64, pub finished_at_ms: Option<i64>,        // UTC, Unix milliseconds
     pub outcome: Option<Outcome>, pub elapsed_ms: Option<u64>,      // None while the game is open
     pub moves: Option<u32>,               // None for rows written before schema v2
-    pub undo_allowed: bool,               // always true until a "no undo" mode exists
+    pub undo_allowed: bool,               // the undo mode of the game (P3-12)
 }
-pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64 }
+pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64, pub undo_allowed: bool }  // serde default true
 pub enum StorageError {
     Io(std::io::Error),                              // file-level failure
     Corrupt { reason: String },                      // unreadable data (the app renames the file)
@@ -215,7 +215,8 @@ pub struct NullClipboard;                                // every copy fails wit
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `CopySeed(u64)`, `Quit`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
+  `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
+  `{ variant, seed: Option<u64>, undo_allowed: bool }`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, `audio_status`, `sound_styles`, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
@@ -249,6 +250,28 @@ pub struct NullClipboard;                                // every copy fails wit
   as `true`) switches it; `Action::Guide`, key `g`, and a click on the panel title toggle it through
   `Effect::Apply`. `layout::chrome_with(area, guide)` returns the panel only when the screen is at
   least `BOARD_MIN_WIDTH + GUIDE_WIDTH` = 130 columns wide, so the board always keeps 100 columns.
+- **Board counters, no-undo mode and seed copying (P3-12):** the header reads `variant | seed | time |
+  Moves: N` (`Session::moves_made()`; the win dialog shows the time and the moves too). The stock counter
+  comes from `Game::stock_status` (`screens/board/counters.rs`): Klondike "Turned over: N", Pyramid
+  "Pass N of M" (`recycles + 1` of `recycles + recycles_left + 1`), "Last pass (N of N)" when no recycle
+  is left, "No passes left" once the last pass has emptied the stock, Spider "Deals left: N", FreeCell
+  none. It is drawn in the row under the stock when neither a card nor a halo can reach that row (a
+  pyramid in a window taller than the board), else appended to the `Now:` line; the guide panel always
+  lists it. *No-undo mode:* every game is dealt with `undo_allowed` (`Effect::Start`, `Storage::start_game`,
+  `SavedGame`, `BoardScreen::begin`); the engine keeps the history for replay and restore, the board
+  refuses `Action::Undo` and `Action::Redo` (status `board.status.undo_off`, an illegal-move cue), leaves
+  them out of the action line, footer and guide panel and adds a "No undo" badge to the header.
+  `Settings::undo_allowed` (default `true`, an older value without the field loads as `true`) is the last
+  choice; the game selection (also behind "New game from seed" and `--seed`) shows `[ Undo: on|off ]`,
+  switched by `Action::Undo` (`u`) or a click, through `Effect::Apply`. A new game from the board keeps
+  the mode of the running game; "Play this seed again" in the statistics replays the row's own mode. The
+  saved game keeps the mode: `SavedGame::undo_allowed` has a serde default of `true`, and `SqliteStorage`
+  reads it from the `games` row of the saved game's id (a left join), so the database schema is unchanged.
+  *Copy the seed:* `Action::CopySeed`, key `c` (help group Game; the statistics screen's own `c` is the same
+  key and the same effect), and a click on the seed in the header, return `Effect::CopySeed`; `App::copy_seed`
+  announces the result on both the statistics screen and the board status line ("Seed N copied", or the
+  failure text with the seed). The statistics summary shows every group (up to 8 games × 2 modes = 16
+  rows) and leaves the history list at least 5 rows at the minimum size.
 - **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
   selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.

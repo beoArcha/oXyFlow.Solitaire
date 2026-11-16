@@ -20,6 +20,7 @@ fn saved_game(variant: Variant, seed: u64) -> SavedGame {
         id: crate::storage::GameId(7),
         record: Session::new(variant, seed).record(),
         elapsed_ms: 90_000,
+        undo_allowed: true,
     }
 }
 
@@ -225,11 +226,13 @@ fn a_typed_seed_bypasses_the_seed_source() {
     h.app.apply(Effect::Start {
         variant: Variant::FreeCell,
         seed: Some(7),
+        undo_allowed: true,
     });
     assert!(h.app.board().session().is_some_and(|s| s.seed() == 7));
     h.app.apply(Effect::Start {
         variant: Variant::FreeCell,
         seed: None,
+        undo_allowed: true,
     });
     assert!(h.app.board().session().is_some_and(|s| s.seed() == 42));
 }

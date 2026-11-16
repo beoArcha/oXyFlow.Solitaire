@@ -38,6 +38,7 @@ fn saved_game(id: GameId, seed: u64, elapsed_ms: u64) -> SavedGame {
         id,
         record: session.record(),
         elapsed_ms,
+        undo_allowed: true,
     }
 }
 
@@ -89,6 +90,31 @@ fn game_round_trip_replace_and_clear() {
     assert!(storage.clear_game().is_ok());
     assert!(matches!(storage.load_game(), Ok(None)));
     assert!(storage.clear_game().is_ok());
+}
+
+#[test]
+fn a_saved_game_keeps_the_undo_mode_of_its_game() {
+    let (_dir, paths) = temp_paths();
+    let mut storage = open(&paths);
+    for undo_allowed in [false, true] {
+        let id = storage.start_game(KLONDIKE, 7, undo_allowed);
+        assert!(id.is_ok());
+        let Ok(id) = id else {
+            return;
+        };
+        let saved = SavedGame {
+            undo_allowed,
+            ..saved_game(id, 7, 1_000)
+        };
+        assert!(storage.save_game(&saved).is_ok());
+        assert!(matches!(storage.load_game(), Ok(Some(ref g)) if *g == saved));
+        drop(storage);
+        storage = open(&paths);
+        assert!(
+            matches!(storage.load_game(), Ok(Some(ref g)) if g.undo_allowed == undo_allowed),
+            "undo_allowed = {undo_allowed} survives a reopen"
+        );
+    }
 }
 
 #[test]

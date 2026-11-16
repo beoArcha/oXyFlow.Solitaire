@@ -188,7 +188,11 @@ impl BoardScreen {
             .as_ref()
             .is_some_and(|session| session.game().legal_moves().is_empty());
         if stuck {
-            self.status = Some(status::NO_MOVES);
+            self.status = Some(if self.undo_allowed {
+                status::NO_MOVES
+            } else {
+                status::NO_MOVES_NO_UNDO
+            });
         }
         Effect::None
     }

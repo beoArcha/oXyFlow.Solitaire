@@ -37,10 +37,12 @@ pub struct ViewCtx<'a> {
 pub enum Effect {
     None,
     Goto(Screen),
-    /// Deal `variant`; `None` asks the application for a fresh seed.
+    /// Deal `variant`; `None` asks the application for a fresh seed. `undo_allowed` is the undo
+    /// mode of the new game.
     Start {
         variant: Variant,
         seed: Option<u64>,
+        undo_allowed: bool,
     },
     /// Restore the saved game.
     Resume,

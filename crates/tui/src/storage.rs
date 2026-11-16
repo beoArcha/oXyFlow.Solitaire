@@ -38,16 +38,23 @@ pub struct GameRecord {
     pub outcome: Option<Outcome>,
     pub elapsed_ms: Option<u64>,
     pub moves: Option<u32>,
-    /// Whether undo was available in this game; always `true` until a "no undo" mode exists.
+    /// Whether undo and redo were available in this game.
     pub undo_allowed: bool,
 }
 
-/// The game that resumes on the next start.
+const fn undo_allowed_by_default() -> bool {
+    true
+}
+
+/// The game that resumes on the next start. `undo_allowed` is the undo mode the game was dealt
+/// with; a save written before the mode existed loads as `true`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SavedGame {
     pub id: GameId,
     pub record: SessionRecord,
     pub elapsed_ms: u64,
+    #[serde(default = "undo_allowed_by_default")]
+    pub undo_allowed: bool,
 }
 
 /// Why a storage operation failed. A missing value is `Ok(None)`, never an error.
@@ -96,4 +103,35 @@ pub trait Storage {
     ) -> Result<(), StorageError>;
     /// Every recorded game in start order, oldest first.
     fn history(&self) -> Result<Vec<GameRecord>, StorageError>;
+}
+
+#[cfg(test)]
+mod tests {
+    use oxysol_core::{Session, Variant};
+
+    use super::*;
+
+    #[test]
+    fn a_save_written_before_the_undo_mode_existed_loads_with_undo_allowed() {
+        let saved = SavedGame {
+            id: GameId(1),
+            record: Session::new(Variant::FreeCell, 3).record(),
+            elapsed_ms: 10,
+            undo_allowed: false,
+        };
+        let text = toml::to_string(&saved).unwrap_or_default();
+        assert!(text.contains("undo_allowed = false"), "{text}");
+        let old: String = text
+            .lines()
+            .filter(|line| !line.starts_with("undo_allowed"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let loaded = toml::from_str::<SavedGame>(&old);
+        assert!(
+            matches!(loaded, Ok(ref game) if game.undo_allowed),
+            "{loaded:?}"
+        );
+        let current = toml::from_str::<SavedGame>(&text);
+        assert!(matches!(current, Ok(ref game) if *game == saved));
+    }
 }
