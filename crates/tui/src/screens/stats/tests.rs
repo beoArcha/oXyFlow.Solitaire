@@ -1,3 +1,4 @@
+mod focus;
 mod math;
 mod render;
 mod screen;

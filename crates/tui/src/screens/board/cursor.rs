@@ -5,6 +5,7 @@ use ratatui::layout::Rect;
 
 use crate::action::Action;
 use crate::layout::BoardGeometry;
+use crate::screens::focus::step;
 
 /// A direction of cursor movement on the board.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -132,6 +133,36 @@ pub(super) fn nearest(
         })
         .min_by_key(|(_, cost)| *cost)
         .map(|(pile, _)| pile)
+}
+
+/// Reading order of the piles: stock, waste, foundations, cells, tableau columns, then pyramid
+/// positions row by row.
+fn reading_key(pile: PileRef) -> (u8, u8, u8) {
+    match pile {
+        PileRef::Stock => (0, 0, 0),
+        PileRef::Waste => (1, 0, 0),
+        PileRef::Foundation(index) => (2, index, 0),
+        PileRef::Cell(index) => (3, index, 0),
+        PileRef::Tableau(index) => (4, index, 0),
+        PileRef::Pyramid { row, index } => (5, row, index),
+    }
+}
+
+/// The focusable pile after `from` in reading order (`forward`) or before it, wrapping at both
+/// ends. A cursor on a pile that is not focusable moves to the first or the last one.
+pub(super) fn cycle(piles: &[PileSnapshot], from: PileRef, forward: bool) -> Option<PileRef> {
+    let mut order: Vec<PileRef> = piles
+        .iter()
+        .filter(|snapshot| focusable(snapshot))
+        .map(|snapshot| snapshot.pile)
+        .collect();
+    order.sort_by_key(|pile| reading_key(*pile));
+    let next = match order.iter().position(|pile| *pile == from) {
+        Some(at) => step(at, order.len(), forward),
+        None if forward => 0,
+        None => order.len().saturating_sub(1),
+    };
+    order.get(next).copied()
 }
 
 /// The focusable pile closest to `from` in any direction; used when the cursor's own pile

@@ -2,7 +2,7 @@
 
 use oxysol_core::{Move, PileSnapshot};
 
-use super::cursor::{Cursor, Dir, closest, focusable, max_depth, nearest};
+use super::cursor::{Cursor, Dir, closest, cycle, focusable, max_depth, nearest};
 use super::{BoardScreen, status};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
@@ -22,6 +22,10 @@ impl BoardScreen {
         match action {
             Action::Up | Action::Down | Action::Left | Action::Right => {
                 self.navigate(action);
+                Effect::None
+            }
+            Action::FocusNext | Action::FocusPrevious => {
+                self.cycle_pile(action == Action::FocusNext);
                 Effect::None
             }
             Action::RunMore | Action::RunLess => {
@@ -98,6 +102,14 @@ impl BoardScreen {
             .geometry(&piles)
             .and_then(|geometry| nearest(&piles, &geometry, self.cursor.pile, dir));
         if let Some(pile) = target {
+            self.cursor = Cursor { pile, depth: 1 };
+        }
+    }
+
+    /// Tab and Shift+Tab: the cursor goes to the next or the previous pile in reading order.
+    fn cycle_pile(&mut self, forward: bool) {
+        let piles = self.piles();
+        if let Some(pile) = cycle(&piles, self.cursor.pile, forward) {
             self.cursor = Cursor { pile, depth: 1 };
         }
     }
