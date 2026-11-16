@@ -158,3 +158,6 @@ impl GameSelect {
         footer::draw(frame, footer_area, &FOOTER, ctx);
     }
 }
+
+#[cfg(test)]
+mod tests;

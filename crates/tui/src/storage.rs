@@ -104,3 +104,34 @@ pub trait Storage {
     /// Every recorded game in start order, oldest first.
     fn history(&self) -> Result<Vec<GameRecord>, StorageError>;
 }
+
+#[cfg(test)]
+mod tests {
+    use oxysol_core::{Session, Variant};
+
+    use super::*;
+
+    #[test]
+    fn a_save_written_before_the_undo_mode_existed_loads_with_undo_allowed() {
+        let saved = SavedGame {
+            id: GameId(1),
+            record: Session::new(Variant::FreeCell, 3).record(),
+            elapsed_ms: 10,
+            undo_allowed: false,
+        };
+        let text = toml::to_string(&saved).unwrap_or_default();
+        assert!(text.contains("undo_allowed = false"), "{text}");
+        let old: String = text
+            .lines()
+            .filter(|line| !line.starts_with("undo_allowed"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let loaded = toml::from_str::<SavedGame>(&old);
+        assert!(
+            matches!(loaded, Ok(ref game) if game.undo_allowed),
+            "{loaded:?}"
+        );
+        let current = toml::from_str::<SavedGame>(&text);
+        assert!(matches!(current, Ok(ref game) if *game == saved));
+    }
+}

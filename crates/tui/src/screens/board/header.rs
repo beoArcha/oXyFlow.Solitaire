@@ -97,3 +97,63 @@ impl Header {
         .centered()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use oxysol_core::{DrawCount, Variant};
+
+    use super::*;
+    use crate::i18n::{Locale, set_locale};
+
+    fn header(seed: u64, undo_allowed: bool) -> Header {
+        let session = Session::new(Variant::Klondike(DrawCount::One), seed);
+        Header::new(&session, Duration::from_secs(75), undo_allowed)
+    }
+
+    #[test]
+    fn the_seed_is_found_after_the_game_name_even_when_the_name_holds_digits() {
+        for seed in [1, 42, u64::MAX] {
+            let header = header(seed, true);
+            let text: Vec<char> = header.text.chars().collect();
+            let spelled: String = text[header.seed_start..header.seed_start + header.seed_len]
+                .iter()
+                .collect();
+            assert_eq!(spelled, seed.to_string(), "{}", header.text);
+        }
+    }
+
+    #[test]
+    fn the_seed_cells_are_where_the_centered_line_draws_the_seed() {
+        for undo_allowed in [true, false] {
+            for width in [100_u16, 101, 120] {
+                let header = header(42, undo_allowed);
+                let area = Rect::new(0, 0, width, 1);
+                let mut buffer = ratatui::buffer::Buffer::empty(area);
+                ratatui::widgets::Widget::render(
+                    ratatui::widgets::Paragraph::new(header.line(Style::default())),
+                    area,
+                    &mut buffer,
+                );
+                let cells = header.seed_cells(area);
+                let drawn: String = (cells.left()..cells.right())
+                    .map(|x| buffer[(x, 0)].symbol().to_owned())
+                    .collect();
+                assert_eq!(drawn, "42", "width {width}");
+            }
+        }
+    }
+
+    #[test]
+    fn the_header_names_moves_and_the_badge_in_both_languages() {
+        for (locale, moves, badge) in [
+            (Locale::EnUs, "Moves: 0", "No undo"),
+            (Locale::PlPl, "Ruchy: 0", "Bez cofania"),
+        ] {
+            set_locale(locale);
+            assert!(header(7, true).text.contains(moves));
+            assert!(!header(7, true).text.contains(badge));
+            assert!(header(7, false).text.contains(badge));
+        }
+        set_locale(Locale::EnUs);
+    }
+}
