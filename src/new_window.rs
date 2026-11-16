@@ -20,6 +20,7 @@ const CREATE_NEW_CONSOLE: u32 = 0x0000_0010;
 const TERMINAL_VARIABLE: &str = "TERMINAL";
 const DASH_E: &str = "-e";
 const DOUBLE_DASH: &str = "--";
+const START: &str = "start";
 const OSASCRIPT: &str = "osascript";
 
 /// The new window could not be opened.
@@ -118,11 +119,9 @@ pub fn forwarded(args: &[String]) -> Vec<String> {
         .collect()
 }
 
-fn with_separator(program: &str, separator: &str, context: &Context) -> Plan {
-    let mut args = vec![
-        OsString::from(separator),
-        context.exe.clone().into_os_string(),
-    ];
+fn linux_plan(program: &str, prefix: &[&str], context: &Context) -> Plan {
+    let mut args: Vec<OsString> = prefix.iter().map(OsString::from).collect();
+    args.push(context.exe.clone().into_os_string());
     args.extend(context.args.iter().map(OsString::from));
     Plan {
         program: OsString::from(program),
@@ -136,15 +135,21 @@ fn linux_plans(context: &Context) -> Vec<Plan> {
         .terminal
         .as_deref()
         .filter(|name| !name.trim().is_empty())
-        .map(|name| with_separator(name, DASH_E, context));
-    let others = [
-        ("x-terminal-emulator", DASH_E),
-        ("gnome-terminal", DOUBLE_DASH),
-        ("konsole", DASH_E),
-        ("xterm", DASH_E),
-    ]
-    .map(|(program, separator)| with_separator(program, separator, context));
-    from_environment.into_iter().chain(others).collect()
+        .map(|name| linux_plan(name, &[DASH_E], context));
+    let others: [(&str, &[&str]); 8] = [
+        ("x-terminal-emulator", &[DASH_E]),
+        ("gnome-terminal", &[DOUBLE_DASH]),
+        ("konsole", &[DASH_E]),
+        ("alacritty", &[DASH_E]),
+        ("kitty", &[]),
+        ("wezterm", &[START, DOUBLE_DASH]),
+        ("foot", &[]),
+        ("xterm", &[DASH_E]),
+    ];
+    from_environment
+        .into_iter()
+        .chain(others.map(|(program, prefix)| linux_plan(program, prefix, context)))
+        .collect()
 }
 
 /// Quotes `word` for a POSIX shell.

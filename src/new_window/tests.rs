@@ -60,28 +60,53 @@ fn windows_starts_the_executable_itself_in_a_new_console() {
 #[test]
 fn linux_tries_the_environment_terminal_first_and_then_the_known_ones_in_order() {
     let mut ctx = context(HostOs::Linux, "/opt/oxysol", &["--seed", "5"]);
-    ctx.terminal = Some("alacritty".to_owned());
+    ctx.terminal = Some("custom-term".to_owned());
     let plans = plans(&ctx);
     let programs: Vec<String> = plans.iter().map(Plan::label).collect();
     assert_eq!(
         programs,
         strings(&[
-            "alacritty",
+            "custom-term",
             "x-terminal-emulator",
             "gnome-terminal",
             "konsole",
-            "xterm"
+            "alacritty",
+            "kitty",
+            "wezterm",
+            "foot",
+            "xterm",
         ])
     );
     assert_eq!(
         plans[0].args,
         os_strings(&["-e", "/opt/oxysol", "--seed", "5"])
     );
-    assert_eq!(
-        plans[2].args,
-        os_strings(&["--", "/opt/oxysol", "--seed", "5"])
-    );
     assert!(plans.iter().all(|plan| !plan.new_console));
+}
+
+#[test]
+fn linux_constructs_the_exact_command_line_for_each_terminal() {
+    let ctx = context(HostOs::Linux, "/opt/oxysol", &["--seed", "5"]);
+    let plans = plans(&ctx);
+    let expected = [
+        (
+            "x-terminal-emulator",
+            vec!["-e", "/opt/oxysol", "--seed", "5"],
+        ),
+        ("gnome-terminal", vec!["--", "/opt/oxysol", "--seed", "5"]),
+        ("konsole", vec!["-e", "/opt/oxysol", "--seed", "5"]),
+        ("alacritty", vec!["-e", "/opt/oxysol", "--seed", "5"]),
+        ("kitty", vec!["/opt/oxysol", "--seed", "5"]),
+        ("wezterm", vec!["start", "--", "/opt/oxysol", "--seed", "5"]),
+        ("foot", vec!["/opt/oxysol", "--seed", "5"]),
+        ("xterm", vec!["-e", "/opt/oxysol", "--seed", "5"]),
+    ];
+    assert_eq!(plans.len(), expected.len());
+    for (plan, (program, args)) in plans.iter().zip(expected) {
+        assert_eq!(plan.program, OsString::from(program));
+        assert_eq!(plan.args, os_strings(&args));
+        assert!(!plan.new_console);
+    }
 }
 
 #[test]
@@ -94,7 +119,7 @@ fn linux_skips_an_unset_or_blank_terminal_variable() {
             programs.first().map(String::as_str),
             Some("x-terminal-emulator")
         );
-        assert_eq!(programs.len(), 4);
+        assert_eq!(programs.len(), 8);
     }
 }
 
