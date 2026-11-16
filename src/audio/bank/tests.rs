@@ -94,3 +94,30 @@ fn every_embedded_style_loads_at_the_output_rate() {
         assert!(result.is_ok(), "sound style {} does not load", style.id);
     }
 }
+
+#[test]
+fn the_style_list_offers_default_and_retro_with_their_names() {
+    let styles = style_list();
+    let named = |id: &str, name: &str| StyleInfo {
+        id: id.to_owned(),
+        name: name.to_owned(),
+    };
+    assert!(styles.contains(&named("default", "Default")));
+    assert!(styles.contains(&named("retro", "Retro")));
+}
+
+#[test]
+fn a_style_without_a_name_is_listed_by_its_id() {
+    let without_name = style_info("custom", Some(MANIFEST_TEXT.as_bytes()));
+    assert_eq!(without_name.name, "custom");
+    let named = style_info(
+        "custom",
+        Some(
+            b"name = \"Own\"
+",
+        ),
+    );
+    assert_eq!(named.name, "Own");
+    assert_eq!(style_info("custom", None).name, "custom");
+    assert_eq!(style_info("custom", Some(b"name = [")).name, "custom");
+}

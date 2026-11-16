@@ -14,6 +14,7 @@ use std::time::Instant;
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
 use crate::app::{Modal, Screen};
+use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
 use crate::settings::Settings;
@@ -25,7 +26,8 @@ pub struct ViewCtx<'a> {
     pub glyphs: &'a Glyphs,
     pub settings: &'a Settings,
     pub caps: &'a TerminalCaps,
-    pub audio_available: bool,
+    pub audio_status: AudioStatus,
+    pub sound_styles: &'a [StyleInfo],
     pub has_saved_game: bool,
     pub now: Instant,
 }

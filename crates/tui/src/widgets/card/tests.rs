@@ -7,6 +7,7 @@ use ratatui::layout::{Position, Rect};
 
 use super::art::{Scale, suit_art};
 use super::*;
+use crate::audio::AudioStatus;
 use crate::glyphs::{Glyphs, is_wgl4};
 use crate::screens::ViewCtx;
 use crate::settings::{GlyphMode, Settings};
@@ -38,7 +39,8 @@ impl Fixture {
             glyphs: &self.glyphs,
             settings: &self.settings,
             caps: &TRUE_COLOR,
-            audio_available: false,
+            audio_status: AudioStatus::NoDevice,
+            sound_styles: &[],
             has_saved_game: false,
             now: Instant::now(),
         }

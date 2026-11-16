@@ -6,15 +6,17 @@ use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 
+use super::changed;
 use crate::action::Action;
+use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::settings::SettingsScreen;
-use crate::screens::settings::options::{FIELDS, Field, Step, changed};
+use crate::screens::settings::options::{FIELDS, Field, Step};
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
-use crate::test_support::TRUE_COLOR;
+use crate::test_support::{TRUE_COLOR, sound_styles};
 use crate::theme::Theme;
 
 struct Fixture {
@@ -22,6 +24,7 @@ struct Fixture {
     glyphs: Glyphs,
     settings: Settings,
     caps: TerminalCaps,
+    sound_styles: Vec<StyleInfo>,
 }
 
 impl Fixture {
@@ -31,16 +34,18 @@ impl Fixture {
             glyphs: Glyphs::new(settings.glyph_mode),
             settings,
             caps,
+            sound_styles: sound_styles(),
         }
     }
 
-    fn ctx(&self, audio_available: bool) -> ViewCtx<'_> {
+    fn ctx(&self, audio_status: AudioStatus) -> ViewCtx<'_> {
         ViewCtx {
             theme: &self.theme,
             glyphs: &self.glyphs,
             settings: &self.settings,
             caps: &self.caps,
-            audio_available,
+            audio_status,
+            sound_styles: &self.sound_styles,
             has_saved_game: false,
             now: Instant::now(),
         }
@@ -98,7 +103,7 @@ fn row_at(lines: &[String], field: Field) -> (u16, u16) {
 #[test]
 fn a_click_changes_the_clicked_row_forward() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
-    let ctx = fixture.ctx(true);
+    let ctx = fixture.ctx(AudioStatus::Ready);
     let mut screen = SettingsScreen::new();
     let lines = render(&mut screen, &ctx);
     let (column, row) = row_at(&lines, Field::Theme);
@@ -112,7 +117,7 @@ fn a_click_changes_the_clicked_row_forward() {
 #[test]
 fn every_row_changes_by_mouse() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
-    let ctx = fixture.ctx(true);
+    let ctx = fixture.ctx(AudioStatus::Ready);
     for field in FIELDS {
         let mut screen = SettingsScreen::new();
         let lines = render(&mut screen, &ctx);
@@ -129,10 +134,14 @@ fn every_row_changes_by_mouse() {
 #[test]
 fn sound_rows_do_nothing_without_audio() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
-    let ctx = fixture.ctx(false);
+    let ctx = fixture.ctx(AudioStatus::NoDevice);
     let mut screen = SettingsScreen::new();
     let lines = render(&mut screen, &ctx);
-    assert!(lines.iter().any(|text| text.contains("no audio device")));
+    assert!(
+        lines
+            .iter()
+            .any(|text| text.contains("no working audio device"))
+    );
     let mut clicked = SettingsScreen::new();
     let lines = render(&mut clicked, &ctx);
     let (column, row) = row_at(&lines, Field::Music);
@@ -156,21 +165,38 @@ fn sound_rows_do_nothing_without_audio() {
 
 #[test]
 fn the_reason_names_a_remote_session() {
-    let caps = TerminalCaps {
-        remote: true,
-        ..TRUE_COLOR
-    };
-    let fixture = Fixture::new(Settings::default(), caps);
+    let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(false));
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::RemoteSession));
     assert!(lines.iter().any(|text| text.contains("remote session")));
+}
+
+#[test]
+fn a_build_without_sound_says_sound_is_not_included() {
+    let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
+    let mut screen = SettingsScreen::new();
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::NotBuilt));
+    assert!(
+        lines
+            .iter()
+            .any(|text| text.contains("Sound is not included in this build."))
+    );
+    assert!(!lines.iter().any(|text| text.contains("audio device")));
+}
+
+#[test]
+fn the_reason_is_not_drawn_while_sound_is_available() {
+    let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
+    let mut screen = SettingsScreen::new();
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
+    assert!(!lines.iter().any(|text| text.contains("Sound is")));
 }
 
 #[test]
 fn unavailable_rows_are_marked_in_their_text() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(false));
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::NoDevice));
     assert!(
         lines
             .iter()
@@ -188,7 +214,7 @@ fn unavailable_rows_are_marked_in_their_text() {
 fn every_row_is_drawn_in_both_locales() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(true));
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
     for field in FIELDS {
         row_at(&lines, field);
     }
@@ -198,7 +224,7 @@ fn every_row_is_drawn_in_both_locales() {
         ..Settings::default()
     };
     let fixture = Fixture::new(polish, TRUE_COLOR);
-    let lines = render(&mut screen, &fixture.ctx(true));
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
     let expected = format!(
         "{}: {}",
         t("settings.row.language"),

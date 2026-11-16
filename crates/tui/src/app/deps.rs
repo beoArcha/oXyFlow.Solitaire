@@ -1,6 +1,6 @@
 //! The services `App` takes from the outside world.
 
-use crate::audio::Audio;
+use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::clipboard::Clipboard;
 use crate::storage::Storage;
@@ -15,4 +15,6 @@ pub struct Deps {
     pub seeds: Box<dyn FnMut() -> u64>,
     /// A seed from the command line: the main menu opens on the games dealt from it.
     pub start_seed: Option<u64>,
+    /// The sound styles the settings offer, in order; the binary embeds them.
+    pub sound_styles: Vec<StyleInfo>,
 }

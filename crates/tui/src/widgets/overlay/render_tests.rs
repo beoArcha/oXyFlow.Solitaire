@@ -8,6 +8,7 @@ use ratatui::style::Modifier;
 
 use super::{HowToPlay, Rules, draw};
 use crate::app::Modal;
+use crate::audio::AudioStatus;
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
 use crate::i18n::{self, Locale};
@@ -54,7 +55,8 @@ fn render(
         glyphs: &glyphs,
         settings: &settings,
         caps: &caps,
-        audio_available: false,
+        audio_status: AudioStatus::NoDevice,
+        sound_styles: &[],
         has_saved_game: false,
         now,
     };
