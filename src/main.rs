@@ -6,6 +6,7 @@ use std::process::ExitCode;
 
 use oxysol::audio;
 use oxysol::cli::{self, Cli, ColorArg};
+use oxysol::clipboard::SystemClipboard;
 use oxysol::console;
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
@@ -72,6 +73,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
     let deps = Deps {
         storage: Box::new(storage),
         audio: audio::create(&caps),
+        clipboard: Box::new(SystemClipboard::new(caps.remote)),
         caps,
         seeds: Box::new(seed::fresh),
         start_seed: args.seed,

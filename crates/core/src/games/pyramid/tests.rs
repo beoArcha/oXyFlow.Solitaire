@@ -5,6 +5,7 @@ mod deal;
 mod hints;
 mod legal;
 mod rules;
+mod stock;
 
 use super::{Pyramid, passes, value};
 use crate::card::{Card, CardId, Rank, Suit};

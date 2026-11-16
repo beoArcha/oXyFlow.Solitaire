@@ -10,8 +10,8 @@ use oxysol_core::{DrawCount, PileSnapshot, Session, Variant};
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::{
-    App, AudioStatus, Deps, GameId, Input, Modal, NullAudio, Outcome, SavedGame, Screen, Settings,
-    Storage, StorageError,
+    App, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio, NullClipboard, Outcome,
+    SavedGame, Screen, Settings, Storage, StorageError,
 };
 use rusqlite::Connection;
 use tempfile::TempDir;
@@ -55,6 +55,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
     let app = App::new(Deps {
         storage,
         audio: Box::new(NullAudio::new(AudioStatus::NotBuilt)),
+        clipboard: Box::new(NullClipboard),
         caps: CAPS,
         seeds: Box::new(|| SEED),
         start_seed: None,
@@ -265,8 +266,13 @@ impl Storage for FailingSaves {
         self.0.clear_game()
     }
 
-    fn start_game(&mut self, variant: Variant, seed: u64) -> Result<GameId, StorageError> {
-        self.0.start_game(variant, seed)
+    fn start_game(
+        &mut self,
+        variant: Variant,
+        seed: u64,
+        undo_allowed: bool,
+    ) -> Result<GameId, StorageError> {
+        self.0.start_game(variant, seed, undo_allowed)
     }
 
     fn finish_game(
@@ -274,8 +280,13 @@ impl Storage for FailingSaves {
         id: GameId,
         outcome: Outcome,
         elapsed_ms: u64,
+        moves: u32,
     ) -> Result<(), StorageError> {
-        self.0.finish_game(id, outcome, elapsed_ms)
+        self.0.finish_game(id, outcome, elapsed_ms, moves)
+    }
+
+    fn history(&self) -> Result<Vec<GameRecord>, StorageError> {
+        self.0.history()
     }
 }
 

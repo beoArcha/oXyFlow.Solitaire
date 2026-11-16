@@ -76,14 +76,15 @@ macro_rules! areas {
             area!($locale, "cli"),
             area!($locale, "audio"),
             area!($locale, "rules"),
+            area!($locale, "stats"),
         ]
     };
 }
 
-const EN_US: [(&str, &str); 9] = areas!("en-US");
-const PL_PL: [(&str, &str); 9] = areas!("pl-PL");
+const EN_US: [(&str, &str); 10] = areas!("en-US");
+const PL_PL: [(&str, &str); 10] = areas!("pl-PL");
 
-fn sources(locale: Locale) -> &'static [(&'static str, &'static str); 9] {
+fn sources(locale: Locale) -> &'static [(&'static str, &'static str); 10] {
     match locale {
         Locale::EnUs => &EN_US,
         Locale::PlPl => &PL_PL,

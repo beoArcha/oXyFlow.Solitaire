@@ -25,7 +25,7 @@ fn value(field: Field, settings: &Settings) -> String {
 }
 
 /// Position of Settings in the main menu without a saved game.
-const SETTINGS_ITEM: usize = 2;
+const SETTINGS_ITEM: usize = 3;
 
 fn open_settings() -> Harness {
     let mut h = Harness::new();

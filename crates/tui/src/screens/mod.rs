@@ -7,6 +7,7 @@ pub mod board;
 pub mod game_select;
 pub mod main_menu;
 pub mod settings;
+pub mod stats;
 
 use std::time::Instant;
 
@@ -50,6 +51,8 @@ pub enum Effect {
     Open(Modal),
     /// Open the "How to play" window on the game being played, or on Klondike.
     HowToPlay,
+    /// Copy the seed to the clipboard and announce the result.
+    CopySeed(u64),
     Quit,
 }
 

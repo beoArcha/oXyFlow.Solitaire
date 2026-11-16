@@ -40,6 +40,10 @@ fn every_item_is_reached_by_keyboard() {
     h.press(KeyCode::Esc);
     h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Stats);
+    h.press(KeyCode::Esc);
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Esc);
     h.press(KeyCode::Down);
@@ -59,6 +63,7 @@ fn every_item_is_reached_by_keyboard() {
 fn every_item_is_reached_by_mouse() {
     for label in [
         "New game from seed",
+        "Statistics",
         "Settings",
         "How to play",
         "Help",
@@ -68,6 +73,7 @@ fn every_item_is_reached_by_mouse() {
         let (column, row) = h.find(label).unwrap_or_default();
         h.click(column, row);
         match label {
+            "Statistics" => assert_eq!(h.app.screen(), Screen::Stats),
             "Settings" => assert_eq!(h.app.screen(), Screen::Settings),
             "How to play" => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
             "Help" => assert!(matches!(h.app.modal(), Some(Modal::Help))),

@@ -9,7 +9,7 @@ mod tests;
 
 use crate::card::Card;
 use crate::deck;
-use crate::game::{DrawCount, Game};
+use crate::game::{DrawCount, Game, StockStatus};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot};
@@ -26,7 +26,8 @@ struct Column {
     up: Vec<Card>,
 }
 
-/// A Klondike game. The top card of every pile is the last element of its vector.
+/// A Klondike game. The top card of every pile is the last element of its vector. `recycles`
+/// counts the waste turned back into the stock; the stock itself has no pass limit.
 #[derive(Debug, Clone)]
 pub(crate) struct Klondike {
     draw: DrawCount,
@@ -34,6 +35,7 @@ pub(crate) struct Klondike {
     waste: Vec<Card>,
     foundations: [Vec<Card>; FOUNDATIONS],
     columns: [Column; COLUMNS],
+    recycles: u32,
 }
 
 impl Klondike {
@@ -44,6 +46,7 @@ impl Klondike {
             waste: Vec::new(),
             foundations: Default::default(),
             columns: Default::default(),
+            recycles: 0,
         }
     }
 
@@ -102,5 +105,13 @@ impl Game for Klondike {
         piles
             .extend(columns.map(|(i, c)| snapshot(PileRef::Tableau(index_ref(i)), &c.down, &c.up)));
         piles
+    }
+
+    fn stock_status(&self) -> Option<StockStatus> {
+        Some(StockStatus {
+            recycles: self.recycles,
+            recycles_left: None,
+            deals_left: None,
+        })
     }
 }

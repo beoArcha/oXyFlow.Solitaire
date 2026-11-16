@@ -35,6 +35,22 @@ pub enum PyramidRules {
     Classic,
 }
 
+/// The state of a game's stock, read-only. A recycle turns the waste back into the stock and
+/// completes one pass. The first traversal is pass 1 and is in progress until its recycle, so the
+/// pass in progress is `recycles + 1`. Pyramid's "3 passes" (Relaxed) are the first traversal plus
+/// 2 recycles, so its `recycles_left` is 2 right after the deal.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct StockStatus {
+    /// Recycles made so far: 0 right after the deal, +1 for each waste turned back into the stock.
+    /// A rejected recycle does not count. Spider never recycles, so it is always 0.
+    pub recycles: u32,
+    /// Recycles still allowed. `None` when the stock is unlimited (Klondike). `Some(0)` when no
+    /// recycle can happen at all (Spider) or the last allowed one has been made (Pyramid).
+    pub recycles_left: Option<u32>,
+    /// Spider only: the row deals still in the stock, one per 10 cards. `None` for other games.
+    pub deals_left: Option<u32>,
+}
+
 /// A playable game with its options. Serialized with stable snake_case names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -76,6 +92,9 @@ pub trait Game {
 
     /// Read-only view of every pile, cards bottom to top.
     fn piles(&self) -> Vec<PileSnapshot>;
+
+    /// The stock counters, or `None` for a game without a stock (FreeCell).
+    fn stock_status(&self) -> Option<StockStatus>;
 }
 
 /// Deals `variant` from `seed`. The same pair always gives the same deal.

@@ -11,6 +11,7 @@ use ratatui::widgets::Block;
 use crate::action::Action;
 use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
+use crate::clipboard::Clipboard;
 use crate::glyphs::Glyphs;
 use crate::i18n;
 use crate::input::{Input, action_for_key, is_text_key};
@@ -18,6 +19,7 @@ use crate::screens::board::BoardScreen;
 use crate::screens::game_select::GameSelect;
 use crate::screens::main_menu::MainMenu;
 use crate::screens::settings::SettingsScreen;
+use crate::screens::stats::StatsScreen;
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::{DEFAULT_SOUND_STYLE, Settings};
 use crate::storage::{SavedGame, Storage, StorageError};
@@ -25,20 +27,8 @@ use crate::theme::Theme;
 use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
 
+pub use deps::Deps;
 pub use modal::Modal;
-
-/// Everything the application needs from the outside world.
-pub struct Deps {
-    pub storage: Box<dyn Storage>,
-    pub audio: Box<dyn Audio>,
-    pub caps: TerminalCaps,
-    /// Fresh seed for "New game"; a typed seed bypasses it.
-    pub seeds: Box<dyn FnMut() -> u64>,
-    /// A seed from the command line: the main menu opens on the games dealt from it.
-    pub start_seed: Option<u64>,
-    /// The sound styles the settings offer, in order; the binary embeds them.
-    pub sound_styles: Vec<StyleInfo>,
-}
 
 /// The screen behind the modal layer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -47,6 +37,7 @@ pub enum Screen {
     GameSelect,
     Board,
     Settings,
+    Stats,
 }
 
 macro_rules! view_ctx {
@@ -68,6 +59,7 @@ macro_rules! view_ctx {
 pub struct App {
     storage: Box<dyn Storage>,
     audio: Box<dyn Audio>,
+    clipboard: Box<dyn Clipboard>,
     seeds: Box<dyn FnMut() -> u64>,
     caps: TerminalCaps,
     sound_styles: Vec<StyleInfo>,
@@ -81,6 +73,7 @@ pub struct App {
     menu: MainMenu,
     select: GameSelect,
     settings_screen: SettingsScreen,
+    stats: StatsScreen,
     board: BoardScreen,
     area: Option<(u16, u16)>,
     now: Instant,
@@ -95,6 +88,7 @@ impl App {
         let Deps {
             storage,
             audio,
+            clipboard,
             caps,
             seeds,
             start_seed,
@@ -104,6 +98,7 @@ impl App {
         let mut app = Self {
             storage,
             audio,
+            clipboard,
             seeds,
             caps,
             sound_styles,
@@ -117,6 +112,7 @@ impl App {
             menu: start_seed.map_or_else(MainMenu::new, MainMenu::for_seed),
             select: GameSelect::new(),
             settings_screen: SettingsScreen::new(),
+            stats: StatsScreen::new(),
             board: BoardScreen::new(),
             area: None,
             now: Instant::now(),
@@ -260,6 +256,7 @@ impl App {
             Screen::GameSelect => self.select.handle(&key, action, &ctx),
             Screen::Board => self.board.handle(&key, action, &ctx),
             Screen::Settings => self.settings_screen.handle(&key, action, &ctx),
+            Screen::Stats => self.stats.handle(&key, action),
         }
     }
 
@@ -267,7 +264,7 @@ impl App {
     fn captures_text(&self) -> bool {
         match self.screen {
             Screen::MainMenu => self.menu.captures_text(),
-            Screen::GameSelect | Screen::Board | Screen::Settings => false,
+            Screen::GameSelect | Screen::Board | Screen::Settings | Screen::Stats => false,
         }
     }
 
@@ -322,6 +319,7 @@ impl App {
             Screen::GameSelect => self.select.handle_mouse(event, &ctx),
             Screen::Board => self.board.handle_mouse(event, &ctx),
             Screen::Settings => self.settings_screen.handle_mouse(event, &ctx),
+            Screen::Stats => self.stats.handle_mouse(event),
         }
     }
 
@@ -341,6 +339,7 @@ impl App {
             Screen::GameSelect => self.select.draw(frame, area, &ctx),
             Screen::Board => self.board.draw(frame, area, &ctx),
             Screen::Settings => self.settings_screen.draw(frame, area, &ctx),
+            Screen::Stats => self.stats.draw(frame, area, &ctx),
         }
         if let Some(modal) = &self.modal {
             overlay::draw(frame, area, modal, &self.board, &ctx);
@@ -348,6 +347,7 @@ impl App {
     }
 }
 
+mod deps;
 mod effects;
 mod modal;
 mod persist;

@@ -38,6 +38,7 @@ impl Klondike {
             }
             self.stock = std::mem::take(&mut self.waste);
             self.stock.reverse();
+            self.recycles = self.recycles.saturating_add(1);
             return Ok(());
         }
         let from = self.stock.len().saturating_sub(self.draw_size());

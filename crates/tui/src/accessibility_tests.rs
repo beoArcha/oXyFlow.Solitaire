@@ -99,7 +99,7 @@ fn every_action_has_a_key_and_a_help_line() {
 #[test]
 fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
     let labels = rows(&mut Harness::new());
-    assert_eq!(labels.len(), 6, "{labels:?}");
+    assert_eq!(labels.len(), 7, "{labels:?}");
     for index in 0..labels.len() {
         let mut h = menu_at(index);
         h.press(KeyCode::Enter);
@@ -110,9 +110,10 @@ fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
                 h.type_char('2');
                 assert!(h.text().contains("42"), "seed field takes digits");
             }
-            2 => assert_eq!(h.app.screen(), Screen::Settings),
-            3 => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
-            4 => assert!(matches!(h.app.modal(), Some(Modal::Help))),
+            2 => assert_eq!(h.app.screen(), Screen::Stats),
+            3 => assert_eq!(h.app.screen(), Screen::Settings),
+            4 => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
+            5 => assert!(matches!(h.app.modal(), Some(Modal::Help))),
             _ => assert!(h.app.should_quit()),
         }
     }
@@ -152,7 +153,7 @@ fn a_seed_typed_by_keyboard_deals_the_chosen_variant() {
 
 #[test]
 fn every_settings_row_is_reached_by_keyboard() {
-    let mut h = menu_at(2);
+    let mut h = menu_at(3);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);

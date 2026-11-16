@@ -2,15 +2,15 @@
 //! `Fault`; the trait methods convert it to `StorageError` at the boundary.
 
 use oxysol_core::{SessionRecord, Variant};
-use oxysol_tui::{GameId, Outcome, SavedGame, Settings, Storage, StorageError};
+use oxysol_tui::{GameId, GameRecord, Outcome, SavedGame, Settings, Storage, StorageError};
 use rusqlite::{OptionalExtension, params};
 
-use super::SqliteStorage;
 use super::convert::{
-    millis_from_column, millis_to_column, now_millis, outcome_to_column, seed_to_column,
-    variant_to_column,
+    count_to_column, millis_from_column, millis_to_column, now_millis, outcome_to_column,
+    seed_to_column, variant_to_column,
 };
 use super::error::Fault;
+use super::{SqliteStorage, history};
 
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -82,26 +82,44 @@ impl SqliteStorage {
         Ok(())
     }
 
-    fn insert_game(&mut self, variant: Variant, seed: u64) -> Result<GameId, Fault> {
+    fn insert_game(
+        &mut self,
+        variant: Variant,
+        seed: u64,
+        undo_allowed: bool,
+    ) -> Result<GameId, Fault> {
         let variant = variant_to_column(variant)?;
         let tx = self.conn.transaction()?;
         tx.execute(
-            "INSERT INTO games (variant, seed, started_at) VALUES (?1, ?2, ?3)",
-            params![variant, seed_to_column(seed), now_millis()],
+            "INSERT INTO games (variant, seed, started_at, undo_allowed) VALUES (?1, ?2, ?3, ?4)",
+            params![
+                variant,
+                seed_to_column(seed),
+                now_millis(),
+                i64::from(undo_allowed)
+            ],
         )?;
         let id = tx.last_insert_rowid();
         tx.commit()?;
         Ok(GameId(id))
     }
 
-    fn close_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64) -> Result<(), Fault> {
+    fn close_game(
+        &mut self,
+        id: GameId,
+        outcome: Outcome,
+        elapsed_ms: u64,
+        moves: u32,
+    ) -> Result<(), Fault> {
         let tx = self.conn.transaction()?;
         let changed = tx.execute(
-            "UPDATE games SET outcome = ?1, finished_at = ?2, elapsed_ms = ?3 WHERE id = ?4",
+            "UPDATE games SET outcome = ?1, finished_at = ?2, elapsed_ms = ?3, moves = ?4
+             WHERE id = ?5",
             params![
                 outcome_to_column(outcome),
                 now_millis(),
                 millis_to_column(elapsed_ms),
+                count_to_column(moves),
                 id.0
             ],
         )?;
@@ -134,8 +152,13 @@ impl Storage for SqliteStorage {
         Ok(self.remove_game()?)
     }
 
-    fn start_game(&mut self, variant: Variant, seed: u64) -> Result<GameId, StorageError> {
-        Ok(self.insert_game(variant, seed)?)
+    fn start_game(
+        &mut self,
+        variant: Variant,
+        seed: u64,
+        undo_allowed: bool,
+    ) -> Result<GameId, StorageError> {
+        Ok(self.insert_game(variant, seed, undo_allowed)?)
     }
 
     fn finish_game(
@@ -143,7 +166,12 @@ impl Storage for SqliteStorage {
         id: GameId,
         outcome: Outcome,
         elapsed_ms: u64,
+        moves: u32,
     ) -> Result<(), StorageError> {
-        Ok(self.close_game(id, outcome, elapsed_ms)?)
+        Ok(self.close_game(id, outcome, elapsed_ms, moves)?)
+    }
+
+    fn history(&self) -> Result<Vec<GameRecord>, StorageError> {
+        Ok(history::read_all(&self.conn)?)
     }
 }

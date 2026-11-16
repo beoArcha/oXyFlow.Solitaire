@@ -1,6 +1,6 @@
 use super::*;
 use crate::card::{Card, CardId, Rank, Suit};
-use crate::game::DrawCount;
+use crate::game::{DrawCount, StockStatus};
 use crate::pile::{PileRef, PileSnapshot, TableCard};
 
 const LIMIT: u16 = 6;
@@ -50,6 +50,10 @@ impl Game for Counter {
             pile: PileRef::Waste,
             cards,
         }]
+    }
+
+    fn stock_status(&self) -> Option<StockStatus> {
+        None
     }
 }
 
@@ -139,6 +143,20 @@ fn can_undo_and_can_redo_follow_the_cursor() {
     session.restart();
     assert!(!session.can_undo());
     assert!(!session.can_redo());
+}
+
+#[test]
+fn moves_made_counts_applied_moves_and_follows_undo_and_redo() {
+    let mut session = session(0);
+    assert_eq!(session.moves_made(), 0);
+    play(&mut session, 3);
+    assert_eq!(session.moves_made(), 3);
+    assert!(session.undo());
+    assert_eq!(session.moves_made(), 2);
+    assert!(session.redo());
+    assert_eq!(session.moves_made(), 3);
+    session.restart();
+    assert_eq!(session.moves_made(), 0);
 }
 
 #[test]
