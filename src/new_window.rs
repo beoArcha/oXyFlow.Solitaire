@@ -119,7 +119,10 @@ pub fn forwarded(args: &[String]) -> Vec<String> {
 }
 
 fn with_separator(program: &str, separator: &str, context: &Context) -> Plan {
-    let mut args = vec![OsString::from(separator), context.exe.clone().into_os_string()];
+    let mut args = vec![
+        OsString::from(separator),
+        context.exe.clone().into_os_string(),
+    ];
     args.extend(context.args.iter().map(OsString::from));
     Plan {
         program: OsString::from(program),

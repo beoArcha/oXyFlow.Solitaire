@@ -24,7 +24,15 @@ fn context(os: HostOs, exe: &str, args: &[&str]) -> Context {
 
 #[test]
 fn both_flags_are_removed_and_every_other_argument_keeps_its_place() {
-    let raw = strings(&["--ascii", "--new-window", "--seed", "7", "-n", "--colors", "16"]);
+    let raw = strings(&[
+        "--ascii",
+        "--new-window",
+        "--seed",
+        "7",
+        "-n",
+        "--colors",
+        "16",
+    ]);
     assert_eq!(
         forwarded(&raw),
         strings(&["--ascii", "--seed", "7", "--colors", "16"])
@@ -34,7 +42,11 @@ fn both_flags_are_removed_and_every_other_argument_keeps_its_place() {
 
 #[test]
 fn windows_starts_the_executable_itself_in_a_new_console() {
-    let plans = plans(&context(HostOs::Windows, r"C:\Games\oxysol.exe", &["--ascii"]));
+    let plans = plans(&context(
+        HostOs::Windows,
+        r"C:\Games\oxysol.exe",
+        &["--ascii"],
+    ));
     assert_eq!(
         plans,
         vec![Plan {
@@ -61,8 +73,14 @@ fn linux_tries_the_environment_terminal_first_and_then_the_known_ones_in_order()
             "xterm"
         ])
     );
-    assert_eq!(plans[0].args, os_strings(&["-e", "/opt/oxysol", "--seed", "5"]));
-    assert_eq!(plans[2].args, os_strings(&["--", "/opt/oxysol", "--seed", "5"]));
+    assert_eq!(
+        plans[0].args,
+        os_strings(&["-e", "/opt/oxysol", "--seed", "5"])
+    );
+    assert_eq!(
+        plans[2].args,
+        os_strings(&["--", "/opt/oxysol", "--seed", "5"])
+    );
     assert!(plans.iter().all(|plan| !plan.new_console));
 }
 
@@ -72,7 +90,10 @@ fn linux_skips_an_unset_or_blank_terminal_variable() {
         let mut ctx = context(HostOs::Linux, "/opt/oxysol", &[]);
         ctx.terminal = terminal;
         let programs: Vec<String> = plans(&ctx).iter().map(Plan::label).collect();
-        assert_eq!(programs.first().map(String::as_str), Some("x-terminal-emulator"));
+        assert_eq!(
+            programs.first().map(String::as_str),
+            Some("x-terminal-emulator")
+        );
         assert_eq!(programs.len(), 4);
     }
 }
@@ -91,7 +112,11 @@ fn applescript_escaping_protects_quotes_and_backslashes() {
 
 #[test]
 fn the_macos_shell_line_changes_directory_sets_variables_and_replaces_the_shell() {
-    let mut ctx = context(HostOs::MacOs, "/Applications/My Games/oxysol", &["--seed", "9"]);
+    let mut ctx = context(
+        HostOs::MacOs,
+        "/Applications/My Games/oxysol",
+        &["--seed", "9"],
+    );
     ctx.env = vec![("OXYSOL_HOME".to_owned(), "/tmp/o x".to_owned())];
     assert_eq!(
         shell_line(&ctx),

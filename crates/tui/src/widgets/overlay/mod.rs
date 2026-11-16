@@ -25,8 +25,8 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Clear};
 
-use self::dialog::{Button, Geometry, Text};
 pub use self::command_line::CommandLine;
+use self::dialog::{Button, Geometry, Text};
 pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;

@@ -127,7 +127,10 @@ mod tests {
     #[test]
     fn test_new_window_flag_long_and_short_keep_the_other_flags() {
         for flag in ["--new-window", "-n"] {
-            let parsed = parse(to_args(&["--ascii", flag, "--seed", "5", "--colors", "256"])).unwrap();
+            let parsed = parse(to_args(&[
+                "--ascii", flag, "--seed", "5", "--colors", "256",
+            ]))
+            .unwrap();
             assert!(parsed.new_window);
             assert!(parsed.ascii);
             assert_eq!(parsed.seed, Some(5));
