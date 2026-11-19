@@ -3,6 +3,7 @@
 mod board;
 mod dump;
 mod faces;
+mod focus;
 mod marks;
 mod slots;
 

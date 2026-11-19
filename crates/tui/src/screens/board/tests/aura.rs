@@ -5,7 +5,7 @@ use ratatui::layout::{Position, Rect};
 
 use super::*;
 use crate::layout::{self, BoardGeometry};
-use crate::settings::{AuraMode, Settings};
+use crate::settings::{AuraMode, GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::TRUE_COLOR;
 use crate::theme::{Theme, ThemeId, Token};
@@ -175,4 +175,65 @@ fn focus_only_keeps_the_focus_halo_and_drops_the_carry_and_target_halos() {
     assert!(painted(&mut h, "▓", Token::AuraCarry).is_empty());
     assert!(painted(&mut h, "·", Token::Target).is_empty());
     assert!(!painted(&mut h, "░", Token::AuraFocus).is_empty());
+}
+
+const FELT_SIZES: [(u16, u16); 5] = [(140, 40), (120, 40), (100, 30), (80, 24), (60, 20)];
+
+fn focused_card_felt(
+    variant: Variant,
+    glyph_mode: GlyphMode,
+    (width, height): (u16, u16),
+) -> Cells {
+    let settings = Settings {
+        glyph_mode,
+        aura: AuraMode::Full,
+        ..Settings::default()
+    };
+    let storage = MemoryStorage {
+        settings: Some(settings),
+        ..MemoryStorage::default()
+    };
+    let mut h = Harness::with(storage, TRUE_COLOR, width, height);
+    h.app.apply(Effect::Start {
+        variant,
+        seed: Some(5),
+        undo_allowed: true,
+    });
+    h.lines();
+    let (geometry, _) = geometry(&h, width, height);
+    let Some(focus) = h.app.board().marks().focus else {
+        unreachable!("a started board has a focus")
+    };
+    let Some(rect) = geometry
+        .pile(focus.pile)
+        .and_then(|placed| placed.cards.get(focus.index).copied())
+    else {
+        unreachable!("the focus is on a card")
+    };
+    let Some(felt) = Theme::new(ThemeId::Dark, TRUE_COLOR.color)
+        .style(Token::TableText, Token::Table)
+        .bg
+    else {
+        unreachable!("the theme paints the felt")
+    };
+    let buffer = h.terminal.backend().buffer();
+    (rect.top()..rect.bottom())
+        .flat_map(|y| (rect.left()..rect.right()).map(move |x| (x, y)))
+        .filter(|(x, y)| buffer[(*x, *y)].bg == felt)
+        .collect()
+}
+
+#[test]
+fn no_felt_inside_the_focused_card_at_any_size_or_glyph_mode() {
+    for glyph_mode in [GlyphMode::Unicode, GlyphMode::Ascii] {
+        for variant in Variant::ALL {
+            for size in FELT_SIZES {
+                let leaked = focused_card_felt(variant, glyph_mode, size);
+                assert!(
+                    leaked.is_empty(),
+                    "{variant:?} {glyph_mode:?} {size:?}: felt inside the focused card at {leaked:?}"
+                );
+            }
+        }
+    }
 }

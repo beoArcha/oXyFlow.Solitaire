@@ -87,6 +87,7 @@ fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
         Face::Slot(_) => theme.style(Token::Slot, Token::Table),
     };
     let border = match mark.token() {
+        Some(Token::BorderFocus) => theme.style(Token::BorderFocus, Token::Surface),
         Some(token) => theme.style(token, Token::Table),
         None => match face {
             Face::Slot(_) => theme.style(Token::Slot, Token::Table),
@@ -162,7 +163,7 @@ pub fn draw_fanned(
     ctx: &ViewCtx<'_>,
 ) {
     draw(buf, area, face, mark, None, ctx);
-    let fill = look(face, mark, ctx).fill;
+    let look = look(face, mark, ctx);
     let inner = Rect::new(
         area.x + 1,
         area.y + 1,
@@ -170,10 +171,9 @@ pub fn draw_fanned(
         area.height.saturating_sub(2),
     );
     let mut painter = Painter { buf, clip: area };
-    painter.fill(inner, " ", fill);
+    painter.fill(inner, " ", look.fill);
     let bottom = Rect::new(area.x, area.bottom().saturating_sub(1), visible, 1);
-    let table = ctx.theme.style(Token::TableText, Token::Table);
-    painter.fill(bottom, " ", table);
+    painter.fill(bottom, " ", look.border);
 }
 
 /// Draws the one-row stand-in for `count` collapsed face-down cards.
