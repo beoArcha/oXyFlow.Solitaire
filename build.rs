@@ -1,14 +1,22 @@
 //! Build script. Embeds every sound style folder under `assets/audio/` (T-07) into a generated table in
 //! `OUT_DIR`, and the application icon and version information into the Windows executable with
-//! `winresource`, only when the target OS is Windows. `winresource` takes `FileVersion` and
-//! `ProductVersion` from `CARGO_PKG_VERSION`; the legal copyright is built from `CARGO_PKG_AUTHORS` and
-//! `CARGO_PKG_LICENSE`.
+//! `winresource`, only when the target OS is Windows. It also computes the effective version (T-21, O-36:
+//! the metadata version with the patch derived from git, or `<version>+src` without git history), exports
+//! it as `OXYSOL_VERSION` and gives it to the Windows `FileVersion` and `ProductVersion`; the legal
+//! copyright is built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE`.
 
 use std::env;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
+
+#[path = "xtask/src/version_scheme.rs"]
+#[allow(
+    dead_code,
+    reason = "the file is shared with xtask and the TUI build script; each uses a part"
+)]
+mod version_scheme;
 
 const ICON_PATH: &str = "assets/icon/generated/oxysol.ico";
 const AUDIO_DIR: &str = "assets/audio";
@@ -22,16 +30,33 @@ fn main() -> ExitCode {
         println!("cargo:warning=cannot embed the sound styles: {error}");
         return ExitCode::FAILURE;
     }
+    let version = export_version();
     if env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return ExitCode::SUCCESS;
     }
-    match embed_windows_resources() {
+    match embed_windows_resources(&version) {
         Ok(()) => ExitCode::SUCCESS,
         Err(message) => {
             println!("cargo:warning=cannot embed the Windows icon: {message}");
             ExitCode::FAILURE
         }
     }
+}
+
+fn export_version() -> String {
+    let base = env::var("CARGO_PKG_VERSION").unwrap_or_default();
+    let version = match env::var("CARGO_MANIFEST_DIR") {
+        Ok(dir) => {
+            let root = PathBuf::from(dir);
+            for file in version_scheme::watched_files(&root) {
+                println!("cargo:rerun-if-changed={}", file.display());
+            }
+            version_scheme::build_version(&root, &base)
+        }
+        Err(_) => version_scheme::source_fallback(&base),
+    };
+    println!("cargo:rustc-env=OXYSOL_VERSION={version}");
+    version
 }
 
 fn embed_audio_styles() -> io::Result<()> {
@@ -106,7 +131,7 @@ fn is_sound_file(name: &str) -> bool {
 }
 
 #[cfg(windows)]
-fn embed_windows_resources() -> Result<(), std::io::Error> {
+fn embed_windows_resources(version: &str) -> Result<(), std::io::Error> {
     const PRODUCT_NAME: &str = "oXySol";
     const FILE_DESCRIPTION: &str = "oXySol - terminal solitaire";
     const COMPANY_NAME: &str = "oXyFlow";
@@ -118,7 +143,14 @@ fn embed_windows_resources() -> Result<(), std::io::Error> {
         .set("CompanyName", COMPANY_NAME)
         .set("LegalCopyright", &legal_copyright())
         .set("OriginalFilename", "oxysol.exe")
-        .set("InternalName", "oxysol");
+        .set("InternalName", "oxysol")
+        .set("FileVersion", version)
+        .set("ProductVersion", version);
+    if let Some(numeric) = version_scheme::windows_file_version(version) {
+        resource
+            .set_version_info(winresource::VersionInfo::FILEVERSION, numeric)
+            .set_version_info(winresource::VersionInfo::PRODUCTVERSION, numeric);
+    }
     resource.compile()
 }
 
@@ -133,6 +165,6 @@ fn legal_copyright() -> String {
 }
 
 #[cfg(not(windows))]
-fn embed_windows_resources() -> Result<(), std::io::Error> {
+fn embed_windows_resources(_version: &str) -> Result<(), std::io::Error> {
     Ok(())
 }

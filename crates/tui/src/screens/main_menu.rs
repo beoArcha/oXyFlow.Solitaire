@@ -284,7 +284,7 @@ impl MainMenu {
             footer::key_style(ctx),
             ctx,
         );
-        let version = tf("menu.version", &[("version", env!("CARGO_PKG_VERSION"))]);
+        let version = tf("menu.version", &[("version", env!("OXYSOL_VERSION"))]);
         frame.render_widget(
             Paragraph::new(Line::styled(
                 version,

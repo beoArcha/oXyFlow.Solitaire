@@ -6,6 +6,7 @@ use crate::icon::IconError;
 use crate::midi::MidiError;
 use crate::screenshots::ScreenshotError;
 use crate::sync_metadata::SyncMetadataError;
+use crate::version_scheme::GitError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum XtaskError {
@@ -48,14 +49,8 @@ pub enum XtaskError {
     },
     #[error("`{path}` has no string `version` in `[project]`")]
     MissingVersion { path: PathBuf },
-    #[error("`git rev-list --count HEAD` failed (exit code {code:?})")]
-    GitRevList { code: Option<i32> },
-    #[error("`git rev-list --count HEAD` printed `{output}`, which is not a number")]
-    CommitCount {
-        output: String,
-        #[source]
-        source: std::num::ParseIntError,
-    },
+    #[error("cannot work out the version")]
+    Version(#[from] GitError),
     #[error(transparent)]
     SyncMetadata(#[from] SyncMetadataError),
     #[error(transparent)]

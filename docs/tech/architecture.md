@@ -38,7 +38,7 @@ assets/cards/fronts/<style>/   style.toml glyphs/*.svg
 assets/cards/backs/<style>/    style.toml glyphs/*.svg
 assets/cards/codepoints.toml   glyph → code point registry
 assets/audio/<style>/          style.toml *.mid (optional scores/*.txt)
-xtask/src/               main.rs check.rs affected.rs version.rs sync_metadata.rs lint/ fonts.rs midi.rs
+xtask/src/               main.rs check.rs affected.rs version.rs version_scheme.rs sync_metadata.rs lint/ fonts.rs midi.rs
 tests/                   architecture/ integration/ e2e/   (each with main.rs)
 docs/                    site/ wiki/ tech/ task_list/
 .github/workflows/       pr.yml main.yml release.yml
@@ -584,7 +584,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
 - **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed`,
-  `--fullscreen`, `--no-fullscreen` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the version and the
+  `--fullscreen`, `--no-fullscreen` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed by the build scripts with `xtask/src/version_scheme.rs`, also used by the main menu label and the Windows file version) and the
   copyright with the license, built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE` through `cli.version_legal`. With `--new-window`, `main` starts only the log and calls
   `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
   with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS

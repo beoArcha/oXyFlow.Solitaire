@@ -284,7 +284,7 @@ fn the_menu_shows_its_tagline_and_version_in_both_locales() {
         };
         let mut h = Harness::with(storage, TRUE_COLOR, 100, 30);
         let tagline = crate::i18n::t("common.app.tagline").into_owned();
-        let version = format!("v{}", env!("CARGO_PKG_VERSION"));
+        let version = format!("v{}", env!("OXYSOL_VERSION"));
         let text = h.text();
         assert!(text.contains(&tagline), "{text}");
         assert!(text.contains(&version), "{text}");

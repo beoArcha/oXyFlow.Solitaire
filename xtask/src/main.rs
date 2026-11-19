@@ -9,6 +9,11 @@ mod midi;
 mod screenshots;
 mod sync_metadata;
 mod version;
+#[allow(
+    dead_code,
+    reason = "the file is shared with the build scripts; xtask uses only the git-based part"
+)]
+mod version_scheme;
 
 use std::env;
 use std::error::Error;
@@ -18,7 +23,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--tag [--stable]]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--base | --tag]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -58,11 +63,9 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
 
 fn parse_version_flags(flags: &[String]) -> Result<Output, XtaskError> {
     match flags {
-        [] => Ok(Output::Version),
-        [flag] if flag == "--tag" => Ok(Output::Tag { stable: false }),
-        [flag, stable] if flag == "--tag" && stable == "--stable" => {
-            Ok(Output::Tag { stable: true })
-        }
+        [] => Ok(Output::Effective),
+        [flag] if flag == "--base" => Ok(Output::Metadata),
+        [flag] if flag == "--tag" => Ok(Output::Tag),
         _ => Err(usage()),
     }
 }

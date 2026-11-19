@@ -53,15 +53,15 @@ gh workflow run release.yml --ref release
 
 1. `guard` fails unless the ref is `refs/heads/release`.
 2. `check` runs `cargo xtask check` on Ubuntu, Windows and macOS.
-3. `tag` computes the tag with `cargo xtask version --tag` (or `--tag --stable`) and checks whether
-   it already exists:
-   - a stable tag that exists fails the run;
-   - a dev tag that exists at a different commit fails the run;
-   - a dev tag at this commit with a GitHub Release already present is a notice, and the run ends
-     without publishing (the same commit was already released);
-   - a dev tag at this commit without a Release (a previous run stopped before publishing) is
+3. `tag` checks out the full history, computes the tag with `cargo xtask version --tag` (`v<major>.<minor>.<patch>`,
+   see Versions) and checks whether it already exists:
+   - a tag at a different commit fails the run;
+   - a tag at this commit with a GitHub Release already present is a notice, and the run ends
+     without publishing (the same commit was already released); but with `stable: true` and an existing
+     pre-release, the `stabilize` job turns that pre-release into a full release;
+   - a tag at this commit without a Release (a previous run stopped before publishing) is
      published again on the same tag.
-4. `build` makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
+4. `build` checks out the full history (the version needs it) and makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
    `x86_64-unknown-linux-musl` (`musl-tools`), `aarch64-unknown-linux-musl` (`musl-tools`)
    and `aarch64-apple-darwin`. Each target produces two archives: a normal archive
    `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md`, `LICENSE` and
@@ -79,7 +79,7 @@ gh workflow run release.yml --ref release
    placeholder is left), and deploys GitHub Pages. The link points at the release that this run just
    published, so it is always the newest build, pre-releases included (`/releases/latest` ignores them).
 
-Tags: dev `v<version>-dev.<n>`, stable `v<version>`, both from `metadata.toml` (T-21).
+Tag: `v<major>.<minor>.<patch>`, the same for a pre-release and a stable release (T-21).
 
 A stable release adds the input `stable`:
 
@@ -116,11 +116,27 @@ change to the look of the game, and commit the files it writes. The scene script
 (`stills.rs`, `motion.rs`); alternative texts are in `labels.rs`. The command depends on `oxysol-tui`,
 `oxysol-core` and `ratatui`; the TUI exposes nothing extra for it.
 
-## Versions (T-21)
+## Versions (T-21, R-23)
 
-`metadata.toml` holds the next stable version. Each `release.yml` run publishes a
-pre-release `v<version>-dev.<n>`, where `n` is `git rev-list --count HEAD`. With
-`stable: true` it publishes `v<version>` and fails if that tag already exists.
+The version is `major.minor.patch`.
+
+- **Patch: automatic.** It is derived from git, never stored. It is the number of first-parent commits on
+  `main` since the commit that last changed the `version` line of `metadata.toml`. Squash merges give one
+  commit per merge, so every merge to `main` raises the patch by 1. Nobody edits it and no bot commits.
+- **Minor: raised by hand when a plan phase closes.** The minor counts completed phases: completing phase N
+  gives minor N+1 (phases 0–3 done: 0.4.x; the end of phase 8: 0.9.0; 1.0.0 is a later owner decision).
+  One PR does it: set `version = "0.<N+1>.0"` in `metadata.toml`, run `cargo xtask sync-metadata` (it updates
+  `[workspace.package]` in `Cargo.toml`), run `cargo build` so `Cargo.lock` follows, and change nothing else.
+  Once that PR is merged the patch counts again from 0.
+- **Where it shows.** `cargo xtask version` prints the effective version (`cargo xtask version --base` the
+  one in `metadata.toml`, `--tag` the release tag). `build.rs` computes the same value through the same code
+  (`xtask/src/version_scheme.rs`) and exports it as `OXYSOL_VERSION`: `--version`, the main menu label and
+  the Windows file version use it. `Cargo.toml` and `Cargo.lock` keep `major.minor.0`. On a build that
+  cannot read git history (a source archive, a shallow clone, no `git`) the version is `0.4.0+src`; the
+  release workflow always checks out the full history.
+- **Release.** Each `release.yml` run publishes the tag `v<effective version>` as a pre-release; with
+  `stable: true` it publishes the same tag as a full release (or promotes the pre-release of the same
+  commit).
 
 ## One-time setup (repository owner)
 
