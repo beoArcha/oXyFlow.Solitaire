@@ -1,10 +1,11 @@
-//! Localized messages of the board status line, and the description of the focus the line starts
-//! with.
+//! Localized messages of the last event, shown at the right end of the `Now:` row, and what a
+//! position shows.
 
 use oxysol_core::{Move, MoveError, PileSnapshot};
 
 use super::BoardScreen;
-use crate::announce::{self, Focus, Held, Look};
+use crate::announce::Look;
+use crate::i18n::{t, tf};
 
 /// Localization key of the message for a rejected move. Every [`MoveError`] has one; the match is
 /// exhaustive on purpose, so a new variant cannot be forgotten.
@@ -26,15 +27,10 @@ pub(super) const fn error_key(error: &MoveError) -> &'static str {
     }
 }
 
-pub(super) const PICKED: &str = "board.status.picked";
 pub(super) const NO_TARGETS: &str = "board.status.no_targets";
 pub(super) const NOTHING_TO_UNDO: &str = "board.status.nothing_to_undo";
 pub(super) const NOTHING_TO_REDO: &str = "board.status.nothing_to_redo";
 pub(super) const NO_HINT: &str = "board.status.no_hint";
-pub(super) const HINT: &str = "board.status.hint";
-pub(super) const HINT_STOCK: &str = "board.status.hint_stock";
-pub(super) const NO_MOVES: &str = "board.status.no_moves";
-pub(super) const NO_MOVES_NO_UNDO: &str = "board.status.no_moves_no_undo";
 pub(super) const UNDO_OFF: &str = "board.status.undo_off";
 pub(super) const SOLVED: &str = "board.status.solved";
 pub(super) const MOVED: &str = "board.status.moved";
@@ -64,32 +60,44 @@ pub(super) fn look_at(snapshot: &PileSnapshot, depth: usize) -> Look {
     }
 }
 
+/// How an event is drawn: a refusal in the Error token, anything else in the Success token.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum Tone {
+    Success,
+    Error,
+}
+
+const REFUSALS: [&str; 5] = [
+    NO_TARGETS,
+    NOTHING_TO_UNDO,
+    NOTHING_TO_REDO,
+    NO_HINT,
+    UNDO_OFF,
+];
+
+/// The tone of the event with the localization key `key`.
+pub(super) fn tone_of(key: &str) -> Tone {
+    if key.starts_with("board.error.") || REFUSALS.contains(&key) {
+        Tone::Error
+    } else {
+        Tone::Success
+    }
+}
+
 impl BoardScreen {
-    /// The description of the focus that starts the status line. Empty without a game and while
-    /// the board is covered, so a paused game shows no card.
-    pub(super) fn focus_text(&self) -> String {
-        let Some(session) = self.session.as_ref().filter(|_| !self.covered) else {
-            return String::new();
-        };
-        let piles = session.game().piles();
-        let look = piles
-            .iter()
-            .find(|snapshot| snapshot.pile == self.cursor.pile)
-            .map_or(Look::Empty, |snapshot| look_at(snapshot, self.cursor.depth));
-        let held = self.pick.as_ref().map(|pick| Held {
-            source: pick.source,
-            count: pick.count,
-            targets: pick
-                .choices
-                .iter()
-                .filter(|choice| choice.target.is_some())
-                .count(),
-        });
-        announce::focus(&Focus {
-            pile: self.cursor.pile,
-            look,
-            held,
-        })
+    /// The last event, if there is one: the text of the copy result or of the status message, with
+    /// its tone. Short on purpose, it shares the `Now:` row.
+    pub(super) fn event(&self) -> Option<(String, Tone)> {
+        match self.copy_note {
+            Some((seed, true)) => Some((
+                tf("board.status.seed_copied", &[("seed", &seed.to_string())]),
+                Tone::Success,
+            )),
+            Some((_, false)) => {
+                Some((t("board.status.seed_copy_failed").into_owned(), Tone::Error))
+            }
+            None => self.status.map(|key| (t(key).into_owned(), tone_of(key))),
+        }
     }
 
     /// Records the event of the last action, unless the board already says why it stopped.

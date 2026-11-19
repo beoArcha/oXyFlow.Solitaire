@@ -2,10 +2,8 @@
 //! the game is in, how many row deals are left. Read from [`StockStatus`]; FreeCell has none.
 
 use oxysol_core::{PileRef, Session, StockStatus};
-use ratatui::layout::{Position, Rect};
 
 use crate::i18n::tf;
-use crate::layout::BoardGeometry;
 
 /// The text of the stock counter for `status`; `stock_len` tells an empty stock from one that
 /// still has cards, because "no passes left" only matters once the last pass is used up.
@@ -55,34 +53,4 @@ pub(super) fn can_recycle(session: &Session) -> bool {
         .stock_status()
         .is_some_and(|status| status.recycles_left != Some(0));
     waste && passes_left
-}
-
-fn with_halo(rect: Rect) -> Rect {
-    Rect::new(
-        rect.x.saturating_sub(1),
-        rect.y.saturating_sub(1),
-        rect.width.saturating_add(2),
-        rect.height.saturating_add(2),
-    )
-}
-
-/// Where `text` fits beside the stock: the row under the halo of the stock card, when neither a
-/// card nor the halo of any pile can reach it, and it lies inside `body`. A column layout leaves
-/// no such row (the halo of the first column starts right under the halo of the stock), a pyramid
-/// board does when the window is taller than the board. `None` means there is no room, and the
-/// counter is shown in the action line instead.
-pub(super) fn beside_stock(geometry: &BoardGeometry, body: Rect, text: &str) -> Option<Rect> {
-    let stock = geometry.pile(PileRef::Stock)?.slot;
-    let width = u16::try_from(text.chars().count()).unwrap_or(u16::MAX);
-    let row = Rect::new(stock.x, stock.bottom().saturating_add(1), width, 1);
-    let room = body.contains(Position::new(row.x, row.y));
-    let free = geometry.piles.iter().all(|pile| {
-        !with_halo(pile.area).intersects(row)
-            && !with_halo(pile.slot).intersects(row)
-            && pile
-                .cards
-                .iter()
-                .all(|card| !with_halo(*card).intersects(row))
-    });
-    (room && free).then(|| row.intersection(body))
 }
