@@ -11,7 +11,7 @@ pub mod palette;
 use ratatui::style::{Color, Style};
 use serde::{Deserialize, Serialize};
 
-pub use palette::{Palette, Swatch, TEXT_PAIRS, Token};
+pub use palette::{GRAPHIC_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
 
 use crate::caps::ColorDepth;
 

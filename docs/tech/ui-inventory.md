@@ -81,9 +81,8 @@ Notes from the use-sites:
   `widgets/card/mod.rs:89-91` calls `theme.style(token, Token::Table)`. A focused card's frame cells sit
   on the felt, which matters for contrast (section 1.4).
 - Dialog and guide frames use `Surface`; the board field uses `Table`; the screen uses `Background`.
-- The Dark `dark.rs` comment at `theme/dark.rs:7` says every text pair reaches 7.0. The test target for
-  Dark is 4.5 (`theme/mod.rs:41-46`). Section 1.4 shows two Dark pairs below 7.0. The comment is
-  inconsistent with the code.
+- The Dark `dark.rs` comment at `theme/dark.rs:7` said every text pair reaches 7.0, while the test
+  target for Dark is 4.5 (`theme/mod.rs:41-46`). O-26 corrected the comment to 4.5.
 
 ### 1.3 Value of every token in every theme
 
@@ -99,24 +98,28 @@ Format: `R,G,B · ansi16`. Source line: the palette file at the line given (`dar
 | TextMuted | 184,194,214 · Gray (:13) | 96,104,116 · DarkGray (:48) | 255,255,255 · White (:84) |
 | Accent | 140,190,255 · LightCyan (:14) | 18,76,160 · Blue (:49) | 0,255,255 · Cyan (:85) |
 | Border | 110,122,150 · DarkGray (:15) | 192,198,208 · Gray (:50) | 255,255,255 · White (:86) |
-| BorderFocus | 255,214,102 · Yellow (:16) | 28,92,196 · Blue (:51) | 255,255,0 · Yellow (:87) |
+| BorderFocus | 255,214,102 · Yellow (:16) | 0,12,40 · Black (:51) | 255,255,0 · Yellow (:87) |
 | FocusFg | 20,24,32 · Black (:17) | 255,255,255 · White (:52) | 0,0,0 · Black (:88) |
 | FocusBg | 255,214,102 · Yellow (:18) | 28,92,196 · Blue (:53) | 255,255,0 · Yellow (:89) |
 | Error | 255,160,150 · LightRed (:19) | 180,24,24 · Red (:54) | 255,128,128 · LightRed (:90) |
 | Success | 150,230,160 · LightGreen (:20) | 20,116,48 · Green (:55) | 0,255,0 · LightGreen (:91) |
-| Table | 24,92,58 · Green (:21) | 32,114,70 · Green (:56) | 0,0,0 · Black (:92) |
+| Table | 40,120,80 · Green (:21) | 32,114,70 · Green (:56) | 0,0,0 · Black (:92) |
 | TableText | 236,246,240 · White (:22) | 245,252,248 · White (:57) | 255,255,255 · White (:93) |
-| Slot | 120,180,150 · LightGreen (:23) | 130,190,155 · LightGreen (:58) | 255,255,255 · White (:94) |
+| Slot | 170,220,190 · LightGreen (:23) | 160,210,178 · LightGreen (:58) | 255,255,255 · White (:94) |
 | CardFace | 250,250,244 · White (:24) | 255,255,255 · White (:59) | 255,255,255 · White (:95) |
-| CardBack | 28,56,132 · Blue (:25) | 30,64,148 · Blue (:60) | 0,0,128 · Blue (:96) |
-| CardBackMark | 226,236,255 · White (:26) | 230,240,255 · White (:61) | 255,255,255 · White (:97) |
+| CardBack | 184,208,248 · White (:25) | 0,14,46 · Black (:60) | 0,160,255 · LightBlue (:96) |
+| CardBackMark | 16,20,40 · Black (:26) | 230,240,255 · White (:61) | 0,0,0 · Black (:97) |
 | CardRed | 166,20,20 · Red (:27) | 176,24,24 · Red (:62) | 160,0,0 · Red (:98) |
 | CardBlack | 16,16,20 · Black (:28) | 20,20,24 · Black (:63) | 0,0,0 · Black (:99) |
 | Target | 255,214,102 · Yellow (:29) | 255,214,102 · Yellow (:64) | 0,255,0 · LightGreen (:100) |
-| Selection | 102,204,255 · LightCyan (:30) | 80,200,255 · LightCyan (:65) | 0,255,255 · LightCyan (:101) |
-| Hint | 255,170,60 · LightYellow (:31) | 255,165,50 · LightYellow (:66) | 255,255,0 · LightYellow (:102) |
-| AuraFocus | 255,232,130 · Yellow (:32) | 255,236,140 · Yellow (:67) | 255,255,0 · Yellow (:103) |
-| AuraCarry | 150,228,255 · LightCyan (:33) | 172,240,255 · LightCyan (:68) | 0,255,255 · LightCyan (:104) |
+| Selection | 150,220,255 · LightCyan (:30) | 80,200,255 · LightCyan (:65) | 0,255,255 · LightCyan (:101) |
+| Hint | 255,196,110 · LightYellow (:31) | 255,186,70 · LightYellow (:66) | 255,255,0 · LightYellow (:102) |
+| AuraFocus | 255,246,184 · Yellow (:32) | 255,236,140 · Yellow (:67) | 255,255,0 · Yellow (:103) |
+| AuraCarry | 210,244,255 · LightCyan (:33) | 172,240,255 · LightCyan (:68) | 0,255,255 · LightCyan (:104) |
+
+Values from before O-26 are kept in the git history (`origin/main` before the O-26 merge: Dark Table
+24,92,58; Dark CardBack 28,56,132; Light BorderFocus 28,92,196; Light CardBack 30,64,148; HC CardBack
+0,0,128; and the others in the table above that changed). Changes made by O-26 are listed in 1.4.
 
 Observations from the table (facts):
 - Dark: `BorderFocus`, `FocusBg` and `Target` are the **same** RGB (255,214,102) (`dark.rs:16,18,29`).
@@ -141,18 +144,22 @@ Observations from the table (facts):
 - `theme/tests.rs:68-82`: every token resolves to a non-Reset color at every depth.
 - `theme/tests.rs:102-115`: aura pairs are in `TEXT_PAIRS`; `AuraFocus` and `AuraCarry` differ in RGB and
   ANSI16, and both differ from `Table` in ANSI16.
+- `theme/tests.rs` `every_graphic_pair_reaches_three_to_one` (O-26): the graphics class `GRAPHIC_PAIRS`
+  (`theme/palette.rs`) must reach **3.0** in every theme: `BorderFocus`, `CardBack`, `Slot`, `Target`,
+  `Selection` and `Hint` on `Table`, and `Table` on `Background`. One listed exception, `GRAPHIC_GAPS`:
+  `Table` on `Background` in High Contrast (see 1.4 and 7.1 item 9).
 - `theme/contrast.rs:35-68`: unit tests of the formula (black/white = 21, identical = 1, symmetry, mid
   gray 119 on white ≈ 4.48).
 - `accessibility_tests/board.rs:69-100` and `:207-238` check that focus, selection, targets and halos
   differ **by glyph** in both glyph sets (not by color).
 
-**What is not tested.** Non-text pairs (WCAG 1.4.11 territory: borders, slots, marks, card edges),
-`Error` on `Background` (used at `screens/main_menu/seed.rs:224`, `widgets/too_small.rs:36`), and any
-16-color contrast.
+**What is not tested.** Pairs outside `TEXT_PAIRS` and `GRAPHIC_PAIRS` (for example `Error` on
+`Background`, used at `screens/main_menu/seed.rs:224` and `widgets/too_small.rs:36`, and `CardFace` on
+`Table`), and any 16-color contrast.
 
 **Computed ratios.** WCAG 2 contrast ratio (`theme/contrast.rs:3-29`) of the RGB values in 1.3. `T` marks
-pairs in `TEXT_PAIRS`. **Bold** marks a non-text pair below 3.0 (the WCAG 1.4.11 bar for graphics that
-identify a state). Every `TEXT_PAIRS` value meets its own target; the two Dark values below 7.0 are noted below the table.
+pairs in `TEXT_PAIRS` (target 4.5 Dark and Light, 7.0 High Contrast). `G` marks pairs in `GRAPHIC_PAIRS`
+(target 3.0). "was" gives the value computed on `origin/main` before O-26 where it changed.
 
 | Pair (fg on bg) | Dark | Light | High Contrast | Tested |
 |---|---|---|---|---|
@@ -165,30 +172,38 @@ identify a state). Every `TEXT_PAIRS` value meets its own target; the two Dark v
 | FocusFg on FocusBg | 12.75 | 6.22 | 19.56 | T |
 | Error on Surface | 7.31 | 6.81 | 8.65 | T |
 | Success on Surface | 9.63 | 5.88 | 15.30 | T |
-| TableText on Table | 7.22 | 5.67 | 21.00 | T |
+| TableText on Table | 4.88 (was 7.22) | 5.67 | 21.00 | T |
 | CardRed on CardFace | 7.34 | 7.02 | 8.42 | T |
 | CardBlack on CardFace | 18.12 | 18.37 | 21.00 | T |
-| CardBackMark on CardBack | 9.07 | 8.25 | 16.01 | T |
-| AuraFocus on Table | 6.51 | 4.96 | 19.56 | T |
-| AuraCarry on Table | 5.64 | 4.68 | 16.75 | T |
+| CardBackMark on CardBack | 11.64 (was 9.07) | 16.58 (was 8.25) | 7.47 (was 16.01) | T |
+| AuraFocus on Table | 4.91 (was 6.51) | 4.96 | 19.56 | T |
+| AuraCarry on Table | 4.66 (was 5.64) | 4.68 | 16.75 | T |
 | Error on Background | 8.70 | 6.28 | 8.65 | — |
 | Success on Background | 11.45 | 5.43 | 15.30 | — |
 | Border on Surface (panel frame) | 3.33 | **1.72** | 21.00 | — |
-| BorderFocus on Surface (dialog frame) | 10.27 | 6.22 | 19.56 | — |
+| BorderFocus on Surface (dialog frame) | 10.27 | 19.39 (was 6.22) | 19.56 | — |
 | Border on Background | 3.96 | **1.59** | 21.00 | — |
-| **BorderFocus on Table (focused card frame)** | 5.73 | **1.05** | 19.56 | — |
-| **Slot on Table (empty slot)** | 3.33 | **2.75** | 21.00 | — |
-| Target on Table | 5.73 | 4.23 | 15.30 | — |
-| Selection on Table | 4.43 | 3.11 | 16.75 | — |
-| Hint on Table | 4.21 | 3.00 | 19.56 | — |
-| CardFace on Table (face-up card edge) | 7.62 | 5.90 | 21.00 | — |
-| **CardBack on Table (face-down card edge)** | **1.35** | **1.60** | **1.31** | — |
-| Table on Background (field edge) | **2.13** | 5.45 | **1.00** | — |
+| BorderFocus on Table (focused card frame) | 3.87 (was 5.73) | 3.28 (was 1.05) | 19.56 | G |
+| Slot on Table (empty slot) | 3.52 (was 3.33) | 3.47 (was 2.75) | 21.00 | G |
+| Target on Table | 3.87 (was 5.73) | 4.23 | 15.30 | G |
+| Selection on Table | 3.59 (was 4.43) | 3.11 | 16.75 | G |
+| Hint on Table | 3.44 (was 4.21) | 3.48 (was 3.00) | 19.56 | G |
+| CardFace on Table (face-up card edge) | 5.15 (was 7.62) | 5.90 | 21.00 | — |
+| CardBack on Table (face-down card edge) | 3.45 (was 1.35) | 3.23 (was 1.60) | 7.47 (was 1.31) | G |
+| Table on Background (field edge) | 3.16 (was 2.13) | 5.45 | **1.00** (exception, see below) | G |
 | FocusBg on Background | 12.22 | 5.74 | 19.56 | — |
 
-Note: the Dark comment at `theme/dark.rs:7` says every text pair reaches 7.0. Two Dark `TEXT_PAIRS`
-(AuraFocus on Table 6.51, AuraCarry on Table 5.64) are below 7.0. They pass the Dark target of 4.5
-(`theme/mod.rs:41-46`), so the comment is wrong, not the test.
+Before O-26, the graphics pairs below 3.0 were Light `BorderFocus` on `Table`, Light `Slot`, all `CardBack`
+on `Table`, Dark `Table` on `Background` and High Contrast `Table` on `Background`; Light `Hint` was at 3.00.
+
+**Dark `dark.rs:7` claim.** The comment said every text pair reaches 7.0. The Dark target is 4.5, and after O-26
+the lowest Dark text pair is `AuraCarry on Table` at 4.66. The comment now says 4.5.
+
+**High Contrast field edge (open, not fixed by O-26).** `Table` on `Background` is 1.00 (both black). It is
+exempt in `GRAPHIC_GAPS` because no single black/white palette can meet both bars: with white text, 7:1 on
+`Table` requires `Table` luminance ≤ 0.10, while 3:1 against a black `Background` requires ≥ 0.10. A field that
+keeps 7:1 dark text must be light (luminance ≥ 0.30), which changes every mark on the felt and makes
+`BorderFocus` conflict with dialog frames on the black `Surface`. This needs an owner decision (see 7.1 item 9).
 
 ---
 
@@ -468,21 +483,23 @@ terminal font and font size (section 4.3), aura and frame glyphs, zoom (planned 
    both light cyan. Light `Target` (255,214,102) and `Hint` (255,165,50) are yellow and orange. These pairs
    rely on shapes (`●` and `▓`, `:` and `=`, `?→`).
 5. **Field and card edges by hue.** A face-down card against the felt is `CardBack` against `Table`:
-   1.35 Dark, 1.60 Light, 1.31 High Contrast (computed, section 1.4). The boundary is mostly blue against
-   green, with almost no lightness difference. The face-up card against the felt is 5.90–7.62.
+   1.35 Dark, 1.60 Light, 1.31 High Contrast before O-26. O-26 made it 3.45 Dark, 3.23 Light and 7.47 High
+   Contrast (section 1.4). The face-up card against the felt is 5.15–5.90 Dark and Light, 21.00 High Contrast.
 
 ### 7.2 Text and marks that may be too small or too faint
 
-6. **Focused card frame in Light is nearly invisible.** `BorderFocus` (28,92,196) on `Table` (32,114,70) is
-   **1.05:1** (computed). The frame cells of a marked card are drawn on `Table` (`widgets/card/mod.rs:89-91`).
+6. **Focused card frame in Light is nearly invisible (fixed by O-26).** Before O-26, `BorderFocus`
+   (28,92,196) on `Table` (32,114,70) was **1.05:1** (computed). It is now near-black (0,12,40), 3.28:1. The frame cells of a marked card are drawn on `Table` (`widgets/card/mod.rs:89-91`).
    The `►` marker and double-line shape still show focus, but the frame color itself does not show it.
-7. **Light: marks at or below the 3:1 graphics bar.** Empty slot 2.75 is below it; Selection 3.11 and Hint
-   3.00 are at it; Target 4.23 is below the 4.5 text bar (all on `Table`, computed). Slot placeholders
+7. **Light: marks at or below the 3:1 graphics bar (fixed by O-26 except Selection).** Before O-26 the empty
+   slot was 2.75, Hint 3.00 and Selection 3.11 (all on `Table`, computed); Slot and Hint are now 3.47 and 3.48.
+   Selection (3.11) still passes the bar but has little margin. Slot placeholders
    (`A`, `↑`, `x`, `+`, `widgets/card/slot.rs:24-53`) are text in these colors.
 8. **Light: panel and dialog frames.** The side panel frame (`Border`) is 1.72 on Surface and 1.59 on Background
    (computed; `widgets/guide/mod.rs:178,190`). Structure is still shown by glyphs, but faintly.
-9. **High Contrast: field edge.** `Table` and `Background` are both (0,0,0) (`high_contrast.rs:81,92`), so the
-   playing field has no color edge against the screen. Its edge is not drawn by any glyph.
+9. **High Contrast: field edge (open).** `Table` and `Background` are both (0,0,0) (`high_contrast.rs:81,92`), so the
+   playing field has no color edge against the screen. O-26 left it open: the 7:1 text rule and the 3:1 edge
+   cannot both hold with a black screen (section 1.4, `GRAPHIC_GAPS`). Its edge is not drawn by any glyph.
 10. **Halo glyphs are single cells of low ink.** `·` (U+00B7), `:` and `.` (ASCII target) are small. The
     shade `░` and `▓` are dense but one cell. Halos are drawn only on free cells (`aura.rs:56-63`), so a
     halo around a crowded column may be broken.
@@ -509,7 +526,7 @@ terminal font and font size (section 4.3), aura and frame glyphs, zoom (planned 
 16. **16-color contrast is untested.** `theme/tests.rs:55-65` checks only named colors. The real contrast
     is set by the player's palette (unknown).
 17. **Documentation mismatches found while reading** (not code defects, listed for the owner):
-    - `theme/dark.rs:7`: "every text pair reaches 7.0" vs the 4.5 target and the 6.51 and 5.64 Dark pairs (section 1.4).
+    - `theme/dark.rs:7`: "every text pair reaches 7.0" vs the 4.5 target (fixed by O-26; the comment now says 4.5).
     - `docs/tech/architecture.md:470-471`: Font uses PUA glyphs and a graphics-check screen; the code maps
       Font to Unicode (`glyphs.rs:85`) and has no such screen.
     - `docs/tech/architecture.md:13,37-39`: `xtask/src/fonts.rs` and `assets/cards/` do not exist.
