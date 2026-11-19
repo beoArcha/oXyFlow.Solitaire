@@ -3,6 +3,8 @@
 //! Right (or Tab) change the game, Up, Down, PageUp, PageDown, Home, End and the mouse wheel
 //! scroll, Esc, Enter or the Close button close it. The controls are read from the key table.
 
+#[cfg(test)]
+mod bar_tests;
 mod content;
 #[cfg(test)]
 mod focus_tests;

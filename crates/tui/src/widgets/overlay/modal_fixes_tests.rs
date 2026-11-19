@@ -202,22 +202,27 @@ fn the_wheel_keeps_working_on_the_command_line_and_the_guide_windows() {
     }
 }
 
+fn assert_renders_cleanly(window: Window, locale: Locale, caps: TerminalCaps) {
+    let mut h = open(window, locale, caps);
+    for step in [None, Some(KeyCode::PageDown), Some(KeyCode::End)] {
+        if let Some(code) = step {
+            h.press(code);
+        }
+        let lines = h.lines();
+        assert_eq!(lines.len(), 30);
+        let drawn = lines.iter().flat_map(|line| line.chars());
+        for ch in drawn {
+            assert!(ch.is_ascii() || is_wgl4(ch), "{window:?} {locale:?} {ch:?}");
+        }
+    }
+}
+
 #[test]
 fn every_window_renders_at_100_by_30_in_both_locales_with_only_wgl4_or_ascii() {
     for locale in Locale::ALL {
         for caps in [TRUE_COLOR, PLAIN] {
             for window in [Window::Keys, Window::CommandLine, Window::Guide] {
-                let mut h = open(window, locale, caps);
-                for step in [None, Some(KeyCode::PageDown), Some(KeyCode::End)] {
-                    if let Some(code) = step {
-                        h.press(code);
-                    }
-                    let lines = h.lines();
-                    assert_eq!(lines.len(), 30);
-                    for ch in lines.iter().flat_map(|line| line.chars()) {
-                        assert!(ch.is_ascii() || is_wgl4(ch), "{window:?} {locale:?} {ch:?}");
-                    }
-                }
+                assert_renders_cleanly(window, locale, caps);
             }
         }
     }
