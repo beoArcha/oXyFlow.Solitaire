@@ -40,6 +40,16 @@ fn every_graphic_pair_reaches_three_to_one() {
 }
 
 #[test]
+fn every_mark_pair_reaches_three_to_one() {
+    for id in ThemeId::ALL {
+        for (fg, bg) in MARK_PAIRS {
+            let ratio = contrast_ratio(rgb(id, fg), rgb(id, bg));
+            assert!(ratio >= 3.0, "{id:?}: {fg:?} on {bg:?} is {ratio}");
+        }
+    }
+}
+
+#[test]
 fn red_and_black_cards_differ_in_every_variant() {
     for id in ThemeId::ALL {
         let palette = id.palette();
