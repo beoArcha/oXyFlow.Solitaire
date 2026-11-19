@@ -9,7 +9,7 @@ use super::palette::{Palette, swatch};
 pub fn palette() -> Palette {
     Palette {
         background: swatch(0, 0, 0, Color::Black),
-        surface: swatch(0, 0, 0, Color::Black),
+        surface: swatch(16, 16, 16, Color::Black),
         text: swatch(255, 255, 255, Color::White),
         text_muted: swatch(255, 255, 255, Color::White),
         accent: swatch(0, 255, 255, Color::Cyan),

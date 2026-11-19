@@ -117,7 +117,7 @@ impl Swatch {
 }
 
 /// Text on background pairs that are drawn together; each must reach the theme's contrast target.
-pub const TEXT_PAIRS: [(Token, Token); 15] = [
+pub const TEXT_PAIRS: [(Token, Token); 17] = [
     (Token::Text, Token::Background),
     (Token::Text, Token::Surface),
     (Token::TextMuted, Token::Background),
@@ -125,7 +125,9 @@ pub const TEXT_PAIRS: [(Token, Token); 15] = [
     (Token::Accent, Token::Background),
     (Token::Accent, Token::Surface),
     (Token::FocusFg, Token::FocusBg),
+    (Token::Error, Token::Background),
     (Token::Error, Token::Surface),
+    (Token::Success, Token::Background),
     (Token::Success, Token::Surface),
     (Token::TableText, Token::Table),
     (Token::CardRed, Token::CardFace),
@@ -144,6 +146,17 @@ pub const GRAPHIC_PAIRS: [(Token, Token); 7] = [
     (Token::Selection, Token::Table),
     (Token::Hint, Token::Table),
     (Token::Table, Token::Background),
+];
+
+/// Marks drawn on the felt and on dialog surfaces; each must reach 3:1 in every theme, including the
+/// marks that a 16-color terminal draws in its named colors.
+pub const MARK_PAIRS: [(Token, Token); 6] = [
+    (Token::Target, Token::Table),
+    (Token::Selection, Token::Table),
+    (Token::Hint, Token::Table),
+    (Token::BorderFocus, Token::Table),
+    (Token::Slot, Token::Table),
+    (Token::Border, Token::Surface),
 ];
 
 /// Every token of one theme.
