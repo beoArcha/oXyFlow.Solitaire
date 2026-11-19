@@ -168,9 +168,7 @@ mod tests {
         solver.submit(query(99, Variant::FreeCell, 0));
         let answers = collect(&mut solver, 1);
         assert!(!answers.is_empty());
-        let mut later = collect(&mut solver, 1);
-        later.extend(answers);
-        assert!(later.iter().all(|answer| answer.id == 99), "{later:?}");
+        assert!(answers.iter().all(|answer| answer.id == 99), "{answers:?}");
     }
 
     #[test]

@@ -41,6 +41,7 @@ fn shown(
         seed: Some(SEED),
         undo_allowed: true,
     });
+    h.send(crate::input::Input::Tick);
     h
 }
 
