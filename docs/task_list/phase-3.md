@@ -519,6 +519,8 @@ Rules for the whole phase:
   marker; `cargo xtask check --quick` passes.
 - **Done (part 1):** #103 (tagline, version, variant hints with difficulty, grouped and aligned settings with descriptions, style names, Font hidden, statistics headings).
 - **Part 2 (open):** `Resume` names the saved game; the win dialog's personal-best marker and `Same seed`; `◄ ►` on the focused settings value. Needs `screens/mod.rs`, `app.rs`, `app/modal.rs`, `app/effects.rs`.
+- **Done (part 2):** #111 (Resume names the save, win dialog bests and `Same seed`, `◄ ►` on the focused setting).
+- **Deviation (accepted):** the personal-best check is a small function in `app/records.rs` reading `Storage::history()`; the Storage trait is unchanged.
 
 ### P3-25 — Footer keys as mouse buttons
 

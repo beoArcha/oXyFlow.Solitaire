@@ -144,7 +144,7 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-21 | Aura options (focus only) and the stock recycle button | U-04, P3-14 | DONE |
 | P3-22 | Localization templates (no pile name after a verb) and localized key names | P3-15 | DONE |
 | P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | DONE |
-| P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | IN PROGRESS |
+| P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | DONE |
 | P3-25 | Footer keys as mouse buttons; `g` in the footer (#86) | P3-15 | DONE |
 | P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | DONE |
 | P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | DONE |
