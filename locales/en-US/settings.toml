@@ -34,6 +34,8 @@ pl_pl = "Polski"
 dark = "Dark"
 light = "Light"
 high_contrast = "High contrast"
+monokai = "Monokai"
+dracula = "Dracula"
 
 [glyph]
 font = "Font"
