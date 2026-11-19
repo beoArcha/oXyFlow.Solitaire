@@ -128,6 +128,7 @@ the PR descriptions; cards that exist are in the phase files.
 | O-17 | Task cards for the owner's interface feedback of 2026-11-16 | — | DONE |
 | O-15 | `--new-window` flag and the command-line options in Help | O-05, O-14 | DONE |
 | O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | O-15 | DONE |
+| O-21 | Task cards for the owner's feedback of 2026-11-19 (Restart, recycle button, footer buttons, moves panel, quick options) | — | DONE |
 | O-16 | Full-screen (borderless window) option: setting and `--fullscreen` | U-04, P3-16 | TODO |
 | U-04 | Interface review for usability and readability (Fable with Opus) | P3-12, P3-13, O-14 | DONE |
 | P3-14 | Readable card faces (replace the block-art rank) | U-04 | TODO |
@@ -138,10 +139,14 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-18 | Guide panel on screens slightly too small (the panel as a window below 130 columns) | U-04, P3-15 | TODO |
 | P3-19 | Auto-finish a won game (option); unfinished start on branch `feat/P3-19-auto-finish-b` | P2-07, P3-15 | TODO |
 | P3-20 | Winnable deals only (option) | P2-08 | TODO |
-| P3-21 | Aura options (focus only) and reshuffle | U-04, P3-14 | TODO |
+| P3-21 | Aura options (focus only) and the stock recycle button | U-04, P3-14 | TODO |
 | P3-22 | Localization templates (no pile name after a verb) and localized key names | P3-15 | TODO |
 | P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | TODO |
 | P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | TODO |
+| P3-25 | Footer keys as mouse buttons; `g` in the footer | P3-15 | TODO |
+| P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | TODO |
+| P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | TODO |
+| P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | TODO |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
 | P2-08 | Solver for winnable deals | P2-07 | TODO |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
