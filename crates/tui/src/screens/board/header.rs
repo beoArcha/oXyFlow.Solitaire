@@ -81,10 +81,9 @@ impl Facts {
 
     fn fitting(&self, width: usize) -> Vec<&String> {
         let mut shown: Vec<&String> = self.facts.iter().collect();
-        if Self::joined_width(&shown) > width {
-            if let Some(index) = self.counter {
-                shown.remove(index);
-            }
+        let dropped = self.counter.filter(|_| Self::joined_width(&shown) > width);
+        if let Some(index) = dropped {
+            shown.remove(index);
         }
         shown
     }
