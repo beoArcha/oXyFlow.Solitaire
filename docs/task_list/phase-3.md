@@ -498,6 +498,7 @@ Rules for the whole phase:
   in `crates/tui/src/theme/tests.rs`, so the 3:1 graphics test covers that pair without exception.
 - **Done (part 1):** #94 (16-color swatches, `MARK_PAIRS`). The board edge is PR #98.
 - **Decision (owner, 2026-11-19):** the field frame and its one-cell inset are drawn only in High Contrast (`Palette::field_edge`), so the other themes keep their card sizes.
+- **Done:** #98
 
 ### P3-24 — Menus, settings and statistics polish
 
@@ -516,6 +517,8 @@ Rules for the whole phase:
 - **Acceptance:** renders at 100 × 30 and 130 × 40 in both locales reviewed by the owner; the
   settings values aligned and grouped; tests for the description row and the win dialog's best
   marker; `cargo xtask check --quick` passes.
+- **Done (part 1):** #103 (tagline, version, variant hints with difficulty, grouped and aligned settings with descriptions, style names, Font hidden, statistics headings).
+- **Part 2 (open):** `Resume` names the saved game; the win dialog's personal-best marker and `Same seed`; `◄ ►` on the focused settings value. Needs `screens/mod.rs`, `app.rs`, `app/modal.rs`, `app/effects.rs`.
 
 ### P3-25 — Footer keys as mouse buttons
 
@@ -548,6 +551,8 @@ Rules for the whole phase:
 - **Acceptance:** tests that the list matches the legal moves on fixed deals; inactive entries render
   and do nothing on click; a click on an active entry runs the move; the toggle key; renders at
   100 × 30, 130 × 40 and 200 × 60; both locales.
+- **Done:** #102
+- **Deviation (accepted):** toggle key `v`; the panel is on by default and shares the side column with the guide (guide above); `Effect::Board` and `Modal::Moves` added in `app/` for the Compact window; generic entry labels.
 
 ### P3-27 — Quick options during the game and defaults in Settings
 
@@ -902,6 +907,7 @@ Rules for the whole phase:
 - **Acceptance:** tests on fixed deals: Down and `-` on the top card select the whole run, `+` at the
   deepest depth returns to one card, Down on a one-card pile still moves to the pile below, and the
   usable keys in the guidance; Klondike, Spider and FreeCell covered; both locales if texts change.
+- **Done:** #106
 
 ### O-28 — Focused card drawn with a gap of felt inside its face
 
@@ -916,6 +922,8 @@ Rules for the whole phase:
   aura Full and Focus only.
 - **Acceptance:** a render test asserting that no cell inside a focused card's rectangle has the `Table` background,
   per card size and glyph mode; the focus still visible without color.
+- **Done:** #105
+- **Deviation (accepted):** only the focus frame moved to the `Surface` ground; selected, target and hint borders still sit on the felt (a follow-up after the owner sees the focus fix).
 
 ### O-29 — Screen-specific labels for Select and Back
 
@@ -928,3 +936,6 @@ Rules for the whole phase:
   do (main menu: no Back, `Esc` absent or `Quit`; board: `Enter` = pick up / drop as the `Do:` row says), from one
   label table per screen, both locales.
 - **Acceptance:** footer tests per screen in both locales; no key shown that does nothing on that screen.
+- **Done:** #108
+- **Deviation (accepted):** the board needed no change (its `Do:` row already names each action); fixed footers: main menu (no Esc, `Enter Open`), game select (`Enter Play`), settings (`Enter Change`).
+
