@@ -83,3 +83,51 @@ fn hiding_the_panel_brings_the_header_row_back() {
         assert_eq!(parts.body.width, width);
     }
 }
+
+#[test]
+fn the_moves_panel_alone_takes_the_side_column_and_brings_the_header_row_back() {
+    let parts = chrome_panels(area(130, 40), false, true);
+    assert_eq!(parts.guide, None);
+    assert_eq!(parts.moves, Some(Rect::new(100, 0, GUIDE_WIDTH, 40)));
+    assert_eq!(parts.header, Some(Rect::new(0, 0, 100, 1)));
+    assert_eq!(parts.body.width, 100);
+}
+
+#[test]
+fn both_panels_share_the_column_with_the_guide_above() {
+    let parts = chrome_panels(area(130, 40), true, true);
+    assert_eq!(parts.header, None);
+    assert_eq!(parts.guide, Some(Rect::new(100, 0, GUIDE_WIDTH, 28)));
+    assert_eq!(
+        parts.moves,
+        Some(Rect::new(100, 28, GUIDE_WIDTH, MOVES_ROWS))
+    );
+    let tall = chrome_panels(area(200, 60), true, true);
+    assert_eq!(
+        tall.moves,
+        Some(Rect::new(160, 38, GUIDE_WIDTH_WIDE, MOVES_ROWS_TALL))
+    );
+    assert_eq!(tall.body.width, 160);
+}
+
+#[test]
+fn a_short_column_gives_the_moves_panel_at_most_half_of_it() {
+    let parts = chrome_panels(area(130, 20), true, true);
+    assert_eq!(parts.moves.map(|rect| rect.height), Some(10));
+}
+
+#[test]
+fn a_compact_screen_has_no_moves_panel() {
+    let parts = chrome_panels(area(100, 30), true, true);
+    assert_eq!((parts.guide, parts.moves), (None, None));
+    assert_eq!(parts.body.width, 100);
+}
+
+#[test]
+fn the_moves_panel_does_not_change_the_board_width() {
+    for (width, height) in [(130, 40), (179, 40), (200, 60)] {
+        let with = chrome_panels(area(width, height), true, true);
+        let without = chrome_with(area(width, height), true);
+        assert_eq!(with.body.width, without.body.width, "{width}x{height}");
+    }
+}

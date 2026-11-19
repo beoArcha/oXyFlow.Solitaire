@@ -89,7 +89,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 26] = [
+pub const KEY_TABLE: [Binding; 27] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -147,6 +147,7 @@ pub const KEY_TABLE: [Binding; 26] = [
     bind(Action::Hint, HelpGroup::Board, &[KeySpec::ch('h')]),
     bind(Action::Finish, HelpGroup::Board, &[KeySpec::ch('f')]),
     bind(Action::Guide, HelpGroup::Board, &[KeySpec::ch('g')]),
+    bind(Action::Moves, HelpGroup::Board, &[KeySpec::ch('v')]),
     bind(Action::Restart, HelpGroup::Game, &[KeySpec::ch('R')]),
     bind(Action::NewGame, HelpGroup::Game, &[KeySpec::ch('n')]),
     bind(Action::Pause, HelpGroup::Game, &[KeySpec::ch('p')]),
@@ -278,6 +279,17 @@ mod tests {
         assert_eq!(primary_key(Action::Guide).as_deref(), Some("g"));
         assert_eq!(
             binding_for(Action::Guide).map(|binding| binding.group),
+            Some(HelpGroup::Board)
+        );
+    }
+
+    #[test]
+    fn the_moves_key_is_v_and_is_listed_with_the_board_moves() {
+        let key = press(KeyCode::Char('v'), KeyModifiers::NONE);
+        assert_eq!(action_for_key(&key), Some(Action::Moves));
+        assert_eq!(primary_key(Action::Moves).as_deref(), Some("v"));
+        assert_eq!(
+            binding_for(Action::Moves).map(|binding| binding.group),
             Some(HelpGroup::Board)
         );
     }

@@ -2,7 +2,7 @@
 
 use super::search::SearchProgress;
 use crate::screens::Effect;
-use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay};
+use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay, MovesWindow};
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
@@ -14,6 +14,8 @@ pub enum Modal {
     CommandLine(CommandLine),
     /// The content of the guide panel as a window, on a screen too narrow for the panel.
     Guide(GuideWindow),
+    /// The entries of the possible moves panel as a window, on a screen too narrow for the panel.
+    Moves(MovesWindow),
     Pause,
     /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
     Confirm {

@@ -1,10 +1,6 @@
 # oXySol architecture — contract
 
-<<<<<<< HEAD
-Status: contract v0.4 (2026-11-19: O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock). Later tasks may refine it.
-=======
-Status: contract v0.4 (2026-11-19: P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
->>>>>>> 6e1898a (feat(stats): count restarts in no-undo games [P4-05])
+Status: contract v0.4 (2026-11-19: P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-26 added the possible moves panel). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -260,7 +256,7 @@ pub struct NullClipboard;                                // every copy fails wit
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `Apply(Settings)`, `Open(Modal)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
+  `Restart`, `Apply(Settings)`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
   `{ variant, seed: Option<u64>, undo_allowed: bool }`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, `audio_status`, `sound_styles`, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
@@ -357,6 +353,24 @@ pub struct NullClipboard;                                // every copy fails wit
   reaches the board. The `Do:` row of a Compact screen carries `g: guide` in its fixed tail (before `?: keys`),
   and the settings row reads `Guide panel: On (needs 130 columns, now 100)` (`settings.value.needs_columns`;
   `options::line` takes the screen width). From 130 columns `g` hides and shows the side panel as before.
+- **Possible moves panel (P3-26):** `widgets/moves.rs` (the framed list, `MoveEntry`, `PanelMap`),
+  `screens/board/moves_panel.rs` (entries, focus, clicks) and `widgets/overlay/moves_window.rs`. Every board
+  action (stock draw, deal or recycle, pick up or drop, quick move or send to foundation, put back, hint, undo,
+  redo, finish, restart, new game) is one button; `BoardScreen::move_entries` takes "active" from
+  `Guidance::usable`, the same source as the `Do:` row, so the panel never decides a rule. An inactive entry stays
+  listed, dimmed and marked `×` (ASCII `x`; active `•`, ASCII `o`: `Glyphs::entry_on/entry_off`), and carries a
+  short reason (`board.moves.reason.*`) that is drawn under it when every reason fits in the panel. Key `v`
+  (`Action::Moves`, help group Moves) and a click on the title toggle `Settings::moves_panel` (default `true`; an
+  older value without the field loads as `true`) through `Effect::Apply`. *Layout:* `layout::chrome_panels(area,
+  guide, moves)` (`chrome_with` is the guide-only form) puts the panels in the one side column of the size class
+  (30 or 40 columns): alone either takes the full height (without the guide the header row is back); together the
+  guide is above and the moves panel below it with 12 rows (22 from a column height of 56, where the reasons fit),
+  at most half the column. `Chrome::moves` is the new rectangle; the board width never changes. Below 130
+  columns `v` opens `Modal::Moves(MovesWindow)` with the same entries; Up, Down and Tab choose one, Enter or a
+  click runs an active one through `Effect::Board(Action)` (the application runs the action as its key would,
+  after the window closed), an inactive one does nothing. *Focus:* while the panel is drawn it is the last stop of
+  the board's Tab ring (piles, then the entries, then round); Up and Down choose an entry, Enter and Space run it
+  (an inactive one only says `board.status.not_possible`), Esc, Left and Right return to the piles.
 - **Board counters, no-undo mode and seed copying (P3-12):** the game information (`screens/board/header.rs`, `Facts`) reads
   `variant | seed N | Time m:ss | Moves: N | stock counter | No undo` in one header row at Compact size or as the
   lines of the `Game` compartment at Standard and Wide size (the counter is the first fact dropped when the header

@@ -20,7 +20,14 @@ fn row(h: &mut Harness, prefix: &str) -> String {
 }
 
 fn sized(variant: Variant, width: u16, height: u16) -> Harness {
-    let mut h = Harness::with(MemoryStorage::new(), TRUE_COLOR, width, height);
+    let storage = MemoryStorage {
+        settings: Some(crate::settings::Settings {
+            moves_panel: false,
+            ..crate::settings::Settings::default()
+        }),
+        ..MemoryStorage::default()
+    };
+    let mut h = Harness::with(storage, TRUE_COLOR, width, height);
     h.app.apply(Effect::Start {
         variant,
         seed: Some(5),

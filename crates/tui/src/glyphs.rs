@@ -41,6 +41,10 @@ pub struct Glyphs {
     pub scroll_track: &'static str,
     /// The thumb of a scroll bar, which marks the visible part of the text.
     pub scroll_thumb: &'static str,
+    /// Sign of an entry of the possible moves panel that can be run now.
+    pub entry_on: &'static str,
+    /// Sign of an entry of the possible moves panel that cannot be run now.
+    pub entry_off: &'static str,
     pub border: BorderType,
 }
 
@@ -62,6 +66,8 @@ const UNICODE: Glyphs = Glyphs {
     edge: "│",
     scroll_track: "░",
     scroll_thumb: "█",
+    entry_on: "•",
+    entry_off: "×",
     border: BorderType::Plain,
 };
 
@@ -83,6 +89,8 @@ const ASCII: Glyphs = Glyphs {
     edge: "|",
     scroll_track: ":",
     scroll_thumb: "#",
+    entry_on: "o",
+    entry_off: "x",
     border: BorderType::Plain,
 };
 
@@ -129,6 +137,8 @@ mod tests {
             &glyphs.edge,
             &glyphs.scroll_track,
             &glyphs.scroll_thumb,
+            &glyphs.entry_on,
+            &glyphs.entry_off,
         ]);
         for text in all {
             assert!(text.is_ascii(), "{text}");
@@ -186,6 +196,16 @@ mod tests {
             }
             assert_eq!(glyphs.hint_source.chars().count(), 2);
             assert_eq!(glyphs.hint_target.chars().count(), 2);
+        }
+    }
+
+    #[test]
+    fn the_entry_signs_differ_in_both_sets() {
+        for mode in [GlyphMode::Unicode, GlyphMode::Ascii] {
+            let glyphs = Glyphs::new(mode);
+            assert_ne!(glyphs.entry_on, glyphs.entry_off);
+            assert_eq!(glyphs.entry_on.chars().count(), 1);
+            assert_eq!(glyphs.entry_off.chars().count(), 1);
         }
     }
 

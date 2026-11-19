@@ -31,6 +31,7 @@ fn shown(
     let storage = MemoryStorage {
         settings: Some(Settings {
             locale,
+            moves_panel: false,
             ..Settings::for_caps(&caps)
         }),
         ..MemoryStorage::default()

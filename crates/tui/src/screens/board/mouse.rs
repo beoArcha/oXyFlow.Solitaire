@@ -13,6 +13,7 @@ use ratatui::layout::Position;
 use ratatui::style::Style;
 
 use super::cursor::{Cursor, focusable};
+use super::moves_panel::toggle_moves;
 use super::{BoardScreen, toggle_guide};
 use crate::action::Action;
 use crate::layout;
@@ -68,10 +69,18 @@ impl BoardScreen {
             return Effect::None;
         }
         self.guide_panel = ctx.settings.guide_panel;
+        self.moves_panel = ctx.settings.moves_panel;
         if let Some(cell) = left_press(event) {
             if self.on_guide_title(cell) {
                 return toggle_guide(ctx);
             }
+            if self.on_moves_title(cell) {
+                return toggle_moves(ctx);
+            }
+            if let Some(effect) = self.press_panel(cell) {
+                return effect;
+            }
+            self.leave_panel();
             if self.on_seed(cell, ctx.now) {
                 return self.dispatch(Action::CopySeed);
             }
@@ -87,7 +96,7 @@ impl BoardScreen {
     }
 
     fn on_seed(&self, cell: (u16, u16), now: Instant) -> bool {
-        let parts = layout::chrome_with(self.screen, self.guide_panel);
+        let parts = layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel);
         let Some(facts) = self.facts(now) else {
             return false;
         };
@@ -100,7 +109,7 @@ impl BoardScreen {
     }
 
     fn on_guide_title(&self, cell: (u16, u16)) -> bool {
-        layout::chrome_with(self.screen, self.guide_panel)
+        layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel)
             .guide
             .map(guide::title_row)
             .is_some_and(|row| row.contains(Position::new(cell.0, cell.1)))

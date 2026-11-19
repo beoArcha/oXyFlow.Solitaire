@@ -148,21 +148,40 @@ fn reading_key(pile: PileRef) -> (u8, u8, u8) {
     }
 }
 
-/// The focusable pile after `from` in reading order (`forward`) or before it, wrapping at both
-/// ends. A cursor on a pile that is not focusable moves to the first or the last one.
-pub(super) fn cycle(piles: &[PileSnapshot], from: PileRef, forward: bool) -> Option<PileRef> {
+fn reading_order(piles: &[PileSnapshot]) -> Vec<PileRef> {
     let mut order: Vec<PileRef> = piles
         .iter()
         .filter(|snapshot| focusable(snapshot))
         .map(|snapshot| snapshot.pile)
         .collect();
     order.sort_by_key(|pile| reading_key(*pile));
-    let next = match order.iter().position(|pile| *pile == from) {
-        Some(at) => step(at, order.len(), forward),
-        None if forward => 0,
-        None => order.len().saturating_sub(1),
+    order
+}
+
+/// The focusable pile after `from` in reading order (`forward`) or before it, wrapping at both
+/// ends, and whether the step wrapped. A cursor on a pile that is not focusable moves to the first
+/// or the last one, which counts as a wrap.
+pub(super) fn cycle_edge(
+    piles: &[PileSnapshot],
+    from: PileRef,
+    forward: bool,
+) -> Option<(PileRef, bool)> {
+    let order = reading_order(piles);
+    let (next, wrapped) = match order.iter().position(|pile| *pile == from) {
+        Some(at) => {
+            let next = step(at, order.len(), forward);
+            (next, if forward { next <= at } else { next >= at })
+        }
+        None if forward => (0, true),
+        None => (order.len().saturating_sub(1), true),
     };
-    order.get(next).copied()
+    order.get(next).map(|pile| (*pile, wrapped))
+}
+
+/// The first (`last` false) or the last focusable pile in reading order.
+pub(super) fn end_pile(piles: &[PileSnapshot], last: bool) -> Option<PileRef> {
+    let order = reading_order(piles);
+    if last { order.last() } else { order.first() }.copied()
 }
 
 /// The focusable pile closest to `from` in any direction; used when the cursor's own pile

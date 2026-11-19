@@ -12,6 +12,7 @@ mod guide_winnable;
 mod layout;
 mod mouse;
 mod moves;
+mod moves_panel;
 mod navigation;
 mod persist;
 mod pyramid;

@@ -56,6 +56,9 @@ pub struct Settings {
     pub volume: u8,
     /// Whether the board shows the guide panel beside it (when the terminal is wide enough).
     pub guide_panel: bool,
+    /// Whether the board shows the possible moves panel beside it (a window below 130 columns). An
+    /// older saved value without the field loads as `true`.
+    pub moves_panel: bool,
     /// The undo mode offered in the game selection and used for the next game: `true` allows undo
     /// and redo. An older saved value without the field loads as `true`.
     pub undo_allowed: bool,
@@ -83,6 +86,7 @@ impl Default for Settings {
             music: false,
             volume: 70,
             guide_panel: true,
+            moves_panel: true,
             undo_allowed: true,
             winnable_only: false,
             auto_finish: true,
@@ -162,6 +166,26 @@ mod tests {
         assert!(matches!(parsed, Ok(ref s) if s.guide_panel));
         let off = toml::from_str::<Settings>("guide_panel = false");
         assert!(matches!(off, Ok(ref s) if !s.guide_panel));
+    }
+
+    #[test]
+    fn the_moves_panel_is_on_by_default_and_old_values_without_it_keep_it_on() {
+        assert!(Settings::default().moves_panel);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if s.moves_panel));
+        let off = toml::from_str::<Settings>("moves_panel = false");
+        assert!(matches!(off, Ok(ref s) if !s.moves_panel));
+    }
+
+    #[test]
+    fn the_moves_panel_round_trips() {
+        let settings = Settings {
+            moves_panel: false,
+            ..Settings::default()
+        };
+        let text = toml::to_string(&settings).unwrap_or_default();
+        let back = toml::from_str::<Settings>(&text);
+        assert!(matches!(back, Ok(ref s) if *s == settings && !s.moves_panel));
     }
 
     #[test]

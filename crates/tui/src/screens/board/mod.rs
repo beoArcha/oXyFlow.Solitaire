@@ -14,6 +14,7 @@ mod header;
 mod marks;
 mod mouse;
 mod moves;
+mod moves_panel;
 mod now;
 mod status;
 #[cfg(test)]
@@ -40,6 +41,7 @@ use crate::settings::Settings;
 use crate::solver::DealCheck;
 use crate::storage::GameId;
 use crate::widgets::footer::FooterMap;
+use crate::widgets::moves::PanelMap;
 use crate::widgets::pile::Marks;
 
 const DEFAULT_SCREEN: Rect = Rect::new(0, 0, 120, 40);
@@ -76,6 +78,8 @@ pub struct BoardScreen {
     restarts: u32,
     deal: DealCheck,
     guide_panel: bool,
+    moves_panel: bool,
+    panel_focus: Option<usize>,
     auto_finish: bool,
     forced: Option<Vec<Move>>,
     finishing: Option<Finishing>,
@@ -87,6 +91,8 @@ pub struct BoardScreen {
     pointer: Pointer,
     /// The buttons of the `Do:` row as drawn last.
     do_map: FooterMap,
+    /// The active entries of the possible moves panel as drawn last.
+    moves_map: PanelMap,
 }
 
 /// The request to show the guide panel when it is hidden and to hide it when it is shown.
@@ -116,6 +122,8 @@ impl Default for BoardScreen {
             restarts: 0,
             deal: DealCheck::Unchecked,
             guide_panel: true,
+            moves_panel: true,
+            panel_focus: None,
             auto_finish: true,
             forced: None,
             finishing: None,
@@ -126,6 +134,7 @@ impl Default for BoardScreen {
             covered: false,
             pointer: Pointer::default(),
             do_map: FooterMap::default(),
+            moves_map: PanelMap::default(),
         }
     }
 }
@@ -294,11 +303,16 @@ impl BoardScreen {
     /// Handles a key press mapped to `action`; the effect is for the application to apply.
     pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         self.guide_panel = ctx.settings.guide_panel;
+        self.moves_panel = ctx.settings.moves_panel;
         self.auto_finish = ctx.settings.auto_finish;
         match action {
             Some(Action::Guide) if self.panel_unavailable() => self.open_guide_window(ctx),
             Some(Action::Guide) => toggle_guide(ctx),
-            Some(action) => self.dispatch(action),
+            Some(Action::Moves) if self.panel_unavailable() => self.open_moves_window(),
+            Some(Action::Moves) => moves_panel::toggle_moves(ctx),
+            Some(action) => self
+                .panel_key(action)
+                .unwrap_or_else(|| self.dispatch(action)),
             None => Effect::None,
         }
     }
@@ -307,8 +321,11 @@ impl BoardScreen {
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         self.screen = area;
         self.guide_panel = ctx.settings.guide_panel;
+        self.moves_panel = ctx.settings.moves_panel;
         self.auto_finish = ctx.settings.auto_finish;
-        self.do_map = view::draw(frame, area, self, ctx);
+        let (do_map, moves_map) = view::draw(frame, area, self, ctx);
+        self.do_map = do_map;
+        self.moves_map = moves_map;
     }
 
     /// The action of the `Do:` button under `cell`, if any.
