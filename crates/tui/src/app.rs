@@ -373,6 +373,9 @@ mod search;
 mod tests;
 
 #[cfg(test)]
+mod chosen_deal_tests;
+
+#[cfg(test)]
 mod deals_tests;
 
 #[cfg(test)]
