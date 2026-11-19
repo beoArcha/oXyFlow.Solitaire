@@ -58,6 +58,7 @@ jobs:
       tag: ${{ steps.compute.outputs.tag }}
       stable: ${{ steps.compute.outputs.stable }}
       skip: ${{ steps.compute.outputs.skip }}
+      promote: ${{ steps.compute.outputs.promote }}
     env:
       REPO: ${{ github.repository }}
       GH_TOKEN: ${{ github.token }}
@@ -70,19 +71,12 @@ jobs:
         id: compute
         run: |
           set -eu
-          if [ "$STABLE" = "true" ]; then
-            TAG=$(cargo xtask version --tag --stable)
-          else
-            TAG=$(cargo xtask version --tag)
-          fi
+          TAG=$(cargo xtask version --tag)
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "stable=$STABLE" >> "$GITHUB_OUTPUT"
           skip=false
+          promote=false
           if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
-            if [ "$STABLE" = "true" ]; then
-              echo "::error::tag $TAG already exists; a stable version is published only once"
-              exit 1
-            fi
             git fetch --no-tags --force origin "refs/tags/$TAG:refs/tags/$TAG"
             TAG_COMMIT=$(git rev-parse "refs/tags/$TAG^{commit}")
             if [ "$TAG_COMMIT" != "$GITHUB_SHA" ]; then
@@ -90,11 +84,33 @@ jobs:
               exit 1
             fi
             if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
-              echo "::notice::release $TAG already exists for this commit; nothing to publish"
+              PRERELEASE=$(gh release view "$TAG" --repo "$REPO" --json isPrerelease --jq .isPrerelease)
+              if [ "$STABLE" = "true" ] && [ "$PRERELEASE" = "true" ]; then
+                echo "::notice::release $TAG is a pre-release of this commit; making it a full release"
+                promote=true
+              else
+                echo "::notice::release $TAG already exists for this commit; nothing to publish"
+              fi
               skip=true
             fi
           fi
           echo "skip=$skip" >> "$GITHUB_OUTPUT"
+          echo "promote=$promote" >> "$GITHUB_OUTPUT"
+
+  stabilize:
+    needs: tag
+    if: needs.tag.outputs.promote == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    env:
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.tag.outputs.tag }}
+    steps:
+      - name: Turn the pre-release into a full release
+        run: gh release edit "$TAG" --repo "$REPO" --prerelease=false --latest
 
   build:
     needs: [check, tag]
@@ -125,6 +141,8 @@ jobs:
       TARGET: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Install musl tools
         if: matrix.musl
         run: |

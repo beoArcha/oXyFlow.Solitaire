@@ -81,7 +81,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         console::widen_owned_window();
     }
     tracing::info!(
-        version = env!("CARGO_PKG_VERSION"),
+        version = env!("OXYSOL_VERSION"),
         data_dir = %paths.data_dir().display(),
         "oXySol starting"
     );

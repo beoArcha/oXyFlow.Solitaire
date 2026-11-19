@@ -8,7 +8,7 @@ pub const COPYRIGHT_YEAR: &str = "2026";
 /// The two lines printed by `--version`, in the current locale.
 pub fn version_text() -> String {
     version_text_for(
-        env!("CARGO_PKG_VERSION"),
+        env!("OXYSOL_VERSION"),
         env!("CARGO_PKG_AUTHORS"),
         env!("CARGO_PKG_LICENSE"),
     )

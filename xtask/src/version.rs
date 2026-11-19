@@ -1,32 +1,30 @@
-//! The `version` command: prints the version in `metadata.toml` or the release tag derived from it
-//! (T-21). `parse_version` and `release_tag` are pure; only `run` and `commit_count` touch files
-//! and git.
+//! The `version` command: prints the effective version or its release tag (T-21, O-36). The metadata
+//! version gives major and minor; the patch is derived from git by `version_scheme`. `parse_version` is
+//! pure; only `run` touches files and git.
 
 use std::fs;
 use std::path::Path;
-use std::process::Command;
 
 use crate::check::workspace_root;
 use crate::error::XtaskError;
+use crate::version_scheme::{effective_version, release_tag};
 
 const METADATA_FILE: &str = "metadata.toml";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Output {
-    Version,
-    Tag { stable: bool },
+    Metadata,
+    Effective,
+    Tag,
 }
 
 pub fn run(output: Output) -> Result<(), XtaskError> {
     let root = workspace_root()?;
-    let version = read_version(&root)?;
+    let base = read_version(&root)?;
     match output {
-        Output::Version => println!("{version}"),
-        Output::Tag { stable: true } => println!("{}", release_tag(&version, 0, true)),
-        Output::Tag { stable: false } => {
-            let count = commit_count(&root)?;
-            println!("{}", release_tag(&version, count, false));
-        }
+        Output::Metadata => println!("{base}"),
+        Output::Effective => println!("{}", effective_version(&root, &base)?),
+        Output::Tag => println!("{}", release_tag(&effective_version(&root, &base)?)),
     }
     Ok(())
 }
@@ -47,14 +45,6 @@ pub fn parse_version(path: &Path, text: &str) -> Result<String, XtaskError> {
         })
 }
 
-pub fn release_tag(version: &str, commit_count: u64, stable: bool) -> String {
-    if stable {
-        format!("v{version}")
-    } else {
-        format!("v{version}-dev.{commit_count}")
-    }
-}
-
 fn read_version(root: &Path) -> Result<String, XtaskError> {
     let path = root.join(METADATA_FILE);
     let text = fs::read_to_string(&path).map_err(|source| XtaskError::Io {
@@ -64,45 +54,14 @@ fn read_version(root: &Path) -> Result<String, XtaskError> {
     parse_version(&path, &text)
 }
 
-fn commit_count(root: &Path) -> Result<u64, XtaskError> {
-    let output = Command::new("git")
-        .args(["rev-list", "--count", "HEAD"])
-        .current_dir(root)
-        .output()
-        .map_err(|source| XtaskError::Spawn {
-            program: "git".to_owned(),
-            source,
-        })?;
-    if !output.status.success() {
-        return Err(XtaskError::GitRevList {
-            code: output.status.code(),
-        });
-    }
-    let text = String::from_utf8_lossy(&output.stdout).trim().to_owned();
-    text.parse().map_err(|source| XtaskError::CommitCount {
-        output: text,
-        source,
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use std::path::Path;
 
-    use super::{parse_version, release_tag};
+    use super::parse_version;
     use crate::error::XtaskError;
 
     const PATH: &str = "metadata.toml";
-
-    #[test]
-    fn dev_tag_carries_the_commit_count() {
-        assert_eq!(release_tag("0.1.0", 12, false), "v0.1.0-dev.12");
-    }
-
-    #[test]
-    fn stable_tag_has_no_suffix() {
-        assert_eq!(release_tag("0.1.0", 12, true), "v0.1.0");
-    }
 
     #[test]
     fn reads_the_project_version() {
