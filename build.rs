@@ -1,7 +1,8 @@
 //! Build script. Embeds every sound style folder under `assets/audio/` (T-07) into a generated table in
 //! `OUT_DIR`, and the application icon and version information into the Windows executable with
 //! `winresource`, only when the target OS is Windows. `winresource` takes `FileVersion` and
-//! `ProductVersion` from `CARGO_PKG_VERSION`.
+//! `ProductVersion` from `CARGO_PKG_VERSION`; the legal copyright is built from `CARGO_PKG_AUTHORS` and
+//! `CARGO_PKG_LICENSE`.
 
 use std::env;
 use std::fs;
@@ -108,14 +109,27 @@ fn is_sound_file(name: &str) -> bool {
 fn embed_windows_resources() -> Result<(), std::io::Error> {
     const PRODUCT_NAME: &str = "oXySol";
     const FILE_DESCRIPTION: &str = "oXySol - terminal solitaire";
+    const COMPANY_NAME: &str = "oXyFlow";
     let mut resource = winresource::WindowsResource::new();
     resource
         .set_icon(ICON_PATH)
         .set("ProductName", PRODUCT_NAME)
         .set("FileDescription", FILE_DESCRIPTION)
+        .set("CompanyName", COMPANY_NAME)
+        .set("LegalCopyright", &legal_copyright())
         .set("OriginalFilename", "oxysol.exe")
         .set("InternalName", "oxysol");
     resource.compile()
+}
+
+#[cfg(windows)]
+fn legal_copyright() -> String {
+    const COPYRIGHT_YEAR: &str = "2026";
+    let authors = env::var("CARGO_PKG_AUTHORS")
+        .unwrap_or_default()
+        .replace(':', ", ");
+    let license = env::var("CARGO_PKG_LICENSE").unwrap_or_default();
+    format!("Copyright (c) {COPYRIGHT_YEAR} {authors}. {license} License.")
 }
 
 #[cfg(not(windows))]

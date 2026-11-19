@@ -166,7 +166,7 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
             .map(|line| line.trim_end().chars().count())
             .max();
         assert!(widest.is_some_and(|width| width <= 100));
-        let names = ["Best streak", "Maks. seria"];
+        let names = ["Best streak", "Rekord"];
         assert!(
             lines
                 .iter()

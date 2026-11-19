@@ -1,13 +1,14 @@
 # Strings of the cli area.
 
 version = "oXySol {version}"
+version_legal = "Copyright (c) {year} {authors}. Licencja {license}."
 help = """
 oXySol: najlepszy biurowy pasjans w terminalu
 
 Użycie: oxysol [opcje]
 
 Opcje:
-  --version                    wypisz wersję i zakończ
+  --version                    wypisz wersję i licencję oraz zakończ
   --help                       wypisz tę pomoc i zakończ
 
 Wygląd:
@@ -28,7 +29,7 @@ Dwuklik czy konsola:
   Enter.
 
 Pliki:
-  OXYSOL_HOME      katalog na bazę danych i dziennik (zawsze wygrywa)
+  OXYSOL_HOME      katalog na bazę danych i dziennik (ma pierwszeństwo)
   oxysol.portable  plik obok programu: pliki leżą wtedy w katalogu
                    data obok niego
   OXYSOL_LOG       poziom dziennika: error, warn, info, debug lub trace
@@ -36,9 +37,9 @@ Pliki:
 usage_error = "oxysol: {error}\nSpróbuj `oxysol --help`, aby zobaczyć listę opcji."
 paths_failed = "oXySol nie może znaleźć katalogu na swoje pliki. Ustaw OXYSOL_HOME na katalog z prawem zapisu."
 storage_failed = "oXySol nie może otworzyć swojej bazy danych. Szczegóły są w pliku dziennika."
-terminal_failed = "oXySol zakończył działanie, bo terminal zawiódł. Szczegóły są w pliku dziennika."
-output_failed = "oXySol nie może pisać do terminala."
+terminal_failed = "oXySol zakończył działanie z powodu błędu terminala. Szczegóły w pliku dziennika."
+output_failed = "oXySol nie może zapisywać do terminala."
 new_window_failed = "oXySol nie może otworzyć nowego okna konsoli (próbowano: {tried}). Uruchom go bez --new-window."
-log_unavailable = "oXySol nie może zapisywać dziennika w {path}. Działa bez dziennika."
-panic = "oXySol niespodziewanie zakończył działanie w {location}. Szczegóły są w {path}."
+log_unavailable = "oXySol nie może zapisać dziennika w pliku {path}. Działa bez dziennika."
+panic = "oXySol niespodziewanie zakończył działanie ({location}). Szczegóły w pliku {path}."
 press_enter = "Naciśnij Enter, aby zamknąć to okno."

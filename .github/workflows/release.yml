@@ -40,6 +40,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: false
       - name: Install the ALSA development package for the audio feature
         if: runner.os == 'Linux'
         run: |
@@ -64,7 +66,6 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: Swatinem/rust-cache@v2
       - name: Compute the tag and stop if this commit is already published
         id: compute
         run: |
@@ -131,24 +132,29 @@ jobs:
           sudo apt-get install -y musl-tools
       - name: Add the Rust target
         run: rustup target add "$TARGET"
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ matrix.target }}
       - name: Release build
         env:
           FEATURES: ${{ matrix.features }}
         run: cargo build --release --locked $FEATURES --target "$TARGET" -p oxysol
+      - name: Install cargo-about
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-about@0.9.3
+      - name: Generate the third-party licenses
+        env:
+          FEATURES: ${{ matrix.features }}
+        run: cargo about generate --locked --fail $FEATURES about.hbs -o THIRD-PARTY-LICENSES.md
       - name: Archive (Unix)
         if: runner.os != 'Windows'
         run: |
           name="oxysol-$TAG-$TARGET"
           mkdir -p "dist/$name"
-          cp "target/$TARGET/release/oxysol" README.md LICENSE "dist/$name/"
+          cp "target/$TARGET/release/oxysol" README.md LICENSE THIRD-PARTY-LICENSES.md "dist/$name/"
           tar -C dist -czf "dist/$name.tar.gz" "$name"
 
           pname="oxysol-$TAG-$TARGET-portable"
           mkdir -p "dist/$pname"
-          cp "target/$TARGET/release/oxysol" README.md LICENSE "dist/$pname/"
+          cp "target/$TARGET/release/oxysol" README.md LICENSE THIRD-PARTY-LICENSES.md "dist/$pname/"
           printf '%s\n' \
             'This copy of oXySol is portable: it keeps its database and log in the "data" folder next to the program.' \
             'Delete this file to use the system data folder instead.' \
@@ -160,12 +166,12 @@ jobs:
         run: |
           $name = "oxysol-$env:TAG-$env:TARGET"
           New-Item -ItemType Directory -Force -Path "dist/$name" | Out-Null
-          Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE" -Destination "dist/$name"
+          Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE", "THIRD-PARTY-LICENSES.md" -Destination "dist/$name"
           Compress-Archive -Path "dist/$name" -DestinationPath "dist/$name.zip"
 
           $pname = "oxysol-$env:TAG-$env:TARGET-portable"
           New-Item -ItemType Directory -Force -Path "dist/$pname" | Out-Null
-          Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE" -Destination "dist/$pname"
+          Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE", "THIRD-PARTY-LICENSES.md" -Destination "dist/$pname"
           $lines = @(
             'This copy of oXySol is portable: it keeps its database and log in the "data" folder next to the program.',
             'Delete this file to use the system data folder instead.'

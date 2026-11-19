@@ -5,7 +5,6 @@ use std::time::Instant;
 
 use oxysol::audio;
 #[cfg(feature = "audio")]
-#[cfg(feature = "audio")]
 use oxysol::audio::output::OutputError;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
@@ -24,6 +23,7 @@ const REMOTE: TerminalCaps = TerminalCaps {
     ..LOCAL
 };
 
+#[cfg(feature = "audio")]
 fn settings() -> AudioSettings {
     AudioSettings {
         style: "default".to_owned(),

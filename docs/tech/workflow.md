@@ -29,8 +29,8 @@ package. Changes under `docs/` and to `*.md` select none.
 
 | File | Trigger | Runs |
 |---|---|---|
-| `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu; a newer push cancels the older run of the same PR |
-| `.github/workflows/main.yml` | push to `main`, manual dispatch | `cargo xtask check` on Ubuntu, Windows and macOS; then `promote` (main only) |
+| `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu, then Clippy and tests of `oxysol` with `--no-default-features` (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`) |
+| `.github/workflows/main.yml` | push to `main`, manual dispatch | `cargo xtask check` on Ubuntu, Windows and macOS, plus the no-sound Clippy and tests on Ubuntu; then `promote` (main only). It is the only workflow that saves the rust cache |
 | `.github/workflows/release.yml` | manual dispatch only (R-20), input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
 
 `promote` runs one at a time and is never cancelled. It stops when `release` already contains the
@@ -63,10 +63,14 @@ gh workflow run release.yml --ref release
 4. `build` makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
    `x86_64-unknown-linux-musl` (`musl-tools`), `aarch64-unknown-linux-musl` (`musl-tools`)
    and `aarch64-apple-darwin`. Each target produces two archives: a normal archive
-   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md` and `LICENSE`) and a
-   portable archive `oxysol-<tag>-<target>-portable` with the same files plus `oxysol.portable`:
+   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md`, `LICENSE` and
+   `THIRD-PARTY-LICENSES.md`) and a portable archive `oxysol-<tag>-<target>-portable` with the same
+   files plus `oxysol.portable`:
    `.zip` on Windows, `.tar.gz` elsewhere. Archives are workflow artifacts named
-   `archive-<target>`.
+   `archive-<target>`. `THIRD-PARTY-LICENSES.md` is generated per target by a pinned `cargo-about`
+   (`about.toml`, `about.hbs`) with the features of that target's build, so it lists the crates that
+   the binary includes. `tag` and `build` use no rust cache: published binaries come from clean builds;
+   only `check` reads the cache of `main`.
 5. `publish` writes `SHA256SUMS`, creates the tag on the tested commit and a GitHub Release with
    every archive and `SHA256SUMS`. It is a pre-release unless `stable` is set.
 6. `site` builds `docs/site` with a pinned mdBook (v0.4.52, SHA-256 checked), inserts the tag and the

@@ -2,14 +2,14 @@
 label = "Statystyki"
 title = "Statystyki"
 footer_list = "Góra Dół Wybór"
-footer_replay = "Enter Zagraj to ziarno ponownie"
+footer_replay = "Enter Zagraj ponownie"
 footer_copy = "c Kopiuj ziarno"
 footer_back = "Esc Wstecz"
-empty = "Nie rozegrano jeszcze żadnej gry. Zacznij ją z menu głównego."
+empty = "Nie rozegrano jeszcze żadnej gry. Rozpocznij nową w menu głównym."
 load_failed = "Nie można odczytać historii gier."
 position = "Gra {current} z {total}"
 copied = "Skopiowano ziarno {seed}"
-copy_failed = "Nie udało się skopiować ziarna — oto ono: {seed}"
+copy_failed = "Nie udało się skopiować ziarna: {seed}"
 
 [mode]
 undo = "z cofaniem"
@@ -28,7 +28,7 @@ rate = "% wygr."
 best_time = "Najl. czas"
 fewest_moves = "Min. ruchów"
 streak = "Seria"
-longest = "Maks. seria"
+longest = "Rekord"
 
 [history]
 title = "Historia, od najnowszej, czas UTC"

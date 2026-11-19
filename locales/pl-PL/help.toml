@@ -41,11 +41,11 @@ right_click = "Prawy przycisk"
 drag = "Przeciągnięcie"
 
 [mouse]
-click_card = "Podnieś, a potem upuść na cel"
+click_card = "Weź, a potem połóż na celu"
 click_stock = "Dobierz kartę z talii"
 double_click = "Szybki ruch na cel"
-right_click = "Anuluj podniesienie"
-drag = "Przenieś kartę na jej cel"
+right_click = "Odłóż karty"
+drag = "Przenieś kartę na cel"
 
 [overlay]
 continue = "Kontynuuj"
@@ -66,4 +66,4 @@ rules = "Zasady"
 command_line = "Wiersz poleceń"
 
 [command_line]
-footer = "Tab: następna karta   {up}/{down}/PgUp/PgDn: przewijanie   {back}: zamknij"
+footer = "Tab: następna zakładka   {up}/{down}/PgUp/PgDn: przewijanie   {back}: zamknij"
