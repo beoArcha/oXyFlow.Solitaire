@@ -126,6 +126,7 @@ The full key list is in the game: press `?`.
 | `u` and `r` | Undo and redo |
 | `g` | Guide panel |
 | `v` | Possible moves panel |
+| `o` | Quick options for this game (hints, aura, panels, auto-finish) |
 | `i` | How to play |
 | `?` | Help: every key |
 | `q` | Quit |
