@@ -56,22 +56,28 @@ fn panel_width(columns: u16) -> u16 {
     if columns < 180 { 30 } else { 40 }
 }
 
-#[test]
-fn every_size_locale_and_glyph_mode_draws_inside_wgl4_or_ascii() {
+fn every_screen() -> Vec<(Variant, (u16, u16), Locale, TerminalCaps)> {
+    let mut all = Vec::new();
     for size in SIZES {
         for locale in Locale::ALL {
             for caps in [TRUE_COLOR, PLAIN] {
-                for variant in GAMES {
-                    let mut h = shown(variant, size, locale, caps);
-                    let lines = h.lines();
-                    assert_eq!(lines.len(), usize::from(size.1));
-                    let plain_english = !caps.unicode && locale == Locale::EnUs;
-                    for ch in lines.concat().chars() {
-                        assert!(ch.is_ascii() || is_wgl4(ch), "{size:?} {variant:?}: {ch:?}");
-                        assert!(!plain_english || ch.is_ascii(), "{size:?}: {ch:?}");
-                    }
-                }
+                all.extend(GAMES.map(|variant| (variant, size, locale, caps)));
             }
+        }
+    }
+    all
+}
+
+#[test]
+fn every_size_locale_and_glyph_mode_draws_inside_wgl4_or_ascii() {
+    for (variant, size, locale, caps) in every_screen() {
+        let mut h = shown(variant, size, locale, caps);
+        let lines = h.lines();
+        assert_eq!(lines.len(), usize::from(size.1));
+        let plain_english = !caps.unicode && locale == Locale::EnUs;
+        for ch in lines.concat().chars() {
+            assert!(ch.is_ascii() || is_wgl4(ch), "{size:?} {variant:?}: {ch:?}");
+            assert!(!plain_english || ch.is_ascii(), "{size:?}: {ch:?}");
         }
     }
     set_locale(Locale::EnUs);
