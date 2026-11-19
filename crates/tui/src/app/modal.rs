@@ -2,7 +2,7 @@
 
 use super::search::SearchProgress;
 use crate::screens::Effect;
-use crate::widgets::overlay::{CommandLine, HowToPlay};
+use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay};
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
@@ -12,6 +12,8 @@ pub enum Modal {
     HowToPlay(HowToPlay),
     /// The options of `oxysol --help`, the third tab of the help window.
     CommandLine(CommandLine),
+    /// The content of the guide panel as a window, on a screen too narrow for the panel.
+    Guide(GuideWindow),
     Pause,
     /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
     Confirm {

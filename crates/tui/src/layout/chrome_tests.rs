@@ -11,8 +11,10 @@ fn the_class_follows_the_size_at_every_draw() {
     let cases = [
         ((100, 30), Class::Compact),
         ((129, 50), Class::Compact),
-        ((130, 35), Class::Compact),
-        ((200, 35), Class::Compact),
+        ((115, 35), Class::Compact),
+        ((130, 30), Class::Standard),
+        ((130, 35), Class::Standard),
+        ((200, 30), Class::Wide),
         ((130, 36), Class::Standard),
         ((179, 60), Class::Standard),
         ((180, 36), Class::Wide),
@@ -43,6 +45,23 @@ fn a_standard_screen_has_two_chrome_rows_and_a_full_height_panel() {
         (parts.now, parts.possible),
         (Rect::new(0, 38, 100, 1), Rect::new(0, 39, 100, 1))
     );
+}
+
+#[test]
+fn a_short_wide_screen_keeps_the_panel_and_a_board_of_the_minimum_width() {
+    let parts = chrome_with(area(130, 30), true);
+    assert_eq!(parts.class, Class::Standard);
+    assert_eq!(parts.header, None);
+    assert_eq!(parts.guide, Some(Rect::new(100, 0, GUIDE_WIDTH, 30)));
+    assert_eq!(parts.body, Rect::new(0, 0, 100, 28));
+    assert!(parts.body.width >= BOARD_MIN_WIDTH);
+}
+
+#[test]
+fn a_tall_narrow_screen_has_no_panel_whatever_its_height() {
+    let parts = chrome_with(area(129, 60), true);
+    assert_eq!((parts.guide, parts.body.width), (None, 129));
+    assert!(parts.header.is_some());
 }
 
 #[test]

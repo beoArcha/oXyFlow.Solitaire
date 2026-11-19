@@ -130,6 +130,7 @@ rules = "{key}: jak grać"
 restart = "{key}: od nowa"
 new_game = "{key}: nowa gra"
 menu = "{key}: menu"
+guide = "{key}: przewodnik"
 finish = "{key}: dokończ grę"
 
 [counter]
@@ -141,6 +142,8 @@ deals_left = "Rozdań: {count}"
 
 [guide]
 title = "Przewodnik ({key}: ukryj)"
+window_title = "Przewodnik"
+window_footer = "{up}/{down}/PgUp/PgDn: przewijanie   {key}/{back}: zamknij"
 game_title = "Gra"
 goal_title = "Cel"
 keys_title = "Klawisze"

@@ -18,7 +18,7 @@ fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
 }
 
 fn row(field: Field, settings: &Settings, audio_available: bool) -> String {
-    line(field, settings, audio_available, &sound_styles())
+    line(field, settings, audio_available, &sound_styles(), 200)
 }
 
 fn value(field: Field, settings: &Settings) -> String {

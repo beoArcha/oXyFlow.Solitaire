@@ -8,6 +8,7 @@ mod command_line_tests;
 mod dialog;
 #[cfg(test)]
 mod focus_tests;
+mod guide_window;
 mod help;
 #[cfg(test)]
 mod help_rules_tests;
@@ -30,6 +31,7 @@ use ratatui::widgets::{Block, Clear};
 
 pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
+pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
@@ -43,7 +45,7 @@ use crate::screens::{Effect, ViewCtx};
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
-        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) => None,
+        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) | Modal::Guide(_) => None,
         Modal::Pause => Some(pause::text()),
         Modal::Search(progress) => Some(search::text(progress)),
         Modal::Win { menu_focused } => {
@@ -83,6 +85,7 @@ fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geo
     match (modal, text_of(modal, board, now)) {
         (_, Some(text)) => text.geometry(area),
         (Modal::HowToPlay(_), None) => how_to_play::geometry(area),
+        (Modal::Guide(_), None) => guide_window::geometry(area),
         (_, None) => help::geometry(area),
     }
 }
@@ -102,6 +105,7 @@ pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, c
         }
         (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
         (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),
+        (Modal::Guide(state), None) => guide_window::draw(frame, area, state, board, ctx),
         (_, None) => help::draw(frame, area, ctx),
     }
 }
@@ -220,6 +224,9 @@ pub fn handle_for(
     action: Option<Action>,
     rules: Rules,
 ) -> Option<Effect> {
+    if let Modal::Guide(state) = modal {
+        return guide_window::handle(state, key, action);
+    }
     if let Some(tab) = tab_of(modal) {
         if let Some(target) = tab_target(tab, key, action) {
             *modal = modal_for(target, rules);
@@ -260,6 +267,9 @@ pub fn handle_mouse(
     now: Instant,
     event: &MouseEvent,
 ) -> Option<Effect> {
+    if let Modal::Guide(state) = modal {
+        return guide_window::handle_mouse(state, area, event);
+    }
     if let Some(tab) = tab_of(modal) {
         if let Some(target) = clicked_tab(tab, area, event) {
             *modal = modal_for(target, rules_of(board));

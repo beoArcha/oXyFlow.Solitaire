@@ -9,6 +9,7 @@ mod counters;
 mod cursor;
 mod finish;
 mod guidance;
+mod guide_view;
 mod header;
 mod marks;
 mod mouse;
@@ -271,6 +272,7 @@ impl BoardScreen {
         self.guide_panel = ctx.settings.guide_panel;
         self.auto_finish = ctx.settings.auto_finish;
         match action {
+            Some(Action::Guide) if self.panel_unavailable() => self.open_guide_window(ctx),
             Some(Action::Guide) => toggle_guide(ctx),
             Some(action) => self.dispatch(action),
             None => Effect::None,

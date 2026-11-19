@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -314,12 +314,24 @@ pub struct NullClipboard;                                // every copy fails wit
   appear only when every section still fits. It never repeats a fact of the controls strip. `Settings::guide_panel`
   (default `true`; an older saved value without the field loads as `true`) switches it; `Action::Guide`, key `g`,
   and the title click toggle it through `Effect::Apply`.
-  *Size classes:* `layout::Class::of(area)` is decided at every draw: Compact below 130 columns or below 36
-  rows, Standard from 130 columns, Wide from 180 columns. The panel exists in Standard and Wide only, and only when
-  the setting is on; the board keeps at least 100 columns. Chrome rows: Compact has the header row plus the two
-  strip rows; Standard and Wide have the two strip rows only, the facts moving into the `Game` compartment. When
-  the panel is off (setting) the header row comes back, so the game information has exactly one place at all
-  times. A Compact screen has no panel (P3-18 opens the guide as a window there).
+  *Size classes:* `layout::Class::of(area)` is decided at every draw from the width alone (P3-18 dropped the
+  height limit): Compact below 130 columns, Standard from 130 columns, Wide from 180 columns. The panel exists in
+  Standard and Wide only, and only when the setting is on, whatever the height (a short wide screen, 130 × 30,
+  has it; the terminal is never smaller than 100 × 30, so the board keeps its 100 columns and at least 28 rows
+  beside it). Chrome rows: Compact has the header row plus the two strip rows; Standard and Wide have the two
+  strip rows only, the facts moving into the `Game` compartment. When the panel is off (setting) the header row
+  comes back, so the game information has exactly one place at all times. When the panel is shorter than its
+  sections, `widgets/guide` drops the `Mouse` section first and the `Legend` next (`fitted`), so a heading never
+  stands without its lines.
+  *Guide window (P3-18):* below 130 columns the setting stays on and its effect stays visible. `g`
+  (`BoardScreen::panel_unavailable`, the class of the last drawn size) opens `Modal::Guide(GuideWindow)`
+  (`widgets/overlay/guide_window.rs`, a `dialog::boxed` of 62 columns and 17 text rows) with the same content as
+  the panel, laid out by `guide::window_lines` (`Game`, `Goal`, `Keys` with the usable ones marked, `Mouse`,
+  `Legend`, a blank row between them). It scrolls with Up, Down, PgUp, PgDn, Home, End and the wheel, shows its
+  position in the footer, and closes with `g`, Esc, Enter or Close; the clock stops while it is open and no key
+  reaches the board. The `Do:` row of a Compact screen carries `g: guide` in its fixed tail (before `?: keys`),
+  and the settings row reads `Guide panel: On (needs 130 columns, now 100)` (`settings.value.needs_columns`;
+  `options::line` takes the screen width). From 130 columns `g` hides and shows the side panel as before.
 - **Board counters, no-undo mode and seed copying (P3-12):** the game information (`screens/board/header.rs`, `Facts`) reads
   `variant | seed N | Time m:ss | Moves: N | stock counter | No undo` in one header row at Compact size or as the
   lines of the `Game` compartment at Standard and Wide size (the counter is the first fact dropped when the header
