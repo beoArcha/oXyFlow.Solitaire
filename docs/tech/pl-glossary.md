@@ -12,6 +12,9 @@ New Polish texts must use this glossary.
 | run | ciąg | |
 | restart (a game) | od nowa | Header: `Od nowa: N` |
 | win without a restart | czysta wygrana | Stats column: Czyste |
+| hints and help | podpowiedzi i pomoc | Settings group |
+| target marks | znaczniki celów | |
+| quick options | szybkie opcje | |
 | run size | długość ciągu | |
 | face-up / face-down | odkryta / zakryta | |
 | pick up / drop / put back | weź / połóż / odłóż | |

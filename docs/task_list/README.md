@@ -143,11 +143,11 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-20 | Winnable deals only (option) (#82) | P2-08 | DONE |
 | P3-21 | Aura options (focus only) and the stock recycle button | U-04, P3-14 | DONE |
 | P3-22 | Localization templates (no pile name after a verb) and localized key names | P3-15 | DONE |
-| P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | IN PROGRESS |
+| P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | DONE |
 | P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | IN PROGRESS |
 | P3-25 | Footer keys as mouse buttons; `g` in the footer (#86) | P3-15 | DONE |
-| P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | IN PROGRESS |
-| P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | TODO |
+| P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | DONE |
+| P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | IN PROGRESS |
 | P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | DONE |
 | O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows (#91) | P3-18, P3-25 | DONE |
 | P3-28 | Docking modals to a side of the screen | O-23 | TODO |
@@ -158,15 +158,16 @@ the PR descriptions; cards that exist are in the phase files.
 | O-25 | UI inventory of colors, sizes and fonts (`docs/tech/ui-inventory.md`) | — | DONE |
 | O-26 | Contrast fixes found by the UI inventory (focus frame, card back edge, field edge) (#92) | O-25 | DONE |
 | O-27 | Sync the task list with `main`: statuses, cards, PR numbers and deviations | — | DONE |
-| O-28 | Focused card drawn with a gap of felt inside its face | — | TODO |
-| O-29 | Screen-specific labels for Select and Back (P3-22 part 4) | P3-26 | TODO |
+| O-28 | Focused card drawn with a gap of felt inside its face | — | DONE |
+| O-29 | Screen-specific labels for Select and Back (P3-22 part 4) | P3-26 | DONE |
+| O-30 | Player site: screenshots, both languages, latest release, build from source | — | IN PROGRESS |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
 | P3-35 | Color-blind modes (protanopia, deuteranopia, tritanopia, monochrome; four-color deck) | O-26, P3-29 | TODO |
 | P3-36 | Themes as data and the interface size scale | P3-29, P3-30 | TODO |
 | P3-37 | Language selector with flags in the main menu corner (tooltip, arrows, drop-down list) | P3-24 | TODO |
-| P3-38 | Run selection wraps around: Down or `-` on the top card selects the whole run | P3-26 | TODO |
+| P3-38 | Run selection wraps around: Down or `-` on the top card selects the whole run | P3-26 | DONE |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
 | P2-08 | Solver for winnable deals (#78) | P2-07 | DONE |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |

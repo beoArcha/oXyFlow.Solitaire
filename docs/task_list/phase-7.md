@@ -47,3 +47,19 @@ developers, and a one-click deployment from `release`.
   the wiki and releases.
 - **Acceptance:** every signature and path in the documents exists in the code; nothing is stated
   twice across files; `README` promises nothing outside MVP.
+
+### O-30 — Player site: screenshots, both languages, latest release, build from source
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `docs/site/**`, `xtask/**` (a screenshot command), `.github/workflows/release.yml` (site job only),
+  `docs/tech/workflow.md`, `README.md` (install section only)
+- **Scope:** owner request 2026-11-19: the GitHub Pages site (`docs/site`, mdBook) becomes a real landing page:
+  several screenshots and a few short animations of the game (generated reproducibly from the TUI, e.g. by an
+  `xtask` command that renders scripted scenes to SVG; vector per AGENTS.md), English and Polish with a language
+  switch on every page, a link to the newest build (pre-releases included, injected at build time), and for
+  Windows, Linux and macOS how to download the latest source with `curl` in a terminal and build it, stating that
+  Rust (rustup, the toolchain in `rust-toolchain.toml`; on Windows the MSVC Build Tools) is required.
+- **Acceptance:** `mdbook build docs/site` succeeds locally; the screenshots regenerate with one command; every
+  page exists in both languages; the build commands verified on Windows (say how) and written for Linux and
+  macOS; the release link resolves to the newest pre-release.
