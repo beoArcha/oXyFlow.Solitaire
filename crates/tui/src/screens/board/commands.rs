@@ -19,6 +19,7 @@ impl BoardScreen {
             };
         }
         self.copy_note = None;
+        self.status = None;
         self.hint_note = false;
         match action {
             Action::Up | Action::Down | Action::Left | Action::Right => {

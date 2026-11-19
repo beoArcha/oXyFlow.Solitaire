@@ -5,12 +5,12 @@ mod commands;
 mod counters;
 mod focus;
 mod guidance;
+mod layout;
 mod mouse;
 mod moves;
 mod navigation;
 mod persist;
 mod pyramid;
-mod scratch;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
 use ratatui::crossterm::event::KeyCode;
