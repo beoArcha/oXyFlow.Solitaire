@@ -618,3 +618,95 @@ Rules for the whole phase:
   A row in Settings (Interface section once P3-29 exists) with a small preview.
 - **Acceptance:** every back at every card size in both glyph modes; the count mark contrast test; the
   choice remembered; both locales.
+
+### O-26 — Contrast fixes found by the UI inventory
+
+- **Owner:** Haiku
+- **Depends on:** O-25
+- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/widgets/card/**` (only if a frame must be drawn
+  on another background), tests
+- **Scope:** bugs found by `docs/tech/ui-inventory.md` §1.4 (non-text graphics need 3:1, WCAG 1.4.11):
+  (1) Light: the focused card's frame (`BorderFocus` on `Table`) is 1.05:1, so the focus is almost
+  invisible; (2) face-down card edges (`CardBack` on `Table`) are 1.31–1.60:1 in all themes; (3) High
+  Contrast: `Table` and `Background` are the same black, so the field has no edge; (4) Light: `Slot`
+  on `Table` 2.75:1, `Hint` 3.00:1; (5) Dark: the aura pairs are 6.51 and 5.64 while `dark.rs:7` claims
+  7.0 (fix the claim or the colors). Adjust the palettes (or the frame's background) so every graphic
+  pair that carries meaning reaches 3:1, and add these pairs to the contrast tests as a graphics class
+  with a 3:1 target so they cannot regress. Keep the themes' character.
+- **Acceptance:** the new graphics pairs tested in every theme; the inventory's §1.4 table updated with
+  the new ratios; renders of the board in Light and High Contrast.
+
+### P3-32 — Table color and feel
+
+- **Owner:** Haiku
+- **Depends on:** O-26, P3-29
+- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/screens/board/view.rs`, `crates/tui/src/settings.rs`
+  and the Interface section, locales, tests
+- **Scope:** owner request 2026-11-19: the table is set apart from the theme. Color presets (green felt,
+  blue, red, grey, brown, black, "theme default") and a feel: plain, felt (a sparse, low-contrast
+  texture with a shade or dot glyph and an ASCII form) or lined. The texture never sits under text or
+  card frames. A combination that fails the contrast tests for the cards, slots and auras on that table
+  is shown with a warning and the nearest passing shade is offered.
+- **Acceptance:** every preset and feel rendered in every theme; the contrast tests run on each
+  combination; the choice remembered; both locales.
+
+### P3-33 — Card face tint
+
+- **Owner:** Haiku
+- **Depends on:** O-26, P3-29
+- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/settings.rs` and the
+  Interface section, locales, tests
+- **Scope:** owner request 2026-11-19: the card face color is set apart from the theme: white, ivory,
+  light grey and a dark face (light text) for dark themes, plus "theme default". Suit colors adapt so red
+  and black suits keep their contrast on the chosen face (tested).
+- **Acceptance:** every tint at every card size in every theme; suit contrast tests per tint; the choice
+  remembered; both locales.
+
+### P3-34 — Low-vision mode
+
+- **Owner:** Sonnet
+- **Depends on:** O-26, P3-16, P3-29
+- **Files:** `crates/tui/src/settings.rs` and the Interface section, `crates/tui/src/theme/**`,
+  `crates/tui/src/widgets/{aura,card}/**`, `crates/tui/src/layout/**`, locales, tests, `docs/wiki/`
+- **Scope:** owner request 2026-11-19: one switch "Low vision" that sets a readable bundle and leaves each
+  part adjustable afterwards: High Contrast colors (or a 7:1 variant of the chosen theme), the largest
+  card size that fits, thick aura, bold rank and suit, no dim text, larger focus and target marks, wider
+  fan steps, and a hint to enlarge the terminal font (classic console: the font change of P3-16/P3-29).
+  The mode is offered on the first start and in Settings.
+- **Acceptance:** the bundle applied and reverted; every text pair at 7:1 in the mode; renders at
+  100 × 30 and 130 × 40; both locales; a wiki page section.
+
+### P3-35 — Color-blind modes
+
+- **Owner:** Sonnet
+- **Depends on:** O-26, P3-29
+- **Files:** `crates/tui/src/theme/**` (palettes and a simulation used by tests),
+  `crates/tui/src/widgets/{card,aura}/**`, `crates/tui/src/screens/board/{controls,now}.rs`,
+  `crates/tui/src/settings.rs` and the Interface section, locales, tests
+- **Scope:** owner request 2026-11-19: a setting "Color vision": normal, protanopia, deuteranopia,
+  tritanopia, monochrome. Each mode remaps the meaning tokens to a palette safe for that type (based on
+  Okabe–Ito), and every mode removes color-only meaning found by the inventory (§7): focus, target and
+  hint get distinct shapes as well as colors; success and error events get a sign (`✓` / `✗` with ASCII
+  forms); a four-color deck option (spades black, hearts red, diamonds blue, clubs green) for every
+  mode. Tests simulate each color vision type (Machado or Brettel matrices) and assert a minimum color
+  difference between tokens that must be told apart.
+- **Acceptance:** the simulation tests per mode; the four-color deck at every card size; the signs on
+  events; renders per mode; both locales.
+
+### P3-36 — Themes as data and the interface size scale
+
+- **Owner:** Sonnet
+- **Depends on:** P3-29, P3-30
+- **Files:** `crates/tui/src/theme/**`, `assets/themes/` (new), `crates/tui/src/layout/**`,
+  `crates/tui/src/settings.rs`, `src/` (loading a user theme), `docs/tech/ui-inventory.md`, tests
+- **Scope:** owner request 2026-11-19: every item of `docs/tech/ui-inventory.md` is changed in one of
+  three ways, recorded as a column in the inventory: by the theme (colors and text styles), by the
+  interface size (one scale S / M / L / XL that sets the card size cap, fan steps, gaps, side panel and
+  modal widths together, building on P3-16), or by its own setting (table, card face, card back, aura,
+  glyphs, color vision). Themes move from Rust tables to embedded TOML files under `assets/themes/`
+  (Dark, Light, High Contrast, Monokai, Dracula), validated by the contrast tests at build or test
+  time. A user theme file in the data folder is loaded at start, checked with the same contrast rules
+  and rejected with a readable message when it fails.
+- **Acceptance:** the built-in themes render exactly as before; a valid and an invalid user theme; the
+  size scale renders at 100 × 30, 130 × 40 and 200 × 60 per step; the inventory column filled; both
+  locales.
