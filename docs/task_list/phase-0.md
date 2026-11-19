@@ -193,3 +193,15 @@ shared file already has its final shape so later tasks do not collide.
   archives of one target; the generated `THIRD-PARTY-LICENSES.md` contains the Fonts section; the check fails
   when `OFL.txt` is removed; the release workflow itself was not run (say so).
 
+### O-36 — Version scheme: patch counts merges, minor counts phases, the plan ends at 0.9
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `metadata.toml`, `Cargo.toml`, `build.rs`, `crates/tui/build.rs`, `src/about.rs`, `xtask/src/version*`,
+  `.github/workflows/release.yml`, `docs/tech/{decisions,workflow,architecture}.md`
+- **Scope:** owner decision 2026-11-19: every merge to `main` raises the patch by one (derived from git: first-parent
+  commits since the `version` line of `metadata.toml` last changed; no bot commits); the minor counts completed plan
+  phases (phases 0–3 done: 0.4.0); the whole plan ends at 0.9.0 and 1.0.0 is a later decision. The binary, the menu,
+  the Windows file version and the release tags (`v0.4.P`) use the effective version; without git it is `0.4.0+src`.
+- **Acceptance:** unit and temporary-repository tests; `cargo xtask version` and `oxysol --version` shown in the PR.
+- **Done:** #119

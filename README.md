@@ -7,6 +7,8 @@ Klondike, Spider, FreeCell and Pyramid in one small program.</p>
   <a href="https://github.com/beoArcha/oXyFlow.Solitare/actions/workflows/main.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/beoArcha/oXyFlow.Solitare/main.yml?branch=main&label=CI"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/beoArcha/oXyFlow.Solitare"></a>
   <a href="https://github.com/beoArcha/oXyFlow.Solitare/releases"><img alt="Latest pre-release" src="https://img.shields.io/github/v/release/beoArcha/oXyFlow.Solitare?include_prereleases&label=latest%20build"></a>
+  <a href="https://www.rust-lang.org/"><img alt="Rust 1.99" src="https://img.shields.io/badge/Rust-1.99-orange?logo=rust"></a>
+  <a href="https://ratatui.rs/"><img alt="TUI: Ratatui" src="https://img.shields.io/badge/TUI-Ratatui%200.30-blueviolet"></a>
   <a href="https://beoarcha.github.io/oXyFlow.Solitare/"><img alt="Website" src="https://img.shields.io/badge/website-EN%20%7C%20PL-blue"></a>
 </p>
 
@@ -17,14 +19,19 @@ Klondike, Spider, FreeCell and Pyramid in one small program.</p>
 ## What it is
 
 oXySol is a terminal solitaire with four games, **Klondike, Spider, FreeCell and Pyramid**, shipped as the single
-binary `oxysol`. It is a pre-release: it plays, and it is still in development.
+binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it plays, and it is still in development.
 
 - **Keyboard and mouse.** Every action works with both.
 - **Help while you play.** A guide panel, a possible moves panel, hints, undo and redo, and auto-finish when the game
   is certainly won.
 - **Seeds and winnable deals.** Every deal has a seed you can copy and replay, a game can start from any seed,
   and a new game can search for a deal that is proven winnable.
-- **Statistics and history** of every game you play.
+- **Statistics and history** of every game you play: wins without a restart, personal bests, a scroll bar, and a
+  mark for each deal that was checked as winnable or not.
+- **Restart from the beginning** in the pause menu (`Esc`) or with `Shift+R`, always confirmed; in a game without undo
+  restarts are counted.
+- **Fits the Windows console.** Started by a double-click, the game opens full screen (Alt+Enter mode), or widens its
+  window to 130 columns so the side panels fit. Started from an open console, it leaves the console alone.
 - **Five themes:** Dark, Light, High contrast (for low vision), Monokai and Dracula. Color is never the only signal.
   Color-vision modes are planned, not built yet.
 - **Polish and English.** Switch the language in Settings.
@@ -124,6 +131,7 @@ The full key list is in the game: press `?`.
 | `+` and `-` | Pick more or fewer cards of a run |
 | `h` | Hint |
 | `u` and `r` | Undo and redo |
+| `Shift+R` | Restart this deal (asks first) |
 | `g` | Guide panel |
 | `v` | Possible moves panel |
 | `o` | Quick options for this game (hints, aura, panels, auto-finish) |
@@ -139,6 +147,7 @@ Command-line options (`oxysol --help` lists them):
 | `--ascii` | Draw cards with ASCII characters only |
 | `--colors <16\|256\|truecolor>` | Set the color depth of the terminal |
 | `-n`, `--new-window` | Open the game in a new console window and return to the prompt |
+| `--fullscreen`, `--no-fullscreen` | Force full screen on or off for this run (the setting is `Auto` by default) |
 | `--version`, `--help` | Print the version, or the help, and exit |
 
 **Where the files are.** Settings, the saved game and the history are in one SQLite file, `oxysol.db`, next to the log
