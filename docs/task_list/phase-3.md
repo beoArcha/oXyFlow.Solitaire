@@ -240,105 +240,160 @@ Rules for the whole phase:
 
 - **Owner:** Sonnet
 - **Depends on:** U-04
-- **Files:** `crates/tui/src/widgets/card/**`, `crates/tui/src/layout/size.rs`, tests
-- **Scope:** owner feedback: the block-art rank of P3-13 is less readable than the small face (D and 0,
-  W and H look alike; the shapes are blurry). Replace it with what U-04 recommends, for example: corner
-  indices that are larger and always visible (rank and suit on their own cells, bold, on every size),
-  the centre showing the rank as plain text next to the suit (doubled or with spacing on large cards)
-  and the suit pictogram only where it stays crisp. Rank letters must never be confusable (D/0, W/H,
-  10/1O, 8/B); check every rank in both locales. Keep WGL4 and an ASCII equivalent.
-- **Acceptance:** renders of every rank and suit at every size in both locales and glyph modes,
-  reviewed by the owner; a test that no two ranks render the same at any size; existing render tests
-  pass.
+- **Files:** `crates/tui/src/widgets/card/**` (delete `rank_font.rs`), `crates/tui/src/glyphs.rs`,
+  `crates/tui/src/layout/{fan,columns}.rs`, locales (`board.toml` placeholders), tests
+- **Scope:** decisions of `docs/tech/ui-review.md` §4 (D-U04-1, D-U04-6). (1) Remove the pixel font:
+  the centre of a 9 × 7, 11 × 9 and 13 × 11 card is one row of bold text `K ♣` (rank label, a space,
+  suit symbol; two spaces at 13 × 11) above the existing suit pictogram (Small 5 × 2, Medium 5 × 3,
+  Large 7 × 4, unchanged); 7 × 5 keeps the single suit symbol. Corner indices stay in both corners.
+  No multi-row rank glyph in any mode. (2) ASCII suits become lowercase `c d h s`, so the Polish
+  queen of diamonds is `Dd`, not `DD`. (3) A face-down card whose visible part is one row draws
+  the pattern in that row (`┌▒▒▒▒▒┐`, ASCII `+#####+`); when the down step is 1 and at least two
+  face-down cards lead a column, collapse them to the counted row (`draw_collapsed`) always.
+  (4) Placeholders in empty slots (Slot token): `A` in a foundation; `↑` (U+2191, ASCII `^`) in an
+  empty stock that can be recycled, `x` when no pass is left; nothing in cells and columns. The stock
+  badge reads `x24`. (5) Marks: the hint shows `?→` on the source and `→?` on the target (U+2192;
+  ASCII `?>` / `>?`) and uses a hint border set that differs from the normal one in Unicode too; a
+  target shows `+` in both top corners and a centred `+` on an empty slot; focus and selection keep
+  `►`/`●` and their border sets. (6) The waste fan at 7 × 5 shows two covered cards, each by its
+  label width plus one, and no bottom-row fragments of covered cards.
+- **Acceptance:** a test renders every rank of every suit at every size in both locales and glyph
+  modes and asserts that the corner label and the centre row contain the rank label and the suit
+  symbol as text, that no two cards render the same, and that every mark differs by symbol or border
+  in both sets; a Spider deal at 100 × 30 shows face-down columns that differ from empty slots;
+  renders of all four sizes in both locales reviewed by the owner; `cargo xtask check --quick` passes.
 
 ### P3-15 — Screen layout: game information apart from controls
 
 - **Owner:** Sonnet
-- **Depends on:** U-04
-- **Files:** `crates/tui/src/layout/**`, `crates/tui/src/screens/board/{view,header,status,guidance}.rs`,
-  `crates/tui/src/widgets/{guide,footer}*`, locales, tests
-- **Scope:** owner feedback: the bottom area is overloaded. Put game information in one place (game and
-  variant, seed, time, moves, stock counters, undo mode, the focused card, short statistics such as the
-  best time for this game) and the interface in another (the `Now:` / `Possible:` guidance and the key
-  footer), with no fact shown twice (the announcer line repeats the focus that `Now:` already shows).
-  The guide panel gets a frame or clear separators from the header, the board and the bottom area. Use
-  the layout per screen size class from U-04, so a small screen keeps the board first and a large one
-  uses the room.
-- **Acceptance:** renders at 100 × 30, 130 × 40 and 200 × 60 in both locales; no duplicated fact; the
-  guide panel framed; existing guidance, footer and accessibility tests updated.
+- **Depends on:** U-04, P3-14
+- **Files:** `crates/tui/src/layout/mod.rs`, `crates/tui/src/screens/board/{view,header,status,guidance,counters}.rs`,
+  `crates/tui/src/widgets/{guide,footer}.rs`, `crates/tui/src/announce.rs`, locales, tests,
+  `docs/tech/architecture.md` (Board guidance and counters paragraphs)
+- **Scope:** decisions of `docs/tech/ui-review.md` §3 (D-U04-2, D-U04-3). Size classes from the
+  terminal size at every draw: Compact (100–129 columns or fewer than 36 rows), Standard (130–179
+  columns and at least 36 rows), Wide (180 columns and more). (1) Game information in one place:
+  Compact uses the header row (`variant · seed · time · moves · stock counter · No undo · best time`,
+  dropping the best time and then the counter when the row is too narrow); Standard and Wide put the
+  same facts in a framed `Game` box at the top of the side panel and remove the header row. The seed
+  stays a click target in both. (2) Controls in one place: two rows under the board, as wide as the
+  board: `Now:` in the colon form (`Tableau 3: ace of clubs`, `Carrying: ace of clubs (from Tableau 3),
+  4 targets`, `Hint: ace of clubs to Foundation 1`, `Game won`, `No legal moves`) with the last event
+  right-aligned on the same row in the Success or Error token and cleared by the next action; `Do:`
+  with the keys of this exact state, dropping parts from the right, always ending with `? keys` and
+  `Esc menu`. The announcer row and the footer leave the board (other screens keep their footer); the
+  texts `Cards picked up…` and the stock counter leave `Now:`. (3) The side panel is framed with its
+  title in the top border (WGL4 light box, ASCII `+-`), spans the full height, is 30 columns at
+  Standard and 40 at Wide, and holds `Game`, `Goal`, `Keys` (usable ones marked as today), `Mouse` and
+  a `Legend` row (`►` focus, `●` picked, `+` target, `?` hint); it never repeats a fact of the controls
+  strip. (4) The pile name `Pyramid row 7, position 1` becomes `Row 7, card 1`. (5) The fan may grow
+  its step by one when the body has spare rows. A screen reader reads `Now:` as the announcer did.
+- **Acceptance:** renders at 100 × 30, 130 × 40, 180 × 50 and 200 × 60 in both locales; no fact
+  shown twice; Compact has three chrome rows and Standard two; the panel framed; the Polish `Now:`
+  rows grammatical (colon form); guidance, counters, header, footer and accessibility tests updated;
+  `cargo xtask check --quick` passes.
 
 ### P3-16 — Zoom: card size by keyboard and console font
 
 - **Owner:** Sonnet
-- **Depends on:** U-04
-- **Files:** `crates/tui/src/{input,action,settings}.rs`, `crates/tui/src/layout/**`, `src/` (console
-  font on Windows), help locales, tests
-- **Scope:** owner decision 2026-11-16: both. (1) In-game zoom: keys (e.g. Ctrl+Plus / Ctrl+Minus and
-  a plain-key alternative for terminals that swallow Ctrl+Plus) step the card size up and down within
-  what fits, with "auto" (largest that fits) as the default; the choice is a setting. (2) In the classic
-  Windows console, the same keys may also change the real console font size (`GetCurrentConsoleFontEx`
-  / `SetCurrentConsoleFontEx`; needs an approved dependency such as `windows-sys` and a justified
-  `unsafe`; record a decision). Windows Terminal, Linux and macOS terminals cannot be resized by the
-  program: Help explains their own zoom (Ctrl+mouse wheel, Ctrl+Plus/Minus/0). Zoom keys appear in the
-  key table, the help window and the guide panel.
-- **Acceptance:** tests for stepping, the "auto" default, the limit when nothing larger fits and the
-  remembered setting; the console font change verified by hand on Windows (say where); help text in
-  both locales.
+- **Depends on:** U-04, P3-15
+- **Files:** `crates/tui/src/{input,action,settings}.rs`, `crates/tui/src/layout/**`,
+  `crates/tui/src/screens/board/**`, `crates/tui/src/screens/settings/**`, `src/` (console font on
+  Windows), `Cargo.toml` (`windows-sys`, after the decision), help and settings locales,
+  `docs/tech/decisions.md`, tests
+- **Scope:** decision D-U04-4 of `docs/tech/ui-review.md` §5.2. (1) Keys: `+` and `=` zoom in,
+  `-` zooms out, `0` returns to Auto (`Action::ZoomIn`, `ZoomOut`, `ZoomAuto`, help group Display).
+  `RunMore`/`RunLess` move to Shift+Up / Shift+Down (Up/Down already change the depth inside a
+  column). Ctrl+mouse wheel zooms when the terminal delivers it. (2) Setting `card_size: Auto | Small
+  | Medium | Large | Huge` (serde default Auto; Small = 7 × 5 … Huge = 13 × 11), row `Card size` in
+  Settings, changed by the keys and remembered; a size that does not fit falls back to the largest
+  that fits and the game information shows `(auto)`; at the limit the status says so. (3) Classic
+  Windows console only: Ctrl+Plus / Ctrl+Minus / Ctrl+0 also change the console font by ±2 pixels /
+  back to the start size through `GetCurrentConsoleFontEx` / `SetCurrentConsoleFontEx`
+  (`windows-sys`, feature `Win32_System_Console`, one justified `unsafe` each, behind a `Console`
+  trait in `oxysol` so the TUI stays free of it); record the dependency in `decisions.md`. In every
+  other terminal those keys never arrive and are not bound. (4) Help: a `Display` section on the Keys
+  tab with the card-size keys and the terminal's own zoom per terminal (Windows Terminal and Linux
+  terminals: Ctrl+Plus, Ctrl+Minus, Ctrl+0, Ctrl+wheel; macOS: Cmd+Plus, Cmd+Minus, Cmd+0; classic
+  console: the keys above); the guide panel lists `+/-/0 card size`; the too-small notice names the
+  terminal's zoom-out key.
+- **Acceptance:** tests for stepping up and down, the Auto default, the fallback when the chosen size
+  does not fit, the remembered setting, Shift+Up/Down as run size and the help section in both
+  locales; the console font change verified by hand in the classic console (say where); `cargo xtask
+  check --quick` passes.
 
 ### P3-17 — Tab moves the focus
 
 - **Owner:** Haiku
 - **Depends on:** U-04
-- **Files:** `crates/tui/src/screens/**`, `crates/tui/src/widgets/overlay/**`, `crates/tui/src/input.rs`, tests
-- **Scope:** Tab and Shift+Tab move the focus through every focusable element of the current screen or
-  dialog in reading order (menu items, toggles, buttons such as Back, Copy seed, Close), wrapping at the
-  ends; Enter or Space activates the focused element. Where Tab already has a meaning (the help tabs,
-  how-to-play), keep it consistent with U-04's recommendation. The focus is visible without color.
-- **Acceptance:** tests per screen and dialog for the Tab order, wrap-around, Shift+Tab and activation;
-  help lists Tab; accessibility tests updated.
+- **Files:** `crates/tui/src/screens/**`, `crates/tui/src/widgets/{menu_list,overlay/**}.rs`,
+  `crates/tui/src/{input,action}.rs`, help locales, tests
+- **Scope:** decision D-U04-5 of `docs/tech/ui-review.md` §5.1. `Action::FocusNext` (Tab) and
+  `Action::FocusPrevious` (Shift+Tab, `KeyCode::BackTab`) in the key table, group Navigation. Every
+  screen and dialog owns a focus ring in reading order, wrapping at both ends; Enter and Space activate
+  the focused element; Up/Down keep their meaning inside a list, Left/Right inside a value or a button
+  row. Rings: main menu = the items; game selection = the list, then `[ Undo: on ]`; seed entry = the
+  field, Continue, Back; settings = the rows; statistics = the list, Play again, Copy seed, Back;
+  board = the piles in order (Stock, Waste, Foundations, Cells, Tableau 1…n); confirm, win, alert and
+  pause = the buttons; the help window keeps Tab for its top tabs (they are its ring). The focused
+  element shows `►` directly before its label and reverse video; `MenuList` draws the marker next to
+  the label, not at the width of the longest one; the undo toggle is drawn as a button (Accent on
+  Background, reversed when focused), not in the focus style.
+- **Acceptance:** tests per screen and dialog for the Tab order, wrap-around, Shift+Tab and
+  activation; the board cycles the piles; help lists Tab and Shift+Tab; accessibility tests updated;
+  `cargo xtask check --quick` passes.
 
 ### O-16 — Full-screen option
 
 - **Owner:** Sonnet
-- **Depends on:** U-04
+- **Depends on:** U-04, P3-16
 - **Files:** `src/` (a new module), `src/cli.rs`, `crates/tui/src/settings.rs` and the settings screen,
-  locales, docs
-- **Scope:** owner decision 2026-11-16: "borderless" means the game window fills the whole screen with no
-  frame or title bar. A setting "Full screen" and a flag `--fullscreen`. Classic Windows console: switch
-  the console to full screen (`SetConsoleDisplayMode` or the Alt+Enter equivalent; record the approved
-  dependency and `unsafe` in a decision). Windows Terminal: relaunch through `wt.exe --fullscreen` when
-  the game was started by double-click, or tell the player to press F11 / Alt+Enter. Linux and macOS:
-  the xterm window-manipulation sequence (`CSI 10 ; 1 t`) where the terminal supports it, otherwise a
-  hint with the terminal's own shortcut. Never fail the start when full screen is unavailable; say so
-  once in the status line.
-- **Acceptance:** the setting and flag parsed and remembered; the per-terminal decision unit-tested;
-  verified by hand in the classic console and Windows Terminal (say which); help text in both locales.
+  locales, `docs/tech/decisions.md`, docs
+- **Scope:** owner decision 2026-11-16 and D-U04-8 of `docs/tech/ui-review.md`: "borderless" means
+  the game window fills the whole screen with no frame or title bar. A setting `Full screen` (group
+  Display) and a flag `--fullscreen`. The game never relaunches itself for this. Classic Windows
+  console: `SetConsoleDisplayMode(CONSOLE_FULLSCREEN_MODE)` through the same `Console` trait and
+  `windows-sys` feature as P3-16, verified by hand on Windows 10 and 11 (it is the Alt+Enter mode of
+  conhost; if the call is refused, the hint names Alt+Enter). Windows Terminal: no API; the hint names
+  F11 and Alt+Enter. Linux and macOS: the xterm window-manipulation sequence `CSI 10 ; 1 t` where the
+  terminal answers `CSI 8 ; … t` to a size query within 100 ms, otherwise a hint with the terminal's own
+  key (F11 in GNOME Terminal and Konsole, Ctrl+Cmd+F in Terminal.app and iTerm2). Never fail the start;
+  say once in the `Now:` event slot that full screen is unavailable and which key the terminal uses.
+  The help `Display` section (P3-16) lists the setting, the flag and the keys.
+- **Acceptance:** the setting and flag parsed and remembered; the per-terminal decision unit-tested as
+  a pure function; verified by hand in the classic console and Windows Terminal (say which); help text
+  in both locales; `cargo xtask check --quick` passes.
 
 ### P3-18 — Guide panel on screens slightly too small
 
 - **Owner:** Sonnet
 - **Depends on:** U-04, P3-15
-- **Files:** `crates/tui/src/layout/**`, `crates/tui/src/widgets/guide.rs`, `crates/tui/src/screens/board/**`, tests
-- **Scope:** owner feedback: below 130 columns the guide panel silently disappears even when it is on.
-  Offer what U-04 recommends, for example: a compact panel (narrower, abbreviated) between 100 and 130
-  columns, the panel as a collapsible strip at the bottom, or switchable views (board / guide) with a key
-  and a visible hint; when the panel cannot be shown, say so once and how to show it. Never hide a
-  setting's effect without telling the player.
-- **Acceptance:** renders at 100 × 30, 115 × 35 and 130 × 40 with the panel on; the hint when it does not
-  fit; tests for the chosen fallback.
+- **Files:** `crates/tui/src/layout/mod.rs`, `crates/tui/src/widgets/guide.rs`,
+  `crates/tui/src/widgets/overlay/**`, `crates/tui/src/screens/board/**`,
+  `crates/tui/src/screens/settings/options.rs`, locales, tests
+- **Scope:** decision D-U04-3 of `docs/tech/ui-review.md` §3.1. Below 130 columns the setting stays
+  on and its effect is visible: `g` opens the panel's content (Game, Goal, Keys, Mouse, Legend) as a
+  window over the board (`dialog::boxed`, closed by `g`, Esc or Enter, scrollable like the Rules
+  tab), the `Do:` row shows `g: guide`, and the settings row reads `Guide panel: On (needs 130
+  columns, now 100)`. At 130 columns and more `g` hides and shows the side panel as today. No compact
+  side panel and no bottom strip: the board keeps its 100 columns.
+- **Acceptance:** renders at 100 × 30, 115 × 35 and 130 × 40 with the setting on (window at the two
+  narrow sizes, panel at the wide one); the settings row text at 100 columns; tests for the window's
+  keys and for the `Do:` part; `cargo xtask check --quick` passes.
 
 ### P3-19 — Auto-finish a won game
 
 - **Owner:** Haiku
-- **Depends on:** P2-07
+- **Depends on:** P2-07, P3-15
 - **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/settings.rs` and the settings screen, locales, tests
-- **Scope:** when the engine reports that the rest of the game is a forced win (P2-07), the board says so
-  ("Game solved — finishing") and plays the remaining moves to the foundations one by one at a readable
-  pace (each move animated or stepped by the clock, interruptible by any key), then shows the win dialog.
-  A setting "Auto-finish" (on by default) and a key to finish at once when it is off. Statistics count
-  the game as won with the moves actually played plus the finishing moves.
+- **Scope:** when `Session::forced_finish` (P2-07) returns the finishing moves, the board says so in
+  `Now:` ("Game solved: finishing") and plays them one by one at a readable pace (stepped by the
+  clock, interruptible by any key), then shows the win dialog. A setting "Auto-finish" (group Board,
+  on by default); when it is off, the `Do:` row offers `f: finish` and the key plays the moves at
+  once. Statistics count the game as won with the moves actually played plus the finishing moves.
 - **Acceptance:** tests on fixed deals that reach a forced win (Klondike with every card face up and the
-  stock empty, FreeCell, Spider where P2-07 supports it); interruption; the setting off; the win recorded.
+  stock empty, FreeCell, Spider, Pyramid as P2-07 supports them); interruption; the setting off and the
+  key; the win recorded; `cargo xtask check --quick` passes.
 
 ### P3-20 — Winnable deals only
 
@@ -348,24 +403,78 @@ Rules for the whole phase:
   `src/` (seed search off the UI thread), locales, tests
 - **Scope:** an option in the game selection (remembered) "Winnable deals only": a new game draws seeds
   until the solver (P2-08) proves one winnable within its budget, showing progress and allowing cancel;
-  the deal is marked as winnable in the header and in the history. Typed seeds and replays are never
-  replaced; the header says whether a typed seed is known winnable, unknown or unwinnable. The search
-  must not freeze the interface (a worker thread or chunked steps).
-- **Acceptance:** tests with a stub solver (accepts the n-th seed); cancel; the marker in the header and
-  history; a typed seed kept as typed.
+  the deal is marked as winnable in the game information place (P3-15) and in the history. Typed seeds
+  and replays are never replaced; the game information says whether a typed seed is known winnable,
+  unknown or unwinnable. The search must not freeze the interface (a worker thread or chunked steps).
+- **Acceptance:** tests with a stub solver (accepts the n-th seed); cancel; the marker in the game
+  information and the history; a typed seed kept as typed.
 
 ### P3-21 — Aura options and reshuffle
 
 - **Owner:** Haiku
-- **Depends on:** U-04
+- **Depends on:** U-04, P3-14
 - **Files:** `crates/tui/src/widgets/aura.rs`, `crates/tui/src/screens/board/**`, `crates/tui/src/settings.rs`
-  and the settings screen, `crates/tui/src/input.rs`, locales, tests
-- **Scope:** (1) a setting to show only the aura of the focused card and its position, hiding the carry
-  and drop-target auras (targets keep their non-color marker, so the information is not lost), or the
-  finer choice U-04 recommends. (2) "Reshuffle": deal the current game again with a new seed in one step
-  (one key and a menu entry, with confirmation when moves were made, offered in the action line). Ask the
-  owner first whether "przetasuj ponownie" also means reshuffling the remaining stock inside a running game
-  (a house rule some players use); implement that only if confirmed, as an option off by default.
-- **Acceptance:** tests for the aura setting (focus aura present, others absent, markers kept) and its
-  persistence; reshuffle starts the same variant and undo mode with a new seed and records the abandoned
-  game; help lists the key.
+  and the settings screen, `crates/tui/src/{input,action}.rs`, locales, tests
+- **Scope:** decision D-U04-7 of `docs/tech/ui-review.md`. (1) Setting `aura: Full | FocusOnly`
+  (serde default Full), row `Aura` in the Board group: `Focus only` draws the focus halo and hides the
+  carry and target halos; the `●` and `+` card marks of P3-14 stay, so nothing is lost. (2)
+  "Reshuffle" (`Action::Reshuffle`, key `N`, Shift+n, help group Game; a menu entry on the board's
+  `Do:` row): deal the same variant and undo mode again with a new seed in one step, with a confirm
+  dialog when moves were made; the abandoned game is recorded. Ask the owner first whether "przetasuj
+  ponownie" also means reshuffling the remaining stock inside a running game (a house rule); implement
+  that only if confirmed, as an option off by default.
+- **Acceptance:** tests for the aura setting (focus halo present, others absent, card marks kept) and
+  its persistence; reshuffle starts the same variant and undo mode with a new seed and records the
+  abandoned game; help lists the key; `cargo xtask check --quick` passes.
+
+### P3-22 — Localization templates and localized key names
+
+- **Owner:** Haiku
+- **Depends on:** P3-15
+- **Files:** `locales/en-US/*.toml`, `locales/pl-PL/*.toml`, `crates/tui/src/input.rs`
+  (`KeySpec::display`), `crates/tui/src/announce.rs`, `crates/tui/src/i18n/tests.rs`, tests
+- **Scope:** `docs/tech/ui-review.md` §2.5. (1) Rule for every locale: a pile name is never the
+  object of a verb; it stands after a colon or in parentheses. Rewrite the remaining templates of
+  `board.toml` (`announce.*`, `status.*`, `confirm.*`, `error.*`) that break the rule, and add a test
+  that no template puts `{pile}` after a word. (2) Localize the key names shown in Help, the footer,
+  the guide panel and the `Do:` row through `help.key.*` (`Up`, `Down`, `Left`, `Right`, `Space`,
+  `Enter`, `Esc`, `Tab`, `Shift`, `Ctrl`; Polish `Góra`, `Dół`, `Lewo`, `Prawo`, `Spacja`, …).
+  (3) Help shows `Shift+R` for restart, not `R`. (4) Board-specific labels for Select and Back where
+  a screen-independent label is wrong (`Enter Wybierz` on the board).
+- **Acceptance:** the key sets of both locales identical (existing test); the template test; renders
+  of the board, Help and the guide panel in Polish reviewed by the owner; `cargo xtask check --quick`
+  passes.
+
+### P3-23 — Colors: 16-color swatches, mark contrast, High Contrast board edge
+
+- **Owner:** Haiku
+- **Depends on:** U-04
+- **Files:** `crates/tui/src/theme/{dark,light,high_contrast,palette,tests}.rs`,
+  `crates/tui/src/screens/board/view.rs`, tests
+- **Scope:** `docs/tech/ui-review.md` §6. (1) Dark theme ANSI column: `border` → `Gray`;
+  `border_focus`, `focus_bg`, `target`, `aura_focus` → `LightYellow` (`Yellow` is dark olive in the
+  classic console and xterm). (2) Light theme: `slot` → 200, 230, 210 and `White`. (3) High Contrast:
+  `surface` → 16, 16, 16; the board body gets a one-cell `Border` line in this theme so the table has
+  an edge. (4) `TEXT_PAIRS` gains `Error` and `Success` on `Background`; a new `MARK_PAIRS` list
+  (`Target`, `Selection`, `Hint`, `BorderFocus`, `Slot` on `Table`; `Border` on `Surface`) is tested
+  at a 3.0 ratio in every theme.
+- **Acceptance:** the contrast tests pass with the new pairs; a render of the board at `--colors 16`
+  in each theme reviewed by the owner in the classic console; `cargo xtask check --quick` passes.
+
+### P3-24 — Menus, settings and statistics polish
+
+- **Owner:** Haiku
+- **Depends on:** P3-17
+- **Files:** `crates/tui/src/screens/{main_menu,game_select,settings,stats}*`,
+  `crates/tui/src/screens/settings/options.rs`, `crates/tui/src/screens/stats/format.rs`, locales, tests
+- **Scope:** `docs/tech/ui-review.md` §2.6–2.8. (1) Main menu: the tagline under the logo, the
+  version in the bottom-right corner, `Resume` names the saved game (`Resume: Klondike, Draw 3,
+  12:34, Moves 42`). (2) Game selection: a one-line description and a difficulty word for the
+  focused variant under the list. (3) Settings: two aligned columns (`Language ……… ◄ English ►`),
+  groups `Display`, `Sound`, `Board`, a description row for the focused option, style names from the
+  manifests instead of folder ids, the `Font` value hidden until P5-02. (4) Statistics: shorter
+  Polish headings, `Best streak` hidden below 110 columns, `UTC` only in the heading. (5) The win
+  dialog says when the time or the move count is a personal best and offers `Same seed`.
+- **Acceptance:** renders at 100 × 30 and 130 × 40 in both locales reviewed by the owner; the
+  settings values aligned and grouped; tests for the description row and the win dialog's best
+  marker; `cargo xtask check --quick` passes.

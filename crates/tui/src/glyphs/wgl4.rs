@@ -100,7 +100,7 @@ mod tests {
     use crate::settings::{GlyphMode, Settings};
     use crate::test_support::{Harness, TRUE_COLOR};
     use crate::theme::{Theme, ThemeId};
-    use crate::widgets::card::{self, Face, Mark};
+    use crate::widgets::card::{self, Face, Hint, Mark, Placeholder};
     use crate::widgets::pile::{self, CardPos, Marks};
     use oxysol_core::{PileRef, Variant, deal};
     use ratatui::buffer::Buffer;
@@ -158,6 +158,11 @@ mod tests {
             assert!(is_wgl4(ch), "face_down has non-WGL4 char {ch:?}");
         }
         for (name, symbol) in [
+            ("target", glyphs.target),
+            ("hint_source", glyphs.hint_source),
+            ("hint_target", glyphs.hint_target),
+            ("recycle", glyphs.recycle),
+            ("spent", glyphs.spent),
             ("aura_focus", glyphs.aura_focus),
             ("aura_carry", glyphs.aura_carry),
             ("aura_target", glyphs.aura_target),
@@ -250,23 +255,35 @@ mod tests {
                 ..Mark::default()
             },
             Mark {
-                hint: true,
+                hint: Some(Hint::Source),
+                ..Mark::default()
+            },
+            Mark {
+                hint: Some(Hint::Target),
                 ..Mark::default()
             },
             Mark {
                 focus: true,
                 selected: true,
                 target: true,
-                hint: true,
+                hint: Some(Hint::Target),
             },
         ];
         for mark in mark_cases {
             let mut buf = Buffer::empty(area);
             card::draw(&mut buf, area, Face::Up(sample_card), mark, Some(42), &ctx);
             assert_buffer_wgl4(&buf);
-            let mut slot_buf = Buffer::empty(area);
-            card::draw(&mut slot_buf, area, Face::Slot, mark, None, &ctx);
-            assert_buffer_wgl4(&slot_buf);
+            for placeholder in [
+                Placeholder::None,
+                Placeholder::Ace,
+                Placeholder::Recycle,
+                Placeholder::Spent,
+            ] {
+                let mut slot_buf = Buffer::empty(area);
+                let face = Face::Slot(placeholder);
+                card::draw(&mut slot_buf, area, face, mark, None, &ctx);
+                assert_buffer_wgl4(&slot_buf);
+            }
             let mut down_buf = Buffer::empty(area);
             card::draw(&mut down_buf, area, Face::Down, mark, None, &ctx);
             assert_buffer_wgl4(&down_buf);
@@ -302,7 +319,7 @@ mod tests {
             };
             let mut buf = Buffer::empty(bounds);
             for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
-                pile::draw(&mut buf, snapshot, placed, &marks, &ctx);
+                pile::draw(&mut buf, snapshot, placed, &marks, true, &ctx);
             }
             assert_buffer_wgl4(&buf);
         }

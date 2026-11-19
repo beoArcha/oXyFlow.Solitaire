@@ -4,6 +4,7 @@
 //! it wants done comes back as an [`Effect`] that `App` applies.
 
 pub mod board;
+pub mod focus;
 pub mod game_select;
 pub mod main_menu;
 pub mod settings;

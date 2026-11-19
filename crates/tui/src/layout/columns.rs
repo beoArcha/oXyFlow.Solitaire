@@ -1,7 +1,7 @@
 //! The column layout: a top row of stock, waste, cells and foundations above fanned tableau
 //! columns. Cells and the stock sit on the left, foundations on the right.
 
-use oxysol_core::{DrawCount, PileRef, PileSnapshot, Variant};
+use oxysol_core::{DrawCount, PileRef, PileSnapshot, Rank, Variant};
 use ratatui::layout::Rect;
 
 use super::fan::fan;
@@ -35,6 +35,12 @@ impl Counts {
         }
         counts
     }
+}
+
+/// Columns of a covered waste card that stay visible: its left border and its corner label, `10♥`
+/// or `Q♥`, so a fanned card is as wide as its label plus one.
+fn covered_width(rank: Rank) -> u16 {
+    if rank == Rank::Ten { 4 } else { 3 }
 }
 
 fn waste_columns(size: CardSize, gap: u16, fanned: bool) -> u16 {
@@ -116,14 +122,16 @@ impl Grid {
         if !self.fanned {
             return geometry;
         }
-        let step = self.size.waste_step();
-        geometry.area.width += (FAN_CARDS - 1) * step;
+        geometry.area.width += (FAN_CARDS - 1) * self.size.waste_step();
         let len = geometry.cards.len();
         let shown = len.min(usize::from(FAN_CARDS));
         let mut x = geometry.slot.x;
-        for rect in &mut geometry.cards[len - shown..] {
+        for (rect, table_card) in geometry.cards[len - shown..]
+            .iter_mut()
+            .zip(&pile.cards[len - shown..])
+        {
             rect.x = x;
-            x += step;
+            x += covered_width(table_card.card.rank);
         }
         geometry
     }

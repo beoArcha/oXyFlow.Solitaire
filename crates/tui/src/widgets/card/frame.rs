@@ -38,7 +38,7 @@ const UNICODE_EDGES: EdgeSets = EdgeSets {
     selected: edges(["╒", "╕", "╘", "╛"], "═", "│"),
     focus: edges(["╔", "╗", "╚", "╝"], "═", "║"),
     target: edges(["┌", "┐", "└", "┘"], "─", "│"),
-    hint: edges(["┌", "┐", "└", "┘"], "─", "│"),
+    hint: edges(["╓", "╖", "╙", "╜"], "─", "║"),
 };
 
 const ASCII_EDGES: EdgeSets = EdgeSets {
@@ -61,7 +61,7 @@ pub(super) fn edges_for(glyphs: &Glyphs, mark: Mark) -> &'static Edges {
         &sets.focus
     } else if mark.target {
         &sets.target
-    } else if mark.hint {
+    } else if mark.hint.is_some() {
         &sets.hint
     } else {
         &sets.normal
@@ -84,4 +84,32 @@ pub(super) fn paint_frame(painter: &mut Painter<'_>, area: Rect, edges: &Edges, 
     painter.put(right, top, top_right, border);
     painter.put(left, bottom, bottom_left, border);
     painter.put(right, bottom, bottom_right, border);
+}
+
+/// Puts the target symbol in both top corners, over whatever border the card has, so a target
+/// that also has the focus still shows that it accepts the picked cards.
+pub(super) fn paint_target_corners(
+    painter: &mut Painter<'_>,
+    area: Rect,
+    glyphs: &Glyphs,
+    style: Style,
+) {
+    painter.put(area.left(), area.top(), glyphs.target, style);
+    painter.put(area.right() - 1, area.top(), glyphs.target, style);
+}
+
+/// Paints only the top row of a card: `fill` between the corners of `edges`.
+pub(super) fn paint_patterned_top(
+    painter: &mut Painter<'_>,
+    area: Rect,
+    edges: &Edges,
+    fill: &str,
+    border: Style,
+) {
+    let (left, right) = (area.left(), area.right() - 1);
+    for x in left + 1..right {
+        painter.put(x, area.top(), fill, border);
+    }
+    painter.put(left, area.top(), edges.corners[0], border);
+    painter.put(right, area.top(), edges.corners[1], border);
 }

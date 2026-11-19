@@ -1,7 +1,7 @@
 //! The statistics screen: a summary per variant and the list of played games, newest first.
-//! Enter replays the seed of the selected game, `c` copies it; both are also buttons. The screen
-//! never reads storage itself: `App` hands it the history when the screen opens and tells it how
-//! a copy ended.
+//! Enter replays the seed of the selected game, `c` copies it; both are also buttons. Tab moves the
+//! focus through the list and then the buttons, wrapping. The screen never reads storage itself:
+//! `App` hands it the history when the screen opens and tells it how a copy ended.
 
 mod format;
 mod list;
@@ -17,6 +17,7 @@ use ratatui::layout::Rect;
 use self::list::ListState;
 use self::summary::{Summary, has_several_modes, summarize};
 use super::Effect;
+use super::focus::{step, tab_forward};
 use crate::action::Action;
 use crate::app::Screen;
 use crate::mouse::{contains, left_press, wheel_action};
@@ -27,6 +28,14 @@ enum Button {
     Replay,
     Copy,
     Back,
+}
+
+/// What has the focus: the history list, or one of the buttons.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+enum Stop {
+    #[default]
+    List,
+    Button(Button),
 }
 
 /// What happened to the last copy, shown on the status line until the selection moves.
@@ -45,6 +54,7 @@ pub struct StatsScreen {
     list: ListState,
     load_failed: bool,
     notice: Option<Notice>,
+    stop: Stop,
     buttons: Vec<(Button, Rect)>,
     rows: Vec<(usize, Rect)>,
 }
@@ -62,6 +72,7 @@ impl StatsScreen {
         self.show_modes = has_several_modes(&records);
         self.records = records;
         self.list = ListState::default();
+        self.stop = Stop::List;
         self.load_failed = false;
         self.notice = None;
     }
@@ -100,6 +111,33 @@ impl StatsScreen {
             .map_or(Effect::None, |record| Effect::CopySeed(record.seed))
     }
 
+    /// The buttons in the order Tab visits them: Replay and Copy only when a game can be acted on.
+    fn visible_buttons(&self) -> Vec<Button> {
+        let mut buttons = Vec::with_capacity(3);
+        if !self.records.is_empty() {
+            buttons.extend([Button::Replay, Button::Copy]);
+        }
+        buttons.push(Button::Back);
+        buttons
+    }
+
+    fn stops(&self) -> Vec<Stop> {
+        std::iter::once(Stop::List)
+            .chain(self.visible_buttons().into_iter().map(Stop::Button))
+            .collect()
+    }
+
+    fn step_focus(&mut self, forward: bool) {
+        let stops = self.stops();
+        let at = stops
+            .iter()
+            .position(|stop| *stop == self.stop)
+            .unwrap_or(0);
+        if let Some(stop) = stops.get(step(at, stops.len(), forward)) {
+            self.stop = *stop;
+        }
+    }
+
     fn press(&self, button: Button) -> Effect {
         match button {
             Button::Replay => self.replay(),
@@ -108,7 +146,16 @@ impl StatsScreen {
         }
     }
 
+    /// Enter: replays the selected game when the list has the focus, else presses the button.
+    fn activate(&self) -> Effect {
+        match self.stop {
+            Stop::List => self.replay(),
+            Stop::Button(button) => self.press(button),
+        }
+    }
+
     fn move_selection(&mut self, step: impl FnOnce(&mut ListState, usize)) {
+        self.stop = Stop::List;
         let before = self.list.selected();
         step(&mut self.list, self.records.len());
         if self.list.selected() != before {
@@ -116,12 +163,17 @@ impl StatsScreen {
         }
     }
 
-    /// Handles a key press mapped to `action`: Up and Down (and Home, End, PgUp, PgDn) move
-    /// through the list, Enter replays the seed, `c` copies it, Esc goes back.
+    /// Handles a key press mapped to `action`: Tab and Shift+Tab move the focus, Up and Down (and
+    /// Home, End, PgUp, PgDn) move through the list, Enter activates the focused element, `c`
+    /// copies the seed, Esc goes back.
     pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
+        if let Some(forward) = action.and_then(tab_forward) {
+            self.step_focus(forward);
+            return Effect::None;
+        }
         match (action, key.code) {
             (Some(Action::Back), _) => return Effect::Goto(Screen::MainMenu),
-            (Some(Action::Select), _) => return self.replay(),
+            (Some(Action::Select), _) => return self.activate(),
             (Some(Action::Up), _) => self.move_selection(|list, len| list.step(-1, len)),
             (Some(Action::Down), _) => self.move_selection(|list, len| list.step(1, len)),
             (_, KeyCode::PageUp) => self.move_selection(|list, len| list.page_by(true, len)),
@@ -137,7 +189,7 @@ impl StatsScreen {
     }
 
     /// Handles a mouse event: the wheel moves the selection, a click selects a row or presses a
-    /// button.
+    /// button, which takes the focus.
     pub fn handle_mouse(&mut self, event: &MouseEvent) -> Effect {
         if let Some(action) = wheel_action(event) {
             let delta = if action == Action::Up { -1 } else { 1 };
@@ -153,6 +205,7 @@ impl StatsScreen {
             .find(|(_, area)| contains(*area, cell))
             .map(|(button, _)| *button)
         {
+            self.stop = Stop::Button(button);
             return self.press(button);
         }
         if let Some(index) = self

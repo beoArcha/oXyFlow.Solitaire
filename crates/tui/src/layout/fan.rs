@@ -3,6 +3,8 @@
 //! Compression is progressive and monotone: face-down steps shrink first, then face-up steps, then
 //! the face-down cards collapse into one row with a counter. Only when even that cannot fit, the
 //! oldest face-up cards stack up under each other; the newest cards keep their ranks visible.
+//! When the face-down step is already one row, two or more leading face-down cards collapse at
+//! once: a stack of single rows would look like a stack of empty slots.
 
 use oxysol_core::TableCard;
 
@@ -63,6 +65,9 @@ fn plans(size: CardSize, collapsible: bool) -> Vec<Plan> {
         up,
         collapse: true,
     });
+    if collapsible && down == 1 {
+        return collapse.collect();
+    }
     let mut all: Vec<Plan> = shrink_down.chain(shrink_up).collect();
     if collapsible {
         all.extend(collapse);

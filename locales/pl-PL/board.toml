@@ -17,6 +17,9 @@ jack = "W"
 queen = "D"
 king = "K"
 
+[placeholder]
+foundation = "A"
+
 [name]
 card = "{rank} {suit}"
 empty = "puste"

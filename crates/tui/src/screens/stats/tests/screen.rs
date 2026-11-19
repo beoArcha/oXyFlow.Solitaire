@@ -76,23 +76,16 @@ fn the_selected_row_is_marked_without_color_in_both_glyph_sets() {
             h.press(KeyCode::Down);
         }
         h.press(KeyCode::Enter);
-        let (left, right) = if caps.unicode {
-            ("►", "◄")
-        } else {
-            (">", "<")
-        };
+        let left = if caps.unicode { "►" } else { ">" };
         let marked: Vec<String> = h
             .lines()
             .into_iter()
-            .filter(|line| line.contains(left) && line.contains(right))
+            .filter(|line| line.contains(left))
             .collect();
         assert_eq!(marked.len(), 1, "{marked:?}");
         assert!(marked[0].contains("33"), "the newest game is selected");
         h.press(KeyCode::Down);
-        let marked = h
-            .lines()
-            .into_iter()
-            .find(|line| line.contains(left) && line.contains(right));
+        let marked = h.lines().into_iter().find(|line| line.contains(left));
         assert!(marked.is_some_and(|line| line.contains("22")));
     }
 }

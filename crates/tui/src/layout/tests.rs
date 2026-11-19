@@ -3,7 +3,6 @@ use oxysol_core::{Card, CardId, DrawCount, Rank, Session, Suit, SuitCount, Table
 
 const SMALL: Rect = Rect::new(0, 0, 100, 27);
 const LARGE: Rect = Rect::new(0, 0, 160, 47);
-const LABEL_WIDTH: u16 = 3;
 
 fn card(id: u16, face_up: bool) -> TableCard {
     TableCard {
@@ -41,8 +40,9 @@ fn all_rects(geometry: &BoardGeometry) -> Vec<(usize, usize, Rect)> {
     rects
 }
 
-fn label_rect(rect: Rect) -> Rect {
-    Rect::new(rect.x + 1, rect.y, LABEL_WIDTH, 1)
+fn label_rect(rect: Rect, rank: Rank) -> Rect {
+    let width = if rank == Rank::Ten { 3 } else { 2 };
+    Rect::new(rect.x + 1, rect.y, width, 1)
 }
 
 fn assert_inside(geometry: &BoardGeometry, area: Rect, what: &str) {
@@ -62,7 +62,7 @@ fn assert_ranks_visible(piles: &[PileSnapshot], geometry: &BoardGeometry, what: 
         if !snapshot.cards[*index].face_up || stacked {
             continue;
         }
-        let label = label_rect(*rect);
+        let label = label_rect(*rect, snapshot.cards[*index].card.rank);
         for (_, _, later) in &rects[position + 1..] {
             assert!(
                 !label.intersects(*later),
@@ -239,16 +239,33 @@ fn check_without_ranks(variant: Variant, piles: &[PileSnapshot], area: Rect) -> 
 
 #[test]
 fn face_down_cards_compress_before_the_face_up_ones() {
-    let size = CardSize::smallest();
-    let natural = fan::fan(&column(3, 3), size, 21);
+    let size = CardSize::new(13, 11);
+    let natural = fan::fan(&column(6, 8), size, 60);
     assert_eq!(natural.collapsed, 0);
-    assert_eq!(natural.ys, vec![0, 1, 2, 3, 5, 7]);
-    let tight = fan::fan(&column(6, 8), size, 18);
-    assert_eq!(tight.collapsed, 0);
-    let tighter = fan::fan(&column(6, 8), size, 17);
+    assert_eq!(natural.ys[..3], [0, 2, 4]);
+    let down_shrunk = fan::fan(&column(6, 8), size, 52);
+    assert_eq!(down_shrunk.collapsed, 0);
+    assert_eq!(down_shrunk.ys[..3], [0, 1, 2]);
+    let up_shrunk = fan::fan(&column(6, 8), size, 40);
+    assert_eq!(up_shrunk.collapsed, 0);
+    let tighter = fan::fan(&column(6, 8), size, 23);
     assert_eq!(tighter.collapsed, 6);
     assert_eq!(tighter.ys[..6], [0; 6]);
     assert_eq!(tighter.ys[6], 1);
+}
+
+#[test]
+fn at_a_down_step_of_one_two_leading_face_down_cards_collapse_at_once() {
+    for size in [CardSize::smallest(), CardSize::new(9, 7)] {
+        let roomy = fan::fan(&column(3, 3), size, 40);
+        assert_eq!(roomy.collapsed, 3);
+        assert_eq!(roomy.ys[..4], [0, 0, 0, 1]);
+        let single = fan::fan(&column(1, 3), size, 40);
+        assert_eq!(single.collapsed, 0);
+        assert_eq!(single.ys[..2], [0, 1]);
+    }
+    let larger = fan::fan(&column(3, 3), CardSize::new(11, 9), 40);
+    assert_eq!(larger.collapsed, 0);
 }
 
 #[test]
@@ -262,14 +279,26 @@ fn klondike_draw_three_fans_the_top_three_waste_cards() {
     let (slot, area, cards) = waste.unwrap_or_default();
     let xs: Vec<u16> = cards.iter().map(|rect| rect.x).collect();
     let step = geometry.card.waste_step();
+    let covered = |index: usize| {
+        let rank = piles[waste_index(&piles)].cards[index].card.rank;
+        if rank == Rank::Ten { 4 } else { 3 }
+    };
+    let second = slot.x + covered(2);
     assert_eq!(
         xs,
-        vec![slot.x, slot.x, slot.x, slot.x + step, slot.x + 2 * step]
+        vec![slot.x, slot.x, slot.x, second, second + covered(3)]
     );
     assert_eq!(area.right(), slot.right() + 2 * step);
     for other in geometry.piles.iter().filter(|p| p.pile != PileRef::Waste) {
         assert!(!area.intersects(other.area), "{:?}", other.pile);
     }
+}
+
+fn waste_index(piles: &[PileSnapshot]) -> usize {
+    piles
+        .iter()
+        .position(|snapshot| snapshot.pile == PileRef::Waste)
+        .unwrap_or_default()
 }
 
 #[test]

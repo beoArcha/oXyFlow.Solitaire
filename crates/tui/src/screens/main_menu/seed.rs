@@ -1,5 +1,6 @@
 //! The seed entry stage of the main menu: a field that takes decimal digits, the validation of
-//! what was typed, and the two buttons that submit or leave it.
+//! what was typed, and the two buttons that submit or leave it. Tab visits the field, Continue and
+//! Back in that order and wraps. Typed digits go to the field only while the field has the focus.
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseEvent};
@@ -8,9 +9,11 @@ use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
+use crate::action::Action;
 use crate::i18n::t;
 use crate::mouse::{contains, left_press};
 use crate::screens::ViewCtx;
+use crate::screens::focus::{button_style, marker, step, tab_forward};
 use crate::theme::Token;
 
 const FIELD_WIDTH: usize = 22;
@@ -61,12 +64,29 @@ enum Button {
     Back,
 }
 
-/// The seed text, the message about the last rejected input, and the button rectangles of the
-/// last frame.
+/// An element of the seed stage that can have the focus.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Stop {
+    Field,
+    Button(Button),
+}
+
+/// The focus ring of the stage, in the order Tab visits it.
+const STOPS: [Stop; 3] = [
+    Stop::Field,
+    Stop::Button(Button::Continue),
+    Stop::Button(Button::Back),
+];
+const CONTINUE: usize = 1;
+const BACK: usize = 2;
+
+/// The seed text, the message about the last rejected input, the focus (an index into [`STOPS`])
+/// and the button rectangles of the last frame.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct SeedField {
     text: String,
     error: Option<SeedError>,
+    focus: usize,
     buttons: Vec<(Button, Rect)>,
 }
 
@@ -79,8 +99,39 @@ impl SeedField {
         }
     }
 
-    /// Handles a key press: characters are typed, Backspace deletes, Enter submits and validates.
-    pub fn handle_key(&mut self, key: &KeyEvent) -> Step {
+    /// Whether the field has the focus, so that typed characters are its text.
+    pub fn captures_text(&self) -> bool {
+        self.stop() == Stop::Field
+    }
+
+    fn stop(&self) -> Stop {
+        STOPS.get(self.focus).copied().unwrap_or(Stop::Field)
+    }
+
+    /// Handles a key press. Tab and Shift+Tab move the focus. With the field focused, characters
+    /// are typed, Backspace deletes and Enter submits; with a button focused, Enter or Space presses
+    /// it and Left and Right switch between the two buttons.
+    pub fn handle_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Step {
+        if let Some(forward) = action.and_then(tab_forward) {
+            self.focus = step(self.focus, STOPS.len(), forward);
+            return Step::Stay;
+        }
+        match (self.stop(), action) {
+            (Stop::Field, _) => self.type_key(key),
+            (Stop::Button(button), Some(Action::Select)) => self.press(button),
+            (Stop::Button(_), Some(Action::Left | Action::Right)) => {
+                self.focus = if self.focus == CONTINUE {
+                    BACK
+                } else {
+                    CONTINUE
+                };
+                Step::Stay
+            }
+            (Stop::Button(_), _) => Step::Stay,
+        }
+    }
+
+    fn type_key(&mut self, key: &KeyEvent) -> Step {
         match key.code {
             KeyCode::Enter => self.submit(),
             KeyCode::Backspace => {
@@ -99,20 +150,29 @@ impl SeedField {
         }
     }
 
-    /// Handles a click on one of the buttons.
+    /// Handles a click on one of the buttons: the button takes the focus and is pressed.
     pub fn handle_mouse(&mut self, event: &MouseEvent) -> Step {
         let Some(cell) = left_press(event) else {
             return Step::Stay;
         };
-        match self
+        let Some(button) = self
             .buttons
             .iter()
             .find(|(_, area)| contains(*area, cell))
             .map(|(button, _)| *button)
-        {
-            Some(Button::Continue) => self.submit(),
-            Some(Button::Back) => Step::Back,
-            None => Step::Stay,
+        else {
+            return Step::Stay;
+        };
+        if let Some(index) = STOPS.iter().position(|stop| *stop == Stop::Button(button)) {
+            self.focus = index;
+        }
+        self.press(button)
+    }
+
+    fn press(&mut self, button: Button) -> Step {
+        match button {
+            Button::Continue => self.submit(),
+            Button::Back => Step::Back,
         }
     }
 
@@ -155,8 +215,7 @@ impl SeedField {
         let accent = ctx.theme.style(Token::Accent, Token::Background);
         draw_line(frame, title_area, &t("menu.seed.title"), accent);
         draw_line(frame, prompt_area, &t("menu.seed.prompt"), ctx.theme.base());
-        let field = format!("[ {:<FIELD_WIDTH$}]", format!("{}_", self.text));
-        draw_line(frame, field_area, &field, ctx.theme.focus());
+        self.draw_field(frame, field_area, ctx);
         let message = self.error.map(|error| t(error.message_key()).into_owned());
         draw_line(
             frame,
@@ -174,31 +233,52 @@ impl SeedField {
         );
     }
 
+    fn draw_field(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        let focused = self.stop() == Stop::Field;
+        let caret = if focused { "_" } else { "" };
+        let shown = format!("{}{caret}", self.text);
+        let field = format!("{} [ {shown:<FIELD_WIDTH$}]", marker(ctx, focused));
+        let style = if focused {
+            ctx.theme.focus()
+        } else {
+            ctx.theme.base()
+        };
+        draw_line(frame, area, &field, style);
+    }
+
     fn draw_buttons(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let labels = [
-            (Button::Continue, format!("[ {} ]", t("menu.seed.continue"))),
-            (Button::Back, format!("[ {} ]", t("menu.seed.back"))),
+            (Button::Continue, t("menu.seed.continue")),
+            (Button::Back, t("menu.seed.back")),
         ];
-        let widths: Vec<u16> = labels
+        let texts: Vec<(Button, String)> = labels
             .iter()
-            .map(|(_, label)| u16::try_from(label.chars().count()).unwrap_or(u16::MAX))
+            .map(|(button, label)| {
+                let focused = self.stop() == Stop::Button(*button);
+                (*button, format!("{} [ {label} ]", marker(ctx, focused)))
+            })
+            .collect();
+        let widths: Vec<u16> = texts
+            .iter()
+            .map(|(_, text)| u16::try_from(text.chars().count()).unwrap_or(u16::MAX))
             .collect();
         let total = widths.iter().sum::<u16>() + BUTTON_GAP;
         let mut x = area.x + area.width.saturating_sub(total) / 2;
         self.buttons.clear();
-        for ((button, _), width) in labels.iter().zip(&widths) {
+        for ((button, _), width) in texts.iter().zip(&widths) {
             self.buttons
                 .push((*button, Rect::new(x, area.y, *width, 1)));
             x = x.saturating_add(width + BUTTON_GAP);
         }
-        let spans: Vec<Span> = labels
+        let spans: Vec<Span> = texts
             .iter()
             .enumerate()
-            .flat_map(|(index, (_, label))| {
+            .flat_map(|(index, (button, text))| {
                 let gap = if index == 0 { "" } else { "   " };
+                let focused = self.stop() == Stop::Button(*button);
                 [
                     Span::raw(gap),
-                    Span::styled(label.clone(), ctx.theme.focus()),
+                    Span::styled(text.clone(), button_style(ctx, focused)),
                 ]
             })
             .collect();

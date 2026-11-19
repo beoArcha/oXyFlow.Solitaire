@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab). Later tasks may refine it.
+Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -236,6 +236,16 @@ pub struct NullClipboard;                                // every copy fails wit
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
   returns `None` (stay open) or `Some(effect)` (close, then apply).
+- **Focus (P3-17):** `Action::FocusNext` (Tab) and `Action::FocusPrevious` (Shift+Tab, `KeyCode::BackTab`) are
+  rows of `KEY_TABLE` (group Navigation), so the help window lists them. Every screen and dialog owns a focus
+  ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
+  Rings: main menu items; seed entry field, Continue, Back; game selection list, then the undo toggle; settings
+  rows; statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
+  Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
+  (Tab toggles the two-button dialogs). The help window keeps Tab and Shift+Tab for its own tabs. Enter and Space
+  press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
+  digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in
+  ASCII) directly before its label and, for buttons, reverse video; `MenuList` draws the marker next to the label.
 - **How to play (P3-10, O-14, O-15):** `Modal::Help` (the keys table), `Modal::HowToPlay(HowToPlay { rules, scroll })`
   (the rules pages) and `Modal::CommandLine(CommandLine { scroll })` (the options of `oxysol --help`) form the help
   window (`widgets/overlay/`): three top tabs ("Keys", "Rules" and "Command line") switch between them by
@@ -339,13 +349,31 @@ pub struct NullClipboard;                                // every copy fails wit
   16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly.
   `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
   `ThemeId::contrast_target()` (4.5, High Contrast 7.0).
-- **Large card faces (P3-13):** `widgets/card/` is a module (`mod.rs` drawing and labels, `frame.rs`
-  borders, `paint.rs` clipped painting, `face.rs` centre layout, `art.rs` suit pictograms, `rank_font.rs`
-  pixel font). A face-up card whose interior is big enough draws a three-row rank (a 3x5 pixel font in
-  half blocks, `^ _ #` in ASCII, taken from the localized rank label; a character without a shape falls
-  back to plain text) above a suit pictogram: 7x4 cells at 13x11, 5x3 at 11x9, 5x2 at 9x7. 7x5 keeps the
-  single suit symbol. Unicode art uses only WGL4 block characters, ASCII art only printable ASCII; the
-  four shapes differ in both sets, and the art uses the suit color token, so nothing depends on color.
+- **Readable card faces (P3-14, replaces the P3-13 pixel font):** `widgets/card/` is a module (`mod.rs` drawing,
+  labels and the three entry points `draw`, `draw_back_row`, `draw_fanned`, `draw_collapsed`; `frame.rs` borders;
+  `mark.rs` `Mark` and `Hint`; `rows.rs` corner labels, marker symbols and the stock badge; `slot.rs` placeholders;
+  `paint.rs` clipped painting; `face.rs` centre layout; `art.rs` suit pictograms). The rank is text, never a
+  picture: a face-up card of 9x7, 11x9 or 13x11 draws one bold row `K ♣` (the localized corner label, one space,
+  the suit symbol; two spaces at 13x11) in the suit color at the top of its interior, with the suit pictogram
+  below it (5x2 at 9x7, 5x3 at 11x9, 7x4 at 13x11); 7x5 keeps the single suit symbol. The corner labels stay in
+  the top-left and bottom-right corners. Unicode art uses only WGL4 characters, ASCII art only printable ASCII;
+  the ASCII suits are lowercase `c d h s`, so the Polish queen of diamonds is `Dd`, not `DD`. No two ranks render
+  the same at any size, in both locales and both glyph modes (tested).
+  *Face-down cards:* a covered face-down card whose visible part is one row draws the back pattern in that row
+  (`draw_back_row`, `┌▒▒▒▒▒┐`, ASCII `+#####+`); when the face-down step of the size is 1 (7x5, 9x7) and at least
+  two face-down cards lead a column, `layout::fan` always collapses them to the counted row (`draw_collapsed`).
+  The stock badge reads `x24`. *Placeholders (`Face::Slot(Placeholder)`):* `A` (`board.placeholder.foundation`) in
+  a foundation, `↑` (ASCII `^`, `Glyphs::recycle`) in an empty stock that can be turned over again, `x`
+  (`Glyphs::spent`) when no pass is left, nothing in cells and columns; `pile::draw` takes `recycle`, which
+  `screens/board/counters.rs::can_recycle` derives from the waste and `StockStatus::recycles_left`.
+  *Marks:* `Mark { focus, selected, target, hint: Option<Hint> }`. The hint marks the source `?→` and the target
+  `→?` (ASCII `?>`, `>?`; `Glyphs::hint_source/hint_target`) and has its own border (Unicode `╓─╖ ║ ╙─╜`, ASCII
+  `.` and `:`); `Marks::hints` lists the moved cards first and the destination last, which is how `pile::draw`
+  tells source from target. A target draws `+` (`Glyphs::target`, both sets) in both top corners, over any border,
+  and a centred `+` in an empty slot; focus and selection keep `►`/`●` and their border sets. *Waste fan:* a
+  covered waste card shows its left border and corner label only (label width plus one column, 3 or 4), the rows
+  under its top row and its bottom border stay blank in that strip (`draw_fanned`); only the playable card shows a
+  bottom index.
 - **Card rendering:** front style and back style are selected independently. Each is drawn in one of
   three glyph modes — `Font` (Private Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` —
   described by the style's `style.toml`. `Font` is opt-in through the graphics-check screen.

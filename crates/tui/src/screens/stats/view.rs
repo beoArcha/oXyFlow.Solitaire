@@ -7,9 +7,10 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::format::{history_header, history_row, summary_lines};
-use super::{Button, Notice, StatsScreen};
+use super::{Button, Notice, StatsScreen, Stop};
 use crate::i18n::{t, tf};
 use crate::screens::ViewCtx;
+use crate::screens::focus::{button_style, marker};
 use crate::theme::Token;
 
 /// Rows of the screen that are not the summary or the history list: title, two gaps, the history
@@ -34,6 +35,15 @@ fn text_width(text: &str) -> u16 {
 
 fn block_x(area: Rect, width: u16) -> u16 {
     area.x + area.width.saturating_sub(width) / 2
+}
+
+fn button_label(button: Button) -> String {
+    let key = match button {
+        Button::Replay => "stats.button.replay",
+        Button::Copy => "stats.button.copy",
+        Button::Back => "stats.button.back",
+    };
+    t(key).into_owned()
 }
 
 impl StatsScreen {
@@ -143,38 +153,33 @@ impl StatsScreen {
         let window = self
             .list
             .visible(usize::from(list_area.height), self.records.len());
+        let list_focused = self.stop == Stop::List;
         for (offset, index) in window.enumerate() {
             let (Some(record), Ok(row)) = (self.records.get(index), u16::try_from(offset)) else {
                 break;
             };
-            let focused = index == self.list.selected();
-            let (left, right) = if focused {
-                (ctx.glyphs.focus_left, ctx.glyphs.focus_right)
-            } else {
-                (" ", " ")
-            };
+            let focused = list_focused && index == self.list.selected();
             let style = if focused {
                 ctx.theme.focus()
             } else {
                 ctx.theme.base()
             };
             let cell = Rect::new(x, list_area.y + row, width.min(list_area.width), 1);
-            let text = format!("{left} {} {right}", history_row(record));
+            let text = format!("{} {}", marker(ctx, focused), history_row(record));
             frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
             self.rows.push((index, cell));
         }
     }
 
     fn draw_buttons(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
-        let mut labels = Vec::new();
-        if !self.records.is_empty() {
-            labels.push((Button::Replay, t("stats.button.replay").into_owned()));
-            labels.push((Button::Copy, t("stats.button.copy").into_owned()));
-        }
-        labels.push((Button::Back, t("stats.button.back").into_owned()));
-        let labels: Vec<(Button, String)> = labels
+        let labels: Vec<(Button, String)> = self
+            .visible_buttons()
             .into_iter()
-            .map(|(button, label)| (button, format!("[ {label} ]")))
+            .map(|button| {
+                let focused = self.stop == Stop::Button(button);
+                let text = format!("{} [ {} ]", marker(ctx, focused), button_label(button));
+                (button, text)
+            })
             .collect();
         let gaps = BUTTON_GAP * u16::try_from(labels.len().saturating_sub(1)).unwrap_or(0);
         let total: u16 = labels
@@ -192,7 +197,8 @@ impl StatsScreen {
                 x += BUTTON_GAP;
             }
             self.buttons.push((button, Rect::new(x, area.y, width, 1)));
-            spans.push(Span::styled(label, ctx.theme.base()));
+            let focused = self.stop == Stop::Button(button);
+            spans.push(Span::styled(label, button_style(ctx, focused)));
             x += width;
         }
         frame.render_widget(
