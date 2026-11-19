@@ -4,6 +4,8 @@
 //! scroll, Esc, Enter or the Close button close it. The controls are read from the key table.
 
 mod content;
+#[cfg(test)]
+mod focus_tests;
 mod pages;
 #[cfg(test)]
 mod render_tests;

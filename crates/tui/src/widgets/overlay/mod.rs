@@ -13,6 +13,8 @@ mod help;
 #[cfg(test)]
 mod help_rules_tests;
 mod how_to_play;
+#[cfg(test)]
+mod modal_fixes_tests;
 mod nav;
 mod pause;
 #[cfg(test)]
