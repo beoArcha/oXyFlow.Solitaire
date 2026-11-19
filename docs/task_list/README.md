@@ -1,6 +1,6 @@
 # oXySol task list (MVP)
 
-Started 2026-11-10. Revised 2026-11-15 for R-14…R-19 (roles, CI, seeds, SQLite). Statuses synced with `main` on 2026-11-15.
+Started 2026-11-10. Revised 2026-11-15 for R-14…R-19 (roles, CI, seeds, SQLite). Statuses synced with `main` on 2026-11-19.
 Contract behind the cards: `docs/tech/architecture.md`. Decisions: `docs/tech/decisions.md`.
 
 ## Roles
@@ -102,7 +102,7 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | F-03 | Checkpoint: release sign-off | Opus | P8-02 | TODO |
 | P8-03 | Release 0.1.0 | Haiku + User | F-03, P7-02 | TODO |
 
-Micro tasks M-01…M-34: see `micro.md`.
+Micro tasks M-01…M-35: see `micro.md`.
 
 ### Follow-up tasks
 
@@ -128,40 +128,43 @@ the PR descriptions; cards that exist are in the phase files.
 | O-17 | Task cards for the owner's interface feedback of 2026-11-16 | — | DONE |
 | O-15 | `--new-window` flag and the command-line options in Help | O-05, O-14 | DONE |
 | O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | O-15 | DONE |
+| O-20 | Sync follow-up task statuses (#74) | — | DONE |
 | O-21 | Task cards for the owner's feedback of 2026-11-19 (Restart, recycle button, footer buttons, moves panel, quick options) | — | DONE |
+| O-22 | No-sound CI build, cache tuning, author and third-party licences (#85) | — | DONE |
 | O-16 | Full-screen (borderless window) option: setting and `--fullscreen` | U-04, P3-16 | TODO |
 | U-04 | Interface review for usability and readability (Fable with Opus) | P3-12, P3-13, O-14 | DONE |
-| P3-14 | Readable card faces (replace the block-art rank) | U-04 | TODO |
-| P3-15 | Screen layout: game information apart from controls; framed guide panel | U-04, P3-14 | TODO |
+| P3-14 | Readable card faces (replace the block-art rank) (#75) | U-04 | DONE |
+| P3-15 | Screen layout: game information apart from controls; framed guide panel (#80) | U-04, P3-14 | DONE |
 | P3-16 | Zoom: card size by keyboard, console font on Windows, terminal zoom in Help | U-04, P3-15 | TODO |
-| P3-17 | Tab and Shift+Tab move the focus through menus, buttons and dialogs | U-04 | TODO |
+| P3-17 | Tab and Shift+Tab move the focus through menus, buttons and dialogs (#76) | U-04 | DONE |
 | O-18 | Task cards for the owner's feedback of 2026-11-16 (second round) | — | DONE |
-| P3-18 | Guide panel on screens slightly too small (the panel as a window below 130 columns) | U-04, P3-15 | TODO |
-| P3-19 | Auto-finish a won game (option); unfinished start on branch `feat/P3-19-auto-finish-b` | P2-07, P3-15 | TODO |
-| P3-20 | Winnable deals only (option) | P2-08 | TODO |
+| P3-18 | Guide panel on screens slightly too small (the panel as a window below 130 columns) (#83) | U-04, P3-15 | DONE |
+| P3-19 | Auto-finish a won game (option); unfinished start on branch `feat/P3-19-auto-finish-b` (#81) | P2-07, P3-15 | DONE |
+| P3-20 | Winnable deals only (option) (#82) | P2-08 | DONE |
 | P3-21 | Aura options (focus only) and the stock recycle button | U-04, P3-14 | TODO |
 | P3-22 | Localization templates (no pile name after a verb) and localized key names | P3-15 | TODO |
 | P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | TODO |
 | P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | TODO |
-| P3-25 | Footer keys as mouse buttons; `g` in the footer | P3-15 | TODO |
+| P3-25 | Footer keys as mouse buttons; `g` in the footer (#86) | P3-15 | DONE |
 | P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | TODO |
 | P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | TODO |
 | P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | TODO |
-| O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows | P3-18, P3-25 | IN PROGRESS |
+| O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows (#91) | P3-18, P3-25 | DONE |
 | P3-28 | Docking modals to a side of the screen | O-23 | TODO |
 | P3-29 | Settings: Interface section (colors, aura color/style/size, interface size, font) | P3-16, P3-21, P3-24, P3-27 | TODO |
 | P3-30 | Themes Monokai and Dracula | P3-23 | TODO |
 | P3-31 | Card back selection (Theme, Monokai, Dracula) | P3-30 | TODO |
 | P4-06 | Automatic moves in statistics: failed attempts and streaks, "assisted" games | P4-05 | TODO |
 | O-25 | UI inventory of colors, sizes and fonts (`docs/tech/ui-inventory.md`) | — | DONE |
-| O-26 | Contrast fixes found by the UI inventory (focus frame, card back edge, field edge) | O-25 | TODO |
+| O-26 | Contrast fixes found by the UI inventory (focus frame, card back edge, field edge) (#92) | O-25 | DONE |
+| O-27 | Sync the task list with `main`: statuses, cards, PR numbers and deviations | — | DONE |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
 | P3-35 | Color-blind modes (protanopia, deuteranopia, tritanopia, monochrome; four-color deck) | O-26, P3-29 | TODO |
 | P3-36 | Themes as data and the interface size scale | P3-29, P3-30 | TODO |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
-| P2-08 | Solver for winnable deals | P2-07 | TODO |
+| P2-08 | Solver for winnable deals (#78) | P2-07 | DONE |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
 | P3-10 | How-to-play overlay and first-steps hint | P3-07 | DONE |
 | P3-11 | Board guidance: focus aura, action line and guide panel | P3-06, P3-08, P3-10 | DONE |

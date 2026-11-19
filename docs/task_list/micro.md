@@ -39,8 +39,8 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-31 | Wiki: controls | Beo | P3-09 | DRAFT |
 | M-32 | Wiki: decks, themes, sound | Oxy | P5-02, P6-02 | DRAFT |
 | M-33 | Wiki: accessibility and FAQ | Son | P3-09 | DRAFT |
-| M-34 | Polish translation, part 2 | Beo | P5-02, P6-02 | IN PROGRESS |
-| M-35 | Polish copy edit and glossary (external review of 2026-11-19) | Son | — | READY |
+| M-34 | Polish translation, part 2 (#62) | Beo | P5-02, P6-02 | DONE |
+| M-35 | Polish copy edit and glossary (external review of 2026-11-19) (#84) | Son | — | DONE |
 
 ## Tooling
 
@@ -53,6 +53,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   Rule name `"loc"`, line 1, message with the count and the limit.
 - **Done when:** unit tests in the same file pass for 300 lines (nothing), 301 (warning), 500
   (warning), 501 (error), and show that blank and comment-only lines are not counted.
+- **Done:** #2
 
 ### M-02 — Lint rule: nesting depth
 
@@ -65,6 +66,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 - **Done when:** tests pass for: `match` in `for` in `if` = 3; an `else if` chain = 1; a
   block-bodied closure adds one; a nested function does not add to its parent; depth 4 (nothing),
   5 (warning), 7 (error).
+- **Done:** #3
 
 ### M-03 — Lint rule: empty `Err` arms
 
@@ -74,6 +76,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   block. Rule name `"err-arms"`.
 - **Done when:** tests pass for both forms, and show no finding for `Err(e) => return Err(e.into())`,
   `Err(e) => log(e)`, and `Ok(_) => {}`.
+- **Done:** #4
 
 ### M-04 — Lint rule: vague error types
 
@@ -83,6 +86,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   or any type whose path starts with `anyhow`. Rule name `"err-types"`.
 - **Done when:** tests pass for each forbidden form, and show no finding for a private function
   with `Result<_, String>` or a public one with `Result<_, MoveError>`.
+- **Done:** #6
 
 ### M-05 — Metadata sync
 
@@ -95,6 +99,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   fails when the result would differ.
 - **Done when:** tests on strings pass: values are copied, comments and ordering survive, already
   synced input is returned unchanged, a missing `[project]` key is an error.
+- **Done:** #12
 
 ### M-06 — Architecture tests
 
@@ -108,6 +113,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   4. `crates/core/src/lib.rs` does not contain `pub mod games`.
 - **Done when:** `cargo test --test architecture` passes (this target is not part of `--quick`,
   run it explicitly), and each test fails when you temporarily break its rule — say so in the report.
+- **Done:** #11
 
 ### M-18 — Command-line parser
 
@@ -126,6 +132,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 - **Done when:** tests pass for no arguments, each flag, all three color values, `--colors` without
   a value, `--colors 8`, `--seed 42`, `--seed 18446744073709551615`, `--seed -1`, `--seed abc`,
   `--seed` without a value, and an unknown argument.
+- **Done:** #10
 
 ## Wiki: rules
 
@@ -137,6 +144,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   Stock, Winning, Variants. Use card-table words, never code names such as `Move::Stock`. Do not add
   a rule that is not in the source card and do not omit one.
 - **Done when:** every rule of the source card appears once; nothing else is claimed.
+- **Done:** M-07 #22, M-08 #23, M-09 #26, M-10 #19
 
 ## Terminal and theme helpers
 
@@ -148,6 +156,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   the gray ramp (indexes 232–255, value 8 + 10·i). Never return 0–15.
 - **Done when:** tests pass: (0,0,0) → 16; (255,255,255) → 231; (255,0,0) → 196; (128,128,128) → 244;
   (95,135,175) → 67.
+- **Done:** #8
 
 ### M-14 — Contrast ratio helper
 
@@ -156,6 +165,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   luminance formula for sRGB.
 - **Done when:** tests pass: black on white = 21.0 (± 0.01); identical colors = 1.0; the result is
   symmetric; (119,119,119) on white is 4.48 (± 0.01).
+- **Done:** #15
 
 ### M-15 — Terminal capability detection
 
@@ -177,6 +187,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   `LANG=en_US.UTF-8`; Linux `TERM=xterm` with `LANG=C` (16 colors, no Unicode); macOS
   `xterm-256color` UTF-8; `COLORTERM=truecolor`; `LC_ALL` overriding `LANG`; an SSH session; no
   variables at all on Linux.
+- **Done:** #17
 
 ### M-16 — Title logo
 
@@ -186,6 +197,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   uses only `█`, `▀`, `▄` and spaces; the ASCII version only `#` and spaces.
 - **Done when:** tests pass for equal row widths, the width limit and the allowed characters of
   both versions; the six letters are legible when printed.
+- **Done:** #18
 
 ### M-11, M-12 — Theme palettes: Light, High Contrast
 
@@ -216,12 +228,13 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   `ThemeId::contrast_target()` of the theme (4.5 or 7.0), that `card_red` differs from `card_black`
   (RGB and 16-color), that `focus_bg` differs from `background` (RGB and 16-color), and that every
   16-color value is a named color.
+- **Done:** M-11 #32, M-12 #33
 
 ## Translation
 
 ### M-17, M-34 — Polish translation
 
-- **Status:** M-17 READY (finalized by P3-03), M-34 DRAFT (finalized by P3-09)
+- **Status:** M-17 DONE (finalized by P3-03), M-34 DONE (finalized by P3-09)
 - **Branch:** `docs/M-XX-pl-translation` · **Files:** part 1 — `locales/pl-PL/{common,menu,board}.toml`;
   part 2 — the remaining `locales/pl-PL/*.toml`
 - **M-17 keys:** `common.toml` (all tables); `board.toml`: `[status]`, `[error]` and `[confirm]` (move
@@ -234,6 +247,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   form of a number.
 - **Done when:** the locale parity test passes; no value is identical to the English one unless it
   is a proper name.
+- **Done:** M-17 #54, M-34 #62
 
 ## Artwork
 
@@ -267,6 +281,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   files. Cues are short (under one second, the win cue under three) and distinguishable from each
   other by contour, not only by pitch.
 - **Done when:** the command compiles without errors and the style loads in the game's settings.
+- **Done:** M-25 #52, M-26 #53, M-27 #52, #53
 
 ## Tests
 
@@ -295,7 +310,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 ### M-35 — Polish copy edit and glossary
 
-- **Status:** READY · **Branch:** `docs/M-35-pl-copy-edit`
+- **Status:** DONE · **Branch:** `docs/M-35-pl-copy-edit`
 - **Files:** `locales/pl-PL/*.toml`, `docs/tech/pl-glossary.md` (new), and only the tests that pin
   the changed Polish strings (render or locale tests).
 - **Do:** set the values below exactly (keys and placeholders unchanged; en-US untouched). Then
@@ -360,3 +375,5 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   `action.cards` and `settings: value.unavailable` (placeholder grammar) belong to P3-22.
 - **Done when:** the values are set, a key named above that does not exist is listed in the report
   (not invented), `cargo xtask check --quick` passes, the PR is open.
+- **Deviation (accepted):** four board messages kept their short forms (40-column event limit), and the `stats: longest` heading became `Rekord`.
+- **Done:** #84

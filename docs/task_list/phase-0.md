@@ -14,6 +14,7 @@ shared file already has its final shape so later tasks do not collide.
   3. Done: the repository is `github.com/beoArcha/oXyFlow.Solitare` (R-12).
   4. Still open: review the assumed defaults in `decisions.md`.
 - **Blocks:** nothing.
+- **Done:** before PR numbering
 
 ### P0-01 — Repository skeleton and workspace
 
@@ -58,6 +59,7 @@ shared file already has its final shape so later tasks do not collide.
   12. `LICENSE`: MIT (R-10), copyright holder `oXyFlow`.
 - **Acceptance:** `cargo xtask check` and `cargo xtask check --quick` pass; `cargo run` prints
   `oxysol 0.1.0`; first commit on `main`; `release` branch created from it.
+- **Done:** before PR numbering
 
 ### P0-02 — Master prompt in English with amendments
 
@@ -69,6 +71,7 @@ shared file already has its final shape so later tasks do not collide.
   passage with its amendment ID. Do not add requirements of your own.
 - **Acceptance:** every original section present; every amendment applied exactly once and
   traceable; no statement contradicts `decisions.md`.
+- **Done:** #1
 
 ### P0-03 — CI: pull requests, main, promotion
 
@@ -99,6 +102,7 @@ shared file already has its final shape so later tasks do not collide.
   oxysol; `crates/tui/…` → tui, oxysol; `src/…` and `tests/…` → oxysol; `xtask/…` → xtask;
   `Cargo.lock` → all; mixed input); workflows are valid YAML; the PR's own `pr.yml` run is green.
 - **Done by Opus after merge:** deploy key and secret, rulesets for `main` and `release`, Pages source.
+- **Done:** #9
 
 ### P0-04 — Release workflow: build, tag, publish, site
 
@@ -124,3 +128,49 @@ shared file already has its final shape so later tasks do not collide.
     download link to the latest release, link to the repository). P7-02 grows it into the player wiki.
 - **Acceptance:** tests for `version` and the tag function; workflow is valid; after merge Opus
   states whether the first promotion produced a pre-release with five archives and an updated page.
+- **Done:** #13
+
+### O-01 — Record roles, CI, seed and SQLite decisions (R-14…R-19)
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** U-01
+- **Files:** `AGENTS.md`, `docs/task_list/{README,micro,phase-0,phase-1,phase-3,phase-4,phase-5,phase-7,phase-8}.md`, `docs/tech/{architecture,decisions}.md`
+- **Scope:** Records R-14 (Opus orchestrates and reviews, Fable on escalation), R-15 (small PRs), R-16 (PR CI with the full architecture and E2E targets, incremental unit and integration), R-17 (main to release promotion; release builds, tags, publishes and updates the site), R-18 (seeds shown, typed and recorded) and R-19 (SQLite and text logs). Revises T-02 and T-19, adds T-21…T-24, and rewrites the affected cards (P0-03, the new P0-04, P4-01 on SQLite, P7-02, M-18 with `--seed`, M-06).
+- **Acceptance:** Docs only, no code changed; the decisions are in `decisions.md` and the cards are rewritten to match (PR #5).
+- **Done:** #5
+
+### O-03 — CI actions on Node 24
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P0-03
+- **Files:** `.github/workflows/{main,pr,release}.yml`
+- **Scope:** Updates the third-party actions to Node 24 versions: `actions/checkout` v7, `upload-artifact` v7, `download-artifact` v8, `upload-pages-artifact` v5, `deploy-pages` v5. `Swatinem/rust-cache` stays at v2 (v2.9.3), which already targets Node 24. Workflow triggers and the `promote` steps are unchanged.
+- **Acceptance:** No workflow input changes were needed (PR #40).
+- **Done:** #40
+
+### O-04 — Release builds only by manual dispatch
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P0-04
+- **Files:** `.github/workflows/{main,release}.yml`, `docs/tech/{decisions,workflow}.md`
+- **Scope:** Owner decision R-20 (2026-11-15): `release.yml` loses its `push` trigger and keeps `workflow_dispatch` with the `stable` input. `main.yml` `promote` still fast-forwards `release` after a green full check but no longer starts the release. R-17, T-21 and T-23 are updated; `workflow.md` says how to start a release (`gh workflow run release.yml --ref release`, with `-f stable=true` for a stable one).
+- **Acceptance:** A push to `release` no longer starts a release build; `workflow_dispatch` does (PR #38).
+- **Done:** #38
+
+### O-08 — Release targets: Windows x64, Linux x64/arm64 musl, macOS arm64
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** O-04
+- **Files:** `.github/workflows/release.yml`, `docs/tech/{decisions,workflow}.md`
+- **Scope:** Release matrix: `x86_64-pc-windows-msvc` (windows-latest), `x86_64-unknown-linux-musl` (ubuntu-latest, `musl-tools`), `aarch64-unknown-linux-musl` (ubuntu-24.04-arm, native ARM runner), `aarch64-apple-darwin` (macos-latest). `x86_64-unknown-linux-gnu` and `x86_64-apple-darwin` are removed. Each target gets a normal archive and a `-portable` archive that contains `oxysol.portable`. Decision T-25.
+- **Acceptance:** Matrix and archive names as listed in PR #44.
+- **Done:** #44
+
+### O-22 — No-sound CI build, cache tuning, author and third-party licences
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `.github/workflows/{main,pr,release}.yml`, `Cargo.toml`, `LICENSE`, `about.toml`, `about.hbs`, `build.rs`, `crates/{core,tui}/Cargo.toml`, `src/{about,lib,main}.rs`, `tests/e2e/main.rs`, `tests/integration/audio.rs`, `locales/*/cli.toml`, `docs/tech/{architecture,decisions,workflow}.md`
+- **Scope:** CI builds and tests the no-sound configuration (`--no-default-features`, as the Linux musl release) in `pr.yml` and in the ubuntu job of `main.yml`. Rust cache is read-only in `pr.yml` and in the release check, and no longer used by the release tag and build jobs. `authors` in `[workspace.package]`, a copyright line in `LICENSE`, Windows `CompanyName` and `LegalCopyright`, and a legal second line in `oxysol --version`. Release archives contain `THIRD-PARTY-LICENSES.md`, generated per target by cargo-about 0.9.3. Decision T-31.
+- **Acceptance:** `cargo xtask check --quick`, the clippy run and the `--no-default-features` tests pass locally, and cargo-about generation was run locally; the release workflow was not run (PR #85).
+- **Done:** #85
