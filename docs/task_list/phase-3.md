@@ -955,3 +955,19 @@ Rules for the whole phase:
   size alone. A game started inside an existing terminal never resizes it. Other systems: no change.
 - **Acceptance:** unit tests for the size decision (current size, largest size → new size or none); the change
   verified by hand on Windows 10 by double-clicking `oxysol.exe` (say what was seen); `cargo xtask check --quick`.
+
+### O-32 — Easy restart from the beginning, confirmed like Quit
+
+- **Owner:** Antigravity (Dad)
+- **Depends on:** P3-27
+- **Files:** `crates/tui/src/screens/board/{guidance,commands}.rs`, `crates/tui/src/widgets/overlay/**` (the pause
+  dialog and the confirm dialog), `locales/*/`, tests
+- **Scope:** owner request 2026-11-19: restarting the current deal from the beginning must be easy to find, and
+  confirmed by a dialog like Quit. Today it is only `Shift+R` (confirm `board.confirm.restart`) and a `Do:` entry that
+  is dropped first when the row is narrow. Make it reachable: (1) a Restart button in the pause dialog (`Esc`) next to
+  its other buttons; (2) the `Do:` row keeps `Shift+R: restart` like the always-kept `o: options` part, dropping a less
+  important entry instead; (3) the confirm dialog matches Quit: the same two buttons (Yes / No) with keyboard focus and
+  mouse, Esc = No, and in a game without undo its text says the restart is counted (P4-05). Restart deals the same seed
+  through the existing `Effect::Restart`.
+- **Acceptance:** tests: the pause dialog's Restart opens the confirm and Yes restarts; No and Esc keep the game;
+  `Shift+R` unchanged; the `Do:` row shows restart at 100 and 130 columns in both locales; the no-undo text.
