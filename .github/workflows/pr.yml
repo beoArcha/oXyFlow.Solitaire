@@ -21,6 +21,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: false
       - name: Install the ALSA development package for the audio feature
         run: |
           sudo apt-get update
@@ -29,3 +31,7 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: cargo xtask check --pr "origin/$BASE_REF"
+      - name: Clippy without the audio feature, as the Linux release is built
+        run: cargo clippy --no-default-features -p oxysol --all-targets -- -D warnings
+      - name: Test without the audio feature
+        run: cargo test --no-default-features -p oxysol
