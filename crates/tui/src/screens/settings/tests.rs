@@ -174,7 +174,8 @@ fn left_and_right_step_the_focused_row() {
 #[test]
 fn volume_is_adjusted_with_the_arrows_and_clamped() {
     let mut h = open_settings();
-    move_down(&mut h, FIELDS.len() - 2);
+    let volume = FIELDS.iter().position(|field| *field == Field::Volume);
+    move_down(&mut h, volume.unwrap_or_default());
     for _ in 0..10 {
         h.press(KeyCode::Left);
     }

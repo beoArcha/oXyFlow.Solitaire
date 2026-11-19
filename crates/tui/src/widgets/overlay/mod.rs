@@ -16,6 +16,7 @@ mod how_to_play;
 mod pause;
 #[cfg(test)]
 mod render_tests;
+mod search;
 mod tabs;
 #[cfg(test)]
 mod tests;
@@ -34,7 +35,7 @@ pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
-use crate::app::{Modal, Screen};
+use crate::app::{Modal, Screen, SearchCommand};
 use crate::i18n::t;
 use crate::layout::chrome;
 use crate::mouse;
@@ -46,6 +47,7 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
         Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) | Modal::Guide(_) => None,
         Modal::Pause => Some(pause::text()),
+        Modal::Search(progress) => Some(search::text(progress)),
         Modal::Win { menu_focused } => {
             let moves = board.session().map_or(0, |session| session.moves_made());
             Some(win::text(board.elapsed(now), moves, *menu_focused))
@@ -108,8 +110,12 @@ pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, c
     }
 }
 
-fn toggle_focus(modal: &mut Modal) -> bool {
+fn step_focus(modal: &mut Modal, forward: bool) -> bool {
     match modal {
+        Modal::Search(progress) => {
+            progress.step_focus(forward);
+            true
+        }
         Modal::Confirm { yes_focused, .. } => {
             *yes_focused = !*yes_focused;
             true
@@ -126,6 +132,7 @@ fn focused_index(modal: &Modal) -> usize {
     match modal {
         Modal::Confirm { yes_focused, .. } => usize::from(!yes_focused),
         Modal::Win { menu_focused } => usize::from(*menu_focused),
+        Modal::Search(progress) => progress.focus,
         _ => 0,
     }
 }
@@ -136,6 +143,7 @@ fn press(modal: &Modal, index: usize) -> Effect {
         Modal::Confirm { on_yes, .. } if index == 0 => (**on_yes).clone(),
         Modal::Win { .. } if index == 0 => Effect::Goto(Screen::GameSelect),
         Modal::Win { .. } => Effect::Goto(Screen::MainMenu),
+        Modal::Search(progress) => Effect::SearchStep(search::command_at(progress, index)),
         _ => Effect::None,
     }
 }
@@ -235,10 +243,14 @@ pub fn handle_for(
         action,
         Action::Left | Action::Right | Action::Up | Action::Down
     ) || tab_forward(action).is_some();
-    if moves_focus && toggle_focus(modal) {
+    let forward = tab_forward(action).unwrap_or(!matches!(action, Action::Left | Action::Up));
+    if moves_focus && step_focus(modal, forward) {
         return None;
     }
     match action {
+        Action::Back if matches!(modal, Modal::Search(_)) => {
+            Some(Effect::SearchStep(SearchCommand::Cancel))
+        }
         Action::Select => Some(press(modal, focused_index(modal))),
         Action::Back => Some(Effect::None),
         Action::Pause if *modal == Modal::Pause => Some(Effect::None),

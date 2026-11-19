@@ -6,6 +6,7 @@ use crate::app::Screen;
 use crate::glyphs::is_wgl4;
 use crate::i18n::Locale;
 use crate::settings::Settings;
+use crate::solver::Proof;
 use crate::storage::Outcome::{Abandoned, Won};
 use crate::storage::memory::{HistoryRow, MemoryStorage};
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
@@ -179,5 +180,37 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
         assert!(text.contains("Back") || text.contains("Wstecz"), "{text}");
         h.press(KeyCode::End);
         assert!(h.text().contains("16 of 16") || h.text().contains("16 z 16"));
+    }
+}
+
+#[test]
+fn the_history_marks_winnable_deals_in_both_languages_at_100_by_30() {
+    for (locale, header, yes, no, unknown) in [
+        (Locale::EnUs, "Winnable", "yes", "no", "unknown"),
+        (Locale::PlPl, "Wygrana?", "tak", "nie", "nieznane"),
+    ] {
+        let mut storage = three_games();
+        storage.history[0].proof = Some(Proof::Winnable);
+        storage.history[1].proof = Some(Proof::Unwinnable);
+        storage.history[2].proof = Some(Proof::Unknown);
+        storage.settings = Some(Settings {
+            locale,
+            ..Settings::default()
+        });
+        let mut h = open_stats(storage, 100, 30);
+        let lines = h.lines();
+        assert!(lines.iter().any(|line| line.contains(header)), "{header}");
+        for (seed, mark) in [("11", yes), ("22", no), ("33", unknown)] {
+            let line = lines
+                .iter()
+                .find(|line| line.contains(&format!("  {seed}  ")))
+                .unwrap_or_else(|| panic!("no row for seed {seed}: {lines:#?}"));
+            assert!(line.contains(mark), "{line}");
+        }
+        assert!(
+            lines
+                .iter()
+                .all(|line| line.trim_end().chars().count() <= 100)
+        );
     }
 }

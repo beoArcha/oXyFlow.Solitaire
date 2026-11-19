@@ -28,6 +28,7 @@ pub fn record(
         elapsed_ms,
         moves,
         undo_allowed: true,
+        proof: None,
     }
 }
 

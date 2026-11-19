@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -8,7 +8,7 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 | Package | Path | Responsibility | Allowed dependencies |
 |---|---|---|---|
 | `oxysol-core` | `crates/core` | cards, decks, shuffling, rules of four games, session (undo/redo, replay) | `serde`, `thiserror` |
-| `oxysol-tui` | `crates/tui` | rendering, layout, input, themes, localization, screens, accessibility | `oxysol-core`, `ratatui` (Crossterm via `ratatui::crossterm`), `serde`, `toml`, `thiserror`, `tracing` |
+| `oxysol-tui` | `crates/tui` | rendering, layout, input, themes, localization, screens, accessibility, the search for winnable deals (state only; the solving runs behind the `Solver` trait) | `oxysol-core`, `ratatui` (Crossterm via `ratatui::crossterm`), `serde`, `toml`, `thiserror`, `tracing` |
 | `oxysol` | `src/` (lib + bin) | entry point, arguments, paths, SQLite persistence, audio output, clipboard, logging, panic hook | both above, `rusqlite` (`bundled`), `serde_json`, `directories`, `midly`, `cpal`, `arboard` (default features off), `tracing`, `tracing-subscriber`, `thiserror` |
 | `xtask` | `xtask/` | `check`, `affected`, `lint`, `sync-metadata`, `fonts`, `midi`, `version` | `syn`, `proc-macro2`, `toml`, `toml_edit`, `thiserror`, `ra-ap-rustc_lexer` |
 
@@ -19,7 +19,7 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 
 ```text
 metadata.toml            canonical metadata (name, version, license, URL)
-src/                     main.rs lib.rs cli.rs new_window.rs console.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs audio/
+src/                     main.rs lib.rs cli.rs new_window.rs console.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
 crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/)
@@ -29,7 +29,7 @@ crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
 crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
-                         i18n.rs settings.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
+                         i18n.rs settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml audio.toml
                          rules.toml stats.toml
@@ -185,6 +185,7 @@ pub struct Deps {
     pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed seed bypasses it
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
+    pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
@@ -208,6 +209,7 @@ pub trait Storage {
     fn clear_game(&mut self) -> Result<(), StorageError>;
     fn start_game(&mut self, variant: Variant, seed: u64, undo_allowed: bool) -> Result<GameId, StorageError>;  // history row
     fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64, moves: u32) -> Result<(), StorageError>;
+    fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError>;   // winnability of a history row (P3-20)
     fn history(&self) -> Result<Vec<GameRecord>, StorageError>;   // every row, oldest first
 }
 pub struct GameId(pub i64);
@@ -218,6 +220,7 @@ pub struct GameRecord {                   // one history row
     pub outcome: Option<Outcome>, pub elapsed_ms: Option<u64>,      // None while the game is open
     pub moves: Option<u32>,               // None for rows written before schema v2
     pub undo_allowed: bool,               // the undo mode of the game (P3-12)
+    pub proof: Option<Proof>,             // what the solver said about the deal; None while unchecked (P3-20)
 }
 pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64, pub undo_allowed: bool }  // serde default true
 pub enum StorageError {
@@ -351,6 +354,33 @@ pub struct NullClipboard;                                // every copy fails wit
   `Effect::CopySeed`; `App::copy_seed` announces the result on the statistics screen and as the last event of
   the board ("Seed N copied", or "Could not copy the seed"; the seed is always visible as text). The statistics summary shows every group (up to 8 games × 2 modes = 16
   rows) and leaves the history list at least 5 rows at the minimum size.
+- **Winnable deals (P3-20):** `solver.rs` holds the service the TUI asks: `Proof { Winnable, Unwinnable, Unknown }`,
+  `Query { id, variant, seed }`, `Answer { id, proof }` and `trait Solver { submit, cancel, poll }`. `submit` queues a
+  query and never blocks, `poll` returns the answers that arrived, oldest first, `cancel` drops the queries not yet
+  started (an answer in flight is ignored by the application). The binary wires `oxysol::solver::ThreadSolver`: one
+  worker thread that runs `oxysol_core::solve` with `SolveBudget::default_for(variant)`, a generation counter for
+  cancelling, and an `Unknown` answer for every query when the thread has stopped, so a search never waits for ever;
+  when the thread cannot start `main` uses `NullSolver` (answers `Unknown` at once). `App` polls on every input, and
+  the event loop's 200 ms tick advances a search. `Settings::winnable_only` (default `false`, an older value without
+  the field loads as `false`) is the option `[ Winnable deals only: on|off ]` of the game selection (focus ring: list,
+  undo toggle, this toggle; a click also switches it), remembered through `Effect::Apply`. *Search:* a new game whose
+  seed is `None` (`Effect::Start`, from the selection or from the board's "new game") with the option on opens
+  `Modal::Search(SearchProgress)` instead of dealing: `app/search.rs` (state) and `app/deals.rs` (flow) queue
+  `SEED_CAP` = 40 fresh seeds from `Deps::seeds`, the first `Winnable` answer deals that seed and marks it, `Esc` or
+  the Cancel button (`Effect::SearchStep(Cancel)`) drops the search and leaves the previous screen and game as they
+  were, and the dialog shows "Seeds tried: N of 40". When all 40 answers are in and none is winnable the dialog offers
+  "Play as unknown" (the first seed the solver could not decide; absent when every seed was proven unwinnable),
+  "Keep searching" (another 40) and Cancel. In the game selection the variants that the solver rarely proves
+  (`solver::slow_to_prove`: Spider with 2 and 4 suits, Pyramid Classic, decision T-29) carry "(the search can take
+  long)" while the option is on, and the dialog repeats it. *Seeds the player chose are never replaced:* a typed seed
+  (`Effect::Start` with `Some(seed)`: "New game from seed", `--seed`) and a replay from the statistics are dealt as
+  they are and queued as one background query; a resumed game is checked again. The answer sets
+  `BoardScreen::set_deal(DealCheck)`; `DealCheck { Unchecked, Checking, Known(Proof) }` adds one fact to the game
+  information (`Facts`, so the Compact header row and the `Game` compartment both show it): `Winnable: checking...`,
+  `Winnable: yes`, `Winnable: unknown`, `Winnable: no`; a random game dealt without the option says nothing. Every
+  proof of the running deal is written to its history row with `Storage::record_proof` (a failure is logged, not
+  alerted: the mark is advisory). The statistics history has a `Winnable` column (`yes`, `no`, `unknown`, `-` when
+  unchecked). Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
 - **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
   selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
@@ -389,6 +419,13 @@ pub struct NullClipboard;                                // every copy fails wit
   at the end of each `apply` and saves (see Autosave below). A win opens `Modal::win()` (help, pause, win and dialogs are drawn by `widgets/overlay/`); a
   position without legal moves shows a status message. `Modal::Pause` hides the cards
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
+- **Auto-finish (P3-19):** `board/finish.rs`. After every change `settle` asks `Session::forced_finish`
+  and keeps the moves (`forced`). With the setting `auto_finish` (default on) `BoardScreen::advance(now, auto)`,
+  called by `App` after each event while the board shows with no modal, plays them one per `STEP` (400 ms)
+  through `play`, so the history and statistics see every move; the status line shows
+  `board.status.finishing`. Any key or mouse press calls `interrupt_finish`, which leaves the position to the
+  player until it changes; the `f` key (`Action::Finish`) restarts the paced finish. With the setting off, `f`
+  plays all moves at once; the action line offers `f: finish game` when a forced win is not played out by itself.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
   and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
   an optional header row, `body` and the two rows of the controls strip; `chrome_with(area, guide)` also
@@ -455,7 +492,7 @@ pub struct NullClipboard;                                // every copy fails wit
 - **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
   (`OXYSOL_HOME` overrides; an `oxysol.portable` file beside the executable selects `data/` beside it, R-21). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
   started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed) and `saved_game` (one row: game id, `SessionRecord`
-  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
+  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (3: v3 added `games.proof TEXT`, NULL until the solver has answered; 2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.

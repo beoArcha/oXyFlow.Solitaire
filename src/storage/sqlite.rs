@@ -2,12 +2,12 @@
 //! `Fault`; the trait methods convert it to `StorageError` at the boundary.
 
 use oxysol_core::{SessionRecord, Variant};
-use oxysol_tui::{GameId, GameRecord, Outcome, SavedGame, Settings, Storage, StorageError};
+use oxysol_tui::{GameId, GameRecord, Outcome, Proof, SavedGame, Settings, Storage, StorageError};
 use rusqlite::{OptionalExtension, params};
 
 use super::convert::{
     count_to_column, millis_from_column, millis_to_column, now_millis, outcome_to_column,
-    seed_to_column, variant_to_column,
+    proof_to_column, seed_to_column, variant_to_column,
 };
 use super::error::Fault;
 use super::{SqliteStorage, history};
@@ -136,6 +136,21 @@ impl SqliteStorage {
     }
 }
 
+impl SqliteStorage {
+    fn write_proof(&mut self, id: GameId, proof: Proof) -> Result<(), Fault> {
+        let tx = self.conn.transaction()?;
+        let changed = tx.execute(
+            "UPDATE games SET proof = ?1 WHERE id = ?2",
+            params![proof_to_column(proof), id.0],
+        )?;
+        if changed == 0 {
+            return Err(Fault::invalid(format!("no game with id {}", id.0)));
+        }
+        tx.commit()?;
+        Ok(())
+    }
+}
+
 impl Storage for SqliteStorage {
     fn load_settings(&self) -> Result<Option<Settings>, StorageError> {
         Ok(self.read_settings()?)
@@ -174,6 +189,10 @@ impl Storage for SqliteStorage {
         moves: u32,
     ) -> Result<(), StorageError> {
         Ok(self.close_game(id, outcome, elapsed_ms, moves)?)
+    }
+
+    fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
+        Ok(self.write_proof(id, proof)?)
     }
 
     fn history(&self) -> Result<Vec<GameRecord>, StorageError> {

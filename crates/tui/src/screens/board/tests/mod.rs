@@ -3,6 +3,7 @@
 mod aura;
 mod commands;
 mod counters;
+mod finish;
 mod focus;
 mod guidance;
 mod guide_window;

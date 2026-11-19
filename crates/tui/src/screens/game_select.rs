@@ -1,7 +1,8 @@
 //! Game and variant selection. Enter or a click starts the focused variant; with a seed (from
 //! "New game from seed") the variant is dealt from that seed. A toggle under the list switches the
-//! undo mode of the next game (`u` or a click); the choice is remembered in the settings. Tab moves
-//! the focus between the list and the toggle.
+//! undo mode of the next game (`u` or a click) and a second one switches the search for winnable
+//! deals; both choices are remembered in the settings. Tab moves the focus between the list and
+//! the two toggles.
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
@@ -9,14 +10,14 @@ use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use super::focus::{button_style, marker, step, tab_forward};
+use super::focus::{step, tab_forward};
 use super::{Effect, ViewCtx, variant_label_key};
 use crate::action::Action;
 use crate::app::Screen;
 use crate::i18n::{t, tf};
-use crate::input::primary_key;
 use crate::mouse::{contains, left_press};
 use crate::settings::Settings;
+use crate::solver::slow_to_prove;
 use crate::theme::Token;
 use crate::widgets::footer;
 use crate::widgets::menu_list::MenuList;
@@ -24,10 +25,11 @@ use oxysol_core::Variant;
 
 const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
 
-/// The focus ring of the screen: the variants list, then the undo toggle.
+/// The focus ring of the screen: the variants list, the undo toggle, the winnable-deals toggle.
 const LIST: usize = 0;
 const TOGGLE: usize = 1;
-const RING_LEN: usize = 2;
+const WINNABLE: usize = 2;
+const RING_LEN: usize = 3;
 
 /// State of the game selection screen.
 #[derive(Debug, Default)]
@@ -36,6 +38,7 @@ pub struct GameSelect {
     seed: Option<u64>,
     focus: usize,
     toggle: Rect,
+    winnable: Rect,
 }
 
 impl GameSelect {
@@ -69,8 +72,23 @@ impl GameSelect {
         })
     }
 
+    fn toggle_winnable(ctx: &ViewCtx<'_>) -> Effect {
+        Effect::Apply(Settings {
+            winnable_only: !ctx.settings.winnable_only,
+            ..ctx.settings.clone()
+        })
+    }
+
+    fn press_toggle(&self, ctx: &ViewCtx<'_>) -> Effect {
+        if self.focus == WINNABLE {
+            Self::toggle_winnable(ctx)
+        } else {
+            Self::toggle_undo(ctx)
+        }
+    }
+
     /// Handles a key press mapped to `action`: Enter starts the focused variant or presses the
-    /// toggle, Tab moves the focus, `u` switches the undo mode, Esc goes back.
+    /// focused toggle, Tab moves the focus, `u` switches the undo mode, Esc goes back.
     pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         match action {
             Some(Action::Back) => Effect::Goto(Screen::MainMenu),
@@ -85,9 +103,9 @@ impl GameSelect {
             self.focus = step(self.focus, RING_LEN, forward);
             return Effect::None;
         }
-        if self.focus == TOGGLE {
+        if self.focus != LIST {
             match action {
-                Action::Select | Action::Left | Action::Right => return Self::toggle_undo(ctx),
+                Action::Select | Action::Left | Action::Right => return self.press_toggle(ctx),
                 Action::Up | Action::Down => self.focus = LIST,
                 _ => return Effect::None,
             }
@@ -97,12 +115,16 @@ impl GameSelect {
             .map_or(Effect::None, |index| self.start(index, ctx))
     }
 
-    /// Handles a mouse event: the wheel moves focus, a click starts a variant or presses the undo
-    /// toggle.
+    /// Handles a mouse event: the wheel moves focus, a click starts a variant or presses a toggle.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
-        if left_press(event).is_some_and(|cell| contains(self.toggle, cell)) {
+        let pressed = left_press(event);
+        if pressed.is_some_and(|cell| contains(self.toggle, cell)) {
             self.focus = TOGGLE;
             return Self::toggle_undo(ctx);
+        }
+        if pressed.is_some_and(|cell| contains(self.winnable, cell)) {
+            self.focus = WINNABLE;
+            return Self::toggle_winnable(ctx);
         }
         self.focus = LIST;
         self.list
@@ -117,34 +139,21 @@ impl GameSelect {
         }
     }
 
-    fn draw_toggle(&mut self, frame: &mut Frame, areas: [Rect; 2], ctx: &ViewCtx<'_>) {
-        let [toggle_area, hint_area] = areas;
-        let state = if ctx.settings.undo_allowed {
-            t("common.select.undo_on")
-        } else {
-            t("common.select.undo_off")
-        };
-        let focused = self.focus == TOGGLE;
-        let label = tf("common.select.undo", &[("state", &state)]);
-        let text = format!("{} {label}", marker(ctx, focused));
-        let width = u16::try_from(text.chars().count()).unwrap_or(u16::MAX);
-        let x = toggle_area.x + toggle_area.width.saturating_sub(width) / 2;
-        self.toggle = Rect::new(x, toggle_area.y, width, 1).intersection(toggle_area);
-        frame.render_widget(
-            Paragraph::new(Line::styled(text, button_style(ctx, focused)))
-                .alignment(Alignment::Center),
-            toggle_area,
-        );
-        let key = primary_key(Action::Undo).unwrap_or_default();
-        let hint = tf("common.select.undo_hint", &[("key", &key)]);
-        let muted = ctx.theme.style(Token::TextMuted, Token::Background);
-        frame.render_widget(
-            Paragraph::new(Line::styled(hint, muted)).alignment(Alignment::Center),
-            hint_area,
-        );
+    fn variant_labels(ctx: &ViewCtx<'_>) -> Vec<String> {
+        Variant::ALL
+            .iter()
+            .map(|variant| {
+                let name = t(variant_label_key(*variant));
+                if ctx.settings.winnable_only && slow_to_prove(*variant) {
+                    tf("common.select.slow_search", &[("variant", &name)])
+                } else {
+                    name.into_owned()
+                }
+            })
+            .collect()
     }
 
-    /// Draws the title, the variants, the undo toggle and the key hints.
+    /// Draws the title, the variants, the two toggles and the key hints.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let [
             _,
@@ -152,8 +161,10 @@ impl GameSelect {
             _,
             list_area,
             _,
-            toggle_area,
-            hint_area,
+            undo_area,
+            winnable_area,
+            undo_hint_area,
+            winnable_hint_area,
             _,
             footer_area,
         ] = Layout::vertical([
@@ -161,6 +172,8 @@ impl GameSelect {
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(u16::try_from(Variant::ALL.len()).unwrap_or(0)),
+            Constraint::Length(1),
+            Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
@@ -176,18 +189,25 @@ impl GameSelect {
             Paragraph::new(title).alignment(Alignment::Center),
             title_area,
         );
-        let labels: Vec<String> = Variant::ALL
-            .iter()
-            .map(|variant| t(variant_label_key(*variant)).into_owned())
-            .collect();
-        self.list
-            .draw(frame, list_area, &labels, ctx, self.focus == LIST);
-        self.draw_toggle(frame, [toggle_area, hint_area], ctx);
+        self.list.draw(
+            frame,
+            list_area,
+            &Self::variant_labels(ctx),
+            ctx,
+            self.focus == LIST,
+        );
+        self.toggle = toggles::draw_undo(frame, undo_area, self.focus == TOGGLE, ctx);
+        self.winnable = toggles::draw_winnable(frame, winnable_area, self.focus == WINNABLE, ctx);
+        toggles::draw_hints(frame, [undo_hint_area, winnable_hint_area], ctx);
         footer::draw(frame, footer_area, &FOOTER, ctx);
     }
 }
+
+mod toggles;
 
 #[cfg(test)]
 mod focus_tests;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod winnable_tests;
