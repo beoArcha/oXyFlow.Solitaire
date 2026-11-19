@@ -25,7 +25,7 @@ rate = "% wygr."
 best_time = "Najl. czas"
 fewest_moves = "Min. ruchów"
 streak = "Seria"
-longest = "Maks. seria"
+longest = "Rekord"
 
 [history]
 title = "Historia, od najnowszej, czas UTC"
