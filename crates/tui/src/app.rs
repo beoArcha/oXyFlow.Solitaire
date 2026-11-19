@@ -4,7 +4,7 @@
 use std::time::Instant;
 
 use ratatui::Frame;
-use ratatui::crossterm::event::{KeyEvent, KeyEventKind, MouseEvent};
+use ratatui::crossterm::event::{KeyEvent, KeyEventKind, MouseEvent, MouseEventKind};
 use ratatui::layout::Rect;
 use ratatui::widgets::Block;
 
@@ -230,6 +230,8 @@ impl App {
         };
         self.apply(effect);
         self.poll_solver();
+        let effect = self.advance_finish();
+        self.apply(effect);
         self.play_board_cues();
     }
 
@@ -247,6 +249,7 @@ impl App {
         if action == Some(Action::ForceQuit) {
             return Effect::Quit;
         }
+        self.board.interrupt_finish();
         if self.too_small() {
             return if action == Some(Action::Quit) {
                 Effect::Quit
@@ -325,6 +328,9 @@ impl App {
         if self.too_small() {
             return Effect::None;
         }
+        if matches!(event.kind, MouseEventKind::Down(_)) {
+            self.board.interrupt_finish();
+        }
         if self.modal.is_some() {
             return self.on_modal_mouse(event);
         }
@@ -365,6 +371,7 @@ impl App {
 mod deals;
 mod deps;
 mod effects;
+mod finish;
 mod modal;
 mod persist;
 mod search;

@@ -407,6 +407,13 @@ pub struct NullClipboard;                                // every copy fails wit
   at the end of each `apply` and saves (see Autosave below). A win opens `Modal::win()` (help, pause, win and dialogs are drawn by `widgets/overlay/`); a
   position without legal moves shows a status message. `Modal::Pause` hides the cards
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
+- **Auto-finish (P3-19):** `board/finish.rs`. After every change `settle` asks `Session::forced_finish`
+  and keeps the moves (`forced`). With the setting `auto_finish` (default on) `BoardScreen::advance(now, auto)`,
+  called by `App` after each event while the board shows with no modal, plays them one per `STEP` (400 ms)
+  through `play`, so the history and statistics see every move; the status line shows
+  `board.status.finishing`. Any key or mouse press calls `interrupt_finish`, which leaves the position to the
+  player until it changes; the `f` key (`Action::Finish`) restarts the paced finish. With the setting off, `f`
+  plays all moves at once; the action line offers `f: finish game` when a forced win is not played out by itself.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
   and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
   an optional header row, `body` and the two rows of the controls strip; `chrome_with(area, guide)` also

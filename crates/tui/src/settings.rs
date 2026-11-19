@@ -53,6 +53,9 @@ pub struct Settings {
     /// Whether a new game with a fresh seed searches for a deal the solver proves winnable.
     /// An older saved value without the field loads as `false`.
     pub winnable_only: bool,
+    /// Whether a forced win is played out automatically move by move. An older saved value without
+    /// the field loads as `true`.
+    pub auto_finish: bool,
 }
 
 impl Default for Settings {
@@ -71,6 +74,7 @@ impl Default for Settings {
             guide_panel: true,
             undo_allowed: true,
             winnable_only: false,
+            auto_finish: true,
         }
     }
 }
@@ -211,5 +215,26 @@ mod tests {
             ..Settings::default()
         };
         assert_eq!(settings.audio().volume, 100);
+    }
+
+    #[test]
+    fn auto_finish_is_on_by_default_and_old_values_without_it_keep_it_on() {
+        assert!(Settings::default().auto_finish);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if s.auto_finish));
+        let off = toml::from_str::<Settings>("auto_finish = false");
+        assert!(matches!(off, Ok(ref s) if !s.auto_finish));
+    }
+
+    #[test]
+    fn auto_finish_round_trips() {
+        let settings = Settings {
+            auto_finish: false,
+            ..Settings::default()
+        };
+        let text = toml::to_string(&settings);
+        assert!(text.is_ok());
+        let back = text.map(|t| toml::from_str::<Settings>(&t));
+        assert!(matches!(back, Ok(Ok(ref s)) if *s == settings && !s.auto_finish));
     }
 }

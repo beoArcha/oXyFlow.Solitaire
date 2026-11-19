@@ -12,6 +12,7 @@ cues = "Efekty dźwiękowe"
 music = "Muzyka"
 volume = "Głośność"
 guide_panel = "Panel przewodnika"
+auto_finish = "Automatyczne kończenie"
 line = "{label}: {value}"
 
 [value]
