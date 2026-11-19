@@ -51,6 +51,7 @@ drag = "Move a card onto its target"
 
 [overlay]
 continue = "Continue"
+restart = "Restart"
 new_game = "New game"
 menu = "Menu"
 win_time = "Time: {time}"

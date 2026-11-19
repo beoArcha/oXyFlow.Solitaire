@@ -196,13 +196,23 @@ fn every_button_of_the_board_does_what_its_key_does() {
             (Action::Options, "board.action.options"),
             (Action::Back, "board.action.menu"),
         ];
+        let mut probe = setup(locale);
         let buttons: Vec<(Action, String)> = board
             .iter()
             .map(|(action, key)| {
                 let name = primary_key(*action).unwrap_or_default();
                 (*action, tf(key, &[("key", &name)]))
             })
+            .filter(|(_, text)| probe.find(text).is_some())
             .collect();
+        assert!(
+            buttons.iter().any(|(action, _)| *action == Action::Options),
+            "the options button is always drawn ({locale:?})"
+        );
+        assert!(
+            buttons.iter().any(|(action, _)| *action == Action::Back),
+            "the menu button is always drawn ({locale:?})"
+        );
         assert_clicks_match_keys(locale, &setup, &buttons, "board");
     });
 }

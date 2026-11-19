@@ -44,7 +44,7 @@ fn simple_modals_close_on_select_and_back() {
 
 #[test]
 fn pause_closes_on_its_own_key_only() {
-    let mut modal = Modal::Pause;
+    let mut modal = Modal::pause(true);
     assert_eq!(handle(&mut modal, &key(), Some(Action::Hint)), None);
     assert_eq!(
         handle(&mut modal, &key(), Some(Action::Pause)),
@@ -125,8 +125,23 @@ fn clicks_press_the_button_under_them() {
         Some(Effect::Goto(Screen::MainMenu))
     );
 
-    let mut pause = Modal::Pause;
+    let mut pause = Modal::pause(true);
     assert_eq!(click_button(&mut pause, 0), Some(Effect::None));
+    assert_eq!(
+        click_button(&mut pause, 1),
+        Some(Effect::Open(Modal::confirm(
+            "board.confirm.restart",
+            Effect::Restart
+        )))
+    );
+    let mut pause_no_undo = Modal::pause(false);
+    assert_eq!(
+        click_button(&mut pause_no_undo, 1),
+        Some(Effect::Open(Modal::confirm(
+            "board.confirm.restart_no_undo",
+            Effect::Restart
+        )))
+    );
     let mut help = Modal::Help;
     assert_eq!(click_button(&mut help, 0), Some(Effect::None));
 }

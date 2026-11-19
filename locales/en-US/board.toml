@@ -98,6 +98,7 @@ blocked = "Illegal move: the card is covered."
 
 [confirm]
 restart = "Deal this game again from the beginning?"
+restart_no_undo = "Deal this game again from the beginning? The restart will be counted."
 new_game = "Give up this game and deal a new one?"
 quit = "Quit oXySol?"
 

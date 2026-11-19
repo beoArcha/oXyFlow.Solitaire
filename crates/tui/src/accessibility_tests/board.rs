@@ -55,6 +55,11 @@ fn klondike_seed() -> Option<u64> {
     })
 }
 
+/// The board without the two control rows at the bottom, where `Do:` names keys such as `Shift+R`.
+fn board_lines(lines: &[String]) -> &[String] {
+    &lines[..lines.len() - 2]
+}
+
 fn klondike(caps: crate::caps::TerminalCaps, seed: u64) -> Harness {
     let mut h = Harness::with(MemoryStorage::new(), caps, 120, 40);
     h.app.apply(Effect::Start {
@@ -84,7 +89,11 @@ fn focus_selection_targets_face_down_cards_and_suits_read_without_color() {
         assert!(count(&resting, glyphs.focus_left) >= 1, "focus");
         assert_eq!(count(&resting, glyphs.selected), 0, "nothing selected");
         let target_mark = if caps.unicode { glyphs.target } else { "~" };
-        assert_eq!(count(&resting, target_mark), 0, "no targets at rest");
+        assert_eq!(
+            count(board_lines(&resting), target_mark),
+            0,
+            "no targets at rest"
+        );
         assert!(count(&held, glyphs.selected) >= 1, "selection");
         assert!(count(&held, target_mark) >= 1, "legal targets");
         assert!(count(&resting, glyphs.face_down) >= 1, "face-down cards");

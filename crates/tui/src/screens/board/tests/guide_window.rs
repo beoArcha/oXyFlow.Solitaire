@@ -186,40 +186,38 @@ fn from_130_columns_g_still_hides_and_shows_the_panel() {
 }
 
 #[test]
-fn the_do_row_names_the_guide_key_below_130_columns_and_only_there() {
-    let cases = [
-        ((100, 30), true),
-        ((129, 40), true),
-        ((130, 30), false),
-        ((130, 40), false),
-    ];
-    for (size, named) in cases {
+fn the_do_row_keeps_restart_and_options_at_every_width_of_the_guide_window() {
+    for size in [(100, 30), (129, 40), (130, 30), (130, 40)] {
         let mut h = english(size);
         let possible = last_row(&mut h);
-        assert_eq!(possible.contains("g: guide"), named, "{size:?}: {possible}");
-        assert!(possible.contains("?: keys") && possible.contains("Esc: menu"));
+        assert!(
+            possible.contains("Shift+R: restart"),
+            "{size:?}: {possible}"
+        );
+        assert!(possible.contains("o: options"), "{size:?}: {possible}");
     }
 }
 
 #[test]
-fn the_do_row_keeps_the_guide_key_in_every_game_and_locale_at_100_columns() {
+fn the_do_row_keeps_restart_and_options_at_100_columns_in_every_game_and_locale() {
     for locale in Locale::ALL {
-        let word = match locale {
-            Locale::EnUs => "g: guide",
-            Locale::PlPl => "g: przewodnik",
+        let (restart, options) = match locale {
+            Locale::EnUs => ("Shift+R: restart", "o: options"),
+            Locale::PlPl => ("Shift+R: od nowa", "o: opcje"),
         };
         for variant in GAMES {
             let mut h = shown(variant, (100, 30), locale, TRUE_COLOR);
             let browsing = last_row(&mut h);
             assert!(browsing.trim_end().chars().count() <= 100, "{browsing}");
-            assert!(browsing.contains(word), "{variant:?}: {browsing}");
+            assert!(browsing.contains(restart), "{variant:?}: {browsing}");
+            assert!(browsing.contains(options), "{variant:?}: {browsing}");
         }
     }
     set_locale(Locale::EnUs);
 }
 
 #[test]
-fn the_do_row_keeps_the_guide_key_while_cards_are_carried() {
+fn the_do_row_keeps_restart_while_cards_are_carried() {
     let mut h = english((100, 30));
     let Some((from, _, _)) = first_transfer(&h) else {
         unreachable!("seed 5 has a transfer")
@@ -228,7 +226,7 @@ fn the_do_row_keeps_the_guide_key_while_cards_are_carried() {
     h.press(KeyCode::Enter);
     let carrying = last_row(&mut h);
     assert!(carrying.starts_with("Do: "), "{carrying}");
-    assert!(carrying.contains("g: guide"), "{carrying}");
+    assert!(carrying.contains("Shift+R: restart"), "{carrying}");
 }
 
 fn every_narrow_screen() -> Vec<(Variant, (u16, u16), Locale, TerminalCaps)> {

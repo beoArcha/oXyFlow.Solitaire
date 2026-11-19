@@ -20,7 +20,11 @@ pub enum Modal {
     Moves(MovesWindow),
     /// The aids of the running game, switched at once; "Save as default" keeps them for new games.
     Quick(QuickOptions),
-    Pause,
+    /// The pause dialog; `restart_focused` is true when the Restart button has focus.
+    Pause {
+        undo_allowed: bool,
+        restart_focused: bool,
+    },
     /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
     Confirm {
         prompt: &'static str,
@@ -45,6 +49,14 @@ impl Modal {
     /// A notice showing the text of the localization key `message`.
     pub fn alert(message: &'static str) -> Self {
         Modal::Alert { message }
+    }
+
+    /// The pause dialog, with focus on "Continue".
+    pub fn pause(undo_allowed: bool) -> Self {
+        Modal::Pause {
+            undo_allowed,
+            restart_focused: false,
+        }
     }
 
     /// The win screen, with focus on "New game" and no personal best yet.

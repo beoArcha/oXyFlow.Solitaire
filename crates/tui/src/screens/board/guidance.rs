@@ -29,7 +29,8 @@ pub(super) struct Part {
 pub(super) struct Guidance {
     pub now: String,
     pub possible: Vec<Part>,
-    /// Parts that are never dropped: the way to the key list and the way out.
+    /// Parts after the possible ones: restart, options, the key list and the way out. They are
+    /// dropped by `drop_order` like the others.
     pub tail: Vec<Part>,
     pub usable: Vec<Action>,
 }
@@ -133,6 +134,7 @@ impl Guidance {
 
     fn visible_parts(&self, width: usize) -> Vec<Part> {
         let mut parts = self.possible.clone();
+        parts.extend(self.tail.iter().cloned());
         while !self.do_row_fits(&parts, width) {
             let Some(index) = parts
                 .iter()
@@ -144,13 +146,11 @@ impl Guidance {
             };
             parts.remove(index);
         }
-        parts.extend(self.tail.iter().cloned());
         parts
     }
 
     fn do_row_fits(&self, parts: &[Part], width: usize) -> bool {
-        let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
-        tf("board.action.possible", &[("text", &join(&all))])
+        tf("board.action.possible", &[("text", &join(parts))])
             .chars()
             .count()
             <= width
@@ -167,15 +167,16 @@ impl Guidance {
     }
 }
 
-/// The parts that end every `Do:` row: how to see all keys and, unless Esc is taken by a pick,
-/// how to leave for the menu.
+/// The parts that end every `Do:` row: restart and options, which are kept longest, the key list,
+/// and unless Esc is taken by a pick, the way to the menu.
 fn tail(with_menu: bool) -> Vec<Part> {
     let mut parts = vec![
-        part(Action::Options, "board.action.options", 0),
-        part(Action::Help, "board.action.help", 0),
+        part(Action::Restart, "board.action.restart", 2),
+        part(Action::Options, "board.action.options", 2),
+        part(Action::Help, "board.action.help", 8),
     ];
     if with_menu {
-        parts.push(part(Action::Back, "board.action.menu", 0));
+        parts.push(part(Action::Back, "board.action.menu", 2));
     }
     parts
 }
@@ -195,7 +196,6 @@ fn stuck(session: &Session, undo_allowed: bool) -> Guidance {
         possible.push(part(Action::Undo, "board.action.undo", 3));
         usable.push(Action::Undo);
     }
-    possible.push(part(Action::Restart, "board.action.restart", 0));
     possible.push(part(Action::NewGame, "board.action.new_game", 1));
     Guidance::closed("board.action.stuck", possible, usable)
 }
@@ -208,7 +208,7 @@ impl BoardScreen {
         if self.panel_unavailable() {
             guidance
                 .tail
-                .insert(0, part(Action::Guide, "board.action.guide", 0));
+                .insert(0, part(Action::Guide, "board.action.guide", 8));
         }
         Some(guidance)
     }
@@ -280,7 +280,7 @@ impl BoardScreen {
             usable.push(Action::Undo);
         }
         if runs {
-            possible.push(run_part(5));
+            possible.push(run_part(1));
         }
         usable.extend(runs.then_some(Action::RunMore));
         usable.extend(runs.then_some(Action::RunLess));

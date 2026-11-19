@@ -43,10 +43,8 @@ impl BoardScreen {
             Action::Redo => self.redo(),
             Action::Hint => self.hint(),
             Action::Finish => self.finish_key(),
-            Action::Pause => Effect::Open(Modal::Pause),
-            Action::Restart => {
-                Effect::Open(Modal::confirm("board.confirm.restart", Effect::Restart))
-            }
+            Action::Pause => Effect::Open(Modal::pause(self.undo_allowed)),
+            Action::Restart => self.confirm_restart(),
             Action::NewGame => self.confirm_new_game(),
             Action::CopySeed => self
                 .session
@@ -219,6 +217,15 @@ impl BoardScreen {
         self.status = None;
         self.hint_note = true;
         Effect::None
+    }
+
+    fn confirm_restart(&self) -> Effect {
+        let prompt = if self.undo_allowed {
+            "board.confirm.restart"
+        } else {
+            "board.confirm.restart_no_undo"
+        };
+        Effect::Open(Modal::confirm(prompt, Effect::Restart))
     }
 
     fn confirm_new_game(&self) -> Effect {

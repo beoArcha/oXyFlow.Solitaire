@@ -51,6 +51,7 @@ drag = "Przenieś kartę na cel"
 
 [overlay]
 continue = "Kontynuuj"
+restart = "Od nowa"
 new_game = "Nowa gra"
 menu = "Menu"
 win_time = "Czas: {time}"

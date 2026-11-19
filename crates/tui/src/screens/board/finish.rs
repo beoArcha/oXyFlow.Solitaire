@@ -73,7 +73,7 @@ impl BoardScreen {
     pub(super) fn push_finish(&self, possible: &mut Vec<Part>, usable: &mut Vec<Action>) {
         let offered = self.forced.is_some() && (!self.auto_finish || self.declined);
         if offered {
-            possible.push(guidance::part(Action::Finish, "board.action.finish", 3));
+            possible.push(guidance::part(Action::Finish, "board.action.finish", 1));
             usable.push(Action::Finish);
         }
     }

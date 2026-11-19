@@ -196,8 +196,8 @@ fn no_fact_is_shown_twice() {
             "Time 0:00",
             "Klondike, Draw 3",
             "s: turn stock",
-            "?: keys",
-            "Esc: menu",
+            "Shift+R: restart",
+            "o: options",
         ];
         for fact in facts {
             assert_eq!(count(&text, fact), 1, "{size:?}: {fact}\n{text}");
