@@ -848,3 +848,4 @@ Rules for the whole phase:
 - **Files:** `docs/task_list/**` only
 - **Scope:** Syncs the task list with `main`: status fixes for the rows that were wrong (P2-08, P3-14, P3-15, P3-17…P3-20, P3-25, O-23, M-34, M-35), missing rows (O-20, O-22, O-27), a card for every follow-up ID that had none, `Done:` lines with PR numbers for every DONE card, accepted deviations recorded on their cards, and the status date in the README.
 - **Acceptance:** Every ID in a README or micro.md status table has exactly one card, and every merged PR with `[ID]` in its title has a DONE row; any mismatch is listed in the PR report.
+- **Done:** #93
