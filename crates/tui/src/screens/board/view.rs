@@ -29,6 +29,7 @@ pub(super) struct Scene<'a> {
     pub covered: bool,
     pub guidance: Option<&'a Guidance>,
     pub guide: bool,
+    pub do_focus: Option<usize>,
 }
 
 fn draw_board(frame: &mut Frame, body: Rect, session: &Session, marks: &Marks, ctx: &ViewCtx<'_>) {
@@ -56,8 +57,8 @@ fn draw_panel(frame: &mut Frame, rect: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_
     guide::draw(frame.buffer_mut(), rect, &panel, ctx);
 }
 
-/// Draws the whole board screen into `area`.
-pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_>) {
+/// Draws the whole board screen into `area` and stores the `Do:` row hit map on `board`.
+pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_>) -> super::DoMap {
     let parts = layout::chrome_with(area, scene.guide);
     if let (Some(rect), Some(facts)) = (parts.header, scene.facts) {
         let row = facts.row(rect, ctx.theme.style(Token::Accent, Token::Background));
@@ -70,20 +71,22 @@ pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &Vie
     if let Some(session) = scene.session.filter(|_| !scene.covered) {
         draw_board(frame, parts.body, session, scene.marks, ctx);
     }
-    controls::draw(
+    let do_map = controls::draw(
         frame,
         parts.now,
         parts.possible,
         scene.guidance,
         scene.event.filter(|_| !scene.covered),
+        scene.do_focus,
         ctx,
     );
     if let Some(rect) = parts.guide {
         draw_panel(frame, rect, scene, ctx);
     }
+    do_map
 }
 
-pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &ViewCtx<'_>) {
+pub(super) fn draw(frame: &mut Frame, area: Rect, board: &mut BoardScreen, ctx: &ViewCtx<'_>) {
     let guidance = board.guidance();
     let facts = board.facts(ctx.now);
     let event = board.event();
@@ -96,6 +99,7 @@ pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &Vie
         covered: board.covered,
         guidance: guidance.as_ref(),
         guide: ctx.settings.guide_panel,
+        do_focus: board.do_focus,
     };
-    render(frame, area, &scene, ctx);
+    board.do_map = render(frame, area, &scene, ctx);
 }

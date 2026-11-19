@@ -19,6 +19,8 @@ use crate::widgets::text::clip;
 pub(super) struct Part {
     pub text: String,
     pub drop_order: u8,
+    /// The action this part runs when clicked; `None` for display-only parts like `Arrows: move`.
+    pub action: Option<Action>,
 }
 
 /// The moment on the board: what is in progress, what can be done, and which actions work.
@@ -51,6 +53,7 @@ fn part(action: Action, key: &str, drop_order: u8) -> Part {
     Part {
         text: tf(key, &[("key", &name)]),
         drop_order,
+        action: Some(action),
     }
 }
 
@@ -58,6 +61,7 @@ fn plain(key: &str, drop_order: u8) -> Part {
     Part {
         text: t(key).into_owned(),
         drop_order,
+        action: None,
     }
 }
 
@@ -93,6 +97,7 @@ fn run_part(drop_order: u8) -> Part {
     Part {
         text: tf("board.action.run", &[("keys", &keys)]),
         drop_order,
+        action: None,
     }
 }
 
@@ -100,6 +105,30 @@ impl Guidance {
     /// The `Now:` row text cut to `width` columns.
     pub(super) fn now_line(&self, width: usize) -> String {
         clip(&tf("board.action.now", &[("text", &self.now)]), width)
+    }
+
+    /// All parts in display order (possible then tail), trimmed to fit `width`, least useful
+    /// dropped first. Returns the parts that are shown.
+    pub(super) fn visible_parts(&self, width: usize) -> Vec<&Part> {
+        let mut parts = self.possible.clone();
+        loop {
+            let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
+            let line = tf("board.action.possible", &[("text", &join(&all))]);
+            if line.chars().count() <= width || parts.is_empty() {
+                return parts.iter().chain(&self.tail).collect();
+            }
+            let least = parts
+                .iter()
+                .enumerate()
+                .max_by_key(|(_, part)| part.drop_order)
+                .map(|(index, _)| index);
+            if let Some(index) = least {
+                parts.remove(index);
+            } else {
+                break;
+            }
+        }
+        parts.iter().chain(&self.tail).collect()
     }
 
     /// The `Do:` row: the parts that fit `width` columns, least useful dropped first, then the
@@ -243,6 +272,7 @@ impl BoardScreen {
             usable.push(Action::Redo);
         }
         possible.push(part(Action::Rules, "board.action.rules", 9));
+        possible.push(part(Action::Guide, "board.action.guide", 8));
         usable.extend(ALWAYS);
         Guidance {
             now: self.now_text(piles),
