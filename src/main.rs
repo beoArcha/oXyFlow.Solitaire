@@ -76,6 +76,9 @@ fn start(args: &Cli) -> Result<(), AppError> {
     let level = std::env::var(logging::LEVEL_VARIABLE).ok();
     let diagnostics = start_logging(&paths, level.as_deref());
     panic_hook::install(paths.log_file(), diagnostics);
+    if console::owns_window() {
+        console::widen_owned_window();
+    }
     tracing::info!(
         version = env!("CARGO_PKG_VERSION"),
         data_dir = %paths.data_dir().display(),
