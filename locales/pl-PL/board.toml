@@ -1,6 +1,10 @@
 [header]
 format = "{variant} | ziarno {seed} | {time} | Ruchy: {moves}"
 no_undo = "Bez cofania"
+winnable_checking = "Do wygrania: sprawdzam..."
+winnable_yes = "Do wygrania: tak"
+winnable_unknown = "Do wygrania: nie wiadomo"
+winnable_no = "Do wygrania: nie"
 
 [rank]
 ace = "A"

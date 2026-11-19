@@ -1,5 +1,6 @@
 //! The modal layer's state: which dialog is open and what confirming it does.
 
+use super::search::SearchProgress;
 use crate::screens::Effect;
 use crate::widgets::overlay::{CommandLine, HowToPlay};
 
@@ -22,6 +23,8 @@ pub enum Modal {
     Alert {
         message: &'static str,
     },
+    /// The search for a winnable deal: progress, then the choices once the cap is reached.
+    Search(SearchProgress),
     /// The win screen; `menu_focused` picks which of its two buttons has the focus.
     Win {
         menu_focused: bool,

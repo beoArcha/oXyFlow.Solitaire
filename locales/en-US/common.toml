@@ -11,9 +11,12 @@ quit = "Quit"
 [select]
 title = "Choose a game"
 undo = "[ Undo: {state} ]"
-undo_on = "on"
-undo_off = "off"
+on = "on"
+off = "off"
 undo_hint = "{key} or a click switches undo on or off for the next game"
+winnable = "[ Winnable deals only: {state} ]"
+winnable_hint = "A new game then searches for a deal proven winnable; a typed seed is dealt as typed"
+slow_search = "{variant}  (the search can take long)"
 
 [variant]
 klondike_one = "Klondike, Draw 1"
@@ -46,6 +49,19 @@ win_body = "The game is solved."
 win_moves = "Moves: {moves}"
 alert_title = "Notice"
 confirm_title = "Please confirm"
+
+[search]
+title = "Searching for a winnable deal"
+running = "Looking for a winnable deal of {variant}..."
+progress = "Seeds tried: {tried} of {cap}"
+slow = "This game is rarely proven winnable, so the search can take long."
+escape = "Esc cancels the search."
+capped = "No winnable deal was found in {cap} seeds."
+capped_offer = "Play the best candidate, whose winnability is unknown, or keep searching?"
+capped_offer_none = "None of the seeds could be played as unknown. Keep searching?"
+play_unproven = "Play as unknown"
+more = "Keep searching"
+cancel = "Cancel"
 
 [error]
 storage = "Saving to the database failed. The game continues without saving."

@@ -1,6 +1,10 @@
 [header]
 format = "{variant} | seed {seed} | {time} | Moves: {moves}"
 no_undo = "No undo"
+winnable_checking = "Winnable: checking..."
+winnable_yes = "Winnable: yes"
+winnable_unknown = "Winnable: unknown"
+winnable_no = "Winnable: no"
 
 [rank]
 ace = "A"

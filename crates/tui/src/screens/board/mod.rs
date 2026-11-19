@@ -34,6 +34,7 @@ use crate::audio::SoundCue;
 use crate::clock::GameClock;
 use crate::i18n::{t, tf};
 use crate::settings::Settings;
+use crate::solver::DealCheck;
 use crate::storage::GameId;
 use crate::widgets::pile::Marks;
 
@@ -67,6 +68,7 @@ pub struct BoardScreen {
     status: Option<&'static str>,
     copy_note: Option<(u64, bool)>,
     undo_allowed: bool,
+    deal: DealCheck,
     guide_panel: bool,
     cues: Vec<SoundCue>,
     dirty: bool,
@@ -98,6 +100,7 @@ impl Default for BoardScreen {
             status: None,
             copy_note: None,
             undo_allowed: true,
+            deal: DealCheck::Unchecked,
             guide_panel: true,
             cues: Vec::new(),
             dirty: false,
@@ -131,7 +134,18 @@ impl BoardScreen {
         self.pointer = Pointer::default();
         self.copy_note = None;
         self.undo_allowed = undo_allowed;
+        self.deal = DealCheck::Unchecked;
         self.settle();
+    }
+
+    /// Tells the header what is known about the running deal.
+    pub fn set_deal(&mut self, deal: DealCheck) {
+        self.deal = deal;
+    }
+
+    /// What the header says about the running deal.
+    pub fn deal(&self) -> DealCheck {
+        self.deal
     }
 
     /// Whether undo and redo are allowed in the running game.
@@ -230,7 +244,12 @@ impl BoardScreen {
 
     fn header(&self, now: Instant) -> Option<Header> {
         let session = self.session.as_ref()?;
-        Some(Header::new(session, self.elapsed(now), self.undo_allowed))
+        Some(Header::new(
+            session,
+            self.elapsed(now),
+            self.undo_allowed,
+            self.deal,
+        ))
     }
 
     fn status_text(&self) -> String {

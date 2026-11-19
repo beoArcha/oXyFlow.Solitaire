@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::settings::Settings;
+use crate::solver::Proof;
 
 pub mod memory;
 
@@ -40,6 +41,8 @@ pub struct GameRecord {
     pub moves: Option<u32>,
     /// Whether undo and redo were available in this game.
     pub undo_allowed: bool,
+    /// What the solver said about the deal; `None` while it has not been checked.
+    pub proof: Option<Proof>,
 }
 
 const fn undo_allowed_by_default() -> bool {
@@ -101,6 +104,8 @@ pub trait Storage {
         elapsed_ms: u64,
         moves: u32,
     ) -> Result<(), StorageError>;
+    /// Records what the solver found out about the deal of a history row.
+    fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError>;
     /// Every recorded game in start order, oldest first.
     fn history(&self) -> Result<Vec<GameRecord>, StorageError>;
 }

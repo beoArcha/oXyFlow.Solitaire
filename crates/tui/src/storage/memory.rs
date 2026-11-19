@@ -4,6 +4,7 @@ use oxysol_core::Variant;
 
 use super::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 use crate::settings::Settings;
+use crate::solver::Proof;
 
 /// One recorded deal.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,6 +17,7 @@ pub struct HistoryRow {
     pub undo_allowed: bool,
     pub finished: Option<(Outcome, u64)>,
     pub moves: Option<u32>,
+    pub proof: Option<Proof>,
 }
 
 impl HistoryRow {
@@ -29,6 +31,7 @@ impl HistoryRow {
             undo_allowed: true,
             finished: None,
             moves: None,
+            proof: None,
         }
     }
 
@@ -48,6 +51,7 @@ impl HistoryRow {
             undo_allowed: true,
             finished: Some((outcome, elapsed_ms)),
             moves: None,
+            proof: None,
         }
     }
 
@@ -64,6 +68,7 @@ impl HistoryRow {
             elapsed_ms: self.finished.map(|(_, elapsed_ms)| elapsed_ms),
             moves: self.moves,
             undo_allowed: self.undo_allowed,
+            proof: self.proof,
         }
     }
 }
@@ -139,6 +144,7 @@ impl Storage for MemoryStorage {
             undo_allowed,
             finished: None,
             moves: None,
+            proof: None,
         });
         Ok(id)
     }
@@ -155,6 +161,19 @@ impl Storage for MemoryStorage {
             Some(row) => {
                 row.finished = Some((outcome, elapsed_ms));
                 row.moves = Some(moves);
+                Ok(())
+            }
+            None => Err(StorageError::Corrupt {
+                reason: format!("no game with id {}", id.0),
+            }),
+        }
+    }
+
+    fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
+        self.check()?;
+        match self.history.iter_mut().find(|row| row.id == id) {
+            Some(row) => {
+                row.proof = Some(proof);
                 Ok(())
             }
             None => Err(StorageError::Corrupt {
@@ -225,6 +244,7 @@ mod tests {
         assert!(storage.load_game().is_err());
         assert!(storage.clear_game().is_err());
         assert!(storage.start_game(Variant::FreeCell, 1, true).is_err());
+        assert!(storage.record_proof(GameId(1), Proof::Winnable).is_err());
         assert!(storage.history().is_err());
     }
 
@@ -246,5 +266,19 @@ mod tests {
         assert!(records[0].undo_allowed);
         assert_eq!(records[1].outcome, None);
         assert!(!records[1].undo_allowed);
+    }
+
+    #[test]
+    fn a_recorded_proof_shows_in_the_history() {
+        let mut storage = MemoryStorage::new();
+        let Ok(id) = storage.start_game(Variant::FreeCell, 1, true) else {
+            panic!("start_game failed");
+        };
+        assert!(storage.record_proof(id, Proof::Winnable).is_ok());
+        assert!(storage.record_proof(GameId(99), Proof::Winnable).is_err());
+        let Ok(records) = storage.history() else {
+            panic!("history failed");
+        };
+        assert_eq!(records[0].proof, Some(Proof::Winnable));
     }
 }

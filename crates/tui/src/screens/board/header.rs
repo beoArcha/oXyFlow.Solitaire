@@ -12,6 +12,7 @@ use ratatui::text::{Line, Span};
 use crate::clock::format_elapsed;
 use crate::i18n::{t, tf};
 use crate::screens::variant_label_key;
+use crate::solver::DealCheck;
 
 /// The header text and the characters of it that spell the seed.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,8 +22,8 @@ pub(super) struct Header {
     seed_len: usize,
 }
 
-fn text_of(session: &Session, elapsed: Duration, undo_allowed: bool) -> String {
-    let text = tf(
+fn text_of(session: &Session, elapsed: Duration, undo_allowed: bool, deal: DealCheck) -> String {
+    let mut text = tf(
         "board.header.format",
         &[
             ("variant", &t(variant_label_key(session.variant()))),
@@ -31,14 +32,13 @@ fn text_of(session: &Session, elapsed: Duration, undo_allowed: bool) -> String {
             ("moves", &session.moves_made().to_string()),
         ],
     );
-    if undo_allowed {
-        return text;
+    let badge = (!undo_allowed).then(|| t("board.header.no_undo"));
+    let winnable = deal.label_key().map(t);
+    for extra in [badge, winnable].into_iter().flatten() {
+        text.push_str(&t("board.action.separator"));
+        text.push_str(&extra);
     }
-    format!(
-        "{text}{}{}",
-        t("board.action.separator"),
-        t("board.header.no_undo")
-    )
+    text
 }
 
 /// Character index of the seed in `text`, searched after the game name so that a digit in the name
@@ -55,8 +55,13 @@ fn seed_start(text: &str, variant: &str, seed: &str) -> usize {
 }
 
 impl Header {
-    pub(super) fn new(session: &Session, elapsed: Duration, undo_allowed: bool) -> Self {
-        let text = text_of(session, elapsed, undo_allowed);
+    pub(super) fn new(
+        session: &Session,
+        elapsed: Duration,
+        undo_allowed: bool,
+        deal: DealCheck,
+    ) -> Self {
+        let text = text_of(session, elapsed, undo_allowed, deal);
         let seed = session.seed().to_string();
         let variant = t(variant_label_key(session.variant())).into_owned();
         Self {
@@ -107,7 +112,12 @@ mod tests {
 
     fn header(seed: u64, undo_allowed: bool) -> Header {
         let session = Session::new(Variant::Klondike(DrawCount::One), seed);
-        Header::new(&session, Duration::from_secs(75), undo_allowed)
+        Header::new(
+            &session,
+            Duration::from_secs(75),
+            undo_allowed,
+            DealCheck::Unchecked,
+        )
     }
 
     #[test]
