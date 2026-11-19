@@ -450,6 +450,8 @@ Rules for the whole phase:
   its persistence; the recycle sign shown with passes left and the "no more passes" sign without;
   click and Enter on the empty stock recycle the waste; both glyph modes; `cargo xtask check --quick`
   passes.
+- **Done:** #95
+- **Deviation (accepted):** the recycle sign is `↑` (ASCII `^`); the Aura row sits before Guide panel; the spent `x` stays clickable and reports the empty stock.
 
 ### P3-22 — Localization templates and localized key names
 
@@ -473,6 +475,8 @@ Rules for the whole phase:
 - **Acceptance:** the key sets of both locales identical (existing test); the template test; renders
   of the board, Help and the guide panel in Polish reviewed by the owner; `cargo xtask check --quick`
   passes.
+- **Done:** #101
+- **Deviation (accepted):** part (4), board labels for Select and Back, moved to O-29 (needs `action.rs` and the footer).
 
 ### P3-23 — Colors: 16-color swatches, mark contrast, High Contrast board edge
 
@@ -492,6 +496,8 @@ Rules for the whole phase:
 - **Must close the GRAPHIC_GAPS exception:** draw the High Contrast board edge (the field edge that
   O-26 left to this card), then remove the High Contrast Table/Background entry from `GRAPHIC_GAPS`
   in `crates/tui/src/theme/tests.rs`, so the 3:1 graphics test covers that pair without exception.
+- **Done (part 1):** #94 (16-color swatches, `MARK_PAIRS`). The board edge is PR #98.
+- **Decision (owner, 2026-11-19):** the field frame and its one-cell inset are drawn only in High Contrast (`Palette::field_edge`), so the other themes keep their card sizes.
 
 ### P3-24 — Menus, settings and statistics polish
 
@@ -634,6 +640,8 @@ Rules for the whole phase:
   text, the mark contrast of P3-23).
 - **Acceptance:** both themes selectable and remembered; the contrast tests pass for them; renders of the
   board in both; both locales.
+- **Done:** #100
+- **Deviation (accepted):** both themes keep a green felt table; the table color is P3-32.
 
 ### P3-31 — Card back selection
 
@@ -894,3 +902,29 @@ Rules for the whole phase:
 - **Acceptance:** tests on fixed deals: Down and `-` on the top card select the whole run, `+` at the
   deepest depth returns to one card, Down on a one-card pile still moves to the pile below, and the
   usable keys in the guidance; Klondike, Spider and FreeCell covered; both locales if texts change.
+
+### O-28 — Focused card drawn with a gap of felt inside its face
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/aura.rs`, the card and board render tests
+- **Scope:** owner screenshots 2026-11-19 (Klondike, Dark, Unicode and ASCII, small cards): the focused card shows the
+  focus frame (`BorderFocus`, top arrow `══>`) inset inside the face, and the cells between the frame and the card's
+  left and bottom edges are painted in the felt color, so the face looks cut by a green L-shape. In ASCII the same
+  cells are blank green next to `@` aura marks. Find where the focus frame paints its background and draw it on the
+  card face (or replace the card border) so no felt shows inside a card, at every card size, in Unicode and ASCII, with
+  aura Full and Focus only.
+- **Acceptance:** a render test asserting that no cell inside a focused card's rectangle has the `Table` background,
+  per card size and glyph mode; the focus still visible without color.
+
+### O-29 — Screen-specific labels for Select and Back
+
+- **Owner:** Haiku
+- **Depends on:** P3-26
+- **Files:** `crates/tui/src/action.rs`, `crates/tui/src/widgets/footer*`, `crates/tui/src/screens/{main_menu,board}*`,
+  `locales/*/`, tests
+- **Scope:** part (4) of P3-22, plus an owner screenshot 2026-11-19: the main menu footer shows `Esc Back` /
+  `Esc Wstecz`, which does nothing there; the board shows the generic `Enter Wybierz`. Each screen names what its keys
+  do (main menu: no Back, `Esc` absent or `Quit`; board: `Enter` = pick up / drop as the `Do:` row says), from one
+  label table per screen, both locales.
+- **Acceptance:** footer tests per screen in both locales; no key shown that does nothing on that screen.

@@ -82,6 +82,8 @@ Goal: the game saves and resumes, and every technical error has exactly one plac
   wins), and the history lists the restart count. Games with undo are unchanged.
 - **Acceptance:** migration test from the current schema; restart increments the count only in no-undo
   games; statistics and history show it; both locales.
+- **Done:** #96
+- **Deviation (accepted):** the file list was widened to `crates/tui/src/storage.rs`, `storage/memory.rs`, `app/{effects,persist}.rs`, their tests and `architecture.md`; `App` calls `Storage::record_restart` for the board; the stats tables use a one-space gap to fit 100 columns; the Polish column is `Czyste`.
 
 ### P4-06 — Automatic moves in statistics: failed attempts and streaks
 

@@ -25,6 +25,7 @@ confirmed by spike X-01 before any production work.
   5. Is a patched complete monospace font needed for terminals without font fallback?
   6. Which build tool: a font library called from a script, or pure Rust in `xtask`?
 - **Acceptance:** a results table per terminal with screenshots, and a recommendation for each question.
+- **Scope (2026-11-19):** the owner tests on Windows 10 only (Windows Terminal, classic console); macOS, Linux, PuTTY and SSH are answered from documentation and marked not tested. Prototype on branch `spike/X-01-card-font`.
 
 ### F-02 — Checkpoint: graphics delivery
 
