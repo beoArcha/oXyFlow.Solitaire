@@ -164,6 +164,7 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-35 | Color-blind modes (protanopia, deuteranopia, tritanopia, monochrome; four-color deck) | O-26, P3-29 | TODO |
 | P3-36 | Themes as data and the interface size scale | P3-29, P3-30 | TODO |
 | P3-37 | Language selector with flags in the main menu corner (tooltip, arrows, drop-down list) | P3-24 | TODO |
+| P3-38 | Run selection wraps around: Down or `-` on the top card selects the whole run | P3-26 | TODO |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
 | P2-08 | Solver for winnable deals (#78) | P2-07 | DONE |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
