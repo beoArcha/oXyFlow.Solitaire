@@ -10,6 +10,7 @@ mod moves;
 mod navigation;
 mod persist;
 mod pyramid;
+mod scratch;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
 use ratatui::crossterm::event::KeyCode;
