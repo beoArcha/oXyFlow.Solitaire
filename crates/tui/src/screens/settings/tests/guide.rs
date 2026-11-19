@@ -61,7 +61,7 @@ fn the_guide_row_note_is_polish_in_polish() {
     }));
     let text = h.text();
     assert!(
-        text.contains("Panel przewodnika: Włączone (potrzeba 130 kolumn, jest 100)"),
+        text.contains("Panel przewodnika: Tak (potrzeba 130 kolumn, jest 100)"),
         "{text}"
     );
     set_locale(Locale::EnUs);
