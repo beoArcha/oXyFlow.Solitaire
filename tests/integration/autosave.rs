@@ -7,6 +7,7 @@ use std::time::{Duration, Instant};
 use oxysol::paths::AppPaths;
 use oxysol::storage::SqliteStorage;
 use oxysol_core::{DrawCount, PileSnapshot, Session, Variant};
+use oxysol_tui::app::DisplayDeps;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::{
@@ -61,6 +62,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
         start_seed: None,
         sound_styles: Vec::new(),
         solver: Box::new(NullSolver::default()),
+        display: DisplayDeps::none(),
     });
     Player {
         app,

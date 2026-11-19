@@ -1,5 +1,6 @@
 //! The services `App` takes from the outside world.
 
+use super::display::DisplayDeps;
 use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::clipboard::Clipboard;
@@ -20,4 +21,6 @@ pub struct Deps {
     pub sound_styles: Vec<StyleInfo>,
     /// Checks deals off the UI thread: the search for a winnable deal and the check of a typed seed.
     pub solver: Box<dyn Solver>,
+    /// The console switch for full screen and the facts the decision needs.
+    pub display: DisplayDeps,
 }

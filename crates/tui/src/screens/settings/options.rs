@@ -2,7 +2,7 @@
 //! them. What a row shows and how one step changes [`Settings`] is in `values`. Front and back styles
 //! are fixed to the ids that exist today; the sound styles are the list the application passes in.
 
-use crate::settings::{Aid, ColorMode, GlyphMode};
+use crate::settings::{Aid, ColorMode, FullScreen, GlyphMode};
 
 /// One row of the settings screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -13,6 +13,7 @@ pub enum Field {
     BackStyle,
     Glyphs,
     Colors,
+    FullScreen,
     SoundStyle,
     Cues,
     Music,
@@ -25,13 +26,14 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 15] = [
+pub const FIELDS: [Field; 16] = [
     Field::Language,
     Field::Theme,
     Field::FrontStyle,
     Field::BackStyle,
     Field::Glyphs,
     Field::Colors,
+    Field::FullScreen,
     Field::SoundStyle,
     Field::Cues,
     Field::Music,
@@ -84,6 +86,8 @@ pub(super) const COLOR_MODES: [ColorMode; 4] = [
     ColorMode::Ansi256,
     ColorMode::TrueColor,
 ];
+pub(super) const FULL_SCREEN_MODES: [FullScreen; 3] =
+    [FullScreen::Auto, FullScreen::On, FullScreen::Off];
 
 impl Field {
     /// The aid a row switches, for the rows of the "Hints and help" group.
@@ -118,6 +122,7 @@ impl Field {
             Field::BackStyle => "settings.row.back_style",
             Field::Glyphs => "settings.row.glyphs",
             Field::Colors => "settings.row.colors",
+            Field::FullScreen => "settings.row.full_screen",
             Field::SoundStyle => "settings.row.sound_style",
             Field::Cues => "settings.row.cues",
             Field::Music => "settings.row.music",
@@ -133,7 +138,8 @@ impl Field {
             | Field::FrontStyle
             | Field::BackStyle
             | Field::Glyphs
-            | Field::Colors => Group::Display,
+            | Field::Colors
+            | Field::FullScreen => Group::Display,
             Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
             Field::Aura
             | Field::TargetMarks
@@ -155,6 +161,7 @@ impl Field {
             Field::BackStyle => "settings.desc.back_style",
             Field::Glyphs => "settings.desc.glyphs",
             Field::Colors => "settings.desc.colors",
+            Field::FullScreen => "settings.desc.full_screen",
             Field::SoundStyle => "settings.desc.sound_style",
             Field::Cues => "settings.desc.cues",
             Field::Music => "settings.desc.music",

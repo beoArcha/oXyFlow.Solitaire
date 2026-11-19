@@ -210,7 +210,11 @@ impl App {
     }
 
     pub(super) fn apply_settings(&mut self, settings: Settings) {
+        let full_screen_changed = self.settings.full_screen != settings.full_screen;
         self.settings = settings;
+        if full_screen_changed {
+            self.full_screen_setting_changed();
+        }
         self.refresh_running();
         self.refresh_view();
         if let Err(error) = self.storage.save_settings(&self.settings) {

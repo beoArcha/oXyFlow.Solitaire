@@ -14,6 +14,8 @@ Options:
 Display:
   --ascii                      draw cards with ASCII characters only
   --colors <16|256|truecolor>  color depth of the terminal
+  --fullscreen                 start in full screen, whatever the setting says
+  --no-fullscreen              start in a window, whatever the setting says
 
 Game:
   --seed <u64>                 choose a game for this seed at once
@@ -27,6 +29,12 @@ Double-click or console:
   when the game exits. Started from a console, the game runs inside that
   console, unless --new-window is given. After an error at startup the
   window waits for Enter.
+
+Full screen:
+  The setting Full screen (Auto, On, Off) is in Settings. Auto goes full
+  screen only in a window the game opened itself. A classic Windows console
+  is switched by the game; elsewhere press Alt+Enter or F11 (Ctrl+Cmd+F on
+  macOS). The game never relaunches itself for this.
 
 Files:
   OXYSOL_HOME      folder for the database and the log (always wins)

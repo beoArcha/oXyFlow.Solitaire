@@ -9,6 +9,7 @@ use ratatui::layout::Rect;
 use ratatui::widgets::Block;
 
 use self::deals::Check;
+use self::display::FullScreenState;
 use self::search::Search;
 use crate::action::Action;
 use crate::audio::{Audio, StyleInfo};
@@ -33,6 +34,7 @@ use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
 
 pub use deps::Deps;
+pub use display::{ConsoleDisplay, DisplayDeps, DisplayFacts, NullConsoleDisplay};
 pub use modal::Modal;
 pub use search::{SEED_CAP, SearchCommand, SearchProgress};
 
@@ -73,6 +75,7 @@ pub struct App {
     clipboard: Box<dyn Clipboard>,
     seeds: Box<dyn FnMut() -> u64>,
     solver: Box<dyn Solver>,
+    full_screen: FullScreenState,
     search: Option<Search>,
     check: Option<Check>,
     next_query: u64,
@@ -113,6 +116,7 @@ impl App {
             start_seed,
             sound_styles,
             solver,
+            display,
         } = deps;
         let settings = Settings::for_caps(&caps);
         let mut app = Self {
@@ -121,6 +125,7 @@ impl App {
             clipboard,
             seeds,
             solver,
+            full_screen: FullScreenState::new(display),
             search: None,
             check: None,
             next_query: 0,
@@ -148,6 +153,7 @@ impl App {
         };
         app.load_stored_state();
         app.fit_sound_style();
+        app.sync_full_screen();
         app.reset_quick();
         app.refresh_view();
         app
@@ -421,6 +427,7 @@ impl App {
 
 mod deals;
 mod deps;
+mod display;
 mod effects;
 mod finish;
 mod modal;
@@ -428,6 +435,9 @@ mod persist;
 mod quick;
 mod records;
 mod search;
+
+#[cfg(test)]
+mod display_tests;
 
 #[cfg(test)]
 mod records_tests;

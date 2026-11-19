@@ -20,7 +20,7 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 ```text
 metadata.toml            canonical metadata (name, version, license, URL)
 about.toml about.hbs     cargo-about configuration and template for THIRD-PARTY-LICENSES.md (release time only, T-31)
-src/                     main.rs lib.rs about.rs cli.rs new_window.rs console.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
+src/                     main.rs lib.rs about.rs cli.rs new_window.rs console.rs console/display.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
 crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/)
@@ -187,6 +187,7 @@ pub struct Deps {
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
     pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
+    pub display: DisplayDeps,             // full screen (O-16): `Box<dyn ConsoleDisplay>` + `DisplayFacts { owns_window, kind, flag }`
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
@@ -582,8 +583,8 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
-- **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed` and
-  `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the version and the
+- **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed`,
+  `--fullscreen`, `--no-fullscreen` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the version and the
   copyright with the license, built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE` through `cli.version_legal`. With `--new-window`, `main` starts only the log and calls
   `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
   with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS
@@ -594,6 +595,12 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   (`Deps::start_seed`) opens the main menu on the game selection for that seed, the stage that
   "New game from seed" reaches after a typed seed; the chosen variant starts the deal. Every other new
   game takes a fresh seed. The board header shows the seed; the menu offers "New game from seed".
+- **Full screen (R-22, T-33):** `Settings::full_screen` is `Auto` (default), `On` or `Off`; `--fullscreen` and
+  `--no-fullscreen` (`Cli::full_screen`) override it until the player changes the setting. `App` asks the pure
+  `settings::decide(setting, flag, owns_window, kind)` at start and on every change of the setting and calls the
+  `ConsoleDisplay` trait of `Deps::display`; `src/console/display.rs` implements it (`ConsoleWindow`) with
+  `SetConsoleDisplayMode`, falling back to a posted Alt+Enter checked by `GetConsoleDisplayMode`, and leaves full screen
+  when dropped. Terminals the game cannot switch get one hint in the `Now:` slot (`board.status.full_screen_*`).
 - **Clipboard (T-27):** `src/clipboard.rs` implements `Clipboard` with `SystemClipboard`: the native clipboard
   through `arboard` (kept alive between copies), else, or when the session is remote, the OSC 52 escape
   sequence written to standard output. A terminal does not answer OSC 52, so that path reports "sent".

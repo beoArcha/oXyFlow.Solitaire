@@ -149,6 +149,7 @@ impl App {
     /// Shows the board; a modal that is open keeps the clock stopped.
     pub(super) fn enter_board(&mut self) {
         self.goto(Screen::Board);
+        self.show_full_screen_hint();
         if self.modal.is_some() {
             self.board.pause_clock(self.now);
         }

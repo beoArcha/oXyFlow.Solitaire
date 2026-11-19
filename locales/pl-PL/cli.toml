@@ -14,6 +14,8 @@ Opcje:
 Wygląd:
   --ascii                      rysuj karty wyłącznie znakami ASCII
   --colors <16|256|truecolor>  głębia kolorów terminala
+  --fullscreen                 start na pełnym ekranie, wbrew ustawieniu
+  --no-fullscreen              start w oknie, wbrew ustawieniu
 
 Gra:
   --seed <u64>                 od razu wybierz grę dla tego ziarna
@@ -27,6 +29,12 @@ Dwuklik czy konsola:
   zakończeniu gry. Uruchomiona z konsoli, gra działa w tej konsoli,
   chyba że podano --new-window. Po błędzie przy starcie okno czeka na
   Enter.
+
+Pełny ekran:
+  Ustawienie Pełny ekran (Auto, Tak, Nie) jest w Ustawieniach. Auto włącza
+  pełny ekran tylko w oknie, które gra otworzyła sama. Klasyczną konsolę
+  Windows przełącza gra; gdzie indziej naciśnij Alt+Enter lub F11
+  (Ctrl+Cmd+F w macOS). Gra nie uruchamia się w tym celu ponownie.
 
 Pliki:
   OXYSOL_HOME      katalog na bazę danych i dziennik (ma pierwszeństwo)

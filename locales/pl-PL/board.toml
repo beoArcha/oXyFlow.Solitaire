@@ -80,6 +80,10 @@ undone = "Cofnięto."
 redone = "Ponowiono."
 restarted = "Gra rozpoczęta od nowa."
 defaults_saved = "Zapisano jako domyślne dla nowych gier."
+full_screen_classic = "Pełny ekran: naciśnij Alt+Enter"
+full_screen_windows_terminal = "Pełny ekran: F11 lub Alt+Enter"
+full_screen_linux = "Pełny ekran: naciśnij F11"
+full_screen_macos = "Pełny ekran: naciśnij Ctrl+Cmd+F"
 
 [error]
 unsupported = "Zły ruch: niemożliwy w tej grze."

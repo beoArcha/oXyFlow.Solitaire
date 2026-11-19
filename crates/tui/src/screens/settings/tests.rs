@@ -11,7 +11,7 @@ use super::options::{FIELDS, Field, Step};
 use super::values::{line, value_text};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
-use crate::settings::{AuraMode, ColorMode, GlyphMode, Settings};
+use crate::settings::{AuraMode, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR, sound_styles};
 use crate::theme::ThemeId;
@@ -122,6 +122,28 @@ fn glyph_and_color_modes_cycle() {
         changed(Field::Colors, &base, Step::Previous).color_mode,
         ColorMode::TrueColor
     );
+}
+
+#[test]
+fn the_full_screen_row_cycles_auto_on_off_in_the_display_group() {
+    let base = Settings::default();
+    assert_eq!(base.full_screen, FullScreen::Auto);
+    let on = changed(Field::FullScreen, &base, Step::Next);
+    assert_eq!(on.full_screen, FullScreen::On);
+    let off = changed(Field::FullScreen, &on, Step::Next);
+    assert_eq!(off.full_screen, FullScreen::Off);
+    assert_eq!(
+        changed(Field::FullScreen, &off, Step::Next).full_screen,
+        FullScreen::Auto
+    );
+    assert_eq!(
+        changed(Field::FullScreen, &base, Step::Previous).full_screen,
+        FullScreen::Off
+    );
+    assert_eq!(value(Field::FullScreen, &base), "Auto");
+    assert_eq!(value(Field::FullScreen, &on), "On");
+    assert!(row(Field::FullScreen, &off, true).starts_with("Full screen"));
+    assert_eq!(Field::FullScreen.group(), super::options::Group::Display);
 }
 
 #[test]

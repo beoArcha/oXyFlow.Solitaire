@@ -6,6 +6,7 @@ use std::time::Instant;
 use oxysol::audio;
 #[cfg(feature = "audio")]
 use oxysol::audio::output::OutputError;
+use oxysol_tui::app::DisplayDeps;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::storage::memory::MemoryStorage;
@@ -43,6 +44,7 @@ fn app_with(audio: Box<dyn Audio>) -> App {
         start_seed: None,
         sound_styles: Vec::new(),
         solver: Box::new(NullSolver::default()),
+        display: DisplayDeps::none(),
     })
 }
 

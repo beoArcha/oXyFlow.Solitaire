@@ -109,6 +109,12 @@ impl BoardScreen {
         self.status = Some(DEFAULTS_SAVED);
     }
 
+    /// Puts the full-screen hint, the localization key of a sentence naming the terminal's own
+    /// key, in the event slot until the next action.
+    pub fn announce_full_screen_hint(&mut self, key: &'static str) {
+        self.status = Some(key);
+    }
+
     /// Records the event of the last action, unless the board already says why it stopped.
     pub(super) fn announce_event(&mut self, key: &'static str) {
         if self.status.is_none() {

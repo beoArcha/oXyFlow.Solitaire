@@ -80,6 +80,10 @@ undone = "Undone."
 redone = "Redone."
 restarted = "Game restarted."
 defaults_saved = "Saved as default for new games."
+full_screen_classic = "Full screen: press Alt+Enter"
+full_screen_windows_terminal = "Full screen: press F11 or Alt+Enter"
+full_screen_linux = "Full screen: press F11"
+full_screen_macos = "Full screen: press Ctrl+Cmd+F"
 
 [error]
 unsupported = "Illegal move: not possible in this game."
