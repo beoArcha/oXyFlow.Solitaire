@@ -570,6 +570,8 @@ Rules for the whole phase:
 - **Acceptance:** tests for each toggle from both places, the immediate effect on the board, "Save as
   default" persisted, defaults applied to a new game, keyboard and mouse; help lists the key; both
   locales.
+- **Done:** #107
+- **Deviation (accepted):** key `o` and an always-kept `o: options` button in the `Do:` row (at about 120 columns in FreeCell it pushes the `+/-` hint out); quick choices are not stored with a saved game; the board toggles `g` and `v` are quick choices, persisted only by "Save as default"; new setting `target_marks`.
 
 ### O-23 — Modal fixes: scroll bar, Close shortcut, focus between selector rows
 
@@ -939,3 +941,15 @@ Rules for the whole phase:
 - **Done:** #108
 - **Deviation (accepted):** the board needed no change (its `Do:` row already names each action); fixed footers: main menu (no Esc, `Enter Open`), game select (`Enter Play`), settings (`Enter Change`).
 
+### O-31 — Widen a console window the game owns to 130 columns
+
+- **Owner:** Antigravity (Beo)
+- **Depends on:** —
+- **Files:** `src/console.rs` (or a new `src/console/` submodule), `src/main.rs`, tests
+- **Scope:** owner request 2026-11-19: the Windows console opens 120 columns wide, so the guide panel (130 columns,
+  P3-15/P3-18) does not fit by default. When the game owns its console window (`console::owns_window()`: a
+  double-click or `--new-window`), it widens the window and its buffer to at least 130 columns at start, keeping the
+  height (at least 30 rows), only if the screen allows it (`GetLargestConsoleWindowSize`); otherwise it leaves the
+  size alone. A game started inside an existing terminal never resizes it. Other systems: no change.
+- **Acceptance:** unit tests for the size decision (current size, largest size → new size or none); the change
+  verified by hand on Windows 10 by double-clicking `oxysol.exe` (say what was seen); `cargo xtask check --quick`.

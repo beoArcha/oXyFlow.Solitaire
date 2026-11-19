@@ -63,3 +63,7 @@ developers, and a one-click deployment from `release`.
 - **Acceptance:** `mdbook build docs/site` succeeds locally; the screenshots regenerate with one command; every
   page exists in both languages; the build commands verified on Windows (say how) and written for Linux and
   macOS; the release link resolves to the newest pre-release.
+- **Done:** #110
+- **Scope added (owner, 2026-11-19):** the build instructions use the `release` branch; a Features section (themes, High Contrast for low vision, color never the only signal, languages); the main README rewritten as a GitHub landing page.
+- **Deviation (accepted):** `xtask` depends on the workspace crates `oxysol-tui`, `oxysol-core` and `ratatui` for the screenshot command; animations are CSS-animated SVG; the rules pages link to the English wiki; Linux and macOS commands are marked not verified.
+
