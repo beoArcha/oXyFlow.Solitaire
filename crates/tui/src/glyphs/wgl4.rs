@@ -84,6 +84,8 @@ pub const fn is_wgl4(c: char) -> bool {
             | '♦'
             | '♪'
             | '♫'
+            | '✓'
+            | '✗'
             | '\n'
             | '\r'
             | '\t'
@@ -172,6 +174,10 @@ mod tests {
             ("scroll_thumb", glyphs.scroll_thumb),
             ("entry_on", glyphs.entry_on),
             ("entry_off", glyphs.entry_off),
+            ("proof_winnable", glyphs.proof_winnable),
+            ("proof_unwinnable", glyphs.proof_unwinnable),
+            ("proof_unknown", glyphs.proof_unknown),
+            ("proof_unchecked", glyphs.proof_unchecked),
         ] {
             for ch in symbol.chars() {
                 assert!(is_wgl4(ch), "{name} has non-WGL4 char {ch:?}");

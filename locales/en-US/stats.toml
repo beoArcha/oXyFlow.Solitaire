@@ -41,6 +41,13 @@ time = "Time"
 moves = "Moves"
 restarts = "Restarts"
 winnable = "Winnable"
+winnable_short = "?"
+
+[legend]
+winnable = "winnable"
+unwinnable = "not winnable"
+unknown = "unknown"
+unchecked = "not checked"
 
 [winnable]
 yes = "yes"

@@ -5,10 +5,11 @@ use oxysol_core::{PyramidRules, Variant};
 
 use super::support::{many_games, open_stats, row};
 use super::{KLONDIKE, record};
+use crate::glyphs::Glyphs;
 use crate::i18n::Locale;
 use crate::screens::stats::format::{history_header, history_row, summary_lines};
 use crate::screens::stats::summary::summarize;
-use crate::settings::Settings;
+use crate::settings::{GlyphMode, Settings};
 use crate::storage::Outcome::{Abandoned, Won};
 use crate::storage::memory::HistoryRow;
 use crate::storage::{GameCounters, GameRecord};
@@ -64,13 +65,28 @@ fn the_clean_wins_column_exists_only_when_a_game_without_undo_was_finished() {
 
 #[test]
 fn the_history_lists_the_restart_count_of_a_game_without_undo() {
-    assert!(history_header().trim_end().ends_with("Restarts"));
-    let restarted = history_row(&played_without_undo(2, 4));
+    let glyphs = Glyphs::new(GlyphMode::Unicode);
+    assert!(
+        history_header(&glyphs, false)
+            .trim_end()
+            .ends_with("Restarts")
+    );
+    let restarted = history_row(&played_without_undo(2, 4), &glyphs, false);
     assert!(restarted.trim_end().ends_with(" 4"), "{restarted:?}");
-    let with_undo = history_row(&record(2, KLONDIKE, Some(Won), Some(1), Some(1)));
+    let with_undo = history_row(
+        &record(2, KLONDIKE, Some(Won), Some(1), Some(1)),
+        &glyphs,
+        false,
+    );
     assert!(with_undo.trim_end().ends_with(" -"), "{with_undo:?}");
-    assert_eq!(restarted.chars().count(), history_header().chars().count());
-    assert_eq!(with_undo.chars().count(), history_header().chars().count());
+    assert_eq!(
+        restarted.chars().count(),
+        history_header(&glyphs, false).chars().count()
+    );
+    assert_eq!(
+        with_undo.chars().count(),
+        history_header(&glyphs, false).chars().count()
+    );
 }
 
 #[test]
@@ -143,6 +159,7 @@ fn the_longest_streak_column_is_shown_from_110_columns() {
 
 #[test]
 fn a_row_with_restarts_stays_as_wide_as_the_header_in_both_locales() {
+    let glyphs = Glyphs::new(GlyphMode::Unicode);
     for locale in Locale::ALL {
         crate::i18n::set_locale(locale);
         let worst = GameRecord {
@@ -153,15 +170,17 @@ fn a_row_with_restarts_stays_as_wide_as_the_header_in_both_locales() {
             counters: GameCounters { restarts: 999 },
             ..played_without_undo(1, 0)
         };
-        assert_eq!(
-            history_row(&worst).chars().count(),
-            history_header().chars().count()
-        );
-        assert!(
-            history_header().chars().count() <= 98,
-            "{}",
-            history_header()
-        );
+        for short in [false, true] {
+            assert_eq!(
+                history_row(&worst, &glyphs, short).chars().count(),
+                history_header(&glyphs, short).chars().count()
+            );
+            assert!(
+                history_header(&glyphs, short).chars().count() <= 100,
+                "{}",
+                history_header(&glyphs, short)
+            );
+        }
     }
     crate::i18n::set_locale(Locale::EnUs);
 }

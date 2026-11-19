@@ -9,6 +9,7 @@ pub mod wgl4;
 pub use wgl4::is_wgl4;
 
 use crate::settings::GlyphMode;
+use crate::solver::Proof;
 
 /// The symbols one glyph mode draws with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -45,6 +46,14 @@ pub struct Glyphs {
     pub entry_on: &'static str,
     /// Sign of an entry of the possible moves panel that cannot be run now.
     pub entry_off: &'static str,
+    /// Sign of a game proved winnable by the solver.
+    pub proof_winnable: &'static str,
+    /// Sign of a game proved unwinnable by the solver.
+    pub proof_unwinnable: &'static str,
+    /// Sign of a game where the solver reached its limit without a proof.
+    pub proof_unknown: &'static str,
+    /// Sign of a game not checked by the solver.
+    pub proof_unchecked: &'static str,
     pub border: BorderType,
 }
 
@@ -68,6 +77,10 @@ const UNICODE: Glyphs = Glyphs {
     scroll_thumb: "█",
     entry_on: "•",
     entry_off: "×",
+    proof_winnable: "✓",
+    proof_unwinnable: "✗",
+    proof_unknown: "?",
+    proof_unchecked: "·",
     border: BorderType::Plain,
 };
 
@@ -91,6 +104,10 @@ const ASCII: Glyphs = Glyphs {
     scroll_thumb: "#",
     entry_on: "o",
     entry_off: "x",
+    proof_winnable: "+",
+    proof_unwinnable: "x",
+    proof_unknown: "?",
+    proof_unchecked: ".",
     border: BorderType::Plain,
 };
 
@@ -110,6 +127,16 @@ impl Glyphs {
             Suit::Diamonds => self.suits[1],
             Suit::Hearts => self.suits[2],
             Suit::Spades => self.suits[3],
+        }
+    }
+
+    /// The sign that marks a solver proof.
+    pub fn proof_mark(&self, proof: Option<Proof>) -> &'static str {
+        match proof {
+            Some(Proof::Winnable) => self.proof_winnable,
+            Some(Proof::Unwinnable) => self.proof_unwinnable,
+            Some(Proof::Unknown) => self.proof_unknown,
+            None => self.proof_unchecked,
         }
     }
 }
@@ -139,9 +166,30 @@ mod tests {
             &glyphs.scroll_thumb,
             &glyphs.entry_on,
             &glyphs.entry_off,
+            &glyphs.proof_winnable,
+            &glyphs.proof_unwinnable,
+            &glyphs.proof_unknown,
+            &glyphs.proof_unchecked,
         ]);
         for text in all {
             assert!(text.is_ascii(), "{text}");
+        }
+    }
+
+    #[test]
+    fn the_proof_marks_differ_in_both_sets() {
+        for mode in [GlyphMode::Unicode, GlyphMode::Ascii] {
+            let glyphs = Glyphs::new(mode);
+            let marks = [
+                glyphs.proof_winnable,
+                glyphs.proof_unwinnable,
+                glyphs.proof_unknown,
+                glyphs.proof_unchecked,
+            ];
+            for (index, mark) in marks.iter().enumerate() {
+                assert!(!mark.is_empty());
+                assert!(marks[index + 1..].iter().all(|other| other != mark));
+            }
         }
     }
 

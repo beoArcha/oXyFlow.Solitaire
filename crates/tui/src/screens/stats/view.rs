@@ -6,7 +6,10 @@ use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
-use super::format::{LONGEST_STREAK_MIN_WIDTH, history_header, history_row, summary_lines};
+use super::format::{
+    LONGEST_STREAK_MIN_WIDTH, WINNABLE_TEXT_MIN_WIDTH, history_header, history_row, legend_line,
+    summary_lines,
+};
 use super::{Button, Notice, StatsScreen, Stop};
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -14,13 +17,14 @@ use crate::screens::ViewCtx;
 use crate::screens::focus::{button_style, marker};
 use crate::theme::Token;
 use crate::widgets::footer::{self, Segment};
+use crate::widgets::scrollbar::{self, Metrics};
 
 /// Rows of the screen that are not the summary or the history list: title, two gaps, the history
-/// heading and column header, the buttons, the status line and the key line.
-const FIXED_ROWS: u16 = 8;
+/// heading and column header, the legend, the buttons, the status line and the key line.
+const FIXED_ROWS: u16 = 9;
 /// History rows that always stay visible. With every game in both undo modes the summary needs
 /// 17 rows (header and 16 groups), which leaves exactly this many at the minimum height of 30.
-const MIN_LIST_ROWS: u16 = 5;
+const MIN_LIST_ROWS: u16 = 4;
 const BUTTON_GAP: u16 = 3;
 const MARKER_COLUMNS: u16 = 4;
 
@@ -80,6 +84,7 @@ impl StatsScreen {
             heading_area,
             header_area,
             list_area,
+            legend_area,
             buttons_area,
             status_area,
             footer_area,
@@ -91,6 +96,7 @@ impl StatsScreen {
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Fill(1),
+            Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
@@ -106,6 +112,7 @@ impl StatsScreen {
                 self.draw_summary(frame, summary_area, ctx);
             }
             self.draw_history(frame, [heading_area, header_area, list_area], ctx);
+            self.draw_legend(frame, legend_area, ctx);
         }
         self.draw_buttons(frame, buttons_area, ctx);
         self.draw_status(frame, status_area, ctx);
@@ -165,17 +172,26 @@ impl StatsScreen {
         let heading = format!("{}   {position}", t("stats.history.title"));
         let accent = ctx.theme.style(Token::Accent, Token::Background);
         centered(frame, heading_area, heading, accent);
-        let header = history_header();
+        let short = list_area.width < WINNABLE_TEXT_MIN_WIDTH;
+        let header = history_header(ctx.glyphs, short);
         let width = text_width(&header) + MARKER_COLUMNS;
         let x = block_x(list_area, width);
         let header_cell = Rect::new(x, header_area.y, width.min(header_area.width), 1);
         let muted = ctx.theme.style(Token::TextMuted, Token::Background);
         let header_line = Line::styled(format!("  {header}  "), muted);
         frame.render_widget(Paragraph::new(header_line), header_cell);
+        let track = Rect::new(
+            x + width.saturating_sub(1),
+            list_area.y,
+            1,
+            list_area.height,
+        );
+        self.track = track;
         let window = self
             .list
             .visible(usize::from(list_area.height), self.records.len());
         let list_focused = self.stop == Stop::List;
+        let row_width = width.saturating_sub(1).min(list_area.width);
         for (offset, index) in window.enumerate() {
             let (Some(record), Ok(row)) = (self.records.get(index), u16::try_from(offset)) else {
                 break;
@@ -186,11 +202,30 @@ impl StatsScreen {
             } else {
                 ctx.theme.base()
             };
-            let cell = Rect::new(x, list_area.y + row, width.min(list_area.width), 1);
-            let text = format!("{} {}", marker(ctx, focused), history_row(record));
+            let cell = Rect::new(x, list_area.y + row, row_width, 1);
+            let text = format!(
+                "{} {}",
+                marker(ctx, focused),
+                history_row(record, ctx.glyphs, short)
+            );
             frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
             self.rows.push((index, cell));
         }
+        let metrics = Metrics {
+            total: self.records.len(),
+            view: usize::from(list_area.height),
+            offset: self.list.offset(),
+        };
+        scrollbar::draw(frame, track, metrics, ctx);
+    }
+
+    fn draw_legend(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+        if area.height == 0 {
+            return;
+        }
+        let text = legend_line(ctx.glyphs);
+        let style = ctx.theme.style(Token::TextMuted, Token::Background);
+        centered(frame, area, text, style);
     }
 
     fn draw_buttons(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
