@@ -8,6 +8,7 @@ mod controls;
 mod counters;
 mod cursor;
 mod guidance;
+mod guide_view;
 mod header;
 mod marks;
 mod mouse;
@@ -239,6 +240,7 @@ impl BoardScreen {
     pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         self.guide_panel = ctx.settings.guide_panel;
         match action {
+            Some(Action::Guide) if self.panel_unavailable() => self.open_guide_window(ctx),
             Some(Action::Guide) => toggle_guide(ctx),
             Some(action) => self.dispatch(action),
             None => Effect::None,

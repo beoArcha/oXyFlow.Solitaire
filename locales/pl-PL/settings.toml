@@ -18,6 +18,7 @@ line = "{label}: {value}"
 on = "Włączone"
 off = "Wyłączone"
 unavailable = "niedostępne"
+needs_columns = "{value} (potrzeba {needed} kolumn, jest {now})"
 
 [locale]
 en_us = "Angielski"

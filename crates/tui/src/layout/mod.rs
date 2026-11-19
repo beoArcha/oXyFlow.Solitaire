@@ -22,8 +22,8 @@ use oxysol_core::{PileRef, PileSnapshot, Variant};
 use ratatui::layout::{Position, Rect};
 
 pub use chrome::{
-    BOARD_MIN_WIDTH, Chrome, Class, GUIDE_WIDTH, GUIDE_WIDTH_WIDE, STANDARD_MIN_HEIGHT,
-    STANDARD_MIN_WIDTH, WIDE_MIN_WIDTH, chrome, chrome_with,
+    BOARD_MIN_WIDTH, Chrome, Class, GUIDE_WIDTH, GUIDE_WIDTH_WIDE, STANDARD_MIN_WIDTH,
+    WIDE_MIN_WIDTH, chrome, chrome_with,
 };
 pub use size::{CardSize, FAN_BUDGET, SIZES};
 

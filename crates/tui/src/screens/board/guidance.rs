@@ -168,6 +168,16 @@ impl BoardScreen {
     /// The guidance for the position on the board; `None` without a game and while the board is
     /// covered.
     pub(super) fn guidance(&self) -> Option<Guidance> {
+        let mut guidance = self.moment()?;
+        if self.panel_unavailable() {
+            guidance
+                .tail
+                .insert(0, part(Action::Guide, "board.action.guide", 0));
+        }
+        Some(guidance)
+    }
+
+    fn moment(&self) -> Option<Guidance> {
         let session = self.session.as_ref().filter(|_| !self.covered)?;
         let game = session.game();
         if game.is_won() {

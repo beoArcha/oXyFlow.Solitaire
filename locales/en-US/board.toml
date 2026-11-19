@@ -124,6 +124,7 @@ rules = "{key}: how to play"
 restart = "{key}: restart"
 new_game = "{key}: new game"
 menu = "{key}: menu"
+guide = "{key}: guide"
 
 [counter]
 turned_over = "Turned over: {count}"
@@ -134,6 +135,8 @@ deals_left = "Deals left: {count}"
 
 [guide]
 title = "Guide ({key}: hide)"
+window_title = "Guide"
+window_footer = "{up}/{down}/PgUp/PgDn: scroll   {key}/{back}: close"
 game_title = "Game"
 goal_title = "Goal"
 keys_title = "Keys"

@@ -13,7 +13,7 @@ use crate::test_support::PLAIN;
 
 const KLONDIKE: Variant = Variant::Klondike(DrawCount::Three);
 const SEED: u64 = 5;
-const SIZES: [(u16, u16); 3] = [(100, 30), (130, 40), (200, 60)];
+const SIZES: [(u16, u16); 5] = [(100, 30), (115, 35), (130, 30), (130, 40), (200, 60)];
 
 const GAMES: [Variant; 4] = [
     KLONDIKE,
@@ -41,6 +41,7 @@ fn shown(
         seed: Some(SEED),
         undo_allowed: true,
     });
+    h.lines();
     h
 }
 
@@ -85,7 +86,7 @@ fn every_size_locale_and_glyph_mode_draws_inside_wgl4_or_ascii() {
 
 #[test]
 fn a_compact_screen_has_a_header_row_a_two_row_strip_and_no_panel() {
-    for size in [(100, 30), (129, 40), (130, 35)] {
+    for size in [(100, 30), (115, 35), (129, 40)] {
         let mut h = shown(KLONDIKE, size, Locale::EnUs, TRUE_COLOR);
         let lines = h.lines();
         let last = lines.len();
@@ -146,7 +147,7 @@ fn the_panel_is_framed_in_both_glyph_sets_and_both_locales() {
             (PLAIN, ['+', '+', '+', '+'], ['|', '+', '+']),
         ];
         for (caps, corners, [side, tee_left, tee_right]) in sets {
-            for size in [(130, 40), (200, 60)] {
+            for size in [(130, 30), (130, 40), (200, 60)] {
                 let mut h = shown(KLONDIKE, size, locale, caps);
                 let lines = h.lines();
                 let left = usize::from(size.0 - panel_width(size.0));

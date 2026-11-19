@@ -5,6 +5,7 @@ mod commands;
 mod counters;
 mod focus;
 mod guidance;
+mod guide_window;
 mod layout;
 mod mouse;
 mod moves;
