@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::{self, Write};
 use std::process::ExitCode;
 
+use oxysol::about;
 use oxysol::audio;
 use oxysol::cli::{self, Cli, ColorArg};
 use oxysol::clipboard::SystemClipboard;
@@ -41,8 +42,7 @@ fn launch(args: &Cli, raw: &[String]) -> Result<(), AppError> {
         return print_stdout(&i18n::t("cli.help"));
     }
     if args.show_version {
-        let text = i18n::tf("cli.version", &[("version", env!("CARGO_PKG_VERSION"))]);
-        return print_stdout(&text);
+        return print_stdout(&about::version_text());
     }
     if args.new_window {
         return relaunch(raw);
@@ -205,6 +205,7 @@ mod tests {
     fn every_cli_key_has_text_in_both_locales() {
         let keys = [
             "cli.version",
+            "cli.version_legal",
             "cli.help",
             "cli.usage_error",
             "cli.paths_failed",

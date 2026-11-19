@@ -26,6 +26,12 @@ jobs:
           sudo apt-get install -y libasound2-dev
       - name: Full check
         run: cargo xtask check
+      - name: Clippy without the audio feature, as the Linux release is built
+        if: runner.os == 'Linux'
+        run: cargo clippy --no-default-features -p oxysol --all-targets -- -D warnings
+      - name: Test without the audio feature
+        if: runner.os == 'Linux'
+        run: cargo test --no-default-features -p oxysol
 
   promote:
     needs: check
@@ -40,7 +46,7 @@ jobs:
     env:
       REPO: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

@@ -3,6 +3,7 @@ name = "oxysol-tui"
 description = "Terminal user interface of oXySol: rendering, input, themes and localization"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false

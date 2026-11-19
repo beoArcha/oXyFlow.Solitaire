@@ -19,7 +19,8 @@ Any contract change lands in this file in the same PR. Rationale: `decisions.md`
 
 ```text
 metadata.toml            canonical metadata (name, version, license, URL)
-src/                     main.rs lib.rs cli.rs new_window.rs console.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
+about.toml about.hbs     cargo-about configuration and template for THIRD-PARTY-LICENSES.md (release time only, T-31)
+src/                     main.rs lib.rs about.rs cli.rs new_window.rs console.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
 crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/)
@@ -497,7 +498,8 @@ pub struct NullClipboard;                                // every copy fails wit
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
 - **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed` and
-  `--new-window` / `-n` by hand (`Cli::new_window`). With `--new-window`, `main` starts only the log and calls
+  `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the version and the
+  copyright with the license, built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE` through `cli.version_legal`. With `--new-window`, `main` starts only the log and calls
   `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
   with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS
   (`HostOs`), executable, working directory, forwarded arguments (`forwarded` removes the flag), `OXYSOL_HOME` /
