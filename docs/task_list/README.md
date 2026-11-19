@@ -131,7 +131,7 @@ the PR descriptions; cards that exist are in the phase files.
 | O-20 | Sync follow-up task statuses (#74) | — | DONE |
 | O-21 | Task cards for the owner's feedback of 2026-11-19 (Restart, recycle button, footer buttons, moves panel, quick options) | — | DONE |
 | O-22 | No-sound CI build, cache tuning, author and third-party licences (#85) | — | DONE |
-| O-16 | Full-screen (borderless window) option: setting and `--fullscreen` | U-04, P3-16 | TODO |
+| O-16 | Full-screen (borderless window) option: setting and `--fullscreen` | U-04, P3-16 | DONE |
 | U-04 | Interface review for usability and readability (Fable with Opus) | P3-12, P3-13, O-14 | DONE |
 | P3-14 | Readable card faces (replace the block-art rank) (#75) | U-04 | DONE |
 | P3-15 | Screen layout: game information apart from controls; framed guide panel (#80) | U-04, P3-14 | DONE |
@@ -161,9 +161,10 @@ the PR descriptions; cards that exist are in the phase files.
 | O-28 | Focused card drawn with a gap of felt inside its face | — | DONE |
 | O-29 | Screen-specific labels for Select and Back (P3-22 part 4) | P3-26 | DONE |
 | O-30 | Player site: screenshots, both languages, latest release, build from source | — | DONE |
-| O-31 | Widen a console window the game owns to 130 columns | — | IN PROGRESS |
-| O-32 | Easy restart from the beginning, confirmed like Quit | P3-27 | IN PROGRESS |
-| O-33 | Statistics: scroll bars and a winnable mark per game | O-23, P3-24 | IN PROGRESS |
+| O-31 | Widen a console window the game owns to 130 columns | — | DONE |
+| O-32 | Easy restart from the beginning, confirmed like Quit | P3-27 | DONE |
+| O-33 | Statistics: scroll bars and a winnable mark per game | O-23, P3-24 | DONE |
+| O-36 | Version scheme: patch counts merges, minor counts phases, the plan ends at 0.9 | — | DONE |
 | O-34 | Windows Terminal: test the card font on a real machine | P5-02 | TODO |
 | O-35 | Release archives carry the font licence (OFL) | P5-01 | TODO |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |

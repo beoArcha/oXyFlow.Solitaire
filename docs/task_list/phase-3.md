@@ -379,6 +379,9 @@ Rules for the whole phase:
 - **Acceptance:** the setting and flag parsed and remembered; the per-terminal decision unit-tested as
   a pure function; verified by hand in the classic console and Windows Terminal (say which); help text
   in both locales; `cargo xtask check --quick` passes.
+- **Done:** #117
+- **Decision (owner, 2026-11-19):** on Windows full screen is the default when the game owns its console window (double-click or `--new-window`) and off when started from an existing console; the setting is `Auto` / `On` / `Off`, with `--fullscreen` and `--no-fullscreen`.
+- **Deviation (accepted):** done before P3-16 without windows-sys (kernel32 calls as in `src/console.rs`); `SetConsoleDisplayMode` is not implemented on Windows 10 conhost (error 120), so the game posts Alt+Enter to its own window and checks `GetConsoleDisplayMode`, else shows the Alt+Enter hint; Windows Terminal, Linux and macOS get a hint only (no `CSI 10 ; 1 t`).
 
 ### P3-18 — Guide panel on screens slightly too small
 
@@ -955,6 +958,7 @@ Rules for the whole phase:
   size alone. A game started inside an existing terminal never resizes it. Other systems: no change.
 - **Acceptance:** unit tests for the size decision (current size, largest size → new size or none); the change
   verified by hand on Windows 10 by double-clicking `oxysol.exe` (say what was seen); `cargo xtask check --quick`.
+- **Done:** #114 (verified: a new console opens 130 × 30).
 
 ### O-32 — Easy restart from the beginning, confirmed like Quit
 
@@ -971,6 +975,8 @@ Rules for the whole phase:
   through the existing `Effect::Restart`.
 - **Acceptance:** tests: the pause dialog's Restart opens the confirm and Yes restarts; No and Esc keep the game;
   `Shift+R` unchanged; the `Do:` row shows restart at 100 and 130 columns in both locales; the no-undo text.
+- **Done:** #118
+- **Deviation (accepted):** the `Do:` row drops every part by priority, the tail included: pick up/drop first kept, then quick move, finish, run keys and put back, then stock, `Shift+R` restart, `o` options and `Esc` menu, then hint, undo, arrows, redo, `g` and `?`, and `i` last; finish moved to priority 1 in `screens/board/finish.rs`.
 
 ### O-33 — Statistics: scroll bars and a winnable mark per game
 
@@ -987,3 +993,5 @@ Rules for the whole phase:
   list; never color only. Checking unchecked games in the background is out of scope.
 - **Acceptance:** tests for the scroll bar on the history (thumb, track click, drag, wheel, ASCII), the mark for each
   proof value in both glyph modes, the legend in both locales; renders at 100 × 30 and 130 × 40 in Polish.
+- **Done:** #116 (the mark replaces the text column below 110 columns).
+
