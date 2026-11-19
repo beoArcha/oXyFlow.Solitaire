@@ -85,7 +85,8 @@ fn the_hint_highlights_its_cards_and_stays_while_repeated() {
     let marks = board(&h).marks();
     assert!(marks.hints.iter().any(|card| card.pile == from));
     assert!(marks.hints.iter().any(|card| card.pile == to));
-    assert_eq!(status(&h), Some(status::HINT));
+    assert_eq!(status(&h), None);
+    assert!(h.text().contains("Hint: "));
     h.type_char('h');
     h.type_char('h');
     assert_eq!(cues(&h), vec![SoundCue::Hint]);
@@ -106,8 +107,8 @@ fn a_stock_hint_names_the_stock() {
     assert_eq!(session.game().hint(), Some(Move::Stock));
     let mut h = resumed(KLONDIKE, SEED, &prefix);
     h.type_char('h');
-    assert_eq!(status(&h), Some(status::HINT_STOCK));
-    assert!(h.text().contains("Hint: draw from the stock."));
+    assert_eq!(status(&h), None);
+    assert!(h.text().contains("Hint: draw from the stock"));
     let marks = board(&h).marks();
     assert!(marks.hints.iter().all(|card| card.pile == PileRef::Stock));
     assert!(!marks.hints.is_empty());
@@ -118,8 +119,8 @@ fn no_legal_moves_gives_a_message_and_no_hint() {
     let moves = hint_moves(Variant::Pyramid(PyramidRules::Relaxed), 0);
     let mut h = resumed(Variant::Pyramid(PyramidRules::Relaxed), 0, &moves);
     assert!(legal(&h).is_empty());
-    assert_eq!(status(&h), Some(status::NO_MOVES));
-    assert!(h.text().contains("No moves left."));
+    assert_eq!(status(&h), None);
+    assert!(h.text().contains("No legal moves"));
     h.type_char('h');
     assert_eq!(status(&h), Some(status::NO_HINT));
     assert_eq!(cues(&h), vec![SoundCue::Illegal]);
@@ -131,7 +132,7 @@ fn no_legal_moves_gives_a_message_and_no_hint() {
 fn pause_stops_the_clock_and_hides_the_board() {
     let mut h = start(KLONDIKE, SEED);
     h.advance(10);
-    assert!(h.text().contains("seed 5 | 0:10"));
+    assert!(h.text().contains("seed 5 | Time 0:10"));
     assert!(
         h.text().contains('♥')
             || h.text().contains('♠')
@@ -143,14 +144,14 @@ fn pause_stops_the_clock_and_hides_the_board() {
     assert!(!board(&h).clock_running());
     h.advance(60);
     let paused = h.text();
-    assert!(paused.contains("seed 5 | 0:10"));
+    assert!(paused.contains("seed 5 | Time 0:10"));
     for suit in ['♥', '♠', '♦', '♣'] {
         assert!(!paused.contains(suit), "{suit}");
     }
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     h.advance(5);
-    assert!(h.text().contains("seed 5 | 0:15"));
+    assert!(h.text().contains("seed 5 | Time 0:15"));
 }
 
 #[test]
@@ -195,7 +196,7 @@ fn restart_asks_first_and_deals_the_same_seed_again() {
     assert_eq!(session(&h).game().piles(), dealt);
     assert_eq!(moves_made(&h), 0);
     assert_eq!(session(&h).seed(), SEED);
-    assert!(h.text().contains("seed 5 | 0:00"));
+    assert!(h.text().contains("seed 5 | Time 0:00"));
     assert!(board(&h).clock_running());
     assert_eq!(cursor(&h), (PileRef::Tableau(0), 1));
 }
@@ -291,14 +292,10 @@ fn every_move_error_has_a_message_in_every_locale() {
 #[test]
 fn every_status_key_exists_in_every_locale() {
     let keys = [
-        status::PICKED,
         status::NO_TARGETS,
         status::NOTHING_TO_UNDO,
         status::NOTHING_TO_REDO,
         status::NO_HINT,
-        status::HINT,
-        status::HINT_STOCK,
-        status::NO_MOVES,
         status::SOLVED,
         "board.confirm.restart",
         "board.confirm.new_game",

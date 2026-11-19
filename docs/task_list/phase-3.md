@@ -443,6 +443,11 @@ Rules for the whole phase:
   `Enter`, `Esc`, `Tab`, `Shift`, `Ctrl`; Polish `Góra`, `Dół`, `Lewo`, `Prawo`, `Spacja`, …).
   (3) Help shows `Shift+R` for restart, not `R`. (4) Board-specific labels for Select and Back where
   a screen-independent label is wrong (`Enter Wybierz` on the board).
+- **Input (2026-11-19):** an external Polish review found that `board: action.browsing`,
+  `action.browsing_run`, `action.carrying`, `action.cards` put nominative `{pile}` / `{what}` after
+  verbs and prepositions that need the accusative or genitive, and that `settings: value.unavailable`
+  does not agree with every label's gender. Proposed workaround: label syntax (`Kursor: {pile}, {what}`,
+  `W ręce: {what} ({pile}), {targets}`, `kart: {count}, od: {what}`). Use it or a better template.
 - **Acceptance:** the key sets of both locales identical (existing test); the template test; renders
   of the board, Help and the guide panel in Polish reviewed by the owner; `cargo xtask check --quick`
   passes.

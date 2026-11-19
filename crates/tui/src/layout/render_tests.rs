@@ -91,19 +91,19 @@ fn ascii_mode_draws_only_ascii_and_keeps_suits_apart() {
 #[test]
 fn the_header_shows_the_seed_and_the_time() {
     let mut h = started(Variant::Klondike(DrawCount::Three), TRUE_COLOR, 100, 30);
-    assert!(h.lines()[0].contains("Klondike, Draw 3 | seed 42 | 0:00"));
+    assert!(h.lines()[0].contains("Klondike, Draw 3 | seed 42 | Time 0:00"));
     h.advance(75);
-    assert!(h.lines()[0].contains("seed 42 | 1:15"));
+    assert!(h.lines()[0].contains("seed 42 | Time 1:15"));
 }
 
 #[test]
-fn the_footer_lists_the_board_keys() {
+fn the_controls_strip_replaces_the_footer_under_the_board() {
     let mut h = started(Variant::FreeCell, TRUE_COLOR, 100, 30);
-    let last = h.lines()[29].clone();
-    assert!(
-        last.contains("Enter Select") && last.contains("Esc Back"),
-        "{last}"
-    );
+    let lines = h.lines();
+    assert!(lines[28].starts_with("Now: "), "{}", lines[28]);
+    assert!(lines[29].starts_with("Do: "), "{}", lines[29]);
+    assert!(lines[29].contains("?: keys | Esc: menu"), "{}", lines[29]);
+    assert!(!h.text().contains("Enter Select"));
 }
 
 #[test]

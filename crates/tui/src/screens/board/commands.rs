@@ -19,6 +19,8 @@ impl BoardScreen {
             };
         }
         self.copy_note = None;
+        self.status = None;
+        self.hint_note = false;
         match action {
             Action::Up | Action::Down | Action::Left | Action::Right => {
                 self.navigate(action);
@@ -207,11 +209,8 @@ impl BoardScreen {
             self.hint = Some(mv);
             self.cue(SoundCue::Hint);
         }
-        self.status = Some(if mv == Move::Stock {
-            status::HINT_STOCK
-        } else {
-            status::HINT
-        });
+        self.status = None;
+        self.hint_note = true;
         Effect::None
     }
 

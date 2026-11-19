@@ -4,6 +4,9 @@
 //! Two layouts exist: columns (Klondike, Spider, FreeCell) and the pyramid. The card size is the
 //! largest of [`SIZES`] that fits the window; gaps and margins grow with it.
 
+mod chrome;
+#[cfg(test)]
+mod chrome_tests;
 mod columns;
 mod fan;
 #[cfg(test)]
@@ -16,8 +19,12 @@ mod size;
 mod tests;
 
 use oxysol_core::{PileRef, PileSnapshot, Variant};
-use ratatui::layout::{Constraint, Layout, Position, Rect};
+use ratatui::layout::{Position, Rect};
 
+pub use chrome::{
+    BOARD_MIN_WIDTH, Chrome, Class, GUIDE_WIDTH, GUIDE_WIDTH_WIDE, STANDARD_MIN_HEIGHT,
+    STANDARD_MIN_WIDTH, WIDE_MIN_WIDTH, chrome, chrome_with,
+};
 pub use size::{CardSize, FAN_BUDGET, SIZES};
 
 /// The place of one pile.
@@ -88,63 +95,6 @@ impl BoardGeometry {
                 *rect = rect.intersection(area);
             }
         }
-    }
-}
-
-/// The parts of the board screen. `status` is the announcer line; `now` and `possible` are the two
-/// rows of the action line. `guide` is the side panel, present only when it was asked for and the
-/// terminal is wide enough to keep [`BOARD_MIN_WIDTH`] columns for the board.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Chrome {
-    pub header: Rect,
-    pub body: Rect,
-    pub guide: Option<Rect>,
-    pub status: Rect,
-    pub now: Rect,
-    pub possible: Rect,
-    pub footer: Rect,
-}
-
-/// Columns of the guide panel, its left edge included.
-pub const GUIDE_WIDTH: u16 = 30;
-/// Columns the board keeps when the guide panel is shown; narrower terminals hide the panel.
-pub const BOARD_MIN_WIDTH: u16 = 100;
-
-/// Splits the screen into header, board, status line, the two rows of the action line and footer,
-/// without a guide panel. `body` is the area to pass to [`compute`].
-pub fn chrome(area: Rect) -> Chrome {
-    chrome_with(area, false)
-}
-
-/// Like [`chrome`], and with a guide panel at the right of the board when `guide` is set and
-/// `area` is at least `BOARD_MIN_WIDTH + GUIDE_WIDTH` columns wide.
-pub fn chrome_with(area: Rect, guide: bool) -> Chrome {
-    let [header, middle, status, now, possible, footer] = Layout::vertical([
-        Constraint::Length(1),
-        Constraint::Fill(1),
-        Constraint::Length(1),
-        Constraint::Length(1),
-        Constraint::Length(1),
-        Constraint::Length(1),
-    ])
-    .areas(area);
-    let room = area.width >= BOARD_MIN_WIDTH + GUIDE_WIDTH;
-    let (body, guide) = if guide && room {
-        let [body, side] =
-            Layout::horizontal([Constraint::Fill(1), Constraint::Length(GUIDE_WIDTH)])
-                .areas(middle);
-        (body, Some(side))
-    } else {
-        (middle, None)
-    };
-    Chrome {
-        header,
-        body,
-        guide,
-        status,
-        now,
-        possible,
-        footer,
     }
 }
 

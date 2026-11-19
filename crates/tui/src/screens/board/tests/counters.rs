@@ -39,10 +39,15 @@ fn first_play(h: &mut Harness) {
 }
 
 fn assert_counter(h: &mut Harness, expected: &str) {
+    let header = header_row(h);
+    assert!(
+        header.contains(expected),
+        "{header:?} should contain {expected:?}"
+    );
     let now = now_row(h);
     assert!(
-        now.ends_with(expected),
-        "{now:?} should end with {expected:?}"
+        !now.contains(expected),
+        "{now:?} must not repeat {expected:?}"
     );
 }
 
@@ -119,7 +124,7 @@ fn freecell_has_no_stock_counter() {
 }
 
 #[test]
-fn a_pyramid_in_a_tall_window_shows_the_counter_beside_the_stock() {
+fn the_stock_counter_is_shown_once_in_the_game_information_even_in_a_tall_window() {
     let mut h = Harness::with(MemoryStorage::new(), TRUE_COLOR, 120, 70);
     h.app.apply(Effect::Start {
         variant: PYRAMID,
@@ -253,10 +258,8 @@ fn a_failed_copy_still_shows_the_seed() {
     h.clipboard.borrow_mut().failing = true;
     h.type_char('c');
     assert!(h.clipboard.borrow().copies.is_empty());
-    assert!(
-        h.text()
-            .contains("Could not copy the seed — it is shown here: 5")
-    );
+    assert!(h.text().contains("Could not copy the seed"));
+    assert!(header_row(&mut h).contains("seed 5"));
 }
 
 #[test]

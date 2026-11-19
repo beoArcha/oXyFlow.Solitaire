@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 use oxysol_core::{CardId, PileRef, PileSnapshot};
 use ratatui::crossterm::event::MouseEvent;
 use ratatui::layout::Position;
+use ratatui::style::Style;
 
 use super::cursor::{Cursor, focusable};
 use super::{BoardScreen, toggle_guide};
@@ -86,11 +87,16 @@ impl BoardScreen {
     }
 
     fn on_seed(&self, cell: (u16, u16), now: Instant) -> bool {
-        let header = layout::chrome_with(self.screen, self.guide_panel).header;
-        self.header(now).is_some_and(|text| {
-            text.seed_cells(header)
-                .contains(Position::new(cell.0, cell.1))
-        })
+        let parts = layout::chrome_with(self.screen, self.guide_panel);
+        let Some(facts) = self.facts(now) else {
+            return false;
+        };
+        let seed = match (parts.header, parts.guide) {
+            (Some(header), _) => facts.row(header, Style::default()).seed,
+            (None, Some(panel)) => facts.seed_in_box(guide::game_text(panel)),
+            (None, None) => return false,
+        };
+        seed.contains(Position::new(cell.0, cell.1))
     }
 
     fn on_guide_title(&self, cell: (u16, u16)) -> bool {

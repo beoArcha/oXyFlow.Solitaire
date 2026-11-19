@@ -4,6 +4,7 @@
 
 mod choices;
 mod commands;
+mod controls;
 mod counters;
 mod cursor;
 mod guidance;
@@ -11,6 +12,7 @@ mod header;
 mod marks;
 mod mouse;
 mod moves;
+mod now;
 mod status;
 #[cfg(test)]
 mod tests;
@@ -25,14 +27,12 @@ use ratatui::layout::Rect;
 
 use self::choices::Choice;
 use self::cursor::Cursor;
-use self::header::Header;
+use self::header::Facts;
 use self::mouse::Pointer;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
-use crate::announce;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
-use crate::i18n::{t, tf};
 use crate::settings::Settings;
 use crate::solver::DealCheck;
 use crate::storage::GameId;
@@ -67,6 +67,7 @@ pub struct BoardScreen {
     hint: Option<Move>,
     status: Option<&'static str>,
     copy_note: Option<(u64, bool)>,
+    hint_note: bool,
     undo_allowed: bool,
     deal: DealCheck,
     guide_panel: bool,
@@ -99,6 +100,7 @@ impl Default for BoardScreen {
             hint: None,
             status: None,
             copy_note: None,
+            hint_note: false,
             undo_allowed: true,
             deal: DealCheck::Unchecked,
             guide_panel: true,
@@ -242,30 +244,14 @@ impl BoardScreen {
         )
     }
 
-    fn header(&self, now: Instant) -> Option<Header> {
+    fn facts(&self, now: Instant) -> Option<Facts> {
         let session = self.session.as_ref()?;
-        Some(Header::new(
+        Some(Facts::new(
             session,
             self.elapsed(now),
             self.undo_allowed,
             self.deal,
         ))
-    }
-
-    fn status_text(&self) -> String {
-        let focus = self.focus_text();
-        let event = match self.copy_note {
-            Some((seed, true)) => Some(tf(
-                "board.status.seed_copied",
-                &[("seed", &seed.to_string())],
-            )),
-            Some((seed, false)) => Some(tf(
-                "board.status.seed_copy_failed",
-                &[("seed", &seed.to_string())],
-            )),
-            None => self.status.map(|key| t(key).into_owned()),
-        };
-        announce::announce(&focus, event.as_deref().unwrap_or_default())
     }
 
     /// Handles a key press mapped to `action`; the effect is for the application to apply.
