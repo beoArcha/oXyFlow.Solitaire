@@ -10,7 +10,10 @@ publish = false
 
 [dependencies]
 midly.workspace = true
+oxysol-core.workspace = true
+oxysol-tui.workspace = true
 proc-macro2.workspace = true
+ratatui.workspace = true
 ra-ap-rustc_lexer.workspace = true
 resvg.workspace = true
 syn.workspace = true

@@ -6,6 +6,7 @@ mod error;
 mod icon;
 mod lint;
 mod midi;
+mod screenshots;
 mod sync_metadata;
 mod version;
 
@@ -17,7 +18,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | midi <style> | icon [--check] | sync-metadata [--check] | version [--tag [--stable]]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--tag [--stable]]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -49,6 +50,7 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
             parse_flag(flags, "--check")?,
         )?),
         "sync-metadata" => Ok(sync_metadata::run(parse_flag(flags, "--check")?)?),
+        "screenshots" if flags.is_empty() => Ok(screenshots::run(&check::workspace_root()?)?),
         "version" => version::run(parse_version_flags(flags)?),
         _ => Err(usage()),
     }

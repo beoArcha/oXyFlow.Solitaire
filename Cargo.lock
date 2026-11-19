@@ -3008,8 +3008,11 @@ name = "xtask"
 version = "0.1.0"
 dependencies = [
  "midly",
+ "oxysol-core",
+ "oxysol-tui",
  "proc-macro2",
  "ra-ap-rustc_lexer",
+ "ratatui",
  "resvg",
  "syn 3.0.10",
  "thiserror 2.0.21",
