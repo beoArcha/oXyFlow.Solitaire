@@ -1,12 +1,12 @@
 # Strings of the statistics screen: the summary per game, the history list and copying a seed.
 label = "Statystyki"
 title = "Statystyki"
-footer = "Góra Dół Wybór   Enter Zagraj to ziarno ponownie   c Kopiuj ziarno   Esc Wstecz"
-empty = "Nie rozegrano jeszcze żadnej gry. Zacznij ją z menu głównego."
+footer = "Góra Dół Wybór   Enter Zagraj ponownie   c Kopiuj ziarno   Esc Wstecz"
+empty = "Nie rozegrano jeszcze żadnej gry. Rozpocznij nową w menu głównym."
 load_failed = "Nie można odczytać historii gier."
 position = "Gra {current} z {total}"
 copied = "Skopiowano ziarno {seed}"
-copy_failed = "Nie udało się skopiować ziarna — oto ono: {seed}"
+copy_failed = "Nie udało się skopiować ziarna: {seed}"
 
 [mode]
 undo = "z cofaniem"

@@ -16,8 +16,8 @@ auto_finish = "Automatyczne kończenie"
 line = "{label}: {value}"
 
 [value]
-on = "Włączone"
-off = "Wyłączone"
+on = "Tak"
+off = "Nie"
 unavailable = "niedostępne"
 
 [locale]
@@ -42,6 +42,6 @@ true_color = "Pełny kolor"
 
 [audio]
 no_device = "Dźwięk jest niedostępny: nie znaleziono działającego urządzenia audio."
-remote = "Dźwięk jest niedostępny: to zdalna sesja."
-not_built = "Dźwięk nie jest dołączony do tej wersji programu."
-style_failed = "Dźwięk jest niedostępny: wybranego stylu dźwięku nie można wczytać."
+remote = "Dźwięk jest niedostępny: sesja zdalna."
+not_built = "Ta wersja programu nie zawiera obsługi dźwięku."
+style_failed = "Dźwięk jest niedostępny: nie można wczytać wybranego stylu dźwięku."
