@@ -454,8 +454,10 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   no target (a king in Pyramid) applies immediately. A Pyramid pair is picked from either card.
 - **Board controller** (`screens/board/`): the cursor is a pile plus a depth (cards from the top; only a
   column has more than one). Left/Right/Up/Down go to the nearest pile in that direction by
-  `BoardGeometry` (a row counts twice a column, off-axis piles are penalized); Up/Down first change the
-  depth inside a column (`+`/`-` change it too). Empty Pyramid positions are skipped. Enter/Space on a
+  `BoardGeometry` (a row counts twice a column, off-axis piles are penalized). Up deepens the focus
+  inside a column and leaves it upwards at the deepest card; Down and `-` lift it, and from the top card
+  jump to the deepest one; `+` deepens and, at the deepest card, returns to the top one. Only a pile with
+  more than one card wraps; a one-card pile lets Down leave it. Empty Pyramid positions are skipped. Enter/Space on a
   pile picks, on a target drops, on the stock draws; a drop on a pile that is not a target is tried
   against the engine and shows its `MoveError` message. Esc cancels a pick, otherwise leaves for the
   menu. Every `MoveError` has a key `board.error.*`; other messages are `board.status.*`; restart,

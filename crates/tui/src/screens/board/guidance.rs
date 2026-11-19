@@ -244,8 +244,7 @@ impl BoardScreen {
             .ok()
             .filter(|_| !on_stock);
         let best = found.as_ref().and_then(|(_, found)| quick(found));
-        let deeper = snapshot.is_some_and(|snapshot| cursor.depth < max_depth(snapshot));
-        let shallower = cursor.depth > 1;
+        let runs = snapshot.is_some_and(|snapshot| max_depth(snapshot) > 1);
         let hint = session.game().hint().is_some();
         let variant = session.variant();
 
@@ -276,11 +275,11 @@ impl BoardScreen {
             possible.push(part(Action::Undo, "board.action.undo", 4));
             usable.push(Action::Undo);
         }
-        if deeper || shallower {
+        if runs {
             possible.push(run_part(5));
         }
-        usable.extend(deeper.then_some(Action::RunMore));
-        usable.extend(shallower.then_some(Action::RunLess));
+        usable.extend(runs.then_some(Action::RunMore));
+        usable.extend(runs.then_some(Action::RunLess));
         if self.undo_allowed && session.can_redo() {
             possible.push(part(Action::Redo, "board.action.redo", 7));
             usable.push(Action::Redo);
