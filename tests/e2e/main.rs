@@ -34,7 +34,11 @@ fn version_prints_the_version_and_exits_zero() {
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(output.status.success(), "{:?}", output.status);
     assert!(
-        stdout.contains(&metadata_version()),
+        stdout.contains(&format!("oXySol {}", env!("OXYSOL_VERSION"))),
+        "stdout was {stdout:?}"
+    );
+    assert!(
+        stdout.contains(&format!("oXySol {}.", major_minor(&metadata_version()))),
         "stdout was {stdout:?}"
     );
 }
@@ -53,6 +57,10 @@ fn version_prints_the_copyright_and_the_licence_on_a_second_line() {
     assert_eq!(lines.len(), 2, "stdout was {stdout:?}");
     assert!(lines[1].contains(env!("CARGO_PKG_AUTHORS")), "{stdout:?}");
     assert!(lines[1].contains(env!("CARGO_PKG_LICENSE")), "{stdout:?}");
+}
+
+fn major_minor(version: &str) -> String {
+    version.splitn(3, '.').take(2).collect::<Vec<_>>().join(".")
 }
 
 fn metadata_version() -> String {
