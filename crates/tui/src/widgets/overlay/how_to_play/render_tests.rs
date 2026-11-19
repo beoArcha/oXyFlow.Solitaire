@@ -240,7 +240,8 @@ fn every_game_draws_inside_100_by_30_with_only_wgl4_or_ascii_glyphs() {
                     text.contains(&i18n::tf("help.rules.close", &[("key", "Esc")])),
                     "{context}"
                 );
-                assert!(text.contains("Up/Down"), "{context}");
+                let up_down = format!("{}/{}", i18n::t("help.key.up"), i18n::t("help.key.down"));
+                assert!(text.contains(&up_down), "{context}");
                 let frame = if caps.unicode { '╔' } else { '+' };
                 assert!(text.contains(frame), "{context}");
             }
