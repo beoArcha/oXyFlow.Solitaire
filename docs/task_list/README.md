@@ -85,8 +85,8 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | P4-01 | SQLite persistence | Sonnet | P3-01 | DONE |
 | P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | DONE |
 | P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | DONE |
-| X-01 | Spike: card font in real terminals | Sonnet + User | P0-01 | IN PROGRESS |
-| F-02 | Checkpoint: graphics delivery | Opus | X-01 | TODO |
+| X-01 | Spike: card font in real terminals | Sonnet + User | P0-01 | DONE |
+| F-02 | Checkpoint: graphics delivery | Opus | X-01 | DONE |
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | TODO |
 | P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05 | TODO |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
@@ -164,6 +164,8 @@ the PR descriptions; cards that exist are in the phase files.
 | O-31 | Widen a console window the game owns to 130 columns | — | IN PROGRESS |
 | O-32 | Easy restart from the beginning, confirmed like Quit | P3-27 | IN PROGRESS |
 | O-33 | Statistics: scroll bars and a winnable mark per game | O-23, P3-24 | IN PROGRESS |
+| O-34 | Windows Terminal: test the card font on a real machine | P5-02 | TODO |
+| O-35 | Release archives carry the font licence (OFL) | P5-01 | TODO |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |

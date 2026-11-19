@@ -24,12 +24,12 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-16 | Title logo | Oxy | P0-01 | DONE |
 | M-17 | Polish translation, part 1 | Son | P3-03, P3-04 | DONE |
 | M-18 | Command-line parser | Son | P0-01 | DONE |
-| M-19 | Artwork: International suits | Beo | P5-01 | DRAFT |
-| M-20 | Artwork: German suits | Oxy | P5-01 | DRAFT |
-| M-21 | Artwork: Italian suits | Son | P5-01 | DRAFT |
-| M-22 | Artwork: court emblems | Beo | P5-01 | DRAFT |
-| M-23 | Artwork: back style 1 | Oxy | P5-01 | DRAFT |
-| M-24 | Artwork: back style 2 | Son | P5-01 | DRAFT |
+| M-19 | Artwork: International suits | Beo | P5-01 | READY |
+| M-20 | Artwork: German suits | Oxy | P5-01 | READY |
+| M-21 | Artwork: Italian suits | Son | P5-01 | READY |
+| M-22 | Artwork: court emblems | Beo | P5-01 | READY |
+| M-23 | Artwork: back style 1 | Oxy | P5-01 | READY |
+| M-24 | Artwork: back style 2 | Son | P5-01 | READY |
 | M-25 | Sound style 1: cues | Beo | P6-03 | DONE |
 | M-26 | Sound style 2: cues | Oxy | P6-03 | DONE |
 | M-27 | Music loops | Son | P6-03 | DONE |
@@ -253,17 +253,147 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 ### M-19 … M-24 — Vector glyphs
 
-- **Status:** DRAFT · **Finalized by:** F-02 (glyph box, stroke and fill rules, naming, style guide)
-- **Branch:** `feat/M-XX-art-<style>` · **Files:** `assets/cards/fronts/<style>/glyphs/*.svg` or
-  `assets/cards/backs/<style>/glyphs/*.svg`
-- **Cards:** M-19 International suits (clubs, diamonds, hearts, spades; the French skin reuses
-  them); M-20 German suits (acorns,
-  leaves, hearts, bells); M-21 Italian suits (batons, swords, cups, coins); M-22 court emblems
-  (jack, queen, king); M-23 and M-24 one back style each (repeatable tile set).
-- **Do:** draw each glyph as one hand-written SVG that follows the style guide. Shapes must stay
-  recognizable at one terminal cell and differ from each other by silhouette, not by color.
+- **Status:** READY · **Finalized by:** F-02 (D-06, T-16: glyph box, rules, naming, code points) · **Needs:** P5-01
+  (`cargo xtask fonts` checks the files and builds the preview sheet)
+- **Branch:** `feat/M-XX-art-<style>` · **Files:** only the SVG files of your card, listed below
+- **Cards and files** (names are fixed by the code point table below):
+  - M-19 International suits: `assets/cards/fronts/international/glyphs/{spade,heart,diamond,club}.svg`
+    (the French skin reuses them).
+  - M-20 German suits: `assets/cards/fronts/german/glyphs/{acorn,leaf,heart,bell}.svg`.
+  - M-21 Italian suits: `assets/cards/fronts/italian/glyphs/{baton,sword,cup,coin}.svg`.
+  - M-22 court emblems: `assets/cards/fronts/international/glyphs/{jack,queen,king}.svg` (the other
+    skins reuse them).
+  - M-23 back style 1, `lattice`: `assets/cards/backs/lattice/glyphs/{tile,mosaic}.svg`.
+  - M-24 back style 2, `ornament`: `assets/cards/backs/ornament/glyphs/{tile,mosaic}.svg`.
+- **Do:** draw each glyph as one hand-written SVG that follows the style guide below. Shapes must stay
+  recognizable at one terminal cell and differ from each other by silhouette, not by color. Do not touch
+  `codepoints.toml`, `style.toml` or any other file.
 - **Done when:** `cargo xtask fonts` accepts every file and the glyphs appear in
-  `target/fonts/preview.html`; attach a screenshot of the sheet to the PR.
+  `target/fonts/preview.html`; attach a screenshot of the sheet to the PR and say that you checked the
+  6 × 12 px row.
+
+#### Style guide (shared by M-19…M-24)
+
+**1. Glyph box.** The font is built on the Cascadia Mono cell: units per em 2048, advance 1200, ascent 1900,
+descent 480, line gap 0. One terminal cell is therefore **1200 × 2380 font units**, about one to two.
+
+- Single glyph: `viewBox="0 0 1200 2380"`. The y axis points down. The baseline is at y = 1900; the centre of
+  the cell is (600, 1190). Draw in SVG coordinates and never flip anything: the builder maps (x, y) to the
+  font point (x, 1900 − y).
+- Mosaic (section 6): `viewBox="0 0 2400 4760"`, two cells wide and two high.
+- No `width` or `height` attribute on `<svg>`.
+- Scale to keep in mind: at the smallest cell, 6 × 12 px, **one pixel is about 200 units**; at 10 × 24 px it is
+  about 120 units wide and 100 high.
+
+**2. Safe area and padding.**
+
+- Front glyphs (suits, court emblems): all ink inside **x 60…1140, y 60…2320** (60 units of padding on every
+  side, so neighbouring cells never touch). Center the visual mass on (600, 1190).
+- Fill the width. The X-01 prototype drew suits too small. A round glyph (heart, diamond, club, spade,
+  acorn, bell, cup, coin) is **1000 to 1080 units wide**; a tall glyph (baton, sword, leaf, emblems) is
+  at least 1000 units wide or at least 1700 units high. Height follows the shape; the glyph is centered
+  vertically, not placed on the baseline.
+- Back tiles are full bleed: the ink may reach the box edge, 0…1200 × 0…2380. A tile must be **seamless in
+  both directions**: a shape that touches the left edge at height y touches the right edge at the same
+  height and with the same thickness, and likewise top and bottom, so a grid of tiles forms one pattern.
+- Nothing may lie outside the box. The builder rejects ink outside the box or, for front glyphs, outside
+  the safe area.
+
+**3. Fill, strokes and minimum feature size.**
+
+- Allowed elements: `<svg>` with `xmlns` and `viewBox`, and one or more `<path d="…"/>`. Nothing else: no
+  `<g transform>`, `<use>`, `<rect>`, `<circle>`, `<text>`, `<image>`, `<defs>`, gradients, clip paths,
+  masks, filters, `style` blocks or `transform` attributes. Convert every shape to a path (in Inkscape:
+  Object to Path, Stroke to Path).
+- **Fill only, no strokes.** No `stroke…` attribute anywhere. A line is a thin closed shape.
+- One color. `fill` is omitted or `#000`; no opacity. The theme colors the glyph in the terminal.
+- Holes: a subpath wound opposite to the shape it cuts, with the default (nonzero) fill rule; do not use
+  `fill-rule="evenodd"`. Overlapping subpaths of the same winding are fine, the builder unites them.
+- **Minimum feature size, so that the shape survives at 6 × 12 px:**
+  - every line-like part (rim, stem, blade, frame, bar) is at least **200 units** wide;
+  - every hole and every gap that must show is at least 200 × 200 units; a gap smaller than that fills in,
+    so either close it completely or open it to 200 or more;
+  - a tip or corner narrower than 200 units for more than 150 units of its length disappears: blunt it to a
+    width of 200 units or more (a pointed spade is fine because it widens quickly);
+  - nothing is drawn smaller than 100 units, ever. Detail between 100 and 200 units may exist only as
+    decoration that can vanish without changing what the glyph is.
+- No hinting is applied; keep curves smooth and avoid hairline spikes.
+
+**4. Silhouettes that differ without color.**
+
+- Color is never the carrier. Hearts and diamonds must not be told apart from clubs and spades by red and
+  black. Every glyph is judged as a solid black shape at 6 × 12 px (the preview sheet shows that row).
+- The glyphs of one set (the four suits; jack, queen, king) must be told apart at 6 × 12 px as solid black
+  shapes. They differ by outline: at least two of the width at the top, the width at the base, the
+  height, a stem or none.
+- Interior detail is optional and never what tells two glyphs apart.
+- Suggested silhouettes (not binding): spade pointed top with a stem; heart; diamond as a rhombus; club with
+  three lobes and a stem; acorn as a cup over an oval nut; leaf as a pointed oval with a stalk; bell flared
+  with a clapper; baton as an upright knobbed stick; sword as a blade with a crossguard; cup as a chalice;
+  coin as a disc with a rim; king a crown with three tips; queen a coronet with a round top; jack a cap with
+  a plume.
+
+**5. Naming and files.**
+
+- Path: `assets/cards/<fronts|backs>/<style>/glyphs/<name>.svg`.
+- `<name>` is lowercase ASCII, `[a-z][a-z0-9-]*`, exactly as in the table below. `<style>`: fronts
+  `international`, `german`, `italian`; backs `lattice` (M-23) and `ornament` (M-24).
+- The registry key of a glyph is `<fronts|backs>/<style>/<name>`, for example `fronts/german/acorn`. The same
+  name may appear in two styles (the German and the International `heart`).
+- One glyph, one file. Art that does not exist yet has no file; the builder skips its slot.
+
+**6. The 2 × 2 mosaic.**
+
+- Only the two back styles have a mosaic: `mosaic.svg`, `viewBox="0 0 2400 4760"`. It is **one drawing**
+  that fills a block of 2 × 2 cells, used as a decoration at the larger cell sizes (about 10 × 24 px and up);
+  the single `tile` must look good on its own.
+- The builder cuts it into four glyphs by intersecting the drawing with the four cell boxes, at x = 1200 and
+  y = 2380: top-left (x 0…1200, y 0…2380), top-right, bottom-left, bottom-right. They get the names
+  `mosaic-tl`, `mosaic-tr`, `mosaic-bl`, `mosaic-br`. You draw the picture once and never draw or cut the
+  four parts yourself.
+- Keep the 60-unit padding from the outer edge of the whole 2400 × 4760 box.
+- A feature either **crosses a seam with at least 200 units on both sides, or stays at least 200 units away
+  from it**. Never start or end a shape exactly on a seam: that makes hairlines and gaps.
+- The vertical seam (y = 2380) was the weak point in X-01: a ring and a frame split there. Make every part
+  that crosses it at least 300 units thick, and prefer shapes that are wider than they are tall.
+
+**7. Code point table.** Range **U+E6BC…U+E6FF, 68 code points** (BMP Private Use Area, nothing in plane 16).
+A slot never changes once assigned. A new glyph takes a reserved slot of its group, then a spare one.
+`assets/cards/codepoints.toml` (P5-01) holds this table; the prototype's slots E6C0…E6C8 are not carried over.
+
+| Code point | Key | Card |
+|---|---|---|
+| E6BC | `fronts/international/spade` | M-19 |
+| E6BD | `fronts/international/heart` | M-19 |
+| E6BE | `fronts/international/diamond` | M-19 |
+| E6BF | `fronts/international/club` | M-19 |
+| E6C0 | `fronts/german/acorn` | M-20 |
+| E6C1 | `fronts/german/leaf` | M-20 |
+| E6C2 | `fronts/german/heart` | M-20 |
+| E6C3 | `fronts/german/bell` | M-20 |
+| E6C4 | `fronts/italian/baton` | M-21 |
+| E6C5 | `fronts/italian/sword` | M-21 |
+| E6C6 | `fronts/italian/cup` | M-21 |
+| E6C7 | `fronts/italian/coin` | M-21 |
+| E6C8…E6CF | reserved: more suit sets (8) | — |
+| E6D0 | `fronts/international/jack` | M-22 |
+| E6D1 | `fronts/international/queen` | M-22 |
+| E6D2 | `fronts/international/king` | M-22 |
+| E6D3…E6D7 | reserved: more court emblems (5) | — |
+| E6D8 | `backs/lattice/tile` | M-23 |
+| E6D9 | `backs/lattice/mosaic-tl` | M-23 |
+| E6DA | `backs/lattice/mosaic-tr` | M-23 |
+| E6DB | `backs/lattice/mosaic-bl` | M-23 |
+| E6DC | `backs/lattice/mosaic-br` | M-23 |
+| E6DD | `backs/ornament/tile` | M-24 |
+| E6DE | `backs/ornament/mosaic-tl` | M-24 |
+| E6DF | `backs/ornament/mosaic-tr` | M-24 |
+| E6E0 | `backs/ornament/mosaic-bl` | M-24 |
+| E6E1 | `backs/ornament/mosaic-br` | M-24 |
+| E6E2…E6FF | spare: further back styles and decorations (30) | — |
+
+Count: 12 suit glyphs + 3 court emblems + 10 back glyphs = **25 assigned**; reserved 8 + 5 and spare 30 = **43**;
+25 + 43 = 68, the whole range.
 
 ## Sound
 
