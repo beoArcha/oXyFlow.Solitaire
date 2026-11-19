@@ -18,6 +18,7 @@ mod modal_fixes_tests;
 mod moves_window;
 mod nav;
 mod pause;
+mod quick_options;
 #[cfg(test)]
 mod render_tests;
 mod search;
@@ -38,6 +39,7 @@ use self::dialog::{Button, Geometry, Text};
 pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::how_to_play::{Focus, HowToPlay, Rules};
 pub use self::moves_window::MovesWindow;
+pub use self::quick_options::QuickOptions;
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
 use crate::app::{Modal, Screen, SearchCommand};
@@ -55,7 +57,8 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
         | Modal::HowToPlay(_)
         | Modal::CommandLine(_)
         | Modal::Guide(_)
-        | Modal::Moves(_) => None,
+        | Modal::Moves(_)
+        | Modal::Quick(_) => None,
         Modal::Pause => Some(pause::text()),
         Modal::Search(progress) => Some(search::text(progress)),
         Modal::Win { menu_focused } => {
@@ -97,6 +100,7 @@ fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geo
         (Modal::HowToPlay(_), None) => how_to_play::geometry(area),
         (Modal::Guide(_), None) => guide_window::geometry(area),
         (Modal::Moves(state), None) => moves_window::geometry(area, state),
+        (Modal::Quick(state), None) => quick_options::geometry(area, state),
         (_, None) => help::geometry(area),
     }
 }
@@ -125,6 +129,10 @@ pub fn draw(
         (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),
         (Modal::Guide(state), None) => guide_window::draw(frame, area, state, board, ctx),
         (Modal::Moves(state), None) => moves_window::draw(frame, area, state, ctx),
+        (Modal::Quick(state), None) => {
+            quick_options::draw(frame, area, state, ctx);
+            FooterMap::default()
+        }
         (_, None) => help::draw(frame, area, ctx),
     }
 }
@@ -199,6 +207,9 @@ pub fn handle_for(
     if let Modal::Moves(state) = modal {
         return moves_window::handle(state, key, action);
     }
+    if let Modal::Quick(state) = modal {
+        return quick_options::handle(state, key, action);
+    }
     if nav::tab_of(modal).is_some() {
         if let Some((target, entry)) = nav::target(modal, key, action) {
             *modal = nav::modal_for(target, rules, entry);
@@ -244,6 +255,9 @@ pub fn handle_mouse(
     }
     if let Modal::Moves(state) = modal {
         return moves_window::handle_mouse(state, area, event);
+    }
+    if let Modal::Quick(state) = modal {
+        return quick_options::handle_mouse(state, area, event);
     }
     if nav::tab_of(modal).is_some() {
         if let Some(target) = nav::clicked_tab(modal, area, event) {

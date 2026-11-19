@@ -21,7 +21,7 @@ use crate::widgets::footer::{FooterMap, Segment};
 use crate::widgets::scrollbar::{self, Metrics};
 
 /// Rows of text visible at once: the box body minus the tab row and the footer row.
-pub const VIEW_ROWS: usize = 21;
+pub const VIEW_ROWS: usize = 22;
 
 const PAGE_LINES: i32 = 20;
 const WHEEL_LINES: i32 = 3;

@@ -79,6 +79,7 @@ removed = "Karty usunięte."
 undone = "Cofnięto."
 redone = "Ponowiono."
 restarted = "Gra rozpoczęta od nowa."
+defaults_saved = "Zapisano jako domyślne dla nowych gier."
 
 [error]
 unsupported = "Zły ruch: niemożliwy w tej grze."
@@ -130,6 +131,7 @@ run = "{keys}: długość ciągu"
 help = "{key}: klawisze"
 rules = "{key}: jak grać"
 guide = "{key}: przewodnik"
+options = "{key}: opcje"
 restart = "{key}: od nowa"
 new_game = "{key}: nowa gra"
 menu = "{key}: menu"
@@ -182,6 +184,12 @@ click = "Klik: weź, połóż"
 double_click = "Podwójny klik: szybki ruch"
 stock = "Klik w talię: dobierz"
 right_click = "Prawy klik: odłóż"
+
+[options]
+title = "Szybkie opcje"
+note = "Te wybory działają od razu w tej grze."
+save = "Zapisz jako domyślne"
+footer = "{up}/{down}: wybierz   {left}/{right}: zmień   {select}: przełącz"
 
 [moves]
 title = "Możliwe ruchy ({key}: ukryj)"

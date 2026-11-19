@@ -29,6 +29,8 @@ impl App {
             Effect::Restart => self.restart_game(),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
+            Effect::Quick(aids) => self.set_quick(aids),
+            Effect::SaveAids => self.save_quick(),
             Effect::Board(action) => self.run_board_action(action),
             Effect::HowToPlay => self.open_how_to_play(),
             Effect::CopySeed(seed) => self.copy_seed(seed),
@@ -142,6 +144,7 @@ impl App {
             elapsed: Duration::ZERO,
             undo_allowed,
         };
+        self.reset_quick();
         self.board
             .begin(Session::new(variant, seed), start, self.now);
         self.enter_board();
@@ -174,6 +177,9 @@ impl App {
                     undo_allowed,
                 };
                 let (variant, seed) = (session.variant(), session.seed());
+                if self.board.game_id() != Some(id) {
+                    self.reset_quick();
+                }
                 self.board.begin(session, start, self.now);
                 if !undo_allowed {
                     let restarts = self.stored_restarts(id);
@@ -191,8 +197,9 @@ impl App {
         }
     }
 
-    fn apply_settings(&mut self, settings: Settings) {
+    pub(super) fn apply_settings(&mut self, settings: Settings) {
         self.settings = settings;
+        self.refresh_running();
         self.refresh_view();
         if let Err(error) = self.storage.save_settings(&self.settings) {
             tracing::warn!(%error, "settings could not be saved; they hold for this session");

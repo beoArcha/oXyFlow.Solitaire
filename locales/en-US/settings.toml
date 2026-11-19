@@ -12,6 +12,8 @@ cues = "Sound cues"
 music = "Music"
 volume = "Volume"
 guide_panel = "Guide panel"
+moves_panel = "Possible moves panel"
+target_marks = "Target marks"
 auto_finish = "Auto-finish"
 aura = "Aura"
 line = "{label} {value}"
@@ -19,7 +21,7 @@ line = "{label} {value}"
 [group]
 display = "Display"
 sound = "Sound"
-board = "Board"
+hints = "Hints and help"
 
 [style]
 international = "International"
@@ -38,7 +40,9 @@ music = "Background music while a game is open."
 volume = "The loudness of sound and music, in steps of 10%."
 auto_finish = "Plays the last moves by itself once the win is certain."
 aura = "Glow: Full marks the focus, carried cards and targets; Focus only, the focus."
+target_marks = "Marks the places a carried run can go with + and a glow."
 guide_panel = "A side panel with hints for the focused card and the keys."
+moves_panel = "A side panel listing every action with its key, active or not."
 
 [value]
 on = "On"

@@ -20,7 +20,7 @@ use crate::widgets::footer::{self, FooterMap, Segment};
 const GAP: u16 = 4;
 const KEY_PADDING: usize = 2;
 const LEFT_TOPICS: usize = 2;
-const BODY_ROWS: u16 = 23;
+const BODY_ROWS: u16 = 24;
 const DIALOG_MIN_WIDTH: u16 = 80;
 
 const GESTURES: [(&str, &str); 5] = [

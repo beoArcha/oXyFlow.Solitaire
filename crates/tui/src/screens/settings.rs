@@ -5,6 +5,7 @@
 mod options;
 #[cfg(test)]
 mod tests;
+mod values;
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
@@ -12,7 +13,8 @@ use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use self::options::{FIELDS, Group, Step, changed, line, unavailable_reason_key};
+use self::options::{FIELDS, Group, Step};
+use self::values::{changed, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
 use super::{Effect, ViewCtx};
 use crate::action::Action;

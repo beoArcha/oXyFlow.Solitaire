@@ -35,13 +35,15 @@ use self::header::Facts;
 use self::mouse::Pointer;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
+use crate::app::Modal;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
-use crate::settings::Settings;
+use crate::settings::Aid;
 use crate::solver::DealCheck;
 use crate::storage::GameId;
 use crate::widgets::footer::FooterMap;
 use crate::widgets::moves::PanelMap;
+use crate::widgets::overlay::QuickOptions;
 use crate::widgets::pile::Marks;
 
 const DEFAULT_SCREEN: Rect = Rect::new(0, 0, 120, 40);
@@ -79,6 +81,7 @@ pub struct BoardScreen {
     deal: DealCheck,
     guide_panel: bool,
     moves_panel: bool,
+    target_marks: bool,
     panel_focus: Option<usize>,
     field_edge: bool,
     auto_finish: bool,
@@ -96,12 +99,10 @@ pub struct BoardScreen {
     moves_map: PanelMap,
 }
 
-/// The request to show the guide panel when it is hidden and to hide it when it is shown.
+/// The request to show the guide panel when it is hidden and to hide it when it is shown. It is a
+/// quick choice of the running game; "Save as default" in the quick options keeps it.
 fn toggle_guide(ctx: &ViewCtx<'_>) -> Effect {
-    Effect::Apply(Settings {
-        guide_panel: !ctx.settings.guide_panel,
-        ..ctx.settings.clone()
-    })
+    Effect::Quick(Aid::GuidePanel.toggled(&ctx.settings.aids()))
 }
 
 impl Default for BoardScreen {
@@ -124,6 +125,7 @@ impl Default for BoardScreen {
             deal: DealCheck::Unchecked,
             guide_panel: true,
             moves_panel: true,
+            target_marks: true,
             panel_focus: None,
             field_edge: false,
             auto_finish: true,
@@ -283,12 +285,16 @@ impl BoardScreen {
         let Some(session) = &self.session else {
             return Marks::default();
         };
-        marks::build(
+        let mut marks = marks::build(
             &session.game().piles(),
             &self.cursor,
             self.pick.as_ref(),
             self.hint,
-        )
+        );
+        if !self.target_marks {
+            marks.targets.clear();
+        }
+        marks
     }
 
     fn facts(&self, now: Instant) -> Option<Facts> {
@@ -302,11 +308,13 @@ impl BoardScreen {
         ))
     }
 
-    /// Takes the settings and the theme that decide the screen split, so that drawing, the mouse and
-    /// the commands all use the same [`layout::Chrome`].
+    /// Takes over the aids of the running game, which the application hands over as the settings,
+    /// and the frame of the theme. They decide the screen split, so that drawing, the mouse and the
+    /// commands all use the same [`layout::Chrome`].
     pub(super) fn follow(&mut self, ctx: &ViewCtx<'_>) {
         self.guide_panel = ctx.settings.guide_panel;
         self.moves_panel = ctx.settings.moves_panel;
+        self.target_marks = ctx.settings.target_marks;
         self.field_edge = ctx.theme.field_edge();
         self.auto_finish = ctx.settings.auto_finish;
     }
@@ -317,6 +325,9 @@ impl BoardScreen {
         match action {
             Some(Action::Guide) if self.panel_unavailable() => self.open_guide_window(ctx),
             Some(Action::Guide) => toggle_guide(ctx),
+            Some(Action::Options) => {
+                Effect::Open(Modal::Quick(QuickOptions::new(ctx.settings.aids())))
+            }
             Some(Action::Moves) if self.panel_unavailable() => self.open_moves_window(),
             Some(Action::Moves) => moves_panel::toggle_moves(ctx),
             Some(action) => self

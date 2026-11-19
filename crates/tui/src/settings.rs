@@ -3,6 +3,9 @@
 
 use serde::{Deserialize, Serialize};
 
+mod aids;
+pub use aids::{Aid, Aids};
+
 use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::i18n::Locale;
@@ -70,6 +73,9 @@ pub struct Settings {
     pub auto_finish: bool,
     /// Which halos the board draws. An older saved value without the field loads as `Full`.
     pub aura: AuraMode,
+    /// Whether the board marks the places a carried run can go (`+` and the target halo). An older
+    /// saved value without the field loads as `true`.
+    pub target_marks: bool,
 }
 
 impl Default for Settings {
@@ -91,6 +97,7 @@ impl Default for Settings {
             winnable_only: false,
             auto_finish: true,
             aura: AuraMode::Full,
+            target_marks: true,
         }
     }
 }
@@ -279,6 +286,15 @@ mod tests {
         assert!(text.contains("aura = \"focus_only\""));
         let back = toml::from_str::<Settings>(&text);
         assert!(matches!(back, Ok(ref s) if *s == settings));
+    }
+
+    #[test]
+    fn target_marks_are_on_by_default_and_old_values_without_them_keep_them_on() {
+        assert!(Settings::default().target_marks);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if s.target_marks));
+        let off = toml::from_str::<Settings>("target_marks = false");
+        assert!(matches!(off, Ok(ref s) if !s.target_marks));
     }
 
     #[test]

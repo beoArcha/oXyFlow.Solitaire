@@ -34,7 +34,7 @@ fn geometry(h: &Harness, width: u16, height: u16) -> (BoardGeometry, Rect) {
     (geometry, body)
 }
 
-fn painted(h: &mut Harness, glyph: &str, token: Token) -> Cells {
+pub(super) fn painted(h: &mut Harness, glyph: &str, token: Token) -> Cells {
     h.lines();
     let theme = Theme::new(ThemeId::Dark, TRUE_COLOR.color);
     let wanted = theme.color(token);

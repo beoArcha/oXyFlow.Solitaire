@@ -88,7 +88,7 @@ fn g_opens_the_guide_as_a_window_with_every_section_on_narrow_screens() {
         let mut h = english(size);
         h.type_char('g');
         assert!(window_open(&h), "{size:?}");
-        assert!(h.app.settings().guide_panel, "the setting stays on");
+        assert!(h.app.aids().guide_panel, "the setting stays on");
         let text = h.text();
         let needles = [
             "Guide",
@@ -178,9 +178,9 @@ fn from_130_columns_g_still_hides_and_shows_the_panel() {
         let mut h = english(size);
         h.type_char('g');
         assert!(!window_open(&h), "{size:?}");
-        assert!(!h.app.settings().guide_panel);
+        assert!(!h.app.aids().guide_panel);
         h.type_char('g');
-        assert!(h.app.settings().guide_panel);
+        assert!(h.app.aids().guide_panel);
         assert!(h.text().contains("Guide (g: hide)"));
     }
 }

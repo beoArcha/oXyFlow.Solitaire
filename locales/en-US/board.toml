@@ -79,6 +79,7 @@ removed = "Cards removed."
 undone = "Undone."
 redone = "Redone."
 restarted = "Game restarted."
+defaults_saved = "Saved as default for new games."
 
 [error]
 unsupported = "Illegal move: not possible in this game."
@@ -130,6 +131,7 @@ run = "{keys}: change run size"
 help = "{key}: keys"
 rules = "{key}: how to play"
 guide = "{key}: guide"
+options = "{key}: options"
 restart = "{key}: restart"
 new_game = "{key}: new game"
 menu = "{key}: menu"
@@ -182,6 +184,12 @@ click = "Click: pick up, drop"
 double_click = "Double-click: quick move"
 stock = "Click stock: turn it"
 right_click = "Right-click: put back"
+
+[options]
+title = "Quick options"
+note = "These choices apply to this game now."
+save = "Save as default"
+footer = "{up}/{down}: choose   {left}/{right}: change   {select}: switch"
 
 [moves]
 title = "Possible moves ({key}: hide)"

@@ -8,6 +8,6 @@ impl App {
         if self.screen != Screen::Board || self.modal.is_some() {
             return Effect::None;
         }
-        self.board.advance(self.now, self.settings.auto_finish)
+        self.board.advance(self.now, self.quick.auto_finish)
     }
 }

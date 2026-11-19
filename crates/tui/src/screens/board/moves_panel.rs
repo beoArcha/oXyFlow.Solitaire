@@ -16,16 +16,13 @@ use crate::input::primary_key;
 use crate::layout::Class;
 use crate::screens::focus::step;
 use crate::screens::{Effect, ViewCtx};
-use crate::settings::Settings;
+use crate::settings::Aid;
 use crate::widgets::moves::MoveEntry;
 use crate::widgets::overlay::MovesWindow;
 
 /// The request to show the moves panel when it is hidden and to hide it when it is shown.
 pub(super) fn toggle_moves(ctx: &ViewCtx<'_>) -> Effect {
-    Effect::Apply(Settings {
-        moves_panel: !ctx.settings.moves_panel,
-        ..ctx.settings.clone()
-    })
+    Effect::Quick(Aid::MovesPanel.toggled(&ctx.settings.aids()))
 }
 
 const BOARD_ACTIONS: [Action; 10] = [

@@ -181,7 +181,7 @@ fn every_button_of_the_statistics_does_what_its_key_does() {
 fn every_button_of_the_board_does_what_its_key_does() {
     each_locale(|locale| {
         let setup = |locale| {
-            let mut h = sized(locale, Vec::new(), (120, 40));
+            let mut h = sized(locale, Vec::new(), (129, 40));
             h.app.apply(Effect::Start {
                 variant: Variant::Klondike(DrawCount::One),
                 seed: Some(7),
@@ -193,6 +193,7 @@ fn every_button_of_the_board_does_what_its_key_does() {
             (Action::Help, "board.action.help"),
             (Action::Rules, "board.action.rules"),
             (Action::Guide, "board.action.guide"),
+            (Action::Options, "board.action.options"),
             (Action::Back, "board.action.menu"),
         ];
         let buttons: Vec<(Action, String)> = board
