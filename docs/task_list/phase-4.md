@@ -65,3 +65,17 @@ Goal: the game saves and resumes, and every technical error has exactly one plac
 - **Acceptance:** integration tests with `SqliteStorage` in a temp dir: play → drop `App` → new `App`
   → Resume gives identical `piles()`, history position, seed and time; the history table holds the seed and outcome; a corrupt save leads to an alert
   and the menu; a storage that fails on write neither stops the game nor alerts twice.
+
+### P4-05 — Restarts counted separately in games without undo
+
+- **Owner:** Sonnet
+- **Depends on:** P4-04, P3-12
+- **Files:** `src/` (storage, schema migration), `crates/tui/src/screens/stats*`,
+  `crates/tui/src/screens/board/**` (header counter), locales, tests
+- **Scope:** owner decision 2026-11-19: Restart stays allowed in games without undo, but it is counted
+  separately. Each game record keeps a restart count (schema migration with a default of 0). The board
+  header shows the count in no-undo games once it is above zero. Statistics show no-undo results
+  without restarts apart from those with restarts (for example "wins without restart" next to all
+  wins), and the history lists the restart count. Games with undo are unchanged.
+- **Acceptance:** migration test from the current schema; restart increments the count only in no-undo
+  games; statistics and history show it; both locales.

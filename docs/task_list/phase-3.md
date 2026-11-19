@@ -409,7 +409,7 @@ Rules for the whole phase:
 - **Acceptance:** tests with a stub solver (accepts the n-th seed); cancel; the marker in the game
   information and the history; a typed seed kept as typed.
 
-### P3-21 — Aura options and reshuffle
+### P3-21 — Aura options and the stock recycle button
 
 - **Owner:** Haiku
 - **Depends on:** U-04, P3-14
@@ -417,15 +417,17 @@ Rules for the whole phase:
   and the settings screen, `crates/tui/src/{input,action}.rs`, locales, tests
 - **Scope:** decision D-U04-7 of `docs/tech/ui-review.md`. (1) Setting `aura: Full | FocusOnly`
   (serde default Full), row `Aura` in the Board group: `Focus only` draws the focus halo and hides the
-  carry and target halos; the `●` and `+` card marks of P3-14 stay, so nothing is lost. (2)
-  "Reshuffle" (`Action::Reshuffle`, key `N`, Shift+n, help group Game; a menu entry on the board's
-  `Do:` row): deal the same variant and undo mode again with a new seed in one step, with a confirm
-  dialog when moves were made; the abandoned game is recorded. Ask the owner first whether "przetasuj
-  ponownie" also means reshuffling the remaining stock inside a running game (a house rule); implement
-  that only if confirmed, as an option off by default.
+  carry and target halos; the `●` and `+` card marks of P3-14 stay, so nothing is lost. (2) Stock
+  recycle button (owner clarification 2026-11-19: "przetasuj ponownie" is not a reshuffle): when the
+  stock is empty and the waste can go back (passes left, or unlimited), the empty stock slot shows a
+  clear recycle sign (WGL4 and ASCII forms, for example `↺` / `@`) and a short label, so the player sees
+  that the cards can be turned back. Clicking it, or Enter on it, turns the waste over, the same as the
+  draw key. When no passes are left, the slot shows a distinct "no more passes" sign, not clickable.
+  Applies to Klondike and to Pyramid's stock/waste where recycling is allowed.
 - **Acceptance:** tests for the aura setting (focus halo present, others absent, card marks kept) and
-  its persistence; reshuffle starts the same variant and undo mode with a new seed and records the
-  abandoned game; help lists the key; `cargo xtask check --quick` passes.
+  its persistence; the recycle sign shown with passes left and the "no more passes" sign without;
+  click and Enter on the empty stock recycle the waste; both glyph modes; `cargo xtask check --quick`
+  passes.
 
 ### P3-22 — Localization templates and localized key names
 
@@ -478,3 +480,50 @@ Rules for the whole phase:
 - **Acceptance:** renders at 100 × 30 and 130 × 40 in both locales reviewed by the owner; the
   settings values aligned and grouped; tests for the description row and the win dialog's best
   marker; `cargo xtask check --quick` passes.
+
+### P3-25 — Footer keys as mouse buttons
+
+- **Owner:** Haiku
+- **Depends on:** P3-15
+- **Files:** `crates/tui/src/widgets/footer*`, `crates/tui/src/screens/**` (mouse routing),
+  `crates/tui/src/input.rs`, locales, tests
+- **Scope:** owner feedback 2026-11-19: the footer actions (Enter, h, s, p, ?, Esc, …) work only by
+  keyboard. Each footer entry becomes a button: a click runs the same action as the key, the hovered or
+  focused entry is visible without color, and Tab (P3-17) reaches the footer. The guide panel key `g`
+  is missing from the footer: add it (and any other board key the footer omits that U-04 lists).
+- **Acceptance:** tests that a click on each footer entry produces the same action as its key on every
+  screen with a footer; `g` shown and clickable; both locales; accessibility tests updated.
+
+### P3-26 — Possible moves panel
+
+- **Owner:** Sonnet
+- **Depends on:** P3-15, P3-18
+- **Files:** `crates/tui/src/widgets/` (a new panel), `crates/tui/src/screens/board/**`,
+  `crates/tui/src/layout/**`, `crates/tui/src/settings.rs`, locales, tests
+- **Scope:** owner feedback 2026-11-19: the `Possible:` line becomes a side panel that opens like the
+  guide panel (its own key, shown in the footer and help). It lists every board action (draw, recycle,
+  move to foundation, move to a column, auto-move, undo, redo, hint, restart, …) as a button. A possible
+  action is active: a click or Enter runs it. An impossible one stays listed, inactive and marked
+  without color (dimmed plus a sign), with a short reason when space allows. The list follows the
+  current focus and selection, the same source as the action line. It works with the guide panel on or
+  off and follows the size classes of P3-15/P3-18. The panel's visibility is a setting (see P3-27).
+- **Acceptance:** tests that the list matches the legal moves on fixed deals; inactive entries render
+  and do nothing on click; a click on an active entry runs the move; the toggle key; renders at
+  100 × 30, 130 × 40 and 200 × 60; both locales.
+
+### P3-27 — Quick options during the game and defaults in Settings
+
+- **Owner:** Sonnet
+- **Depends on:** P3-19, P3-21, P3-26
+- **Files:** `crates/tui/src/settings.rs` and the settings screen, `crates/tui/src/widgets/overlay/**`
+  (a new quick options dialog), `crates/tui/src/screens/board/**`, `crates/tui/src/input.rs`, locales,
+  tests
+- **Scope:** owner request 2026-11-19: visual hints and auto-finish are configurable both before and
+  during a game. Settings holds the defaults (group "Hints and help": aura mode, target marks, guide
+  panel, possible moves panel, auto-finish). A quick options dialog on the board (a key and a footer
+  button) toggles the same items for the running game, takes effect at once, and offers "Save as
+  default". Changing the defaults in Settings never changes a running game's quick choices unless
+  saved there.
+- **Acceptance:** tests for each toggle from both places, the immediate effect on the board, "Save as
+  default" persisted, defaults applied to a new game, keyboard and mouse; help lists the key; both
+  locales.
