@@ -102,6 +102,8 @@ const fn theme_key(theme: ThemeId) -> &'static str {
         ThemeId::Dark => "settings.theme.dark",
         ThemeId::Light => "settings.theme.light",
         ThemeId::HighContrast => "settings.theme.high_contrast",
+        ThemeId::Monokai => "settings.theme.monokai",
+        ThemeId::Dracula => "settings.theme.dracula",
     }
 }
 

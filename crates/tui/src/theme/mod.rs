@@ -4,8 +4,10 @@
 pub mod ansi;
 pub mod contrast;
 pub mod dark;
+pub mod dracula;
 pub mod high_contrast;
 pub mod light;
+pub mod monokai;
 pub mod palette;
 
 use ratatui::style::{Color, Style};
@@ -22,11 +24,19 @@ pub enum ThemeId {
     Dark,
     Light,
     HighContrast,
+    Monokai,
+    Dracula,
 }
 
 impl ThemeId {
     /// Every theme, in the order of the settings screen.
-    pub const ALL: [ThemeId; 3] = [ThemeId::Dark, ThemeId::Light, ThemeId::HighContrast];
+    pub const ALL: [ThemeId; 5] = [
+        ThemeId::Dark,
+        ThemeId::Light,
+        ThemeId::HighContrast,
+        ThemeId::Monokai,
+        ThemeId::Dracula,
+    ];
 
     /// The palette of the theme.
     pub fn palette(self) -> Palette {
@@ -34,13 +44,15 @@ impl ThemeId {
             ThemeId::Dark => dark::palette(),
             ThemeId::Light => light::palette(),
             ThemeId::HighContrast => high_contrast::palette(),
+            ThemeId::Monokai => monokai::palette(),
+            ThemeId::Dracula => dracula::palette(),
         }
     }
 
     /// The minimum WCAG contrast ratio of every pair in [`TEXT_PAIRS`].
     pub const fn contrast_target(self) -> f32 {
         match self {
-            ThemeId::Dark | ThemeId::Light => 4.5,
+            ThemeId::Dark | ThemeId::Light | ThemeId::Monokai | ThemeId::Dracula => 4.5,
             ThemeId::HighContrast => 7.0,
         }
     }

@@ -64,13 +64,17 @@ fn themes_and_languages_cycle_both_ways() {
     assert_eq!(light.theme, ThemeId::Light);
     let high = changed(Field::Theme, &light, Step::Next);
     assert_eq!(high.theme, ThemeId::HighContrast);
+    let monokai = changed(Field::Theme, &high, Step::Next);
+    assert_eq!(monokai.theme, ThemeId::Monokai);
+    let dracula = changed(Field::Theme, &monokai, Step::Next);
+    assert_eq!(dracula.theme, ThemeId::Dracula);
     assert_eq!(
-        changed(Field::Theme, &high, Step::Next).theme,
+        changed(Field::Theme, &dracula, Step::Next).theme,
         ThemeId::Dark
     );
     assert_eq!(
         changed(Field::Theme, &base, Step::Previous).theme,
-        ThemeId::HighContrast
+        ThemeId::Dracula
     );
     let polish = changed(Field::Language, &base, Step::Next);
     assert_eq!(polish.locale, Locale::PlPl);

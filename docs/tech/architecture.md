@@ -450,7 +450,7 @@ pub struct NullClipboard;                                // every copy fails wit
   that fits the window (a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.
   Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).
-- **Themes:** `ThemeId { Dark, Light, HighContrast }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
+- **Themes:** `ThemeId { Dark, Light, HighContrast, Monokai, Dracula }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
   `Token`; `Theme::new(id, depth)` resolves it: true color emits the RGB, 256 colors use `rgb_to_ansi256`,
   16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly.
   `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
