@@ -5,7 +5,7 @@
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
 use crate::layout::STANDARD_MIN_WIDTH;
-use crate::settings::{ColorMode, GlyphMode, Settings};
+use crate::settings::{AuraMode, ColorMode, GlyphMode, Settings};
 use crate::theme::ThemeId;
 
 /// One row of the settings screen.
@@ -22,11 +22,12 @@ pub enum Field {
     Music,
     Volume,
     AutoFinish,
+    Aura,
     GuidePanel,
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 12] = [
+pub const FIELDS: [Field; 13] = [
     Field::Language,
     Field::Theme,
     Field::FrontStyle,
@@ -38,6 +39,7 @@ pub const FIELDS: [Field; 12] = [
     Field::Music,
     Field::Volume,
     Field::AutoFinish,
+    Field::Aura,
     Field::GuidePanel,
 ];
 
@@ -60,6 +62,7 @@ const COLOR_MODES: [ColorMode; 4] = [
     ColorMode::Ansi256,
     ColorMode::TrueColor,
 ];
+const AURA_MODES: [AuraMode; 2] = [AuraMode::Full, AuraMode::FocusOnly];
 const VOLUME_STEP: u8 = 10;
 
 impl Field {
@@ -86,6 +89,7 @@ impl Field {
             Field::Volume => "settings.row.volume",
             Field::GuidePanel => "settings.row.guide_panel",
             Field::AutoFinish => "settings.row.auto_finish",
+            Field::Aura => "settings.row.aura",
         }
     }
 }
@@ -110,6 +114,13 @@ const fn glyph_key(mode: GlyphMode) -> &'static str {
         GlyphMode::Font => "settings.glyph.font",
         GlyphMode::Unicode => "settings.glyph.unicode",
         GlyphMode::Ascii => "settings.glyph.ascii",
+    }
+}
+
+const fn aura_key(mode: AuraMode) -> &'static str {
+    match mode {
+        AuraMode::Full => "settings.aura.full",
+        AuraMode::FocusOnly => "settings.aura.focus_only",
     }
 }
 
@@ -165,6 +176,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::Volume => format!("{}%", settings.volume),
         Field::GuidePanel => switch_text(settings.guide_panel),
         Field::AutoFinish => switch_text(settings.auto_finish),
+        Field::Aura => t(aura_key(settings.aura)).into_owned(),
     }
 }
 
@@ -250,6 +262,7 @@ pub fn changed(
         Field::Volume => next.volume = volume_step(settings.volume, step),
         Field::GuidePanel => next.guide_panel = !settings.guide_panel,
         Field::AutoFinish => next.auto_finish = !settings.auto_finish,
+        Field::Aura => next.aura = cycle(&AURA_MODES, settings.aura, step),
     }
     next
 }

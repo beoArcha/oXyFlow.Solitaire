@@ -15,6 +15,7 @@ mod moves;
 mod navigation;
 mod persist;
 mod pyramid;
+mod recycle;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
 use ratatui::crossterm::event::KeyCode;

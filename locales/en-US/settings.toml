@@ -13,6 +13,7 @@ music = "Music"
 volume = "Volume"
 guide_panel = "Guide panel"
 auto_finish = "Auto-finish"
+aura = "Aura"
 line = "{label}: {value}"
 
 [value]
@@ -20,6 +21,10 @@ on = "On"
 off = "Off"
 unavailable = "unavailable"
 needs_columns = "{value} (needs {needed} columns, now {now})"
+
+[aura]
+full = "Full"
+focus_only = "Focus only"
 
 [locale]
 en_us = "English"

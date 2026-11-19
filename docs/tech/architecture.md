@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -305,7 +305,10 @@ pub struct NullClipboard;                                // every copy fails wit
   `Glyphs::aura_focus`), the picked-up run (`Token::AuraCarry`, `aura_carry`) and, weaker, every drop
   target (`Token::Target`, `aura_target`). It paints only free table cells, never a card, so the layout
   does not change and hit tests are unaffected; the three halos use three different symbols, so they
-  read without color. The two aura tokens are in `TEXT_PAIRS` against `Table`. *Controls strip (P3-15; it replaces the P3-11 action line, the announcer row and the footer on the board):*
+  read without color. The two aura tokens are in `TEXT_PAIRS` against `Table`. `Settings::aura` (P3-21;
+  `AuraMode::Full` by default, `Focus only` = `focus_only`; an older value without the field loads as `Full`)
+  decides the halos: `FocusOnly` draws the focus halo only and drops the carry and target halos, while the
+  `●` and `+` card marks stay. *Controls strip (P3-15; it replaces the P3-11 action line, the announcer row and the footer on the board):*
   two rows under the board, as wide as the board only (`screens/board/controls.rs`). `Now:` says what is
   focused, carried or hinted in the colon form `{pile}: {what}` (`Tableau 3: ace of clubs`, `Carrying: ace of
   clubs (from Tableau 3), 4 targets`, `Hint: ace of clubs to Foundation 1`, `Game won`, `No legal moves`; a pile
@@ -471,7 +474,9 @@ pub struct NullClipboard;                                // every copy fails wit
   The stock badge reads `x24`. *Placeholders (`Face::Slot(Placeholder)`):* `A` (`board.placeholder.foundation`) in
   a foundation, `↑` (ASCII `^`, `Glyphs::recycle`) in an empty stock that can be turned over again, `x`
   (`Glyphs::spent`) when no pass is left, nothing in cells and columns; `pile::draw` takes `recycle`, which
-  `screens/board/counters.rs::can_recycle` derives from the waste and `StockStatus::recycles_left`.
+  `screens/board/counters.rs::can_recycle` takes from the engine: an empty stock is recyclable when
+  `Game::legal_moves` lists `Move::Stock` (P3-21). A click or Enter on the empty stock sends `Move::Stock`
+  through `Session`, which turns the waste back; the sign is never a reshuffle.
   *Marks:* `Mark { focus, selected, target, hint: Option<Hint> }`. The hint marks the source `?→` and the target
   `→?` (ASCII `?>`, `>?`; `Glyphs::hint_source/hint_target`) and has its own border (Unicode `╓─╖ ║ ╙─╜`, ASCII
   `.` and `:`); `Marks::hints` lists the moved cards first and the destination last, which is how `pile::draw`
