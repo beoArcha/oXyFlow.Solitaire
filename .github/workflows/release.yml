@@ -242,14 +242,16 @@ jobs:
           echo "${MDBOOK_SHA256}  $dir/mdbook.tar.gz" | sha256sum -c -
           tar -xzf "$dir/mdbook.tar.gz" -C "$dir"
           echo "$dir" >> "$GITHUB_PATH"
-      - name: Insert the version and the release link
+      - name: Insert the version and the release link in every page, both languages
         run: |
           set -eu
-          sed \
+          find docs/site/src -name '*.md' -print0 | xargs -0 sed -i \
             -e "s|{{VERSION}}|$TAG|g" \
-            -e "s|{{RELEASE_URL}}|https://github.com/$REPO/releases/tag/$TAG|g" \
-            docs/site/src/index.md > "$RUNNER_TEMP/index.md"
-          cp "$RUNNER_TEMP/index.md" docs/site/src/index.md
+            -e "s|{{RELEASE_URL}}|https://github.com/$REPO/releases/tag/$TAG|g"
+          if grep -rn '{{' docs/site/src --include='*.md'; then
+            echo "::error::a placeholder was left in the site pages"
+            exit 1
+          fi
       - name: Build the site
         run: mdbook build docs/site
       - uses: actions/upload-pages-artifact@v5

@@ -18,6 +18,7 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 | `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages | `pr.yml` |
 | `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS |
 | `cargo xtask affected --base origin/main` | prints the affected packages (`*` means all) | used by `check --pr` |
+| `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
 
 Affected packages (T-22): `crates/core` selects `oxysol-core`, `oxysol-tui` and `oxysol`;
 `crates/tui` selects `oxysol-tui` and `oxysol`; `src/` and `tests/` select `oxysol`; `xtask/`
@@ -74,7 +75,9 @@ gh workflow run release.yml --ref release
 5. `publish` writes `SHA256SUMS`, creates the tag on the tested commit and a GitHub Release with
    every archive and `SHA256SUMS`. It is a pre-release unless `stable` is set.
 6. `site` builds `docs/site` with a pinned mdBook (v0.4.52, SHA-256 checked), inserts the tag and the
-   release link, and deploys GitHub Pages.
+   release link into every page (`{{VERSION}}` and `{{RELEASE_URL}}`, English and Polish, and fails if a
+   placeholder is left), and deploys GitHub Pages. The link points at the release that this run just
+   published, so it is always the newest build, pre-releases included (`/releases/latest` ignores them).
 
 Tags: dev `v<version>-dev.<n>`, stable `v<version>`, both from `metadata.toml` (T-21).
 
@@ -86,6 +89,32 @@ gh workflow run release.yml --ref release -f stable=true
 
 When the run is skipped at `tag` or fails before `publish`, `publish` and `site` do not run, so
 the site keeps the content of the last successful run.
+
+## Player site
+
+The site is an mdBook in `docs/site`: English pages in `docs/site/src`, Polish pages in
+`docs/site/src/pl` with the same file names, one `SUMMARY.md` with a Polish part, and one build. Every page
+starts with a link to its twin in the other language. Text lives in the pages; the release link is injected by
+the `site` job. To check the site locally, install mdBook (the release binary of the pinned version, or
+`cargo install mdbook --version 0.4.52 --locked`) and run `mdbook build docs/site`. Locally the placeholders
+`{{VERSION}}` and `{{RELEASE_URL}}` stay as they are.
+
+### Screenshots
+
+`cargo xtask screenshots` renders scripted scenes of the real application: it builds an `App` with in-memory
+services, drives it with key presses on a Ratatui `TestBackend` terminal and writes each frame buffer as SVG
+(background runs as rectangles, glyphs as text with an explicit x per glyph, box and block characters as paths so
+they join in any font). It writes both languages (`en-US` and `pl-PL`) to `docs/site/src/img/en/` and
+`docs/site/src/img/pl/`: the `menu`, `klondike`, `spider`, `freecell`, `pyramid`, `settings`, `help` and `guide`
+screens, the board in each theme (`theme-dark`, `theme-light`, `theme-high-contrast`, `theme-monokai`,
+`theme-dracula`) and three animations (`anim-move`, `anim-auto-finish`, `anim-win`). An animation is one SVG:
+the first frame, then for each next frame only the changed runs of cells, shown by CSS keyframes in a loop (with
+`prefers-reduced-motion` it shows the last frame and does not move).
+
+The scenes use fixed seeds and a fixed clock, so the output does not change between runs. Run the command after any
+change to the look of the game, and commit the files it writes. The scene scripts are in `xtask/src/screenshots/`
+(`stills.rs`, `motion.rs`); alternative texts are in `labels.rs`. The command depends on `oxysol-tui`,
+`oxysol-core` and `ratatui`; the TUI exposes nothing extra for it.
 
 ## Versions (T-21)
 
