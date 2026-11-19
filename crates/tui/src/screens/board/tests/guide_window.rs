@@ -96,7 +96,7 @@ fn g_opens_the_guide_as_a_window_with_every_section_on_narrow_screens() {
             "Goal",
             "Build the four",
             "Keys",
-            "Arrows",
+            "► Arrows",
             "g/Esc: close",
         ];
         for needle in needles {
@@ -230,29 +230,35 @@ fn the_do_row_keeps_the_guide_key_while_cards_are_carried() {
     assert!(carrying.contains("g: guide"), "{carrying}");
 }
 
-#[test]
-fn every_narrow_size_locale_and_glyph_mode_draws_the_window_inside_the_screen() {
+fn every_narrow_screen() -> Vec<(Variant, (u16, u16), Locale, TerminalCaps)> {
+    let mut all = Vec::new();
     for size in NARROW {
         for locale in Locale::ALL {
             for caps in [TRUE_COLOR, PLAIN] {
-                for variant in GAMES {
-                    let mut h = shown(variant, size, locale, caps);
-                    h.type_char('g');
-                    let lines = h.lines();
-                    assert_eq!(lines.len(), usize::from(size.1));
-                    let plain_english = !caps.unicode && locale == Locale::EnUs;
-                    for ch in lines.concat().chars() {
-                        assert!(ch.is_ascii() || is_wgl4(ch), "{size:?} {variant:?}: {ch:?}");
-                        assert!(!plain_english || ch.is_ascii(), "{size:?}: {ch:?}");
-                    }
-                    let title = match locale {
-                        Locale::EnUs => "Guide",
-                        Locale::PlPl => "Przewodnik",
-                    };
-                    assert!(lines.concat().contains(title), "{size:?} {variant:?}");
-                }
+                all.extend(GAMES.map(|variant| (variant, size, locale, caps)));
             }
         }
+    }
+    all
+}
+
+#[test]
+fn every_narrow_size_locale_and_glyph_mode_draws_the_window_inside_the_screen() {
+    for (variant, size, locale, caps) in every_narrow_screen() {
+        let mut h = shown(variant, size, locale, caps);
+        h.type_char('g');
+        let lines = h.lines();
+        assert_eq!(lines.len(), usize::from(size.1));
+        let plain_english = !caps.unicode && locale == Locale::EnUs;
+        for ch in lines.concat().chars() {
+            assert!(ch.is_ascii() || is_wgl4(ch), "{size:?} {variant:?}: {ch:?}");
+            assert!(!plain_english || ch.is_ascii(), "{size:?}: {ch:?}");
+        }
+        let title = match locale {
+            Locale::EnUs => "Guide",
+            Locale::PlPl => "Przewodnik",
+        };
+        assert!(lines.concat().contains(title), "{size:?} {variant:?}");
     }
     set_locale(Locale::EnUs);
 }
@@ -287,11 +293,4 @@ fn a_tall_panel_keeps_every_section() {
     for needle in ["Goal", "Keys", "Mouse", "Legend"] {
         assert!(text.contains(needle), "{needle}");
     }
-}
-
-#[test]
-fn the_window_marks_the_keys_that_work_now() {
-    let mut h = english((100, 30));
-    h.type_char('g');
-    assert!(h.text().contains("► Arrows"), "{}", h.text());
 }
