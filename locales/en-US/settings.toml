@@ -12,6 +12,7 @@ cues = "Sound cues"
 music = "Music"
 volume = "Volume"
 guide_panel = "Guide panel"
+auto_finish = "Auto-finish"
 line = "{label}: {value}"
 
 [value]

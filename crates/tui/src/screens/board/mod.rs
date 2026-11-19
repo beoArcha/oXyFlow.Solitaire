@@ -7,6 +7,7 @@ mod commands;
 mod controls;
 mod counters;
 mod cursor;
+mod finish;
 mod guidance;
 mod header;
 mod marks;
@@ -29,6 +30,7 @@ use ratatui::layout::Rect;
 
 use self::choices::Choice;
 use self::cursor::Cursor;
+use self::finish::Finishing;
 use self::header::Facts;
 use self::mouse::Pointer;
 use super::{Effect, ViewCtx};
@@ -71,6 +73,10 @@ pub struct BoardScreen {
     hint_note: bool,
     undo_allowed: bool,
     guide_panel: bool,
+    auto_finish: bool,
+    forced: Option<Vec<Move>>,
+    finishing: Option<Finishing>,
+    declined: bool,
     cues: Vec<SoundCue>,
     dirty: bool,
     screen: Rect,
@@ -107,6 +113,10 @@ impl Default for BoardScreen {
             hint_note: false,
             undo_allowed: true,
             guide_panel: true,
+            auto_finish: true,
+            forced: None,
+            finishing: None,
+            declined: false,
             cues: Vec::new(),
             dirty: false,
             screen: DEFAULT_SCREEN,
@@ -137,6 +147,7 @@ impl BoardScreen {
         self.game_id = id;
         self.clock = GameClock::stopped(elapsed);
         self.clock.resume(now);
+        self.finishing = None;
         self.cues.clear();
         self.pointer = Pointer::default();
         self.copy_note = None;
@@ -162,6 +173,7 @@ impl BoardScreen {
         session.restart();
         self.cursor = Cursor::initial(&session.game().piles());
         self.pointer = Pointer::default();
+        self.finishing = None;
         self.clock = GameClock::stopped(Duration::ZERO);
         self.clock.resume(now);
         self.settle();
@@ -246,6 +258,7 @@ impl BoardScreen {
     /// Handles a key press mapped to `action`; the effect is for the application to apply.
     pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         self.guide_panel = ctx.settings.guide_panel;
+        self.auto_finish = ctx.settings.auto_finish;
         match action {
             Some(Action::Guide) => toggle_guide(ctx),
             Some(Action::FocusNext) => {
@@ -305,6 +318,7 @@ impl BoardScreen {
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         self.screen = area;
         self.guide_panel = ctx.settings.guide_panel;
+        self.auto_finish = ctx.settings.auto_finish;
         view::draw(frame, area, self, ctx);
     }
 }
