@@ -39,7 +39,11 @@ fn direct_steps_are_the_engine_moves() {
             .into_iter()
             .map(|mv| normalized(&position, mv))
             .collect();
-        same_moves(model, engine, &format!("seed {seed} after {}", history.len()));
+        same_moves(
+            model,
+            engine,
+            &format!("seed {seed} after {}", history.len()),
+        );
     });
 }
 
@@ -55,8 +59,15 @@ fn spades_behind_cells(cells: usize) -> Vec<PileSnapshot> {
         pile(PileRef::Foundation(2), "", &run_of('H', 1)),
         pile(PileRef::Tableau(0), "", "AS 2S"),
     ];
-    for (i, card) in ["7S", "8S", "9S", "10S", "JS", "QS", "KS"].iter().enumerate() {
-        piles.push(pile(PileRef::Tableau(u8::try_from(i + 1).unwrap()), "", card));
+    for (i, card) in ["7S", "8S", "9S", "10S", "JS", "QS", "KS"]
+        .iter()
+        .enumerate()
+    {
+        piles.push(pile(
+            PileRef::Tableau(u8::try_from(i + 1).unwrap()),
+            "",
+            card,
+        ));
     }
     for (i, card) in ["3S", "4S", "5S", "6S"].iter().take(cells).enumerate() {
         piles.push(pile(PileRef::Cell(u8::try_from(i).unwrap()), "", card));

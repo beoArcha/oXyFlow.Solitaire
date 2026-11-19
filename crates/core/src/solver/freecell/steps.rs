@@ -94,7 +94,8 @@ impl Position {
         self.direct(out);
         out.retain(|step| match *step {
             Step::Run { from, to, count } => {
-                !(self.len[usize::from(to)] == 0 && usize::from(count) == self.len[usize::from(from)])
+                !(self.len[usize::from(to)] == 0
+                    && usize::from(count) == self.len[usize::from(from)])
             }
             _ => true,
         });

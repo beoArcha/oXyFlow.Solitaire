@@ -136,7 +136,12 @@ impl Position {
 
     pub(super) fn key(&self) -> u128 {
         let columns = (0..COLUMNS)
-            .map(|i| column_hash(u8::try_from(self.hidden[i]).unwrap_or(0), &self.cols[i][..self.len[i]]))
+            .map(|i| {
+                column_hash(
+                    u8::try_from(self.hidden[i]).unwrap_or(0),
+                    &self.cols[i][..self.len[i]],
+                )
+            })
             .collect();
         let mut hash = PositionHash::new();
         feed_unordered(&mut hash, columns);

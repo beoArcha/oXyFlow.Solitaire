@@ -42,7 +42,10 @@ pub(in crate::solver) fn no_finish(_: &[Move]) -> Option<Vec<Move>> {
 
 /// Along random playouts of `variant`: every step of the model, applied to the model, gives the
 /// moves that are legal on the engine and lead to the position the model computed.
-pub(in crate::solver) fn check_steps<M: Model>(variant: Variant, make: impl Fn(&dyn Game) -> Option<M>) {
+pub(in crate::solver) fn check_steps<M: Model>(
+    variant: Variant,
+    make: impl Fn(&dyn Game) -> Option<M>,
+) {
     walk(variant, |game, seed, history| {
         let position = make(game).unwrap();
         let mut steps = Vec::new();

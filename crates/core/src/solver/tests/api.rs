@@ -45,10 +45,16 @@ fn known_winnable_deals_are_won_with_verified_moves() {
         let Verdict::Winnable { moves } = solve(variant, seed, budget(variant)) else {
             panic!("{variant:?} seed {seed} should be winnable");
         };
-        assert!(replays_to_win(variant, seed, &moves), "{variant:?} seed {seed}");
+        assert!(
+            replays_to_win(variant, seed, &moves),
+            "{variant:?} seed {seed}"
+        );
         let mut game = deal(variant, seed);
         for mv in &moves {
-            assert!(!game.is_won(), "{variant:?} seed {seed}: moves continue after the win");
+            assert!(
+                !game.is_won(),
+                "{variant:?} seed {seed}: moves continue after the win"
+            );
             game.apply(*mv).unwrap();
         }
         assert!(game.is_won());
@@ -76,7 +82,10 @@ fn a_relaxed_pyramid_deal_can_be_proven_unwinnable() {
 fn the_budget_is_exact_and_a_tiny_one_gives_unknown() {
     for (variant, seed, nodes) in WINNABLE {
         let enough = solve_report(variant, seed, SolveBudget::nodes(nodes));
-        assert!(matches!(enough.verdict, Verdict::Winnable { .. }), "{variant:?} seed {seed}");
+        assert!(
+            matches!(enough.verdict, Verdict::Winnable { .. }),
+            "{variant:?} seed {seed}"
+        );
         assert_eq!(enough.nodes, nodes, "{variant:?} seed {seed}");
         let short = solve_report(variant, seed, SolveBudget::nodes(nodes - 1));
         assert_eq!(short.verdict, Verdict::Unknown, "{variant:?} seed {seed}");
@@ -131,6 +140,9 @@ fn replay_rejects_lists_that_do_not_win() {
 #[test]
 fn default_budgets_are_set_for_every_variant() {
     for variant in Variant::ALL {
-        assert!(SolveBudget::default_for(variant).nodes >= 100_000, "{variant:?}");
+        assert!(
+            SolveBudget::default_for(variant).nodes >= 100_000,
+            "{variant:?}"
+        );
     }
 }

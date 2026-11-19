@@ -168,7 +168,7 @@ impl Position {
         self.slot[suit]
     }
 
-    pub(super) fn to_foundation(&mut self, card: Face) {
+    pub(super) fn place_home(&mut self, card: Face) {
         let own = usize::from(suit(card));
         if self.found[own] == 0 {
             self.slot[own] = self.foundation_index(card);
@@ -176,7 +176,7 @@ impl Position {
         self.found[own] += 1;
     }
 
-    pub(super) fn from_foundation(&mut self, suit: usize) {
+    pub(super) fn lift_home(&mut self, suit: usize) {
         self.found[suit] = self.found[suit].saturating_sub(1);
     }
 
@@ -215,7 +215,12 @@ impl Position {
 
     pub(super) fn key(&self) -> u128 {
         let columns = (0..COLUMNS)
-            .map(|i| column_hash(u8::try_from(self.hidden[i]).unwrap_or(0), &self.cols[i][..self.len[i]]))
+            .map(|i| {
+                column_hash(
+                    u8::try_from(self.hidden[i]).unwrap_or(0),
+                    &self.cols[i][..self.len[i]],
+                )
+            })
             .collect();
         let mut hash = PositionHash::new();
         feed_unordered(&mut hash, columns);

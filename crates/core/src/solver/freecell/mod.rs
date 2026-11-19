@@ -59,7 +59,7 @@ impl Position {
             if self.foundation_accepts(card) && self.is_safe(card) {
                 moves.push(self.foundation_move(tableau(column), card));
                 self.pop(column);
-                self.to_foundation(card);
+                self.place_home(card);
                 return true;
             }
         }
@@ -68,7 +68,7 @@ impl Position {
             if card != NONE && self.foundation_accepts(card) && self.is_safe(card) {
                 moves.push(self.foundation_move(cell(index), card));
                 self.cells[index] = NONE;
-                self.to_foundation(card);
+                self.place_home(card);
                 return true;
             }
         }
@@ -104,7 +104,7 @@ impl Position {
                 if let Some(card) = self.top(from) {
                     moves.push(self.foundation_move(tableau(from), card));
                     self.pop(from);
-                    self.to_foundation(card);
+                    self.place_home(card);
                 }
             }
             Step::UpCell { cell: index } => {
@@ -112,7 +112,7 @@ impl Position {
                 let card = self.cells[index];
                 moves.push(self.foundation_move(cell(index), card));
                 self.cells[index] = NONE;
-                self.to_foundation(card);
+                self.place_home(card);
             }
         }
     }

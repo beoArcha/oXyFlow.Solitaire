@@ -79,9 +79,7 @@ pub fn solve_report(variant: Variant, seed: u64, budget: SolveBudget) -> Report 
     let searched = search_deal(variant, seed, budget);
     let nodes = searched.nodes;
     let verdict = match searched.outcome {
-        Outcome::Won(moves) if replays_to_win(variant, seed, &moves) => {
-            Verdict::Winnable { moves }
-        }
+        Outcome::Won(moves) if replays_to_win(variant, seed, &moves) => Verdict::Winnable { moves },
         Outcome::Exhausted => Verdict::Unwinnable,
         Outcome::Won(_) | Outcome::OutOfBudget => Verdict::Unknown,
     };

@@ -48,7 +48,10 @@ impl Position {
 
     fn column_moves(&self, from: usize, out: &mut Vec<Step>) {
         let up = self.face_up(from);
-        if self.top(from).is_some_and(|top| self.foundation_accepts(top)) {
+        if self
+            .top(from)
+            .is_some_and(|top| self.foundation_accepts(top))
+        {
             out.push(Step::Up { from: index(from) });
         }
         for count in 1..=up {
@@ -139,7 +142,9 @@ impl Position {
 
     fn score_step(&self, step: Step) -> Option<u32> {
         match step {
-            Step::Run { from, to, count } => self.score_run(usize::from(from), usize::from(to), usize::from(count)),
+            Step::Run { from, to, count } => {
+                self.score_run(usize::from(from), usize::from(to), usize::from(count))
+            }
             Step::Up { from } => {
                 let from = usize::from(from);
                 let reveals = self.len[from] - self.hidden[from] == 1 && self.hidden[from] > 0;
@@ -170,6 +175,10 @@ impl Position {
             return Some(400);
         }
         let exposed = self.cols[from][self.len[from] - count - 1];
-        Some(if self.foundation_accepts(exposed) { 700 } else { 150 })
+        Some(if self.foundation_accepts(exposed) {
+            700
+        } else {
+            150
+        })
     }
 }

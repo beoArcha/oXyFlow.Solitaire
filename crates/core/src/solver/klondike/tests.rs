@@ -41,7 +41,11 @@ fn direct_steps_are_the_engine_moves() {
                 .filter(|&mv| mv != Move::Stock)
                 .map(|mv| normalized(&position, mv))
                 .collect();
-            same_moves(model, engine, &format!("{draw:?} seed {seed} after {}", history.len()));
+            same_moves(
+                model,
+                engine,
+                &format!("{draw:?} seed {seed} after {}", history.len()),
+            );
         });
     }
 }
@@ -62,7 +66,11 @@ fn blocked_spades() -> Vec<PileSnapshot> {
         pile(PileRef::Stock, "3S 4S 5S 6S 7S", ""),
     ];
     for (column, card) in ["KS", "QS", "JS", "10S", "9S", "8S"].iter().enumerate() {
-        piles.push(pile(PileRef::Tableau(u8::try_from(column + 1).unwrap()), "", card));
+        piles.push(pile(
+            PileRef::Tableau(u8::try_from(column + 1).unwrap()),
+            "",
+            card,
+        ));
     }
     piles
 }
@@ -89,7 +97,10 @@ fn a_free_column_turns_the_blocked_position_into_a_win() {
 
 #[test]
 fn aces_and_twos_are_safe_and_a_lone_high_card_is_not() {
-    let piles = vec![pile(PileRef::Tableau(0), "", "AS"), pile(PileRef::Tableau(1), "", "AD")];
+    let piles = vec![
+        pile(PileRef::Tableau(0), "", "AS"),
+        pile(PileRef::Tableau(1), "", "AD"),
+    ];
     let mut position = Position::from_piles(DrawCount::One, &piles).unwrap();
     let mut moves = Vec::new();
     position.settle(&mut moves);
@@ -113,11 +124,20 @@ fn aces_and_twos_are_safe_and_a_lone_high_card_is_not() {
 
 #[test]
 fn column_order_does_not_change_the_key() {
-    let a = vec![pile(PileRef::Tableau(0), "9C", "KS QH"), pile(PileRef::Tableau(1), "", "5D")];
-    let b = vec![pile(PileRef::Tableau(3), "9C", "KS QH"), pile(PileRef::Tableau(6), "", "5D")];
+    let a = vec![
+        pile(PileRef::Tableau(0), "9C", "KS QH"),
+        pile(PileRef::Tableau(1), "", "5D"),
+    ];
+    let b = vec![
+        pile(PileRef::Tableau(3), "9C", "KS QH"),
+        pile(PileRef::Tableau(6), "", "5D"),
+    ];
     let key = |piles: &[PileSnapshot]| Position::from_piles(DrawCount::One, piles).unwrap().key();
     assert_eq!(key(&a), key(&b));
-    let c = vec![pile(PileRef::Tableau(0), "9C", "KS QH"), pile(PileRef::Tableau(1), "", "5C")];
+    let c = vec![
+        pile(PileRef::Tableau(0), "9C", "KS QH"),
+        pile(PileRef::Tableau(1), "", "5C"),
+    ];
     assert_ne!(key(&a), key(&c));
 }
 

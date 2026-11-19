@@ -121,7 +121,7 @@ impl Position {
             .unwrap_or(0)
     }
 
-    pub(super) fn to_foundation(&mut self, card: Face) {
+    pub(super) fn place_home(&mut self, card: Face) {
         let own = usize::from(suit(card));
         if self.found[own] == 0 {
             self.slot[own] = self.foundation_index(card);

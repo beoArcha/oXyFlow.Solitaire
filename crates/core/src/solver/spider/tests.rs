@@ -40,7 +40,11 @@ fn direct_steps_are_the_engine_moves() {
                 .into_iter()
                 .map(|mv| normalized(&position, mv))
                 .collect();
-            same_moves(model, engine, &format!("{suits:?} seed {seed} after {}", history.len()));
+            same_moves(
+                model,
+                engine,
+                &format!("{suits:?} seed {seed} after {}", history.len()),
+            );
         });
     }
 }

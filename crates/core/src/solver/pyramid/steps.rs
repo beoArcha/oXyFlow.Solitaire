@@ -46,7 +46,10 @@ impl Position {
             available.push(Slot::Waste, value);
         }
         for at in (0..POSITIONS).filter(|&at| self.is_free(at)) {
-            available.push(Slot::Pyramid(u8::try_from(at).unwrap_or(0)), self.values[at]);
+            available.push(
+                Slot::Pyramid(u8::try_from(at).unwrap_or(0)),
+                self.values[at],
+            );
         }
         available
     }

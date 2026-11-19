@@ -1,6 +1,6 @@
 //! A 128-bit position hash for the visited-position sets. Two independent 64-bit lanes make an
 //! accidental collision between two different positions negligible for the node budgets used here
-//! (about 2^-90 per pair), which is what lets an exhausted search be reported as "unwinnable".
+//! (below 2^-80 for a million positions), which is what lets an exhausted search be reported as "unwinnable".
 
 use std::collections::HashSet;
 use std::hash::{BuildHasherDefault, Hasher};

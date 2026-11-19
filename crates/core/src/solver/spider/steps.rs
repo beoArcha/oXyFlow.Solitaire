@@ -75,7 +75,11 @@ impl Position {
             return None;
         }
         let joins = self.top(to).is_some_and(|top| suit(top) == suit(card));
-        let chain = if joins { self.run_len(to) + count } else { count };
+        let chain = if joins {
+            self.run_len(to) + count
+        } else {
+            count
+        };
         let reveals = start == self.hidden[from] && self.hidden[from] > 0;
         let breaks = start > self.hidden[from]
             && self.cols[from][start - 1] / 13 == card / 13

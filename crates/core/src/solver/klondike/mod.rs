@@ -55,7 +55,7 @@ impl Position {
         {
             moves.push(self.foundation_move(PileRef::Waste, card));
             self.talon.pop_waste();
-            self.to_foundation(card);
+            self.place_home(card);
             return true;
         }
         for column in 0..COLUMNS {
@@ -65,7 +65,7 @@ impl Position {
             if self.foundation_accepts(card) && self.is_safe(card) {
                 moves.push(self.foundation_move(tableau(column), card));
                 self.pop(column);
-                self.to_foundation(card);
+                self.place_home(card);
                 return true;
             }
         }
@@ -84,7 +84,7 @@ impl Position {
                 if let Some(card) = self.top(from) {
                     moves.push(self.foundation_move(tableau(from), card));
                     self.pop(from);
-                    self.to_foundation(card);
+                    self.place_home(card);
                 }
             }
             Step::Talon { draws, to } => self.play_talon(draws, to, moves),
@@ -93,7 +93,7 @@ impl Position {
                 if let Some(card) = self.foundation_top(suit) {
                     let from = PileRef::Foundation(self.foundation_slot(suit));
                     moves.push(transfer(from, tableau(usize::from(to)), 1));
-                    self.from_foundation(suit);
+                    self.lift_home(suit);
                     self.push(usize::from(to), card);
                 }
             }
@@ -111,7 +111,7 @@ impl Position {
         match to {
             Dest::Foundation => {
                 moves.push(self.foundation_move(PileRef::Waste, card));
-                self.to_foundation(card);
+                self.place_home(card);
             }
             Dest::Column(column) => {
                 moves.push(transfer(PileRef::Waste, tableau(usize::from(column)), 1));

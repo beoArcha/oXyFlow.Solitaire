@@ -61,7 +61,8 @@ impl Position {
 
     pub(super) fn work_left(&self) -> u32 {
         let home = i32::from(self.found.iter().sum::<u8>());
-        let full_cells = i32::try_from(self.cells.iter().filter(|&&c| c != NONE).count()).unwrap_or(0);
+        let full_cells =
+            i32::try_from(self.cells.iter().filter(|&&c| c != NONE).count()).unwrap_or(0);
         let empty = i32::try_from(self.empty_columns()).unwrap_or(0);
         let burying = i32::try_from(self.burying_cards()).unwrap_or(0);
         let blocking = i32::try_from(self.blocking_cards()).unwrap_or(0);
