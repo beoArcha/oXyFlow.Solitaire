@@ -18,12 +18,13 @@ mod persist;
 mod pyramid;
 mod recycle;
 mod restarts;
+mod run_wrap;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
 use ratatui::crossterm::event::KeyCode;
 
 use super::BoardScreen;
-use super::cursor::Cursor;
+use super::cursor::{Cursor, max_depth};
 use crate::audio::SoundCue;
 use crate::screens::Effect;
 use crate::storage::memory::MemoryStorage;
@@ -127,6 +128,15 @@ pub(super) fn pile_len(h: &Harness, pile: PileRef) -> usize {
         .iter()
         .find(|snapshot| snapshot.pile == pile)
         .map_or(0, |snapshot| snapshot.cards.len())
+}
+
+pub(super) fn run_len(h: &Harness, pile: PileRef) -> usize {
+    session(h)
+        .game()
+        .piles()
+        .iter()
+        .find(|snapshot| snapshot.pile == pile)
+        .map_or(1, max_depth)
 }
 
 pub(super) fn first_transfer(h: &Harness) -> Option<(PileRef, PileRef, u8)> {

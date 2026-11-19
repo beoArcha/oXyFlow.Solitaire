@@ -76,13 +76,34 @@ impl Cursor {
         deeper
     }
 
-    /// Lifts the focus by one card; `false` at the top card.
-    pub(super) fn shallower(&mut self) -> bool {
-        let shallower = self.depth > 1;
-        if shallower {
-            self.depth -= 1;
+    /// Grows the run by one card, or from the deepest card back to the top one. `false` when the
+    /// pile offers only one card.
+    pub(super) fn run_more(&mut self, snapshot: &PileSnapshot) -> bool {
+        let limit = max_depth(snapshot);
+        if limit <= 1 {
+            return false;
         }
-        shallower
+        self.depth = if self.depth < limit {
+            self.depth + 1
+        } else {
+            1
+        };
+        true
+    }
+
+    /// Shrinks the run by one card, or from the top card to the whole run. `false` when the pile
+    /// offers only one card.
+    pub(super) fn run_less(&mut self, snapshot: &PileSnapshot) -> bool {
+        if self.depth > 1 {
+            self.depth -= 1;
+            return true;
+        }
+        let limit = max_depth(snapshot);
+        if limit <= 1 {
+            return false;
+        }
+        self.depth = limit;
+        true
     }
 }
 

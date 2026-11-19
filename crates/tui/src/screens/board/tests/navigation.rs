@@ -66,8 +66,12 @@ fn up_reaches_deeper_into_a_column_and_down_comes_back() {
     h.type_char('-');
     assert_eq!(cursor(&h), (PileRef::Tableau(2), 2));
     h.press(KeyCode::Down);
-    h.press(KeyCode::Down);
     assert_eq!(cursor(&h), (PileRef::Tableau(2), 1));
+    h.press(KeyCode::Down);
+    assert_eq!(
+        cursor(&h),
+        (PileRef::Tableau(2), run_len(&h, PileRef::Tableau(2)))
+    );
 }
 
 #[test]
