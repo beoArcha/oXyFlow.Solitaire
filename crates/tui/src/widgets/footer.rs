@@ -72,21 +72,23 @@ impl FooterMap {
     }
 }
 
+/// One entry of a key line: the action and the localization key of the label it has on that
+/// screen. Each screen keeps its own table of these, so `Enter` reads `Open` in the menu and
+/// `Change` in the settings.
+pub type KeyHint = (Action, &'static str);
+
 /// The segments of a key line: each action as `key label`, separated by three spaces. Actions
 /// without a key are left out.
-pub fn key_segments(actions: &[Action]) -> Vec<Segment> {
-    let mut segments = Vec::with_capacity(actions.len() * 2);
-    for action in actions {
+pub fn key_segments(hints: &[KeyHint]) -> Vec<Segment> {
+    let mut segments = Vec::with_capacity(hints.len() * 2);
+    for (action, label) in hints {
         let Some(key) = primary_key(*action) else {
             continue;
         };
         if !segments.is_empty() {
             segments.push(Segment::plain("   "));
         }
-        segments.push(Segment::button(
-            *action,
-            format!("{key} {}", t(action.label_key())),
-        ));
+        segments.push(Segment::button(*action, format!("{key} {}", t(label))));
     }
     segments
 }
@@ -182,7 +184,10 @@ mod tests {
 
     #[test]
     fn key_segments_pair_each_key_with_its_label_and_separate_them() {
-        let segments = key_segments(&[Action::Select, Action::Back]);
+        let segments = key_segments(&[
+            (Action::Select, "help.action.select"),
+            (Action::Back, "help.action.back"),
+        ]);
         let texts: Vec<&str> = segments.iter().map(|s| s.text.as_str()).collect();
         assert_eq!(texts, ["Enter Select", "   ", "Esc Back"]);
         assert_eq!(segments[0].action, Some(Action::Select));

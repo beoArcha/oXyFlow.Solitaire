@@ -18,15 +18,16 @@ use crate::settings::Settings;
 use crate::storage::Outcome;
 use crate::storage::memory::{HistoryRow, MemoryStorage};
 use crate::test_support::{Harness, TRUE_COLOR};
+use crate::widgets::footer::KeyHint;
 
 const SIZE: (u16, u16) = (100, 30);
 
-fn harness(locale: Locale, history: Vec<HistoryRow>) -> Harness {
+pub(super) fn harness(locale: Locale, history: Vec<HistoryRow>) -> Harness {
     sized(locale, history, SIZE)
 }
 
 /// A harness of the given size.
-fn sized(locale: Locale, history: Vec<HistoryRow>, size: (u16, u16)) -> Harness {
+pub(super) fn sized(locale: Locale, history: Vec<HistoryRow>, size: (u16, u16)) -> Harness {
     let storage = MemoryStorage {
         settings: Some(Settings {
             locale,
@@ -49,7 +50,7 @@ fn played() -> HistoryRow {
 }
 
 /// What the player can observe: the screen, the modal, quitting and the drawn text.
-fn observed(h: &mut Harness) -> String {
+pub(super) fn observed(h: &mut Harness) -> String {
     let text = h.text();
     format!(
         "{:?}|{:?}|{}|{text}",
@@ -59,10 +60,10 @@ fn observed(h: &mut Harness) -> String {
     )
 }
 
-/// The drawn label of an action in a key line: its primary key and its label.
-fn key_label(action: Action) -> String {
+/// The drawn label of a key line entry: its primary key and the label of its screen.
+fn key_label((action, label): KeyHint) -> String {
     let key = primary_key(action).unwrap_or_default();
-    format!("{key} {}", t(action.label_key()))
+    format!("{key} {}", t(label))
 }
 
 /// Clicks each `(action, drawn text)` on a fresh harness made by `setup` and compares the result
@@ -92,7 +93,7 @@ fn assert_clicks_match_keys(
     }
 }
 
-fn each_locale(mut check: impl FnMut(Locale)) {
+pub(super) fn each_locale(mut check: impl FnMut(Locale)) {
     for locale in Locale::ALL {
         set_locale(locale);
         check(locale);
@@ -100,10 +101,10 @@ fn each_locale(mut check: impl FnMut(Locale)) {
     set_locale(Locale::EnUs);
 }
 
-fn buttons_of(actions: &[Action]) -> Vec<(Action, String)> {
-    actions
+fn buttons_of(hints: &[KeyHint]) -> Vec<(Action, String)> {
+    hints
         .iter()
-        .map(|action| (*action, key_label(*action)))
+        .map(|hint| (hint.0, key_label(*hint)))
         .collect()
 }
 
@@ -208,7 +209,7 @@ fn every_button_of_the_board_does_what_its_key_does() {
 #[test]
 fn a_button_under_the_pointer_is_drawn_reversed_and_only_that_one() {
     let mut h = harness(Locale::EnUs, Vec::new());
-    let text = key_label(Action::Quit);
+    let text = key_label((Action::Quit, "help.action.quit"));
     let Some((column, row)) = h.find(&text) else {
         panic!("{text:?} is not drawn");
     };
@@ -229,7 +230,7 @@ fn a_button_under_the_pointer_is_drawn_reversed_and_only_that_one() {
     assert!(!reversed(&mut h, column + 1));
     h.send(moved(column + 1));
     assert!(reversed(&mut h, column + 1));
-    let Some((help_column, _)) = h.find(&key_label(Action::Help)) else {
+    let Some((help_column, _)) = h.find(&key_label((Action::Help, "help.action.help"))) else {
         panic!("help is not drawn");
     };
     assert!(!reversed(&mut h, help_column + 1));

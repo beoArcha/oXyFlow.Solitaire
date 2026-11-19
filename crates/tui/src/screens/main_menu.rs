@@ -17,7 +17,7 @@ use crate::action::Action;
 use crate::app::{Modal, Screen};
 use crate::i18n::{t, tf};
 use crate::theme::Token;
-use crate::widgets::footer::{self, FooterMap};
+use crate::widgets::footer::{self, FooterMap, KeyHint};
 use crate::widgets::logo::logo;
 use crate::widgets::menu_list::MenuList;
 
@@ -50,7 +50,13 @@ fn items(has_saved_game: bool) -> Vec<Item> {
     items
 }
 
-pub(crate) const FOOTER: [Action; 4] = [Action::Select, Action::Back, Action::Quit, Action::Help];
+/// The key line of the item list. Esc is not shown: in the list it does nothing (it leaves the seed
+/// entry and the games of a seed, which have their own key line).
+pub(crate) const FOOTER: [KeyHint; 3] = [
+    (Action::Select, "menu.footer.open"),
+    (Action::Quit, "help.action.quit"),
+    (Action::Help, "help.action.help"),
+];
 
 fn label_key(item: Item) -> &'static str {
     match item {

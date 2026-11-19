@@ -31,3 +31,7 @@ error_out_of_range = "To ziarno jest za duże. Maksymalna wartość to 184467440
 
 [how_to_play]
 label = "Jak grać"
+
+[footer]
+open = "Otwórz"
+play = "Zagraj"

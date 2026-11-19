@@ -6,6 +6,7 @@
 mod board;
 mod focus;
 mod footer;
+mod footer_labels;
 
 use oxysol_core::{DrawCount, Variant};
 use ratatui::crossterm::event::KeyCode;

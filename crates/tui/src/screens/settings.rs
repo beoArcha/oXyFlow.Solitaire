@@ -20,9 +20,13 @@ use crate::app::Screen;
 use crate::i18n::t;
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::theme::Token;
-use crate::widgets::footer::{self, FooterMap};
+use crate::widgets::footer::{self, FooterMap, KeyHint};
 
-pub(crate) const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
+pub(crate) const FOOTER: [KeyHint; 3] = [
+    (Action::Select, "settings.footer.change"),
+    (Action::Back, "help.action.back"),
+    (Action::Help, "help.action.help"),
+];
 
 const HEADING_INDENT: &str = "  ";
 

@@ -19,11 +19,15 @@ use crate::mouse::{contains, left_press};
 use crate::settings::Settings;
 use crate::solver::slow_to_prove;
 use crate::theme::Token;
-use crate::widgets::footer::{self, FooterMap};
+use crate::widgets::footer::{self, FooterMap, KeyHint};
 use crate::widgets::menu_list::MenuList;
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
-pub(crate) const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
+pub(crate) const FOOTER: [KeyHint; 3] = [
+    (Action::Select, "menu.footer.play"),
+    (Action::Back, "help.action.back"),
+    (Action::Help, "help.action.help"),
+];
 
 fn difficulty_key(variant: Variant) -> &'static str {
     match variant {
