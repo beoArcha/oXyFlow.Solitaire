@@ -267,3 +267,103 @@ fn the_close_button_of_the_guide_window_closes_it_like_its_key() {
         assert!(h.app.modal().is_none(), "{locale:?}");
     });
 }
+
+/// The position of `text` on the first drawn row that also contains `line`.
+fn find_on_line(h: &mut Harness, line: &str, text: &str) -> Option<(u16, u16)> {
+    h.lines().iter().enumerate().find_map(|(row, drawn)| {
+        if !drawn.contains(line) {
+            return None;
+        }
+        let byte = drawn.find(text)?;
+        Some((
+            u16::try_from(drawn[..byte].chars().count()).ok()?,
+            u16::try_from(row).ok()?,
+        ))
+    })
+}
+
+/// Like [`assert_clicks_match_keys`], for buttons inside a window: each `(action, text, line)`
+/// is found on the drawn row that contains `line`.
+fn assert_window_buttons_match_keys(
+    locale: Locale,
+    setup: &dyn Fn(Locale) -> Harness,
+    buttons: &[(Action, String, String)],
+    context: &str,
+) {
+    for (action, text, line) in buttons {
+        let mut by_key = setup(locale);
+        let mut by_click = setup(locale);
+        let Some((column, row)) = find_on_line(&mut by_click, line, text) else {
+            panic!("{context} ({locale:?}): {text:?} is not drawn");
+        };
+        let Some(key) = primary_key_event(*action) else {
+            panic!("{context}: {action:?} has no key");
+        };
+        by_key.send(Input::Key(key));
+        by_click.click(column + 1, row);
+        assert_eq!(
+            observed(&mut by_click),
+            observed(&mut by_key),
+            "{context} ({locale:?}): clicking {text:?} differs from its key"
+        );
+    }
+}
+
+/// The main menu with the help window open on its keys tab.
+fn help_open(locale: Locale) -> Harness {
+    let mut h = harness(locale, Vec::new());
+    h.press(KeyCode::Char('?'));
+    h
+}
+
+/// The help window on its rules tab.
+fn rules_tab(locale: Locale) -> Harness {
+    let mut h = help_open(locale);
+    h.press(KeyCode::Tab);
+    h
+}
+
+/// The help window on its command line tab.
+fn command_line_tab(locale: Locale) -> Harness {
+    let mut h = rules_tab(locale);
+    h.press(KeyCode::Tab);
+    h
+}
+
+#[test]
+fn the_keys_tab_buttons_close_the_help_window_like_their_keys() {
+    each_locale(|locale| {
+        assert!(matches!(
+            help_open(locale).app.modal(),
+            Some(crate::app::Modal::Help)
+        ));
+        let line = t("help.overlay.close_rest").into_owned();
+        let buttons = [
+            (Action::Back, "Esc".to_owned(), line.clone()),
+            (Action::Select, "Enter".to_owned(), line),
+        ];
+        assert_window_buttons_match_keys(locale, &help_open, &buttons, "keys tab");
+    });
+}
+
+#[test]
+fn the_rules_tab_close_button_closes_the_help_window_like_its_key() {
+    each_locale(|locale| {
+        let close = tf("help.rules.footer_close", &[("back", "Esc")]);
+        let buttons = [(Action::Back, close.clone(), close)];
+        assert_window_buttons_match_keys(locale, &rules_tab, &buttons, "rules tab");
+    });
+}
+
+#[test]
+fn the_command_line_tab_buttons_act_like_their_keys() {
+    each_locale(|locale| {
+        let close = tf("help.command_line.footer_close", &[("back", "Esc")]);
+        let tab = tf("help.command_line.footer_tab", &[("key", "Tab")]);
+        let buttons = [
+            (Action::FocusNext, tab, close.clone()),
+            (Action::Back, close.clone(), close),
+        ];
+        assert_window_buttons_match_keys(locale, &command_line_tab, &buttons, "command line tab");
+    });
+}

@@ -168,7 +168,7 @@ fn help_lists_every_binding_and_the_gestures_in_a_100_by_30_window() {
                 assert!(text.contains(&row.text), "{}", row.text);
             }
         }
-        assert!(text.contains(&crate::i18n::t("help.overlay.help_footer").into_owned()));
+        assert!(text.contains(&crate::i18n::t("help.overlay.close_rest").into_owned()));
         assert!(text.contains('╚'));
     }
     i18n::set_locale(Locale::EnUs);

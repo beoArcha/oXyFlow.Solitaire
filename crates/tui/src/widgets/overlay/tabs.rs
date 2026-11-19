@@ -132,18 +132,7 @@ pub fn draw_top_tabs(frame: &mut Frame, row: Rect, current: HelpTab, ctx: &ViewC
     }
 }
 
-/// Draws the footer of a scrolling tab: `hints` on the left and the visible range on the right.
-pub fn draw_footer(
-    frame: &mut Frame,
-    row: Rect,
-    hints: String,
-    shown: (usize, usize, usize),
-    ctx: &ViewCtx<'_>,
-) {
-    draw_footer_buttons(frame, row, &[Segment::plain(hints)], shown, ctx);
-}
-
-/// Like [`draw_footer`], with the hints as segments: the buttons among them are returned.
+/// Draws the footer of a scrolling tab: the segments on the left, the visible range on the right.
 pub fn draw_footer_buttons(
     frame: &mut Frame,
     row: Rect,

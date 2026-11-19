@@ -52,12 +52,14 @@ continue = "Kontynuuj"
 new_game = "Nowa gra"
 menu = "Menu"
 win_time = "Czas: {time}"
-help_footer = "Esc lub Enter zamyka to okno."
+close_or = " lub "
+close_rest = " zamyka to okno."
 
 [rules]
 title = "Jak grać"
 close = "Zamknij"
-footer = "{left}/{right}: gra   {up}/{down}/PgUp/PgDn: przewijanie   {back}: zamknij"
+footer_move = "{left}/{right}: gra   {up}/{down}/PgUp/PgDn: przewijanie"
+footer_close = "{back}: zamknij"
 position = "{from}-{to} / {total}"
 
 [tab]
@@ -66,4 +68,6 @@ rules = "Zasady"
 command_line = "Wiersz poleceń"
 
 [command_line]
-footer = "Tab: następna zakładka   {up}/{down}/PgUp/PgDn: przewijanie   {back}: zamknij"
+footer_tab = "{key}: następna zakładka"
+footer_move = "{up}/{down}/PgUp/PgDn: przewijanie"
+footer_close = "{back}: zamknij"

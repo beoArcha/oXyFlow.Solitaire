@@ -109,15 +109,13 @@ pub fn draw(
         (_, Some(text)) => {
             let geometry = text.geometry(area);
             text.draw(frame, &geometry, ctx);
+            FooterMap::default()
         }
         (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
         (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),
-        (Modal::Guide(state), None) => {
-            return guide_window::draw(frame, area, state, board, ctx);
-        }
+        (Modal::Guide(state), None) => guide_window::draw(frame, area, state, board, ctx),
         (_, None) => help::draw(frame, area, ctx),
     }
-    FooterMap::default()
 }
 
 fn step_focus(modal: &mut Modal, forward: bool) -> bool {
