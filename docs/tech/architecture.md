@@ -260,6 +260,8 @@ pub struct NullClipboard;                                // every copy fails wit
   `{ variant, seed: Option<u64>, undo_allowed: bool }`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, `audio_status`, `sound_styles`, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
+  each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
+  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `Enter` Change).
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
   character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.

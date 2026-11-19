@@ -76,3 +76,6 @@ no_device = "Dźwięk jest niedostępny: nie znaleziono działającego urządzen
 remote = "Dźwięk jest niedostępny: sesja zdalna."
 not_built = "Ta wersja programu nie zawiera obsługi dźwięku."
 style_failed = "Dźwięk jest niedostępny: nie można wczytać wybranego stylu dźwięku."
+
+[footer]
+change = "Zmień"
