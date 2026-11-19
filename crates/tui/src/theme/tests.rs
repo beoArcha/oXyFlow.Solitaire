@@ -18,6 +18,27 @@ fn every_text_pair_reaches_the_theme_target() {
     }
 }
 
+/// Pairs that may stay below 3:1 in one theme. High Contrast keeps its black field: its white text
+/// on `Table` must reach 7:1, which caps the luminance of `Table` at 0.1, while the field must
+/// reach 3:1 against the black `Background`, which needs at least 0.1. Only a light field with dark
+/// text would fix both, and that also moves `BorderFocus`, which dialogs use on the black `Surface`.
+/// See `docs/tech/ui-inventory.md` §1.4 and §7.1.
+const GRAPHIC_GAPS: [(ThemeId, Token, Token); 1] =
+    [(ThemeId::HighContrast, Token::Table, Token::Background)];
+
+#[test]
+fn every_graphic_pair_reaches_three_to_one() {
+    for id in ThemeId::ALL {
+        for (fg, bg) in GRAPHIC_PAIRS {
+            if GRAPHIC_GAPS.contains(&(id, fg, bg)) {
+                continue;
+            }
+            let ratio = contrast_ratio(rgb(id, fg), rgb(id, bg));
+            assert!(ratio >= 3.0, "{id:?}: {fg:?} on {bg:?} is {ratio}");
+        }
+    }
+}
+
 #[test]
 fn red_and_black_cards_differ_in_every_variant() {
     for id in ThemeId::ALL {

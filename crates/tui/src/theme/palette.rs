@@ -135,6 +135,17 @@ pub const TEXT_PAIRS: [(Token, Token); 15] = [
     (Token::AuraCarry, Token::Table),
 ];
 
+/// Graphics that carry meaning on the felt or on the screen edge; each must reach 3:1 (WCAG 1.4.11).
+pub const GRAPHIC_PAIRS: [(Token, Token); 7] = [
+    (Token::BorderFocus, Token::Table),
+    (Token::CardBack, Token::Table),
+    (Token::Slot, Token::Table),
+    (Token::Target, Token::Table),
+    (Token::Selection, Token::Table),
+    (Token::Hint, Token::Table),
+    (Token::Table, Token::Background),
+];
+
 /// Every token of one theme.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Palette {
