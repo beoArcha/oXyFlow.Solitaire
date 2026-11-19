@@ -874,3 +874,23 @@ Rules for the whole phase:
 - **Acceptance:** tests for switching by arrows and by the list, keyboard and mouse, the tooltip on hover
   and on focus, the Tab order, persistence, the ASCII/16-color fallback; renders of the corner and the
   open list at 100 × 30 and 130 × 40 in both locales.
+
+### P3-38 — Run selection wraps around: Down or `-` on the top card selects the whole run
+
+- **Owner:** Haiku
+- **Depends on:** P3-26
+- **Files:** `crates/tui/src/screens/board/{commands,cursor,guidance}.rs`, the board tests, `locales/*/`
+  (help and guide texts only if a description changes), `docs/tech/architecture.md` if the cursor contract
+  is described there
+- **Scope:** owner request 2026-11-19: when a pile offers more than one card to take (a movable run),
+  choosing the run size is a ring, like a list index of -1. Today `+` / Up add a card and `-` / Down
+  remove one, and both stop at the ends. New rule: on the top card (depth 1), `-` or Down jumps to
+  the whole movable run (the deepest depth); at the deepest depth `+` jumps back to the top card
+  (Up keeps leaving the pile upwards as today, so the top row stays reachable). Down still leaves the
+  pile when the pile offers only one card, so moving from the top row to the columns is unchanged.
+  The guide panel and the `Do:` row list `-` as usable whenever the run has more than one card; the
+  `Now:` event names the new size (e.g. "5 cards"). Mouse is unchanged. Rules stay in the engine; the
+  depth limit comes from the existing `max_depth`.
+- **Acceptance:** tests on fixed deals: Down and `-` on the top card select the whole run, `+` at the
+  deepest depth returns to one card, Down on a one-card pile still moves to the pile below, and the
+  usable keys in the guidance; Klondike, Spider and FreeCell covered; both locales if texts change.
