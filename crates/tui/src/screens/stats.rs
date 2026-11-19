@@ -23,6 +23,7 @@ use crate::app::Screen;
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::storage::GameRecord;
 use crate::widgets::footer::FooterMap;
+use crate::widgets::scrollbar::{self, Metrics};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Button {
@@ -59,6 +60,8 @@ pub struct StatsScreen {
     buttons: Vec<(Button, Rect)>,
     rows: Vec<(usize, Rect)>,
     footer: FooterMap,
+    drag: Option<u16>,
+    track: Rect,
 }
 
 impl StatsScreen {
@@ -77,6 +80,8 @@ impl StatsScreen {
         self.stop = Stop::List;
         self.load_failed = false;
         self.notice = None;
+        self.drag = None;
+        self.track = Rect::default();
     }
 
     /// Shows that the history could not be read, instead of an empty history.
@@ -201,6 +206,15 @@ impl StatsScreen {
         if let Some(action) = wheel_action(event) {
             let delta = if action == Action::Up { -1 } else { 1 };
             self.move_selection(|list, len| list.step(delta, len));
+            return Effect::None;
+        }
+        let metrics = Metrics {
+            total: self.records.len(),
+            view: usize::from(self.track.height),
+            offset: self.list.offset(),
+        };
+        if let Some(line) = scrollbar::handle_mouse(event, self.track, metrics, &mut self.drag) {
+            self.move_selection(|list, len| list.scroll_to_offset(line, len));
             return Effect::None;
         }
         let Some(cell) = left_press(event) else {

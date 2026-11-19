@@ -3,11 +3,14 @@ mod math;
 mod render;
 mod restarts;
 mod screen;
+mod scrollbar;
 mod support;
 
 use oxysol_core::{DrawCount, Variant};
 
 use super::format::{format_time, format_utc, history_header, history_row};
+use crate::glyphs::Glyphs;
+use crate::settings::GlyphMode;
 use crate::storage::{GameCounters, GameId, GameRecord, Outcome};
 
 pub const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
@@ -53,8 +56,9 @@ fn times_are_m_ss_then_h_mm_ss_and_unknown_is_a_dash() {
 
 #[test]
 fn a_history_row_lists_date_game_seed_result_time_and_moves() {
+    let glyphs = Glyphs::new(GlyphMode::Unicode);
     let won = record(2, KLONDIKE, Some(Outcome::Won), Some(90_000), Some(87));
-    let row = history_row(&won);
+    let row = history_row(&won, &glyphs, false);
     for part in [
         "2023-11-14 22:15",
         "Klondike, Draw 1",
@@ -66,13 +70,17 @@ fn a_history_row_lists_date_game_seed_result_time_and_moves() {
         assert!(row.contains(part), "{row:?} lacks {part:?}");
     }
     let open = record(3, KLONDIKE, None, None, None);
-    let row = history_row(&open);
+    let row = history_row(&open, &glyphs, false);
     assert!(row.contains("In progress"), "{row:?}");
-    assert_eq!(row.chars().count(), history_header().chars().count());
+    assert_eq!(
+        row.chars().count(),
+        history_header(&glyphs, false).chars().count()
+    );
 }
 
 #[test]
 fn rows_and_header_have_one_width() {
+    let glyphs = Glyphs::new(GlyphMode::Unicode);
     let long = record(
         7,
         Variant::Pyramid(oxysol_core::PyramidRules::Relaxed),
@@ -80,8 +88,10 @@ fn rows_and_header_have_one_width() {
         Some(3_725_000),
         Some(123),
     );
-    assert_eq!(
-        history_row(&long).chars().count(),
-        history_header().chars().count()
-    );
+    for short in [false, true] {
+        assert_eq!(
+            history_row(&long, &glyphs, short).chars().count(),
+            history_header(&glyphs, short).chars().count()
+        );
+    }
 }

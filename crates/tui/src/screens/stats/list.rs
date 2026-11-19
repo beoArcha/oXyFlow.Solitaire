@@ -22,6 +22,22 @@ impl ListState {
         self.page.max(1)
     }
 
+    /// The first visible row as of the last draw.
+    pub fn offset(&self) -> usize {
+        self.offset
+    }
+
+    /// Scrolls the window to `new_offset`, keeping the selection inside the visible range.
+    pub fn scroll_to_offset(&mut self, new_offset: usize, len: usize) {
+        let max_offset = len.saturating_sub(self.page());
+        self.offset = new_offset.min(max_offset);
+        let min_selected = self.offset;
+        let max_selected = (self.offset + self.page())
+            .saturating_sub(1)
+            .min(len.saturating_sub(1));
+        self.selected = self.selected.clamp(min_selected, max_selected);
+    }
+
     /// Selects `index`, or the last row when it is beyond the end.
     pub fn select(&mut self, index: usize, len: usize) {
         self.selected = index.min(len.saturating_sub(1));
@@ -107,5 +123,20 @@ mod tests {
         let mut list = ListState::default();
         list.select(2, 3);
         assert_eq!(list.visible(10, 3), 0..3);
+    }
+
+    #[test]
+    fn scroll_to_offset_clamps_offset_and_keeps_selection_inside() {
+        let mut list = ListState::default();
+        list.visible(5, 60);
+        list.scroll_to_offset(20, 60);
+        assert_eq!(list.offset(), 20);
+        assert_eq!(list.selected(), 20);
+        list.scroll_to_offset(10, 60);
+        assert_eq!(list.offset(), 10);
+        assert_eq!(list.selected(), 14);
+        list.scroll_to_offset(100, 60);
+        assert_eq!(list.offset(), 55);
+        assert_eq!(list.selected(), 55);
     }
 }

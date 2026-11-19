@@ -41,6 +41,13 @@ time = "Czas"
 moves = "Ruchy"
 restarts = "Od nowa"
 winnable = "Wygrana?"
+winnable_short = "?"
+
+[legend]
+winnable = "do wygrania"
+unwinnable = "nie do wygrania"
+unknown = "nieznane"
+unchecked = "niesprawdzone"
 
 [winnable]
 yes = "tak"

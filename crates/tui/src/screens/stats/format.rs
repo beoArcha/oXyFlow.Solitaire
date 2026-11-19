@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use super::summary::Summary;
 use crate::clock::format_elapsed;
+use crate::glyphs::Glyphs;
 use crate::i18n::t;
 use crate::screens::variant_label_key;
 use crate::solver::Proof;
@@ -19,31 +20,22 @@ const COLUMN_GAP: &str = " ";
 fn civil_date(days: i64) -> (i64, i64, i64) {
     let shifted = days + 719_468;
     let era = shifted.div_euclid(146_097);
-    let day_of_era = shifted.rem_euclid(146_097);
-    let year_of_era =
-        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
-    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
-    let month_index = (5 * day_of_year + 2) / 153;
-    let day = day_of_year - (153 * month_index + 2) / 5 + 1;
-    let month = if month_index < 10 {
-        month_index + 3
-    } else {
-        month_index - 9
-    };
-    (year_of_era + era * 400 + i64::from(month <= 2), month, day)
+    let doe = shifted.rem_euclid(146_097);
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mi = (5 * doy + 2) / 153;
+    let day = doy - (153 * mi + 2) / 5 + 1;
+    let mo = if mi < 10 { mi + 3 } else { mi - 9 };
+    (yoe + era * 400 + i64::from(mo <= 2), mo, day)
 }
 
 /// `YYYY-MM-DD HH:MM` in UTC for Unix milliseconds. The standard library cannot convert to the
 /// local time zone, so the history is shown in UTC and its heading says so.
 pub fn format_utc(unix_ms: i64) -> String {
     let days = unix_ms.div_euclid(MILLIS_PER_DAY);
-    let minutes = unix_ms.rem_euclid(MILLIS_PER_DAY) / MILLIS_PER_MINUTE;
-    let (year, month, day) = civil_date(days);
-    format!(
-        "{year:04}-{month:02}-{day:02} {:02}:{:02}",
-        minutes / 60,
-        minutes % 60
-    )
+    let m = unix_ms.rem_euclid(MILLIS_PER_DAY) / MILLIS_PER_MINUTE;
+    let (y, mo, d) = civil_date(days);
+    format!("{y:04}-{mo:02}-{d:02} {:02}:{:02}", m / 60, m % 60)
 }
 
 /// `m:ss` or `h:mm:ss`; `-` when unknown.
@@ -67,14 +59,37 @@ fn outcome_label(outcome: Option<Outcome>) -> String {
     t(key).into_owned()
 }
 
-fn winnable_label(proof: Option<Proof>) -> String {
-    let key = match proof {
+fn winnable_label(proof: Option<Proof>) -> &'static str {
+    match proof {
         Some(Proof::Winnable) => "stats.winnable.yes",
         Some(Proof::Unwinnable) => "stats.winnable.no",
         Some(Proof::Unknown) => "stats.winnable.unknown",
         None => "stats.winnable.unchecked",
-    };
-    t(key).into_owned()
+    }
+}
+
+fn winnable_cell(proof: Option<Proof>, glyphs: &Glyphs, short: bool) -> String {
+    let mark = glyphs.proof_mark(proof);
+    if short {
+        mark.to_owned()
+    } else {
+        format!("{mark} {}", t(winnable_label(proof)))
+    }
+}
+
+/// The one-line legend under the history list, explaining the winnable signs.
+pub fn legend_line(glyphs: &Glyphs) -> String {
+    let items = [
+        (glyphs.proof_winnable, t("stats.legend.winnable")),
+        (glyphs.proof_unwinnable, t("stats.legend.unwinnable")),
+        (glyphs.proof_unknown, t("stats.legend.unknown")),
+        (glyphs.proof_unchecked, t("stats.legend.unchecked")),
+    ];
+    items
+        .into_iter()
+        .map(|(glyph, text)| format!("{glyph} {text}"))
+        .collect::<Vec<_>>()
+        .join("   ")
 }
 
 fn variant_label(variant: Variant) -> String {
@@ -166,11 +181,13 @@ fn summary_header(with_clean: bool) -> Vec<String> {
         "stats.summary.streak",
         "stats.summary.longest",
     ]);
-    keys.iter().map(|key| t(key).into_owned()).collect()
+    keys.into_iter().map(|key| t(key).into_owned()).collect()
 }
 
 /// The narrowest terminal that has room for the longest-streak column of the summary.
 pub const LONGEST_STREAK_MIN_WIDTH: u16 = 110;
+/// The narrowest terminal that has room for the winnable text column beside the mark.
+pub const WINNABLE_TEXT_MIN_WIDTH: u16 = 110;
 
 /// The header and the rows of the summary table, padded to one width per column. Wins without a
 /// restart get a column beside the wins once a game without undo has finished. The longest-streak
@@ -193,7 +210,7 @@ pub fn summary_lines(summaries: &[Summary], show_mode: bool, with_longest: bool)
 
 /// The widest possible cell of each history column, so that the columns keep their place while
 /// the list scrolls: the longest variant name, outcome label, time and count.
-fn history_floor() -> Vec<String> {
+fn history_floor(glyphs: &Glyphs, short: bool) -> Vec<String> {
     let outcomes = [Some(Outcome::Won), Some(Outcome::Abandoned), None].map(outcome_label);
     let proofs = [
         Some(Proof::Winnable),
@@ -201,7 +218,7 @@ fn history_floor() -> Vec<String> {
         Some(Proof::Unknown),
         None,
     ]
-    .map(winnable_label);
+    .map(|p| winnable_cell(p, glyphs, short));
     let widest = |texts: Vec<String>| texts.into_iter().max_by_key(|text| char_width(text));
     vec![
         "0000-00-00 00:00".to_owned(),
@@ -215,28 +232,33 @@ fn history_floor() -> Vec<String> {
     ]
 }
 
-fn history_header_cells() -> Vec<String> {
+fn history_header_cells(short: bool) -> Vec<String> {
+    let winnable = if short {
+        "stats.history.winnable_short"
+    } else {
+        "stats.history.winnable"
+    };
     [
         "stats.history.date",
         "stats.history.variant",
         "stats.history.seed",
-        "stats.history.winnable",
+        winnable,
         "stats.history.outcome",
         "stats.history.time",
         "stats.history.moves",
         "stats.history.restarts",
     ]
-    .iter()
+    .into_iter()
     .map(|key| t(key).into_owned())
     .collect()
 }
 
-fn history_cells(record: &GameRecord) -> Vec<String> {
+fn history_cells(record: &GameRecord, glyphs: &Glyphs, short: bool) -> Vec<String> {
     vec![
         format_utc(record.started_at_ms),
         variant_label(record.variant),
         record.seed.to_string(),
-        winnable_label(record.proof),
+        winnable_cell(record.proof, glyphs, short),
         outcome_label(record.outcome),
         format_time(record.elapsed_ms),
         format_count(record.moves),
@@ -245,28 +267,27 @@ fn history_cells(record: &GameRecord) -> Vec<String> {
 }
 
 fn restarts_cell(record: &GameRecord) -> String {
-    if record.undo_allowed {
-        NONE.to_owned()
-    } else {
-        record.counters.restarts.to_string()
+    match record.undo_allowed {
+        true => NONE.to_owned(),
+        false => record.counters.restarts.to_string(),
     }
 }
 
-fn history_line(cells: &[String]) -> String {
-    let widths: Vec<usize> = history_floor()
+fn history_line(cells: &[String], glyphs: &Glyphs, short: bool) -> String {
+    let widths: Vec<usize> = history_floor(glyphs, short)
         .iter()
-        .zip(history_header_cells())
+        .zip(history_header_cells(short))
         .map(|(floor, header)| char_width(floor).max(char_width(&header)))
         .collect();
     pad_row(cells, &widths, 5)
 }
 
 /// The column header of the history list, without the focus marker columns.
-pub fn history_header() -> String {
-    history_line(&history_header_cells())
+pub fn history_header(glyphs: &Glyphs, short: bool) -> String {
+    history_line(&history_header_cells(short), glyphs, short)
 }
 
 /// One history row, without the focus marker columns.
-pub fn history_row(record: &GameRecord) -> String {
-    history_line(&history_cells(record))
+pub fn history_row(record: &GameRecord, glyphs: &Glyphs, short: bool) -> String {
+    history_line(&history_cells(record, glyphs, short), glyphs, short)
 }
