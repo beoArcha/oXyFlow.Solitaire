@@ -44,10 +44,10 @@ impl ConsoleDisplay for ConsoleWindow {
 
 impl Drop for ConsoleWindow {
     fn drop(&mut self) {
-        if self.entered {
-            if let Err(error) = switch(false) {
-                tracing::debug!(%error, "the console stayed in full screen at exit");
-            }
+        if self.entered
+            && let Err(error) = switch(false)
+        {
+            tracing::debug!(%error, "the console stayed in full screen at exit");
         }
     }
 }
