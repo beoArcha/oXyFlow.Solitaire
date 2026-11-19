@@ -1,13 +1,14 @@
 # Strings of the cli area.
 
 version = "oXySol {version}"
+version_legal = "Copyright (c) {year} {authors}. {license} License."
 help = """
 oXySol: Ultimate Office Solitaire for the terminal
 
 Usage: oxysol [options]
 
 Options:
-  --version                    print the version and exit
+  --version                    print the version and license, and exit
   --help                       print this help and exit
 
 Display:

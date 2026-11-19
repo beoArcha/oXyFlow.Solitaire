@@ -3,6 +3,7 @@ name = "oxysol-core"
 description = "Engine of oXySol: cards, decks and the rules of the solitaire games"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false

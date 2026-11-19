@@ -1,13 +1,14 @@
 # Strings of the cli area.
 
 version = "oXySol {version}"
+version_legal = "Copyright (c) {year} {authors}. Licencja {license}."
 help = """
 oXySol: najlepszy biurowy pasjans w terminalu
 
 Użycie: oxysol [opcje]
 
 Opcje:
-  --version                    wypisz wersję i zakończ
+  --version                    wypisz wersję i licencję oraz zakończ
   --help                       wypisz tę pomoc i zakończ
 
 Wygląd:

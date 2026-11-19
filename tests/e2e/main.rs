@@ -39,6 +39,22 @@ fn version_prints_the_version_and_exits_zero() {
     );
 }
 
+#[test]
+fn version_prints_the_copyright_and_the_licence_on_a_second_line() {
+    let home = tempfile::tempdir().ok();
+    let Some(home) = home else {
+        return;
+    };
+    let Some(output) = run_oxysol(&["--version"], home.path(), &[("LC_ALL", "en_US.UTF-8")]) else {
+        panic!("the binary did not start");
+    };
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let lines: Vec<&str> = stdout.lines().collect();
+    assert_eq!(lines.len(), 2, "stdout was {stdout:?}");
+    assert!(lines[1].contains(env!("CARGO_PKG_AUTHORS")), "{stdout:?}");
+    assert!(lines[1].contains(env!("CARGO_PKG_LICENSE")), "{stdout:?}");
+}
+
 fn metadata_version() -> String {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("metadata.toml");
     let text = std::fs::read_to_string(manifest).unwrap_or_default();
