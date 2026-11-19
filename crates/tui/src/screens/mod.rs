@@ -14,6 +14,7 @@ use std::time::Instant;
 
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
+use crate::action::Action;
 use crate::app::{Modal, Screen, SearchCommand};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::TerminalCaps;
@@ -56,6 +57,8 @@ pub enum Effect {
     /// Replace the settings; the application applies and saves them.
     Apply(Settings),
     Open(Modal),
+    /// Run a board action as its key would, after a dialog closed (a button of the moves window).
+    Board(Action),
     /// Open the "How to play" window on the game being played, or on Klondike.
     HowToPlay,
     /// Copy the seed to the clipboard and announce the result.

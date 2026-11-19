@@ -6,6 +6,8 @@ use oxysol_core::{Session, Variant};
 
 use super::deals::Origin;
 use super::{App, Modal, Screen};
+use crate::action::Action;
+use crate::input::primary_key_event;
 use crate::screens::Effect;
 use crate::screens::board::Start;
 use crate::settings::Settings;
@@ -27,6 +29,7 @@ impl App {
             Effect::Restart => self.restart_game(),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
+            Effect::Board(action) => self.run_board_action(action),
             Effect::HowToPlay => self.open_how_to_play(),
             Effect::CopySeed(seed) => self.copy_seed(seed),
             Effect::Quit => {
@@ -35,6 +38,16 @@ impl App {
             }
         }
         self.sync_board();
+    }
+
+    fn run_board_action(&mut self, action: Action) {
+        if self.screen != Screen::Board {
+            return;
+        }
+        if let Some(key) = primary_key_event(action) {
+            let effect = self.run(key, Some(action));
+            self.apply(effect);
+        }
     }
 
     pub(super) fn goto(&mut self, screen: Screen) {

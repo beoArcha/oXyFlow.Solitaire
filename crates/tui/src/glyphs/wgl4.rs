@@ -170,6 +170,8 @@ mod tests {
             ("edge", glyphs.edge),
             ("scroll_track", glyphs.scroll_track),
             ("scroll_thumb", glyphs.scroll_thumb),
+            ("entry_on", glyphs.entry_on),
+            ("entry_off", glyphs.entry_off),
         ] {
             for ch in symbol.chars() {
                 assert!(is_wgl4(ch), "{name} has non-WGL4 char {ch:?}");

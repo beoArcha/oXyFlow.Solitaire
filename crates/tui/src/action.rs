@@ -16,6 +16,7 @@ pub enum Action {
     Help,
     Rules,
     Guide,
+    Moves,
     Stock,
     QuickMove,
     RunMore,
@@ -33,7 +34,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 26] = [
+    pub const ALL: [Action; 27] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -51,6 +52,7 @@ impl Action {
         Action::Hint,
         Action::Finish,
         Action::Guide,
+        Action::Moves,
         Action::Restart,
         Action::NewGame,
         Action::Pause,
@@ -78,6 +80,7 @@ impl Action {
             Action::Help => "help.action.help",
             Action::Rules => "help.action.rules",
             Action::Guide => "help.action.guide",
+            Action::Moves => "help.action.moves",
             Action::Stock => "help.action.stock",
             Action::QuickMove => "help.action.quick_move",
             Action::RunMore => "help.action.run_more",

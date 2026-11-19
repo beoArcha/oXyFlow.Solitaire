@@ -34,7 +34,7 @@ pub(super) struct Guidance {
     pub usable: Vec<Action>,
 }
 
-const ALWAYS: [Action; 12] = [
+const ALWAYS: [Action; 13] = [
     Action::Up,
     Action::Down,
     Action::Left,
@@ -42,6 +42,7 @@ const ALWAYS: [Action; 12] = [
     Action::Help,
     Action::Rules,
     Action::Guide,
+    Action::Moves,
     Action::Restart,
     Action::NewGame,
     Action::Pause,

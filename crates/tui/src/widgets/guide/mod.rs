@@ -22,9 +22,9 @@ use crate::screens::ViewCtx;
 use crate::theme::Token;
 
 /// Columns the frame and the padding take on each side of the text.
-const SIDE: u16 = 2;
+pub(super) const SIDE: u16 = 2;
 /// Rows the frame takes at the top and at the bottom.
-const FRAME_ROWS: u16 = 2;
+pub(super) const FRAME_ROWS: u16 = 2;
 
 const ASCII_BORDER: border::Set<'static> = border::Set {
     top_left: "+",
@@ -169,10 +169,12 @@ fn stacked(sections: Vec<Vec<Line<'static>>>, rows: usize) -> Vec<Line<'static>>
 
 fn draw_frame(buf: &mut Buffer, area: Rect, ctx: &ViewCtx<'_>) {
     let hide = primary_key(Action::Guide).unwrap_or_default();
-    let title = clip(
-        &tf("board.guide.title", &[("key", &hide)]),
-        usize::from(area.width.saturating_sub(SIDE * 2)),
-    );
+    draw_titled_frame(buf, area, &tf("board.guide.title", &[("key", &hide)]), ctx);
+}
+
+/// Draws the frame of a side panel with `title` in its top border.
+pub(super) fn draw_titled_frame(buf: &mut Buffer, area: Rect, title: &str, ctx: &ViewCtx<'_>) {
+    let title = clip(title, usize::from(area.width.saturating_sub(SIDE * 2)));
     Block::bordered()
         .border_set(border_set(ctx))
         .border_style(ctx.theme.style(Token::Border, Token::Surface))

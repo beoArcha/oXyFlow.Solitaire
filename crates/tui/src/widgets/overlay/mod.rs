@@ -15,6 +15,7 @@ mod help_rules_tests;
 mod how_to_play;
 #[cfg(test)]
 mod modal_fixes_tests;
+mod moves_window;
 mod nav;
 mod pause;
 #[cfg(test)]
@@ -36,6 +37,7 @@ pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
 pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::how_to_play::{Focus, HowToPlay, Rules};
+pub use self::moves_window::MovesWindow;
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
 use crate::app::{Modal, Screen, SearchCommand};
@@ -49,7 +51,11 @@ use crate::widgets::footer::FooterMap;
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
-        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) | Modal::Guide(_) => None,
+        Modal::Help
+        | Modal::HowToPlay(_)
+        | Modal::CommandLine(_)
+        | Modal::Guide(_)
+        | Modal::Moves(_) => None,
         Modal::Pause => Some(pause::text()),
         Modal::Search(progress) => Some(search::text(progress)),
         Modal::Win { menu_focused } => {
@@ -90,6 +96,7 @@ fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geo
         (_, Some(text)) => text.geometry(area),
         (Modal::HowToPlay(_), None) => how_to_play::geometry(area),
         (Modal::Guide(_), None) => guide_window::geometry(area),
+        (Modal::Moves(state), None) => moves_window::geometry(area, state),
         (_, None) => help::geometry(area),
     }
 }
@@ -117,6 +124,7 @@ pub fn draw(
         (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
         (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),
         (Modal::Guide(state), None) => guide_window::draw(frame, area, state, board, ctx),
+        (Modal::Moves(state), None) => moves_window::draw(frame, area, state, ctx),
         (_, None) => help::draw(frame, area, ctx),
     }
 }
@@ -188,6 +196,9 @@ pub fn handle_for(
     if let Modal::Guide(state) = modal {
         return guide_window::handle(state, key, action);
     }
+    if let Modal::Moves(state) = modal {
+        return moves_window::handle(state, key, action);
+    }
     if nav::tab_of(modal).is_some() {
         if let Some((target, entry)) = nav::target(modal, key, action) {
             *modal = nav::modal_for(target, rules, entry);
@@ -230,6 +241,9 @@ pub fn handle_mouse(
 ) -> Option<Effect> {
     if let Modal::Guide(state) = modal {
         return guide_window::handle_mouse(state, area, event);
+    }
+    if let Modal::Moves(state) = modal {
+        return moves_window::handle_mouse(state, area, event);
     }
     if nav::tab_of(modal).is_some() {
         if let Some(target) = nav::clicked_tab(modal, area, event) {

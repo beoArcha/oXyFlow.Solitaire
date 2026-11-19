@@ -18,6 +18,7 @@ use crate::theme::Token;
 use crate::widgets::aura;
 use crate::widgets::footer::FooterMap;
 use crate::widgets::guide::{self, Guide};
+use crate::widgets::moves::{self, MoveEntry, PanelMap};
 use crate::widgets::pile::{self, Marks};
 
 /// What the board screen shows: the game, its facts, the highlights and the last event.
@@ -30,6 +31,9 @@ pub(super) struct Scene<'a> {
     pub covered: bool,
     pub guidance: Option<&'a Guidance>,
     pub guide: bool,
+    pub moves: bool,
+    pub entries: &'a [MoveEntry],
+    pub focus: Option<usize>,
 }
 
 fn draw_board(frame: &mut Frame, body: Rect, session: &Session, marks: &Marks, ctx: &ViewCtx<'_>) {
@@ -63,8 +67,8 @@ pub(super) fn render(
     area: Rect,
     scene: &Scene<'_>,
     ctx: &ViewCtx<'_>,
-) -> FooterMap {
-    let parts = layout::chrome_with(area, scene.guide);
+) -> (FooterMap, PanelMap) {
+    let parts = layout::chrome_panels(area, scene.guide, scene.moves);
     if let (Some(rect), Some(facts)) = (parts.header, scene.facts) {
         let row = facts.row(rect, ctx.theme.style(Token::Accent, Token::Background));
         frame.render_widget(Paragraph::new(row.line), row.area);
@@ -87,7 +91,10 @@ pub(super) fn render(
     if let Some(rect) = parts.guide {
         draw_panel(frame, rect, scene, ctx);
     }
-    buttons
+    let panel = parts.moves.map_or_else(PanelMap::default, |rect| {
+        moves::draw(frame.buffer_mut(), rect, scene.entries, scene.focus, ctx)
+    });
+    (buttons, panel)
 }
 
 pub(super) fn draw(
@@ -95,8 +102,9 @@ pub(super) fn draw(
     area: Rect,
     board: &BoardScreen,
     ctx: &ViewCtx<'_>,
-) -> FooterMap {
+) -> (FooterMap, PanelMap) {
     let guidance = board.guidance();
+    let entries = board.move_entries();
     let facts = board.facts(ctx.now);
     let event = board.event();
     let scene = Scene {
@@ -108,6 +116,9 @@ pub(super) fn draw(
         covered: board.covered,
         guidance: guidance.as_ref(),
         guide: ctx.settings.guide_panel,
+        moves: ctx.settings.moves_panel,
+        entries: &entries,
+        focus: board.panel_focus.filter(|_| board.moves_shown()),
     };
     render(frame, area, &scene, ctx)
 }

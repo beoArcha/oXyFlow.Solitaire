@@ -41,6 +41,7 @@ pub(super) const REDONE: &str = "board.status.redone";
 pub(super) const RESTARTED: &str = "board.status.restarted";
 pub(super) const FINISHING: &str = "board.status.finishing";
 pub(super) const NO_FINISH: &str = "board.status.no_finish";
+pub(super) const NOT_POSSIBLE: &str = "board.status.not_possible";
 
 /// Localization key of the event announced after a move was played.
 pub(super) const fn done_of(mv: Move) -> &'static str {

@@ -2,7 +2,7 @@
 
 use oxysol_core::{Move, PileSnapshot};
 
-use super::cursor::{Cursor, Dir, closest, cycle, focusable, max_depth, nearest};
+use super::cursor::{Cursor, Dir, closest, focusable, max_depth, nearest};
 use super::{BoardScreen, status};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
@@ -27,7 +27,7 @@ impl BoardScreen {
                 Effect::None
             }
             Action::FocusNext | Action::FocusPrevious => {
-                self.cycle_pile(action == Action::FocusNext);
+                self.cycle_focus(action == Action::FocusNext);
                 Effect::None
             }
             Action::RunMore | Action::RunLess => {
@@ -53,7 +53,9 @@ impl BoardScreen {
                 .as_ref()
                 .map_or(Effect::None, |session| Effect::CopySeed(session.seed())),
             Action::Quit => Effect::Open(Modal::confirm("board.confirm.quit", Effect::Quit)),
-            Action::ForceQuit | Action::Help | Action::Rules | Action::Guide => Effect::None,
+            Action::ForceQuit | Action::Help | Action::Rules | Action::Guide | Action::Moves => {
+                Effect::None
+            }
         }
     }
 
@@ -69,7 +71,7 @@ impl BoardScreen {
         Some(layout::compute(
             session.variant(),
             piles,
-            layout::chrome_with(self.screen, self.guide_panel).body,
+            layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel).body,
         ))
     }
 
@@ -105,14 +107,6 @@ impl BoardScreen {
             .geometry(&piles)
             .and_then(|geometry| nearest(&piles, &geometry, self.cursor.pile, dir));
         if let Some(pile) = target {
-            self.cursor = Cursor { pile, depth: 1 };
-        }
-    }
-
-    /// Tab and Shift+Tab: the cursor goes to the next or the previous pile in reading order.
-    fn cycle_pile(&mut self, forward: bool) {
-        let piles = self.piles();
-        if let Some(pile) = cycle(&piles, self.cursor.pile, forward) {
             self.cursor = Cursor { pile, depth: 1 };
         }
     }
