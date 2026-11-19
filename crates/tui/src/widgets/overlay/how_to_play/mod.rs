@@ -15,12 +15,13 @@ mod view;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
-pub use self::state::{HowToPlay, Rules};
+pub use self::state::{Focus, HowToPlay, Rules};
 pub use self::view::{draw, geometry};
 use super::dialog;
 use crate::action::Action;
 use crate::mouse;
 use crate::screens::Effect;
+use crate::widgets::scrollbar;
 
 const PAGE_LINES: i32 = 19;
 const WHEEL_LINES: i32 = 3;
@@ -32,11 +33,17 @@ pub fn handle(state: &mut HowToPlay, key: &KeyEvent, action: Option<Action>) -> 
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
         KeyCode::Home => state.scroll_to(false),
         KeyCode::End => state.scroll_to(true),
+        KeyCode::Tab => {
+            state.step_focus(true);
+        }
+        KeyCode::BackTab => {
+            state.step_focus(false);
+        }
         _ => match action? {
-            Action::Up => state.scroll_by(-1),
-            Action::Down => state.scroll_by(1),
-            Action::Left => state.switch(false),
-            Action::Right => state.switch(true),
+            Action::Up => state.up(),
+            Action::Down => state.down(),
+            Action::Left if state.focus == Focus::Games => state.switch(false),
+            Action::Right if state.focus == Focus::Games => state.switch(true),
             Action::Select | Action::Back => return Some(Effect::None),
             _ => {}
         },
@@ -52,22 +59,38 @@ pub fn handle_mouse(state: &mut HowToPlay, area: Rect, event: &MouseEvent) -> Op
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
-    let cell = mouse::left_press(event)?;
     let geometry = geometry(area);
+    let parts = view::parts(geometry.body);
+    let track = scrollbar::track_of(parts.text);
+    let metrics = state.metrics(track.height);
+    if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
+        state.scroll_to_line(line);
+        state.focus = Focus::Text;
+    }
+    let cell = mouse::left_press(event)?;
     if dialog::button_at(&geometry, cell).is_some() {
         return Some(Effect::None);
     }
-    let placed = view::tabs(view::parts(geometry.body).game_tabs);
+    if mouse::contains(parts.text, cell) {
+        state.focus = Focus::Text;
+    }
+    click_games(state, view::tabs(parts.game_tabs), cell);
+    None
+}
+
+fn click_games(state: &mut HowToPlay, placed: view::Tabs, cell: (u16, u16)) {
     if mouse::contains(placed.previous, cell) {
+        state.focus = Focus::Games;
         state.switch(false);
     } else if mouse::contains(placed.next, cell) {
+        state.focus = Focus::Games;
         state.switch(true);
     } else if let Some((rules, _)) = placed
         .games
         .iter()
         .find(|(_, rect)| mouse::contains(*rect, cell))
     {
+        state.focus = Focus::Games;
         state.show(*rules);
     }
-    None
 }

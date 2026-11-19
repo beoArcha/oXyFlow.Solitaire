@@ -13,6 +13,7 @@ use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, Segment};
 
 const TAB_GAP: u16 = 2;
+const ARROW_COLUMNS: u16 = 3;
 
 /// Which tab of the help window is active.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,6 +61,8 @@ pub struct TopTabs {
     pub keys: Rect,
     pub rules: Rect,
     pub command_line: Rect,
+    pub previous: Rect,
+    pub next: Rect,
 }
 
 impl TopTabs {
@@ -77,6 +80,17 @@ impl TopTabs {
         HelpTab::ALL
             .into_iter()
             .find(|tab| crate::mouse::contains(self.rect(*tab), cell))
+    }
+
+    /// The tab a click on an arrow goes to, if `cell` lies on one.
+    pub fn arrow_target(&self, current: HelpTab, cell: (u16, u16)) -> Option<HelpTab> {
+        if crate::mouse::contains(self.previous, cell) {
+            Some(current.previous())
+        } else if crate::mouse::contains(self.next, cell) {
+            Some(current.next())
+        } else {
+            None
+        }
     }
 }
 
@@ -111,20 +125,50 @@ pub fn top_tabs(row: Rect) -> TopTabs {
         keys,
         rules,
         command_line,
+        previous: Rect::new(
+            keys.x.saturating_sub(ARROW_COLUMNS),
+            row.y,
+            ARROW_COLUMNS,
+            1,
+        )
+        .intersection(row),
+        next: Rect::new(command_line.right(), row.y, ARROW_COLUMNS, 1).intersection(row),
     }
 }
 
-/// Draws the tabs in `row`.
-pub fn draw_top_tabs(frame: &mut Frame, row: Rect, current: HelpTab, ctx: &ViewCtx<'_>) {
+/// The arrows that frame a selector row while it has the focus.
+pub fn arrows(ctx: &ViewCtx<'_>) -> (String, String) {
+    (
+        format!(" {} ", ctx.glyphs.focus_right),
+        format!(" {} ", ctx.glyphs.focus_left),
+    )
+}
+
+/// Draws the tabs in `row`. The row that has the focus shows the arrows and its tab in bold
+/// reverse video; a row without the focus shows its tab in brackets, in plain type.
+pub fn draw_top_tabs(
+    frame: &mut Frame,
+    row: Rect,
+    current: HelpTab,
+    focused: bool,
+    ctx: &ViewCtx<'_>,
+) {
     let placed = top_tabs(row);
     let plain = ctx.theme.surface();
+    if focused {
+        let (left, right) = arrows(ctx);
+        frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
+        frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
+    }
     for tab in HelpTab::ALL {
         let name = t(tab.label_key());
         let (text, style) = if tab == current {
-            (
-                format!("[{name}]"),
-                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED),
-            )
+            let selected = if focused {
+                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED)
+            } else {
+                plain
+            };
+            (format!("[{name}]"), selected)
         } else {
             (format!(" {name} "), plain)
         };

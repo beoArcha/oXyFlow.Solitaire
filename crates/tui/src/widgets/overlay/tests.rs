@@ -187,14 +187,17 @@ fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
     let mut modal = Modal::Help;
     let tab_key = KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE);
     assert_eq!(handle(&mut modal, &tab_key, None), None);
-    assert_eq!(modal, Modal::HowToPlay(HowToPlay::new(Rules::Klondike)));
+    let rules = HowToPlay::new(Rules::Klondike);
+    assert_eq!(modal, Modal::HowToPlay(rules.focused(Focus::Tabs)));
 
-    assert_eq!(handle(&mut modal, &tab_key, None), None);
+    for _ in 0..3 {
+        assert_eq!(handle(&mut modal, &tab_key, None), None);
+    }
     assert_eq!(modal, Modal::CommandLine(CommandLine::new()));
 
     assert_eq!(handle(&mut modal, &tab_key, None), None);
     assert_eq!(modal, Modal::Help);
 
     assert_eq!(handle(&mut modal, &key(), Some(Action::Right)), None);
-    assert_eq!(modal, Modal::HowToPlay(HowToPlay::new(Rules::Klondike)));
+    assert_eq!(modal, Modal::HowToPlay(rules.focused(Focus::Tabs)));
 }

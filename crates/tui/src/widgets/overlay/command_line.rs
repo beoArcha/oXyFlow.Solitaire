@@ -18,6 +18,7 @@ use crate::input::primary_key;
 use crate::mouse;
 use crate::screens::{Effect, ViewCtx};
 use crate::widgets::footer::{FooterMap, Segment};
+use crate::widgets::scrollbar::{self, Metrics};
 
 /// Rows of text visible at once: the box body minus the tab row and the footer row.
 pub const VIEW_ROWS: usize = 21;
@@ -30,12 +31,16 @@ const HEADING_SUFFIX: char = ':';
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct CommandLine {
     pub scroll: u16,
+    drag: Option<u16>,
 }
 
 impl CommandLine {
     /// The tab opened at the top.
     pub const fn new() -> Self {
-        Self { scroll: 0 }
+        Self {
+            scroll: 0,
+            drag: None,
+        }
     }
 
     /// The largest value of `scroll`: the last line sits on the last row.
@@ -53,6 +58,19 @@ impl CommandLine {
     /// Scrolls to the first (`false`) or the last line.
     pub fn scroll_to(&mut self, end: bool) {
         self.scroll = if end { self.max_scroll() } else { 0 };
+    }
+
+    fn metrics(&self, view: u16) -> Metrics {
+        Metrics {
+            total: lines().len(),
+            view: usize::from(view),
+            offset: usize::from(self.scroll),
+        }
+    }
+
+    fn scroll_to_line(&mut self, line: usize) {
+        let clamped = line.min(usize::from(self.max_scroll()));
+        self.scroll = u16::try_from(clamped).unwrap_or(0);
     }
 }
 
@@ -90,8 +108,30 @@ pub fn handle_mouse(state: &mut CommandLine, area: Rect, event: &MouseEvent) -> 
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
+    let geometry = geometry(area);
+    let track = scrollbar::track_of(parts(geometry.body).text);
+    let metrics = state.metrics(track.height);
+    if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
+        state.scroll_to_line(line);
+    }
     let cell = mouse::left_press(event)?;
-    dialog::button_at(&geometry(area), cell).map(|_| Effect::None)
+    dialog::button_at(&geometry, cell).map(|_| Effect::None)
+}
+
+fn parts(body: Rect) -> Parts {
+    let [tabs, text, footer] = Layout::vertical([
+        Constraint::Length(1),
+        Constraint::Fill(1),
+        Constraint::Length(1),
+    ])
+    .areas(body);
+    Parts { tabs, text, footer }
+}
+
+struct Parts {
+    tabs: Rect,
+    text: Rect,
+    footer: Rect,
 }
 
 /// The box of the tab: the same as the other tabs, so switching does not move the window.
@@ -136,13 +176,8 @@ fn footer_segments() -> Vec<Segment> {
 pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
-    let [tab_row, text, footer] = Layout::vertical([
-        Constraint::Length(1),
-        Constraint::Fill(1),
-        Constraint::Length(1),
-    ])
-    .areas(geometry.body);
-    draw_top_tabs(frame, tab_row, HelpTab::CommandLine, ctx);
+    let Parts { tabs, text, footer } = parts(geometry.body);
+    draw_top_tabs(frame, tabs, HelpTab::CommandLine, true, ctx);
     let all = lines();
     let first = usize::from(state.scroll);
     let plain = ctx.theme.surface();
@@ -162,6 +197,12 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_
     frame.render_widget(
         Paragraph::new(shown).style(plain),
         text.inner(Margin::new(1, 0)),
+    );
+    scrollbar::draw(
+        frame,
+        scrollbar::track_of(text),
+        state.metrics(text.height),
+        ctx,
     );
     let buttons_drawn = draw_footer_buttons(
         frame,

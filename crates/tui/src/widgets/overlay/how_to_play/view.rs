@@ -10,15 +10,17 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::content::{self, Kind, Row, VIEW_ROWS};
-use super::state::{HowToPlay, Rules};
+use super::state::{Focus, HowToPlay, Rules};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::footer::{FooterMap, Segment};
-use crate::widgets::overlay::dialog::{self, Button, Geometry};
-use crate::widgets::overlay::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs};
+use crate::widgets::overlay::dialog::{self, Geometry};
+use crate::widgets::overlay::help;
+use crate::widgets::overlay::tabs::{HelpTab, arrows, draw_footer_buttons, draw_top_tabs};
+use crate::widgets::scrollbar;
 
 const CHROME_ROWS: u16 = 3;
 const ARROW_COLUMNS: u16 = 3;
@@ -40,19 +42,12 @@ pub struct Tabs {
     pub games: Vec<(Rules, Rect)>,
 }
 
-fn buttons() -> Vec<Button> {
-    vec![Button {
-        label: t("help.rules.close").into_owned(),
-        focused: true,
-    }]
-}
-
 /// The box of the window, centered in `area`. Its size does not depend on the text: the text
 /// scrolls inside a fixed number of rows, and the box fits the smallest supported terminal.
 pub fn geometry(area: Rect) -> Geometry {
     let width = crate::widgets::overlay::help::geometry(area).frame.width;
     let rows = u16::try_from(VIEW_ROWS).unwrap_or(u16::MAX) + CHROME_ROWS;
-    dialog::boxed(area, width, rows, &buttons())
+    dialog::boxed(area, width, rows, &help::buttons())
 }
 
 /// Splits the box body into top tabs, game tabs, text rows and the footer row.
@@ -105,27 +100,24 @@ pub fn tabs(row: Rect) -> Tabs {
     }
 }
 
-fn arrows(ctx: &ViewCtx<'_>) -> (&'static str, &'static str) {
-    if ctx.glyphs.unicode {
-        (" ◄ ", " ► ")
-    } else {
-        (" < ", " > ")
-    }
-}
-
 fn draw_tabs(frame: &mut Frame, row: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) {
     let placed = tabs(row);
-    let (left, right) = arrows(ctx);
+    let focused = state.focus == Focus::Games;
     let plain = ctx.theme.surface();
-    frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
-    frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
+    if focused {
+        let (left, right) = arrows(ctx);
+        frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
+        frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
+    }
     for (rules, rect) in placed.games {
         let name = t(rules.name_key());
         let (text, style) = if rules == state.rules {
-            (
-                format!("[{name}]"),
-                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED),
-            )
+            let selected = if focused {
+                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED)
+            } else {
+                plain
+            };
+            (format!("[{name}]"), selected)
         } else {
             (format!(" {name} "), plain)
         };
@@ -155,9 +147,9 @@ fn key_name(action: Action) -> String {
     primary_key(action).unwrap_or_default()
 }
 
-fn footer_segments() -> Vec<Segment> {
+fn footer_segments(focus: Focus) -> Vec<Segment> {
     let move_keys = tf(
-        "help.rules.footer_move",
+        footer_key(focus),
         &[
             ("left", &key_name(Action::Left)),
             ("right", &key_name(Action::Right)),
@@ -172,6 +164,14 @@ fn footer_segments() -> Vec<Segment> {
     ]
 }
 
+fn footer_key(focus: Focus) -> &'static str {
+    match focus {
+        Focus::Tabs => "help.rules.footer_tabs",
+        Focus::Games => "help.rules.footer_games",
+        Focus::Text => "help.rules.footer_text",
+    }
+}
+
 fn close_label() -> String {
     tf(
         "help.rules.footer_close",
@@ -184,7 +184,13 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let parts = parts(geometry.body);
-    draw_top_tabs(frame, parts.top_tabs, HelpTab::Rules, ctx);
+    draw_top_tabs(
+        frame,
+        parts.top_tabs,
+        HelpTab::Rules,
+        state.focus == Focus::Tabs,
+        ctx,
+    );
     draw_tabs(frame, parts.game_tabs, state, ctx);
     let rows = content::rows(state.rules);
     let first = usize::from(state.scroll);
@@ -199,13 +205,29 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
         Paragraph::new(lines).style(ctx.theme.surface()),
         parts.text.inner(Margin::new(1, 0)),
     );
+    if state.focus == Focus::Text {
+        let mark = Line::styled(ctx.glyphs.focus_left, ctx.theme.surface());
+        frame.render_widget(
+            Paragraph::new(mark),
+            Rect {
+                height: 1,
+                ..parts.text
+            },
+        );
+    }
+    scrollbar::draw(
+        frame,
+        scrollbar::track_of(parts.text),
+        state.metrics(parts.text.height),
+        ctx,
+    );
     let buttons_drawn = draw_footer_buttons(
         frame,
         parts.footer,
-        &footer_segments(),
+        &footer_segments(state.focus),
         (first + 1, first + shown, rows.len()),
         ctx,
     );
-    dialog::draw_buttons(frame, &geometry, &buttons(), ctx);
+    dialog::draw_buttons(frame, &geometry, &help::buttons(), ctx);
     buttons_drawn
 }

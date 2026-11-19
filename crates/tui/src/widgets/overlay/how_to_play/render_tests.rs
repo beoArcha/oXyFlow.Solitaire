@@ -157,6 +157,8 @@ fn keys_and_the_wheel_scroll_the_text() {
     assert!(h.text().contains("1-20 / "));
     assert!(!h.text().contains("Stuck?"));
     h.press(KeyCode::Down);
+    assert!(h.text().contains("1-20 / "));
+    h.press(KeyCode::Down);
     assert!(h.text().contains("2-21 / "));
     h.press(KeyCode::PageDown);
     assert_eq!(shown(&h).map(|s| s.scroll), Some(20));
@@ -182,7 +184,7 @@ fn escape_enter_and_the_close_button_close_the_window() {
     }
     let mut h = playing(Variant::FreeCell);
     h.type_char('i');
-    assert!(h.text().contains("► Close ◄"));
+    assert!(h.text().contains("► Close [Esc] ◄"));
     click_text(&mut h, "Close");
     assert!(h.app.modal().is_none());
     assert_eq!(h.app.screen(), Screen::Board);
@@ -234,8 +236,11 @@ fn every_game_draws_inside_100_by_30_with_only_wgl4_or_ascii_glyphs() {
                     assert!(is_ascii_or_wgl4(ch), "{context}: {ch:?}");
                 }
                 let text = lines.join("\n");
-                assert!(text.contains(&*i18n::t("help.rules.close")), "{context}");
-                assert!(text.contains("PgDn"), "{context}");
+                assert!(
+                    text.contains(&i18n::tf("help.rules.close", &[("key", "Esc")])),
+                    "{context}"
+                );
+                assert!(text.contains("Up/Down"), "{context}");
                 let frame = if caps.unicode { '╔' } else { '+' };
                 assert!(text.contains(frame), "{context}");
             }
@@ -272,7 +277,7 @@ fn the_window_does_not_cover_the_terminal_edges_in_ascii_mode() {
     open(&mut h, Rules::Spider);
     let text = h.text();
     assert!(text.is_ascii());
-    assert!(text.contains("> Close <"));
+    assert!(text.contains("> Close [Esc] <"));
     assert!(text.contains("[Spider]"));
 }
 

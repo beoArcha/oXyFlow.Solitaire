@@ -29,8 +29,7 @@ fn harness_in(locale: Locale, caps: TerminalCaps) -> Harness {
 fn on_command_line() -> Harness {
     let mut h = harness(TRUE_COLOR);
     h.type_char('?');
-    h.press(KeyCode::Tab);
-    h.press(KeyCode::Tab);
+    h.press(KeyCode::Left);
     h
 }
 
@@ -124,12 +123,12 @@ fn keys_step_through_the_tabs_in_both_directions() {
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Left);
     assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
-    h.press(KeyCode::Tab);
+    h.press(KeyCode::Right);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.type_char('?');
     assert_eq!(h.app.modal(), Some(&Modal::Help));
-    h.press(KeyCode::Tab);
-    h.press(KeyCode::Tab);
+    h.press(KeyCode::Right);
+    h.press(KeyCode::Right);
     h.type_char('i');
     assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
 }

@@ -128,6 +128,9 @@ fn tab_cycles_the_help_tabs_and_shift_tab_steps_back() {
     let mut modal = Modal::Help;
     assert_eq!(tab(&mut modal), None);
     assert!(matches!(modal, Modal::HowToPlay(_)));
+    tab(&mut modal);
+    tab(&mut modal);
+    assert!(matches!(modal, Modal::HowToPlay(_)));
     assert_eq!(tab(&mut modal), None);
     assert!(matches!(modal, Modal::CommandLine(_)));
     assert_eq!(tab(&mut modal), None);

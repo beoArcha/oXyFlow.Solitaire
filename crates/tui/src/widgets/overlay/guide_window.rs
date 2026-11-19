@@ -8,7 +8,8 @@ use ratatui::layout::{Constraint, Layout, Margin, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use super::dialog::{self, Button, Geometry};
+use super::dialog::{self, Geometry};
+use super::help;
 use super::tabs::draw_footer_buttons;
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -17,6 +18,7 @@ use crate::mouse;
 use crate::screens::board::BoardScreen;
 use crate::screens::{Effect, ViewCtx};
 use crate::widgets::footer::{FooterMap, Segment};
+use crate::widgets::scrollbar::{self, Metrics};
 
 /// Text rows of the window, below which it scrolls.
 pub const TEXT_ROWS: usize = 17;
@@ -31,6 +33,7 @@ const WHEEL_LINES: i32 = 3;
 pub struct GuideWindow {
     pub scroll: u16,
     pub total: u16,
+    drag: Option<u16>,
 }
 
 impl GuideWindow {
@@ -39,6 +42,7 @@ impl GuideWindow {
         Self {
             scroll: 0,
             total: u16::try_from(total).unwrap_or(u16::MAX),
+            drag: None,
         }
     }
 
@@ -56,19 +60,25 @@ impl GuideWindow {
     fn scroll_to(&mut self, end: bool) {
         self.scroll = if end { self.max_scroll() } else { 0 };
     }
-}
 
-fn buttons() -> Vec<Button> {
-    vec![Button {
-        label: t("help.rules.close").into_owned(),
-        focused: true,
-    }]
+    fn metrics(&self, view: u16) -> Metrics {
+        Metrics {
+            total: usize::from(self.total),
+            view: usize::from(view),
+            offset: usize::from(self.scroll),
+        }
+    }
+
+    fn scroll_to_line(&mut self, line: usize) {
+        let clamped = line.min(usize::from(self.max_scroll()));
+        self.scroll = u16::try_from(clamped).unwrap_or(0);
+    }
 }
 
 /// The box of the window, centered in `area`. Its size does not depend on the content.
 pub fn geometry(area: Rect) -> Geometry {
     let rows = u16::try_from(TEXT_ROWS + 1).unwrap_or(u16::MAX);
-    dialog::boxed(area, BOX_WIDTH, rows, &buttons())
+    dialog::boxed(area, BOX_WIDTH, rows, &help::buttons())
 }
 
 fn split(body: Rect) -> (Rect, Rect) {
@@ -104,6 +114,12 @@ pub fn draw(
         Paragraph::new(lines).style(ctx.theme.surface()),
         text.inner(Margin::new(1, 0)),
     );
+    scrollbar::draw(
+        frame,
+        scrollbar::track_of(text),
+        state.metrics(text.height),
+        ctx,
+    );
     let scroll = tf(
         "board.guide.window_scroll",
         &[
@@ -130,7 +146,7 @@ pub fn draw(
         (first + 1, first + shown, all.len()),
         ctx,
     );
-    dialog::draw_buttons(frame, &geometry, &buttons(), ctx);
+    dialog::draw_buttons(frame, &geometry, &help::buttons(), ctx);
     buttons_drawn
 }
 
@@ -159,6 +175,12 @@ pub fn handle_mouse(state: &mut GuideWindow, area: Rect, event: &MouseEvent) -> 
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
+    let geometry = geometry(area);
+    let track = scrollbar::track_of(split(geometry.body).0);
+    let metrics = state.metrics(track.height);
+    if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
+        state.scroll_to_line(line);
+    }
     let cell = mouse::left_press(event)?;
-    dialog::button_at(&geometry(area), cell).map(|_| Effect::None)
+    dialog::button_at(&geometry, cell).map(|_| Effect::None)
 }

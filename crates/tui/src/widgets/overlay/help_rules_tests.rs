@@ -5,7 +5,7 @@ use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 use ratatui::crossterm::event::{KeyCode, KeyModifiers, MouseEvent, MouseEventKind};
 use ratatui::style::Modifier;
 
-use super::{HowToPlay, Rules};
+use super::{Focus, HowToPlay, Rules};
 use crate::app::Modal;
 use crate::caps::TerminalCaps;
 use crate::glyphs::is_wgl4;
@@ -31,6 +31,13 @@ fn playing(variant: Variant) -> Harness {
         undo_allowed: true,
     });
     h
+}
+
+fn shown(h: &Harness) -> Option<(Rules, Focus)> {
+    match h.app.modal() {
+        Some(Modal::HowToPlay(state)) => Some((state.rules, state.focus)),
+        _ => None,
+    }
 }
 
 fn shown_rules(h: &Harness) -> Option<HowToPlay> {
@@ -71,19 +78,21 @@ fn switching_between_keys_and_rules_by_key_and_mouse() {
     assert_eq!(h.app.modal(), Some(&Modal::Help));
 
     h.press(KeyCode::Tab);
-    assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
+    assert_eq!(shown(&h), Some((Rules::Klondike, Focus::Tabs)));
     assert!(h.text().contains("Keys"));
     assert!(h.text().contains("[Rules]"));
     assert!(h.text().contains("[Klondike]"));
 
-    h.press(KeyCode::Tab);
+    for _ in 0..3 {
+        h.press(KeyCode::Tab);
+    }
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Tab);
     assert_eq!(h.app.modal(), Some(&Modal::Help));
     assert!(h.text().contains("[Keys]"));
 
     click_text(&mut h, "Rules");
-    assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
+    assert_eq!(shown(&h), Some((Rules::Klondike, Focus::Games)));
     assert!(h.text().contains("[Rules]"));
 
     click_text(&mut h, "Keys");
@@ -91,7 +100,7 @@ fn switching_between_keys_and_rules_by_key_and_mouse() {
     assert!(h.text().contains("[Keys]"));
 
     h.press(KeyCode::Right);
-    assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
+    assert_eq!(shown(&h), Some((Rules::Klondike, Focus::Tabs)));
     assert!(h.text().contains("[Rules]"));
 }
 
@@ -108,7 +117,7 @@ fn rules_opens_on_current_game_from_board() {
         h.type_char('?');
         assert_eq!(h.app.modal(), Some(&Modal::Help));
         h.press(KeyCode::Tab);
-        assert_eq!(shown_rules(&h), Some(HowToPlay::new(rules)), "{variant:?}");
+        assert_eq!(shown(&h).map(|state| state.0), Some(rules), "{variant:?}");
         let name = i18n::t(rules.name_key());
         assert!(h.text().contains(&format!("[{name}]")));
 
@@ -129,6 +138,9 @@ fn scrolling_works_in_rules_tab() {
     let mut h = harness(TRUE_COLOR);
     h.type_char('?');
     h.press(KeyCode::Tab);
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Tab);
+    assert_eq!(shown(&h).map(|state| state.1), Some(Focus::Text));
     assert!(h.text().contains("1-20 / "));
 
     h.press(KeyCode::Down);
@@ -157,14 +169,16 @@ fn i_and_menu_item_show_rules_and_can_switch_to_keys() {
     assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
     assert!(h.text().contains("[Rules]"));
     h.press(KeyCode::BackTab);
+    h.press(KeyCode::BackTab);
     assert_eq!(h.app.modal(), Some(&Modal::Help));
     assert!(h.text().contains("[Keys]"));
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
 
     click_text(&mut h, "How to play");
-    assert_eq!(shown_rules(&h), Some(HowToPlay::new(Rules::Klondike)));
+    assert_eq!(shown(&h), Some((Rules::Klondike, Focus::Games)));
     assert!(h.text().contains("[Rules]"));
+    h.press(KeyCode::BackTab);
     h.press(KeyCode::BackTab);
     assert_eq!(h.app.modal(), Some(&Modal::Help));
     assert!(h.text().contains("[Keys]"));

@@ -325,8 +325,8 @@ fn rules_tab(locale: Locale) -> Harness {
 
 /// The help window on its command line tab.
 fn command_line_tab(locale: Locale) -> Harness {
-    let mut h = rules_tab(locale);
-    h.press(KeyCode::Tab);
+    let mut h = help_open(locale);
+    h.press(KeyCode::Left);
     h
 }
 
