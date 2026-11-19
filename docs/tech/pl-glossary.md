@@ -10,6 +10,8 @@ New Polish texts must use this glossary.
 | waste | stos odrzuconych | Short: Odrzucone |
 | free cell | wolna komórka | |
 | run | ciąg | |
+| restart (a game) | od nowa | Header: `Od nowa: N` |
+| win without a restart | czysta wygrana | Stats column: Czyste |
 | run size | długość ciągu | |
 | face-up / face-down | odkryta / zakryta | |
 | pick up / drop / put back | weź / połóż / odłóż | |

@@ -13,7 +13,7 @@ use oxysol_core::Variant;
 const NONE: &str = "-";
 const MILLIS_PER_DAY: i64 = 86_400_000;
 const MILLIS_PER_MINUTE: i64 = 60_000;
-const COLUMN_GAP: &str = "  ";
+const COLUMN_GAP: &str = " ";
 
 /// Year, month and day of a day count since 1970-01-01 in the proleptic Gregorian calendar.
 fn civil_date(days: i64) -> (i64, i64, i64) {
@@ -131,36 +131,54 @@ fn summary_label(summary: &Summary, show_mode: bool) -> String {
     format!("{name} ({mode})")
 }
 
-fn summary_row(summary: &Summary, show_mode: bool) -> Vec<String> {
-    vec![
+fn summary_row(summary: &Summary, show_mode: bool, with_clean: bool) -> Vec<String> {
+    let mut row = vec![
         summary_label(summary, show_mode),
         summary.played.to_string(),
         summary.won.to_string(),
+    ];
+    if with_clean {
+        row.push(format_count(summary.clean_wins));
+    }
+    row.extend([
         format!("{}%", summary.win_rate_percent()),
         format_time(summary.best_time_ms),
         format_count(summary.fewest_moves),
         summary.current_streak.to_string(),
         summary.longest_streak.to_string(),
-    ]
+    ]);
+    row
 }
 
-/// The header and the rows of the summary table, padded to one width per column.
-pub fn summary_lines(summaries: &[Summary], show_mode: bool) -> Vec<String> {
-    let header = [
+fn summary_header(with_clean: bool) -> Vec<String> {
+    let mut keys = vec![
         "stats.summary.game",
         "stats.summary.played",
         "stats.summary.won",
+    ];
+    if with_clean {
+        keys.push("stats.summary.clean");
+    }
+    keys.extend([
         "stats.summary.rate",
         "stats.summary.best_time",
         "stats.summary.fewest_moves",
         "stats.summary.streak",
         "stats.summary.longest",
-    ]
-    .iter()
-    .map(|key| t(key).into_owned())
-    .collect();
-    let mut rows = vec![header];
-    rows.extend(summaries.iter().map(|s| summary_row(s, show_mode)));
+    ]);
+    keys.iter().map(|key| t(key).into_owned()).collect()
+}
+
+/// The header and the rows of the summary table, padded to one width per column. Wins without a
+/// restart get a column beside the wins once a game without undo has finished.
+pub fn summary_lines(summaries: &[Summary], show_mode: bool) -> Vec<String> {
+    let with_clean = summaries.iter().any(|summary| summary.clean_wins.is_some());
+    let mut rows = vec![summary_header(with_clean)];
+    rows.extend(
+        summaries
+            .iter()
+            .map(|s| summary_row(s, show_mode, with_clean)),
+    );
     table(&rows, 1)
 }
 
@@ -182,8 +200,9 @@ fn history_floor() -> Vec<String> {
         u64::MAX.to_string(),
         widest(proofs.to_vec()).unwrap_or_default(),
         widest(outcomes.to_vec()).unwrap_or_default(),
-        "00:00:00".to_owned(),
-        "000000".to_owned(),
+        "0:00:00".to_owned(),
+        "00000".to_owned(),
+        "000".to_owned(),
     ]
 }
 
@@ -196,6 +215,7 @@ fn history_header_cells() -> Vec<String> {
         "stats.history.outcome",
         "stats.history.time",
         "stats.history.moves",
+        "stats.history.restarts",
     ]
     .iter()
     .map(|key| t(key).into_owned())
@@ -211,7 +231,16 @@ fn history_cells(record: &GameRecord) -> Vec<String> {
         outcome_label(record.outcome),
         format_time(record.elapsed_ms),
         format_count(record.moves),
+        restarts_cell(record),
     ]
+}
+
+fn restarts_cell(record: &GameRecord) -> String {
+    if record.undo_allowed {
+        NONE.to_owned()
+    } else {
+        record.counters.restarts.to_string()
+    }
 }
 
 fn history_line(cells: &[String]) -> String {

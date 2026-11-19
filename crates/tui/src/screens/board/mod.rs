@@ -73,6 +73,7 @@ pub struct BoardScreen {
     copy_note: Option<(u64, bool)>,
     hint_note: bool,
     undo_allowed: bool,
+    restarts: u32,
     deal: DealCheck,
     guide_panel: bool,
     auto_finish: bool,
@@ -112,6 +113,7 @@ impl Default for BoardScreen {
             copy_note: None,
             hint_note: false,
             undo_allowed: true,
+            restarts: 0,
             deal: DealCheck::Unchecked,
             guide_panel: true,
             auto_finish: true,
@@ -152,6 +154,7 @@ impl BoardScreen {
         self.pointer = Pointer::default();
         self.copy_note = None;
         self.undo_allowed = undo_allowed;
+        self.restarts = 0;
         self.deal = DealCheck::Unchecked;
         self.settle();
     }
@@ -171,15 +174,26 @@ impl BoardScreen {
         self.undo_allowed
     }
 
+    /// Restarts counted in the running game: only a game without undo counts them.
+    pub fn restarts(&self) -> u32 {
+        self.restarts
+    }
+
+    /// Sets the restart count of a game taken over from the saved one.
+    pub fn set_restarts(&mut self, restarts: u32) {
+        self.restarts = restarts;
+    }
+
     /// Records how copying the seed ended, for the status line, until the next action.
     pub fn announce_copy(&mut self, seed: u64, copied: bool) {
         self.copy_note = Some((seed, copied));
     }
 
     /// Back to the dealt position of the same seed with an empty history and a zeroed clock.
-    pub fn restart(&mut self, now: Instant) {
+    /// Returns whether the restart was counted, which it is in a game without undo only.
+    pub fn restart(&mut self, now: Instant) -> bool {
         let Some(session) = self.session.as_mut() else {
-            return;
+            return false;
         };
         session.restart();
         self.cursor = Cursor::initial(&session.game().piles());
@@ -189,6 +203,11 @@ impl BoardScreen {
         self.clock.resume(now);
         self.settle();
         self.announce_event(status::RESTARTED);
+        let counted = !self.undo_allowed;
+        if counted {
+            self.restarts = self.restarts.saturating_add(1);
+        }
+        counted
     }
 
     /// The running session, if a game was started.
@@ -267,6 +286,7 @@ impl BoardScreen {
             session,
             self.elapsed(now),
             self.undo_allowed,
+            self.restarts,
             self.deal,
         ))
     }

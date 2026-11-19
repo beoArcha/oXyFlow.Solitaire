@@ -79,6 +79,10 @@ impl Storage for SharedStorage {
             .finish_game(id, outcome, elapsed_ms, moves)
     }
 
+    fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
+        self.0.borrow_mut().record_restart(id)
+    }
+
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
         self.0.borrow_mut().record_proof(id, proof)
     }

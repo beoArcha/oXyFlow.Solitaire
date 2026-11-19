@@ -1,5 +1,6 @@
 //! The game information of the board, in the one place the screen shows it: variant, seed, playing
-//! time, moves, the stock counter, in a game without undo the "No undo" badge and, for a deal the solver
+//! time, moves, the stock counter, in a game without undo the "No undo" badge and, once it has been
+//! restarted, the restart count and, for a deal the solver
 //! was asked about, whether it is winnable. A Compact
 //! screen draws the facts in one header row, a Standard or Wide screen in the `Game` box of the
 //! side panel. The seed is a click target that copies it, so it is underlined in both places.
@@ -24,7 +25,7 @@ pub(super) const SEED_ROW: u16 = 1;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct Facts {
     facts: Vec<String>,
-    counter: Option<usize>,
+    droppable: Vec<usize>,
     seed_at: usize,
     seed_len: usize,
 }
@@ -49,6 +50,7 @@ impl Facts {
         session: &Session,
         elapsed: Duration,
         undo_allowed: bool,
+        restarts: u32,
         deal: DealCheck,
     ) -> Self {
         let seed = session.seed().to_string();
@@ -65,19 +67,25 @@ impl Facts {
                 &[("moves", &session.moves_made().to_string())],
             ),
         ];
-        let counter = counters::stock_text(session).map(|text| {
+        let mut droppable = Vec::new();
+        if let Some(text) = counters::stock_text(session) {
+            droppable.push(facts.len());
             facts.push(text);
-            facts.len() - 1
-        });
+        }
         if !undo_allowed {
             facts.push(t("board.header.no_undo").into_owned());
+            if restarts > 0 {
+                let count = restarts.to_string();
+                facts.push(tf("board.header.restarts", &[("count", &count)]));
+            }
         }
         if let Some(key) = deal.label_key() {
+            droppable.push(facts.len());
             facts.push(t(key).into_owned());
         }
         Self {
             facts,
-            counter,
+            droppable,
             seed_at,
             seed_len: cells(&seed),
         }
@@ -89,13 +97,24 @@ impl Facts {
             + separator * facts.len().saturating_sub(1)
     }
 
+    fn shown(&self, indices: &[usize]) -> Vec<&String> {
+        indices
+            .iter()
+            .filter_map(|index| self.facts.get(*index))
+            .collect()
+    }
+
+    /// The facts that fit `width`: the stock counter goes first, the winnable mark next, so that
+    /// the no-undo badge and the restart count stay.
     fn fitting(&self, width: usize) -> Vec<&String> {
-        let mut shown: Vec<&String> = self.facts.iter().collect();
-        let dropped = self.counter.filter(|_| Self::joined_width(&shown) > width);
-        if let Some(index) = dropped {
-            shown.remove(index);
+        let mut kept: Vec<usize> = (0..self.facts.len()).collect();
+        for dropped in &self.droppable {
+            if Self::joined_width(&self.shown(&kept)) <= width {
+                break;
+            }
+            kept.retain(|index| index != dropped);
         }
-        shown
+        self.shown(&kept)
     }
 
     /// The header row for `area`: the facts that fit, centered, the seed underlined.

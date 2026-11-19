@@ -35,6 +35,9 @@ pub(super) const MIGRATIONS: &[&str] = &[
     "
     ALTER TABLE games ADD COLUMN proof TEXT;
 ",
+    "
+    ALTER TABLE games ADD COLUMN restarts INTEGER NOT NULL DEFAULT 0;
+",
 ];
 
 /// The schema version this build writes.

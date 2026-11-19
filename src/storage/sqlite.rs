@@ -137,6 +137,19 @@ impl SqliteStorage {
 }
 
 impl SqliteStorage {
+    fn bump_restarts(&mut self, id: GameId) -> Result<(), Fault> {
+        let tx = self.conn.transaction()?;
+        let changed = tx.execute(
+            "UPDATE games SET restarts = restarts + 1 WHERE id = ?1",
+            params![id.0],
+        )?;
+        if changed == 0 {
+            return Err(Fault::invalid(format!("no game with id {}", id.0)));
+        }
+        tx.commit()?;
+        Ok(())
+    }
+
     fn write_proof(&mut self, id: GameId, proof: Proof) -> Result<(), Fault> {
         let tx = self.conn.transaction()?;
         let changed = tx.execute(
@@ -189,6 +202,10 @@ impl Storage for SqliteStorage {
         moves: u32,
     ) -> Result<(), StorageError> {
         Ok(self.close_game(id, outcome, elapsed_ms, moves)?)
+    }
+
+    fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
+        Ok(self.bump_restarts(id)?)
     }
 
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
