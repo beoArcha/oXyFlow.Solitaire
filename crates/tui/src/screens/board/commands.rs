@@ -40,6 +40,7 @@ impl BoardScreen {
             Action::Undo => self.undo(),
             Action::Redo => self.redo(),
             Action::Hint => self.hint(),
+            Action::Finish => self.finish_key(),
             Action::Pause => Effect::Open(Modal::Pause),
             Action::Restart => {
                 Effect::Open(Modal::confirm("board.confirm.restart", Effect::Restart))

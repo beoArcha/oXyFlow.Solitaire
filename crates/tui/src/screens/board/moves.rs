@@ -179,6 +179,8 @@ impl BoardScreen {
         self.cursor.depth = 1;
         self.keep_cursor_valid();
         self.persist();
+        self.forced = self.session.as_ref().and_then(|session| session.forced_finish());
+        self.declined = false;
         if self.is_won() {
             self.cue(SoundCue::Win);
             return Effect::Open(Modal::win());

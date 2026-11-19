@@ -46,7 +46,7 @@ const ALWAYS: [Action; 12] = [
     Action::Quit,
 ];
 
-fn part(action: Action, key: &str, drop_order: u8) -> Part {
+pub(super) fn part(action: Action, key: &str, drop_order: u8) -> Part {
     let name = primary_key(action).unwrap_or_default();
     Part {
         text: tf(key, &[("key", &name)]),
@@ -217,6 +217,10 @@ impl BoardScreen {
         if hint {
             possible.push(part(Action::Hint, "board.action.hint", 3));
             usable.push(Action::Hint);
+        }
+        if let Some(finish) = self.finish_part() {
+            possible.push(finish);
+            usable.push(Action::Finish);
         }
         if self.undo_allowed && session.can_undo() {
             possible.push(part(Action::Undo, "board.action.undo", 4));

@@ -4,7 +4,7 @@
 use std::time::Instant;
 
 use ratatui::Frame;
-use ratatui::crossterm::event::{KeyEvent, KeyEventKind, MouseEvent};
+use ratatui::crossterm::event::{KeyEvent, KeyEventKind, MouseEvent, MouseEventKind};
 use ratatui::layout::Rect;
 use ratatui::widgets::Block;
 
@@ -216,7 +216,17 @@ impl App {
             Input::Tick => Effect::None,
         };
         self.apply(effect);
+        let effect = self.advance_finish();
+        self.apply(effect);
         self.play_board_cues();
+    }
+
+    /// Runs the auto-finish of the board when no modal is open on it.
+    fn advance_finish(&mut self) -> Effect {
+        if self.screen != Screen::Board || self.modal.is_some() {
+            return Effect::None;
+        }
+        self.board.advance(self.now, self.settings.auto_finish)
     }
 
     fn play_board_cues(&mut self) {
@@ -233,6 +243,7 @@ impl App {
         if action == Some(Action::ForceQuit) {
             return Effect::Quit;
         }
+        self.board.interrupt_finish();
         if self.too_small() {
             return if action == Some(Action::Quit) {
                 Effect::Quit
@@ -310,6 +321,9 @@ impl App {
     fn on_mouse(&mut self, event: &MouseEvent) -> Effect {
         if self.too_small() {
             return Effect::None;
+        }
+        if matches!(event.kind, MouseEventKind::Down(_)) {
+            self.board.interrupt_finish();
         }
         if self.modal.is_some() {
             return self.on_modal_mouse(event);
