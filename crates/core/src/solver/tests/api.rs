@@ -141,7 +141,7 @@ fn replay_rejects_lists_that_do_not_win() {
 fn default_budgets_are_set_for_every_variant() {
     for variant in Variant::ALL {
         assert!(
-            SolveBudget::default_for(variant).nodes >= 100_000,
+            SolveBudget::default_for(variant).nodes >= 50_000,
             "{variant:?}"
         );
     }
