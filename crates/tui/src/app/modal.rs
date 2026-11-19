@@ -2,7 +2,7 @@
 
 use super::search::SearchProgress;
 use crate::screens::Effect;
-use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay, MovesWindow};
+use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay, MovesWindow, QuickOptions};
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
@@ -16,6 +16,8 @@ pub enum Modal {
     Guide(GuideWindow),
     /// The entries of the possible moves panel as a window, on a screen too narrow for the panel.
     Moves(MovesWindow),
+    /// The aids of the running game, switched at once; "Save as default" keeps them for new games.
+    Quick(QuickOptions),
     Pause,
     /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
     Confirm {

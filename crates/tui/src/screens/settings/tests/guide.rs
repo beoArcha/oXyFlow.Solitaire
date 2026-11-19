@@ -1,16 +1,25 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::FIELDS;
+use super::super::options::{FIELDS, Field};
 use super::{line_of, move_down, open_settings};
 use crate::i18n::{Locale, set_locale};
 use crate::screens::Effect;
 use crate::settings::Settings;
+use crate::test_support::Harness;
+
+fn move_to_guide(h: &mut Harness) {
+    let index = FIELDS
+        .iter()
+        .position(|field| *field == Field::GuidePanel)
+        .unwrap_or_default();
+    move_down(h, index);
+}
 
 #[test]
 fn the_guide_panel_row_toggles_and_reaches_storage() {
     let mut h = open_settings();
     h.resize(130, 40);
-    move_down(&mut h, FIELDS.len() - 1);
+    move_to_guide(&mut h);
     assert!(line_of(&mut h, "Guide panel").ends_with("On"));
     h.press(KeyCode::Enter);
     assert!(!h.app.settings().guide_panel);
@@ -41,11 +50,11 @@ fn the_guide_row_names_the_columns_the_panel_needs_on_a_narrow_screen() {
 fn the_guide_row_adds_no_note_when_the_panel_is_off() {
     let mut h = open_settings();
     h.resize(100, 30);
-    move_down(&mut h, FIELDS.len() - 1);
+    move_to_guide(&mut h);
     h.press(KeyCode::Enter);
     assert!(!h.app.settings().guide_panel);
     assert!(line_of(&mut h, "Guide panel").ends_with("Off"));
-    assert!(!h.text().contains("needs"));
+    assert!(!line_of(&mut h, "Guide panel").contains("needs"));
 }
 
 #[test]

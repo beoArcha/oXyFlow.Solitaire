@@ -19,7 +19,7 @@ use crate::app::{Modal, Screen, SearchCommand};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
-use crate::settings::Settings;
+use crate::settings::{Aids, Settings};
 use crate::theme::Theme;
 
 /// Everything a screen may read while drawing or handling input.
@@ -57,6 +57,10 @@ pub enum Effect {
     /// Replace the settings; the application applies and saves them.
     Apply(Settings),
     Open(Modal),
+    /// Set the aids of the running game; the defaults in the settings stay as they are.
+    Quick(Aids),
+    /// Make the aids of the running game the defaults for new games, and save them.
+    SaveAids,
     /// Run a board action as its key would, after a dialog closed (a button of the moves window).
     Board(Action),
     /// Open the "How to play" window on the game being played, or on Klondike.

@@ -17,6 +17,7 @@ mod moves_panel;
 mod navigation;
 mod persist;
 mod pyramid;
+mod quick;
 mod recycle;
 mod restarts;
 mod run_wrap;

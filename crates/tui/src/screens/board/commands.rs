@@ -53,9 +53,12 @@ impl BoardScreen {
                 .as_ref()
                 .map_or(Effect::None, |session| Effect::CopySeed(session.seed())),
             Action::Quit => Effect::Open(Modal::confirm("board.confirm.quit", Effect::Quit)),
-            Action::ForceQuit | Action::Help | Action::Rules | Action::Guide | Action::Moves => {
-                Effect::None
-            }
+            Action::ForceQuit
+            | Action::Help
+            | Action::Rules
+            | Action::Guide
+            | Action::Moves
+            | Action::Options => Effect::None,
         }
     }
 

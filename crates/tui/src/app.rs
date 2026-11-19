@@ -24,7 +24,7 @@ use crate::screens::main_menu::MainMenu;
 use crate::screens::settings::SettingsScreen;
 use crate::screens::stats::StatsScreen;
 use crate::screens::{Effect, ViewCtx};
-use crate::settings::{DEFAULT_SOUND_STYLE, Settings};
+use crate::settings::{Aids, DEFAULT_SOUND_STYLE, Settings};
 use crate::solver::Solver;
 use crate::storage::{SavedGame, Storage, StorageError};
 use crate::theme::Theme;
@@ -51,7 +51,11 @@ macro_rules! view_ctx {
         ViewCtx {
             theme: &$app.theme,
             glyphs: &$app.glyphs,
-            settings: &$app.settings,
+            settings: if $app.screen == Screen::Board {
+                &$app.running
+            } else {
+                &$app.settings
+            },
             caps: &$app.caps,
             audio_status: $app.audio.status(),
             sound_styles: &$app.sound_styles,
@@ -75,6 +79,8 @@ pub struct App {
     caps: TerminalCaps,
     sound_styles: Vec<StyleInfo>,
     settings: Settings,
+    quick: Aids,
+    running: Settings,
     theme: Theme,
     glyphs: Glyphs,
     saved: Option<SavedGame>,
@@ -122,6 +128,8 @@ impl App {
             sound_styles,
             theme: Theme::new(settings.theme, settings.color_depth(&caps)),
             glyphs: Glyphs::new(settings.glyph_mode),
+            quick: settings.aids(),
+            running: settings.clone(),
             settings,
             saved: None,
             write_failed: false,
@@ -140,6 +148,7 @@ impl App {
         };
         app.load_stored_state();
         app.fit_sound_style();
+        app.reset_quick();
         app.refresh_view();
         app
     }
@@ -326,6 +335,7 @@ impl App {
             .modal
             .as_mut()
             .and_then(|modal| overlay::handle_for(modal, key, action, rules));
+        self.sync_quick();
         self.finish_modal(outcome)
     }
 
@@ -335,6 +345,7 @@ impl App {
             .modal
             .as_mut()
             .and_then(|modal| overlay::handle_mouse(modal, area, &self.board, self.now, event));
+        self.sync_quick();
         self.finish_modal(outcome)
     }
 
@@ -414,6 +425,7 @@ mod effects;
 mod finish;
 mod modal;
 mod persist;
+mod quick;
 mod search;
 
 #[cfg(test)]

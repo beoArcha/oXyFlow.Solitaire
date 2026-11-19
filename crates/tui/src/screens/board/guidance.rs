@@ -34,7 +34,7 @@ pub(super) struct Guidance {
     pub usable: Vec<Action>,
 }
 
-const ALWAYS: [Action; 13] = [
+const ALWAYS: [Action; 14] = [
     Action::Up,
     Action::Down,
     Action::Left,
@@ -43,6 +43,7 @@ const ALWAYS: [Action; 13] = [
     Action::Rules,
     Action::Guide,
     Action::Moves,
+    Action::Options,
     Action::Restart,
     Action::NewGame,
     Action::Pause,
@@ -169,7 +170,10 @@ impl Guidance {
 /// The parts that end every `Do:` row: how to see all keys and, unless Esc is taken by a pick,
 /// how to leave for the menu.
 fn tail(with_menu: bool) -> Vec<Part> {
-    let mut parts = vec![part(Action::Help, "board.action.help", 0)];
+    let mut parts = vec![
+        part(Action::Options, "board.action.options", 0),
+        part(Action::Help, "board.action.help", 0),
+    ];
     if with_menu {
         parts.push(part(Action::Back, "board.action.menu", 0));
     }

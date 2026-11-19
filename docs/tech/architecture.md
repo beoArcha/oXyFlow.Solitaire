@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -190,7 +190,7 @@ pub struct Deps {
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
-pub enum Modal { Help, HowToPlay(HowToPlay), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
+pub enum Modal { Help, HowToPlay(HowToPlay), Quick(QuickOptions), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
 
 impl App {
     pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
@@ -256,7 +256,7 @@ pub struct NullClipboard;                                // every copy fails wit
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `Apply(Settings)`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
+  `Restart`, `Apply(Settings)`, `Quick(Aids)`, `SaveAids`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
   `{ variant, seed: Option<u64>, undo_allowed: bool }`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, `audio_status`, `sound_styles`, clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
@@ -371,6 +371,26 @@ pub struct NullClipboard;                                // every copy fails wit
   after the window closed), an inactive one does nothing. *Focus:* while the panel is drawn it is the last stop of
   the board's Tab ring (piles, then the entries, then round); Up and Down choose an entry, Enter and Space run it
   (an inactive one only says `board.status.not_possible`), Esc, Left and Right return to the piles.
+- **Aids and quick options (P3-27):** the board aids are `Settings::aura`, `target_marks` (default `true`; an older
+  value without the field loads as `true`), `guide_panel`, `moves_panel` and `auto_finish`; `settings/aids.rs` holds them as
+  `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
+  `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings groups them under
+  "Hints and help" (`Group::Hints`, replacing the old Board group), after Display and Sound; the moves panel and the
+  target marks got rows there. They are the *defaults for a new game*. The running game has its own copy:
+  `App::quick` (`App::aids()`), set from the defaults whenever a game is dealt or a saved game other than the one
+  on the board is resumed (a restart and resuming the same game keep it, the choices are not saved with the game).
+  The board and the modal layer draw with `App::running` (the settings with `quick` laid over their aids) while the
+  screen is the board; every other screen sees the settings. So `ViewCtx::settings` on the board *is* the running game's
+  view, and a default changed in Settings never reaches a game in progress. `target_marks: false` leaves `Marks::targets`
+  empty (no `+` and no target halo); the focus and the carried run stay marked. *Quick options:* key `o`
+  (`Action::Options`, help group Moves, `board.action.options`) and the footer button `o: options` in the fixed tail
+  of the `Do:` row open `Modal::Quick(QuickOptions { aids, focus })` (`widgets/overlay/quick_options.rs`). Its focus ring is
+  the five rows, "Save as default" and Close (Tab, Shift+Tab, Up, Down wrap; Left/Right change a row or move between the
+  two buttons; Enter and Space press; a click presses; Esc, `o` and Close close). Every change reaches the game at
+  once: after each key or click `App::sync_quick` copies the dialog's `aids` into `quick` while the dialog is open.
+  "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
+  closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
+  are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
 - **Board counters, no-undo mode and seed copying (P3-12):** the game information (`screens/board/header.rs`, `Facts`) reads
   `variant | seed N | Time m:ss | Moves: N | stock counter | No undo` in one header row at Compact size or as the
   lines of the `Game` compartment at Standard and Wide size (the counter is the first fact dropped when the header

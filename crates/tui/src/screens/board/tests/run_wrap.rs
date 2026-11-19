@@ -126,6 +126,7 @@ fn down_on_a_one_card_pile_still_moves_to_the_pile_below() {
 fn the_run_keys_are_usable_and_named_when_the_pile_has_a_run() {
     for variant in VARIANTS {
         let (mut h, pile) = deal_with_a_run(variant);
+        h.resize(160, 40);
         put_cursor(&mut h, pile);
         let usable = board(&h).guidance().map(|g| g.usable).unwrap_or_default();
         assert!(usable.contains(&Action::RunMore), "{variant:?}");

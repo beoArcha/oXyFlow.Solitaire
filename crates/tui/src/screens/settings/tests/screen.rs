@@ -246,24 +246,24 @@ fn heading_y(lines: &[String], group: Group) -> u16 {
 }
 
 #[test]
-fn the_rows_sit_under_their_group_headings_and_the_guide_row_is_last() {
+fn the_rows_sit_under_their_group_headings_and_the_aid_rows_close_the_list() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let mut screen = SettingsScreen::new();
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
     let display = heading_y(&lines, Group::Display);
     let sound = heading_y(&lines, Group::Sound);
-    let board = heading_y(&lines, Group::Board);
+    let hints = heading_y(&lines, Group::Hints);
     assert!(display < row_at(&lines, Field::Language).1);
     assert!(row_at(&lines, Field::Colors).1 < sound);
     assert!(sound < row_at(&lines, Field::SoundStyle).1);
-    assert!(row_at(&lines, Field::Volume).1 < board);
-    assert!(board < row_at(&lines, Field::Aura).1);
+    assert!(row_at(&lines, Field::Volume).1 < hints);
+    assert!(hints < row_at(&lines, Field::Aura).1);
     let last = FIELDS
         .iter()
         .map(|field| row_at(&lines, *field).1)
         .max()
         .unwrap_or_default();
-    assert_eq!(row_at(&lines, Field::GuidePanel).1, last);
+    assert_eq!(row_at(&lines, Field::AutoFinish).1, last);
 }
 
 fn value_column(line: &str) -> Option<usize> {

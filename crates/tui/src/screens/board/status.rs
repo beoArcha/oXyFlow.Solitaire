@@ -42,6 +42,7 @@ pub(super) const RESTARTED: &str = "board.status.restarted";
 pub(super) const FINISHING: &str = "board.status.finishing";
 pub(super) const NO_FINISH: &str = "board.status.no_finish";
 pub(super) const NOT_POSSIBLE: &str = "board.status.not_possible";
+pub(super) const DEFAULTS_SAVED: &str = "board.status.defaults_saved";
 
 /// Localization key of the event announced after a move was played.
 pub(super) const fn done_of(mv: Move) -> &'static str {
@@ -101,6 +102,11 @@ impl BoardScreen {
             }
             None => self.status.map(|key| (t(key).into_owned(), tone_of(key))),
         }
+    }
+
+    /// Tells the player that the quick choices were saved as the defaults for new games.
+    pub fn announce_defaults_saved(&mut self) {
+        self.status = Some(DEFAULTS_SAVED);
     }
 
     /// Records the event of the last action, unless the board already says why it stopped.

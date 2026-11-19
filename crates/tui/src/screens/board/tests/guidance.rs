@@ -5,7 +5,7 @@ use super::*;
 use crate::announce::{card_name, pile_name, targets_text};
 use crate::glyphs::is_wgl4;
 use crate::i18n::{Locale, set_locale};
-use crate::settings::Settings;
+use crate::settings::{Aids, Settings};
 
 const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
 const TITLE: &str = "Guide (g: hide)";
@@ -178,7 +178,7 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     assert!(row(&mut h, "Now:").starts_with("Now: Game won"));
     let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Do: n: new game | g: guide | ?: keys | Esc: menu"),
+        possible.starts_with("Do: n: new game | g: guide | o: options | ?: keys | Esc: menu"),
         "{possible}"
     );
 }
@@ -260,31 +260,32 @@ fn the_board_keeps_its_width_and_the_guide_needs_130_columns() {
 #[test]
 fn the_guide_is_off_when_the_setting_is_off() {
     let mut h = sized(KLONDIKE, 140, 40);
-    h.app.apply(Effect::Apply(Settings {
+    h.app.apply(Effect::Quick(Aids {
         guide_panel: false,
-        ..Settings::default()
+        ..Settings::default().aids()
     }));
     assert!(!h.text().contains(TITLE));
-    h.app.apply(Effect::Apply(Settings::default()));
+    h.app.apply(Effect::Quick(Settings::default().aids()));
     assert!(h.text().contains(TITLE));
 }
 
 #[test]
-fn the_g_key_and_a_click_on_the_title_toggle_the_guide_and_save_the_setting() {
+fn the_g_key_and_a_click_on_the_title_toggle_the_guide_for_this_game_only() {
     let mut h = sized(KLONDIKE, 140, 40);
-    assert!(h.app.settings().guide_panel);
+    assert!(h.app.aids().guide_panel);
     h.type_char('g');
-    assert!(!h.app.settings().guide_panel);
+    assert!(!h.app.aids().guide_panel);
+    assert!(h.app.settings().guide_panel);
     assert!(!h.text().contains(TITLE));
     let saved = h.storage.borrow().settings.clone();
-    assert!(saved.is_some_and(|settings| !settings.guide_panel));
+    assert!(saved.is_none_or(|settings| settings.guide_panel));
     h.type_char('g');
-    assert!(h.app.settings().guide_panel);
+    assert!(h.app.aids().guide_panel);
     let Some((column, line)) = h.find(TITLE) else {
         unreachable!("the title is drawn")
     };
     h.click(column + 2, line);
-    assert!(!h.app.settings().guide_panel);
+    assert!(!h.app.aids().guide_panel);
     assert!(!h.text().contains(TITLE));
 }
 

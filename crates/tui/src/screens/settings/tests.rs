@@ -2,10 +2,12 @@ use ratatui::crossterm::event::KeyCode;
 
 mod focus;
 mod guide;
+mod hints;
 mod screen;
 mod styles;
 
-use super::options::{FIELDS, Field, Step, line, value_text};
+use super::options::{FIELDS, Field, Step};
+use super::values::{line, value_text};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
 use crate::settings::{AuraMode, ColorMode, GlyphMode, Settings};
@@ -14,7 +16,7 @@ use crate::test_support::{Harness, PLAIN, TRUE_COLOR, sound_styles};
 use crate::theme::ThemeId;
 
 fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
-    super::options::changed(field, settings, step, &sound_styles())
+    super::values::changed(field, settings, step, &sound_styles())
 }
 
 fn row(field: Field, settings: &Settings, audio_available: bool) -> String {

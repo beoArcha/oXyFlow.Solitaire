@@ -69,7 +69,7 @@ fn the_third_tab_shows_the_help_text_with_the_new_window_option() {
     assert!(text.contains("[Command line]"));
     assert!(text.contains("Usage: oxysol [options]"));
     assert!(text.contains("--version"));
-    assert!(text.contains("1-21 / "));
+    assert!(text.contains("1-22 / "));
 }
 
 #[test]
@@ -156,7 +156,7 @@ fn the_text_scrolls_by_key_and_by_wheel_and_stops_at_both_ends() {
     assert_eq!(scroll_of(&h), Some(0));
     h.press(KeyCode::Down);
     assert_eq!(scroll_of(&h), Some(1));
-    assert!(h.text().contains("2-22 / "));
+    assert!(h.text().contains("2-23 / "));
     h.press(KeyCode::PageDown);
     assert!(scroll_of(&h) >= Some(1));
     h.press(KeyCode::End);

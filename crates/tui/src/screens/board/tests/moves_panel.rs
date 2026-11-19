@@ -252,15 +252,15 @@ fn without_the_panel_tab_stays_on_the_piles() {
 }
 
 #[test]
-fn the_toggle_key_hides_and_shows_the_panel_and_keeps_the_setting() {
+fn the_toggle_key_hides_and_shows_the_panel_for_this_game_only() {
     let mut h = english(KLONDIKE, STANDARD);
     assert!(h.text().contains("Possible moves (v: hide)"));
     h.type_char('v');
-    assert!(!h.app.settings().moves_panel);
+    assert!(!h.app.aids().moves_panel);
     assert!(!h.text().contains("Possible moves"));
-    assert!(h.app.settings().guide_panel);
+    assert!(h.app.aids().guide_panel);
     h.type_char('v');
-    assert!(h.app.settings().moves_panel);
+    assert!(h.app.aids().moves_panel);
     assert!(h.text().contains("Possible moves (v: hide)"));
 }
 
@@ -268,14 +268,14 @@ fn the_toggle_key_hides_and_shows_the_panel_and_keeps_the_setting() {
 fn a_click_on_the_panel_title_hides_it() {
     let mut h = english(KLONDIKE, STANDARD);
     click_text(&mut h, "Possible moves");
-    assert!(!h.app.settings().moves_panel);
+    assert!(!h.app.aids().moves_panel);
 }
 
 #[test]
 fn the_panel_works_with_the_guide_panel_off() {
     let mut h = english(KLONDIKE, STANDARD);
     h.type_char('g');
-    assert!(!h.app.settings().guide_panel);
+    assert!(!h.app.aids().guide_panel);
     let text = h.text();
     assert!(text.contains("Possible moves"), "{text}");
     assert!(!text.contains("Guide ("), "{text}");

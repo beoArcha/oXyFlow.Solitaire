@@ -1,8 +1,7 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{
-    BACK_STYLES, FIELDS, FRONT_STYLES, Field, Step, unavailable_reason_key,
-};
+use super::super::options::{BACK_STYLES, FIELDS, FRONT_STYLES, Field, Step};
+use super::super::values::unavailable_reason_key;
 use super::{changed, move_down, open_settings, value};
 use crate::audio::{AudioSettings, AudioStatus};
 use crate::i18n::{Locale, set_locale, t};
