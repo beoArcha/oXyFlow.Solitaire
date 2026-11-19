@@ -1,9 +1,11 @@
 //! What a row of the settings screen shows and how one step changes [`Settings`].
 
-use super::options::{BACK_STYLES, COLOR_MODES, FIELDS, FRONT_STYLES, Field, GLYPH_MODES, Step};
+use super::options::{
+    BACK_STYLES, COLOR_MODES, FIELDS, FRONT_STYLES, FULL_SCREEN_MODES, Field, GLYPH_MODES, Step,
+};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
-use crate::settings::{ColorMode, GlyphMode, Settings};
+use crate::settings::{ColorMode, FullScreen, GlyphMode, Settings};
 use crate::theme::ThemeId;
 
 const VOLUME_STEP: u8 = 10;
@@ -38,6 +40,14 @@ const fn color_key(mode: ColorMode) -> &'static str {
         ColorMode::Ansi16 => "settings.color.ansi16",
         ColorMode::Ansi256 => "settings.color.ansi256",
         ColorMode::TrueColor => "settings.color.true_color",
+    }
+}
+
+const fn full_screen_key(mode: FullScreen) -> &'static str {
+    match mode {
+        FullScreen::Auto => "settings.full_screen.auto",
+        FullScreen::On => "settings.value.on",
+        FullScreen::Off => "settings.value.off",
     }
 }
 
@@ -109,6 +119,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::BackStyle => card_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
+        Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
         Field::Music => switch_text(settings.music),
@@ -196,6 +207,9 @@ pub fn changed(
         }
         Field::Glyphs => next.glyph_mode = cycle(&GLYPH_MODES, settings.glyph_mode, step),
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
+        Field::FullScreen => {
+            next.full_screen = cycle(&FULL_SCREEN_MODES, settings.full_screen, step);
+        }
         Field::SoundStyle => {
             let ids: Vec<&str> = sound_styles.iter().map(|style| style.id.as_str()).collect();
             next.sound_style = cycle_str(&ids, &settings.sound_style, step);

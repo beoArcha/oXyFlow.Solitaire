@@ -4,7 +4,9 @@
 use serde::{Deserialize, Serialize};
 
 mod aids;
+mod full_screen;
 pub use aids::{Aid, Aids};
+pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 
 use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -76,6 +78,9 @@ pub struct Settings {
     /// Whether the board marks the places a carried run can go (`+` and the target halo). An older
     /// saved value without the field loads as `true`.
     pub target_marks: bool,
+    /// Whether the game fills the whole screen. An older saved value without the field loads as
+    /// `Auto`.
+    pub full_screen: FullScreen,
 }
 
 impl Default for Settings {
@@ -98,6 +103,7 @@ impl Default for Settings {
             auto_finish: true,
             aura: AuraMode::Full,
             target_marks: true,
+            full_screen: FullScreen::Auto,
         }
     }
 }

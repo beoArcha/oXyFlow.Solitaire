@@ -13,7 +13,7 @@ use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 
-use crate::app::{App, Deps};
+use crate::app::{App, Deps, DisplayDeps};
 use crate::audio::{Audio, AudioSettings, AudioStatus, SoundCue, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::clipboard::{Clipboard, ClipboardError};
@@ -239,11 +239,16 @@ impl Harness {
 
     /// A harness whose application was started with the command-line seed `seed`.
     pub fn starting_at_seed(seed: u64) -> Self {
-        Self::build(MemoryStorage::new(), TRUE_COLOR, 120, 40, Some(seed))
+        Self::build(MemoryStorage::new(), TRUE_COLOR, 120, 40, Some(seed), None)
+    }
+
+    /// A harness whose application was given `display` for the full-screen switch.
+    pub fn with_display(storage: MemoryStorage, display: DisplayDeps) -> Self {
+        Self::build(storage, TRUE_COLOR, 120, 40, None, Some(display))
     }
 
     pub fn with(storage: MemoryStorage, caps: TerminalCaps, width: u16, height: u16) -> Self {
-        Self::build(storage, caps, width, height, None)
+        Self::build(storage, caps, width, height, None, None)
     }
 
     fn build(
@@ -252,6 +257,7 @@ impl Harness {
         width: u16,
         height: u16,
         start_seed: Option<u64>,
+        display: Option<DisplayDeps>,
     ) -> Self {
         let storage = Rc::new(RefCell::new(storage));
         let audio = Rc::new(RefCell::new(AudioLog::default()));
@@ -270,6 +276,7 @@ impl Harness {
             start_seed,
             sound_styles: sound_styles(),
             solver: Box::new(StubSolver(Rc::clone(&solver))),
+            display: display.unwrap_or_else(DisplayDeps::none),
         });
         Self {
             app,

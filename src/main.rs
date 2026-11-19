@@ -9,12 +9,13 @@ use oxysol::about;
 use oxysol::audio;
 use oxysol::cli::{self, Cli, ColorArg};
 use oxysol::clipboard::SystemClipboard;
-use oxysol::console;
+use oxysol::console::{self, display};
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
 use oxysol::solver::ThreadSolver;
 use oxysol::storage::SqliteStorage;
 use oxysol::{logging, new_window, panic_hook, seed};
+use oxysol_tui::app::{DisplayDeps, DisplayFacts};
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
 use oxysol_tui::i18n::{self, Locale};
 use oxysol_tui::{Deps, NullSolver, Solver};
@@ -102,11 +103,23 @@ fn start(args: &Cli) -> Result<(), AppError> {
         start_seed: args.seed,
         sound_styles: audio::bank::style_list(),
         solver: start_solver(),
+        display: display_deps(args),
     };
     oxysol_tui::run(deps).map_err(|error| {
         tracing::error!(%error, "the terminal interface stopped");
         AppError::from(error)
     })
+}
+
+fn display_deps(args: &Cli) -> DisplayDeps {
+    DisplayDeps {
+        display: Box::new(display::ConsoleWindow::default()),
+        facts: DisplayFacts {
+            owns_window: console::owns_window(),
+            kind: display::terminal_kind(platform(), &|key: &str| std::env::var(key).ok()),
+            flag: args.full_screen,
+        },
+    }
 }
 
 fn start_solver() -> Box<dyn Solver> {

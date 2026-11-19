@@ -2,6 +2,7 @@
 
 use std::time::{Duration, Instant};
 
+use oxysol_tui::app::DisplayDeps;
 use oxysol_tui::audio::{AudioStatus, NullAudio, StyleInfo};
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
@@ -51,6 +52,7 @@ impl Driver {
             start_seed: None,
             sound_styles: sound_styles(),
             solver: Box::new(NullSolver::default()),
+            display: DisplayDeps::none(),
         });
         Self {
             app,

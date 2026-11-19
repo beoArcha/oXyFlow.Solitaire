@@ -19,6 +19,8 @@ pub struct Cli {
     pub new_window: bool,
     pub colors: Option<ColorArg>,
     pub seed: Option<u64>,
+    /// `--fullscreen` (`Some(true)`) or `--no-fullscreen` (`Some(false)`); the last one given wins.
+    pub full_screen: Option<bool>,
 }
 
 /// Command-line parsing error.
@@ -52,6 +54,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
         new_window: false,
         colors: None,
         seed: None,
+        full_screen: None,
     };
     let mut it = args.into_iter();
     while let Some(arg) = it.next() {
@@ -60,6 +63,8 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
             "--help" => cli.show_help = true,
             "--ascii" => cli.ascii = true,
             "--new-window" | "-n" => cli.new_window = true,
+            "--fullscreen" => cli.full_screen = Some(true),
+            "--no-fullscreen" => cli.full_screen = Some(false),
             "--colors" => {
                 let val = it.next().ok_or(CliError::MissingValue("--colors"))?;
                 let color = parse_colors(&val).ok_or(CliError::InvalidValue {
@@ -102,6 +107,7 @@ mod tests {
                 new_window: false,
                 colors: None,
                 seed: None,
+                full_screen: None,
             }
         );
     }
@@ -137,6 +143,22 @@ mod tests {
             assert_eq!(parsed.colors, Some(ColorArg::Ansi256));
         }
         assert!(!parse(to_args(&["--ascii"])).unwrap().new_window);
+    }
+
+    #[test]
+    fn test_full_screen_flags_force_the_setting_and_the_last_one_wins() {
+        assert_eq!(
+            parse(to_args(&["--fullscreen"])).unwrap().full_screen,
+            Some(true)
+        );
+        assert_eq!(
+            parse(to_args(&["--no-fullscreen"])).unwrap().full_screen,
+            Some(false)
+        );
+        let last = parse(to_args(&["--fullscreen", "--seed", "3", "--no-fullscreen"])).unwrap();
+        assert_eq!(last.full_screen, Some(false));
+        assert_eq!(last.seed, Some(3));
+        assert_eq!(parse(to_args(&["--ascii"])).unwrap().full_screen, None);
     }
 
     #[test]
