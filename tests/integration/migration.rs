@@ -1,10 +1,10 @@
-//! Forward migration of the database: a version 1 file with rows opens as version 2 and keeps
-//! every row.
+//! Forward migration of the database: a version 1 or 2 file with rows opens as the current
+//! version and keeps every row.
 
 use oxysol::paths::AppPaths;
 use oxysol::storage::SqliteStorage;
 use oxysol_core::{DrawCount, Variant};
-use oxysol_tui::{Outcome, Storage};
+use oxysol_tui::{Outcome, Proof, Storage};
 use rusqlite::Connection;
 use tempfile::TempDir;
 
@@ -116,5 +116,61 @@ fn a_migrated_database_is_stamped_with_the_current_version_and_records_new_games
     };
     let version: Result<u32, _> = conn.pragma_query_value(None, "user_version", |row| row.get(0));
     assert!(matches!(version, Ok(v) if v == SqliteStorage::supported_schema_version()));
-    assert_eq!(SqliteStorage::supported_schema_version(), 2);
+    assert_eq!(SqliteStorage::supported_schema_version(), 3);
+    assert!(rows.iter().all(|row| row.proof.is_none()));
+}
+
+const SCHEMA_V2_COLUMNS: &str = "
+    ALTER TABLE games ADD COLUMN moves INTEGER;
+    ALTER TABLE games ADD COLUMN undo_allowed INTEGER NOT NULL DEFAULT 1;
+";
+
+fn version_two_database() -> (TempDir, AppPaths) {
+    let (dir, paths) = version_one_database();
+    let conn = Connection::open(paths.database_file());
+    let Ok(conn) = conn else {
+        std::process::abort();
+    };
+    assert!(conn.execute_batch(SCHEMA_V2_COLUMNS).is_ok());
+    assert!(conn.pragma_update(None, "user_version", 2).is_ok());
+    (dir, paths)
+}
+
+#[test]
+fn a_version_two_database_gains_the_proof_column_and_keeps_its_rows() {
+    let (_dir, paths) = version_two_database();
+    let storage = open(&paths);
+    let rows = storage.history();
+    assert!(matches!(rows, Ok(ref rows) if rows.len() == 3));
+    let Ok(rows) = rows else {
+        return;
+    };
+    assert!(rows.iter().all(|row| row.proof.is_none()));
+    assert_eq!(rows[0].seed, 7);
+    assert_eq!(rows[0].outcome, Some(Outcome::Won));
+}
+
+#[test]
+fn a_recorded_proof_survives_a_reopen() {
+    let (_dir, paths) = version_two_database();
+    {
+        let mut storage = open(&paths);
+        let id = storage.start_game(KLONDIKE, 11, true);
+        let Ok(id) = id else {
+            std::process::abort();
+        };
+        assert!(storage.record_proof(id, Proof::Winnable).is_ok());
+        assert!(
+            storage
+                .record_proof(oxysol_tui::GameId(999), Proof::Winnable)
+                .is_err()
+        );
+    }
+    let storage = open(&paths);
+    let rows = storage.history();
+    let Ok(rows) = rows else {
+        std::process::abort();
+    };
+    assert_eq!(rows[3].proof, Some(Proof::Winnable));
+    assert!(rows[..3].iter().all(|row| row.proof.is_none()));
 }

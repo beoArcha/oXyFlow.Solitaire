@@ -3,6 +3,7 @@
 use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::clipboard::Clipboard;
+use crate::solver::Solver;
 use crate::storage::Storage;
 
 /// Everything the application needs from the outside world.
@@ -17,4 +18,6 @@ pub struct Deps {
     pub start_seed: Option<u64>,
     /// The sound styles the settings offer, in order; the binary embeds them.
     pub sound_styles: Vec<StyleInfo>,
+    /// Checks deals off the UI thread: the search for a winnable deal and the check of a typed seed.
+    pub solver: Box<dyn Solver>,
 }

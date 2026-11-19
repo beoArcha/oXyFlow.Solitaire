@@ -3,7 +3,7 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use oxysol_core::Variant;
-use oxysol_tui::Outcome;
+use oxysol_tui::{Outcome, Proof};
 
 use super::error::Fault;
 
@@ -62,5 +62,22 @@ pub(super) fn outcome_from_column(text: &str) -> Result<Outcome, Fault> {
         "won" => Ok(Outcome::Won),
         "abandoned" => Ok(Outcome::Abandoned),
         other => Err(Fault::invalid(format!("unknown outcome `{other}`"))),
+    }
+}
+
+pub(super) fn proof_to_column(proof: Proof) -> &'static str {
+    match proof {
+        Proof::Winnable => "winnable",
+        Proof::Unwinnable => "unwinnable",
+        Proof::Unknown => "unknown",
+    }
+}
+
+pub(super) fn proof_from_column(text: &str) -> Result<Proof, Fault> {
+    match text {
+        "winnable" => Ok(Proof::Winnable),
+        "unwinnable" => Ok(Proof::Unwinnable),
+        "unknown" => Ok(Proof::Unknown),
+        other => Err(Fault::invalid(format!("unknown proof `{other}`"))),
     }
 }

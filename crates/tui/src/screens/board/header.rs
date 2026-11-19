@@ -1,5 +1,6 @@
 //! The game information of the board, in the one place the screen shows it: variant, seed, playing
-//! time, moves, the stock counter and, in a game without undo, the "No undo" badge. A Compact
+//! time, moves, the stock counter, in a game without undo the "No undo" badge and, for a deal the solver
+//! was asked about, whether it is winnable. A Compact
 //! screen draws the facts in one header row, a Standard or Wide screen in the `Game` box of the
 //! side panel. The seed is a click target that copies it, so it is underlined in both places.
 
@@ -14,6 +15,7 @@ use super::counters;
 use crate::clock::format_elapsed;
 use crate::i18n::{t, tf};
 use crate::screens::variant_label_key;
+use crate::solver::DealCheck;
 
 /// Index of the seed among the facts, and so the row of it in the `Game` box.
 pub(super) const SEED_ROW: u16 = 1;
@@ -43,7 +45,12 @@ fn span_of(text: &str, from: usize, to: usize) -> String {
 }
 
 impl Facts {
-    pub(super) fn new(session: &Session, elapsed: Duration, undo_allowed: bool) -> Self {
+    pub(super) fn new(
+        session: &Session,
+        elapsed: Duration,
+        undo_allowed: bool,
+        deal: DealCheck,
+    ) -> Self {
         let seed = session.seed().to_string();
         let seed_fact = tf("board.header.seed", &[("seed", &seed)]);
         let seed_at = seed_fact
@@ -64,6 +71,9 @@ impl Facts {
         });
         if !undo_allowed {
             facts.push(t("board.header.no_undo").into_owned());
+        }
+        if let Some(key) = deal.label_key() {
+            facts.push(t(key).into_owned());
         }
         Self {
             facts,

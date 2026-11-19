@@ -1,4 +1,4 @@
-//! Tab and Shift+Tab on the game selection: the variants list, then the undo toggle, wrapping.
+//! Tab and Shift+Tab on the game selection: the variants list, the undo toggle, then the winnable toggle, wrapping.
 
 use oxysol_core::Variant;
 use ratatui::crossterm::event::KeyCode;
@@ -11,6 +11,7 @@ use crate::test_support::Harness;
 
 const TOGGLE_ON: &str = "[ Undo: on ]";
 const TOGGLE_OFF: &str = "[ Undo: off ]";
+const WINNABLE_OFF: &str = "[ Winnable deals only: off ]";
 
 fn select() -> Harness {
     let mut h = Harness::new();
@@ -45,16 +46,20 @@ fn tab_moves_the_focus_from_the_list_to_the_undo_toggle() {
 }
 
 #[test]
-fn tab_from_the_toggle_returns_to_the_list() {
+fn tab_from_the_undo_toggle_reaches_the_winnable_toggle_and_then_the_list() {
     let mut h = select();
     h.press(KeyCode::Tab);
+    h.press(KeyCode::Tab);
+    assert_eq!(focused(&mut h).as_deref(), Some(WINNABLE_OFF));
     h.press(KeyCode::Tab);
     assert_eq!(focused(&mut h), Some(label_of(Variant::ALL[0])));
 }
 
 #[test]
-fn shift_tab_from_the_list_wraps_to_the_toggle() {
+fn shift_tab_from_the_list_wraps_to_the_winnable_toggle() {
     let mut h = select();
+    h.press(KeyCode::BackTab);
+    assert_eq!(focused(&mut h).as_deref(), Some(WINNABLE_OFF));
     h.press(KeyCode::BackTab);
     assert_eq!(focused(&mut h).as_deref(), Some(TOGGLE_ON));
 }

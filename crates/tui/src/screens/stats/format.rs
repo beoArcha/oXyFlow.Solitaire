@@ -6,6 +6,7 @@ use super::summary::Summary;
 use crate::clock::format_elapsed;
 use crate::i18n::t;
 use crate::screens::variant_label_key;
+use crate::solver::Proof;
 use crate::storage::{GameRecord, Outcome};
 use oxysol_core::Variant;
 
@@ -62,6 +63,16 @@ fn outcome_label(outcome: Option<Outcome>) -> String {
         Some(Outcome::Won) => "stats.outcome.won",
         Some(Outcome::Abandoned) => "stats.outcome.abandoned",
         None => "stats.outcome.open",
+    };
+    t(key).into_owned()
+}
+
+fn winnable_label(proof: Option<Proof>) -> String {
+    let key = match proof {
+        Some(Proof::Winnable) => "stats.winnable.yes",
+        Some(Proof::Unwinnable) => "stats.winnable.no",
+        Some(Proof::Unknown) => "stats.winnable.unknown",
+        None => "stats.winnable.unchecked",
     };
     t(key).into_owned()
 }
@@ -157,11 +168,19 @@ pub fn summary_lines(summaries: &[Summary], show_mode: bool) -> Vec<String> {
 /// the list scrolls: the longest variant name, outcome label, time and count.
 fn history_floor() -> Vec<String> {
     let outcomes = [Some(Outcome::Won), Some(Outcome::Abandoned), None].map(outcome_label);
+    let proofs = [
+        Some(Proof::Winnable),
+        Some(Proof::Unwinnable),
+        Some(Proof::Unknown),
+        None,
+    ]
+    .map(winnable_label);
     let widest = |texts: Vec<String>| texts.into_iter().max_by_key(|text| char_width(text));
     vec![
         "0000-00-00 00:00".to_owned(),
         widest(Variant::ALL.iter().map(|v| variant_label(*v)).collect()).unwrap_or_default(),
         u64::MAX.to_string(),
+        widest(proofs.to_vec()).unwrap_or_default(),
         widest(outcomes.to_vec()).unwrap_or_default(),
         "00:00:00".to_owned(),
         "000000".to_owned(),
@@ -173,6 +192,7 @@ fn history_header_cells() -> Vec<String> {
         "stats.history.date",
         "stats.history.variant",
         "stats.history.seed",
+        "stats.history.winnable",
         "stats.history.outcome",
         "stats.history.time",
         "stats.history.moves",
@@ -187,6 +207,7 @@ fn history_cells(record: &GameRecord) -> Vec<String> {
         format_utc(record.started_at_ms),
         variant_label(record.variant),
         record.seed.to_string(),
+        winnable_label(record.proof),
         outcome_label(record.outcome),
         format_time(record.elapsed_ms),
         format_count(record.moves),
@@ -199,7 +220,7 @@ fn history_line(cells: &[String]) -> String {
         .zip(history_header_cells())
         .map(|(floor, header)| char_width(floor).max(char_width(&header)))
         .collect();
-    pad_row(cells, &widths, 4)
+    pad_row(cells, &widths, 5)
 }
 
 /// The column header of the history list, without the focus marker columns.
