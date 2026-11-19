@@ -79,3 +79,19 @@ Goal: the game saves and resumes, and every technical error has exactly one plac
   wins), and the history lists the restart count. Games with undo are unchanged.
 - **Acceptance:** migration test from the current schema; restart increments the count only in no-undo
   games; statistics and history show it; both locales.
+
+### P4-06 — Automatic moves in statistics: failed attempts and streaks
+
+- **Owner:** Sonnet
+- **Depends on:** P4-05
+- **Files:** `crates/core/src/session*` (counters only), `src/` (storage, schema migration),
+  `crates/tui/src/screens/stats*`, `crates/tui/src/screens/board/**` (game facts), locales, tests
+- **Scope:** owner request 2026-11-19: detect a game played mostly by the automatic moves. Count per game
+  the automatic moves made (quick move, auto-move to the foundations, auto-finish counted apart),
+  the failed automatic attempts (a quick move with no target), the manual moves, and the longest streak
+  of automatic moves in a row. Store them with the game (schema migration with defaults). Statistics and
+  history show the share of automatic moves, the failed attempts and the longest automatic streak, and
+  mark a game as "assisted" when the share is above a threshold (a constant, e.g. 80 %, named in the
+  decision log). The counters are information only; they never block a move.
+- **Acceptance:** tests for each counter on scripted games, the streak, the migration, the "assisted"
+  mark at the threshold; both locales.
