@@ -27,7 +27,7 @@ The delivery method was confirmed by spike X-01 and decided at checkpoint F-02.
 - **Acceptance:** a results table per terminal with screenshots, and a recommendation for each question.
 - **Scope (2026-11-19):** the owner tests on Windows 10 only (Windows Terminal, classic console); macOS, Linux, PuTTY and SSH are answered from documentation and marked not tested. Prototype on branch `spike/X-01-card-font`.
 - **Results so far (owner, classic console, 2026-11-19):** BMP PUA glyphs (U+E6C0…) render one cell wide with the patched complete font; plane-16 twins show as squares and break the width; the glyph-only font turns all text into squares; the 2×2 mosaic joins horizontally, the vertical seam needs a check at a larger font size.
-- **Done:** report `docs/tech/spikes/x-01-card-font.md` (#113); the decision it fed is recorded by F-02 (this PR, #PRNUM).
+- **Done:** report `docs/tech/spikes/x-01-card-font.md` (#113); the decision it fed is recorded by F-02 (this PR, #115).
 
 ### F-02 — Checkpoint: graphics delivery
 
@@ -44,7 +44,7 @@ The delivery method was confirmed by spike X-01 and decided at checkpoint F-02.
   code points U+E6BC–U+E6FF. The glyph box, the artwork rules and the code point table are the style guide on
   the card of M-19…M-24; M-19…M-24 are `READY`; P5-01 and P5-02 are adjusted below; follow-ups O-34 (here)
   and O-35 (`phase-0.md`).
-- **Done:** X-01 report (#113) and this PR (#PRNUM).
+- **Done:** X-01 report (#113) and this PR (#115).
 
 ### P5-01 — Font builder and preview sheet
 
