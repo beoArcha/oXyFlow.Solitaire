@@ -12,7 +12,7 @@ use super::convert::{
 use super::error::Fault;
 use super::{SqliteStorage, history};
 
-const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
+const APP_VERSION: &str = env!("OXYSOL_VERSION");
 
 impl SqliteStorage {
     fn read_settings(&self) -> Result<Option<Settings>, Fault> {
