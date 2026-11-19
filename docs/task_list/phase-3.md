@@ -532,3 +532,44 @@ Rules for the whole phase:
 - **Acceptance:** tests for each toggle from both places, the immediate effect on the board, "Save as
   default" persisted, defaults applied to a new game, keyboard and mouse; help lists the key; both
   locales.
+
+### O-23 — Modal fixes: scroll bar, Close shortcut, focus between selector rows
+
+- **Owner:** Sonnet
+- **Depends on:** P3-18, P3-25
+- **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/widgets/` (a shared scroll bar),
+  `crates/tui/src/app/**` (mouse routing), locales, tests
+- **Scope:** owner bug report 2026-11-19 (help window and guide window):
+  (1) A scrolling modal has no scroll bar, so nothing shows that more text follows and the mouse can only
+  use the wheel. Add a vertical scroll bar on the right edge inside the frame of every scrolling modal
+  (help tabs, guide window, how-to-play): a thumb sized and placed by the visible share, WGL4 and ASCII
+  forms, visible without color. Mouse: click on the track pages up or down, dragging the thumb scrolls,
+  the wheel keeps working. Keep the `1-20 / 37` position text.
+  (2) The Close button shows its shortcut: `Close [Esc]` / `Zamknij [Esc]`, clickable as before.
+  (3) Help, Rules tab: two selector rows (tabs and games) look the same, so the player cannot tell which
+  one Left/Right changes, and Up/Down does not move between them. Make the focus explicit: the focused
+  row shows the `◄ ►` arrows and the bracketed selection in the focus style; the other row shows its
+  selection without arrows and in the plain style (a marker that is not color only). Up/Down moves the
+  focus tabs row → games row → text; in the text Up/Down scroll, and Up at the top of the text returns
+  the focus to the games row. Left/Right acts on the focused row. Tab and Shift+Tab follow the same
+  order (P3-17). The footer names what Left/Right does for the focused row.
+- **Acceptance:** tests for the scroll bar (thumb size and position, click on the track, drag, ASCII
+  form), the Close label in both locales, the focus order and the Left/Right effect per row, the focus
+  marker without color; renders at 100 × 30 in both locales.
+
+### P3-28 — Docking modals to a side of the screen
+
+- **Owner:** Sonnet
+- **Depends on:** O-23
+- **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/layout/**`, `crates/tui/src/settings.rs`
+  and the settings screen, `crates/tui/src/input.rs`, locales, tests
+- **Scope:** owner request 2026-11-19: a modal such as help, the guide window or rules can be docked to
+  the left or right side of the screen at full height instead of covering the board in the middle, so
+  the player reads while seeing the cards. A key (and a button in the modal's title or footer) cycles
+  centre → right → left; the choice is remembered per modal kind in the settings. A docked modal takes
+  the room the guide panel would take and the board keeps its minimum width; when the screen is too
+  narrow, docking falls back to centre with a note. Whether the board stays interactive while a docked
+  modal is open is decided with U-04's keyboard model (proposed: the docked modal is read-only and the
+  board takes the keys, with a key to focus the modal).
+- **Acceptance:** renders docked left and right at 130 × 40 and 200 × 60, the fallback at 100 × 30;
+  the choice remembered; keyboard and mouse; both locales.

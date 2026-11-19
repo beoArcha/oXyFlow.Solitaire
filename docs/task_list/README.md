@@ -147,6 +147,8 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | TODO |
 | P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | TODO |
 | P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | TODO |
+| O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows | P3-18, P3-25 | IN PROGRESS |
+| P3-28 | Docking modals to a side of the screen | O-23 | TODO |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
 | P2-08 | Solver for winnable deals | P2-07 | TODO |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
