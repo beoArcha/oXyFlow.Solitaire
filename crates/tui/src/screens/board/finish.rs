@@ -7,9 +7,9 @@ use std::time::{Duration, Instant};
 
 use oxysol_core::Move;
 
+use super::BoardScreen;
 use super::guidance::{self, Part};
 use super::status;
-use super::BoardScreen;
 use crate::action::Action;
 use crate::audio::SoundCue;
 use crate::screens::Effect;
@@ -129,6 +129,8 @@ impl BoardScreen {
     }
 
     fn moves_made(&self) -> usize {
-        self.session.as_ref().map_or(0, |session| session.moves_made())
+        self.session
+            .as_ref()
+            .map_or(0, |session| session.moves_made())
     }
 }

@@ -129,7 +129,10 @@ fn the_played_out_win_is_recorded_with_every_move() {
     assert_eq!(rows.len(), 1);
     assert_eq!(rows[0].0, Outcome::Won);
     assert_eq!(rows[0].1, u32::try_from(base + finish).ok());
-    assert!(h.storage.borrow().game.is_none(), "the saved game is closed");
+    assert!(
+        h.storage.borrow().game.is_none(),
+        "the saved game is closed"
+    );
 }
 
 #[test]

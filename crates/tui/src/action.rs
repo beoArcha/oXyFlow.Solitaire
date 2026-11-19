@@ -33,7 +33,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-pub const ALL: [Action; 26] = [
+    pub const ALL: [Action; 26] = [
         Action::Up,
         Action::Down,
         Action::Left,
