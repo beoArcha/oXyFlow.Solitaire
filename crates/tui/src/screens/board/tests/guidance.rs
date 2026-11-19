@@ -73,13 +73,10 @@ fn browsing_names_the_place_and_the_actions_of_this_state() {
     put_cursor(&mut h, from);
     let card = top_card(&h, from);
     let now = row(&mut h, "Now:");
-    let expected = format!("Now: Browsing {}, {card}", pile_name(from));
+    let expected = format!("Now: {}: {card}", pile_name(from));
     assert!(now.starts_with(&expected), "{now}");
-    let possible = row(&mut h, "Possible:");
-    assert!(
-        possible.starts_with("Possible: Enter: pick up"),
-        "{possible}"
-    );
+    let possible = row(&mut h, "Do:");
+    assert!(possible.starts_with("Do: Enter: pick up"), "{possible}");
     assert!(possible.contains("s: turn stock"), "{possible}");
     assert!(possible.contains("h: hint"), "{possible}");
     assert!(!possible.contains("u: undo"), "{possible}");
@@ -100,7 +97,7 @@ fn a_run_deeper_in_a_column_is_named_with_its_size() {
     if depth >= 2 {
         let now = row(&mut h, "Now:");
         assert!(now.contains(&format!("{depth} cards from")), "{now}");
-        assert!(row(&mut h, "Possible:").contains("+/-: change run size"));
+        assert!(row(&mut h, "Do:").contains("+/-: change run size"));
     }
 }
 
@@ -117,26 +114,28 @@ fn carrying_names_the_cards_the_source_and_the_targets() {
     let now = row(&mut h, "Now:");
     if count == 1 {
         let expected = format!(
-            "Now: Carrying {card} from {}, {}",
+            "Now: Carrying: {card} (from {}), {}",
             pile_name(from),
             targets_text(targets)
         );
         assert!(now.starts_with(&expected), "{now}");
     } else {
-        assert!(now.starts_with("Now: Carrying "), "{now}");
+        assert!(now.starts_with("Now: Carrying: "), "{now}");
     }
-    let possible = row(&mut h, "Possible:");
+    let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Possible: Enter: drop | Esc: put back | Arrows: choose target"),
+        possible.starts_with("Do: Enter: drop | Esc: put back | Arrows: choose target"),
         "{possible}"
     );
+    assert!(possible.ends_with("?: keys"), "{possible}");
+    assert!(!possible.contains("menu"), "{possible}");
 }
 
 #[test]
 fn the_first_steps_hint_is_gone_and_the_keys_stay_in_the_action_line() {
     let mut h = start(KLONDIKE, 5);
     assert!(!h.text().contains("Enter: pick up / drop"));
-    let possible = row(&mut h, "Possible:");
+    let possible = row(&mut h, "Do:");
     assert!(possible.contains("?: keys") || possible.contains("i: how to play"));
 }
 
@@ -154,11 +153,12 @@ fn a_position_without_moves_offers_undo_restart_and_a_new_game() {
     };
     let mut h = resumed(variant, seed, &moves);
     assert!(row(&mut h, "Now:").starts_with("Now: No legal moves"));
-    let possible = row(&mut h, "Possible:");
+    let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Possible: u: undo | R: restart | n: new game"),
+        possible.starts_with("Do: u: undo | R: restart | n: new game"),
         "{possible}"
     );
+    assert!(possible.ends_with("?: keys | Esc: menu"), "{possible}");
 }
 
 #[test]
@@ -168,9 +168,9 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     let mut h = resumed(variant, 2, &moves);
     assert!(session(&h).game().is_won());
     assert!(row(&mut h, "Now:").starts_with("Now: Game won"));
-    let possible = row(&mut h, "Possible:");
+    let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Possible: n: new game | m: menu"),
+        possible.starts_with("Do: n: new game | ?: keys | Esc: menu"),
         "{possible}"
     );
 }
@@ -178,13 +178,13 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
 #[test]
 fn the_action_line_follows_the_stock_of_each_game() {
     let mut h = start(Variant::FreeCell, 5);
-    assert!(!row(&mut h, "Possible:").contains("stock"));
+    assert!(!row(&mut h, "Do:").contains("stock"));
     let mut h = start(Variant::Spider(SuitCount::One), 5);
     put_cursor(&mut h, PileRef::Tableau(0));
-    assert!(row(&mut h, "Possible:").contains("s: deal a row"));
+    assert!(row(&mut h, "Do:").contains("s: deal a row"));
     let mut h = start(KLONDIKE, 5);
     put_cursor(&mut h, PileRef::Stock);
-    assert!(row(&mut h, "Possible:").starts_with("Possible: Enter: turn stock"));
+    assert!(row(&mut h, "Do:").starts_with("Do: Enter: turn stock"));
 }
 
 #[test]
@@ -196,8 +196,8 @@ fn the_action_line_fits_the_smallest_terminal_in_every_game_and_locale() {
             let lines = h.lines();
             set_locale(Locale::EnUs);
             let prefixes = match locale {
-                Locale::EnUs => ("Now:", "Possible:"),
-                Locale::PlPl => ("Teraz:", "Możliwe:"),
+                Locale::EnUs => ("Now:", "Do:"),
+                Locale::PlPl => ("Teraz:", "Możesz:"),
             };
             let found = |prefix: &str| lines.iter().any(|line| line.trim().starts_with(prefix));
             assert!(found(prefixes.0) && found(prefixes.1), "{variant:?}");
@@ -213,9 +213,10 @@ fn the_action_line_has_polish_text() {
     let mut h = start(KLONDIKE, 5);
     set_locale(Locale::PlPl);
     let now = row(&mut h, "Teraz:");
-    let possible = row(&mut h, "Możliwe:");
+    let possible = row(&mut h, "Możesz:");
     set_locale(Locale::EnUs);
-    assert!(now.starts_with("Teraz: Przeglądasz"), "{now}");
+    assert!(now.starts_with("Teraz: "), "{now}");
+    assert!(!now.contains("Przeglądasz"), "{now}");
     assert!(
         possible.contains("weź") || possible.contains("dobierz"),
         "{possible}"
@@ -227,7 +228,7 @@ fn a_paused_board_shows_no_action_line() {
     let mut h = start(KLONDIKE, 5);
     h.type_char('p');
     assert_eq!(row(&mut h, "Now:"), "");
-    assert_eq!(row(&mut h, "Possible:"), "");
+    assert_eq!(row(&mut h, "Do:"), "");
 }
 
 #[test]
@@ -300,7 +301,7 @@ fn the_guide_lists_the_goal_the_keys_and_the_mouse_of_the_game() {
     assert!(!panel_rows(&mut free).join("\n").contains("stock"));
     let mut pyramid = sized(Variant::Pyramid(PyramidRules::Classic), 140, 40);
     let text = panel_rows(&mut pyramid).join("\n");
-    assert!(text.contains("add up to 13") && text.contains("remove pair"));
+    assert!(text.contains("add up to 13") && text.contains("pick / remove"));
     assert!(!text.contains("run size"));
 }
 
@@ -330,10 +331,32 @@ fn the_guide_and_the_action_line_use_only_wgl4_symbols() {
 }
 
 #[test]
-fn a_guide_taller_than_the_board_is_cut_without_spilling_over_the_chrome() {
-    let mut h = sized(Variant::Spider(SuitCount::Four), 130, 30);
-    let lines = h.lines();
-    assert_eq!(lines.len(), 30);
-    assert!(lines[0].contains("Spider"));
-    assert!(lines[29].contains("Esc Back"));
+fn a_guide_as_tall_as_the_smallest_standard_screen_still_shows_every_section() {
+    for variant in [
+        Variant::Spider(SuitCount::Four),
+        Variant::Klondike(DrawCount::Three),
+    ] {
+        let mut h = sized(variant, 130, 36);
+        let lines = h.lines();
+        assert_eq!(lines.len(), 36);
+        let panel: Vec<String> = lines
+            .iter()
+            .map(|line| line.chars().skip(100).collect())
+            .collect();
+        assert!(
+            panel[0].starts_with('┌') && panel[0].contains(TITLE),
+            "{}",
+            panel[0]
+        );
+        assert!(panel[35].starts_with('└'), "{}", panel[35]);
+        for section in ["Game", "Goal", "Keys", "Mouse", "Legend"] {
+            assert!(
+                panel
+                    .iter()
+                    .any(|row| row.starts_with(&format!("│ {section}"))),
+                "{section}"
+            );
+        }
+        assert!(lines[35].contains("Esc: menu"));
+    }
 }

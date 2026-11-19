@@ -229,13 +229,18 @@ fn every_rejection_and_board_event_is_announced_in_both_locales() {
         set_locale(locale);
         let prefix = match locale {
             Locale::EnUs => "Illegal move: ",
-            Locale::PlPl => "Niedozwolony ruch: ",
+            Locale::PlPl => "Zły ruch: ",
         };
         for key in REJECTIONS {
             assert!(t(key).starts_with(prefix), "{locale:?} {key}: {}", t(key));
         }
-        for key in EVENTS {
-            assert_ne!(t(key), key, "{locale:?} {key}");
+        for key in EVENTS.iter().chain(&REJECTIONS) {
+            assert_ne!(t(key), *key, "{locale:?} {key}");
+            assert!(
+                t(key).chars().count() <= 40,
+                "{locale:?} {key} is too long for the Now row: {}",
+                t(key)
+            );
         }
     }
     set_locale(Locale::EnUs);

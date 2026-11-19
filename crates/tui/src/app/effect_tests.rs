@@ -34,7 +34,7 @@ fn starting_a_game_uses_the_injected_seed_and_records_it() {
     let history = h.storage.borrow().history.clone();
     assert_eq!(history.len(), 1);
     assert_eq!((history[0].variant, history[0].seed), (FIRST_VARIANT, 42));
-    assert!(h.text().contains("Klondike, Draw 1 | seed 42 | 0:00"));
+    assert!(h.text().contains("Klondike, Draw 1 | seed 42 | Time 0:00"));
 }
 
 #[test]
@@ -70,13 +70,13 @@ fn the_clock_runs_on_the_board_and_stops_in_modals() {
     let mut h = Harness::new();
     start_first_game(&mut h);
     h.advance(65);
-    assert!(h.text().contains("seed 42 | 1:05"));
+    assert!(h.text().contains("seed 42 | Time 1:05"));
     h.type_char('?');
     assert!(matches!(h.app.modal(), Some(Modal::Help)));
     h.advance(30);
     h.press(KeyCode::Esc);
     h.advance(5);
-    assert!(h.text().contains("seed 42 | 1:10"));
+    assert!(h.text().contains("seed 42 | Time 1:10"));
 }
 
 #[test]
@@ -203,7 +203,7 @@ fn a_saved_game_can_be_resumed() {
     assert!(h.app.board().session().is_some_and(|s| s.seed() == 99));
     assert_eq!(h.app.board().game_id(), Some(crate::storage::GameId(7)));
     h.advance(1);
-    assert!(h.text().contains("FreeCell | seed 99 | 1:31"));
+    assert!(h.text().contains("FreeCell | seed 99 | Time 1:31"));
 }
 
 #[test]
