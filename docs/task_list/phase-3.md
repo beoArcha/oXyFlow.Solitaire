@@ -519,6 +519,8 @@ Rules for the whole phase:
   marker; `cargo xtask check --quick` passes.
 - **Done (part 1):** #103 (tagline, version, variant hints with difficulty, grouped and aligned settings with descriptions, style names, Font hidden, statistics headings).
 - **Part 2 (open):** `Resume` names the saved game; the win dialog's personal-best marker and `Same seed`; `◄ ►` on the focused settings value. Needs `screens/mod.rs`, `app.rs`, `app/modal.rs`, `app/effects.rs`.
+- **Done (part 2):** #111 (Resume names the save, win dialog bests and `Same seed`, `◄ ►` on the focused setting).
+- **Deviation (accepted):** the personal-best check is a small function in `app/records.rs` reading `Storage::history()`; the Storage trait is unchanged.
 
 ### P3-25 — Footer keys as mouse buttons
 
@@ -570,6 +572,8 @@ Rules for the whole phase:
 - **Acceptance:** tests for each toggle from both places, the immediate effect on the board, "Save as
   default" persisted, defaults applied to a new game, keyboard and mouse; help lists the key; both
   locales.
+- **Done:** #107
+- **Deviation (accepted):** key `o` and an always-kept `o: options` button in the `Do:` row (at about 120 columns in FreeCell it pushes the `+/-` hint out); quick choices are not stored with a saved game; the board toggles `g` and `v` are quick choices, persisted only by "Save as default"; new setting `target_marks`.
 
 ### O-23 — Modal fixes: scroll bar, Close shortcut, focus between selector rows
 
@@ -939,3 +943,47 @@ Rules for the whole phase:
 - **Done:** #108
 - **Deviation (accepted):** the board needed no change (its `Do:` row already names each action); fixed footers: main menu (no Esc, `Enter Open`), game select (`Enter Play`), settings (`Enter Change`).
 
+### O-31 — Widen a console window the game owns to 130 columns
+
+- **Owner:** Antigravity (Beo)
+- **Depends on:** —
+- **Files:** `src/console.rs` (or a new `src/console/` submodule), `src/main.rs`, tests
+- **Scope:** owner request 2026-11-19: the Windows console opens 120 columns wide, so the guide panel (130 columns,
+  P3-15/P3-18) does not fit by default. When the game owns its console window (`console::owns_window()`: a
+  double-click or `--new-window`), it widens the window and its buffer to at least 130 columns at start, keeping the
+  height (at least 30 rows), only if the screen allows it (`GetLargestConsoleWindowSize`); otherwise it leaves the
+  size alone. A game started inside an existing terminal never resizes it. Other systems: no change.
+- **Acceptance:** unit tests for the size decision (current size, largest size → new size or none); the change
+  verified by hand on Windows 10 by double-clicking `oxysol.exe` (say what was seen); `cargo xtask check --quick`.
+
+### O-32 — Easy restart from the beginning, confirmed like Quit
+
+- **Owner:** Antigravity (Dad)
+- **Depends on:** P3-27
+- **Files:** `crates/tui/src/screens/board/{guidance,commands}.rs`, `crates/tui/src/widgets/overlay/**` (the pause
+  dialog and the confirm dialog), `locales/*/`, tests
+- **Scope:** owner request 2026-11-19: restarting the current deal from the beginning must be easy to find, and
+  confirmed by a dialog like Quit. Today it is only `Shift+R` (confirm `board.confirm.restart`) and a `Do:` entry that
+  is dropped first when the row is narrow. Make it reachable: (1) a Restart button in the pause dialog (`Esc`) next to
+  its other buttons; (2) the `Do:` row keeps `Shift+R: restart` like the always-kept `o: options` part, dropping a less
+  important entry instead; (3) the confirm dialog matches Quit: the same two buttons (Yes / No) with keyboard focus and
+  mouse, Esc = No, and in a game without undo its text says the restart is counted (P4-05). Restart deals the same seed
+  through the existing `Effect::Restart`.
+- **Acceptance:** tests: the pause dialog's Restart opens the confirm and Yes restarts; No and Esc keep the game;
+  `Shift+R` unchanged; the `Do:` row shows restart at 100 and 130 columns in both locales; the no-undo text.
+
+### O-33 — Statistics: scroll bars and a winnable mark per game
+
+- **Owner:** Antigravity (Oxy)
+- **Depends on:** O-23, P3-24
+- **Files:** `crates/tui/src/screens/stats/**`, `crates/tui/src/screens/stats.rs`, `crates/tui/src/glyphs*` (only if a
+  new mark glyph is needed), `locales/*/stats.toml`, tests
+- **Scope:** owner request 2026-11-19: (1) the history list and any other part of the statistics screen that can be
+  longer than the screen get the shared vertical scroll bar of O-23 (`widgets/scrollbar`): thumb sized by the visible
+  share, a click on the track pages, dragging the thumb scrolls, the wheel keeps working, WGL4 and ASCII forms, the
+  `1-20 / 37` position kept. (2) Every history row shows a winnable mark from the stored solver proof
+  (`GameRecord::proof`): a sign for winnable, not winnable, unknown and not checked (WGL4 with ASCII forms, e.g.
+  `✓ ✗ ? ·` / `+ x ? .`), next to or replacing the text column when space is short, with a one-line legend under the
+  list; never color only. Checking unchecked games in the background is out of scope.
+- **Acceptance:** tests for the scroll bar on the history (thumb, track click, drag, wheel, ASCII), the mark for each
+  proof value in both glyph modes, the legend in both locales; renders at 100 × 30 and 130 × 40 in Polish.

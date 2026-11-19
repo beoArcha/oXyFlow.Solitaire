@@ -144,10 +144,10 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-21 | Aura options (focus only) and the stock recycle button | U-04, P3-14 | DONE |
 | P3-22 | Localization templates (no pile name after a verb) and localized key names | P3-15 | DONE |
 | P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | DONE |
-| P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | IN PROGRESS |
+| P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | DONE |
 | P3-25 | Footer keys as mouse buttons; `g` in the footer (#86) | P3-15 | DONE |
 | P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | DONE |
-| P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | IN PROGRESS |
+| P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | DONE |
 | P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | DONE |
 | O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows (#91) | P3-18, P3-25 | DONE |
 | P3-28 | Docking modals to a side of the screen | O-23 | TODO |
@@ -160,7 +160,10 @@ the PR descriptions; cards that exist are in the phase files.
 | O-27 | Sync the task list with `main`: statuses, cards, PR numbers and deviations | — | DONE |
 | O-28 | Focused card drawn with a gap of felt inside its face | — | DONE |
 | O-29 | Screen-specific labels for Select and Back (P3-22 part 4) | P3-26 | DONE |
-| O-30 | Player site: screenshots, both languages, latest release, build from source | — | IN PROGRESS |
+| O-30 | Player site: screenshots, both languages, latest release, build from source | — | DONE |
+| O-31 | Widen a console window the game owns to 130 columns | — | IN PROGRESS |
+| O-32 | Easy restart from the beginning, confirmed like Quit | P3-27 | IN PROGRESS |
+| O-33 | Statistics: scroll bars and a winnable mark per game | O-23, P3-24 | IN PROGRESS |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
