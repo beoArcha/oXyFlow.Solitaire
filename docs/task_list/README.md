@@ -149,6 +149,10 @@ the PR descriptions; cards that exist are in the phase files.
 | P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | TODO |
 | O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows | P3-18, P3-25 | IN PROGRESS |
 | P3-28 | Docking modals to a side of the screen | O-23 | TODO |
+| P3-29 | Settings: Interface section (colors, aura color/style/size, interface size, font) | P3-16, P3-21, P3-24, P3-27 | TODO |
+| P3-30 | Themes Monokai and Dracula | P3-23 | TODO |
+| P3-31 | Card back selection (Theme, Monokai, Dracula) | P3-30 | TODO |
+| P4-06 | Automatic moves in statistics: failed attempts and streaks, "assisted" games | P4-05 | TODO |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
 | P2-08 | Solver for winnable deals | P2-07 | TODO |
 | P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |

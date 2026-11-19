@@ -573,3 +573,48 @@ Rules for the whole phase:
   board takes the keys, with a key to focus the modal).
 - **Acceptance:** renders docked left and right at 130 × 40 and 200 × 60, the fallback at 100 × 30;
   the choice remembered; keyboard and mouse; both locales.
+
+### P3-29 — Settings: an Interface section (colors, aura, size, font)
+
+- **Owner:** Sonnet
+- **Depends on:** P3-16, P3-21, P3-24, P3-27
+- **Files:** `crates/tui/src/settings.rs` and the settings screen, `crates/tui/src/widgets/aura.rs`,
+  `crates/tui/src/layout/**`, `src/` (console font on Windows), locales, tests
+- **Scope:** owner request 2026-11-19: Settings gets an "Interface" (UI/UX) section that gathers
+  everything about look and readability in one place: theme (interface colors, P3-30), card back
+  (P3-31), aura color, aura style (halo, frame, marks only) and aura size (thin or thick), interface
+  size (card size and spacing, the setting of P3-16), font size and font choice. Font size and font face
+  can only be changed by the program in the classic Windows console (`SetCurrentConsoleFontEx`, shared
+  with P3-16; offer the fonts installed that cover WGL4, e.g. Consolas, Lucida Console, Cascadia Mono).
+  In Windows Terminal, Linux and macOS terminals the rows show the terminal's own shortcut instead of a
+  value and say why. Every change is previewed at once and kept only after confirmation.
+- **Acceptance:** tests for each row (value, persistence, immediate preview, revert on cancel); the
+  unsupported-terminal note; the console font change verified by hand in the classic console (say
+  where); both locales.
+
+### P3-30 — Themes Monokai and Dracula
+
+- **Owner:** Haiku
+- **Depends on:** P3-23
+- **Files:** `crates/tui/src/theme/**` (two new palettes), `crates/tui/src/screens/settings/options.rs`,
+  locales, tests
+- **Scope:** owner request 2026-11-19: two more themes based on the public Monokai and Dracula color
+  schemes (Dracula is MIT-licensed; credit both in `docs/tech/decisions.md`). Map every theme token,
+  including the card faces (red and black suits must stay distinguishable), aura, success and error,
+  and the 16-color fallback swatches of P3-23. They must pass the existing contrast tests (WCAG AA for
+  text, the mark contrast of P3-23).
+- **Acceptance:** both themes selectable and remembered; the contrast tests pass for them; renders of the
+  board in both; both locales.
+
+### P3-31 — Card back selection
+
+- **Owner:** Haiku
+- **Depends on:** P3-30
+- **Files:** `crates/tui/src/widgets/card/**` (the back), `crates/tui/src/theme/**`, `crates/tui/src/settings.rs`
+  and the settings screen, locales, tests
+- **Scope:** owner request 2026-11-19: the card back is chosen apart from the theme. Styles: "Theme"
+  (today's back, the default), "Monokai" and "Dracula" (their colors and a distinct pattern each, WGL4
+  shade or box glyphs with an ASCII form). The face-down count mark (`x21`) stays readable on every back.
+  A row in Settings (Interface section once P3-29 exists) with a small preview.
+- **Acceptance:** every back at every card size in both glyph modes; the count mark contrast test; the
+  choice remembered; both locales.
