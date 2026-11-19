@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -190,7 +190,7 @@ pub struct Deps {
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
-pub enum Modal { Help, HowToPlay(HowToPlay), Quick(QuickOptions), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { menu_focused } }
+pub enum Modal { Help, HowToPlay(HowToPlay), Quick(QuickOptions), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { focus, best: PersonalBest { time, moves } } }
 
 impl App {
     pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
@@ -256,9 +256,9 @@ pub struct NullClipboard;                                // every copy fails wit
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `Apply(Settings)`, `Quick(Aids)`, `SaveAids`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
+  `Restart`, `SameSeed`, `Apply(Settings)`, `Quick(Aids)`, `SaveAids`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
   `{ variant, seed: Option<u64>, undo_allowed: bool }`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
-  settings, caps, `audio_status`, `sound_styles`, clock instant) and never change shared state or call `Storage` themselves.
+  settings, caps, `audio_status`, `sound_styles`, `saved: Option<SavedSummary>` (variant, elapsed, moves of the saved game, for the Resume row), clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
   that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `Enter` Change).
@@ -373,6 +373,10 @@ pub struct NullClipboard;                                // every copy fails wit
   after the window closed), an inactive one does nothing. *Focus:* while the panel is drawn it is the last stop of
   the board's Tab ring (piles, then the entries, then round); Up and Down choose an entry, Enter and Space run it
   (an inactive one only says `board.status.not_possible`), Esc, Left and Right return to the piles.
+- **Settings values and arrows (P3-24 part 2):** the focused row frames its value as `◄ value ►` (`<` `>` in ASCII, the
+  `focus_right` and `focus_left` glyphs); every other row keeps the same two columns blank, so the values line up.
+  `settings/arrows.rs` records the arrows' cells when the screen draws: a click on `◄` steps the value back, a click on
+  `►` forward, a click elsewhere on the row forward as before (`settings/values.rs::line`).
 - **Aids and quick options (P3-27):** the board aids are `Settings::aura`, `target_marks` (default `true`; an older
   value without the field loads as `true`), `guide_panel`, `moves_panel` and `auto_finish`; `settings/aids.rs` holds them as
   `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
@@ -487,7 +491,11 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   The screen collects `SoundCue`s and `App` plays them after each input (`BoardScreen::take_cues`);
   `persist()` raises a flag after every session change; `App` reads it (`BoardScreen::take_dirty`)
   at the end of each `apply` and saves (see Autosave below). A win opens `Modal::win()` (help, pause, win and dialogs are drawn by `widgets/overlay/`); a
-  position without legal moves shows a status message. `Modal::Pause` hides the cards
+  position without legal moves shows a status message. *Win dialog (P3-24 part 2):* `App::open_modal` fills `best`
+  (`app/records.rs`, `personal_best`): the time is a personal best when it beats the shortest earlier win of the same
+  variant and undo mode in `Storage::history` (the game itself and open or lost rows do not count), the moves when they beat
+  the fewest; a first win is no best. Three buttons, `New game`, `Same seed` (`Effect::SameSeed`, which deals the same
+  seed again through `start_game`) and `Menu`; Tab and the arrows move the focus, a click presses. `Modal::Pause` hides the cards
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
 - **Auto-finish (P3-19):** `board/finish.rs`. After every change `settle` asks `Session::forced_finish`
   and keeps the moves (`forced`). With the setting `auto_finish` (default on) `BoardScreen::advance(now, auto)`,
@@ -558,7 +566,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
 
 - **Autosave (P4-03):** `app/persist.rs`. A new game calls `Storage::start_game` and logs the deal at
   `info`. After every session change, when leaving the board and on quit, `App` writes
-  `SavedGame { id, record, elapsed_ms }` and keeps a copy in memory (the Resume item reads it). A won
+  `SavedGame { id, record, elapsed_ms }` and keeps a copy in memory (the Resume item reads it; its row names the variant, the time and the moves, `main_menu/resume.rs`, and shortens itself when the row is narrow). A won
   game calls `finish_game(Won)` and `clear_game`; dealing over a save calls `finish_game(Abandoned)`
   first; quitting keeps the save. A corrupt or incompatible save at startup, or one that
   `Session::restore` rejects, gives one alert, `clear_game` (and `Abandoned` for a known id) and the

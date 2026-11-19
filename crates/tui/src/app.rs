@@ -59,7 +59,7 @@ macro_rules! view_ctx {
             caps: &$app.caps,
             audio_status: $app.audio.status(),
             sound_styles: &$app.sound_styles,
-            has_saved_game: $app.saved.is_some(),
+            saved: $app.saved_summary(),
             pointer: $app.pointer,
             now: $app.now,
         }
@@ -426,7 +426,11 @@ mod finish;
 mod modal;
 mod persist;
 mod quick;
+mod records;
 mod search;
+
+#[cfg(test)]
+mod records_tests;
 
 #[cfg(test)]
 mod tests;

@@ -149,7 +149,7 @@ fn drawn(mode: GlyphMode, at: Metrics) -> Vec<String> {
         caps: &TRUE_COLOR,
         audio_status: AudioStatus::NoDevice,
         sound_styles: &[],
-        has_saved_game: false,
+        saved: None,
         pointer: None,
         now: Instant::now(),
     };

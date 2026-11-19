@@ -2,7 +2,9 @@
 
 use super::search::SearchProgress;
 use crate::screens::Effect;
-use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay, MovesWindow, QuickOptions};
+use crate::widgets::overlay::{
+    CommandLine, GuideWindow, HowToPlay, MovesWindow, PersonalBest, QuickOptions,
+};
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
@@ -31,9 +33,11 @@ pub enum Modal {
     },
     /// The search for a winnable deal: progress, then the choices once the cap is reached.
     Search(SearchProgress),
-    /// The win screen; `menu_focused` picks which of its two buttons has the focus.
+    /// The win screen; `focus` is the index of the focused button and `best` the personal bests
+    /// the game set (filled in when the dialog opens).
     Win {
-        menu_focused: bool,
+        focus: usize,
+        best: PersonalBest,
     },
 }
 
@@ -43,10 +47,11 @@ impl Modal {
         Modal::Alert { message }
     }
 
-    /// The win screen, with focus on "New game".
+    /// The win screen, with focus on "New game" and no personal best yet.
     pub fn win() -> Self {
         Modal::Win {
-            menu_focused: false,
+            focus: 0,
+            best: PersonalBest::default(),
         }
     }
 

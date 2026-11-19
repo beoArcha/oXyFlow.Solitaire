@@ -2,6 +2,7 @@
 //! the result leaves as [`Effect::Apply`] and `App` applies and saves it. Headings are not focusable,
 //! so the focus moves over the rows only.
 
+mod arrows;
 mod options;
 #[cfg(test)]
 mod tests;
@@ -13,6 +14,7 @@ use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
+use self::arrows::{Arrows, glyphs, locate};
 use self::options::{FIELDS, Group, Step};
 use self::values::{changed, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
@@ -63,6 +65,7 @@ fn entries() -> Vec<Entry> {
 pub struct SettingsScreen {
     focus: usize,
     rows: Vec<(usize, Rect)>,
+    arrows: Option<Arrows>,
     footer: FooterMap,
 }
 
@@ -130,7 +133,8 @@ impl SettingsScreen {
         self.footer.action_at(cell)
     }
 
-    /// Handles a mouse event: the wheel moves focus, a click changes the clicked row forward.
+    /// Handles a mouse event: the wheel moves focus, a click on an arrow of the focused row steps its
+    /// value back or forward, and a click on any other part of a row steps it forward.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         if let Some(action) = wheel_action(event) {
             self.move_focus(action);
@@ -139,13 +143,23 @@ impl SettingsScreen {
         let Some(cell) = left_press(event) else {
             return Effect::None;
         };
-        match self.rows.iter().find(|(_, area)| contains(*area, cell)) {
-            Some((index, _)) => {
-                self.focus = *index;
-                change_row(*index, Step::Next, ctx)
+        if let Some(hit) = self.arrows {
+            if contains(hit.left, cell) {
+                return self.step_row(hit.row, Step::Previous, ctx);
             }
+            if contains(hit.right, cell) {
+                return self.step_row(hit.row, Step::Next, ctx);
+            }
+        }
+        match self.rows.iter().find(|(_, area)| contains(*area, cell)) {
+            Some((index, _)) => self.step_row(*index, Step::Next, ctx),
             None => Effect::None,
         }
+    }
+
+    fn step_row(&mut self, index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
+        self.focus = index;
+        change_row(index, step, ctx)
     }
 
     /// Draws the title, the groups and their rows, the explanation of the focused row, the reason
@@ -215,6 +229,7 @@ impl SettingsScreen {
             .min(area.width);
         let x = area.x + (area.width - width) / 2;
         self.rows.clear();
+        self.arrows = None;
         for (offset, (entry, text)) in lines.into_iter().enumerate() {
             let Ok(dy) = u16::try_from(offset) else {
                 break;
@@ -228,10 +243,13 @@ impl SettingsScreen {
                 Entry::Row(index) if index == self.focus => ctx.theme.focus(),
                 Entry::Row(_) | Entry::Gap => ctx.theme.base(),
             };
-            frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
             if let Entry::Row(index) = entry {
+                if index == self.focus {
+                    self.arrows = locate(index, &text, cell, glyphs(ctx));
+                }
                 self.rows.push((index, cell));
             }
+            frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
         }
     }
 
@@ -248,6 +266,7 @@ impl SettingsScreen {
                         ctx.audio_status.is_ready(),
                         ctx.sound_styles,
                         columns,
+                        focused.then(|| glyphs(ctx)),
                     )
                 });
                 format!("{} {text}", marker(ctx, focused))

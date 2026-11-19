@@ -109,8 +109,12 @@ fn the_settings_mark_one_row_at_a_time() {
         }
         h.press(KeyCode::Enter);
         h.press(KeyCode::Tab);
-        let text = h.text();
-        assert_eq!(text.matches(marker(caps)).count(), 1, "{locale:?}");
+        let marked = h
+            .lines()
+            .iter()
+            .filter(|line| line.trim_start().starts_with(marker(caps)))
+            .count();
+        assert_eq!(marked, 1, "{locale:?}");
         assert_wgl4(&mut h, "settings");
     });
 }

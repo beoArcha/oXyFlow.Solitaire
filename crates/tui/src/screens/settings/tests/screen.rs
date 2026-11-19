@@ -6,7 +6,7 @@ use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 
-use super::changed;
+use super::{bare, changed};
 use crate::action::Action;
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -46,7 +46,7 @@ impl Fixture {
             caps: &self.caps,
             audio_status,
             sound_styles: &self.sound_styles,
-            has_saved_game: false,
+            saved: None,
             pointer: None,
             now: Instant::now(),
         }
@@ -199,14 +199,14 @@ fn unavailable_rows_are_marked_in_their_text() {
     let mut screen = SettingsScreen::new();
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::NoDevice));
     assert!(
-        lines.iter().any(|text| {
-            text.contains("Music") && text.trim_end().ends_with("Off (unavailable)")
-        })
+        lines
+            .iter()
+            .any(|text| { text.contains("Music") && bare(text).ends_with("Off (unavailable)") })
     );
     assert!(
         lines
             .iter()
-            .any(|text| { text.contains("Language") && text.trim_end().ends_with("English") })
+            .any(|text| { text.contains("Language") && bare(text).ends_with("English") })
     );
     assert!(
         !lines
@@ -235,7 +235,7 @@ fn every_row_is_drawn_in_both_locales() {
     assert!(
         lines
             .iter()
-            .any(|text| { text.contains(&label) && text.trim_end().ends_with(&value) })
+            .any(|text| { text.contains(&label) && bare(text).ends_with(&value) })
     );
     set_locale(Locale::EnUs);
 }

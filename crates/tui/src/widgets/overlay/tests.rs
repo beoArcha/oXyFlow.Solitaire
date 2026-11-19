@@ -81,7 +81,13 @@ fn confirm_back_cancels() {
 fn win_buttons_move_focus_and_lead_to_their_screens() {
     let mut modal = Modal::win();
     assert_eq!(handle(&mut modal, &key(), Some(Action::Right)), None);
-    assert_eq!(modal, Modal::Win { menu_focused: true });
+    assert_eq!(
+        handle(&mut modal, &key(), Some(Action::Select)),
+        Some(Effect::SameSeed)
+    );
+
+    let mut modal = Modal::win();
+    assert_eq!(handle(&mut modal, &key(), Some(Action::Left)), None);
     assert_eq!(
         handle(&mut modal, &key(), Some(Action::Select)),
         Some(Effect::Goto(Screen::MainMenu))
@@ -112,8 +118,10 @@ fn clicks_press_the_button_under_them() {
         Some(Effect::Goto(Screen::GameSelect))
     );
     let mut win = Modal::win();
+    assert_eq!(click_button(&mut win, 1), Some(Effect::SameSeed));
+    let mut win = Modal::win();
     assert_eq!(
-        click_button(&mut win, 1),
+        click_button(&mut win, 2),
         Some(Effect::Goto(Screen::MainMenu))
     );
 

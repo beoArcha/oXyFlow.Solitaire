@@ -41,13 +41,14 @@ pub use self::how_to_play::{Focus, HowToPlay, Rules};
 pub use self::moves_window::MovesWindow;
 pub use self::quick_options::QuickOptions;
 pub use self::tabs::{HelpTab, TopTabs};
+pub use self::win::PersonalBest;
 use crate::action::Action;
 use crate::app::{Modal, Screen, SearchCommand};
 use crate::i18n::t;
 use crate::layout::chrome;
 use crate::mouse;
 use crate::screens::board::BoardScreen;
-use crate::screens::focus::tab_forward;
+use crate::screens::focus::{step, tab_forward};
 use crate::screens::{Effect, ViewCtx};
 use crate::widgets::footer::FooterMap;
 
@@ -61,9 +62,11 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
         | Modal::Quick(_) => None,
         Modal::Pause => Some(pause::text()),
         Modal::Search(progress) => Some(search::text(progress)),
-        Modal::Win { menu_focused } => {
-            let moves = board.session().map_or(0, |session| session.moves_made());
-            Some(win::text(board.elapsed(now), moves, *menu_focused))
+        Modal::Win { focus, best } => {
+            let (moves, variant) = board.session().map_or((0, None), |session| {
+                (session.moves_made(), Some(session.variant()))
+            });
+            Some(win::text(board.elapsed(now), moves, variant, *focus, *best))
         }
         Modal::Confirm {
             prompt,
@@ -147,8 +150,8 @@ fn step_focus(modal: &mut Modal, forward: bool) -> bool {
             *yes_focused = !*yes_focused;
             true
         }
-        Modal::Win { menu_focused } => {
-            *menu_focused = !*menu_focused;
+        Modal::Win { focus, .. } => {
+            *focus = step(*focus, win::BUTTONS, forward);
             true
         }
         _ => false,
@@ -158,7 +161,7 @@ fn step_focus(modal: &mut Modal, forward: bool) -> bool {
 fn focused_index(modal: &Modal) -> usize {
     match modal {
         Modal::Confirm { yes_focused, .. } => usize::from(!yes_focused),
-        Modal::Win { menu_focused } => usize::from(*menu_focused),
+        Modal::Win { focus, .. } => *focus,
         Modal::Search(progress) => progress.focus,
         _ => 0,
     }
@@ -168,8 +171,9 @@ fn focused_index(modal: &Modal) -> usize {
 fn press(modal: &Modal, index: usize) -> Effect {
     match modal {
         Modal::Confirm { on_yes, .. } if index == 0 => (**on_yes).clone(),
-        Modal::Win { .. } if index == 0 => Effect::Goto(Screen::GameSelect),
-        Modal::Win { .. } => Effect::Goto(Screen::MainMenu),
+        Modal::Win { .. } if index == win::NEW_GAME => Effect::Goto(Screen::GameSelect),
+        Modal::Win { .. } if index == win::SAME_SEED => Effect::SameSeed,
+        Modal::Win { .. } if index == win::MENU => Effect::Goto(Screen::MainMenu),
         Modal::Search(progress) => Effect::SearchStep(search::command_at(progress, index)),
         _ => Effect::None,
     }

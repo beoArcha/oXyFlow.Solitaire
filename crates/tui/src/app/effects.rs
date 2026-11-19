@@ -26,6 +26,7 @@ impl App {
             } => self.start_game(variant, seed, undo_allowed),
             Effect::SearchStep(command) => self.search_step(command),
             Effect::Resume => self.resume_game(),
+            Effect::SameSeed => self.same_seed(),
             Effect::Restart => self.restart_game(),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
@@ -92,9 +93,20 @@ impl App {
     }
 
     pub(super) fn open_modal(&mut self, modal: Modal) {
+        let modal = self.with_personal_best(modal);
         self.board.pause_clock(self.now);
         self.board.set_covered(modal == Modal::Pause);
         self.modal = Some(modal);
+    }
+
+    /// Deals the game that was just played again from its seed, through the new-game path.
+    fn same_seed(&mut self) {
+        let Some(session) = self.board.session() else {
+            return;
+        };
+        let (variant, seed) = (session.variant(), session.seed());
+        let undo_allowed = self.board.undo_allowed();
+        self.start_game(variant, Some(seed), undo_allowed);
     }
 
     fn open_how_to_play(&mut self) {

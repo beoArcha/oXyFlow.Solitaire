@@ -2,6 +2,7 @@
 //! "New game from seed" asks for a seed, then lists the games dealt from it; the menu keeps that
 //! flow to itself, so the seed travels in the `Effect::Start` it returns.
 
+mod resume;
 mod seed;
 
 use ratatui::Frame;
@@ -149,7 +150,7 @@ impl MainMenu {
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         match &mut self.stage {
             Stage::Items => {
-                let items = items(ctx.has_saved_game);
+                let items = items(ctx.saved.is_some());
                 let clicked = self.list.on_mouse(event, items.len());
                 match clicked.and_then(|index| items.get(index).copied()) {
                     Some(item) => self.activate(item),
@@ -184,7 +185,7 @@ impl MainMenu {
     }
 
     fn handle_items(&mut self, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
-        let items = items(ctx.has_saved_game);
+        let items = items(ctx.saved.is_some());
         match action {
             Some(Action::Quit) => Effect::Quit,
             Some(action) => match self.list.on_action(action, items.len()) {
@@ -239,7 +240,7 @@ impl MainMenu {
 
     fn draw_items(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let rows = logo(ctx.glyphs.unicode);
-        let items = items(ctx.has_saved_game);
+        let items = items(ctx.saved.is_some());
         let logo_height = u16::try_from(rows.len()).unwrap_or(0);
         let [_, logo_area, tagline_area, _, list_area, _, footer_area] = Layout::vertical([
             Constraint::Fill(1),
@@ -269,7 +270,10 @@ impl MainMenu {
         );
         let labels: Vec<String> = items
             .iter()
-            .map(|item| t(label_key(*item)).into_owned())
+            .map(|item| match (item, ctx.saved) {
+                (Item::Resume, Some(saved)) => resume::label(saved, list_area.width),
+                _ => t(label_key(*item)).into_owned(),
+            })
             .collect();
         self.list.draw(frame, list_area, &labels, ctx, true);
         self.footer = footer::draw(
@@ -294,5 +298,7 @@ impl MainMenu {
 
 #[cfg(test)]
 mod focus_tests;
+#[cfg(test)]
+mod resume_tests;
 #[cfg(test)]
 mod tests;

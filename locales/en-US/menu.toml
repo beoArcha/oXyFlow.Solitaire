@@ -2,6 +2,9 @@
 # Items shared with the rest of the interface (New game, Settings, Quit, the variant names)
 # live in common.toml.
 resume = "Resume"
+resume_full = "Resume: {game}, {time}, Moves {moves}"
+resume_time = "Resume: {game}, {time}"
+resume_game = "Resume: {game}"
 new_game_from_seed = "New game from seed"
 help = "Help"
 select_seed = "Choose a game for seed {seed}"
