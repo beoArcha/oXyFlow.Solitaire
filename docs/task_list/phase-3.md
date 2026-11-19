@@ -971,3 +971,19 @@ Rules for the whole phase:
   through the existing `Effect::Restart`.
 - **Acceptance:** tests: the pause dialog's Restart opens the confirm and Yes restarts; No and Esc keep the game;
   `Shift+R` unchanged; the `Do:` row shows restart at 100 and 130 columns in both locales; the no-undo text.
+
+### O-33 — Statistics: scroll bars and a winnable mark per game
+
+- **Owner:** Antigravity (Oxy)
+- **Depends on:** O-23, P3-24
+- **Files:** `crates/tui/src/screens/stats/**`, `crates/tui/src/screens/stats.rs`, `crates/tui/src/glyphs*` (only if a
+  new mark glyph is needed), `locales/*/stats.toml`, tests
+- **Scope:** owner request 2026-11-19: (1) the history list and any other part of the statistics screen that can be
+  longer than the screen get the shared vertical scroll bar of O-23 (`widgets/scrollbar`): thumb sized by the visible
+  share, a click on the track pages, dragging the thumb scrolls, the wheel keeps working, WGL4 and ASCII forms, the
+  `1-20 / 37` position kept. (2) Every history row shows a winnable mark from the stored solver proof
+  (`GameRecord::proof`): a sign for winnable, not winnable, unknown and not checked (WGL4 with ASCII forms, e.g.
+  `✓ ✗ ? ·` / `+ x ? .`), next to or replacing the text column when space is short, with a one-line legend under the
+  list; never color only. Checking unchecked games in the background is out of scope.
+- **Acceptance:** tests for the scroll bar on the history (thumb, track click, drag, wheel, ASCII), the mark for each
+  proof value in both glyph modes, the legend in both locales; renders at 100 × 30 and 130 × 40 in Polish.

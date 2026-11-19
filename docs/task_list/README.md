@@ -163,6 +163,7 @@ the PR descriptions; cards that exist are in the phase files.
 | O-30 | Player site: screenshots, both languages, latest release, build from source | — | DONE |
 | O-31 | Widen a console window the game owns to 130 columns | — | IN PROGRESS |
 | O-32 | Easy restart from the beginning, confirmed like Quit | P3-27 | IN PROGRESS |
+| O-33 | Statistics: scroll bars and a winnable mark per game | O-23, P3-24 | IN PROGRESS |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
