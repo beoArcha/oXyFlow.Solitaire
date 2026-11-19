@@ -218,10 +218,7 @@ impl BoardScreen {
             possible.push(part(Action::Hint, "board.action.hint", 3));
             usable.push(Action::Hint);
         }
-        if let Some(finish) = self.finish_part() {
-            possible.push(finish);
-            usable.push(Action::Finish);
-        }
+        self.push_finish(&mut possible, &mut usable);
         if self.undo_allowed && session.can_undo() {
             possible.push(part(Action::Undo, "board.action.undo", 4));
             usable.push(Action::Undo);

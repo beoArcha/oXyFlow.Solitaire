@@ -221,14 +221,6 @@ impl App {
         self.play_board_cues();
     }
 
-    /// Runs the auto-finish of the board when no modal is open on it.
-    fn advance_finish(&mut self) -> Effect {
-        if self.screen != Screen::Board || self.modal.is_some() {
-            return Effect::None;
-        }
-        self.board.advance(self.now, self.settings.auto_finish)
-    }
-
     fn play_board_cues(&mut self) {
         for cue in self.board.take_cues() {
             self.audio.play(cue);
@@ -364,6 +356,7 @@ impl App {
 
 mod deps;
 mod effects;
+mod finish;
 mod modal;
 mod persist;
 

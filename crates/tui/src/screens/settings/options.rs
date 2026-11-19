@@ -20,8 +20,8 @@ pub enum Field {
     Cues,
     Music,
     Volume,
-    GuidePanel,
     AutoFinish,
+    GuidePanel,
 }
 
 /// Every row, top to bottom.
@@ -36,8 +36,8 @@ pub const FIELDS: [Field; 12] = [
     Field::Cues,
     Field::Music,
     Field::Volume,
-    Field::GuidePanel,
     Field::AutoFinish,
+    Field::GuidePanel,
 ];
 
 /// Which way a change moves through the options.

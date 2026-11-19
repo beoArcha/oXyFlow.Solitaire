@@ -68,10 +68,14 @@ impl BoardScreen {
         self.play_all(moves)
     }
 
-    /// The finish offer as a row of the action line, when the player has to ask for it.
-    pub(super) fn finish_part(&self) -> Option<Part> {
+    /// Offers the finish in the action line when the player has to ask for it: a forced win that
+    /// is not played out by itself.
+    pub(super) fn push_finish(&self, possible: &mut Vec<Part>, usable: &mut Vec<Action>) {
         let offered = self.forced.is_some() && (!self.auto_finish || self.declined);
-        offered.then(|| guidance::part(Action::Finish, "board.action.finish", 3))
+        if offered {
+            possible.push(guidance::part(Action::Finish, "board.action.finish", 3));
+            usable.push(Action::Finish);
+        }
     }
 
     fn start_finishing(&mut self, now: Instant) {
