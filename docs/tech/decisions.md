@@ -1,14 +1,10 @@
 # Decisions
 
-Updated 2026-11-15. This file overrides `master_prompt.md` where they differ.
+Updated 2026-11-19. This file overrides `master_prompt.md` where they differ.
 
 ## Open — owner: user
 
-### D-06 Card graphics delivery — confirmed after spike X-01
-
-Proposed in T-16: vector art reaches the terminal as a font. Consequence to accept: a player sees the
-custom artwork only after installing the oXySol card font and enabling it in the terminal; everyone
-else gets the Unicode or ASCII rendering. The app cannot install or select a font.
+None at the moment. D-06 was decided on 2026-11-19, see below.
 
 ### Assumed defaults (object if wrong)
 
@@ -50,6 +46,46 @@ else gets the Unicode or ASCII rendering. The app cannot install or select a fon
 | R-20 | (2026-11-15) Building and publishing a release is started only by the user: `release.yml` runs on manual dispatch, never on a push. `main` still fast-forwards `release` automatically after a green full check, so `release` always holds the latest tested commit ready to be released. | R-17 (automatic release run) |
 | R-21 | Every release platform also ships a **portable** archive. A portable copy keeps all its files (`oxysol.db`, `oxysol.log`) in a `data` folder next to the executable and writes nothing to system folders. A copy is portable when a file named `oxysol.portable` exists in the same directory as the executable. | — |
 
+## Resolved by the user (2026-11-19) — card graphics
+
+### D-06 Card graphics delivery — DECIDED (final)
+
+Decided after spike X-01 (report: [`spikes/x-01-card-font.md`](spikes/x-01-card-font.md), §5 and §6) at
+checkpoint F-02. It makes T-16 final and amends R-03 ("delivered as fonts"). Consequence the owner
+accepts: a player sees the custom artwork only after installing the oXySol card font and switching Font
+mode on; everyone else gets the Unicode or ASCII rendering. The game never installs a font.
+
+1. **Delivery.** oXySol ships its own complete monospace font with the card glyphs in the BMP Private Use
+   Area.
+   - When the font is installed, the game can switch the classic Windows console to it itself with
+     `SetCurrentConsoleFontEx`. This is an option in Settings and part of the existing Font render mode.
+   - Without the font the game uses today's Unicode and ASCII glyphs.
+   - Font mode stays opt-in (T-16): in general the font cannot be detected. On the classic console the
+     game can check whether the font is registered.
+2. **Base font and licence.** The base is Cascadia Mono (SIL OFL 1.1).
+   - The derivative font is published with the game under a different family name (working name
+     `oXySol Mono`), with the OFL text and the copyright notices kept in the font and in the archives, and
+     with no Reserved Font Name of the base.
+   - R-10 stands: the patched font keeps the licence of its base. The card artwork sources stay MIT.
+   - Gap: `THIRD-PARTY-LICENSES.md` comes from `cargo-about` (T-31), which lists crates and not fonts. The
+     font licence is therefore added to the release archives by hand, tracked as O-35.
+3. **Build tool.** Python with fontTools and skia-pathops, run from `cargo xtask fonts`.
+   - Python is needed only to regenerate the font. The built font file is committed, so an ordinary
+     `cargo build` needs no Python. Versions are pinned in a requirements file (P5-01).
+4. **Windows Terminal** is a supported target from documentation. The game shows a hint on how to set
+   the font face (or face list) in the profile. A test on a real machine is a follow-up, O-34, for when the
+   owner installs Windows Terminal.
+5. **Scope.**
+   - Single-cell glyphs: suits, court emblems and back tiles.
+   - Small mosaic decorations (2 × 2 cells) at larger cell sizes, about 10 × 24 px and up.
+   - No full-card illustrations.
+   - Code points U+E6BC–U+E6FF only (68 code points). No plane 16: it renders as squares in the classic
+     console (verified in X-01).
+
+The glyph box (Cascadia Mono cell: UPM 2048, advance 1200, ascent 1900, descent 480, line gap 0), the
+code point table and the artwork rules are in the style guide on the shared card of M-19…M-24 in
+`docs/task_list/micro.md`.
+
 ## Technical decisions — owner: architect
 
 | ID | Decision | Rationale |
@@ -69,7 +105,7 @@ else gets the Unicode or ASCII rendering. The app cannot install or select a fon
 | T-13 | Scaling means card size, spacing and margins in cells. | The user's terminal controls the font size. |
 | T-14 | Clock and seed generation live outside the engine. | The engine stays deterministic and free of I/O. |
 | T-15 | Dependencies are added only by phase tasks on the Claude lane. Micro tasks never touch `Cargo.toml` or `Cargo.lock`. | No merge conflicts, controlled dependency list. |
-| T-16 | **Graphics (proposed, pending X-01):** SVG sources are compiled into a card font whose glyphs sit in the Unicode Private Use Area. Three render modes: Font, Unicode, ASCII. The font cannot be detected, so Font mode is enabled by the player in a graphics-check screen; the default is Unicode. Single-cell glyphs (suits, emblems, back tiles) are the MVP scope; multi-cell card illustrations and a patched full monospace font for terminals without font fallback depend on the spike. Raster protocols (Kitty, Sixel, iTerm2) are post-MVP and would use the same SVGs. | A standard terminal draws only font glyphs. Fonts stay sharp at any size and work over SSH because rendering happens on the player's machine. |
+| T-16 | **Graphics (final, D-06, after X-01):** SVG sources are compiled by `cargo xtask fonts` (Python, fontTools, skia-pathops) into one complete monospace font, `oXySol Mono`, a patched copy of Cascadia Mono (SIL OFL 1.1) under a different family name; the card glyphs sit in the BMP Private Use Area, code points **U+E6BC–U+E6FF only (68, no plane 16)**, assigned in `assets/cards/codepoints.toml` (an assigned code point never changes). The glyph box is the Cascadia Mono cell: UPM 2048, advance 1200, ascent 1900, descent 480. The built font is committed under `assets/fonts/`, so `cargo build` needs no Python. Three render modes: Font, Unicode, ASCII; the default is Unicode. Font mode is opt-in: the player turns it on in a graphics-check screen, and on the classic Windows console the game can also switch the console to the font itself (`SetCurrentConsoleFontEx`, an option in Settings) when the font is registered. Windows Terminal is supported from documentation with an in-game hint on the font face. Scope: single-cell glyphs (suits, court emblems, back tiles) and small 2 × 2 mosaic decorations at larger cell sizes; no full-card illustrations. Raster protocols (Kitty, Sixel, iTerm2) are post-MVP and would use the same SVGs. | The classic console has one font and no fallback list (X-01: a glyph-only font turned all text into squares, a complete font rendered everything), so a complete patched font is the only way to reach it. Plane 16 failed to render, so the BMP range found free of Nerd Fonts, Font Awesome 6 and the Segoe icon fonts is the whole budget. Fonts stay sharp at any size and work over SSH because rendering happens on the player's machine. Python is the only tool that builds and patches fonts with little code; committing the output keeps it off the normal build path. |
 | T-17 | **Audio:** `.mid` files per sound style, parsed with `midly`, played by a small built-in polyphonic synthesizer (oscillators and envelopes; timbres defined in `style.toml`), output through `cpal`, behind cargo feature `audio`. No audio device, or an SSH session, means audio is off and the game is unaffected. No SoundFont in MVP. The TUI `Audio` trait keeps cues and music separate so an external music source can replace music later. | A SoundFont adds megabytes and licensing review; a built-in synth keeps sound styles small, text-defined and authorable by agents. The sound is deliberately simple. |
 | T-18 | **Revised 2026-11-15 (owner).** Linux releases ship only the static musl builds, and those are built with `--no-default-features`: Linux builds are silent and have no glibc build with audio. Linux CI runners install `libasound2-dev` so that the default `audio` feature still builds and is tested there. | Servers reached over SSH often lack ALSA; a binary linked to it would not start there. A static musl build cannot link ALSA at all, so Linux releases ship without sound. |
 | T-19 | **Revised by R-16, R-17.** `pr.yml` (Linux) runs `cargo xtask check --pr <base>`: fmt, Clippy, lint, the architecture and E2E suites, and unit/integration tests of affected packages only. `main.yml` runs `cargo xtask check` on Linux, Windows and macOS, then a `promote` job fast-forwards `release` and dispatches `release.yml`. `release.yml` (push to `release`, `workflow_dispatch`) runs the full check on three systems, builds, tags, publishes the GitHub Release and deploys GitHub Pages. | The repository is public, so Actions minutes on standard runners are free and PRs can afford the E2E and architecture suites. |
