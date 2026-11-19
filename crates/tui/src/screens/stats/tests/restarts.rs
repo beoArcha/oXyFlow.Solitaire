@@ -77,7 +77,7 @@ fn the_history_lists_the_restart_count_of_a_game_without_undo() {
 fn the_summary_and_the_history_show_restarts_at_100_by_30_in_both_locales() {
     for (locale, history, clean, restarts) in [
         (Locale::EnUs, "Restarts", "No restart", "(no undo)"),
-        (Locale::PlPl, "Od nowa", "Bez rest.", "(bez cofania)"),
+        (Locale::PlPl, "Od nowa", "Czyste", "(bez cofania)"),
     ] {
         let mut storage = many_games(3);
         for (index, variant) in Variant::ALL.into_iter().enumerate() {
