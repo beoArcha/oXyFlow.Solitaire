@@ -1,0 +1,26 @@
+# Third-party licenses
+
+oXySol is distributed under the MIT license (see LICENSE). The program includes the following
+third-party software. Each group below gives the license text and the packages that are covered by it.
+SQLite, which is built into the program through the rusqlite package, is in the public domain.
+
+## Overview
+
+{{#each overview}}
+- {{name}} ({{count}})
+{{/each}}
+
+{{#each licenses}}
+## {{name}}
+
+Used by:
+
+{{#each used_by}}
+- {{crate.name}} {{crate.version}}{{#if crate.repository}} ({{crate.repository}}){{/if}}
+{{/each}}
+
+```text
+{{{text}}}
+```
+
+{{/each}}
