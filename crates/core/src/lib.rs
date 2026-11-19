@@ -9,6 +9,7 @@ pub mod pile;
 pub mod rng;
 pub mod rules;
 pub mod session;
+pub mod solver;
 
 pub use card::{Card, CardId, Color, Rank, Suit};
 pub use game::{DrawCount, Game, PyramidRules, StockStatus, SuitCount, Variant, deal};
@@ -16,3 +17,4 @@ pub use moves::{Move, MoveError};
 pub use pile::{PileRef, PileSnapshot, TableCard};
 pub use rng::SplitMix64;
 pub use session::{RestoreError, Session, SessionRecord};
+pub use solver::{SolveBudget, Verdict, solve};
