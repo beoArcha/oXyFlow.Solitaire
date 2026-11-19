@@ -3,6 +3,7 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseEvent};
 
 use crate::action::{Action, HelpGroup};
+use crate::i18n::t;
 
 /// One terminal event, already translated from the backend's event type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -40,24 +41,26 @@ impl KeySpec {
         }
     }
 
-    /// Plain-text name of the key for help and footer, for example `Enter` or `Ctrl+Z`.
+    /// Plain-text name of the key for help and footer, for example `Enter`, `Shift+R` or
+    /// `Ctrl+Z`. The names of the keys are localized through `help.key.*`.
     pub fn display(&self) -> String {
         let name = match self.code {
-            KeyCode::Char(' ') => "Space".to_owned(),
+            KeyCode::Char(' ') => t("help.key.space").into_owned(),
+            KeyCode::Char(c) if c.is_uppercase() => format!("{}+{c}", t("help.key.shift")),
             KeyCode::Char(c) => c.to_string(),
-            KeyCode::Enter => "Enter".to_owned(),
-            KeyCode::Esc => "Esc".to_owned(),
-            KeyCode::Up => "Up".to_owned(),
-            KeyCode::Down => "Down".to_owned(),
-            KeyCode::Left => "Left".to_owned(),
-            KeyCode::Right => "Right".to_owned(),
-            KeyCode::Tab => "Tab".to_owned(),
-            KeyCode::BackTab => "Shift+Tab".to_owned(),
+            KeyCode::Enter => t("help.key.enter").into_owned(),
+            KeyCode::Esc => t("help.key.esc").into_owned(),
+            KeyCode::Up => t("help.key.up").into_owned(),
+            KeyCode::Down => t("help.key.down").into_owned(),
+            KeyCode::Left => t("help.key.left").into_owned(),
+            KeyCode::Right => t("help.key.right").into_owned(),
+            KeyCode::Tab => t("help.key.tab").into_owned(),
+            KeyCode::BackTab => format!("{}+{}", t("help.key.shift"), t("help.key.tab")),
             KeyCode::F(n) => format!("F{n}"),
             other => format!("{other:?}"),
         };
         if self.modifiers.contains(KeyModifiers::CONTROL) {
-            format!("Ctrl+{}", name.to_uppercase())
+            format!("{}+{}", t("help.key.ctrl"), name.to_uppercase())
         } else {
             name
         }
@@ -205,6 +208,7 @@ mod tests {
     use std::collections::HashSet;
 
     use crate::action::HelpGroup;
+    use crate::i18n::{Locale, set_locale};
 
     fn press(code: KeyCode, modifiers: KeyModifiers) -> KeyEvent {
         KeyEvent::new(code, modifiers)
@@ -350,5 +354,21 @@ mod tests {
         assert_eq!(primary_key(Action::Select).as_deref(), Some("Enter"));
         assert_eq!(primary_key(Action::ForceQuit).as_deref(), Some("Ctrl+C"));
         assert_eq!(KeySpec::ch(' ').display(), "Space");
+    }
+
+    #[test]
+    fn restart_is_shown_as_shift_r() {
+        assert_eq!(primary_key(Action::Restart).as_deref(), Some("Shift+R"));
+        assert_eq!(KeySpec::ctrl('z').display(), "Ctrl+Z");
+    }
+
+    #[test]
+    fn key_names_follow_the_locale() {
+        set_locale(Locale::PlPl);
+        assert_eq!(KeySpec::plain(KeyCode::Up).display(), "Góra");
+        assert_eq!(KeySpec::plain(KeyCode::Down).display(), "Dół");
+        assert_eq!(KeySpec::ch(' ').display(), "Spacja");
+        assert_eq!(KeySpec::plain(KeyCode::BackTab).display(), "Shift+Tab");
+        set_locale(Locale::EnUs);
     }
 }

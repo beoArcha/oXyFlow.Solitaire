@@ -115,7 +115,7 @@ fn carrying_names_the_cards_the_source_and_the_targets() {
     let now = row(&mut h, "Now:");
     if count == 1 {
         let expected = format!(
-            "Now: Carrying: {card} (from {}), {}",
+            "Now: Carrying: {card} (from: {}), {}",
             pile_name(from),
             targets_text(targets)
         );
@@ -156,7 +156,7 @@ fn a_position_without_moves_offers_undo_restart_and_a_new_game() {
     assert!(row(&mut h, "Now:").starts_with("Now: No legal moves"));
     let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Do: u: undo | R: restart | n: new game"),
+        possible.starts_with("Do: u: undo | Shift+R: restart | n: new game"),
         "{possible}"
     );
     assert!(possible.ends_with("?: keys | Esc: menu"), "{possible}");

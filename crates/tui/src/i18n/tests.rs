@@ -2,6 +2,10 @@ use super::*;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
+use oxysol_core::{Card, CardId, PileRef, Rank, Suit};
+
+use crate::announce::{card_name, pile_name};
+
 const AREAS: [&str; 10] = [
     "common", "menu", "board", "settings", "help", "cards", "cli", "audio", "rules", "stats",
 ];
@@ -127,4 +131,94 @@ fn locale_ids_round_trip() {
 fn scanner_finds_keys_but_not_file_names() {
     let found = keys_in(r#"t("common.menu.quit") include_str!("x/common.toml")"#);
     assert_eq!(found, vec!["common.menu.quit".to_owned()]);
+}
+
+fn placeholders(text: &str) -> BTreeSet<String> {
+    let mut found = BTreeSet::new();
+    let mut rest = text;
+    while let Some(open) = rest.find('{') {
+        let inner = &rest[open + 1..];
+        let Some(close) = inner.find('}') else {
+            break;
+        };
+        let name = &inner[..close];
+        if !name.is_empty() && name.bytes().all(|b| b.is_ascii_lowercase() || b == b'_') {
+            found.insert(name.to_owned());
+        }
+        rest = &inner[close + 1..];
+    }
+    found
+}
+
+#[test]
+fn every_locale_uses_the_placeholders_of_en_us() {
+    let source = catalog(Locale::EnUs);
+    for locale in Locale::ALL {
+        let translated = catalog(locale);
+        for (key, text) in source {
+            let other = translated.get(key).map_or("", String::as_str);
+            assert_eq!(
+                placeholders(other),
+                placeholders(text),
+                "{} {key}",
+                locale.id()
+            );
+        }
+    }
+}
+
+#[test]
+fn a_pile_name_stands_at_the_start_after_a_colon_or_in_parentheses() {
+    for locale in Locale::ALL {
+        for (key, text) in catalog(locale) {
+            for (at, _) in text.match_indices("{pile}") {
+                let before = text[..at].trim_end();
+                assert!(
+                    before.is_empty() || before.ends_with(':') || before.ends_with('('),
+                    "{} {key}: {text}",
+                    locale.id()
+                );
+            }
+        }
+    }
+}
+
+fn all_cards() -> Vec<Card> {
+    let mut cards = Vec::new();
+    for suit in Suit::ALL {
+        for rank in Rank::ALL {
+            let id = CardId(u16::try_from(cards.len()).unwrap_or_default());
+            cards.push(Card { id, suit, rank });
+        }
+    }
+    cards
+}
+
+fn longest<I: IntoIterator<Item = String>>(names: I) -> String {
+    names
+        .into_iter()
+        .max_by_key(|name| name.chars().count())
+        .unwrap_or_default()
+}
+
+#[test]
+fn now_row_names_fit_forty_columns_for_a_tableau_pile() {
+    for locale in Locale::ALL {
+        set_locale(locale);
+        let pile = pile_name(PileRef::Tableau(9));
+        let card = longest(all_cards().into_iter().map(card_name));
+        let texts = [
+            tf("board.action.browsing", &[("pile", &pile), ("what", &card)]),
+            tf("board.action.hint_single", &[("what", &card)]),
+        ];
+        for text in texts {
+            assert!(
+                text.chars().count() <= 40,
+                "{} is {} columns: {text}",
+                locale.id(),
+                text.chars().count()
+            );
+        }
+    }
+    set_locale(Locale::EnUs);
 }

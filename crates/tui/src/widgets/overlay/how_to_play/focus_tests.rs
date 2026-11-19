@@ -175,7 +175,7 @@ fn the_text_shows_its_focus_with_a_marker_in_the_margin() {
 fn the_footer_names_what_left_and_right_do_for_the_focused_row() {
     for (locale, tabs, games) in [
         (Locale::EnUs, "Left/Right: tab", "Left/Right: game"),
-        (Locale::PlPl, "Left/Right: zakładka", "Left/Right: gra"),
+        (Locale::PlPl, "Lewo/Prawo: zakładka", "Lewo/Prawo: gra"),
     ] {
         let mut h = opened(locale, TRUE_COLOR);
         assert!(h.text().contains(games), "{locale:?} games");
