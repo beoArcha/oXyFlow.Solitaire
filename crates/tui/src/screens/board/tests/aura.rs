@@ -5,6 +5,9 @@ use ratatui::layout::{Position, Rect};
 
 use super::*;
 use crate::layout::{self, BoardGeometry};
+use crate::settings::{AuraMode, Settings};
+use crate::storage::memory::MemoryStorage;
+use crate::test_support::TRUE_COLOR;
 use crate::theme::{Theme, ThemeId, Token};
 use crate::widgets::aura;
 use crate::widgets::pile::CardPos;
@@ -143,4 +146,33 @@ fn no_halo_without_a_focus_or_while_paused() {
     h.type_char('p');
     assert!(painted(&mut h, "░", Token::AuraFocus).is_empty());
     assert!(painted(&mut h, "▓", Token::AuraCarry).is_empty());
+}
+
+#[test]
+fn focus_only_keeps_the_focus_halo_and_drops_the_carry_and_target_halos() {
+    let storage = MemoryStorage {
+        settings: Some(Settings {
+            aura: AuraMode::FocusOnly,
+            ..Settings::default()
+        }),
+        ..MemoryStorage::default()
+    };
+    let mut h = Harness::with(storage, TRUE_COLOR, 140, 40);
+    h.app.apply(Effect::Start {
+        variant: Variant::Klondike(DrawCount::One),
+        seed: Some(5),
+        undo_allowed: true,
+    });
+    let Some((from, to, _)) = first_transfer(&h) else {
+        unreachable!("seed 5 has a transfer")
+    };
+    put_cursor(&mut h, from);
+    h.press(ratatui::crossterm::event::KeyCode::Enter);
+    put_cursor(&mut h, to);
+    assert!(board(&h).marks().selected.is_some(), "no carried run");
+    assert!(!board(&h).marks().targets.is_empty(), "no drop target");
+
+    assert!(painted(&mut h, "▓", Token::AuraCarry).is_empty());
+    assert!(painted(&mut h, "·", Token::Target).is_empty());
+    assert!(!painted(&mut h, "░", Token::AuraFocus).is_empty());
 }

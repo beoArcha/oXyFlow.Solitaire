@@ -30,6 +30,15 @@ pub enum ColorMode {
     TrueColor,
 }
 
+/// Which halos the board draws: all three (focus, carried run, drop targets), or only the focus.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AuraMode {
+    #[default]
+    Full,
+    FocusOnly,
+}
+
 /// Everything the player can change in the settings screen. Styles are folder ids.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
@@ -56,6 +65,8 @@ pub struct Settings {
     /// Whether a forced win is played out automatically move by move. An older saved value without
     /// the field loads as `true`.
     pub auto_finish: bool,
+    /// Which halos the board draws. An older saved value without the field loads as `Full`.
+    pub aura: AuraMode,
 }
 
 impl Default for Settings {
@@ -75,6 +86,7 @@ impl Default for Settings {
             undo_allowed: true,
             winnable_only: false,
             auto_finish: true,
+            aura: AuraMode::Full,
         }
     }
 }
@@ -224,6 +236,25 @@ mod tests {
         assert!(matches!(parsed, Ok(ref s) if s.auto_finish));
         let off = toml::from_str::<Settings>("auto_finish = false");
         assert!(matches!(off, Ok(ref s) if !s.auto_finish));
+    }
+
+    #[test]
+    fn the_aura_is_full_by_default_and_old_values_without_it_keep_it_full() {
+        assert_eq!(Settings::default().aura, AuraMode::Full);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if s.aura == AuraMode::Full));
+    }
+
+    #[test]
+    fn the_aura_focus_only_round_trips() {
+        let settings = Settings {
+            aura: AuraMode::FocusOnly,
+            ..Settings::default()
+        };
+        let text = toml::to_string(&settings).unwrap_or_default();
+        assert!(text.contains("aura = \"focus_only\""));
+        let back = toml::from_str::<Settings>(&text);
+        assert!(matches!(back, Ok(ref s) if *s == settings));
     }
 
     #[test]

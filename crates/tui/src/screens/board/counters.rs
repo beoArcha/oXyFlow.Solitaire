@@ -1,7 +1,7 @@
 //! The counters of the stock: how often the waste was turned over, which pass of a limited number
 //! the game is in, how many row deals are left. Read from [`StockStatus`]; FreeCell has none.
 
-use oxysol_core::{PileRef, Session, StockStatus};
+use oxysol_core::{Move, PileRef, Session, StockStatus};
 
 use crate::i18n::tf;
 
@@ -39,18 +39,14 @@ pub(super) fn stock_text(session: &Session) -> Option<String> {
     Some(stock_text_of(&status, len))
 }
 
-/// Whether the waste can be turned back into an empty stock: the waste has cards and the game
-/// still allows a pass (`recycles_left` is not `Some(0)`, the engine's word for "no recycle").
+/// Whether an empty stock can be turned over again: the engine lists [`Move::Stock`] as legal then,
+/// and only then (the waste has cards and a pass is left). The board does not repeat that rule.
 pub(super) fn can_recycle(session: &Session) -> bool {
-    let waste = session
+    let stock_empty = session
         .game()
         .piles()
         .iter()
-        .find(|snapshot| snapshot.pile == PileRef::Waste)
-        .is_some_and(|snapshot| !snapshot.cards.is_empty());
-    let passes_left = session
-        .game()
-        .stock_status()
-        .is_some_and(|status| status.recycles_left != Some(0));
-    waste && passes_left
+        .find(|snapshot| snapshot.pile == PileRef::Stock)
+        .is_some_and(|snapshot| snapshot.cards.is_empty());
+    stock_empty && session.game().legal_moves().contains(&Move::Stock)
 }

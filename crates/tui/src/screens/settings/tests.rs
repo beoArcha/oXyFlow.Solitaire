@@ -8,7 +8,7 @@ mod styles;
 use super::options::{FIELDS, Field, Step, line, value_text};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
-use crate::settings::{ColorMode, GlyphMode, Settings};
+use crate::settings::{AuraMode, ColorMode, GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR, sound_styles};
 use crate::theme::ThemeId;
@@ -122,6 +122,19 @@ fn cues_and_music_toggle() {
     let base = Settings::default();
     assert!(!changed(Field::Cues, &base, Step::Next).cues);
     assert!(changed(Field::Music, &base, Step::Next).music);
+}
+
+#[test]
+fn the_aura_row_cycles_between_full_and_focus_only() {
+    let base = Settings::default();
+    let focus = changed(Field::Aura, &base, Step::Next);
+    assert_eq!(focus.aura, AuraMode::FocusOnly);
+    assert_eq!(
+        changed(Field::Aura, &focus, Step::Next).aura,
+        AuraMode::Full
+    );
+    assert_eq!(value(Field::Aura, &focus), "Focus only");
+    assert_eq!(row(Field::Aura, &base, true), "Aura: Full");
 }
 
 #[test]

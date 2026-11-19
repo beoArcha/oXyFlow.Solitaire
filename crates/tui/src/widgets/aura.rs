@@ -11,6 +11,7 @@ use ratatui::style::Style;
 use super::pile::{CardPos, Marks};
 use crate::layout::BoardGeometry;
 use crate::screens::ViewCtx;
+use crate::settings::AuraMode;
 use crate::theme::Token;
 
 /// The cells of the halo of `rect`: its one-cell ring.
@@ -80,7 +81,8 @@ fn paint(
 }
 
 /// Draws the halos of `marks` over the free cells of `clip`: targets first, then the focus, then
-/// the carried run, so the stronger halo wins where two meet.
+/// the carried run, so the stronger halo wins where two meet. In [`AuraMode::FocusOnly`] the
+/// targets and the carried run get no halo; their `+` and `●` card marks still show.
 pub fn draw(
     buf: &mut Buffer,
     clip: Rect,
@@ -91,25 +93,32 @@ pub fn draw(
     let theme = ctx.theme;
     let glyphs = ctx.glyphs;
     let on = |token| theme.style(token, Token::Table);
-    for rect in marks
-        .targets
-        .iter()
-        .filter_map(|pile| top_rect(geometry, *pile))
-    {
-        paint(
-            buf,
-            geometry,
-            clip,
-            rect,
-            (glyphs.aura_target, on(Token::Target)),
-        );
+    let full = ctx.settings.aura == AuraMode::Full;
+    if full {
+        for rect in marks
+            .targets
+            .iter()
+            .filter_map(|pile| top_rect(geometry, *pile))
+        {
+            paint(
+                buf,
+                geometry,
+                clip,
+                rect,
+                (glyphs.aura_target, on(Token::Target)),
+            );
+        }
     }
     let focus = (glyphs.aura_focus, on(Token::AuraFocus));
     if let Some(rect) = marks.focus.and_then(|pos| run_rect(geometry, pos)) {
         paint(buf, geometry, clip, rect, focus);
     }
     let carry = (glyphs.aura_carry, on(Token::AuraCarry));
-    if let Some(rect) = marks.selected.and_then(|pos| run_rect(geometry, pos)) {
+    if let Some(rect) = marks
+        .selected
+        .and_then(|pos| run_rect(geometry, pos))
+        .filter(|_| full)
+    {
         paint(buf, geometry, clip, rect, carry);
     }
 }
