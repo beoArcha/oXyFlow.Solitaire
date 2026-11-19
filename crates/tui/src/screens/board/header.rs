@@ -1,6 +1,7 @@
-//! The header line of the board: game, seed, playing time, move count and, in a game without undo,
-//! the "No undo" badge. The seed is a click target that copies it, so the header also says where
-//! that target is.
+//! The game information of the board, in the one place the screen shows it: variant, seed, playing
+//! time, moves, the stock counter and, in a game without undo, the "No undo" badge. A Compact
+//! screen draws the facts in one header row, a Standard or Wide screen in the `Game` box of the
+//! side panel. The seed is a click target that copies it, so it is underlined in both places.
 
 use std::time::Duration;
 
@@ -9,151 +10,144 @@ use ratatui::layout::Rect;
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 
+use super::counters;
 use crate::clock::format_elapsed;
 use crate::i18n::{t, tf};
 use crate::screens::variant_label_key;
 
-/// The header text and the characters of it that spell the seed.
+/// Index of the seed among the facts, and so the row of it in the `Game` box.
+pub(super) const SEED_ROW: u16 = 1;
+
+/// The facts of the game, each one a short text.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct Header {
-    text: String,
-    seed_start: usize,
+pub(super) struct Facts {
+    facts: Vec<String>,
+    counter: Option<usize>,
+    seed_at: usize,
     seed_len: usize,
 }
 
-fn text_of(session: &Session, elapsed: Duration, undo_allowed: bool) -> String {
-    let text = tf(
-        "board.header.format",
-        &[
-            ("variant", &t(variant_label_key(session.variant()))),
-            ("seed", &session.seed().to_string()),
-            ("time", &format_elapsed(elapsed)),
-            ("moves", &session.moves_made().to_string()),
-        ],
-    );
-    if undo_allowed {
-        return text;
-    }
-    format!(
-        "{text}{}{}",
-        t("board.action.separator"),
-        t("board.header.no_undo")
-    )
+/// The header row: where it is drawn, what is drawn and the cells of the seed.
+pub(super) struct Row {
+    pub area: Rect,
+    pub line: Line<'static>,
+    pub seed: Rect,
 }
 
-/// Character index of the seed in `text`, searched after the game name so that a digit in the name
-/// is not taken for the seed.
-fn seed_start(text: &str, variant: &str, seed: &str) -> usize {
-    let skipped = if text.starts_with(variant) {
-        variant.len()
-    } else {
-        0
-    };
-    let found = text.get(skipped..).and_then(|rest| rest.find(seed));
-    let byte = skipped + found.unwrap_or(0);
-    text.get(..byte).map_or(0, |head| head.chars().count())
+fn cells(text: &str) -> usize {
+    text.chars().count()
 }
 
-impl Header {
+fn span_of(text: &str, from: usize, to: usize) -> String {
+    text.chars().skip(from).take(to - from).collect()
+}
+
+impl Facts {
     pub(super) fn new(session: &Session, elapsed: Duration, undo_allowed: bool) -> Self {
-        let text = text_of(session, elapsed, undo_allowed);
         let seed = session.seed().to_string();
-        let variant = t(variant_label_key(session.variant())).into_owned();
+        let seed_fact = tf("board.header.seed", &[("seed", &seed)]);
+        let seed_at = seed_fact
+            .find(&seed)
+            .map_or(0, |byte| cells(&seed_fact[..byte]));
+        let mut facts = vec![
+            t(variant_label_key(session.variant())).into_owned(),
+            seed_fact,
+            tf("board.header.time", &[("time", &format_elapsed(elapsed))]),
+            tf(
+                "board.header.moves",
+                &[("moves", &session.moves_made().to_string())],
+            ),
+        ];
+        let counter = counters::stock_text(session).map(|text| {
+            facts.push(text);
+            facts.len() - 1
+        });
+        if !undo_allowed {
+            facts.push(t("board.header.no_undo").into_owned());
+        }
         Self {
-            seed_start: seed_start(&text, &variant, &seed),
-            seed_len: seed.chars().count(),
-            text,
+            facts,
+            counter,
+            seed_at,
+            seed_len: cells(&seed),
         }
     }
 
-    fn width(&self) -> usize {
-        self.text.chars().count()
+    fn joined_width(facts: &[&String]) -> usize {
+        let separator = cells(&t("board.action.separator"));
+        facts.iter().map(|fact| cells(fact)).sum::<usize>()
+            + separator * facts.len().saturating_sub(1)
     }
 
-    /// Where the line starts: the same rule the renderer uses to center it.
-    fn left(&self, area: Rect) -> u16 {
-        let offset = (usize::from(area.width) / 2).saturating_sub(self.width() / 2);
-        area.x + u16::try_from(offset).unwrap_or(0)
-    }
-
-    /// The cells of the seed when the header is centered in `area`.
-    pub(super) fn seed_cells(&self, area: Rect) -> Rect {
-        let start = u16::try_from(self.seed_start).unwrap_or(0);
-        let len = u16::try_from(self.seed_len).unwrap_or(0);
-        Rect::new(self.left(area) + start, area.y, len, 1).intersection(area)
-    }
-
-    /// The header as a line: the seed underlined, so that it reads as something to press.
-    pub(super) fn line(&self, style: Style) -> Line<'static> {
-        let chars: Vec<char> = self.text.chars().collect();
-        let end = (self.seed_start + self.seed_len).min(chars.len());
-        let start = self.seed_start.min(end);
-        let piece = |from: usize, to: usize| chars[from..to].iter().collect::<String>();
-        Line::from(vec![
-            Span::styled(piece(0, start), style),
-            Span::styled(piece(start, end), style.add_modifier(Modifier::UNDERLINED)),
-            Span::styled(piece(end, chars.len()), style),
-        ])
-        .centered()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use oxysol_core::{DrawCount, Variant};
-
-    use super::*;
-    use crate::i18n::{Locale, set_locale};
-
-    fn header(seed: u64, undo_allowed: bool) -> Header {
-        let session = Session::new(Variant::Klondike(DrawCount::One), seed);
-        Header::new(&session, Duration::from_secs(75), undo_allowed)
-    }
-
-    #[test]
-    fn the_seed_is_found_after_the_game_name_even_when_the_name_holds_digits() {
-        for seed in [1, 42, u64::MAX] {
-            let header = header(seed, true);
-            let text: Vec<char> = header.text.chars().collect();
-            let spelled: String = text[header.seed_start..header.seed_start + header.seed_len]
-                .iter()
-                .collect();
-            assert_eq!(spelled, seed.to_string(), "{}", header.text);
+    fn fitting(&self, width: usize) -> Vec<&String> {
+        let mut shown: Vec<&String> = self.facts.iter().collect();
+        let dropped = self.counter.filter(|_| Self::joined_width(&shown) > width);
+        if let Some(index) = dropped {
+            shown.remove(index);
         }
+        shown
     }
 
-    #[test]
-    fn the_seed_cells_are_where_the_centered_line_draws_the_seed() {
-        for undo_allowed in [true, false] {
-            for width in [100_u16, 101, 120] {
-                let header = header(42, undo_allowed);
-                let area = Rect::new(0, 0, width, 1);
-                let mut buffer = ratatui::buffer::Buffer::empty(area);
-                ratatui::widgets::Widget::render(
-                    ratatui::widgets::Paragraph::new(header.line(Style::default())),
-                    area,
-                    &mut buffer,
-                );
-                let cells = header.seed_cells(area);
-                let drawn: String = (cells.left()..cells.right())
-                    .map(|x| buffer[(x, 0)].symbol().to_owned())
-                    .collect();
-                assert_eq!(drawn, "42", "width {width}");
+    /// The header row for `area`: the facts that fit, centered, the seed underlined.
+    pub(super) fn row(&self, area: Rect, style: Style) -> Row {
+        let width = usize::from(area.width);
+        let shown = self.fitting(width);
+        let separator = t("board.action.separator");
+        let total = Self::joined_width(&shown).min(width);
+        let left = (width / 2).saturating_sub(total / 2);
+        let mut spans = Vec::new();
+        let mut offset = 0;
+        let mut seed = Rect::new(area.x, area.y, 0, 1);
+        for (index, fact) in shown.iter().enumerate() {
+            if index > 0 {
+                spans.push(Span::styled(separator.to_string(), style));
+                offset += cells(&separator);
             }
+            if index == usize::from(SEED_ROW) {
+                let start = u16::try_from(left + offset + self.seed_at).unwrap_or(0);
+                let len = u16::try_from(self.seed_len).unwrap_or(0);
+                seed = Rect::new(area.x + start, area.y, len, 1).intersection(area);
+            }
+            spans.extend(self.spans(index, fact, style));
+            offset += cells(fact);
+        }
+        let x = area.x + u16::try_from(left).unwrap_or(0);
+        let rest = area.width.saturating_sub(x - area.x);
+        Row {
+            area: Rect::new(x, area.y, rest, 1),
+            line: Line::from(spans),
+            seed,
         }
     }
 
-    #[test]
-    fn the_header_names_moves_and_the_badge_in_both_languages() {
-        for (locale, moves, badge) in [
-            (Locale::EnUs, "Moves: 0", "No undo"),
-            (Locale::PlPl, "Ruchy: 0", "Bez cofania"),
-        ] {
-            set_locale(locale);
-            assert!(header(7, true).text.contains(moves));
-            assert!(!header(7, true).text.contains(badge));
-            assert!(header(7, false).text.contains(badge));
+    fn spans(&self, index: usize, fact: &str, style: Style) -> Vec<Span<'static>> {
+        if index != usize::from(SEED_ROW) {
+            return vec![Span::styled(fact.to_owned(), style)];
         }
-        set_locale(Locale::EnUs);
+        let end = self.seed_at + self.seed_len;
+        vec![
+            Span::styled(span_of(fact, 0, self.seed_at), style),
+            Span::styled(
+                span_of(fact, self.seed_at, end),
+                style.add_modifier(Modifier::UNDERLINED),
+            ),
+            Span::styled(span_of(fact, end, cells(fact)), style),
+        ]
+    }
+
+    /// The facts as the lines of the `Game` box, one per fact, the seed underlined.
+    pub(super) fn lines(&self, style: Style) -> Vec<Line<'static>> {
+        self.facts
+            .iter()
+            .enumerate()
+            .map(|(index, fact)| Line::from(self.spans(index, fact, style)))
+            .collect()
+    }
+
+    /// The cells of the seed when the facts are the lines of a box whose text starts at `inner`.
+    pub(super) fn seed_in_box(&self, inner: Rect) -> Rect {
+        let start = u16::try_from(self.seed_at).unwrap_or(0);
+        let len = u16::try_from(self.seed_len).unwrap_or(0);
+        Rect::new(inner.x + start, inner.y + SEED_ROW, len, 1).intersection(inner)
     }
 }

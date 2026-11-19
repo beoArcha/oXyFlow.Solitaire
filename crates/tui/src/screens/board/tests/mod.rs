@@ -6,6 +6,7 @@ mod counters;
 mod finish;
 mod focus;
 mod guidance;
+mod layout;
 mod mouse;
 mod moves;
 mod navigation;

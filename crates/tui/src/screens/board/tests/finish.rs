@@ -205,7 +205,7 @@ fn the_finish_key_without_a_forced_win_says_so_and_moves_nothing() {
     h.type_char('f');
     assert_eq!(moves_made(&h), 0);
     assert_eq!(status(&h), Some(board_status::NO_FINISH));
-    assert!(h.text().contains("cannot be finished automatically"));
+    assert!(h.text().contains("nothing to finish"));
 }
 
 #[test]

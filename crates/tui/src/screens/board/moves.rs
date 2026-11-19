@@ -55,7 +55,6 @@ impl BoardScreen {
             count,
             choices: found,
         });
-        self.status = Some(status::PICKED);
         self.cue(SoundCue::CardPick);
         Effect::None
     }
@@ -187,17 +186,6 @@ impl BoardScreen {
         if self.is_won() {
             self.cue(SoundCue::Win);
             return Effect::Open(Modal::win());
-        }
-        let stuck = self
-            .session
-            .as_ref()
-            .is_some_and(|session| session.game().legal_moves().is_empty());
-        if stuck {
-            self.status = Some(if self.undo_allowed {
-                status::NO_MOVES
-            } else {
-                status::NO_MOVES_NO_UNDO
-            });
         }
         Effect::None
     }

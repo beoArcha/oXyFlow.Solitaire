@@ -31,9 +31,9 @@ fn a_legal_move_is_picked_then_dropped() {
         marks.selected.map(|s| (s.pile, s.index)),
         Some((from, len - 1))
     );
-    assert_eq!(status(&h), Some(status::PICKED));
+    assert_eq!(status(&h), None);
     assert_eq!(cues(&h), vec![SoundCue::CardPick]);
-    assert!(h.text().contains("Cards picked up"));
+    assert!(h.text().contains("Carrying:"));
 
     put_cursor(&mut h, to);
     h.press(KeyCode::Enter);

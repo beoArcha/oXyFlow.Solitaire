@@ -7,10 +7,8 @@ use oxysol_core::{Move, PileRef, PileSnapshot, Session, Variant};
 
 use super::choices::{Choice, quick};
 use super::cursor::max_depth;
-use super::status::look_at;
-use super::{BoardScreen, Pick};
+use super::{BoardScreen, Pick, now};
 use crate::action::Action;
-use crate::announce::{Look, look_text, pile_name, targets_text};
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
 use crate::widgets::text::clip;
@@ -28,6 +26,8 @@ pub(super) struct Part {
 pub(super) struct Guidance {
     pub now: String,
     pub possible: Vec<Part>,
+    /// Parts that are never dropped: the way to the key list and the way out.
+    pub tail: Vec<Part>,
     pub usable: Vec<Action>,
 }
 
@@ -97,21 +97,18 @@ fn run_part(drop_order: u8) -> Part {
 }
 
 impl Guidance {
-    /// The `Now:` row cut to `width` columns. `counter` is the stock counter when it has no room
-    /// beside the stock; it follows the text.
-    pub(super) fn now_line(&self, width: usize, counter: Option<&str>) -> String {
-        let text = match counter {
-            Some(counter) => format!("{}{}{counter}", self.now, t("board.action.separator")),
-            None => self.now.clone(),
-        };
-        clip(&tf("board.action.now", &[("text", &text)]), width)
+    /// The `Now:` row text cut to `width` columns.
+    pub(super) fn now_line(&self, width: usize) -> String {
+        clip(&tf("board.action.now", &[("text", &self.now)]), width)
     }
 
-    /// The `Possible:` row: the parts that fit `width` columns, least useful dropped first.
+    /// The `Do:` row: the parts that fit `width` columns, least useful dropped first, then the
+    /// tail, which always stays.
     pub(super) fn possible_line(&self, width: usize) -> String {
         let mut parts = self.possible.clone();
         loop {
-            let line = tf("board.action.possible", &[("text", &join(&parts))]);
+            let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
+            let line = tf("board.action.possible", &[("text", &join(&all))]);
             if line.chars().count() <= width || parts.is_empty() {
                 return clip(&line, width);
             }
@@ -131,19 +128,26 @@ impl Guidance {
         Self {
             now: t(now_key).into_owned(),
             possible,
+            tail: tail(true),
             usable,
         }
     }
 }
 
+/// The parts that end every `Do:` row: how to see all keys and, unless Esc is taken by a pick,
+/// how to leave for the menu.
+fn tail(with_menu: bool) -> Vec<Part> {
+    let mut parts = vec![part(Action::Help, "board.action.help", 0)];
+    if with_menu {
+        parts.push(part(Action::Back, "board.action.menu", 0));
+    }
+    parts
+}
+
 fn won() -> Guidance {
     Guidance::closed(
         "board.action.won",
-        vec![
-            part(Action::NewGame, "board.action.new_game", 0),
-            part(Action::Menu, "board.action.menu", 1),
-            part(Action::Help, "board.action.help", 2),
-        ],
+        vec![part(Action::NewGame, "board.action.new_game", 0)],
         Vec::new(),
     )
 }
@@ -157,7 +161,6 @@ fn stuck(session: &Session, undo_allowed: bool) -> Guidance {
     }
     possible.push(part(Action::Restart, "board.action.restart", 0));
     possible.push(part(Action::NewGame, "board.action.new_game", 1));
-    possible.push(part(Action::Help, "board.action.help", 2));
     Guidance::closed("board.action.stuck", possible, usable)
 }
 
@@ -179,6 +182,14 @@ impl BoardScreen {
             Some(pick) => carrying(&piles, pick),
             None => self.browsing(&piles, &legal, session),
         })
+    }
+
+    fn now_text(&self, piles: &[PileSnapshot]) -> String {
+        let hint = self.hint.filter(|_| self.hint_note);
+        match hint {
+            Some(mv) => now::hint(piles, mv),
+            None => now::browsing(piles, self.cursor.pile, self.cursor.depth),
+        }
     }
 
     fn browsing(&self, piles: &[PileSnapshot], legal: &[Move], session: &Session) -> Guidance {
@@ -232,32 +243,14 @@ impl BoardScreen {
             possible.push(part(Action::Redo, "board.action.redo", 7));
             usable.push(Action::Redo);
         }
-        possible.push(part(Action::Help, "board.action.help", 8));
         possible.push(part(Action::Rules, "board.action.rules", 9));
         usable.extend(ALWAYS);
         Guidance {
-            now: self.browsing_text(snapshot),
+            now: self.now_text(piles),
             possible,
+            tail: tail(true),
             usable,
         }
-    }
-
-    fn browsing_text(&self, snapshot: Option<&PileSnapshot>) -> String {
-        let cursor = self.cursor;
-        let what =
-            look_text(snapshot.map_or(Look::Empty, |snapshot| look_at(snapshot, cursor.depth)));
-        let pile = pile_name(cursor.pile);
-        if cursor.depth > 1 {
-            return tf(
-                "board.action.browsing_run",
-                &[
-                    ("pile", &pile),
-                    ("count", &cursor.depth.to_string()),
-                    ("what", &what),
-                ],
-            );
-        }
-        tf("board.action.browsing", &[("pile", &pile), ("what", &what)])
     }
 }
 
@@ -267,29 +260,6 @@ fn carrying(piles: &[PileSnapshot], pick: &Pick) -> Guidance {
         .iter()
         .filter(|choice| choice.target.is_some())
         .count();
-    let card = piles
-        .iter()
-        .find(|snapshot| snapshot.pile == pick.source)
-        .map_or(Look::Empty, |snapshot| {
-            look_at(snapshot, usize::from(pick.count))
-        });
-    let card = look_text(card);
-    let what = if pick.count > 1 {
-        tf(
-            "board.action.cards",
-            &[("count", &pick.count.to_string()), ("what", &card)],
-        )
-    } else {
-        card
-    };
-    let now = tf(
-        "board.action.carrying",
-        &[
-            ("what", &what),
-            ("pile", &pile_name(pick.source)),
-            ("targets", &targets_text(targets)),
-        ],
-    );
     let mut possible = vec![
         part(Action::Select, "board.action.drop", 0),
         part(Action::Back, "board.action.put_back", 1),
@@ -300,11 +270,11 @@ fn carrying(piles: &[PileSnapshot], pick: &Pick) -> Guidance {
         possible.push(quick_part(best, 3));
         usable.push(Action::QuickMove);
     }
-    possible.push(part(Action::Help, "board.action.help", 4));
     usable.extend(ALWAYS);
     Guidance {
-        now,
+        now: now::carrying(piles, pick.source, pick.count, targets),
         possible,
+        tail: tail(false),
         usable,
     }
 }
