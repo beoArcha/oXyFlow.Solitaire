@@ -7,6 +7,7 @@ mod finish;
 mod focus;
 mod guidance;
 mod guide_window;
+mod guide_winnable;
 mod layout;
 mod mouse;
 mod moves;
