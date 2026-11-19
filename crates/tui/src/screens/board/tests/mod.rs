@@ -6,6 +6,7 @@ mod counters;
 mod finish;
 mod focus;
 mod footer;
+mod frame;
 mod guidance;
 mod guide_window;
 mod guide_winnable;

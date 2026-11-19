@@ -26,7 +26,8 @@ pub(super) const SIDE: u16 = 2;
 /// Rows the frame takes at the top and at the bottom.
 pub(super) const FRAME_ROWS: u16 = 2;
 
-const ASCII_BORDER: border::Set<'static> = border::Set {
+/// The plain-ASCII frame, for the ASCII glyph mode.
+pub(crate) const ASCII_BORDER: border::Set<'static> = border::Set {
     top_left: "+",
     top_right: "+",
     bottom_left: "+",

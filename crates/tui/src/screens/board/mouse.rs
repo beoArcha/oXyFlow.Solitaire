@@ -16,7 +16,6 @@ use super::cursor::{Cursor, focusable};
 use super::moves_panel::toggle_moves;
 use super::{BoardScreen, toggle_guide};
 use crate::action::Action;
-use crate::layout;
 use crate::mouse::{left_press, left_release, right_press};
 use crate::screens::{Effect, ViewCtx};
 use crate::widgets::guide;
@@ -68,8 +67,7 @@ impl BoardScreen {
         if self.session.is_none() {
             return Effect::None;
         }
-        self.guide_panel = ctx.settings.guide_panel;
-        self.moves_panel = ctx.settings.moves_panel;
+        self.follow(ctx);
         if let Some(cell) = left_press(event) {
             if self.on_guide_title(cell) {
                 return toggle_guide(ctx);
@@ -96,7 +94,7 @@ impl BoardScreen {
     }
 
     fn on_seed(&self, cell: (u16, u16), now: Instant) -> bool {
-        let parts = layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel);
+        let parts = self.chrome();
         let Some(facts) = self.facts(now) else {
             return false;
         };
@@ -109,7 +107,7 @@ impl BoardScreen {
     }
 
     fn on_guide_title(&self, cell: (u16, u16)) -> bool {
-        layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel)
+        self.chrome()
             .guide
             .map(guide::title_row)
             .is_some_and(|row| row.contains(Position::new(cell.0, cell.1)))

@@ -1,5 +1,6 @@
 //! Drawing of the board screen: the game information (a header row, or the `Game` box of the guide
-//! panel), the board with its auras, the framed guide panel and the two rows of the controls strip.
+//! panel), the board with its auras (inside the field frame in the themes that draw one), the
+//! framed guide panel and the two rows of the controls strip.
 //! Geometry comes from [`layout`], so the mouse sees the same board that is drawn.
 
 use oxysol_core::Session;
@@ -15,11 +16,11 @@ use super::{BoardScreen, counters};
 use crate::layout;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
-use crate::widgets::aura;
 use crate::widgets::footer::FooterMap;
 use crate::widgets::guide::{self, Guide};
 use crate::widgets::moves::{self, MoveEntry, PanelMap};
 use crate::widgets::pile::{self, Marks};
+use crate::widgets::{aura, edge};
 
 /// What the board screen shows: the game, its facts, the highlights and the last event.
 pub(super) struct Scene<'a> {
@@ -30,8 +31,7 @@ pub(super) struct Scene<'a> {
     pub event: Option<&'a (String, Tone)>,
     pub covered: bool,
     pub guidance: Option<&'a Guidance>,
-    pub guide: bool,
-    pub moves: bool,
+    pub chrome: layout::Chrome,
     pub entries: &'a [MoveEntry],
     pub focus: Option<usize>,
 }
@@ -61,14 +61,13 @@ fn draw_panel(frame: &mut Frame, rect: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_
     guide::draw(frame.buffer_mut(), rect, &panel, ctx);
 }
 
-/// Draws the whole board screen into `area`.
+/// Draws the whole board screen into the parts of `scene.chrome`.
 pub(super) fn render(
     frame: &mut Frame,
-    area: Rect,
     scene: &Scene<'_>,
     ctx: &ViewCtx<'_>,
 ) -> (FooterMap, PanelMap) {
-    let parts = layout::chrome_panels(area, scene.guide, scene.moves);
+    let parts = scene.chrome;
     if let (Some(rect), Some(facts)) = (parts.header, scene.facts) {
         let row = facts.row(rect, ctx.theme.style(Token::Accent, Token::Background));
         frame.render_widget(Paragraph::new(row.line), row.area);
@@ -77,6 +76,9 @@ pub(super) fn render(
         Block::new().style(ctx.theme.style(Token::TableText, Token::Table)),
         parts.body,
     );
+    if ctx.theme.field_edge() {
+        edge::draw(frame.buffer_mut(), parts.field, ctx);
+    }
     if let Some(session) = scene.session.filter(|_| !scene.covered) {
         draw_board(frame, parts.body, session, scene.marks, ctx);
     }
@@ -99,7 +101,6 @@ pub(super) fn render(
 
 pub(super) fn draw(
     frame: &mut Frame,
-    area: Rect,
     board: &BoardScreen,
     ctx: &ViewCtx<'_>,
 ) -> (FooterMap, PanelMap) {
@@ -115,10 +116,9 @@ pub(super) fn draw(
         event: event.as_ref(),
         covered: board.covered,
         guidance: guidance.as_ref(),
-        guide: ctx.settings.guide_panel,
-        moves: ctx.settings.moves_panel,
+        chrome: board.chrome(),
         entries: &entries,
         focus: board.panel_focus.filter(|_| board.moves_shown()),
     };
-    render(frame, area, &scene, ctx)
+    render(frame, &scene, ctx)
 }

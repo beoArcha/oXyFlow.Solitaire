@@ -362,7 +362,7 @@ pub struct NullClipboard;                                // every copy fails wit
   short reason (`board.moves.reason.*`) that is drawn under it when every reason fits in the panel. Key `v`
   (`Action::Moves`, help group Moves) and a click on the title toggle `Settings::moves_panel` (default `true`; an
   older value without the field loads as `true`) through `Effect::Apply`. *Layout:* `layout::chrome_panels(area,
-  guide, moves)` (`chrome_with` is the guide-only form) puts the panels in the one side column of the size class
+  guide, moves, frame)` (`chrome_with(area, guide, frame)` is the guide-only form) puts the panels in the one side column of the size class
   (30 or 40 columns): alone either takes the full height (without the guide the header row is back); together the
   guide is above and the moves panel below it with 12 rows (22 from a column height of 56, where the reasons fit),
   at most half the column. `Chrome::moves` is the new rectangle; the board width never changes. Below 130
@@ -474,9 +474,15 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   plays all moves at once; the action line offers `f: finish game` when a forced win is not played out by itself.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
   and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
-  an optional header row, `body` and the two rows of the controls strip; `chrome_with(area, guide)` also
-  reserves the full-height guide panel at the right and drops the header row when the panel is there (see Board
-  guidance; `Chrome { class, header: Option<Rect>, body, guide: Option<Rect>, now, possible }`). The same result drives rendering and hit-testing. Two layouts:
+  an optional header row, the `field` (the playing area), its `body` (the area to pass to `compute`) and the two
+  rows of the controls strip; `chrome_with(area, guide, frame)` also reserves the full-height guide panel at the
+  right and drops the header row when the panel is there (see Board guidance), and insets `body` by `FRAME_INSET`
+  (one cell) when `frame` is set, which is `Theme::field_edge()`: only a theme whose felt has no edge of its own
+  (High Contrast, `Table` = `Background` = black) draws the one-cell `Border` field frame (`widgets/edge.rs`,
+  `┌─┐│└┘`, ASCII `+-|`) on the ring of `field`; in every other theme `body == field` and no frame is drawn.
+  `BoardScreen` takes the flag with the settings at every draw, key and mouse event (`follow`), so drawing,
+  mouse hit-testing and `commands.rs` share one `chrome()` (`chrome_panels` with the guide, moves and frame flags).
+  `Chrome { class, header: Option<Rect>, field, body, guide: Option<Rect>, moves: Option<Rect>, now, possible }`. The same result drives rendering and hit-testing. Two layouts:
   columns (Klondike, Spider, FreeCell) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
   that fits the window (a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.

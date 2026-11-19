@@ -39,7 +39,7 @@ fn geometry(h: &Harness, size: (u16, u16)) -> BoardGeometry {
     let Some(session) = h.app.board().session() else {
         unreachable!("a game is running")
     };
-    let body = chrome_with(Rect::new(0, 0, size.0, size.1), true).body;
+    let body = chrome_with(Rect::new(0, 0, size.0, size.1), true, false).body;
     compute(session.variant(), &session.game().piles(), body)
 }
 

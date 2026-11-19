@@ -80,6 +80,7 @@ pub struct BoardScreen {
     guide_panel: bool,
     moves_panel: bool,
     panel_focus: Option<usize>,
+    field_edge: bool,
     auto_finish: bool,
     forced: Option<Vec<Move>>,
     finishing: Option<Finishing>,
@@ -124,6 +125,7 @@ impl Default for BoardScreen {
             guide_panel: true,
             moves_panel: true,
             panel_focus: None,
+            field_edge: false,
             auto_finish: true,
             forced: None,
             finishing: None,
@@ -300,11 +302,18 @@ impl BoardScreen {
         ))
     }
 
-    /// Handles a key press mapped to `action`; the effect is for the application to apply.
-    pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
+    /// Takes the settings and the theme that decide the screen split, so that drawing, the mouse and
+    /// the commands all use the same [`layout::Chrome`].
+    pub(super) fn follow(&mut self, ctx: &ViewCtx<'_>) {
         self.guide_panel = ctx.settings.guide_panel;
         self.moves_panel = ctx.settings.moves_panel;
+        self.field_edge = ctx.theme.field_edge();
         self.auto_finish = ctx.settings.auto_finish;
+    }
+
+    /// Handles a key press mapped to `action`; the effect is for the application to apply.
+    pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
+        self.follow(ctx);
         match action {
             Some(Action::Guide) if self.panel_unavailable() => self.open_guide_window(ctx),
             Some(Action::Guide) => toggle_guide(ctx),
@@ -320,10 +329,8 @@ impl BoardScreen {
     /// Draws the board screen.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         self.screen = area;
-        self.guide_panel = ctx.settings.guide_panel;
-        self.moves_panel = ctx.settings.moves_panel;
-        self.auto_finish = ctx.settings.auto_finish;
-        let (do_map, moves_map) = view::draw(frame, area, self, ctx);
+        self.follow(ctx);
+        let (do_map, moves_map) = view::draw(frame, self, ctx);
         self.do_map = do_map;
         self.moves_map = moves_map;
     }

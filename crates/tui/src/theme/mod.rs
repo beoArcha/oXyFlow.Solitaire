@@ -81,6 +81,11 @@ impl Theme {
         self.id
     }
 
+    /// Whether the board draws a one-cell frame around the playing field in this theme.
+    pub fn field_edge(&self) -> bool {
+        self.palette.field_edge
+    }
+
     /// The color to emit for a token.
     pub fn color(&self, token: Token) -> Color {
         self.palette.swatch(token).resolve(self.depth)

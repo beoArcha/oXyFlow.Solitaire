@@ -32,5 +32,6 @@ pub fn palette() -> Palette {
         hint: swatch(255, 255, 0, Color::LightYellow),
         aura_focus: swatch(255, 255, 0, Color::Yellow),
         aura_carry: swatch(0, 255, 255, Color::LightCyan),
+        field_edge: true,
     }
 }

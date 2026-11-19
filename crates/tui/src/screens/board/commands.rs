@@ -71,8 +71,17 @@ impl BoardScreen {
         Some(layout::compute(
             session.variant(),
             piles,
-            layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel).body,
+            self.chrome().body,
         ))
+    }
+
+    pub(super) fn chrome(&self) -> layout::Chrome {
+        layout::chrome_panels(
+            self.screen,
+            self.guide_panel,
+            self.moves_panel,
+            self.field_edge,
+        )
     }
 
     pub(super) fn cue(&mut self, cue: SoundCue) {

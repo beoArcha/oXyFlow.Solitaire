@@ -137,15 +137,15 @@ pub const TEXT_PAIRS: [(Token, Token); 17] = [
     (Token::AuraCarry, Token::Table),
 ];
 
-/// Graphics that carry meaning on the felt or on the screen edge; each must reach 3:1 (WCAG 1.4.11).
-pub const GRAPHIC_PAIRS: [(Token, Token); 7] = [
+/// Graphics that carry meaning on the felt; each must reach 3:1 (WCAG 1.4.11). The edge between the
+/// felt and the screen is [`Palette::field_edge_pair`], which depends on the theme.
+pub const GRAPHIC_PAIRS: [(Token, Token); 6] = [
     (Token::BorderFocus, Token::Table),
     (Token::CardBack, Token::Table),
     (Token::Slot, Token::Table),
     (Token::Target, Token::Table),
     (Token::Selection, Token::Table),
     (Token::Hint, Token::Table),
-    (Token::Table, Token::Background),
 ];
 
 /// Marks drawn on the felt and on dialog surfaces; each must reach 3:1 in every theme, including the
@@ -186,9 +186,22 @@ pub struct Palette {
     pub hint: Swatch,
     pub aura_focus: Swatch,
     pub aura_carry: Swatch,
+    /// Whether the board draws a one-cell `Border` frame around the felt. A theme sets it when its
+    /// felt has no edge of its own against `Background`.
+    pub field_edge: bool,
 }
 
 impl Palette {
+    /// The pair whose contrast makes the edge of the playing field: `Border` on `Background` when the
+    /// frame is drawn, otherwise the felt itself, `Table` on `Background`. Either must reach 3:1.
+    pub fn field_edge_pair(&self) -> (Token, Token) {
+        if self.field_edge {
+            (Token::Border, Token::Background)
+        } else {
+            (Token::Table, Token::Background)
+        }
+    }
+
     /// The swatch of a token.
     pub fn swatch(&self, token: Token) -> Swatch {
         match token {
