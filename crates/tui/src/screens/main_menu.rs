@@ -15,7 +15,7 @@ use super::game_select::GameSelect;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
-use crate::i18n::t;
+use crate::i18n::{t, tf};
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::logo::logo;
@@ -235,10 +235,11 @@ impl MainMenu {
         let rows = logo(ctx.glyphs.unicode);
         let items = items(ctx.has_saved_game);
         let logo_height = u16::try_from(rows.len()).unwrap_or(0);
-        let [_, logo_area, _, list_area, _, footer_area] = Layout::vertical([
+        let [_, logo_area, tagline_area, _, list_area, _, footer_area] = Layout::vertical([
             Constraint::Fill(1),
             Constraint::Length(logo_height),
-            Constraint::Length(2),
+            Constraint::Length(1),
+            Constraint::Length(1),
             Constraint::Length(u16::try_from(items.len()).unwrap_or(0)),
             Constraint::Fill(2),
             Constraint::Length(1),
@@ -252,6 +253,14 @@ impl MainMenu {
             Paragraph::new(lines).alignment(Alignment::Center),
             logo_area,
         );
+        let tagline = Line::styled(
+            t("common.app.tagline").into_owned(),
+            ctx.theme.style(Token::TextMuted, Token::Background),
+        );
+        frame.render_widget(
+            Paragraph::new(tagline).alignment(Alignment::Center),
+            tagline_area,
+        );
         let labels: Vec<String> = items
             .iter()
             .map(|item| t(label_key(*item)).into_owned())
@@ -264,6 +273,15 @@ impl MainMenu {
             Alignment::Center,
             footer::key_style(ctx),
             ctx,
+        );
+        let version = tf("menu.version", &[("version", env!("CARGO_PKG_VERSION"))]);
+        frame.render_widget(
+            Paragraph::new(Line::styled(
+                version,
+                ctx.theme.style(Token::TextMuted, Token::Background),
+            ))
+            .alignment(Alignment::Right),
+            footer_area,
         );
     }
 }

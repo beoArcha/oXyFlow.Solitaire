@@ -169,9 +169,13 @@ fn summary_header(with_clean: bool) -> Vec<String> {
     keys.iter().map(|key| t(key).into_owned()).collect()
 }
 
+/// The narrowest terminal that has room for the longest-streak column of the summary.
+pub const LONGEST_STREAK_MIN_WIDTH: u16 = 110;
+
 /// The header and the rows of the summary table, padded to one width per column. Wins without a
-/// restart get a column beside the wins once a game without undo has finished.
-pub fn summary_lines(summaries: &[Summary], show_mode: bool) -> Vec<String> {
+/// restart get a column beside the wins once a game without undo has finished. The longest-streak
+/// column is left out unless `with_longest`.
+pub fn summary_lines(summaries: &[Summary], show_mode: bool, with_longest: bool) -> Vec<String> {
     let with_clean = summaries.iter().any(|summary| summary.clean_wins.is_some());
     let mut rows = vec![summary_header(with_clean)];
     rows.extend(
@@ -179,6 +183,11 @@ pub fn summary_lines(summaries: &[Summary], show_mode: bool) -> Vec<String> {
             .iter()
             .map(|s| summary_row(s, show_mode, with_clean)),
     );
+    if !with_longest {
+        for row in &mut rows {
+            row.pop();
+        }
+    }
     table(&rows, 1)
 }
 

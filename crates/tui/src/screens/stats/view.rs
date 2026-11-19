@@ -6,7 +6,7 @@ use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
-use super::format::{history_header, history_row, summary_lines};
+use super::format::{LONGEST_STREAK_MIN_WIDTH, history_header, history_row, summary_lines};
 use super::{Button, Notice, StatsScreen, Stop};
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -135,7 +135,8 @@ impl StatsScreen {
     }
 
     fn draw_summary(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
-        let lines = summary_lines(&self.summaries, self.show_modes);
+        let with_longest = area.width >= LONGEST_STREAK_MIN_WIDTH;
+        let lines = summary_lines(&self.summaries, self.show_modes, with_longest);
         let width = lines.first().map_or(0, |line| text_width(line));
         let x = block_x(area, width);
         for (offset, line) in lines.into_iter().take(usize::from(area.height)).enumerate() {

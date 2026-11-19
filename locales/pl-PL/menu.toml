@@ -4,7 +4,20 @@
 resume = "Wznów"
 new_game_from_seed = "Nowa gra z ziarna"
 help = "Pomoc"
-select_seed = "Wybierz grę dla ziarna {seed}"
+version = "v{version}"
+variant_hint = "Poziom {level}: {description}"
+select_seed ="Wybierz grę dla ziarna {seed}"
+
+[difficulty]
+easy = "łatwy"
+medium = "średni"
+hard = "trudny"
+
+[game_hint]
+klondike = "Stosy końcowe buduj od asów, po kolorze; talia zasila kolumny."
+spider = "Zbuduj osiem ciągów od króla do asa, każdy w jednym kolorze."
+freecell = "Wszystkie karty są odkryte; cztery wolne komórki ułatwiają ruchy."
+pyramid = "Usuwaj pary o sumie 13; króla usuwaj samego."
 
 [seed]
 title = "Nowa gra z ziarna"

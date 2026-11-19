@@ -25,6 +25,14 @@ fn value(field: Field, settings: &Settings) -> String {
     value_text(field, settings, &sound_styles())
 }
 
+pub(super) fn line_of(h: &mut Harness, label: &str) -> String {
+    h.lines()
+        .into_iter()
+        .find(|line| line.contains(label))
+        .map(|line| line.trim_end().to_owned())
+        .unwrap_or_default()
+}
+
 /// Position of Settings in the main menu without a saved game.
 const SETTINGS_ITEM: usize = 3;
 
@@ -94,7 +102,7 @@ fn glyph_and_color_modes_cycle() {
     );
     assert_eq!(
         changed(Field::Glyphs, &base, Step::Previous).glyph_mode,
-        GlyphMode::Font
+        GlyphMode::Ascii
     );
     assert_eq!(base.color_mode, ColorMode::Auto);
     assert_eq!(
@@ -138,7 +146,7 @@ fn the_aura_row_cycles_between_full_and_focus_only() {
         AuraMode::Full
     );
     assert_eq!(value(Field::Aura, &focus), "Focus only");
-    assert_eq!(row(Field::Aura, &base, true), "Aura: Full");
+    assert!(row(Field::Aura, &base, true).ends_with("Full"));
 }
 
 #[test]
@@ -201,7 +209,7 @@ fn volume_is_adjusted_with_the_arrows_and_clamped() {
         h.press(KeyCode::Right);
     }
     assert_eq!(h.app.settings().volume, 100);
-    assert!(h.text().contains("Volume: 100%"));
+    assert!(line_of(&mut h, "Volume").ends_with("100%"));
 }
 
 #[test]
@@ -210,7 +218,7 @@ fn a_theme_change_is_shown_at_once() {
     move_down(&mut h, 1);
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
-    assert!(h.text().contains("Theme: Light"));
+    assert!(line_of(&mut h, "Theme").ends_with("Light"));
 }
 
 #[test]
@@ -218,12 +226,8 @@ fn a_language_change_switches_the_locale_at_once() {
     let mut h = open_settings();
     h.press(KeyCode::Right);
     assert_eq!(locale(), Locale::PlPl);
-    let expected = format!(
-        "{}: {}",
-        t("settings.row.language"),
-        t("settings.locale.pl_pl")
-    );
-    assert!(h.text().contains(&expected));
+    let expected = t("settings.locale.pl_pl").into_owned();
+    assert!(line_of(&mut h, &t("settings.row.language")).ends_with(&expected));
     set_locale(Locale::EnUs);
 }
 
@@ -237,12 +241,12 @@ fn escape_returns_to_the_main_menu() {
 #[test]
 fn the_focused_row_is_marked_without_color() {
     let mut h = open_settings();
-    assert!(h.text().contains("► Language:"));
+    assert!(h.text().contains("► Language"));
     let mut ascii = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
     move_down(&mut ascii, SETTINGS_ITEM);
     ascii.press(KeyCode::Enter);
     let text = ascii.text();
-    assert!(text.contains("> Language:"));
+    assert!(text.contains("> Language"));
     assert!(text.is_ascii());
 }
 
@@ -276,14 +280,24 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
 #[test]
 fn the_row_text_uses_the_line_format() {
     let base = Settings::default();
-    assert_eq!(row(Field::Volume, &base, true), "Volume: 70%");
-    assert_eq!(t("settings.row.line"), "{label}: {value}");
+    assert!(row(Field::Volume, &base, true).starts_with("Volume "));
+    assert!(row(Field::Volume, &base, true).ends_with(" 70%"));
+    assert_eq!(t("settings.row.line"), "{label} {value}");
+}
+
+#[test]
+fn the_focused_row_is_explained_in_the_description_line() {
+    let mut h = open_settings();
+    assert!(h.text().contains(&*t("settings.desc.language")));
+    move_down(&mut h, 1);
+    assert!(h.text().contains(&*t("settings.desc.theme")));
+    assert!(!h.text().contains(&*t("settings.desc.language")));
 }
 
 #[test]
 fn a_click_on_a_row_reaches_the_settings_through_the_app() {
     let mut h = open_settings();
-    let found = h.find("Theme:");
+    let found = h.find("Theme");
     assert!(found.is_some());
     let (column, row) = found.unwrap_or_default();
     h.click(column, row);

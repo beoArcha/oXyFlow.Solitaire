@@ -33,7 +33,7 @@ longest = "Best streak"
 
 [history]
 title = "History, newest first, times in UTC"
-date = "Date (UTC)"
+date = "Date"
 variant = "Game"
 seed = "Seed"
 outcome = "Result"

@@ -54,7 +54,7 @@ fn the_history_is_listed_newest_first_with_its_columns_and_a_summary() {
     assert!(newest < middle && middle < oldest, "{lines:#?}");
     let text = h.text();
     for part in [
-        "Date (UTC)",
+        "Date",
         "Seed",
         "Abandoned",
         "1:15",

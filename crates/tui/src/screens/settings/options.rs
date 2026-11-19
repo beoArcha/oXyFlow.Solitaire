@@ -1,6 +1,6 @@
-//! The options of the settings screen: their order, what each row shows, and how one step changes
-//! [`Settings`]. Front and back styles are fixed to the ids that exist today; the sound styles are the
-//! list the application passes in.
+//! The options of the settings screen: their order, the group each belongs to, what each row shows,
+//! and how one step changes [`Settings`]. Front and back styles are fixed to the ids that exist today;
+//! the sound styles are the list the application passes in.
 
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
@@ -43,6 +43,28 @@ pub const FIELDS: [Field; 13] = [
     Field::GuidePanel,
 ];
 
+/// A heading of the settings screen; the rows of a group follow its heading.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Group {
+    Display,
+    Sound,
+    Board,
+}
+
+impl Group {
+    /// The groups, top to bottom.
+    pub const ALL: [Group; 3] = [Group::Display, Group::Sound, Group::Board];
+
+    /// Localization key of the heading.
+    pub const fn label_key(self) -> &'static str {
+        match self {
+            Group::Display => "settings.group.display",
+            Group::Sound => "settings.group.sound",
+            Group::Board => "settings.group.board",
+        }
+    }
+}
+
 /// Which way a change moves through the options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Step {
@@ -55,7 +77,7 @@ pub const FRONT_STYLES: [&str; 1] = ["international"];
 /// Back style ids offered today.
 pub const BACK_STYLES: [&str; 1] = ["default"];
 
-const GLYPH_MODES: [GlyphMode; 3] = [GlyphMode::Font, GlyphMode::Unicode, GlyphMode::Ascii];
+const GLYPH_MODES: [GlyphMode; 2] = [GlyphMode::Unicode, GlyphMode::Ascii];
 const COLOR_MODES: [ColorMode; 4] = [
     ColorMode::Auto,
     ColorMode::Ansi16,
@@ -92,6 +114,39 @@ impl Field {
             Field::Aura => "settings.row.aura",
         }
     }
+
+    /// The group whose heading the row follows.
+    pub const fn group(self) -> Group {
+        match self {
+            Field::Language
+            | Field::Theme
+            | Field::FrontStyle
+            | Field::BackStyle
+            | Field::Glyphs
+            | Field::Colors => Group::Display,
+            Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
+            Field::AutoFinish | Field::Aura | Field::GuidePanel => Group::Board,
+        }
+    }
+
+    /// Localization key of the sentence that explains the row when it is focused.
+    pub const fn description_key(self) -> &'static str {
+        match self {
+            Field::Language => "settings.desc.language",
+            Field::Theme => "settings.desc.theme",
+            Field::FrontStyle => "settings.desc.front_style",
+            Field::BackStyle => "settings.desc.back_style",
+            Field::Glyphs => "settings.desc.glyphs",
+            Field::Colors => "settings.desc.colors",
+            Field::SoundStyle => "settings.desc.sound_style",
+            Field::Cues => "settings.desc.cues",
+            Field::Music => "settings.desc.music",
+            Field::Volume => "settings.desc.volume",
+            Field::AutoFinish => "settings.desc.auto_finish",
+            Field::Aura => "settings.desc.aura",
+            Field::GuidePanel => "settings.desc.guide_panel",
+        }
+    }
 }
 
 const fn locale_key(locale: Locale) -> &'static str {
@@ -113,8 +168,7 @@ const fn theme_key(theme: ThemeId) -> &'static str {
 
 const fn glyph_key(mode: GlyphMode) -> &'static str {
     match mode {
-        GlyphMode::Font => "settings.glyph.font",
-        GlyphMode::Unicode => "settings.glyph.unicode",
+        GlyphMode::Font | GlyphMode::Unicode => "settings.glyph.unicode",
         GlyphMode::Ascii => "settings.glyph.ascii",
     }
 }
@@ -163,13 +217,31 @@ pub fn sound_style_name<'a>(sound_styles: &'a [StyleInfo], id: &'a str) -> &'a s
         .map_or(id, |style| style.name.as_str())
 }
 
+/// The name of a card style: its localized name for the ids offered today, its id otherwise.
+fn card_style_name(id: &str) -> String {
+    match id {
+        "international" => t("settings.style.international").into_owned(),
+        "default" => t("settings.style.default").into_owned(),
+        other => other.to_owned(),
+    }
+}
+
+/// The widest label of the rows, in characters: the column the values start after.
+fn label_width() -> usize {
+    FIELDS
+        .iter()
+        .map(|field| t(field.label_key()).chars().count())
+        .max()
+        .unwrap_or_default()
+}
+
 /// The value of a row as the player reads it.
 pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo]) -> String {
     match field {
         Field::Language => t(locale_key(settings.locale)).into_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
-        Field::FrontStyle => settings.front_style.clone(),
-        Field::BackStyle => settings.back_style.clone(),
+        Field::FrontStyle => card_style_name(&settings.front_style),
+        Field::BackStyle => card_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
@@ -182,8 +254,9 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     }
 }
 
-/// The text of a row: `label: value`, with a marker on sound rows when sound is unavailable and
-/// the columns the panel needs when the guide panel is on but the screen of `columns` is too narrow.
+/// The text of a row: the label, leaders of dots up to the value column, then the value. Sound rows
+/// say when sound is unavailable, and the guide panel row says which columns it needs when the
+/// screen of `columns` is too narrow.
 pub fn line(
     field: Field,
     settings: &Settings,
@@ -205,7 +278,9 @@ pub fn line(
             ],
         );
     }
-    let label = t(field.label_key()).into_owned();
+    let name = t(field.label_key()).into_owned();
+    let leaders = ".".repeat(label_width().saturating_sub(name.chars().count()) + 2);
+    let label = format!("{name} {leaders}");
     tf(
         "settings.row.line",
         &[("label", label.as_str()), ("value", value.as_str())],

@@ -37,7 +37,7 @@ fn the_list_scrolls_by_key_page_and_wheel_and_a_click_selects_a_row() {
     assert!(h.text().contains("Game 3 of 60"));
     wheel(&mut h, MouseEventKind::ScrollUp);
     assert!(h.text().contains("Game 2 of 60"));
-    let (column, header) = h.find("Date (UTC)").unwrap_or_default();
+    let (column, header) = h.find("Date").unwrap_or_default();
     h.click(column + 2, header + 3);
     assert!(h.text().contains("Game 3 of 60"));
     h.type_char('c');
@@ -168,7 +168,7 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
         assert!(widest.is_some_and(|width| width <= 100));
         let names = ["Best streak", "Rekord"];
         assert!(
-            lines
+            !lines
                 .iter()
                 .any(|line| names.iter().any(|name| line.contains(name)))
         );

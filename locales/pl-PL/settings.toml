@@ -14,7 +14,31 @@ volume = "Głośność"
 guide_panel = "Panel przewodnika"
 auto_finish = "Automatyczne kończenie"
 aura = "Aura"
-line = "{label}: {value}"
+line = "{label} {value}"
+
+[group]
+display = "Wyświetlanie"
+sound = "Dźwięk"
+board = "Plansza"
+
+[style]
+international = "Międzynarodowy"
+default = "Domyślny"
+
+[desc]
+language = "Język wszystkich tekstów. Zmienia się od razu."
+theme = "Kolory interfejsu: ciemny, jasny lub wysoki kontrast."
+front_style = "Wygląd awersów kart."
+back_style = "Wygląd rewersów kart zakrytych."
+glyphs = "Unicode rysuje kolory i symbole; ASCII używa tylko zwykłych znaków."
+colors = "Ile kolorów program prosi terminal o pokazanie. Automatycznie wybiera sam."
+sound_style = "Melodie grane razem z efektami dźwiękowymi i muzyką."
+cues = "Krótkie dźwięki przy ruchach i przy wygranej."
+music = "Muzyka w tle, gdy otwarta jest gra."
+volume = "Głośność dźwięku i muzyki, w krokach po 10%."
+auto_finish = "Sam dokłada ostatnie ruchy, gdy wygrana jest pewna."
+aura = "Poświata wokół kart: na każdej karcie albo tylko na zaznaczonej."
+guide_panel = "Boczny panel z podpowiedziami dla zaznaczonej karty i klawiszy."
 
 [value]
 on = "Tak"
@@ -38,7 +62,6 @@ monokai = "Monokai"
 dracula = "Dracula"
 
 [glyph]
-font = "Czcionka"
 unicode = "Unicode"
 ascii = "ASCII"
 

@@ -5,6 +5,20 @@ resume = "Resume"
 new_game_from_seed = "New game from seed"
 help = "Help"
 select_seed = "Choose a game for seed {seed}"
+version = "v{version}"
+variant_hint = "{level}: {description}"
+
+[difficulty]
+easy = "Easy"
+medium = "Medium"
+hard = "Hard"
+
+[game_hint]
+klondike = "Build the foundations from aces up by suit; the stock feeds the columns."
+spider = "Build eight runs from king down to ace, each in one suit."
+freecell = "Every card is face up; four free cells help you move them."
+pyramid = "Remove pairs that add up to 13; a king is removed alone."
+
 
 [seed]
 title = "New game from seed"
