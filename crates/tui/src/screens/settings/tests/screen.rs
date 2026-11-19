@@ -13,7 +13,7 @@ use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::settings::SettingsScreen;
-use crate::screens::settings::options::{FIELDS, Field, Step};
+use crate::screens::settings::options::{FIELDS, Field, Group, Step};
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
 use crate::test_support::{TRUE_COLOR, sound_styles};
@@ -92,7 +92,7 @@ fn position_of(lines: &[String], needle: &str) -> Option<(u16, u16)> {
 }
 
 fn row_label(field: Field) -> String {
-    format!("{}:", t(field.label_key()))
+    t(field.label_key()).into_owned()
 }
 
 fn row_at(lines: &[String], field: Field) -> (u16, u16) {
@@ -199,15 +199,19 @@ fn unavailable_rows_are_marked_in_their_text() {
     let mut screen = SettingsScreen::new();
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::NoDevice));
     assert!(
+        lines.iter().any(|text| {
+            text.contains("Music") && text.trim_end().ends_with("Off (unavailable)")
+        })
+    );
+    assert!(
         lines
             .iter()
-            .any(|text| text.contains("Music: Off (unavailable)"))
+            .any(|text| { text.contains("Language") && text.trim_end().ends_with("English") })
     );
-    assert!(lines.iter().any(|text| text.contains("Language: English")));
     assert!(
         !lines
             .iter()
-            .any(|text| text.contains("Language: English (unavailable)"))
+            .any(|text| text.contains("Language") && text.contains("(unavailable)"))
     );
 }
 
@@ -226,11 +230,59 @@ fn every_row_is_drawn_in_both_locales() {
     };
     let fixture = Fixture::new(polish, TRUE_COLOR);
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
-    let expected = format!(
-        "{}: {}",
-        t("settings.row.language"),
-        t("settings.locale.pl_pl")
+    let label = t("settings.row.language").into_owned();
+    let value = t("settings.locale.pl_pl").into_owned();
+    assert!(
+        lines
+            .iter()
+            .any(|text| { text.contains(&label) && text.trim_end().ends_with(&value) })
     );
-    assert!(lines.iter().any(|text| text.contains(&expected)));
     set_locale(Locale::EnUs);
+}
+
+fn heading_y(lines: &[String], group: Group) -> u16 {
+    let found = position_of(lines, &t(group.label_key()));
+    found.map_or(0, |(_, y)| y)
+}
+
+#[test]
+fn the_rows_sit_under_their_group_headings_and_the_guide_row_is_last() {
+    let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
+    let mut screen = SettingsScreen::new();
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
+    let display = heading_y(&lines, Group::Display);
+    let sound = heading_y(&lines, Group::Sound);
+    let board = heading_y(&lines, Group::Board);
+    assert!(display < row_at(&lines, Field::Language).1);
+    assert!(row_at(&lines, Field::Colors).1 < sound);
+    assert!(sound < row_at(&lines, Field::SoundStyle).1);
+    assert!(row_at(&lines, Field::Volume).1 < board);
+    assert!(board < row_at(&lines, Field::Aura).1);
+    let last = FIELDS
+        .iter()
+        .map(|field| row_at(&lines, *field).1)
+        .max()
+        .unwrap_or_default();
+    assert_eq!(row_at(&lines, Field::GuidePanel).1, last);
+}
+
+fn value_column(line: &str) -> Option<usize> {
+    let chars: Vec<char> = line.chars().collect();
+    let dots = chars.iter().position(|c| *c == '.')?;
+    let run_end = dots + chars[dots..].iter().position(|c| *c != '.')?;
+    Some(run_end + 1)
+}
+
+#[test]
+fn the_values_start_in_one_column() {
+    let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
+    let mut screen = SettingsScreen::new();
+    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
+    let columns: Vec<Option<usize>> = FIELDS
+        .iter()
+        .map(|field| value_column(&lines[usize::from(row_at(&lines, *field).1)]))
+        .collect();
+    assert!(columns.iter().all(Option::is_some), "{columns:?}");
+    let first = columns.first().copied().flatten();
+    assert!(columns.iter().all(|column| *column == first), "{columns:?}");
 }

@@ -1,4 +1,4 @@
-use oxysol_core::Variant;
+use oxysol_core::{SuitCount, Variant};
 use ratatui::crossterm::event::KeyCode;
 
 use crate::app::Screen;
@@ -15,6 +15,23 @@ fn select() -> Harness {
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::GameSelect);
     h
+}
+
+#[test]
+fn the_hint_line_follows_the_focused_variant_and_names_its_difficulty() {
+    let mut h = select();
+    assert!(h.text().contains("Easy: Build the foundations"));
+    let spider_four = Variant::ALL
+        .iter()
+        .position(|variant| *variant == Variant::Spider(SuitCount::Four))
+        .unwrap_or_default();
+    for _ in 0..spider_four {
+        h.press(KeyCode::Down);
+    }
+    assert!(
+        h.text()
+            .contains("Hard: Build eight runs from king down to ace")
+    );
 }
 
 #[test]

@@ -21,9 +21,45 @@ use crate::solver::slow_to_prove;
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::menu_list::MenuList;
-use oxysol_core::Variant;
+use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
 pub(crate) const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
+
+fn difficulty_key(variant: Variant) -> &'static str {
+    match variant {
+        Variant::Klondike(DrawCount::One)
+        | Variant::Spider(SuitCount::One)
+        | Variant::Pyramid(PyramidRules::Relaxed) => "menu.difficulty.easy",
+        Variant::Klondike(DrawCount::Three)
+        | Variant::Spider(SuitCount::Two)
+        | Variant::FreeCell => "menu.difficulty.medium",
+        Variant::Spider(SuitCount::Four) | Variant::Pyramid(PyramidRules::Classic) => {
+            "menu.difficulty.hard"
+        }
+    }
+}
+
+const fn game_hint_key(variant: Variant) -> &'static str {
+    match variant {
+        Variant::Klondike(_) => "menu.game_hint.klondike",
+        Variant::Spider(_) => "menu.game_hint.spider",
+        Variant::FreeCell => "menu.game_hint.freecell",
+        Variant::Pyramid(_) => "menu.game_hint.pyramid",
+    }
+}
+
+/// The one-line hint under the list: the difficulty word and what the game asks for.
+fn hint_text(variant: Variant) -> String {
+    let level = t(difficulty_key(variant)).into_owned();
+    let description = t(game_hint_key(variant)).into_owned();
+    tf(
+        "menu.variant_hint",
+        &[
+            ("level", level.as_str()),
+            ("description", description.as_str()),
+        ],
+    )
+}
 
 /// The focus ring of the screen: the variants list, the undo toggle, the winnable-deals toggle.
 const LIST: usize = 0;
@@ -145,6 +181,12 @@ impl GameSelect {
         }
     }
 
+    fn hint_line(&self) -> String {
+        Variant::ALL
+            .get(self.list.focus())
+            .map_or_else(String::new, |variant| hint_text(*variant))
+    }
+
     fn variant_labels(ctx: &ViewCtx<'_>) -> Vec<String> {
         Variant::ALL
             .iter()
@@ -166,6 +208,7 @@ impl GameSelect {
             title_area,
             _,
             list_area,
+            hint_area,
             _,
             undo_area,
             winnable_area,
@@ -178,6 +221,7 @@ impl GameSelect {
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(u16::try_from(Variant::ALL.len()).unwrap_or(0)),
+            Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
@@ -202,6 +246,11 @@ impl GameSelect {
             ctx,
             self.focus == LIST,
         );
+        let hint = Line::styled(
+            self.hint_line(),
+            ctx.theme.style(Token::TextMuted, Token::Background),
+        );
+        frame.render_widget(Paragraph::new(hint).alignment(Alignment::Center), hint_area);
         self.toggle = toggles::draw_undo(frame, undo_area, self.focus == TOGGLE, ctx);
         self.winnable = toggles::draw_winnable(frame, winnable_area, self.focus == WINNABLE, ctx);
         toggles::draw_hints(frame, [undo_hint_area, winnable_hint_area], ctx);

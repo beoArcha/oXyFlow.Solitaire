@@ -14,7 +14,31 @@ volume = "Volume"
 guide_panel = "Guide panel"
 auto_finish = "Auto-finish"
 aura = "Aura"
-line = "{label}: {value}"
+line = "{label} {value}"
+
+[group]
+display = "Display"
+sound = "Sound"
+board = "Board"
+
+[style]
+international = "International"
+default = "Default"
+
+[desc]
+language = "The language of all text. Changes at once."
+theme = "The colors of the interface."
+front_style = "The design of the card faces."
+back_style = "The design of the backs of face-down cards."
+glyphs = "Unicode draws suits and symbols; ASCII uses plain characters only."
+colors = "How many colors the terminal is asked to show. Auto detects it."
+sound_style = "The sound of the cues and the music."
+cues = "Short sounds for moves and for a win."
+music = "Background music while a game is open."
+volume = "The loudness of sound and music, in steps of 10%."
+auto_finish = "Plays the last moves by itself once the win is certain."
+aura = "Glow: Full marks the focus, carried cards and targets; Focus only, the focus."
+guide_panel = "A side panel with hints for the focused card and the keys."
 
 [value]
 on = "On"
@@ -38,7 +62,6 @@ monokai = "Monokai"
 dracula = "Dracula"
 
 [glyph]
-font = "Font"
 unicode = "Unicode"
 ascii = "ASCII"
 

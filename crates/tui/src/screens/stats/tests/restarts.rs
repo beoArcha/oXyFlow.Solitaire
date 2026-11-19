@@ -44,14 +44,14 @@ fn wins_without_a_restart_are_counted_apart_for_games_without_undo() {
 #[test]
 fn the_clean_wins_column_exists_only_when_a_game_without_undo_was_finished() {
     let undo_only = summarize(&[record(1, KLONDIKE, Some(Won), Some(1), Some(1))]);
-    let lines = summary_lines(&undo_only, false);
+    let lines = summary_lines(&undo_only, false, true);
     assert!(!lines[0].contains("No restart"), "{lines:?}");
     let mixed = summarize(&[
         record(1, KLONDIKE, Some(Won), Some(1), Some(1)),
         played_without_undo(2, 1),
         played_without_undo(3, 0),
     ]);
-    let lines = summary_lines(&mixed, true);
+    let lines = summary_lines(&mixed, true, true);
     assert!(lines[0].contains("Won No restart"), "{lines:?}");
     let words =
         |line: &str| -> Vec<String> { line.split_whitespace().map(str::to_owned).collect() };
@@ -75,9 +75,9 @@ fn the_history_lists_the_restart_count_of_a_game_without_undo() {
 
 #[test]
 fn the_summary_and_the_history_show_restarts_at_100_by_30_in_both_locales() {
-    for (locale, history, clean, restarts) in [
-        (Locale::EnUs, "Restarts", "No restart", "(no undo)"),
-        (Locale::PlPl, "Od nowa", "Czyste", "(bez cofania)"),
+    for (locale, date, history, clean, restarts) in [
+        (Locale::EnUs, "Date", "Restarts", "No restart", "(no undo)"),
+        (Locale::PlPl, "Data", "Od nowa", "Czyste", "(bez cofania)"),
     ] {
         let mut storage = many_games(3);
         for (index, variant) in Variant::ALL.into_iter().enumerate() {
@@ -116,10 +116,28 @@ fn the_summary_and_the_history_show_restarts_at_100_by_30_in_both_locales() {
         assert!(widest.is_some_and(|width| width <= 100), "{text}");
         let top = lines
             .iter()
-            .find(|line| line.contains("(UTC)"))
+            .find(|line| line.contains(date))
             .cloned()
             .unwrap_or_default();
         assert!(top.trim_end().ends_with(history), "{top:?}");
+    }
+}
+
+#[test]
+fn the_longest_streak_column_is_shown_from_110_columns() {
+    for (locale, longest) in [(Locale::EnUs, "Best streak"), (Locale::PlPl, "Rekord")] {
+        let storage = || {
+            let mut storage = many_games(3);
+            storage.settings = Some(Settings {
+                locale,
+                ..Settings::default()
+            });
+            storage
+        };
+        let mut narrow = open_stats(storage(), 100, 30);
+        assert!(!narrow.text().contains(longest));
+        let mut wide = open_stats(storage(), 110, 30);
+        assert!(wide.text().contains(longest), "{}", wide.text());
     }
 }
 

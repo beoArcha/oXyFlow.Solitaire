@@ -271,3 +271,23 @@ fn the_menu_shows_its_items_again_after_a_game_from_a_seed() {
     assert!(text.contains("New game from seed"), "{text}");
     assert!(!text.contains("Choose a game for seed 7"), "{text}");
 }
+
+#[test]
+fn the_menu_shows_its_tagline_and_version_in_both_locales() {
+    for locale in Locale::ALL {
+        let storage = MemoryStorage {
+            settings: Some(Settings {
+                locale,
+                ..Settings::default()
+            }),
+            ..MemoryStorage::new()
+        };
+        let mut h = Harness::with(storage, TRUE_COLOR, 100, 30);
+        let tagline = crate::i18n::t("common.app.tagline").into_owned();
+        let version = format!("v{}", env!("CARGO_PKG_VERSION"));
+        let text = h.text();
+        assert!(text.contains(&tagline), "{text}");
+        assert!(text.contains(&version), "{text}");
+        crate::i18n::set_locale(Locale::EnUs);
+    }
+}
