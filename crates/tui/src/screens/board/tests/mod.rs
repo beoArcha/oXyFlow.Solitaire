@@ -3,6 +3,7 @@
 mod aura;
 mod commands;
 mod counters;
+mod focus;
 mod guidance;
 mod mouse;
 mod moves;

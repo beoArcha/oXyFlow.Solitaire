@@ -53,8 +53,9 @@ impl SettingsScreen {
         Self::default()
     }
 
-    /// Handles a key press mapped to `action`. Left and right change the focused row, Enter
-    /// changes it forward, Esc leads back to the main menu.
+    /// Handles a key press mapped to `action`. Tab and Shift+Tab (like Up and Down) move the focus
+    /// between the rows, Left and right change the focused row, Enter changes it forward, Esc leads
+    /// back to the main menu.
     pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         match action {
             Some(Action::Back) => Effect::Goto(Screen::MainMenu),
@@ -106,7 +107,7 @@ impl SettingsScreen {
                 )
             })
             .collect();
-        self.list.draw(frame, list_area, &labels, ctx);
+        self.list.draw(frame, list_area, &labels, ctx, true);
         draw_reason(frame, reason_area, ctx);
         footer::draw(frame, footer_area, &FOOTER, ctx);
     }

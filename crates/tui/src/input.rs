@@ -13,7 +13,8 @@ pub enum Input {
     Tick,
 }
 
-/// A key together with the modifiers that must be held. Shift is ignored for character keys.
+/// A key together with the modifiers that must be held. Shift is ignored for character keys and
+/// for Shift+Tab, which terminals report with or without the Shift flag.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct KeySpec {
     pub code: KeyCode,
@@ -50,6 +51,8 @@ impl KeySpec {
             KeyCode::Down => "Down".to_owned(),
             KeyCode::Left => "Left".to_owned(),
             KeyCode::Right => "Right".to_owned(),
+            KeyCode::Tab => "Tab".to_owned(),
+            KeyCode::BackTab => "Shift+Tab".to_owned(),
             KeyCode::F(n) => format!("F{n}"),
             other => format!("{other:?}"),
         };
@@ -62,7 +65,7 @@ impl KeySpec {
 
     fn matches(&self, key: &KeyEvent) -> bool {
         let modifiers = match key.code {
-            KeyCode::Char(_) => key.modifiers - KeyModifiers::SHIFT,
+            KeyCode::Char(_) | KeyCode::BackTab => key.modifiers - KeyModifiers::SHIFT,
             _ => key.modifiers,
         };
         self.code == key.code && self.modifiers == modifiers
@@ -86,7 +89,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 23] = [
+pub const KEY_TABLE: [Binding; 25] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -106,6 +109,16 @@ pub const KEY_TABLE: [Binding; 23] = [
         Action::Right,
         HelpGroup::Navigation,
         &[KeySpec::plain(KeyCode::Right)],
+    ),
+    bind(
+        Action::FocusNext,
+        HelpGroup::Navigation,
+        &[KeySpec::plain(KeyCode::Tab)],
+    ),
+    bind(
+        Action::FocusPrevious,
+        HelpGroup::Navigation,
+        &[KeySpec::plain(KeyCode::BackTab)],
     ),
     bind(
         Action::Select,
@@ -287,6 +300,31 @@ mod tests {
         let mut key = press(KeyCode::Enter, KeyModifiers::NONE);
         key.kind = KeyEventKind::Release;
         assert_eq!(action_for_key(&key), None);
+    }
+
+    #[test]
+    fn tab_and_shift_tab_move_the_focus_with_or_without_the_shift_flag() {
+        let tab = press(KeyCode::Tab, KeyModifiers::NONE);
+        let back = press(KeyCode::BackTab, KeyModifiers::SHIFT);
+        assert_eq!(action_for_key(&tab), Some(Action::FocusNext));
+        assert_eq!(action_for_key(&back), Some(Action::FocusPrevious));
+        let plain_back = press(KeyCode::BackTab, KeyModifiers::NONE);
+        assert_eq!(action_for_key(&plain_back), Some(Action::FocusPrevious));
+        assert!(!is_text_key(&tab));
+        assert!(!is_text_key(&back));
+    }
+
+    #[test]
+    fn tab_keys_are_named_for_help() {
+        assert_eq!(primary_key(Action::FocusNext).as_deref(), Some("Tab"));
+        assert_eq!(
+            primary_key(Action::FocusPrevious).as_deref(),
+            Some("Shift+Tab")
+        );
+        assert_eq!(
+            binding_for(Action::FocusPrevious).map(|binding| binding.group),
+            Some(HelpGroup::Navigation)
+        );
     }
 
     #[test]

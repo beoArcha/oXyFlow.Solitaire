@@ -1,6 +1,7 @@
 //! Game and variant selection. Enter or a click starts the focused variant; with a seed (from
 //! "New game from seed") the variant is dealt from that seed. A toggle under the list switches the
-//! undo mode of the next game (`u` or a click); the choice is remembered in the settings.
+//! undo mode of the next game (`u` or a click); the choice is remembered in the settings. Tab moves
+//! the focus between the list and the toggle.
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
@@ -8,6 +9,7 @@ use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
+use super::focus::{button_style, marker, step, tab_forward};
 use super::{Effect, ViewCtx, variant_label_key};
 use crate::action::Action;
 use crate::app::Screen;
@@ -22,11 +24,17 @@ use oxysol_core::Variant;
 
 const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
 
+/// The focus ring of the screen: the variants list, then the undo toggle.
+const LIST: usize = 0;
+const TOGGLE: usize = 1;
+const RING_LEN: usize = 2;
+
 /// State of the game selection screen.
 #[derive(Debug, Default)]
 pub struct GameSelect {
     list: MenuList,
     seed: Option<u64>,
+    focus: usize,
     toggle: Rect,
 }
 
@@ -61,26 +69,42 @@ impl GameSelect {
         })
     }
 
-    /// Handles a key press mapped to `action`: Enter starts the focused variant, `u` switches the
-    /// undo mode, Esc goes back.
+    /// Handles a key press mapped to `action`: Enter starts the focused variant or presses the
+    /// toggle, Tab moves the focus, `u` switches the undo mode, Esc goes back.
     pub fn handle(&mut self, _key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         match action {
             Some(Action::Back) => Effect::Goto(Screen::MainMenu),
             Some(Action::Undo) => Self::toggle_undo(ctx),
-            Some(action) => self
-                .list
-                .on_action(action, Variant::ALL.len())
-                .map_or(Effect::None, |index| self.start(index, ctx)),
+            Some(action) => self.handle_focused(action, ctx),
             None => Effect::None,
         }
+    }
+
+    fn handle_focused(&mut self, action: Action, ctx: &ViewCtx<'_>) -> Effect {
+        if let Some(forward) = tab_forward(action) {
+            self.focus = step(self.focus, RING_LEN, forward);
+            return Effect::None;
+        }
+        if self.focus == TOGGLE {
+            match action {
+                Action::Select | Action::Left | Action::Right => return Self::toggle_undo(ctx),
+                Action::Up | Action::Down => self.focus = LIST,
+                _ => return Effect::None,
+            }
+        }
+        self.list
+            .on_action(action, Variant::ALL.len())
+            .map_or(Effect::None, |index| self.start(index, ctx))
     }
 
     /// Handles a mouse event: the wheel moves focus, a click starts a variant or presses the undo
     /// toggle.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         if left_press(event).is_some_and(|cell| contains(self.toggle, cell)) {
+            self.focus = TOGGLE;
             return Self::toggle_undo(ctx);
         }
+        self.focus = LIST;
         self.list
             .on_mouse(event, Variant::ALL.len())
             .map_or(Effect::None, |index| self.start(index, ctx))
@@ -100,12 +124,15 @@ impl GameSelect {
         } else {
             t("common.select.undo_off")
         };
+        let focused = self.focus == TOGGLE;
         let label = tf("common.select.undo", &[("state", &state)]);
-        let width = u16::try_from(label.chars().count()).unwrap_or(u16::MAX);
+        let text = format!("{} {label}", marker(ctx, focused));
+        let width = u16::try_from(text.chars().count()).unwrap_or(u16::MAX);
         let x = toggle_area.x + toggle_area.width.saturating_sub(width) / 2;
         self.toggle = Rect::new(x, toggle_area.y, width, 1).intersection(toggle_area);
         frame.render_widget(
-            Paragraph::new(Line::styled(label, ctx.theme.focus())).alignment(Alignment::Center),
+            Paragraph::new(Line::styled(text, button_style(ctx, focused)))
+                .alignment(Alignment::Center),
             toggle_area,
         );
         let key = primary_key(Action::Undo).unwrap_or_default();
@@ -153,11 +180,14 @@ impl GameSelect {
             .iter()
             .map(|variant| t(variant_label_key(*variant)).into_owned())
             .collect();
-        self.list.draw(frame, list_area, &labels, ctx);
+        self.list
+            .draw(frame, list_area, &labels, ctx, self.focus == LIST);
         self.draw_toggle(frame, [toggle_area, hint_area], ctx);
         footer::draw(frame, footer_area, &FOOTER, ctx);
     }
 }
 
+#[cfg(test)]
+mod focus_tests;
 #[cfg(test)]
 mod tests;

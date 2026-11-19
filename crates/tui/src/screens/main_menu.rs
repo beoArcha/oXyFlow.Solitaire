@@ -114,9 +114,9 @@ impl MainMenu {
         }
     }
 
-    /// Whether the seed field is open, so that typed characters are text.
+    /// Whether the seed field has the focus, so that typed characters are text.
     pub fn captures_text(&self) -> bool {
-        matches!(self.stage, Stage::Seed(_))
+        matches!(&self.stage, Stage::Seed(field) if field.captures_text())
     }
 
     /// Handles a key press mapped to `action`.
@@ -127,7 +127,7 @@ impl MainMenu {
         match &mut self.stage {
             Stage::Items => self.handle_items(action, ctx),
             Stage::Seed(field) => {
-                let step = field.handle_key(key);
+                let step = field.handle_key(key, action);
                 self.after_seed(step)
             }
             Stage::Variants { picker, .. } => {
@@ -245,10 +245,12 @@ impl MainMenu {
             .iter()
             .map(|item| t(label_key(*item)).into_owned())
             .collect();
-        self.list.draw(frame, list_area, &labels, ctx);
+        self.list.draw(frame, list_area, &labels, ctx, true);
         footer::draw(frame, footer_area, &FOOTER, ctx);
     }
 }
 
+#[cfg(test)]
+mod focus_tests;
 #[cfg(test)]
 mod tests;
