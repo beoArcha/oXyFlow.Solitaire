@@ -30,6 +30,8 @@ pub struct ViewCtx<'a> {
     pub audio_status: AudioStatus,
     pub sound_styles: &'a [StyleInfo],
     pub has_saved_game: bool,
+    /// The last cell the mouse reported; a footer button under it is drawn as hovered.
+    pub pointer: Option<(u16, u16)>,
     pub now: Instant,
 }
 

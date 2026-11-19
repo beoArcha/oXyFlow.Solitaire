@@ -52,12 +52,14 @@ continue = "Continue"
 new_game = "New game"
 menu = "Menu"
 win_time = "Time: {time}"
-help_footer = "Esc or Enter closes this window."
+close_or = " or "
+close_rest = " closes this window."
 
 [rules]
 title = "How to play"
 close = "Close"
-footer = "{left}/{right}: game   {up}/{down}/PgUp/PgDn: scroll   {back}: close"
+footer_move = "{left}/{right}: game   {up}/{down}/PgUp/PgDn: scroll"
+footer_close = "{back}: close"
 position = "{from}-{to} / {total}"
 
 [tab]
@@ -66,4 +68,6 @@ rules = "Rules"
 command_line = "Command line"
 
 [command_line]
-footer = "Tab: next tab   {up}/{down}/PgUp/PgDn: scroll   {back}: close"
+footer_tab = "{key}: next tab"
+footer_move = "{up}/{down}/PgUp/PgDn: scroll"
+footer_close = "{back}: close"

@@ -17,15 +17,16 @@ use crate::action::Action;
 use crate::app::Screen;
 use crate::i18n::t;
 use crate::theme::Token;
-use crate::widgets::footer;
+use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::menu_list::MenuList;
 
-const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
+pub(crate) const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
 
 /// State of the settings screen: the focused row.
 #[derive(Debug, Default)]
 pub struct SettingsScreen {
     list: MenuList,
+    footer: FooterMap,
 }
 
 fn change_row(index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
@@ -69,6 +70,11 @@ impl SettingsScreen {
         }
     }
 
+    /// The footer button under `cell`, if any.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        self.footer.action_at(cell)
+    }
+
     /// Handles a mouse event: the wheel moves focus, a click changes the clicked row forward.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         self.list
@@ -110,6 +116,13 @@ impl SettingsScreen {
             .collect();
         self.list.draw(frame, list_area, &labels, ctx, true);
         draw_reason(frame, reason_area, ctx);
-        footer::draw(frame, footer_area, &FOOTER, ctx);
+        self.footer = footer::draw(
+            frame,
+            footer_area,
+            &footer::key_segments(&FOOTER),
+            Alignment::Center,
+            footer::key_style(ctx),
+            ctx,
+        );
     }
 }

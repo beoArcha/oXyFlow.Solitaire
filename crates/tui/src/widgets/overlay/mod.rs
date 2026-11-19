@@ -42,6 +42,7 @@ use crate::mouse;
 use crate::screens::board::BoardScreen;
 use crate::screens::focus::tab_forward;
 use crate::screens::{Effect, ViewCtx};
+use crate::widgets::footer::FooterMap;
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
@@ -90,9 +91,15 @@ fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geo
     }
 }
 
-/// Draws `modal` over the screen. The pause dialog first clears the board, so no card shows; the
-/// header with the clock stays visible.
-pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, ctx: &ViewCtx<'_>) {
+/// Draws `modal` over the screen and returns the footer buttons it drew. The pause dialog first
+/// clears the board, so no card shows; the header with the clock stays visible.
+pub fn draw(
+    frame: &mut Frame,
+    area: Rect,
+    modal: &Modal,
+    board: &BoardScreen,
+    ctx: &ViewCtx<'_>,
+) -> FooterMap {
     if *modal == Modal::Pause {
         let body = chrome(area).body;
         frame.render_widget(Clear, body);
@@ -102,6 +109,7 @@ pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, c
         (_, Some(text)) => {
             let geometry = text.geometry(area);
             text.draw(frame, &geometry, ctx);
+            FooterMap::default()
         }
         (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
         (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),

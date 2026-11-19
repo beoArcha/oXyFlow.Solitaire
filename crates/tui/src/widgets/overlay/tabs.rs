@@ -10,6 +10,7 @@ use ratatui::widgets::Paragraph;
 use crate::i18n::{t, tf};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
+use crate::widgets::footer::{self, FooterMap, Segment};
 
 const TAB_GAP: u16 = 2;
 
@@ -131,14 +132,14 @@ pub fn draw_top_tabs(frame: &mut Frame, row: Rect, current: HelpTab, ctx: &ViewC
     }
 }
 
-/// Draws the footer of a scrolling tab: `hints` on the left and the visible range on the right.
-pub fn draw_footer(
+/// Draws the footer of a scrolling tab: the segments on the left, the visible range on the right.
+pub fn draw_footer_buttons(
     frame: &mut Frame,
     row: Rect,
-    hints: String,
+    segments: &[Segment],
     shown: (usize, usize, usize),
     ctx: &ViewCtx<'_>,
-) {
+) -> FooterMap {
     let (from, to, total) = shown;
     let position = tf(
         "help.rules.position",
@@ -154,9 +155,10 @@ pub fn draw_footer(
     ])
     .areas(row.inner(Margin::new(1, 0)));
     let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
-    frame.render_widget(Paragraph::new(Line::styled(hints, muted)), left);
+    let buttons = footer::draw(frame, left, segments, Alignment::Left, muted, ctx);
     frame.render_widget(
         Paragraph::new(Line::styled(position, muted)).alignment(Alignment::Right),
         right,
     );
+    buttons
 }

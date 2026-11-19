@@ -16,7 +16,8 @@ use crate::caps::TerminalCaps;
 use crate::clipboard::Clipboard;
 use crate::glyphs::Glyphs;
 use crate::i18n;
-use crate::input::{Input, action_for_key, is_text_key};
+use crate::input::{Input, action_for_key, is_text_key, primary_key_event};
+use crate::mouse::left_press;
 use crate::screens::board::BoardScreen;
 use crate::screens::game_select::GameSelect;
 use crate::screens::main_menu::MainMenu;
@@ -27,6 +28,7 @@ use crate::settings::{DEFAULT_SOUND_STYLE, Settings};
 use crate::solver::Solver;
 use crate::storage::{SavedGame, Storage, StorageError};
 use crate::theme::Theme;
+use crate::widgets::footer::FooterMap;
 use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
 
@@ -54,6 +56,7 @@ macro_rules! view_ctx {
             audio_status: $app.audio.status(),
             sound_styles: &$app.sound_styles,
             has_saved_game: $app.saved.is_some(),
+            pointer: $app.pointer,
             now: $app.now,
         }
     };
@@ -83,7 +86,9 @@ pub struct App {
     settings_screen: SettingsScreen,
     stats: StatsScreen,
     board: BoardScreen,
+    modal_footer: FooterMap,
     area: Option<(u16, u16)>,
+    pointer: Option<(u16, u16)>,
     now: Instant,
     quit: bool,
 }
@@ -128,6 +133,8 @@ impl App {
             stats: StatsScreen::new(),
             board: BoardScreen::new(),
             area: None,
+            pointer: None,
+            modal_footer: FooterMap::default(),
             now: Instant::now(),
             quit: false,
         };
@@ -220,7 +227,10 @@ impl App {
         self.now = now;
         let effect = match input {
             Input::Key(key) => self.on_key(key),
-            Input::Mouse(event) => self.on_mouse(&event),
+            Input::Mouse(event) => {
+                self.pointer = Some((event.column, event.row));
+                self.on_mouse(&event)
+            }
             Input::Resize(width, height) => {
                 self.area = Some((width, height));
                 self.board.resize(width, height);
@@ -246,6 +256,12 @@ impl App {
             return Effect::None;
         }
         let action = action_for_key(&key);
+        self.run(key, action)
+    }
+
+    /// Runs one key press, or one footer click (which sends the primary key of its action): the
+    /// same path for both, so a button does exactly what its key does.
+    fn run(&mut self, key: KeyEvent, action: Option<Action>) -> Effect {
         if action == Some(Action::ForceQuit) {
             return Effect::Quit;
         }
@@ -274,6 +290,20 @@ impl App {
             Screen::Board => self.board.handle(&key, action, &ctx),
             Screen::Settings => self.settings_screen.handle(&key, action, &ctx),
             Screen::Stats => self.stats.handle(&key, action),
+        }
+    }
+
+    /// The footer button under `cell` on the active screen, if any; no modal may be open.
+    fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        if self.modal.is_some() {
+            return self.modal_footer.action_at(cell);
+        }
+        match self.screen {
+            Screen::MainMenu => self.menu.footer_action_at(cell),
+            Screen::GameSelect => self.select.footer_action_at(cell),
+            Screen::Board => self.board.footer_action_at(cell),
+            Screen::Settings => self.settings_screen.footer_action_at(cell),
+            Screen::Stats => self.stats.footer_action_at(cell),
         }
     }
 
@@ -328,6 +358,9 @@ impl App {
         if self.too_small() {
             return Effect::None;
         }
+        if let Some(action) = left_press(event).and_then(|cell| self.footer_action_at(cell)) {
+            return self.on_footer_click(action);
+        }
         if matches!(event.kind, MouseEventKind::Down(_)) {
             self.board.interrupt_finish();
         }
@@ -341,6 +374,13 @@ impl App {
             Screen::Board => self.board.handle_mouse(event, &ctx),
             Screen::Settings => self.settings_screen.handle_mouse(event, &ctx),
             Screen::Stats => self.stats.handle_mouse(event),
+        }
+    }
+
+    fn on_footer_click(&mut self, action: Action) -> Effect {
+        match primary_key_event(action) {
+            Some(key) => self.run(key, Some(action)),
+            None => Effect::None,
         }
     }
 
@@ -363,7 +403,7 @@ impl App {
             Screen::Stats => self.stats.draw(frame, area, &ctx),
         }
         if let Some(modal) = &self.modal {
-            overlay::draw(frame, area, modal, &self.board, &ctx);
+            self.modal_footer = overlay::draw(frame, area, modal, &self.board, &ctx);
         }
     }
 }

@@ -95,8 +95,8 @@ fn the_help_text_is_the_cli_text_fits_the_window_and_names_the_new_option_in_bot
         }
         assert_ne!(i18n::t("help.tab.command_line"), "help.tab.command_line");
         assert_ne!(
-            i18n::t("help.command_line.footer"),
-            "help.command_line.footer"
+            i18n::t("help.command_line.footer_close"),
+            "help.command_line.footer_close"
         );
     }
     i18n::set_locale(Locale::EnUs);

@@ -17,7 +17,7 @@ use crate::action::Action;
 use crate::app::{Modal, Screen};
 use crate::i18n::t;
 use crate::theme::Token;
-use crate::widgets::footer;
+use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::logo::logo;
 use crate::widgets::menu_list::MenuList;
 
@@ -50,7 +50,7 @@ fn items(has_saved_game: bool) -> Vec<Item> {
     items
 }
 
-const FOOTER: [Action; 4] = [Action::Select, Action::Back, Action::Quit, Action::Help];
+pub(crate) const FOOTER: [Action; 4] = [Action::Select, Action::Back, Action::Quit, Action::Help];
 
 fn label_key(item: Item) -> &'static str {
     match item {
@@ -95,6 +95,7 @@ enum Stage {
 pub struct MainMenu {
     list: MenuList,
     stage: Stage,
+    footer: FooterMap,
 }
 
 impl MainMenu {
@@ -111,6 +112,7 @@ impl MainMenu {
                 seed,
                 picker: GameSelect::for_seed(seed),
             },
+            footer: FooterMap::default(),
         }
     }
 
@@ -156,6 +158,15 @@ impl MainMenu {
                 let effect = picker.handle_mouse(event, ctx);
                 self.leave_variants_on_start(effect)
             }
+        }
+    }
+
+    /// The footer button under `cell`: the menu's own key line, or the one of the games of a seed.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        match &self.stage {
+            Stage::Items => self.footer.action_at(cell),
+            Stage::Seed(_) => None,
+            Stage::Variants { picker, .. } => picker.footer_action_at(cell),
         }
     }
 
@@ -246,7 +257,14 @@ impl MainMenu {
             .map(|item| t(label_key(*item)).into_owned())
             .collect();
         self.list.draw(frame, list_area, &labels, ctx, true);
-        footer::draw(frame, footer_area, &FOOTER, ctx);
+        self.footer = footer::draw(
+            frame,
+            footer_area,
+            &footer::key_segments(&FOOTER),
+            Alignment::Center,
+            footer::key_style(ctx),
+            ctx,
+        );
     }
 }
 

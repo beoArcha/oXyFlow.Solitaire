@@ -11,12 +11,13 @@ use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Geometry};
 use super::help;
-use super::tabs::{HelpTab, draw_footer, draw_top_tabs};
+use super::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
 use crate::mouse;
 use crate::screens::{Effect, ViewCtx};
+use crate::widgets::footer::{FooterMap, Segment};
 
 /// Rows of text visible at once: the box body minus the tab row and the footer row.
 pub const VIEW_ROWS: usize = 21;
@@ -102,19 +103,37 @@ fn key_name(action: Action) -> String {
     primary_key(action).unwrap_or_default()
 }
 
-fn footer_hints() -> String {
-    tf(
-        "help.command_line.footer",
+fn footer_segments() -> Vec<Segment> {
+    let move_keys = tf(
+        "help.command_line.footer_move",
         &[
             ("up", &key_name(Action::Up)),
             ("down", &key_name(Action::Down)),
-            ("back", &key_name(Action::Back)),
         ],
-    )
+    );
+    vec![
+        Segment::button(
+            Action::FocusNext,
+            tf(
+                "help.command_line.footer_tab",
+                &[("key", &key_name(Action::FocusNext))],
+            ),
+        ),
+        Segment::plain("   "),
+        Segment::plain(move_keys),
+        Segment::plain("   "),
+        Segment::button(
+            Action::Back,
+            tf(
+                "help.command_line.footer_close",
+                &[("back", &key_name(Action::Back))],
+            ),
+        ),
+    ]
 }
 
-/// Draws the tab over `area`.
-pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_>) {
+/// Draws the tab over `area` and returns its footer buttons.
+pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let [tab_row, text, footer] = Layout::vertical([
@@ -144,12 +163,13 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_
         Paragraph::new(shown).style(plain),
         text.inner(Margin::new(1, 0)),
     );
-    draw_footer(
+    let buttons_drawn = draw_footer_buttons(
         frame,
         footer,
-        footer_hints(),
+        &footer_segments(),
         (first + 1, first + count, all.len()),
         ctx,
     );
     dialog::draw_buttons(frame, &geometry, &help::buttons(), ctx);
+    buttons_drawn
 }

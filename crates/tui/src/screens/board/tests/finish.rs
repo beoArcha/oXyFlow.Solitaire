@@ -14,8 +14,8 @@ use crate::storage::memory::MemoryStorage;
 use crate::storage::{Outcome, SavedGame, Storage};
 use crate::test_support::{Harness, TRUE_COLOR};
 
-const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
-const KLONDIKE_SEED: u64 = 71;
+pub(super) const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
+pub(super) const KLONDIKE_SEED: u64 = 71;
 const FREECELL_SEED: u64 = 128;
 const SPIDER_SEED: u64 = 160;
 const SPIDER: Variant = Variant::Spider(SuitCount::One);
@@ -46,7 +46,11 @@ fn to_forced_win(variant: Variant, seed: u64) -> Vec<Move> {
 /// A board resumed at the first forced win of `variant` and `seed`, with the setting `auto_finish`
 /// and a history row for the game. Returns the harness, the moves played before the finish and the
 /// number of finishing moves.
-fn at_forced_win(variant: Variant, seed: u64, auto_finish: bool) -> (Harness, usize, usize) {
+pub(super) fn at_forced_win(
+    variant: Variant,
+    seed: u64,
+    auto_finish: bool,
+) -> (Harness, usize, usize) {
     let moves = to_forced_win(variant, seed);
     let mut storage = MemoryStorage::new();
     let id = match storage.start_game(variant, seed, true) {
@@ -76,11 +80,11 @@ fn at_forced_win(variant: Variant, seed: u64, auto_finish: bool) -> (Harness, us
     (h, base, finish)
 }
 
-fn is_won(h: &Harness) -> bool {
+pub(super) fn is_won(h: &Harness) -> bool {
     board(h).is_won()
 }
 
-fn win_open(h: &Harness) -> bool {
+pub(super) fn win_open(h: &Harness) -> bool {
     matches!(h.app.modal(), Some(Modal::Win { .. }))
 }
 

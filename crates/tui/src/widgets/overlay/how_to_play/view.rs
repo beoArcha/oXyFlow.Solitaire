@@ -16,8 +16,9 @@ use crate::i18n::{t, tf};
 use crate::input::primary_key;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
+use crate::widgets::footer::{FooterMap, Segment};
 use crate::widgets::overlay::dialog::{self, Button, Geometry};
-use crate::widgets::overlay::tabs::{HelpTab, draw_footer, draw_top_tabs};
+use crate::widgets::overlay::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs};
 
 const CHROME_ROWS: u16 = 3;
 const ARROW_COLUMNS: u16 = 3;
@@ -154,21 +155,32 @@ fn key_name(action: Action) -> String {
     primary_key(action).unwrap_or_default()
 }
 
-fn footer_hints() -> String {
-    tf(
-        "help.rules.footer",
+fn footer_segments() -> Vec<Segment> {
+    let move_keys = tf(
+        "help.rules.footer_move",
         &[
             ("left", &key_name(Action::Left)),
             ("right", &key_name(Action::Right)),
             ("up", &key_name(Action::Up)),
             ("down", &key_name(Action::Down)),
-            ("back", &key_name(Action::Back)),
         ],
+    );
+    vec![
+        Segment::plain(move_keys),
+        Segment::plain("   "),
+        Segment::button(Action::Back, close_label()),
+    ]
+}
+
+fn close_label() -> String {
+    tf(
+        "help.rules.footer_close",
+        &[("back", &key_name(Action::Back))],
     )
 }
 
-/// Draws the window over `area`.
-pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) {
+/// Draws the window over `area` and returns its footer buttons.
+pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let parts = parts(geometry.body);
@@ -187,12 +199,13 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
         Paragraph::new(lines).style(ctx.theme.surface()),
         parts.text.inner(Margin::new(1, 0)),
     );
-    draw_footer(
+    let buttons_drawn = draw_footer_buttons(
         frame,
         parts.footer,
-        footer_hints(),
+        &footer_segments(),
         (first + 1, first + shown, rows.len()),
         ctx,
     );
     dialog::draw_buttons(frame, &geometry, &buttons(), ctx);
+    buttons_drawn
 }

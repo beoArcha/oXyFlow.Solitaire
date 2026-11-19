@@ -39,6 +39,7 @@ use crate::clock::GameClock;
 use crate::settings::Settings;
 use crate::solver::DealCheck;
 use crate::storage::GameId;
+use crate::widgets::footer::FooterMap;
 use crate::widgets::pile::Marks;
 
 const DEFAULT_SCREEN: Rect = Rect::new(0, 0, 120, 40);
@@ -83,6 +84,8 @@ pub struct BoardScreen {
     screen: Rect,
     covered: bool,
     pointer: Pointer,
+    /// The buttons of the `Do:` row as drawn last.
+    do_map: FooterMap,
 }
 
 /// The request to show the guide panel when it is hidden and to hide it when it is shown.
@@ -120,6 +123,7 @@ impl Default for BoardScreen {
             screen: DEFAULT_SCREEN,
             covered: false,
             pointer: Pointer::default(),
+            do_map: FooterMap::default(),
         }
     }
 }
@@ -284,6 +288,11 @@ impl BoardScreen {
         self.screen = area;
         self.guide_panel = ctx.settings.guide_panel;
         self.auto_finish = ctx.settings.auto_finish;
-        view::draw(frame, area, self, ctx);
+        self.do_map = view::draw(frame, area, self, ctx);
+    }
+
+    /// The action of the `Do:` button under `cell`, if any.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        self.do_map.action_at(cell)
     }
 }

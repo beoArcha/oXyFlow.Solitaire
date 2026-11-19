@@ -9,13 +9,14 @@ use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Button, Geometry};
-use super::tabs::draw_footer;
+use super::tabs::draw_footer_buttons;
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
 use crate::mouse;
 use crate::screens::board::BoardScreen;
 use crate::screens::{Effect, ViewCtx};
+use crate::widgets::footer::{FooterMap, Segment};
 
 /// Text rows of the window, below which it scrolls.
 pub const TEXT_ROWS: usize = 17;
@@ -79,14 +80,14 @@ fn key_name(action: Action) -> String {
     primary_key(action).unwrap_or_default()
 }
 
-/// Draws the window over `area`.
+/// Draws the window over `area` and returns its footer buttons.
 pub fn draw(
     frame: &mut Frame,
     area: Rect,
     state: &GuideWindow,
     board: &BoardScreen,
     ctx: &ViewCtx<'_>,
-) {
+) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("board.guide.window_title"), ctx);
     let (text, footer) = split(geometry.body);
@@ -103,23 +104,34 @@ pub fn draw(
         Paragraph::new(lines).style(ctx.theme.surface()),
         text.inner(Margin::new(1, 0)),
     );
-    let hints = tf(
-        "board.guide.window_footer",
+    let scroll = tf(
+        "board.guide.window_scroll",
         &[
             ("up", &key_name(Action::Up)),
             ("down", &key_name(Action::Down)),
+        ],
+    );
+    let close = tf(
+        "board.guide.window_close",
+        &[
             ("key", &key_name(Action::Guide)),
             ("back", &key_name(Action::Back)),
         ],
     );
-    draw_footer(
+    let segments = [
+        Segment::plain(scroll),
+        Segment::plain("   "),
+        Segment::button(Action::Guide, close),
+    ];
+    let buttons_drawn = draw_footer_buttons(
         frame,
         footer,
-        hints,
+        &segments,
         (first + 1, first + shown, all.len()),
         ctx,
     );
     dialog::draw_buttons(frame, &geometry, &buttons(), ctx);
+    buttons_drawn
 }
 
 /// Handles a key while the window is open. `None` keeps it open; `Some(effect)` closes it.

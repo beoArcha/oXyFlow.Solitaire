@@ -19,11 +19,11 @@ use crate::mouse::{contains, left_press};
 use crate::settings::Settings;
 use crate::solver::slow_to_prove;
 use crate::theme::Token;
-use crate::widgets::footer;
+use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::menu_list::MenuList;
 use oxysol_core::Variant;
 
-const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
+pub(crate) const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
 
 /// The focus ring of the screen: the variants list, the undo toggle, the winnable-deals toggle.
 const LIST: usize = 0;
@@ -39,6 +39,7 @@ pub struct GameSelect {
     focus: usize,
     toggle: Rect,
     winnable: Rect,
+    footer: FooterMap,
 }
 
 impl GameSelect {
@@ -132,6 +133,11 @@ impl GameSelect {
             .map_or(Effect::None, |index| self.start(index, ctx))
     }
 
+    /// The footer button under `cell`, if any.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        self.footer.action_at(cell)
+    }
+
     fn title(&self) -> String {
         match self.seed {
             Some(seed) => tf("menu.select_seed", &[("seed", &seed.to_string())]),
@@ -199,7 +205,14 @@ impl GameSelect {
         self.toggle = toggles::draw_undo(frame, undo_area, self.focus == TOGGLE, ctx);
         self.winnable = toggles::draw_winnable(frame, winnable_area, self.focus == WINNABLE, ctx);
         toggles::draw_hints(frame, [undo_hint_area, winnable_hint_area], ctx);
-        footer::draw(frame, footer_area, &FOOTER, ctx);
+        self.footer = footer::draw(
+            frame,
+            footer_area,
+            &footer::key_segments(&FOOTER),
+            Alignment::Center,
+            footer::key_style(ctx),
+            ctx,
+        );
     }
 }
 

@@ -11,6 +11,7 @@ use super::{BoardScreen, Pick, now};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
+use crate::widgets::footer::Segment;
 use crate::widgets::text::clip;
 
 /// One thing the player can do, as a short text with its key; the part with the highest
@@ -19,6 +20,8 @@ use crate::widgets::text::clip;
 pub(super) struct Part {
     pub text: String,
     pub drop_order: u8,
+    /// The action this part runs when clicked; `None` for display-only parts like `Arrows: move`.
+    pub action: Option<Action>,
 }
 
 /// The moment on the board: what is in progress, what can be done, and which actions work.
@@ -51,6 +54,7 @@ pub(super) fn part(action: Action, key: &str, drop_order: u8) -> Part {
     Part {
         text: tf(key, &[("key", &name)]),
         drop_order,
+        action: Some(action),
     }
 }
 
@@ -58,6 +62,7 @@ fn plain(key: &str, drop_order: u8) -> Part {
     Part {
         text: t(key).into_owned(),
         drop_order,
+        action: None,
     }
 }
 
@@ -93,6 +98,7 @@ fn run_part(drop_order: u8) -> Part {
     Part {
         text: tf("board.action.run", &[("keys", &keys)]),
         drop_order,
+        action: None,
     }
 }
 
@@ -102,25 +108,50 @@ impl Guidance {
         clip(&tf("board.action.now", &[("text", &self.now)]), width)
     }
 
-    /// The `Do:` row: the parts that fit `width` columns, least useful dropped first, then the
-    /// tail, which always stays.
-    pub(super) fn possible_line(&self, width: usize) -> String {
-        let mut parts = self.possible.clone();
-        loop {
-            let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
-            let line = tf("board.action.possible", &[("text", &join(&all))]);
-            if line.chars().count() <= width || parts.is_empty() {
-                return clip(&line, width);
+    /// The `Do:` row as segments: the prefix, the parts that fit `width` columns (least useful
+    /// dropped first, the tail always kept) with their separators, and the suffix. Parts with an
+    /// action are buttons.
+    pub(super) fn do_segments(&self, width: usize) -> Vec<Segment> {
+        let template = t("board.action.possible");
+        let (before, after) = template.split_once("{text}").unwrap_or(("", ""));
+        let separator = t("board.action.separator");
+        let mut segments = vec![Segment::plain(before)];
+        for (index, part) in self.visible_parts(width).iter().enumerate() {
+            if index > 0 {
+                segments.push(Segment::plain(separator.as_ref()));
             }
-            let least = parts
+            segments.push(match part.action {
+                Some(action) => Segment::button(action, part.text.as_str()),
+                None => Segment::plain(part.text.as_str()),
+            });
+        }
+        segments.push(Segment::plain(after));
+        segments
+    }
+
+    fn visible_parts(&self, width: usize) -> Vec<Part> {
+        let mut parts = self.possible.clone();
+        while !self.do_row_fits(&parts, width) {
+            let Some(index) = parts
                 .iter()
                 .enumerate()
                 .max_by_key(|(_, part)| part.drop_order)
-                .map(|(index, _)| index);
-            if let Some(index) = least {
-                parts.remove(index);
-            }
+                .map(|(index, _)| index)
+            else {
+                break;
+            };
+            parts.remove(index);
         }
+        parts.extend(self.tail.iter().cloned());
+        parts
+    }
+
+    fn do_row_fits(&self, parts: &[Part], width: usize) -> bool {
+        let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
+        tf("board.action.possible", &[("text", &join(&all))])
+            .chars()
+            .count()
+            <= width
     }
 
     fn closed(now_key: &str, possible: Vec<Part>, mut usable: Vec<Action>) -> Self {

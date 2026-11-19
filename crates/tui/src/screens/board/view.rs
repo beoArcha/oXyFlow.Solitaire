@@ -16,6 +16,7 @@ use crate::layout;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::aura;
+use crate::widgets::footer::FooterMap;
 use crate::widgets::guide::{self, Guide};
 use crate::widgets::pile::{self, Marks};
 
@@ -57,7 +58,12 @@ fn draw_panel(frame: &mut Frame, rect: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_
 }
 
 /// Draws the whole board screen into `area`.
-pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &ViewCtx<'_>) {
+pub(super) fn render(
+    frame: &mut Frame,
+    area: Rect,
+    scene: &Scene<'_>,
+    ctx: &ViewCtx<'_>,
+) -> FooterMap {
     let parts = layout::chrome_with(area, scene.guide);
     if let (Some(rect), Some(facts)) = (parts.header, scene.facts) {
         let row = facts.row(rect, ctx.theme.style(Token::Accent, Token::Background));
@@ -70,7 +76,7 @@ pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &Vie
     if let Some(session) = scene.session.filter(|_| !scene.covered) {
         draw_board(frame, parts.body, session, scene.marks, ctx);
     }
-    controls::draw(
+    let buttons = controls::draw(
         frame,
         parts.now,
         parts.possible,
@@ -81,9 +87,15 @@ pub(super) fn render(frame: &mut Frame, area: Rect, scene: &Scene<'_>, ctx: &Vie
     if let Some(rect) = parts.guide {
         draw_panel(frame, rect, scene, ctx);
     }
+    buttons
 }
 
-pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &ViewCtx<'_>) {
+pub(super) fn draw(
+    frame: &mut Frame,
+    area: Rect,
+    board: &BoardScreen,
+    ctx: &ViewCtx<'_>,
+) -> FooterMap {
     let guidance = board.guidance();
     let facts = board.facts(ctx.now);
     let event = board.event();
@@ -97,5 +109,5 @@ pub(super) fn draw(frame: &mut Frame, area: Rect, board: &BoardScreen, ctx: &Vie
         guidance: guidance.as_ref(),
         guide: ctx.settings.guide_panel,
     };
-    render(frame, area, &scene, ctx);
+    render(frame, area, &scene, ctx)
 }

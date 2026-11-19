@@ -133,6 +133,7 @@ mod tests {
             audio_status: AudioStatus::NoDevice,
             sound_styles: &[],
             has_saved_game: false,
+            pointer: None,
             now: Instant::now(),
         }
     }

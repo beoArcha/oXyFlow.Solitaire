@@ -10,11 +10,12 @@ use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Button, Geometry};
 use super::tabs::{HelpTab, draw_top_tabs};
-use crate::action::HelpGroup;
+use crate::action::{Action, HelpGroup};
 use crate::i18n::t;
-use crate::input::{KEY_TABLE, KeySpec};
+use crate::input::{KEY_TABLE, KeySpec, primary_key};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
+use crate::widgets::footer::{self, FooterMap, Segment};
 
 const GAP: u16 = 4;
 const KEY_PADDING: usize = 2;
@@ -153,8 +154,19 @@ pub fn geometry(area: Rect) -> Geometry {
     dialog::boxed(area, width, BODY_ROWS, &buttons())
 }
 
-/// Draws the help window over `area`.
-pub fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+/// The footer of the keys tab: the two keys that close it, each a button.
+fn close_segments() -> Vec<Segment> {
+    let key = |action: Action| primary_key(action).unwrap_or_default();
+    vec![
+        Segment::button(Action::Back, key(Action::Back)),
+        Segment::plain(t("help.overlay.close_or")),
+        Segment::button(Action::Select, key(Action::Select)),
+        Segment::plain(t("help.overlay.close_rest")),
+    ]
+}
+
+/// Draws the help window over `area` and returns its footer buttons.
+pub fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let columns = Columns::new();
@@ -179,11 +191,14 @@ pub fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         Paragraph::new(columns.lines(&columns.right, ctx)).style(ctx.theme.surface()),
         right,
     );
-    frame.render_widget(
-        Paragraph::new(Line::raw(t("help.overlay.help_footer")))
-            .alignment(Alignment::Center)
-            .style(ctx.theme.surface()),
+    let buttons_drawn = footer::draw(
+        frame,
         footer,
+        &close_segments(),
+        Alignment::Center,
+        ctx.theme.surface(),
+        ctx,
     );
     dialog::draw_buttons(frame, &geometry, &buttons(), ctx);
+    buttons_drawn
 }

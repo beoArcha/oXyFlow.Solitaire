@@ -1,7 +1,10 @@
 # Strings of the statistics screen: the summary per game, the history list and copying a seed.
 label = "Statistics"
 title = "Statistics"
-footer = "Up Down Select   Enter Play this seed again   c Copy seed   Esc Back"
+footer_list = "Up Down Select"
+footer_replay = "Enter Play this seed again"
+footer_copy = "c Copy seed"
+footer_back = "Esc Back"
 empty = "No games played yet. Start one from the main menu."
 load_failed = "The game history could not be read."
 position = "Game {current} of {total}"
