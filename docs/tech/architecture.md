@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -269,7 +269,7 @@ pub struct NullClipboard;                                // every copy fails wit
   Rings: main menu items; seed entry field, Continue, Back; game selection list, then the undo toggle; settings
   rows; statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
   Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
-  (Tab toggles the two-button dialogs). The help window keeps Tab and Shift+Tab for its own tabs. Enter and Space
+  (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
   press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
   digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in
   ASCII) directly before its label and, for buttons, reverse video; `MenuList` draws the marker next to the label.
@@ -286,6 +286,20 @@ pub struct NullClipboard;                                // every copy fails wit
   picks the game of the board's session, else Klondike. Keys: Tab cycles the tabs, Left/Right switches
   games in Rules, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close close; arrows, tabs and
   Close are clickable.
+  *Selector focus (O-23):* the Rules tab has three parts in reading order, the tabs row, the games row and the text
+  (`how_to_play::Focus`; the window opens on the games). Up and Down move the focus down and up through them; inside
+  the text they scroll, and Up at the top returns the focus to the games. Left and Right act on the focused part only:
+  the top tab on the tabs row, the game on the games row, nothing in the text. Tab and Shift+Tab take the same order and
+  continue to the next or the previous top tab at either end; Keys and Command line, which have only a tabs row, keep
+  Tab and Left/Right for the top tabs. The focused row shows the arrows `◄ ►` (`<` `>` in ASCII) and its selection in
+  bold reverse video; the other row shows its selection as plain `[Name]` without arrows; the focused text shows `►` in
+  its left margin. The footer names what Left/Right does for the focused part (`help.rules.footer_*`).
+  *Close and scroll bar (O-23):* the Close button of every tab and of the guide window reads `Close [Esc]`
+  (`help.rules.close` with the key). Every scrolling window (Rules, Command line, guide window) draws a vertical
+  scroll bar (`widgets/scrollbar.rs`) in the last column inside the frame, from `Glyphs::scroll_track` and
+  `scroll_thumb` (`░ █`, ASCII `: #`), only while the text is longer than the view; the thumb's length is the visible
+  share and its place the position. A click on the track above or below the thumb pages up or down, dragging the thumb
+  scrolls (the grab row lives in the window state until the release), the wheel and the position text stay.
 - **Board guidance (P3-11):** the board tells the player what is going on and what is possible.
   *Aura:* `widgets/aura.rs` draws a one-cell halo around the focused card or run (`Token::AuraFocus`,
   `Glyphs::aura_focus`), the picked-up run (`Token::AuraCarry`, `aura_carry`) and, weaker, every drop

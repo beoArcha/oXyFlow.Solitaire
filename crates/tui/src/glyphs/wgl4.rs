@@ -168,6 +168,8 @@ mod tests {
             ("aura_carry", glyphs.aura_carry),
             ("aura_target", glyphs.aura_target),
             ("edge", glyphs.edge),
+            ("scroll_track", glyphs.scroll_track),
+            ("scroll_thumb", glyphs.scroll_thumb),
         ] {
             for ch in symbol.chars() {
                 assert!(is_wgl4(ch), "{name} has non-WGL4 char {ch:?}");

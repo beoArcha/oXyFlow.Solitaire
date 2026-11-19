@@ -13,6 +13,9 @@ mod help;
 #[cfg(test)]
 mod help_rules_tests;
 mod how_to_play;
+#[cfg(test)]
+mod modal_fixes_tests;
+mod nav;
 mod pause;
 #[cfg(test)]
 mod render_tests;
@@ -25,14 +28,14 @@ mod win;
 use std::time::Instant;
 
 use ratatui::Frame;
-use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
+use ratatui::crossterm::event::{KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 use ratatui::widgets::{Block, Clear};
 
 pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
 pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
-pub use self::how_to_play::{HowToPlay, Rules};
+pub use self::how_to_play::{Focus, HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
 use crate::app::{Modal, Screen, SearchCommand};
@@ -156,56 +159,6 @@ fn press(modal: &Modal, index: usize) -> Effect {
     }
 }
 
-fn tab_of(modal: &Modal) -> Option<HelpTab> {
-    match modal {
-        Modal::Help => Some(HelpTab::Keys),
-        Modal::HowToPlay(_) => Some(HelpTab::Rules),
-        Modal::CommandLine(_) => Some(HelpTab::CommandLine),
-        _ => None,
-    }
-}
-
-fn modal_for(tab: HelpTab, rules: Rules) -> Modal {
-    match tab {
-        HelpTab::Keys => Modal::Help,
-        HelpTab::Rules => Modal::HowToPlay(HowToPlay::new(rules)),
-        HelpTab::CommandLine => Modal::CommandLine(CommandLine::new()),
-    }
-}
-
-/// The tab a key switches to from `tab`: Tab and Shift+Tab step through the tabs. Left and Right
-/// step too, except on Rules where they pick the game. The Help and Rules keys jump to their tabs.
-fn tab_target(tab: HelpTab, key: &KeyEvent, action: Option<Action>) -> Option<HelpTab> {
-    match key.code {
-        KeyCode::Tab => return Some(tab.next()),
-        KeyCode::BackTab => return Some(tab.previous()),
-        _ => {}
-    }
-    match (tab, action?) {
-        (HelpTab::Rules, Action::Help) | (HelpTab::CommandLine, Action::Help) => {
-            Some(HelpTab::Keys)
-        }
-        (HelpTab::Keys | HelpTab::CommandLine, Action::Rules) => Some(HelpTab::Rules),
-        (HelpTab::Keys | HelpTab::CommandLine, Action::Right) => Some(tab.next()),
-        (HelpTab::Keys | HelpTab::CommandLine, Action::Left) => Some(tab.previous()),
-        _ => None,
-    }
-}
-
-fn close_help(key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
-    let closes = matches!(key.code, KeyCode::Esc | KeyCode::Enter)
-        || matches!(action, Some(Action::Select | Action::Back));
-    closes.then_some(Effect::None)
-}
-
-fn clicked_tab(current: HelpTab, area: Rect, event: &MouseEvent) -> Option<HelpTab> {
-    let cell = mouse::left_press(event)?;
-    let row = tabs::top_row(help::geometry(area).body);
-    tabs::top_tabs(row)
-        .tab_at(cell)
-        .filter(|tab| *tab != current)
-}
-
 fn click_help_button(area: Rect, event: &MouseEvent) -> Option<Effect> {
     let cell = mouse::left_press(event)?;
     dialog::button_at(&help::geometry(area), cell).map(|_| Effect::None)
@@ -235,15 +188,15 @@ pub fn handle_for(
     if let Modal::Guide(state) = modal {
         return guide_window::handle(state, key, action);
     }
-    if let Some(tab) = tab_of(modal) {
-        if let Some(target) = tab_target(tab, key, action) {
-            *modal = modal_for(target, rules);
+    if nav::tab_of(modal).is_some() {
+        if let Some((target, entry)) = nav::target(modal, key, action) {
+            *modal = nav::modal_for(target, rules, entry);
             return None;
         }
         return match modal {
             Modal::HowToPlay(state) => how_to_play::handle(state, key, action),
             Modal::CommandLine(state) => command_line::handle(state, key, action),
-            _ => close_help(key, action),
+            _ => nav::close_help(key, action),
         };
     }
     let action = action?;
@@ -278,9 +231,9 @@ pub fn handle_mouse(
     if let Modal::Guide(state) = modal {
         return guide_window::handle_mouse(state, area, event);
     }
-    if let Some(tab) = tab_of(modal) {
-        if let Some(target) = clicked_tab(tab, area, event) {
-            *modal = modal_for(target, rules_of(board));
+    if nav::tab_of(modal).is_some() {
+        if let Some(target) = nav::clicked_tab(modal, area, event) {
+            *modal = nav::modal_for(target, rules_of(board), None);
             return None;
         }
         return match modal {

@@ -37,6 +37,10 @@ pub struct Glyphs {
     pub aura_target: &'static str,
     /// Vertical line that separates a side panel from the board.
     pub edge: &'static str,
+    /// The groove of a scroll bar.
+    pub scroll_track: &'static str,
+    /// The thumb of a scroll bar, which marks the visible part of the text.
+    pub scroll_thumb: &'static str,
     pub border: BorderType,
 }
 
@@ -56,6 +60,8 @@ const UNICODE: Glyphs = Glyphs {
     aura_carry: "▓",
     aura_target: "·",
     edge: "│",
+    scroll_track: "░",
+    scroll_thumb: "█",
     border: BorderType::Plain,
 };
 
@@ -75,6 +81,8 @@ const ASCII: Glyphs = Glyphs {
     aura_carry: "=",
     aura_target: ".",
     edge: "|",
+    scroll_track: ":",
+    scroll_thumb: "#",
     border: BorderType::Plain,
 };
 
@@ -119,6 +127,8 @@ mod tests {
             &glyphs.aura_carry,
             &glyphs.aura_target,
             &glyphs.edge,
+            &glyphs.scroll_track,
+            &glyphs.scroll_thumb,
         ]);
         for text in all {
             assert!(text.is_ascii(), "{text}");

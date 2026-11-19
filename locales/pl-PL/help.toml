@@ -57,8 +57,10 @@ close_rest = " zamyka to okno."
 
 [rules]
 title = "Jak grać"
-close = "Zamknij"
-footer_move = "{left}/{right}: gra   {up}/{down}/PgUp/PgDn: przewijanie"
+close = "Zamknij [{key}]"
+footer_tabs = "{left}/{right}: zakładka   {down}: gry"
+footer_games = "{left}/{right}: gra   {up}/{down}: fokus"
+footer_text = "{up}/{down}/PgUp/PgDn: przewijanie   {up} na górze: gry"
 footer_close = "{back}: zamknij"
 position = "{from}-{to} / {total}"
 

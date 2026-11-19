@@ -11,7 +11,7 @@ use ratatui::widgets::Paragraph;
 use super::dialog::{self, Button, Geometry};
 use super::tabs::{HelpTab, draw_top_tabs};
 use crate::action::{Action, HelpGroup};
-use crate::i18n::t;
+use crate::i18n::{t, tf};
 use crate::input::{KEY_TABLE, KeySpec, primary_key};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
@@ -139,9 +139,11 @@ impl Columns {
     }
 }
 
+/// The Close button every help-window tab and the guide window share; its label names the key.
 pub(crate) fn buttons() -> Vec<Button> {
+    let key = primary_key(Action::Back).unwrap_or_default();
     vec![Button {
-        label: t("help.rules.close").into_owned(),
+        label: tf("help.rules.close", &[("key", &key)]),
         focused: true,
     }]
 }
@@ -176,7 +178,7 @@ pub fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) -> FooterMap {
         Constraint::Length(1),
     ])
     .areas(geometry.body);
-    draw_top_tabs(frame, top_tab_row, HelpTab::Keys, ctx);
+    draw_top_tabs(frame, top_tab_row, HelpTab::Keys, true, ctx);
     let [left, _, right] = Layout::horizontal([
         Constraint::Length(columns.width_of(&columns.left)),
         Constraint::Length(GAP),
