@@ -22,6 +22,7 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
   - Stable serde names on serialized types.
 - **Acceptance:** unit tests per module; a golden-shuffle test (fixed seed → hard-coded order of 52
   cards); `oxysol-core` depends only on `serde` and `thiserror`.
+- **Done:** #7
 
 ### P1-02 — Game contract and session
 
@@ -44,6 +45,7 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
 - **Acceptance:** session tests on a `#[cfg(test)]` toy game cover undo/redo, redo truncation after a
   new move, `restart`, and `restore` failing on a bad log; the playout passes on the stubs;
   `architecture.md` matches the code.
+- **Done:** #14
 
 ### F-01 — Checkpoint: engine contract
 
@@ -54,6 +56,7 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
   now. Update `architecture.md`, and adjust phase 2 cards if the contract moved.
 - **Acceptance:** a short verdict (go, or the list of required changes) recorded in the PR; phase 2
   starts only after "go".
+- **Done:** before PR numbering
 
 ### P1-03 — Comment lint and phase 1 gate
 
@@ -72,3 +75,4 @@ writes the contract; micro tasks M-01…M-06 fill in the lint rules, metadata sy
 - **Acceptance:** tests for `comments` including the traps — `//` inside a string and a raw string,
   a doc comment on an item nested in a function, `// SAFETY:` before `unsafe`; a report listing each
   injected violation and what caught it.
+- **Done:** #21

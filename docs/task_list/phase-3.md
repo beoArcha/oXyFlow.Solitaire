@@ -42,6 +42,7 @@ Rules for the whole phase:
 - **Acceptance:** `TestBackend` tests: start, stub menu rendered, quit by key, too-small screen,
   resize; `cargo run` starts and leaves the terminal as it found it (checked by hand, or stated as
   not checked); `architecture.md` matches the code.
+- **Done:** #30
 
 ### P3-02 — Board geometry and rendering
 
@@ -63,6 +64,7 @@ Rules for the whole phase:
 - **Acceptance:** for every variant at 100 × 30 and 160 × 50: all rectangles inside the area, top
   cards fully visible, ranks of face-up cards never covered; a larger window yields a larger card
   step; a worst-case Spider column test.
+- **Done:** #36
 
 ### P3-03 — Board controller
 
@@ -84,6 +86,7 @@ Rules for the whole phase:
 - **Acceptance:** key-sequence tests on fixed seeds: legal move, illegal move with message, undo/redo,
   hint, pause, quick move, a pair and a king in Pyramid, a deal in Spider; a recording `Audio` double
   proves the cues fire.
+- **Done:** #42
 
 ### P3-04 — Menus and game selection
 
@@ -99,6 +102,7 @@ Rules for the whole phase:
 - **Acceptance:** tests: visiting every item by keyboard and by mouse, Resume hidden without a
   save, every variant creates a session with the right `Variant`, a typed seed reaches `Session`,
   a non-numeric seed is rejected with a message, rendering in both locales and in ASCII.
+- **Done:** #35
 
 ### P3-05 — Settings screen
 
@@ -112,6 +116,7 @@ Rules for the whole phase:
 - **Acceptance:** tests: changing each option changes app state and reaches a test storage, by
   keyboard and by mouse; language switches text at once; a failing storage shows an alert and does
   not interrupt.
+- **Done:** #34
 
 ### P3-06 — Mouse on the board
 
@@ -124,6 +129,7 @@ Rules for the whole phase:
   card, move, release over the target; where the terminal reports no drag events, click–click works.
 - **Acceptance:** tests with synthetic events on known geometry: each gesture above, a click on
   empty space, a release outside the board, a click on a face-down card.
+- **Done:** #50
 
 ### P3-07 — Overlays: help, pause, win, dialogs
 
@@ -136,6 +142,7 @@ Rules for the whole phase:
   Centered and scaled with the window.
 - **Acceptance:** render tests for every overlay in both locales, Unicode and ASCII; help lists
   every binding in the table; pause shows no card.
+- **Done:** #46
 
 ### P3-08 — Accessibility: announcer and tests
 
@@ -154,6 +161,7 @@ Rules for the whole phase:
     4. every theme meets its contrast target for the token pairs used together.
 - **Acceptance:** the four tests pass; announcements exist for every `MoveError` and every action
   that changes the board, in both locales.
+- **Done:** #48
 
 ### P3-09 — Gate: TUI
 
@@ -189,6 +197,7 @@ Rules for the whole phase:
   aura without color, the action line (browsing, carrying, no moves, won), the panel (shown at
   140 × 40, hidden at 100 × 30 and when off), the setting through storage and an old value without
   it, WGL4/ASCII glyphs only; `cargo xtask check --quick` passes.
+- **Done:** #59
 
 ### P3-12 — Board counters, the no-undo mode and copying the seed
 
@@ -214,6 +223,7 @@ Rules for the whole phase:
   game; a no-undo game (rejection, hidden hints, save and resume, `undo_allowed = false` in storage); the
   toggle by key and mouse and the remembered setting; the copy key and the header click against the
   clipboard double; 100 × 30 in both locales with WGL4/ASCII glyphs only; `cargo xtask check --quick` passes.
+- **Done:** #66
 
 ### U-04 — Interface review: usability and readability
 
@@ -235,6 +245,7 @@ Rules for the whole phase:
   Also covers P3-18…P3-21 (guide panel on smaller screens, auto-finish, winnable deals, aura options).
 - **Acceptance:** `docs/tech/ui-review.md` with ranked findings and a recommended layout per screen
   size class; the cards it refines are updated; owner sign-off.
+- **Done:** #73
 
 ### P3-14 — Readable card faces
 
@@ -262,6 +273,7 @@ Rules for the whole phase:
   symbol as text, that no two cards render the same, and that every mark differs by symbol or border
   in both sets; a Spider deal at 100 × 30 shows face-down columns that differ from empty slots;
   renders of all four sizes in both locales reviewed by the owner; `cargo xtask check --quick` passes.
+- **Done:** #75
 
 ### P3-15 — Screen layout: game information apart from controls
 
@@ -292,6 +304,9 @@ Rules for the whole phase:
   shown twice; Compact has three chrome rows and Standard two; the panel framed; the Polish `Now:`
   rows grammatical (colon form); guidance, counters, header, footer and accessibility tests updated;
   `cargo xtask check --quick` passes.
+- **Deviation (accepted):** the variant's best time is not shown in the `Game` box (the board has no history access).
+- **Deviation (accepted):** the size class is decided by width only (P3-18 removed the "fewer than 36 rows" rule); below 130 columns the guide opens as a window instead of a panel (D-U04-3).
+- **Done:** #80
 
 ### P3-16 — Zoom: card size by keyboard and console font
 
@@ -342,6 +357,7 @@ Rules for the whole phase:
 - **Acceptance:** tests per screen and dialog for the Tab order, wrap-around, Shift+Tab and
   activation; the board cycles the piles; help lists Tab and Shift+Tab; accessibility tests updated;
   `cargo xtask check --quick` passes.
+- **Done:** #76
 
 ### O-16 — Full-screen option
 
@@ -380,6 +396,8 @@ Rules for the whole phase:
 - **Acceptance:** renders at 100 × 30, 115 × 35 and 130 × 40 with the setting on (window at the two
   narrow sizes, panel at the wide one); the settings row text at 100 columns; tests for the window's
   keys and for the `Do:` part; `cargo xtask check --quick` passes.
+- **Deviation (accepted):** the size class is decided by width only (P3-18 removed the "fewer than 36 rows" rule); below 130 columns the guide opens as a window instead of a panel (D-U04-3).
+- **Done:** #83
 
 ### P3-19 — Auto-finish a won game
 
@@ -394,6 +412,8 @@ Rules for the whole phase:
 - **Acceptance:** tests on fixed deals that reach a forced win (Klondike with every card face up and the
   stock empty, FreeCell, Spider, Pyramid as P2-07 supports them); interruption; the setting off and the
   key; the win recorded; `cargo xtask check --quick` passes.
+- **Deviation (accepted):** the recorded time includes the paced finishing time; Finish became clickable in P3-25.
+- **Done:** #81
 
 ### P3-20 — Winnable deals only
 
@@ -408,6 +428,8 @@ Rules for the whole phase:
   unknown or unwinnable. The search must not freeze the interface (a worker thread or chunked steps).
 - **Acceptance:** tests with a stub solver (accepts the n-th seed); cancel; the marker in the game
   information and the history; a typed seed kept as typed.
+- **Deviation (accepted):** no hotkey for the "Winnable deals only" toggle; search capped at 40 seeds with "Play as unknown" / "Keep searching".
+- **Done:** #82
 
 ### P3-21 — Aura options and the stock recycle button
 
@@ -467,6 +489,9 @@ Rules for the whole phase:
   at a 3.0 ratio in every theme.
 - **Acceptance:** the contrast tests pass with the new pairs; a render of the board at `--colors 16`
   in each theme reviewed by the owner in the classic console; `cargo xtask check --quick` passes.
+- **Must close the GRAPHIC_GAPS exception:** draw the High Contrast board edge (the field edge that
+  O-26 left to this card), then remove the High Contrast Table/Background entry from `GRAPHIC_GAPS`
+  in `crates/tui/src/theme/tests.rs`, so the 3:1 graphics test covers that pair without exception.
 
 ### P3-24 — Menus, settings and statistics polish
 
@@ -498,6 +523,8 @@ Rules for the whole phase:
   is missing from the footer: add it (and any other board key the footer omits that U-04 lists).
 - **Acceptance:** tests that a click on each footer entry produces the same action as its key on every
   screen with a footer; `g` shown and clickable; both locales; accessibility tests updated.
+- **Deviation (accepted):** Tab does not reach footer buttons; `Arrows` and `+/-` are display-only.
+- **Done:** #86
 
 ### P3-26 — Possible moves panel
 
@@ -556,6 +583,8 @@ Rules for the whole phase:
 - **Acceptance:** tests for the scroll bar (thumb size and position, click on the track, drag, ASCII
   form), the Close label in both locales, the focus order and the Left/Right effect per row, the focus
   marker without color; renders at 100 × 30 in both locales.
+- **Deviation (accepted):** Left/Right inside the Rules text do nothing; Keys and Command line show the ◄ ► arrows.
+- **Done:** #91
 
 ### P3-28 — Docking modals to a side of the screen
 
@@ -635,6 +664,8 @@ Rules for the whole phase:
   with a 3:1 target so they cannot regress. Keep the themes' character.
 - **Acceptance:** the new graphics pairs tested in every theme; the inventory's §1.4 table updated with
   the new ratios; renders of the board in Light and High Contrast.
+- **Deviation (accepted):** High Contrast keeps the black field (Table on Background 1:1, listed in GRAPHIC_GAPS); the field edge becomes a drawn frame in P3-23. The Light focus frame is near-black, and the Dark card backs are light blue with a dark mark (forced by the 3:1 bar).
+- **Done:** #92
 
 ### P3-32 — Table color and feel
 
@@ -710,3 +741,110 @@ Rules for the whole phase:
 - **Acceptance:** the built-in themes render exactly as before; a valid and an invalid user theme; the
   size scale renders at 100 × 30, 130 × 40 and 200 × 60 per step; the inventory column filled; both
   locales.
+
+### P3-10 — How-to-play overlay and first-steps hint
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P3-07
+- **Files:** `crates/tui/src/widgets/overlay/how_to_play/**`, `crates/tui/src/screens/board/**`, `crates/tui/src/{app,input,action}.rs`, `crates/tui/src/screens/main_menu.rs`, `locales/*/{board,help,menu,rules}.toml` (`rules.toml` new), `docs/tech/architecture.md`
+- **Scope:** A "How to play" window (`Modal::HowToPlay`) with tabs for Klondike, Spider, FreeCell and Pyramid, each with Goal, Layout, Moves, Controls and Tips. Controls are generated from `KEY_TABLE`; tips use placeholders such as `{hint}`. Entry points: a main-menu item and `i` (`Action::Rules`, handled on every screen). Until the first action of a game, the board status line shows the basic keys. The rules text comes from `docs/wiki/rules`.
+- **Acceptance:** `cargo xtask check --quick` passed with 312 tests in `oxysol-tui` (PR #55).
+- **Done:** #55
+
+### P3-13 — Large card faces: big suit and rank on medium and large cards
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P3-11
+- **Files:** `crates/tui/src/widgets/card/{mod,art,face,frame,paint,rank_font,tests}.rs` (split from `widgets/card.rs`), `docs/tech/architecture.md`
+- **Scope:** Face-up cards on medium and large sizes draw a large centre: the rank in a three-row pixel font above a multi-row suit pictogram (7×4 at 13×11, 5×3 at 11×9, 5×2 at 9×7). The compact 7×5 card keeps its single suit symbol. Unicode art uses WGL4 block characters; ASCII has its own pictograms, so suits differ by shape without color. The rank is built from the localized label, so Polish `W` and `D` work. The corner indices are unchanged.
+- **Acceptance:** Tests: art sizes match their scale; Unicode art is WGL4 and ASCII art is ASCII; nothing is painted outside the card; the four suits and 13 ranks differ at every size in both modes; `10` fits. `cargo xtask check --quick` passed (PR #63).
+- **Done:** #63
+
+### O-06 — Unicode glyphs within WGL4 for the Windows console
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P3-02
+- **Files:** `crates/tui/src/glyphs.rs`, `crates/tui/src/glyphs/wgl4.rs`, `crates/tui/src/accessibility_tests/board.rs`
+- **Scope:** Every Unicode glyph and border symbol is restricted to WGL4, so conhost (Consolas, Lucida Console) on Windows 10 shows no boxes or question marks. Focus marker ▶ ◀ becomes ► ◄; the normal card keeps plain corners; the selected card uses double and single borders (╒═╕│╘═╛); the target card uses ╓─╖║╙─╜; the hint card uses a light-shade border (░). Dialogs use `BorderType::Plain`. Each highlight stays distinct without color: normal (single border), focus (double border and ►), selected (╒ and ●), target (╓ and +), hint (░ and ?).
+- **Acceptance:** `wgl4::is_wgl4` tests: every `Glyphs` field is WGL4 and non-WGL4 symbols are rejected; buffers of the menus, settings, game selection, dialogs and every board variant contain only WGL4; ASCII tests unchanged (PR #47).
+- **Done:** #47
+
+### O-10 — Remove unused common locale keys
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** M-17
+- **Files:** `locales/en-US/common.toml`, `locales/pl-PL/common.toml`
+- **Scope:** Removes `[board] header`, `[board] placeholder` (with its empty table header) and `[dialog] help_body`. No Rust code under `crates/` or `src/` references them.
+- **Acceptance:** `cargo xtask check --quick` passed (PR #56).
+- **Done:** #56
+
+### O-13 — Sync task list statuses with `main`
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `docs/task_list/README.md`, `docs/task_list/micro.md`
+- **Scope:** Phase tasks merged to `main` (P3-01…P3-08, P4-01…P4-03, P6-01…P6-03) are marked DONE; the follow-up table lists O-01…O-13, P2-06, P3-10…P3-13 and P4-04 with their status. M-11, M-12, M-15, M-16, M-17, M-25, M-26 and M-27 are DONE, M-34 IN PROGRESS. Statuses come from the task IDs in commit subjects on `main`.
+- **Acceptance:** `cargo xtask check --quick` passed (PR #65).
+- **Done:** #65
+
+### O-14 — Game rules as a tab of the help window
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** O-13, P3-10
+- **Files:** `crates/tui/src/app.rs`, `crates/tui/src/widgets/overlay/{help,mod,tabs,tests,help_rules_tests}.rs`, `crates/tui/src/widgets/overlay/how_to_play/**`, `locales/*/help.toml`, `docs/tech/architecture.md`
+- **Scope:** The help window (F1 / ?) gets two top tabs: Keys (the existing table) and Rules (the how-to-play pages, reused without duplication). Tab, Shift+Tab, Left/Right and mouse clicks switch between them. Rules opens on the variant of the current board, Klondike outside boards. `i` and the main-menu item open the help on Rules. Tabs are drawn as `[Keys]  Rules` with bold and reverse, so focus does not depend on color.
+- **Acceptance:** Tests cover keyboard and mouse switching, variant persistence, the 100×30 bounds, WGL4 and ASCII glyphs, and locale parity; `cargo xtask check --quick` passed (PR #67).
+- **Done:** #67
+
+### O-17 — Task cards for the owner's interface feedback of 2026-11-16
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `docs/task_list/{README,phase-3}.md`
+- **Scope:** Cards U-04 (interface review), P3-14 (readable card faces), P3-15 (game information apart from controls, framed guide panel), P3-16 (zoom by keyboard and console font, terminal zoom in Help), P3-17 (Tab and Shift+Tab move the focus) and O-16 (full-screen option). README rows added; O-12, O-13, P3-12, P3-13 and P4-04 marked DONE.
+- **Acceptance:** Cards are in `phase-3.md` and the README rows match them (PR #68).
+- **Done:** #68
+
+### O-18 — Task cards for the owner's feedback of 2026-11-16 (second round)
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `docs/task_list/{README,phase-2,phase-3}.md`
+- **Scope:** Backlog cards, no implementation: P3-18 (the guide panel is missing below 130 columns), P2-07 with P3-19 (forced-win detection and an auto-finish option), P2-08 with P3-20 (a bounded solver and a winnable-deals option), P3-21 (aura options and a reshuffle). Owner priority recorded for U-04: readability first, then ease and intuitiveness. README rows added; O-17 marked DONE.
+- **Acceptance:** Cards are in the phase files and the README rows match them (PR #69).
+- **Done:** #69
+
+### O-20 — Sync follow-up task statuses
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `docs/task_list/README.md`
+- **Scope:** Status sync: O-15, O-19 and P2-07 marked DONE; the saved unfinished start of P3-19 on branch `feat/P3-19-auto-finish-b` is noted.
+- **Acceptance:** README statuses match `main` (PR #74).
+- **Done:** #74
+
+### O-21 — Task cards for the owner's feedback of 2026-11-19
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `docs/task_list/{README,phase-3,phase-4}.md`
+- **Scope:** P4-05: Restart stays allowed in games without undo and is counted separately. P3-21 revised: a visible, clickable recycle sign on the empty stock replaces the reshuffle idea. P3-25: footer keys become mouse buttons and `g` is added to the footer. P3-26: a possible-moves side panel with active and inactive action buttons. P3-27: quick options during the game for hints and auto-finish, with defaults in Settings.
+- **Acceptance:** Cards are in the phase files and the README rows match them (PR #77).
+- **Done:** #77
+
+### O-25 — UI inventory of colors, sizes and fonts
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** —
+- **Files:** `docs/tech/ui-inventory.md` (new)
+- **Scope:** A reference of every visual property: color tokens with their values in every theme, text modifiers, card and screen sizes, fan steps, gaps, modal sizes, glyph sets, the aura, the settings that exist, and accessibility findings. Each entry cites `path:line`. Contrast ratios are computed from the palette RGB values with the formula in `theme/contrast.rs`; no test produces them. Three documentation mismatches are recorded, not fixed.
+- **Acceptance:** Facts only, no code changed; `cargo xtask check --quick` passed (PR #89).
+- **Done:** #89
+
+### O-27 — Sync the task list with `main`
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `docs/task_list/**` only
+- **Scope:** Syncs the task list with `main`: status fixes for the rows that were wrong (P2-08, P3-14, P3-15, P3-17…P3-20, P3-25, O-23, M-34, M-35), missing rows (O-20, O-22, O-27), a card for every follow-up ID that had none, `Done:` lines with PR numbers for every DONE card, accepted deviations recorded on their cards, and the status date in the README.
+- **Acceptance:** Every ID in a README or micro.md status table has exactly one card, and every merged PR with `[ID]` in its title has a DONE row; any mismatch is listed in the PR report.

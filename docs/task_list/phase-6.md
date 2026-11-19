@@ -21,6 +21,7 @@ to visible feedback and never replaces it; the game is fully usable without it (
 - **Acceptance:** tests: deterministic output for a fixed input; silence for an empty sequence; note
   onsets at the expected sample positions, including after a tempo change; the voice limit holds;
   output stays within [-1, 1] and contains no NaN; a malformed file is an error, not a panic.
+- **Done:** #49
 
 ### P6-02 — Audio output and settings
 
@@ -39,6 +40,7 @@ to visible feedback and never replaces it; the game is fully usable without it (
 - **Acceptance:** tests with the feature off and with a failing device both yield a working app
   with sound options shown as unavailable; `cargo build --no-default-features` succeeds; cues heard
   by hand on at least one system — name it in the report.
+- **Done:** #57
 
 ### P6-03 — Score-to-MIDI tool
 
@@ -52,3 +54,13 @@ to visible feedback and never replaces it; the game is fully usable without it (
   notation; finalize micro cards M-25…M-27 and mark them `READY`.
 - **Acceptance:** tests: a known score compiles to a file that parses back to the expected notes,
   lengths, tempo and program; a syntax error names the file and line.
+- **Done:** #43
+
+### O-12 — Selectable sound styles and clearer sound status in Settings
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P6-02, P3-11
+- **Files:** `crates/tui/src/{app,app/deps,audio,settings,lib,test_support}.rs`, `crates/tui/src/screens/settings/**`, `src/audio/**`, `src/main.rs`, `tests/integration/{audio,autosave}.rs`, `locales/*/settings.toml`, `docs/tech/architecture.md`
+- **Scope:** Settings offer every embedded sound style by its `style.toml` name (`default`, `retro`), passed to the TUI through `Deps::sound_styles`; a saved style that no longer exists falls back to `default`. `Audio::status()` returns Ready, RemoteSession, NotBuilt, NoDevice or StyleFailed, each with its own text in both locales. Builds without the audio feature say "Sound is not included in this build." Fallback order: remote session, not built, no working device, failed style, ready. The mixer is swapped with `Output::replace_mixer` after the new one is built.
+- **Acceptance:** Tests for the style list, the status order, the fallback and the settings rows; `cargo xtask check --quick` and `cargo build --no-default-features` passed. Not verified: real sound output on a device (PR #64).
+- **Done:** #64

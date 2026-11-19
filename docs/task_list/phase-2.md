@@ -42,6 +42,7 @@ pattern the other three follow.
   waste to tableau → a king to an empty column if it reveals a face-down card → `Stock`. Never
   suggest: foundation → tableau, moving a king from the bottom of a column to an empty column,
   moving part of a run.
+- **Done:** #20
 
 ### P2-02 — Spider (1, 2, 4 suits)
 
@@ -63,6 +64,7 @@ pattern the other three follow.
 - **Hint order:** a move extending a same-suit run → a move flipping a face-down card → a move
   emptying a column → building on a different suit → `Stock`. Never suggest moving a whole column
   to an empty column.
+- **Done:** #24
 
 ### P2-03 — FreeCell
 
@@ -81,6 +83,7 @@ pattern the other three follow.
   - Win: 52 cards on the foundations.
 - **Hint order:** to a foundation → a column move extending a run → cell to column → column to an
   empty column → column to a cell. Never suggest moving a column's only card to another empty column.
+- **Done:** #27
 
 ### P2-04 — Pyramid (Relaxed, Classic)
 
@@ -104,6 +107,7 @@ pattern the other three follow.
   - `Move::Transfer` → `MoveError::Unsupported`.
   - Passes and win condition: as given under Variants.
 - **Hint order:** a king → a pair of two pyramid cards → pyramid + stock/waste → stock + waste → `Stock`.
+- **Done:** #25
 
 ### P2-05 — Gate: game rules and flow tests
 
@@ -120,6 +124,7 @@ pattern the other three follow.
   - Check wiki pages M-07…M-10 against the implemented rules.
   - Update the Status column in `README.md` and `micro.md`.
 - **Acceptance:** review report; `cargo xtask check` passes; `architecture.md` matches the code.
+- **Done:** #28
 
 ### P2-07 — Forced-win detection and the finishing moves
 
@@ -133,6 +138,7 @@ pattern the other three follow.
   is won and finish laying out the cards by itself (as an option, see P3-19).
 - **Acceptance:** tests per game on positions that are and are not forced wins; the returned moves are
   legal and end in `is_won()`; no false positives on golden deals.
+- **Done:** #71
 
 ### P2-08 — Solver for winnable deals
 
@@ -146,3 +152,23 @@ pattern the other three follow.
   winnable deals only.
 - **Acceptance:** known winnable and unwinnable deals per game answered correctly; the budget respected;
   determinism; a benchmark note in the PR (typical time per deal on this machine).
+- **Deviation (accepted):** the Spider default budget is 60,000 positions; Spider 2 and 4 suits mostly answer Unknown.
+- **Done:** #78
+
+### P2-06 — Stock pass and deal counters in the engine
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P2-05
+- **Files:** `crates/core/src/{game.rs,lib.rs,session/tests.rs}`, `crates/core/src/games/{freecell,klondike,pyramid,spider}/**` (per-game `tests/stock.rs`), `crates/core/tests/flows/{main,stock}.rs`, `docs/tech/architecture.md`
+- **Scope:** Public `StockStatus { recycles, recycles_left, deals_left }` in `oxysol_core` and `Game::stock_status()`, which returns `None` for FreeCell. Klondike counts recycles in its game state; Pyramid derives its count from `recycles_left` and the rule set; Spider reports `deals_left`. No TUI, storage or locale change; the save format is unchanged because sessions rebuild games by replay.
+- **Acceptance:** Per-game stock tests and `Session` flow tests, including undo, redo, restart and restore; golden deals and pinned record JSON unchanged; `architecture.md` documents `StockStatus` in the same PR (PR #60).
+- **Done:** #60
+
+### O-02 — Phase 2 gate follow-ups
+
+- **Owner:** not recorded (follow-up)
+- **Depends on:** P2-05
+- **Files:** `crates/core/src/game.rs`, `xtask/src/lint/mod.rs`
+- **Scope:** Follow-ups 3 and 7 from the P2-05 review (#28): the `PyramidRules` doc comment said Relaxed allows waste pairs, which contradicts R-11 and P2-04 (the rule sets differ only in passes and win condition), so it is corrected; `#![allow(dead_code)]` is removed from `xtask/src/lint/mod.rs` because every rule is implemented.
+- **Acceptance:** Clippy is clean without the allow; `cargo xtask check --quick` passed (PR #29).
+- **Done:** #29
