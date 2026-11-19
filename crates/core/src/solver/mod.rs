@@ -56,10 +56,10 @@ impl SolveBudget {
     }
 }
 
-pub const DEFAULT_KLONDIKE_NODES: u64 = 300_000;
+pub const DEFAULT_KLONDIKE_NODES: u64 = 100_000;
 pub const DEFAULT_FREECELL_NODES: u64 = 100_000;
 pub const DEFAULT_SPIDER_NODES: u64 = 100_000;
-pub const DEFAULT_PYRAMID_NODES: u64 = 300_000;
+pub const DEFAULT_PYRAMID_NODES: u64 = 500_000;
 
 /// A verdict together with the positions it cost.
 #[derive(Debug, Clone, PartialEq, Eq)]

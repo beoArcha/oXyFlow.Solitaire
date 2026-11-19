@@ -96,12 +96,19 @@ fn aces_and_twos_are_safe_and_a_lone_high_card_is_not() {
     assert_eq!(moves.len(), 2);
     assert_eq!(position.found.iter().sum::<u8>(), 2);
 
-    let piles = vec![
-        pile(PileRef::Foundation(0), "", &run_of('C', 1)[..14]),
+    let both = vec![
+        pile(PileRef::Foundation(0), "", "AD 2D"),
+        pile(PileRef::Foundation(1), "", "AH 2H"),
         pile(PileRef::Tableau(0), "", "3S"),
     ];
-    let position = Position::from_piles(DrawCount::One, &piles).unwrap();
+    let position = Position::from_piles(DrawCount::One, &both).unwrap();
     assert!(position.is_safe(position.cols[0][0]));
+    let one = vec![
+        pile(PileRef::Foundation(0), "", "AD 2D"),
+        pile(PileRef::Tableau(0), "", "3S"),
+    ];
+    let position = Position::from_piles(DrawCount::One, &one).unwrap();
+    assert!(!position.is_safe(position.cols[0][0]));
 }
 
 #[test]
