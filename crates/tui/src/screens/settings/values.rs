@@ -123,13 +123,15 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
 
 /// The text of a row: the label, leaders of dots up to the value column, then the value. Sound rows
 /// say when sound is unavailable, and a side panel row says which columns it needs when the screen
-/// of `columns` is too narrow.
+/// of `columns` is too narrow. `arrows` are the glyphs (left, right) that frame the value of the
+/// focused row; every other row keeps the two columns free, so the values line up.
 pub fn line(
     field: Field,
     settings: &Settings,
     audio_available: bool,
     sound_styles: &[StyleInfo],
     columns: u16,
+    arrows: Option<(&str, &str)>,
 ) -> String {
     let mut value = value_text(field, settings, sound_styles);
     if field.is_audio() && !audio_available {
@@ -138,12 +140,16 @@ pub fn line(
     if let Some(aid) = field.aid() {
         value = aid.value_for(&settings.aids(), columns);
     }
+    let framed = match arrows {
+        Some((left, right)) => format!("{left} {value} {right}"),
+        None => format!("  {value}"),
+    };
     let name = t(field.label_key()).into_owned();
     let leaders = ".".repeat(label_width().saturating_sub(name.chars().count()) + 2);
     let label = format!("{name} {leaders}");
     tf(
         "settings.row.line",
-        &[("label", label.as_str()), ("value", value.as_str())],
+        &[("label", label.as_str()), ("value", framed.as_str())],
     )
 }
 

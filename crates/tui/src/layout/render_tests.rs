@@ -145,7 +145,7 @@ impl Fixture {
             caps: &self.caps,
             audio_status: AudioStatus::NoDevice,
             sound_styles: &[],
-            has_saved_game: false,
+            saved: None,
             pointer: None,
             now: Instant::now(),
         }

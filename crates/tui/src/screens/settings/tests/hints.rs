@@ -3,7 +3,7 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::super::options::{FIELDS, Field, Group};
-use super::{line_of, move_down, open_settings};
+use super::{bare, line_of, move_down, open_settings};
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::Effect;
 use crate::settings::{Aid, Settings};
@@ -99,10 +99,10 @@ fn the_focused_aid_row_is_explained_in_both_locales() {
 fn target_marks_and_the_moves_panel_have_their_own_rows() {
     let mut h = open_settings();
     h.resize(140, 40);
-    assert!(line_of(&mut h, "Target marks").ends_with("On"));
-    assert!(line_of(&mut h, "Possible moves panel").ends_with("On"));
+    assert!(bare(&line_of(&mut h, "Target marks")).ends_with("On"));
+    assert!(bare(&line_of(&mut h, "Possible moves panel")).ends_with("On"));
     move_down(&mut h, index_of(Aid::TargetMarks));
     h.press(KeyCode::Enter);
     assert!(!h.app.settings().target_marks);
-    assert!(line_of(&mut h, "Target marks").ends_with("Off"));
+    assert!(bare(&line_of(&mut h, "Target marks")).ends_with("Off"));
 }

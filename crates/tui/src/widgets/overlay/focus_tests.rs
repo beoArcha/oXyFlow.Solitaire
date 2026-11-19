@@ -84,17 +84,14 @@ fn space_presses_the_focused_button_like_enter() {
 }
 
 #[test]
-fn tab_moves_the_win_focus_between_new_game_and_menu() {
+fn tab_moves_the_win_focus_through_three_buttons_and_wraps() {
     let mut modal = Modal::win();
     assert_eq!(tab(&mut modal), None);
-    assert!(matches!(modal, Modal::Win { menu_focused: true }));
+    assert!(matches!(modal, Modal::Win { focus: 1, .. }));
     assert_eq!(tab(&mut modal), None);
-    assert!(matches!(
-        modal,
-        Modal::Win {
-            menu_focused: false
-        }
-    ));
+    assert!(matches!(modal, Modal::Win { focus: 2, .. }));
+    assert_eq!(tab(&mut modal), None);
+    assert!(matches!(modal, Modal::Win { focus: 0, .. }));
 }
 
 #[test]

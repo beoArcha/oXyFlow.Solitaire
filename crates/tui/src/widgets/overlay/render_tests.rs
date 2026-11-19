@@ -6,7 +6,7 @@ use ratatui::backend::TestBackend;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::style::Modifier;
 
-use super::{HowToPlay, Rules, draw};
+use super::{HowToPlay, PersonalBest, Rules, draw};
 use crate::app::Modal;
 use crate::audio::AudioStatus;
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -62,7 +62,7 @@ fn render(
         caps: &caps,
         audio_status: AudioStatus::NoDevice,
         sound_styles: &[],
-        has_saved_game: false,
+        saved: None,
         pointer: None,
         now,
     };
@@ -234,7 +234,10 @@ fn win_shows_the_time_and_both_buttons_in_both_locales() {
 #[test]
 fn win_moves_the_focus_to_menu() {
     let now = Instant::now();
-    let modal = Modal::Win { menu_focused: true };
+    let modal = Modal::Win {
+        focus: 2,
+        best: Default::default(),
+    };
     let terminal = render(&modal, caps(true), Locale::EnUs, (100, 30), now);
     assert!(text_of(&terminal).contains(&focused(true, "Menu")));
 }
@@ -311,4 +314,73 @@ fn a_click_on_yes_quits_from_the_board() {
     let (column, row) = h.find("Yes").expect("button");
     h.click(column, row);
     assert!(h.app.should_quit());
+}
+
+#[test]
+fn win_names_only_the_personal_bests_it_has() {
+    let now = Instant::now();
+    let time = Modal::Win {
+        focus: 0,
+        best: PersonalBest {
+            time: true,
+            moves: false,
+        },
+    };
+    let text = text_of(&render(&time, caps(true), Locale::EnUs, (100, 30), now));
+    assert!(text.contains("Best time for"), "{text}");
+    assert!(!text.contains("Fewest moves for"), "{text}");
+    let both = Modal::Win {
+        focus: 0,
+        best: PersonalBest {
+            time: true,
+            moves: true,
+        },
+    };
+    let text = text_of(&render(&both, caps(true), Locale::EnUs, (100, 30), now));
+    assert!(text.contains("Fewest moves for"), "{text}");
+    let text = text_of(&render(
+        &Modal::win(),
+        caps(true),
+        Locale::EnUs,
+        (100, 30),
+        now,
+    ));
+    assert!(!text.contains("Best time for"), "{text}");
+    assert!(!text.contains("Fewest moves for"), "{text}");
+}
+
+#[test]
+fn win_offers_same_seed_in_both_locales_with_its_focus() {
+    let now = Instant::now();
+    let same_seed = Modal::Win {
+        focus: 1,
+        best: PersonalBest::default(),
+    };
+    let en = text_of(&render(
+        &same_seed,
+        caps(true),
+        Locale::EnUs,
+        (100, 30),
+        now,
+    ));
+    assert!(en.contains(&focused(true, "Same seed")), "{en}");
+    assert!(en.contains("Menu") && en.contains("New game"), "{en}");
+    let pl = text_of(&render(
+        &same_seed,
+        caps(true),
+        Locale::PlPl,
+        (100, 30),
+        now,
+    ));
+    assert!(pl.contains(&focused(true, "To samo ziarno")), "{pl}");
+    let best = Modal::Win {
+        focus: 0,
+        best: PersonalBest {
+            time: true,
+            moves: true,
+        },
+    };
+    let pl = text_of(&render(&best, caps(true), Locale::PlPl, (100, 30), now));
+    assert!(pl.contains("Najlepszy czas:"), "{pl}");
+    assert!(pl.contains("Najmniej ruchów:"), "{pl}");
 }

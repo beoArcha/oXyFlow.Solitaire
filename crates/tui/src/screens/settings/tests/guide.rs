@@ -1,7 +1,7 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::super::options::{FIELDS, Field};
-use super::{line_of, move_down, open_settings};
+use super::{bare, line_of, move_down, open_settings};
 use crate::i18n::{Locale, set_locale};
 use crate::screens::Effect;
 use crate::settings::Settings;
@@ -20,10 +20,10 @@ fn the_guide_panel_row_toggles_and_reaches_storage() {
     let mut h = open_settings();
     h.resize(130, 40);
     move_to_guide(&mut h);
-    assert!(line_of(&mut h, "Guide panel").ends_with("On"));
+    assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("On"));
     h.press(KeyCode::Enter);
     assert!(!h.app.settings().guide_panel);
-    assert!(line_of(&mut h, "Guide panel").ends_with("Off"));
+    assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("Off"));
     let saved = h.storage.borrow().settings.clone();
     assert!(saved.is_some_and(|settings| !settings.guide_panel));
     h.press(KeyCode::Right);
@@ -35,14 +35,14 @@ fn the_guide_row_names_the_columns_the_panel_needs_on_a_narrow_screen() {
     let mut h = open_settings();
     h.resize(100, 30);
     assert!(
-        line_of(&mut h, "Guide panel").ends_with("On (needs 130 columns, now 100)"),
+        bare(&line_of(&mut h, "Guide panel")).ends_with("On (needs 130 columns, now 100)"),
         "{}",
         h.text()
     );
     h.resize(129, 40);
-    assert!(line_of(&mut h, "Guide panel").ends_with("On (needs 130 columns, now 129)"));
+    assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("On (needs 130 columns, now 129)"));
     h.resize(130, 30);
-    assert!(line_of(&mut h, "Guide panel").ends_with("On"));
+    assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("On"));
     assert!(!h.text().contains("needs"));
 }
 
@@ -53,7 +53,7 @@ fn the_guide_row_adds_no_note_when_the_panel_is_off() {
     move_to_guide(&mut h);
     h.press(KeyCode::Enter);
     assert!(!h.app.settings().guide_panel);
-    assert!(line_of(&mut h, "Guide panel").ends_with("Off"));
+    assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("Off"));
     assert!(!line_of(&mut h, "Guide panel").contains("needs"));
 }
 

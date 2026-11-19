@@ -1,5 +1,6 @@
 use ratatui::crossterm::event::KeyCode;
 
+mod arrows;
 mod focus;
 mod guide;
 mod hints;
@@ -20,7 +21,7 @@ fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
 }
 
 fn row(field: Field, settings: &Settings, audio_available: bool) -> String {
-    line(field, settings, audio_available, &sound_styles(), 200)
+    line(field, settings, audio_available, &sound_styles(), 200, None)
 }
 
 fn value(field: Field, settings: &Settings) -> String {
@@ -33,6 +34,12 @@ pub(super) fn line_of(h: &mut Harness, label: &str) -> String {
         .find(|line| line.contains(label))
         .map(|line| line.trim_end().to_owned())
         .unwrap_or_default()
+}
+
+/// A row's text without the arrows that frame the value of the focused row, so that its end is the
+/// value.
+pub(super) fn bare(line: &str) -> &str {
+    line.trim_end().trim_end_matches(['►', '>']).trim_end()
 }
 
 /// Position of Settings in the main menu without a saved game.
@@ -211,7 +218,7 @@ fn volume_is_adjusted_with_the_arrows_and_clamped() {
         h.press(KeyCode::Right);
     }
     assert_eq!(h.app.settings().volume, 100);
-    assert!(line_of(&mut h, "Volume").ends_with("100%"));
+    assert!(bare(&line_of(&mut h, "Volume")).ends_with("100%"));
 }
 
 #[test]
@@ -220,7 +227,7 @@ fn a_theme_change_is_shown_at_once() {
     move_down(&mut h, 1);
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
-    assert!(line_of(&mut h, "Theme").ends_with("Light"));
+    assert!(bare(&line_of(&mut h, "Theme")).ends_with("Light"));
 }
 
 #[test]
@@ -229,7 +236,7 @@ fn a_language_change_switches_the_locale_at_once() {
     h.press(KeyCode::Right);
     assert_eq!(locale(), Locale::PlPl);
     let expected = t("settings.locale.pl_pl").into_owned();
-    assert!(line_of(&mut h, &t("settings.row.language")).ends_with(&expected));
+    assert!(bare(&line_of(&mut h, &t("settings.row.language"))).ends_with(&expected));
     set_locale(Locale::EnUs);
 }
 

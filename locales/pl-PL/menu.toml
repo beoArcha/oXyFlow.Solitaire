@@ -2,6 +2,9 @@
 # Items shared with the rest of the interface (New game, Settings, Quit, the variant names)
 # live in common.toml.
 resume = "Wznów"
+resume_full = "Wznów: {game}, {time}, Ruchy {moves}"
+resume_time = "Wznów: {game}, {time}"
+resume_game = "Wznów: {game}"
 new_game_from_seed = "Nowa gra z ziarna"
 help = "Pomoc"
 version = "v{version}"

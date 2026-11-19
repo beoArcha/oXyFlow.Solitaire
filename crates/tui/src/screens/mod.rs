@@ -10,7 +10,7 @@ pub mod main_menu;
 pub mod settings;
 pub mod stats;
 
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
@@ -22,6 +22,14 @@ use crate::glyphs::Glyphs;
 use crate::settings::{Aids, Settings};
 use crate::theme::Theme;
 
+/// The saved game as the main menu names it in its Resume row.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SavedSummary {
+    pub variant: Variant,
+    pub elapsed: Duration,
+    pub moves: usize,
+}
+
 /// Everything a screen may read while drawing or handling input.
 pub struct ViewCtx<'a> {
     pub theme: &'a Theme,
@@ -30,7 +38,8 @@ pub struct ViewCtx<'a> {
     pub caps: &'a TerminalCaps,
     pub audio_status: AudioStatus,
     pub sound_styles: &'a [StyleInfo],
-    pub has_saved_game: bool,
+    /// The saved game, if any; `None` hides the Resume row.
+    pub saved: Option<SavedSummary>,
     /// The last cell the mouse reported; a footer button under it is drawn as hovered.
     pub pointer: Option<(u16, u16)>,
     pub now: Instant,
@@ -52,6 +61,8 @@ pub enum Effect {
     SearchStep(SearchCommand),
     /// Restore the saved game.
     Resume,
+    /// Deal the game that was just played again from its seed (a button of the win dialog).
+    SameSeed,
     /// Deal the running game again from its seed, with an empty history.
     Restart,
     /// Replace the settings; the application applies and saves them.
