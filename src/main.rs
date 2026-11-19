@@ -11,11 +11,12 @@ use oxysol::clipboard::SystemClipboard;
 use oxysol::console;
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
+use oxysol::solver::ThreadSolver;
 use oxysol::storage::SqliteStorage;
 use oxysol::{logging, new_window, panic_hook, seed};
-use oxysol_tui::Deps;
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
 use oxysol_tui::i18n::{self, Locale};
+use oxysol_tui::{Deps, NullSolver, Solver};
 
 fn main() -> ExitCode {
     i18n::set_locale(locale_from_env());
@@ -97,11 +98,22 @@ fn start(args: &Cli) -> Result<(), AppError> {
         seeds: Box::new(seed::fresh),
         start_seed: args.seed,
         sound_styles: audio::bank::style_list(),
+        solver: start_solver(),
     };
     oxysol_tui::run(deps).map_err(|error| {
         tracing::error!(%error, "the terminal interface stopped");
         AppError::from(error)
     })
+}
+
+fn start_solver() -> Box<dyn Solver> {
+    match ThreadSolver::spawn() {
+        Ok(solver) => Box::new(solver),
+        Err(error) => {
+            tracing::warn!(%error, "no solver thread; deals are never proven winnable");
+            Box::new(NullSolver::default())
+        }
+    }
 }
 
 fn terminal_caps(args: &Cli) -> TerminalCaps {
