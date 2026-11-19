@@ -40,6 +40,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-32 | Wiki: decks, themes, sound | Oxy | P5-02, P6-02 | DRAFT |
 | M-33 | Wiki: accessibility and FAQ | Son | P3-09 | DRAFT |
 | M-34 | Polish translation, part 2 | Beo | P5-02, P6-02 | IN PROGRESS |
+| M-35 | Polish copy edit and glossary (external review of 2026-11-19) | Son | — | READY |
 
 ## Tooling
 
@@ -291,3 +292,71 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
   support) and FAQ.
 - **Do:** describe only what the named sources show. No feature that is not in the game.
 - **Done when:** every statement can be traced to a source named in the card.
+
+### M-35 — Polish copy edit and glossary
+
+- **Status:** READY · **Branch:** `docs/M-35-pl-copy-edit`
+- **Files:** `locales/pl-PL/*.toml`, `docs/tech/pl-glossary.md` (new), and only the tests that pin
+  the changed Polish strings (render or locale tests).
+- **Do:** set the values below exactly (keys and placeholders unchanged; en-US untouched). Then
+  write `docs/tech/pl-glossary.md` with the glossary table below and one line saying that new
+  Polish texts must use it.
+- **Values** (`file: key` → new text):
+  - `menu: seed.error_out_of_range` → `To ziarno jest za duże. Maksymalna wartość to 18446744073709551615.`
+  - `common: select.undo_hint` → `{key} lub kliknięcie przełącza cofanie w następnej grze`
+  - `common: variant.spider_one / spider_two / spider_four` → `Pająk, 1 kolor` / `Pająk, 2 kolory` / `Pająk, 4 kolory`
+  - `common: variant.pyramid_relaxed / pyramid_classic` → `Piramida, swobodna` / `Piramida, klasyczna`
+  - `common: dialog.ok` → `OK`
+  - `common: error.storage` → `Zapis do bazy danych nie powiódł się. Gra toczy się dalej bez zapisu.`
+  - `settings: value.on / value.off` → `Tak` / `Nie`
+  - `settings: audio.remote` → `Dźwięk jest niedostępny: sesja zdalna.`
+  - `settings: audio.not_built` → `Ta wersja programu nie zawiera obsługi dźwięku.`
+  - `settings: audio.style_failed` → `Dźwięk jest niedostępny: nie można wczytać wybranego stylu dźwięku.`
+  - `stats: footer` → `Góra Dół Wybór   Enter Zagraj ponownie   c Kopiuj ziarno   Esc Wstecz`
+  - `stats: empty` → `Nie rozegrano jeszcze żadnej gry. Rozpocznij nową w menu głównym.`
+  - `stats: copy_failed` → `Nie udało się skopiować ziarna: {seed}`
+  - `board: name.foundation` → `Stos końcowy {number}`
+  - `board: status.picked` → `Wzięto karty. Wybierz cel lub naciśnij Esc, aby odłożyć.`
+  - `board: status.hint` → `Podpowiedź: podświetlone karty można przenieść.`
+  - `board: status.seed_copy_failed` → `Nie udało się skopiować ziarna: {seed}`
+  - `board: error.invalid_sequence` → `Niedozwolony ruch: te karty nie tworzą poprawnego ciągu.`
+  - `board: error.empty_column_blocks_deal` → `Niedozwolony ruch: zapełnij wszystkie puste kolumny przed rozdaniem rzędu.`
+  - `board: error.not_a_pair` → `Niedozwolony ruch: suma wartości tych kart nie wynosi 13.`
+  - `board: confirm.restart` → `Rozdać tę grę od początku?`
+  - `board: action.quick_foundation` → `{key}: na stos końcowy`
+  - `board: action.run` → `{keys}: długość ciągu`; `board: guide.run` → `długość ciągu`
+  - `board: guide.goal.klondike` → `Ułóż cztery stosy końcowe od asa do króla, kolorami.`
+  - `board: guide.goal.freecell` → `Ułóż stosy końcowe od asa do króla, kolorami.`
+  - `help: mouse.click_card` → `Weź, a potem połóż na celu`
+  - `help: mouse.right_click` → `Odłóż karty`
+  - `help: mouse.drag` → `Przenieś kartę na cel`
+  - `help: command_line.footer` → replace `Tab: następna karta` with `Tab: następna zakładka` (rest unchanged)
+  - `rules: control.select_pair` → `Wybiera wolną kartę, a potem drugą, aby usunąć parę.`
+  - `rules: control.back` → `Odkłada wybrane karty albo opuszcza grę.`
+  - `rules: control.quick_move` → `Przenosi karty spod kursora w najlepsze miejsce.`
+  - `rules: control.mouse` → `Myszą: kliknij kartę, a potem cel; dwuklik przenosi kartę w najlepsze miejsce; kliknięcie talii dobiera kartę.`
+  - `rules`: every `stos bazowy` / `stosy bazowe` / `stosach bazowych` → the same form of `stos końcowy`
+    (`klondike.goal`, `klondike.moves_3`, `klondike.tips_2`, `spider.goal`, `freecell.goal`)
+  - `rules: klondike.layout_3` → `W trybie „1 karta” dobierasz po jednej karcie, w trybie „3 karty” po trzy, a zagrać można tylko górną kartę stosu odrzuconych.`
+  - `rules: klondike.moves_2` → `Uporządkowany ciąg odkrytych kart przenosi się razem. Na pustą kolumnę można położyć tylko króla albo ciąg od króla.`
+  - `rules: klondike.tips_4` → `Nie widzisz ruchu? Naciśnij {hint}, aby zobaczyć podpowiedź, albo {undo}, aby cofnąć ruch.`
+  - `rules: spider.moves_1` → `Kolumny buduj malejąco, w dowolnym kolorze, na przykład szóstkę kier na siódemce pik.`
+  - `rules: freecell.moves_2` → `Odłóż kartę do wolnej komórki, aby nie przeszkadzała, i weź ją stamtąd, gdy będzie pasować.`
+  - `rules: freecell.moves_3` → `Stosy końcowe buduje się kolorami od asa. Kart nie można z nich zabrać.`
+  - `rules: pyramid.layout_4` → `Wariant swobodny pozwala przejść przez talię 3 razy i kończy się, gdy piramida jest pusta. Wariant klasyczny pozwala na 1 przejście i kończy się, gdy usuniesz wszystkie 52 karty.`
+  - `rules: pyramid.tips_2` → `Zanim usuniesz kartę, sprawdź, czy druga karta nie jest potrzebna do innej pary.`
+  - `cli: help` → in the `OXYSOL_HOME` line replace `(zawsze wygrywa)` with `(ma pierwszeństwo)`
+  - `cli: terminal_failed` → `oXySol zakończył działanie z powodu błędu terminala. Szczegóły w pliku dziennika.`
+  - `cli: output_failed` → `oXySol nie może zapisywać do terminala.`
+  - `cli: log_unavailable` → `oXySol nie może zapisać dziennika w pliku {path}. Działa bez dziennika.`
+  - `cli: panic` → `oXySol niespodziewanie zakończył działanie ({location}). Szczegóły w pliku {path}.`
+- **Glossary** (English → Polish): foundation → stos końcowy; tableau / column → kolumna; stock →
+  talia; waste → stos odrzuconych (short: Odrzucone); free cell → wolna komórka; run → ciąg; run
+  size → długość ciągu; face-up / face-down → odkryta / zakryta; pick up / drop / put back → weź /
+  połóż / odłóż; undo / redo → cofnij / ponów; seed → ziarno; Spider / Pyramid → Pająk / Piramida;
+  Klondike / FreeCell → unchanged; Draw 1 / Draw 3 → 1 karta / 3 karty; Relaxed / Classic →
+  swobodny / klasyczny (swobodna / klasyczna with Piramida); tab (UI) → zakładka.
+- **Not in this card:** `board: action.browsing`, `action.browsing_run`, `action.carrying`,
+  `action.cards` and `settings: value.unavailable` (placeholder grammar) belong to P3-22.
+- **Done when:** the values are set, a key named above that does not exist is listed in the report
+  (not invented), `cargo xtask check --quick` passes, the PR is open.
