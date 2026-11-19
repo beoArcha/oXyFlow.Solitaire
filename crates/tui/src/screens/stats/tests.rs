@@ -1,13 +1,14 @@
 mod focus;
 mod math;
 mod render;
+mod restarts;
 mod screen;
 mod support;
 
 use oxysol_core::{DrawCount, Variant};
 
 use super::format::{format_time, format_utc, history_header, history_row};
-use crate::storage::{GameId, GameRecord, Outcome};
+use crate::storage::{GameCounters, GameId, GameRecord, Outcome};
 
 pub const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
 
@@ -29,6 +30,7 @@ pub fn record(
         moves,
         undo_allowed: true,
         proof: None,
+        counters: GameCounters::default(),
     }
 }
 

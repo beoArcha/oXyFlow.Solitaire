@@ -1,4 +1,4 @@
-//! Forward migration of the database: a version 1 or 2 file with rows opens as the current
+//! Forward migration of the database: a version 1, 2 or 3 file with rows opens as the current
 //! version and keeps every row.
 
 use oxysol::paths::AppPaths;
@@ -116,7 +116,8 @@ fn a_migrated_database_is_stamped_with_the_current_version_and_records_new_games
     };
     let version: Result<u32, _> = conn.pragma_query_value(None, "user_version", |row| row.get(0));
     assert!(matches!(version, Ok(v) if v == SqliteStorage::supported_schema_version()));
-    assert_eq!(SqliteStorage::supported_schema_version(), 3);
+    assert_eq!(SqliteStorage::supported_schema_version(), 4);
+    assert!(rows.iter().all(|row| row.counters.restarts == 0));
     assert!(rows.iter().all(|row| row.proof.is_none()));
 }
 
@@ -173,4 +174,64 @@ fn a_recorded_proof_survives_a_reopen() {
     };
     assert_eq!(rows[3].proof, Some(Proof::Winnable));
     assert!(rows[..3].iter().all(|row| row.proof.is_none()));
+}
+
+const SCHEMA_V3_COLUMN: &str = "ALTER TABLE games ADD COLUMN proof TEXT;";
+
+fn version_three_database() -> (TempDir, AppPaths) {
+    let (dir, paths) = version_two_database();
+    let conn = Connection::open(paths.database_file());
+    let Ok(conn) = conn else {
+        std::process::abort();
+    };
+    assert!(conn.execute_batch(SCHEMA_V3_COLUMN).is_ok());
+    assert!(
+        conn.execute(
+            "INSERT INTO games (variant, seed, started_at, undo_allowed, proof)
+             VALUES ('\"free_cell\"', 12, 1700003000000, 0, 'winnable')",
+            [],
+        )
+        .is_ok()
+    );
+    assert!(conn.pragma_update(None, "user_version", 3).is_ok());
+    (dir, paths)
+}
+
+#[test]
+fn a_version_three_database_reads_its_old_rows_with_no_restarts() {
+    let (_dir, paths) = version_three_database();
+    let storage = open(&paths);
+    let rows = storage.history();
+    let Ok(rows) = rows else {
+        std::process::abort();
+    };
+    assert_eq!(rows.len(), 4);
+    assert!(rows.iter().all(|row| row.counters.restarts == 0));
+    assert_eq!(rows[3].proof, Some(Proof::Winnable));
+    assert!(!rows[3].undo_allowed);
+
+    let conn = Connection::open(paths.database_file());
+    let Ok(conn) = conn else {
+        std::process::abort();
+    };
+    let version: Result<u32, _> = conn.pragma_query_value(None, "user_version", |row| row.get(0));
+    assert!(matches!(version, Ok(4)));
+}
+
+#[test]
+fn a_restart_recorded_after_the_migration_survives_a_reopen() {
+    let (_dir, paths) = version_three_database();
+    {
+        let mut storage = open(&paths);
+        let id = oxysol_tui::GameId(4);
+        assert!(storage.record_restart(id).is_ok());
+        assert!(storage.record_restart(id).is_ok());
+        assert!(storage.record_restart(oxysol_tui::GameId(999)).is_err());
+    }
+    let storage = open(&paths);
+    let Ok(rows) = storage.history() else {
+        std::process::abort();
+    };
+    assert_eq!(rows[3].counters.restarts, 2);
+    assert!(rows[..3].iter().all(|row| row.counters.restarts == 0));
 }

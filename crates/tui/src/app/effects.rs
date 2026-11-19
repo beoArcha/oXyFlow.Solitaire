@@ -24,7 +24,7 @@ impl App {
             } => self.start_game(variant, seed, undo_allowed),
             Effect::SearchStep(command) => self.search_step(command),
             Effect::Resume => self.resume_game(),
-            Effect::Restart => self.board.restart(self.now),
+            Effect::Restart => self.restart_game(),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
             Effect::HowToPlay => self.open_how_to_play(),
@@ -154,13 +154,18 @@ impl App {
         match Session::restore(saved.record) {
             Ok(session) => {
                 let elapsed = Duration::from_millis(elapsed_ms);
+                let undo_allowed = saved.undo_allowed;
                 let start = Start {
                     id: Some(id),
                     elapsed,
-                    undo_allowed: saved.undo_allowed,
+                    undo_allowed,
                 };
                 let (variant, seed) = (session.variant(), session.seed());
                 self.board.begin(session, start, self.now);
+                if !undo_allowed {
+                    let restarts = self.stored_restarts(id);
+                    self.board.set_restarts(restarts);
+                }
                 self.enter_board();
                 self.solver.cancel();
                 self.start_check(variant, seed);

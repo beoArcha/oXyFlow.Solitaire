@@ -1,6 +1,10 @@
 # oXySol architecture — contract
 
+<<<<<<< HEAD
 Status: contract v0.4 (2026-11-19: O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock). Later tasks may refine it.
+=======
+Status: contract v0.4 (2026-11-19: P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3). Later tasks may refine it.
+>>>>>>> 6e1898a (feat(stats): count restarts in no-undo games [P4-05])
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -210,6 +214,7 @@ pub trait Storage {
     fn clear_game(&mut self) -> Result<(), StorageError>;
     fn start_game(&mut self, variant: Variant, seed: u64, undo_allowed: bool) -> Result<GameId, StorageError>;  // history row
     fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64, moves: u32) -> Result<(), StorageError>;
+    fn record_restart(&mut self, id: GameId) -> Result<(), StorageError>;   // +1 restart of a game without undo (P4-05)
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError>;   // winnability of a history row (P3-20)
     fn history(&self) -> Result<Vec<GameRecord>, StorageError>;   // every row, oldest first
 }
@@ -222,7 +227,9 @@ pub struct GameRecord {                   // one history row
     pub moves: Option<u32>,               // None for rows written before schema v2
     pub undo_allowed: bool,               // the undo mode of the game (P3-12)
     pub proof: Option<Proof>,             // what the solver said about the deal; None while unchecked (P3-20)
+    pub counters: GameCounters,           // per-game counters (P4-05); later counters are new fields, the trait stays
 }
+pub struct GameCounters { pub restarts: u32 }   // restarts of a game without undo; 0 for older rows and for games with undo
 pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64, pub undo_allowed: bool }  // serde default true
 pub enum StorageError {
     Io(std::io::Error),                              // file-level failure
@@ -364,7 +371,13 @@ pub struct NullClipboard;                                // every copy fails wit
   `Settings::undo_allowed` (default `true`, an older value without the field loads as `true`) is the last
   choice; the game selection (also behind "New game from seed" and `--seed`) shows `[ Undo: on|off ]`,
   switched by `Action::Undo` (`u`) or a click, through `Effect::Apply`. A new game from the board keeps
-  the mode of the running game; "Play this seed again" in the statistics replays the row's own mode. The
+  the mode of the running game; "Play this seed again" in the statistics replays the row's own mode.
+  *Restarts (P4-05):* Restart stays allowed without undo but is counted. `BoardScreen::restart` returns whether it
+  counted (only when `undo_allowed` is false) and `App::restart_game` then calls `Storage::record_restart` at once, so
+  a quit or a crash cannot lose it; a game with undo never counts one. The header shows `Restarts: N` (`Od nowa: N`)
+  after the `No undo` badge once N is above 0 (`BoardScreen::restarts`); a resume reads N back from the history row
+  (`App::stored_restarts`). When the header row is too narrow the stock counter goes first and the winnable mark next, so
+  the badge and the count stay at 100 columns. The
   saved game keeps the mode: `SavedGame::undo_allowed` has a serde default of `true`, and `SqliteStorage`
   reads it from the `games` row of the saved game's id (a left join), so the database schema is unchanged.
   *Copy the seed:* `Action::CopySeed`, key `c` (help group Game; the statistics screen's own `c` is the same
@@ -403,10 +416,11 @@ pub struct NullClipboard;                                // every copy fails wit
   selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
   A summary per variant and undo mode (games played, won, win rate, best winning time, fewest moves in a win,
-  current and longest streak; only finished games count, an abandoned game ends a streak, wins without a move
+  current and longest streak; once a game without undo has finished, a "No restart" column beside the wins counts the wins
+without a restart, `-` for the undo rows; only finished games count, an abandoned game ends a streak, wins without a move
   count are skipped for "fewest moves") sits above the history list, newest first: UTC date and time (the
   standard library cannot convert to local time and no dependency was added), game, seed, result, playing
-  time, moves. Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed
+  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed
   (`Effect::CopySeed`); both are buttons too, as is Back; Up/Down/PgUp/PgDn/Home/End and the wheel move the
   selection; the selected row is marked with the focus glyphs. `App::copy_seed` calls `Clipboard::copy` and tells
   the screen, which announces "Seed N copied" or "Could not copy the seed — it is shown here: N" on its status
@@ -511,8 +525,8 @@ pub struct NullClipboard;                                // every copy fails wit
 
 - **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
   (`OXYSOL_HOME` overrides; an `oxysol.portable` file beside the executable selects `data/` beside it, R-21). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
-  started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed) and `saved_game` (one row: game id, `SessionRecord`
-  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (3: v3 added `games.proof TEXT`, NULL until the solver has answered; 2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
+  started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed, proof, restarts) and `saved_game` (one row: game id, `SessionRecord`
+  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (4: v4 added `games.restarts INTEGER NOT NULL DEFAULT 0`, so older rows read 0; 3: v3 added `games.proof TEXT`, NULL until the solver has answered; 2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.

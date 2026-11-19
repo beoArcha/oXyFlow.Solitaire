@@ -203,7 +203,7 @@ fn the_history_marks_winnable_deals_in_both_languages_at_100_by_30() {
         for (seed, mark) in [("11", yes), ("22", no), ("33", unknown)] {
             let line = lines
                 .iter()
-                .find(|line| line.contains(&format!("  {seed}  ")))
+                .find(|line| line.split_whitespace().any(|word| word == seed))
                 .unwrap_or_else(|| panic!("no row for seed {seed}: {lines:#?}"));
             assert!(line.contains(mark), "{line}");
         }

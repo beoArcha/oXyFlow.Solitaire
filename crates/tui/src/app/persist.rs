@@ -72,6 +72,33 @@ impl App {
         self.note_write(cleared, "the saved game could not be removed");
     }
 
+    /// Restarts the running game. In a game without undo the restart is counted and written at
+    /// once to its history row, so a quit or a crash cannot lose it.
+    pub(super) fn restart_game(&mut self) {
+        if !self.board.restart(self.now) {
+            return;
+        }
+        let Some(id) = self.board.game_id() else {
+            return;
+        };
+        let result = self.storage.record_restart(id);
+        self.note_write(result, "the restart could not be recorded");
+    }
+
+    /// The restart count of a resumed game, from its history row; 0 when it cannot be read.
+    pub(super) fn stored_restarts(&self, id: GameId) -> u32 {
+        match self.storage.history() {
+            Ok(records) => records
+                .iter()
+                .find(|record| record.id == id)
+                .map_or(0, |record| record.counters.restarts),
+            Err(error) => {
+                tracing::warn!(%error, "the restart count of the saved game could not be read");
+                0
+            }
+        }
+    }
+
     /// Closes the stored game as abandoned before another one is dealt over it.
     pub(super) fn abandon_saved(&mut self) {
         self.save_board();

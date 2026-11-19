@@ -2,7 +2,7 @@
 
 use oxysol_core::Variant;
 
-use super::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
+use super::{GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 use crate::settings::Settings;
 use crate::solver::Proof;
 
@@ -18,6 +18,7 @@ pub struct HistoryRow {
     pub finished: Option<(Outcome, u64)>,
     pub moves: Option<u32>,
     pub proof: Option<Proof>,
+    pub counters: GameCounters,
 }
 
 impl HistoryRow {
@@ -32,6 +33,7 @@ impl HistoryRow {
             finished: None,
             moves: None,
             proof: None,
+            counters: GameCounters::default(),
         }
     }
 
@@ -52,6 +54,7 @@ impl HistoryRow {
             finished: Some((outcome, elapsed_ms)),
             moves: None,
             proof: None,
+            counters: GameCounters::default(),
         }
     }
 
@@ -69,6 +72,7 @@ impl HistoryRow {
             moves: self.moves,
             undo_allowed: self.undo_allowed,
             proof: self.proof,
+            counters: self.counters,
         }
     }
 }
@@ -145,6 +149,7 @@ impl Storage for MemoryStorage {
             finished: None,
             moves: None,
             proof: None,
+            counters: GameCounters::default(),
         });
         Ok(id)
     }
@@ -161,6 +166,19 @@ impl Storage for MemoryStorage {
             Some(row) => {
                 row.finished = Some((outcome, elapsed_ms));
                 row.moves = Some(moves);
+                Ok(())
+            }
+            None => Err(StorageError::Corrupt {
+                reason: format!("no game with id {}", id.0),
+            }),
+        }
+    }
+
+    fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
+        self.check()?;
+        match self.history.iter_mut().find(|row| row.id == id) {
+            Some(row) => {
+                row.counters.restarts = row.counters.restarts.saturating_add(1);
                 Ok(())
             }
             None => Err(StorageError::Corrupt {
@@ -245,6 +263,7 @@ mod tests {
         assert!(storage.clear_game().is_err());
         assert!(storage.start_game(Variant::FreeCell, 1, true).is_err());
         assert!(storage.record_proof(GameId(1), Proof::Winnable).is_err());
+        assert!(storage.record_restart(GameId(1)).is_err());
         assert!(storage.history().is_err());
     }
 
@@ -280,5 +299,25 @@ mod tests {
             panic!("history failed");
         };
         assert_eq!(records[0].proof, Some(Proof::Winnable));
+    }
+
+    #[test]
+    fn a_recorded_restart_adds_to_the_count_of_its_row_only() {
+        let mut storage = MemoryStorage::new();
+        let (Ok(first), Ok(second)) = (
+            storage.start_game(Variant::FreeCell, 1, false),
+            storage.start_game(Variant::FreeCell, 2, false),
+        ) else {
+            panic!("start_game failed");
+        };
+        assert!(storage.record_restart(first).is_ok());
+        assert!(storage.record_restart(first).is_ok());
+        assert!(storage.record_restart(GameId(99)).is_err());
+        let Ok(records) = storage.history() else {
+            panic!("history failed");
+        };
+        assert_eq!(records[0].counters.restarts, 2);
+        assert_eq!(records[1].counters, GameCounters::default());
+        assert_eq!(records[1].id, second);
     }
 }

@@ -22,6 +22,14 @@ pub enum Outcome {
     Abandoned,
 }
 
+/// The counters kept with one history row (P4-05). A later counter is a new field here, so the
+/// [`Storage`] trait keeps its shape.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct GameCounters {
+    /// Restarts of a game played without undo. A game with undo never counts one, so it stays 0.
+    pub restarts: u32,
+}
+
 /// One dealt game as recorded in the history (R-18).
 ///
 /// `moves` counts the moves in the line of play when the game ended: each executed move is one,
@@ -43,6 +51,7 @@ pub struct GameRecord {
     pub undo_allowed: bool,
     /// What the solver said about the deal; `None` while it has not been checked.
     pub proof: Option<Proof>,
+    pub counters: GameCounters,
 }
 
 const fn undo_allowed_by_default() -> bool {
@@ -104,6 +113,9 @@ pub trait Storage {
         elapsed_ms: u64,
         moves: u32,
     ) -> Result<(), StorageError>;
+    /// Adds one to the restart count of a history row, when the player restarts a game that is
+    /// played without undo. It is written at once, so a quit or a crash cannot lose it.
+    fn record_restart(&mut self, id: GameId) -> Result<(), StorageError>;
     /// Records what the solver found out about the deal of a history row.
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError>;
     /// Every recorded game in start order, oldest first.

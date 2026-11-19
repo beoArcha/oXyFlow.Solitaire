@@ -13,6 +13,8 @@ pub struct Summary {
     pub undo_allowed: bool,
     pub played: u32,
     pub won: u32,
+    /// Wins without a restart; `None` with undo, where restarts are not counted (P4-05).
+    pub clean_wins: Option<u32>,
     /// Shortest playing time of a win, milliseconds.
     pub best_time_ms: Option<u64>,
     /// Fewest moves in a win; wins recorded before moves were counted are skipped.
@@ -55,6 +57,10 @@ fn count(group: &[&GameRecord], keep: impl Fn(&GameRecord) -> bool) -> u32 {
     u32::try_from(group.iter().filter(|record| keep(record)).count()).unwrap_or(u32::MAX)
 }
 
+fn is_clean_win(record: &GameRecord) -> bool {
+    is_won(record) && record.counters.restarts == 0
+}
+
 fn summarize_group(variant: Variant, undo_allowed: bool, group: &[&GameRecord]) -> Summary {
     let wins = group.iter().copied().filter(|record| is_won(record));
     let (current_streak, longest_streak) = streaks(group);
@@ -63,6 +69,7 @@ fn summarize_group(variant: Variant, undo_allowed: bool, group: &[&GameRecord]) 
         undo_allowed,
         played: count(group, |_| true),
         won: count(group, is_won),
+        clean_wins: (!undo_allowed).then(|| count(group, is_clean_win)),
         best_time_ms: wins.clone().filter_map(|record| record.elapsed_ms).min(),
         fewest_moves: wins.filter_map(|record| record.moves).min(),
         current_streak,

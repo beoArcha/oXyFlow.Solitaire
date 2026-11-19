@@ -286,6 +286,10 @@ impl Storage for FailingSaves {
         self.0.finish_game(id, outcome, elapsed_ms, moves)
     }
 
+    fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
+        self.0.record_restart(id)
+    }
+
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
         self.0.record_proof(id, proof)
     }
@@ -316,4 +320,27 @@ fn a_storage_that_fails_on_write_alerts_once_and_the_game_goes_on() {
     assert_eq!(player.position(), Some(3));
     player.press(KeyCode::Esc);
     assert!(!player.has_alert());
+}
+
+#[test]
+fn a_restart_without_undo_is_stored_at_once_and_survives_quit_and_resume() {
+    let (_dir, paths) = temp_paths();
+    let mut player = launch(Box::new(open(&paths)));
+    player.press(KeyCode::Enter);
+    player.type_char('u');
+    player.press(KeyCode::Enter);
+    player.type_char('s');
+    player.type_char('R');
+    player.press(KeyCode::Left);
+    player.press(KeyCode::Enter);
+    assert_eq!(player.app.board().restarts(), 1);
+    let stored = open(&paths).history();
+    assert!(matches!(stored, Ok(ref rows) if rows[0].counters.restarts == 1));
+    player.type_char('s');
+    drop(player);
+
+    let mut second = launch(Box::new(open(&paths)));
+    second.press(KeyCode::Enter);
+    assert_eq!(second.app.board().restarts(), 1);
+    assert!(!second.app.board().undo_allowed());
 }
