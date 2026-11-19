@@ -2,6 +2,7 @@
 
 pub mod aura;
 pub mod card;
+pub mod edge;
 pub mod footer;
 pub mod guide;
 pub mod logo;

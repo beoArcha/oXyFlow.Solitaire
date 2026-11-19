@@ -28,7 +28,7 @@ fn start_sized(variant: Variant, width: u16, height: u16) -> Harness {
 }
 
 fn geometry(h: &Harness, width: u16, height: u16) -> (BoardGeometry, Rect) {
-    let body = layout::chrome_with(Rect::new(0, 0, width, height), true).body;
+    let body = layout::chrome_with(Rect::new(0, 0, width, height), true, false).body;
     let session = session(h);
     let geometry = layout::compute(session.variant(), &session.game().piles(), body);
     (geometry, body)

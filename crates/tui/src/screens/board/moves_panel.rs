@@ -273,7 +273,7 @@ impl BoardScreen {
 
     /// Whether a click at `cell` lands on the panel's title row.
     pub(super) fn on_moves_title(&self, cell: (u16, u16)) -> bool {
-        crate::layout::chrome_panels(self.screen, self.guide_panel, self.moves_panel)
+        self.chrome()
             .moves
             .map(crate::widgets::moves::title_row)
             .is_some_and(|row| crate::mouse::contains(row, cell))

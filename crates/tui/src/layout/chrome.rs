@@ -6,7 +6,7 @@
 //! smaller than the board's minimum, and the board keeps its 100 columns beside the panel. Under
 //! the board there are always the two rows of the controls strip.
 
-use ratatui::layout::{Constraint, Layout, Rect};
+use ratatui::layout::{Constraint, Layout, Margin, Rect};
 
 /// Columns the board keeps; the side panel never shrinks it below this.
 pub const BOARD_MIN_WIDTH: u16 = 100;
@@ -49,6 +49,9 @@ impl Class {
     }
 }
 
+/// Cells the field frame takes on each side of the board when the theme draws one.
+pub const FRAME_INSET: u16 = 1;
+
 /// Rows of the possible moves panel when it shares the side column with the guide panel: every
 /// entry of the list plus the frame.
 pub const MOVES_ROWS: u16 = 12;
@@ -61,11 +64,15 @@ pub const MOVES_ROWS_TALL: u16 = 22;
 /// The parts of the board screen. `header` is the game-information row, present exactly when
 /// there is no guide panel; `guide` is the framed guide panel and `moves` the framed possible
 /// moves panel, both in the side column (alone, either takes the full height; together the guide
-/// is above); `now` and `possible` are the two rows of the controls strip, as wide as the board.
+/// is above); `field` is the playing field beside the side column, where the field frame is drawn
+/// when the theme has one; `body` is the area to pass to `compute`: `field` itself without a
+/// frame, `field` inset by [`FRAME_INSET`] with one; `now` and `possible` are the two rows of the
+/// controls strip, as wide as the field.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Chrome {
     pub class: Class,
     pub header: Option<Rect>,
+    pub field: Rect,
     pub body: Rect,
     pub guide: Option<Rect>,
     pub moves: Option<Rect>,
@@ -73,16 +80,17 @@ pub struct Chrome {
     pub possible: Rect,
 }
 
-/// Splits the screen without a side panel: a header row, the board and the controls strip. `body`
-/// is the area to pass to `compute`.
+/// Splits the screen without a side panel and without a field frame: a header row, the field and
+/// the controls strip. `body` is the area to pass to `compute`.
 pub fn chrome(area: Rect) -> Chrome {
-    chrome_with(area, false)
+    chrome_with(area, false, false)
 }
 
 /// Like [`chrome`], and with the guide panel at the right when `guide` is set and the screen is
-/// Standard or Wide.
-pub fn chrome_with(area: Rect, guide: bool) -> Chrome {
-    chrome_panels(area, guide, false)
+/// Standard or Wide. `frame` insets `body` by [`FRAME_INSET`] for the field frame of the theme
+/// (`Theme::field_edge`); without it `body` is `field`.
+pub fn chrome_with(area: Rect, guide: bool, frame: bool) -> Chrome {
+    chrome_panels(area, guide, false, frame)
 }
 
 /// Splits the side column between the panels that are on: one takes it all, two share it with
@@ -109,7 +117,7 @@ fn stack(column: Rect, guide: bool, moves: bool) -> (Option<Rect>, Option<Rect>)
 }
 
 /// Like [`chrome_with`], with the possible moves panel too when `moves` is set.
-pub fn chrome_panels(area: Rect, guide: bool, moves: bool) -> Chrome {
+pub fn chrome_panels(area: Rect, guide: bool, moves: bool, frame: bool) -> Chrome {
     let class = Class::of(area);
     let width = class.panel_width();
     let (main, column) = if (guide || moves) && width > 0 {
@@ -120,17 +128,19 @@ pub fn chrome_panels(area: Rect, guide: bool, moves: bool) -> Chrome {
         (area, None)
     };
     let (guide, moves) = column.map_or((None, None), |column| stack(column, guide, moves));
-    let [header, body, now, possible] = Layout::vertical([
+    let [header, field, now, possible] = Layout::vertical([
         Constraint::Length(u16::from(guide.is_none())),
         Constraint::Fill(1),
         Constraint::Length(1),
         Constraint::Length(1),
     ])
     .areas(main);
+    let inset = if frame { FRAME_INSET } else { 0 };
     Chrome {
         class,
         header: guide.is_none().then_some(header),
-        body,
+        field,
+        body: field.inner(Margin::new(inset, inset)),
         guide,
         moves,
         now,

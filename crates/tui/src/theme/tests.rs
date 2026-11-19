@@ -18,25 +18,64 @@ fn every_text_pair_reaches_the_theme_target() {
     }
 }
 
-/// Pairs that may stay below 3:1 in one theme. High Contrast keeps its black field: its white text
-/// on `Table` must reach 7:1, which caps the luminance of `Table` at 0.1, while the field must
-/// reach 3:1 against the black `Background`, which needs at least 0.1. Only a light field with dark
-/// text would fix both, and that also moves `BorderFocus`, which dialogs use on the black `Surface`.
-/// See `docs/tech/ui-inventory.md` §1.4 and §7.1.
-const GRAPHIC_GAPS: [(ThemeId, Token, Token); 1] =
-    [(ThemeId::HighContrast, Token::Table, Token::Background)];
-
 #[test]
 fn every_graphic_pair_reaches_three_to_one() {
     for id in ThemeId::ALL {
         for (fg, bg) in GRAPHIC_PAIRS {
-            if GRAPHIC_GAPS.contains(&(id, fg, bg)) {
-                continue;
-            }
             let ratio = contrast_ratio(rgb(id, fg), rgb(id, bg));
             assert!(ratio >= 3.0, "{id:?}: {fg:?} on {bg:?} is {ratio}");
         }
     }
+}
+
+#[test]
+fn a_theme_without_the_field_frame_has_a_felt_that_reaches_three_to_one_on_the_background() {
+    let framed: Vec<ThemeId> = ThemeId::ALL
+        .into_iter()
+        .filter(|id| id.palette().field_edge)
+        .collect();
+    assert!(framed.len() < ThemeId::ALL.len());
+    for id in ThemeId::ALL.into_iter().filter(|id| !framed.contains(id)) {
+        assert_eq!(
+            id.palette().field_edge_pair(),
+            (Token::Table, Token::Background)
+        );
+        let ratio = contrast_ratio(rgb(id, Token::Table), rgb(id, Token::Background));
+        assert!(
+            ratio >= 3.0,
+            "{id:?}: the felt on the background is {ratio}"
+        );
+    }
+}
+
+#[test]
+fn a_theme_with_the_field_frame_has_a_border_that_reaches_three_to_one_on_the_background() {
+    for id in ThemeId::ALL
+        .into_iter()
+        .filter(|id| id.palette().field_edge)
+    {
+        assert_eq!(
+            id.palette().field_edge_pair(),
+            (Token::Border, Token::Background)
+        );
+        let ratio = contrast_ratio(rgb(id, Token::Border), rgb(id, Token::Background));
+        assert!(ratio >= 3.0, "{id:?}: the field frame is {ratio}");
+    }
+}
+
+#[test]
+fn only_a_theme_whose_felt_is_the_background_draws_the_field_frame() {
+    for id in ThemeId::ALL {
+        let felt = contrast_ratio(rgb(id, Token::Table), rgb(id, Token::Background));
+        assert_eq!(
+            id.palette().field_edge,
+            felt < 3.0,
+            "{id:?}: felt is {felt}"
+        );
+    }
+    assert!(ThemeId::HighContrast.palette().field_edge);
+    assert!(!ThemeId::Dark.palette().field_edge);
+    assert!(!ThemeId::Light.palette().field_edge);
 }
 
 #[test]

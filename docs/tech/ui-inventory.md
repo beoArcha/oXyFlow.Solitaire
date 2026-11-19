@@ -146,8 +146,11 @@ Observations from the table (facts):
   ANSI16, and both differ from `Table` in ANSI16.
 - `theme/tests.rs` `every_graphic_pair_reaches_three_to_one` (O-26): the graphics class `GRAPHIC_PAIRS`
   (`theme/palette.rs`) must reach **3.0** in every theme: `BorderFocus`, `CardBack`, `Slot`, `Target`,
-  `Selection` and `Hint` on `Table`, and `Table` on `Background`. One listed exception, `GRAPHIC_GAPS`:
-  `Table` on `Background` in High Contrast (see 1.4 and 7.1 item 9).
+  `Selection` and `Hint` on `Table`. The edge of the field is a per-theme pair, `Palette::field_edge_pair`
+  (P3-23), tested by two explicit tests and with no exception list (`GRAPHIC_GAPS` is gone): a theme
+  without the field frame (`field_edge: false`: Dark, Light) keeps `Table` on `Background` at 3:1; a theme
+  with it (`field_edge: true`: High Contrast) has `Border` on `Background` at 3:1.
+  `only_a_theme_whose_felt_is_the_background_draws_the_field_frame` ties the flag to the felt contrast.
 - `theme/contrast.rs:35-68`: unit tests of the formula (black/white = 21, identical = 1, symmetry, mid
   gray 119 on white ≈ 4.48).
 - `accessibility_tests/board.rs:69-100` and `:207-238` check that focus, selection, targets and halos
@@ -190,7 +193,8 @@ pairs in `TEXT_PAIRS` (target 4.5 Dark and Light, 7.0 High Contrast). `G` marks 
 | Hint on Table | 3.44 (was 4.21) | 3.48 (was 3.00) | 19.56 | G |
 | CardFace on Table (face-up card edge) | 5.15 (was 7.62) | 5.90 | 21.00 | — |
 | CardBack on Table (face-down card edge) | 3.45 (was 1.35) | 3.23 (was 1.60) | 7.47 (was 1.31) | G |
-| Table on Background (field edge) | 3.16 (was 2.13) | 5.45 | **1.00** (exception, see below) | G |
+| Table on Background (field edge; no frame in these themes) | 3.16 (was 2.13) | 5.45 | 1.00 (frame drawn instead, see below) | G (Dark, Light) |
+| Border on Background (field frame, High Contrast only, P3-23) | not drawn | not drawn | 21.00 | G (High Contrast) |
 | FocusBg on Background | 12.22 | 5.74 | 19.56 | — |
 
 Before O-26, the graphics pairs below 3.0 were Light `BorderFocus` on `Table`, Light `Slot`, all `CardBack`
@@ -199,11 +203,17 @@ on `Table`, Dark `Table` on `Background` and High Contrast `Table` on `Backgroun
 **Dark `dark.rs:7` claim.** The comment said every text pair reaches 7.0. The Dark target is 4.5, and after O-26
 the lowest Dark text pair is `AuraCarry on Table` at 4.66. The comment now says 4.5.
 
-**High Contrast field edge (open, not fixed by O-26).** `Table` on `Background` is 1.00 (both black). It is
-exempt in `GRAPHIC_GAPS` because no single black/white palette can meet both bars: with white text, 7:1 on
-`Table` requires `Table` luminance ≤ 0.10, while 3:1 against a black `Background` requires ≥ 0.10. A field that
-keeps 7:1 dark text must be light (luminance ≥ 0.30), which changes every mark on the felt and makes
-`BorderFocus` conflict with dialog frames on the black `Surface`. This needs an owner decision (see 7.1 item 9).
+**High Contrast field edge (closed by P3-23).** `Table` on `Background` is 1.00 (both black), and no black/white
+palette can meet both bars: with white text, 7:1 on `Table` requires `Table` luminance ≤ 0.10, while 3:1 against
+a black `Background` requires ≥ 0.10. The edge is therefore a drawn frame, not a color change, and it exists
+**only in High Contrast** (owner decision 2026-11-19): `Palette::field_edge` is `true` there and `false` in Dark and
+Light, whose felt already has 3:1 against the background and which keep their full board area. The frame is a
+one-cell `Border` line (`widgets/edge.rs`) around the felt, `┌─┐│└┘` in Unicode and `+-|` in ASCII. When it is
+drawn the board geometry is inset by that cell (`layout::chrome_with(.., frame)`, `Chrome::field` is the framed
+area, `Chrome::body` the area inside it, `FRAME_INSET`); `BoardScreen` takes the flag from `Theme::field_edge()`, so
+drawing, mouse hit-testing and `commands.rs` all use the same `body`, and no card covers the frame and no click
+lands on it. `Border` on `Background` is 21.00 in High Contrast. The inset costs High Contrast two columns and two
+rows of the board: at 130×40 with the guide panel, Klondike cards are 11×9 there and stay 13×11 in Dark and Light.
 
 ---
 
@@ -497,9 +507,9 @@ terminal font and font size (section 4.3), aura and frame glyphs, zoom (planned 
    (`A`, `↑`, `x`, `+`, `widgets/card/slot.rs:24-53`) are text in these colors.
 8. **Light: panel and dialog frames.** The side panel frame (`Border`) is 1.72 on Surface and 1.59 on Background
    (computed; `widgets/guide/mod.rs:178,190`). Structure is still shown by glyphs, but faintly.
-9. **High Contrast: field edge (open).** `Table` and `Background` are both (0,0,0) (`high_contrast.rs:81,92`), so the
-   playing field has no color edge against the screen. O-26 left it open: the 7:1 text rule and the 3:1 edge
-   cannot both hold with a black screen (section 1.4, `GRAPHIC_GAPS`). Its edge is not drawn by any glyph.
+9. **High Contrast: field edge (closed by P3-23).** `Table` and `Background` are both (0,0,0) (`high_contrast.rs`), so
+   the field has no color edge. In this theme only, the edge is now a drawn one-cell `Border` frame
+   (`widgets/edge.rs`), 21.00 on `Background`, with an ASCII form (section 1.4).
 10. **Halo glyphs are single cells of low ink.** `·` (U+00B7), `:` and `.` (ASCII target) are small. The
     shade `░` and `▓` are dense but one cell. Halos are drawn only on free cells (`aura.rs:56-63`), so a
     halo around a crowded column may be broken.
