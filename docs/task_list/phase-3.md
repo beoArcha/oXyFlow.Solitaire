@@ -849,3 +849,28 @@ Rules for the whole phase:
 - **Scope:** Syncs the task list with `main`: status fixes for the rows that were wrong (P2-08, P3-14, P3-15, P3-17…P3-20, P3-25, O-23, M-34, M-35), missing rows (O-20, O-22, O-27), a card for every follow-up ID that had none, `Done:` lines with PR numbers for every DONE card, accepted deviations recorded on their cards, and the status date in the README.
 - **Acceptance:** Every ID in a README or micro.md status table has exactly one card, and every merged PR with `[ID]` in its title has a DONE row; any mismatch is listed in the PR report.
 - **Done:** #93
+
+### P3-37 — Language selector with flags in the main menu corner
+
+- **Owner:** Sonnet
+- **Depends on:** P3-24
+- **Files:** `crates/tui/src/screens/main_menu*`, `crates/tui/src/widgets/` (a new language picker),
+  `crates/tui/src/i18n*` or the locale list, `crates/tui/src/settings.rs`, `locales/*/`, tests,
+  `docs/tech/architecture.md`, `docs/tech/decisions.md`
+- **Scope:** owner request 2026-11-19: the main menu gets a language selector in the top-left corner,
+  apart from the menu list. It shows the current language as a small flag drawn in the terminal with
+  arrows on both sides: `◄ [flag] ► ▼` (ASCII `< [flag] > v`). Left/Right (and a click on an arrow) switch
+  to the previous or next language at once; `▼` (click, Down or Enter) opens a drop-down list of all
+  languages, each a flag plus its own name ("English (US)", "Polski"), chosen by arrows, Enter or a
+  click, closed by Esc or a click outside. When the mouse hovers the selector or it has the keyboard
+  focus, a tooltip shows the language name in that language. The selector is in the Tab order of the
+  main menu (P3-17) and uses the focus style; the choice is the same setting as the Language row in
+  Settings and is saved at once.
+  Flags: regional-indicator emoji are not drawn by the Windows console and are two cells wide, so each
+  flag is block art of a few cells (e.g. 4 × 2 with half blocks) defined per locale as data; flag colors
+  are content, not theme tokens — record that exception in `decisions.md`. A flag never carries the
+  meaning alone: the language code (`EN`, `PL`) is shown next to it or inside it, and in ASCII or
+  16-color mode the code replaces the flag. A new locale adds its flag in the same data file.
+- **Acceptance:** tests for switching by arrows and by the list, keyboard and mouse, the tooltip on hover
+  and on focus, the Tab order, persistence, the ASCII/16-color fallback; renders of the corner and the
+  open list at 100 × 30 and 130 × 40 in both locales.
