@@ -102,7 +102,11 @@ fn the_controls_strip_replaces_the_footer_under_the_board() {
     let lines = h.lines();
     assert!(lines[28].starts_with("Now: "), "{}", lines[28]);
     assert!(lines[29].starts_with("Do: "), "{}", lines[29]);
-    assert!(lines[29].contains("?: keys | Esc: menu"), "{}", lines[29]);
+    assert!(
+        lines[29].contains("Shift+R: restart | o: options"),
+        "{}",
+        lines[29]
+    );
     assert!(!h.text().contains("Enter Select"));
 }
 

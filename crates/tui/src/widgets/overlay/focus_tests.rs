@@ -112,12 +112,48 @@ fn tab_keeps_the_only_button_of_an_alert_and_enter_closes_it() {
 }
 
 #[test]
-fn tab_keeps_the_continue_button_of_the_pause_and_space_resumes() {
-    let mut modal = Modal::Pause;
+fn tab_moves_between_continue_and_restart_in_pause() {
+    let mut modal = Modal::pause(true);
     assert_eq!(tab(&mut modal), None);
-    assert_eq!(modal, Modal::Pause);
+    assert_eq!(
+        modal,
+        Modal::Pause {
+            undo_allowed: true,
+            restart_focused: true,
+        }
+    );
     assert_eq!(back_tab(&mut modal), None);
+    assert_eq!(
+        modal,
+        Modal::Pause {
+            undo_allowed: true,
+            restart_focused: false,
+        }
+    );
     assert_eq!(space(&mut modal), Some(Effect::None));
+}
+
+#[test]
+fn enter_on_restart_in_pause_opens_confirm() {
+    let mut modal = Modal::pause(true);
+    tab(&mut modal);
+    assert_eq!(
+        enter(&mut modal),
+        Some(Effect::Open(Modal::confirm(
+            "board.confirm.restart",
+            Effect::Restart
+        )))
+    );
+
+    let mut modal_no_undo = Modal::pause(false);
+    tab(&mut modal_no_undo);
+    assert_eq!(
+        enter(&mut modal_no_undo),
+        Some(Effect::Open(Modal::confirm(
+            "board.confirm.restart_no_undo",
+            Effect::Restart
+        )))
+    );
 }
 
 #[test]

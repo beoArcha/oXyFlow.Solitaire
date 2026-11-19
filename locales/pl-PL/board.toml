@@ -98,6 +98,7 @@ blocked = "Zły ruch: karta jest przykryta."
 
 [confirm]
 restart = "Rozdać tę grę od początku?"
+restart_no_undo = "Rozdać tę grę od początku? Rozpoczęcie od nowa zostanie policzone."
 new_game = "Poddać tę grę i rozdać nową?"
 quit = "Wyjść z oXySol?"
 

@@ -60,7 +60,9 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
         | Modal::Guide(_)
         | Modal::Moves(_)
         | Modal::Quick(_) => None,
-        Modal::Pause => Some(pause::text()),
+        Modal::Pause {
+            restart_focused, ..
+        } => Some(pause::text(*restart_focused)),
         Modal::Search(progress) => Some(search::text(progress)),
         Modal::Win { focus, best } => {
             let (moves, variant) = board.session().map_or((0, None), |session| {
@@ -117,7 +119,7 @@ pub fn draw(
     board: &BoardScreen,
     ctx: &ViewCtx<'_>,
 ) -> FooterMap {
-    if *modal == Modal::Pause {
+    if matches!(modal, Modal::Pause { .. }) {
         let body = chrome(area).body;
         frame.render_widget(Clear, body);
         frame.render_widget(Block::new().style(ctx.theme.base()), body);
@@ -146,6 +148,12 @@ fn step_focus(modal: &mut Modal, forward: bool) -> bool {
             progress.step_focus(forward);
             true
         }
+        Modal::Pause {
+            restart_focused, ..
+        } => {
+            *restart_focused = !*restart_focused;
+            true
+        }
         Modal::Confirm { yes_focused, .. } => {
             *yes_focused = !*yes_focused;
             true
@@ -160,6 +168,9 @@ fn step_focus(modal: &mut Modal, forward: bool) -> bool {
 
 fn focused_index(modal: &Modal) -> usize {
     match modal {
+        Modal::Pause {
+            restart_focused, ..
+        } => usize::from(*restart_focused),
         Modal::Confirm { yes_focused, .. } => usize::from(!yes_focused),
         Modal::Win { focus, .. } => *focus,
         Modal::Search(progress) => progress.focus,
@@ -171,6 +182,14 @@ fn focused_index(modal: &Modal) -> usize {
 fn press(modal: &Modal, index: usize) -> Effect {
     match modal {
         Modal::Confirm { on_yes, .. } if index == 0 => (**on_yes).clone(),
+        Modal::Pause { undo_allowed, .. } if index == pause::RESTART => {
+            let prompt = if *undo_allowed {
+                "board.confirm.restart"
+            } else {
+                "board.confirm.restart_no_undo"
+            };
+            Effect::Open(Modal::confirm(prompt, Effect::Restart))
+        }
         Modal::Win { .. } if index == win::NEW_GAME => Effect::Goto(Screen::GameSelect),
         Modal::Win { .. } if index == win::SAME_SEED => Effect::SameSeed,
         Modal::Win { .. } if index == win::MENU => Effect::Goto(Screen::MainMenu),
@@ -240,7 +259,7 @@ pub fn handle_for(
         }
         Action::Select => Some(press(modal, focused_index(modal))),
         Action::Back => Some(Effect::None),
-        Action::Pause if *modal == Modal::Pause => Some(Effect::None),
+        Action::Pause if matches!(modal, Modal::Pause { .. }) => Some(Effect::None),
         _ => None,
     }
 }

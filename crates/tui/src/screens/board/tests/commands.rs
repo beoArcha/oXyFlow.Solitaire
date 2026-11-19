@@ -140,7 +140,7 @@ fn pause_stops_the_clock_and_hides_the_board() {
             || h.text().contains('♣')
     );
     h.type_char('p');
-    assert_eq!(h.app.modal(), Some(&Modal::Pause));
+    assert_eq!(h.app.modal(), Some(&Modal::pause(true)));
     assert!(!board(&h).clock_running());
     h.advance(60);
     let paused = h.text();
@@ -199,6 +199,90 @@ fn restart_asks_first_and_deals_the_same_seed_again() {
     assert!(h.text().contains("seed 5 | Time 0:00"));
     assert!(board(&h).clock_running());
     assert_eq!(cursor(&h), (PileRef::Tableau(0), 1));
+}
+
+#[test]
+fn pause_dialog_restart_opens_confirm_and_yes_restarts() {
+    let mut h = start(KLONDIKE, SEED);
+    let dealt = session(&h).game().piles();
+    play_one(&mut h);
+    h.advance(30);
+    h.type_char('p');
+    assert!(matches!(h.app.modal(), Some(Modal::Pause { .. })));
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    assert!(matches!(h.app.modal(), Some(Modal::Confirm { .. })));
+    assert!(
+        h.text()
+            .contains("Deal this game again from the beginning?")
+    );
+
+    h.press(KeyCode::Left);
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none());
+    assert_eq!(session(&h).game().piles(), dealt);
+    assert_eq!(moves_made(&h), 0);
+    assert_eq!(session(&h).seed(), SEED);
+    assert!(h.text().contains("seed 5 | Time 0:00"));
+    assert!(board(&h).clock_running());
+}
+
+#[test]
+fn pause_dialog_restart_no_and_esc_keep_game_unchanged() {
+    let mut h = start(KLONDIKE, SEED);
+    play_one(&mut h);
+    h.advance(30);
+
+    h.type_char('p');
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    assert!(matches!(h.app.modal(), Some(Modal::Confirm { .. })));
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    assert_eq!(moves_made(&h), 1);
+
+    h.type_char('p');
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    assert!(matches!(h.app.modal(), Some(Modal::Confirm { .. })));
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none());
+    assert_eq!(moves_made(&h), 1);
+}
+
+#[test]
+fn restart_confirm_text_in_no_undo_game() {
+    let storage = MemoryStorage::default();
+    let mut h = Harness::with(storage, TRUE_COLOR, 100, 30);
+    h.app.apply(Effect::Start {
+        variant: KLONDIKE,
+        seed: Some(SEED),
+        undo_allowed: false,
+    });
+    h.lines();
+    play_one(&mut h);
+
+    h.type_char('R');
+    assert!(matches!(h.app.modal(), Some(Modal::Confirm { .. })));
+    assert!(h.text().contains("counted."));
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+
+    h.type_char('p');
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    assert!(matches!(h.app.modal(), Some(Modal::Confirm { .. })));
+    assert!(h.text().contains("counted."));
+    h.press(KeyCode::Esc);
+
+    crate::i18n::set_locale(crate::i18n::Locale::PlPl);
+    h.type_char('R');
+    assert!(matches!(h.app.modal(), Some(Modal::Confirm { .. })));
+    assert!(h.text().contains("policzone."));
+    h.press(KeyCode::Left);
+    h.press(KeyCode::Enter);
+    assert_eq!(board(&h).restarts(), 1);
+    crate::i18n::set_locale(crate::i18n::Locale::EnUs);
 }
 
 #[test]

@@ -194,7 +194,7 @@ fn every_dialog_closes_and_confirm_takes_yes_by_keyboard() {
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     h.type_char('p');
-    assert!(matches!(h.app.modal(), Some(Modal::Pause)));
+    assert!(matches!(h.app.modal(), Some(Modal::Pause { .. })));
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     h.type_char('R');

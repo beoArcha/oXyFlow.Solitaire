@@ -95,7 +95,7 @@ impl App {
     pub(super) fn open_modal(&mut self, modal: Modal) {
         let modal = self.with_personal_best(modal);
         self.board.pause_clock(self.now);
-        self.board.set_covered(modal == Modal::Pause);
+        self.board.set_covered(matches!(modal, Modal::Pause { .. }));
         self.modal = Some(modal);
     }
 

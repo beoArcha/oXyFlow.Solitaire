@@ -25,7 +25,7 @@ fn all_modals() -> Vec<Modal> {
     vec![
         Modal::Help,
         Modal::HowToPlay(HowToPlay::new(Rules::Klondike)),
-        Modal::Pause,
+        Modal::pause(true),
         Modal::win(),
         Modal::confirm("board.confirm.quit", Effect::Quit),
         Modal::alert("common.error.storage"),
@@ -256,10 +256,17 @@ fn alert_and_pause_draw_their_text_and_buttons() {
     assert!(text.contains("Notice"));
     assert!(text.contains(&focused(true, "OK")));
 
-    let terminal = render(&Modal::Pause, caps(true), Locale::EnUs, (100, 30), now);
+    let terminal = render(
+        &Modal::pause(true),
+        caps(true),
+        Locale::EnUs,
+        (100, 30),
+        now,
+    );
     let text = text_of(&terminal);
     assert!(text.contains("Paused"));
     assert!(text.contains(&focused(true, "Continue")));
+    assert!(text.contains("Restart"));
 }
 
 fn started_board(caps: TerminalCaps) -> Harness {

@@ -20,8 +20,13 @@ fn row(h: &mut Harness, prefix: &str) -> String {
 }
 
 fn sized(variant: Variant, width: u16, height: u16) -> Harness {
+    sized_in(Locale::EnUs, variant, width, height)
+}
+
+fn sized_in(locale: Locale, variant: Variant, width: u16, height: u16) -> Harness {
     let storage = MemoryStorage {
         settings: Some(crate::settings::Settings {
+            locale,
             moves_panel: false,
             ..crate::settings::Settings::default()
         }),
@@ -135,7 +140,7 @@ fn carrying_names_the_cards_the_source_and_the_targets() {
         possible.starts_with("Do: Enter: drop | Esc: put back | Arrows: choose target"),
         "{possible}"
     );
-    assert!(possible.ends_with("?: keys"), "{possible}");
+    assert!(possible.contains("Shift+R: restart"), "{possible}");
     assert!(!possible.contains("menu"), "{possible}");
 }
 
@@ -163,9 +168,10 @@ fn a_position_without_moves_offers_undo_restart_and_a_new_game() {
     assert!(row(&mut h, "Now:").starts_with("Now: No legal moves"));
     let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Do: u: undo | Shift+R: restart | n: new game"),
+        possible.starts_with("Do: u: undo | n: new game"),
         "{possible}"
     );
+    assert!(possible.contains("Shift+R: restart"), "{possible}");
     assert!(possible.ends_with("?: keys | Esc: menu"), "{possible}");
 }
 
@@ -178,9 +184,35 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     assert!(row(&mut h, "Now:").starts_with("Now: Game won"));
     let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Do: n: new game | g: guide | o: options | ?: keys | Esc: menu"),
+        possible.starts_with(
+            "Do: n: new game | g: guide | Shift+R: restart | o: options | ?: keys | Esc: menu"
+        ),
         "{possible}"
     );
+}
+
+#[test]
+fn the_do_row_shows_restart_at_100_and_130_columns_in_both_locales() {
+    for locale in Locale::ALL {
+        set_locale(locale);
+        let expected = match locale {
+            Locale::EnUs => "Shift+R: restart",
+            Locale::PlPl => "Shift+R: od nowa",
+        };
+        for width in [100, 130] {
+            let mut h = sized_in(locale, KLONDIKE, width, 30);
+            let prefix = match locale {
+                Locale::EnUs => "Do:",
+                Locale::PlPl => "Możesz:",
+            };
+            let possible = row(&mut h, prefix);
+            assert!(
+                possible.contains(expected),
+                "locale {locale:?}, width {width}: {possible}"
+            );
+        }
+        set_locale(Locale::EnUs);
+    }
 }
 
 #[test]
