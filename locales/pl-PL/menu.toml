@@ -6,7 +6,7 @@ new_game_from_seed = "Nowa gra z ziarna"
 help = "Pomoc"
 version = "v{version}"
 variant_hint = "Poziom {level}: {description}"
-select_seed ="Wybierz grę dla ziarna {seed}"
+select_seed = "Wybierz grę dla ziarna {seed}"
 
 [difficulty]
 easy = "łatwy"
