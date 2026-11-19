@@ -10,6 +10,7 @@ use ratatui::widgets::Paragraph;
 use crate::i18n::{t, tf};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
+use crate::widgets::footer::{self, FooterMap, Segment};
 
 const TAB_GAP: u16 = 2;
 
@@ -139,6 +140,17 @@ pub fn draw_footer(
     shown: (usize, usize, usize),
     ctx: &ViewCtx<'_>,
 ) {
+    draw_footer_buttons(frame, row, &[Segment::plain(hints)], shown, ctx);
+}
+
+/// Like [`draw_footer`], with the hints as segments: the buttons among them are returned.
+pub fn draw_footer_buttons(
+    frame: &mut Frame,
+    row: Rect,
+    segments: &[Segment],
+    shown: (usize, usize, usize),
+    ctx: &ViewCtx<'_>,
+) -> FooterMap {
     let (from, to, total) = shown;
     let position = tf(
         "help.rules.position",
@@ -154,9 +166,10 @@ pub fn draw_footer(
     ])
     .areas(row.inner(Margin::new(1, 0)));
     let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
-    frame.render_widget(Paragraph::new(Line::styled(hints, muted)), left);
+    let buttons = footer::draw(frame, left, segments, Alignment::Left, muted, ctx);
     frame.render_widget(
         Paragraph::new(Line::styled(position, muted)).alignment(Alignment::Right),
         right,
     );
+    buttons
 }

@@ -10,8 +10,8 @@ use oxysol_core::{DrawCount, PileSnapshot, Session, Variant};
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::{
-    App, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio, NullClipboard, Outcome,
-    SavedGame, Screen, Settings, Storage, StorageError,
+    App, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio, NullClipboard, NullSolver,
+    Outcome, Proof, SavedGame, Screen, Settings, Storage, StorageError,
 };
 use rusqlite::Connection;
 use tempfile::TempDir;
@@ -60,6 +60,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
         seeds: Box::new(|| SEED),
         start_seed: None,
         sound_styles: Vec::new(),
+        solver: Box::new(NullSolver::default()),
     });
     Player {
         app,
@@ -283,6 +284,10 @@ impl Storage for FailingSaves {
         moves: u32,
     ) -> Result<(), StorageError> {
         self.0.finish_game(id, outcome, elapsed_ms, moves)
+    }
+
+    fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
+        self.0.record_proof(id, proof)
     }
 
     fn history(&self) -> Result<Vec<GameRecord>, StorageError> {

@@ -11,9 +11,12 @@ quit = "Zakończ"
 [select]
 title = "Wybierz grę"
 undo = "[ Cofanie: {state} ]"
-undo_on = "włączone"
-undo_off = "wyłączone"
+on = "włączone"
+off = "wyłączone"
 undo_hint = "{key} lub kliknięcie włącza i wyłącza cofanie w następnej grze"
+winnable = "[ Tylko do wygrania: {state} ]"
+winnable_hint = "Nowa gra szuka rozdania możliwego do wygrania; wpisane ziarno zostaje bez zmian"
+slow_search = "{variant}  (szukanie może długo trwać)"
 
 [variant]
 klondike_one = "Klondike, 1 karta"
@@ -46,6 +49,19 @@ win_body = "Pasjans został ułożony."
 win_moves = "Ruchy: {moves}"
 alert_title = "Uwaga"
 confirm_title = "Potwierdzenie"
+
+[search]
+title = "Szukanie rozdania do wygrania"
+running = "Szukam rozdania do wygrania: {variant}..."
+progress = "Sprawdzone ziarna: {tried} z {cap}"
+slow = "W tej grze rzadko udaje się wykazać wygraną, więc szukanie może długo trwać."
+escape = "Esc przerywa szukanie."
+capped = "Nie znaleziono rozdania do wygrania w {cap} ziarnach."
+capped_offer = "Zagrać najlepszym kandydatem, o którym nie wiadomo, czy da się wygrać, czy szukać dalej?"
+capped_offer_none = "Żadne ziarno nie nadaje się do gry jako nieznane. Szukać dalej?"
+play_unproven = "Zagraj jako nieznane"
+more = "Szukaj dalej"
+cancel = "Anuluj"
 
 [error]
 storage = "Zapis do bazy danych nie powiódł się. Gra jest kontynuowana bez zapisywania."

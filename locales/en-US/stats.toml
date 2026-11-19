@@ -38,6 +38,13 @@ seed = "Seed"
 outcome = "Result"
 time = "Time"
 moves = "Moves"
+winnable = "Winnable"
+
+[winnable]
+yes = "yes"
+no = "no"
+unknown = "unknown"
+unchecked = "-"
 
 [button]
 replay = "Play this seed again"

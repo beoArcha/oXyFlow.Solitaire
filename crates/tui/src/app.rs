@@ -8,6 +8,8 @@ use ratatui::crossterm::event::{KeyEvent, KeyEventKind, MouseEvent, MouseEventKi
 use ratatui::layout::Rect;
 use ratatui::widgets::Block;
 
+use self::deals::Check;
+use self::search::Search;
 use crate::action::Action;
 use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
@@ -23,13 +25,16 @@ use crate::screens::settings::SettingsScreen;
 use crate::screens::stats::StatsScreen;
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::{DEFAULT_SOUND_STYLE, Settings};
+use crate::solver::Solver;
 use crate::storage::{SavedGame, Storage, StorageError};
 use crate::theme::Theme;
+use crate::widgets::footer::FooterMap;
 use crate::widgets::overlay;
 use crate::widgets::too_small::{self, is_too_small};
 
 pub use deps::Deps;
 pub use modal::Modal;
+pub use search::{SEED_CAP, SearchCommand, SearchProgress};
 
 /// The screen behind the modal layer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -63,6 +68,10 @@ pub struct App {
     audio: Box<dyn Audio>,
     clipboard: Box<dyn Clipboard>,
     seeds: Box<dyn FnMut() -> u64>,
+    solver: Box<dyn Solver>,
+    search: Option<Search>,
+    check: Option<Check>,
+    next_query: u64,
     caps: TerminalCaps,
     sound_styles: Vec<StyleInfo>,
     settings: Settings,
@@ -77,6 +86,7 @@ pub struct App {
     settings_screen: SettingsScreen,
     stats: StatsScreen,
     board: BoardScreen,
+    modal_footer: FooterMap,
     area: Option<(u16, u16)>,
     pointer: Option<(u16, u16)>,
     now: Instant,
@@ -96,6 +106,7 @@ impl App {
             seeds,
             start_seed,
             sound_styles,
+            solver,
         } = deps;
         let settings = Settings::for_caps(&caps);
         let mut app = Self {
@@ -103,6 +114,10 @@ impl App {
             audio,
             clipboard,
             seeds,
+            solver,
+            search: None,
+            check: None,
+            next_query: 0,
             caps,
             sound_styles,
             theme: Theme::new(settings.theme, settings.color_depth(&caps)),
@@ -119,6 +134,7 @@ impl App {
             board: BoardScreen::new(),
             area: None,
             pointer: None,
+            modal_footer: FooterMap::default(),
             now: Instant::now(),
             quit: false,
         };
@@ -223,6 +239,7 @@ impl App {
             Input::Tick => Effect::None,
         };
         self.apply(effect);
+        self.poll_solver();
         let effect = self.advance_finish();
         self.apply(effect);
         self.play_board_cues();
@@ -279,7 +296,7 @@ impl App {
     /// The footer button under `cell` on the active screen, if any; no modal may be open.
     fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
         if self.modal.is_some() {
-            return None;
+            return self.modal_footer.action_at(cell);
         }
         match self.screen {
             Screen::MainMenu => self.menu.footer_action_at(cell),
@@ -386,19 +403,27 @@ impl App {
             Screen::Stats => self.stats.draw(frame, area, &ctx),
         }
         if let Some(modal) = &self.modal {
-            overlay::draw(frame, area, modal, &self.board, &ctx);
+            self.modal_footer = overlay::draw(frame, area, modal, &self.board, &ctx);
         }
     }
 }
 
+mod deals;
 mod deps;
 mod effects;
 mod finish;
 mod modal;
 mod persist;
+mod search;
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod chosen_deal_tests;
+
+#[cfg(test)]
+mod deals_tests;
 
 #[cfg(test)]
 mod effect_tests;

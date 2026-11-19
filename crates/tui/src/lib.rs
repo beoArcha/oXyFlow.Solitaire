@@ -14,6 +14,7 @@ pub mod layout;
 pub mod mouse;
 pub mod screens;
 pub mod settings;
+pub mod solver;
 pub mod storage;
 pub mod terminal;
 pub mod theme;
@@ -24,12 +25,13 @@ mod accessibility_tests;
 #[cfg(test)]
 mod test_support;
 
-pub use app::{App, Deps, Modal, Screen};
+pub use app::{App, Deps, Modal, Screen, SearchCommand, SearchProgress};
 pub use audio::{Audio, AudioSettings, AudioStatus, NullAudio, SoundCue, StyleInfo};
 pub use clipboard::{Clipboard, ClipboardError, NullClipboard};
 pub use input::Input;
 /// The terminal event types of [`Input`], so that callers can build input without their own dependency.
 pub use ratatui::crossterm;
 pub use settings::Settings;
+pub use solver::{Answer, DealCheck, NullSolver, Proof, Query, Solver};
 pub use storage::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 pub use terminal::{TuiError, restore_terminal, run};

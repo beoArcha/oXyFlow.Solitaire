@@ -4,6 +4,7 @@
 
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
+use crate::layout::STANDARD_MIN_WIDTH;
 use crate::settings::{ColorMode, GlyphMode, Settings};
 use crate::theme::ThemeId;
 
@@ -167,16 +168,28 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     }
 }
 
-/// The text of a row: `label: value`, with a marker on sound rows when sound is unavailable.
+/// The text of a row: `label: value`, with a marker on sound rows when sound is unavailable and
+/// the columns the panel needs when the guide panel is on but the screen of `columns` is too narrow.
 pub fn line(
     field: Field,
     settings: &Settings,
     audio_available: bool,
     sound_styles: &[StyleInfo],
+    columns: u16,
 ) -> String {
     let mut value = value_text(field, settings, sound_styles);
     if field.is_audio() && !audio_available {
         value = format!("{value} ({})", t("settings.value.unavailable"));
+    }
+    if field == Field::GuidePanel && settings.guide_panel && columns < STANDARD_MIN_WIDTH {
+        value = tf(
+            "settings.value.needs_columns",
+            &[
+                ("value", value.as_str()),
+                ("needed", &STANDARD_MIN_WIDTH.to_string()),
+                ("now", &columns.to_string()),
+            ],
+        );
     }
     let label = t(field.label_key()).into_owned();
     tf(

@@ -8,6 +8,7 @@ mod command_line_tests;
 mod dialog;
 #[cfg(test)]
 mod focus_tests;
+mod guide_window;
 mod help;
 #[cfg(test)]
 mod help_rules_tests;
@@ -15,6 +16,7 @@ mod how_to_play;
 mod pause;
 #[cfg(test)]
 mod render_tests;
+mod search;
 mod tabs;
 #[cfg(test)]
 mod tests;
@@ -29,21 +31,24 @@ use ratatui::widgets::{Block, Clear};
 
 pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
+pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::tabs::{HelpTab, TopTabs};
 use crate::action::Action;
-use crate::app::{Modal, Screen};
+use crate::app::{Modal, Screen, SearchCommand};
 use crate::i18n::t;
 use crate::layout::chrome;
 use crate::mouse;
 use crate::screens::board::BoardScreen;
 use crate::screens::focus::tab_forward;
 use crate::screens::{Effect, ViewCtx};
+use crate::widgets::footer::FooterMap;
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
-        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) => None,
+        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_) | Modal::Guide(_) => None,
         Modal::Pause => Some(pause::text()),
+        Modal::Search(progress) => Some(search::text(progress)),
         Modal::Win { menu_focused } => {
             let moves = board.session().map_or(0, |session| session.moves_made());
             Some(win::text(board.elapsed(now), moves, *menu_focused))
@@ -81,13 +86,20 @@ fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geo
     match (modal, text_of(modal, board, now)) {
         (_, Some(text)) => text.geometry(area),
         (Modal::HowToPlay(_), None) => how_to_play::geometry(area),
+        (Modal::Guide(_), None) => guide_window::geometry(area),
         (_, None) => help::geometry(area),
     }
 }
 
-/// Draws `modal` over the screen. The pause dialog first clears the board, so no card shows; the
-/// header with the clock stays visible.
-pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, ctx: &ViewCtx<'_>) {
+/// Draws `modal` over the screen and returns the footer buttons it drew. The pause dialog first
+/// clears the board, so no card shows; the header with the clock stays visible.
+pub fn draw(
+    frame: &mut Frame,
+    area: Rect,
+    modal: &Modal,
+    board: &BoardScreen,
+    ctx: &ViewCtx<'_>,
+) -> FooterMap {
     if *modal == Modal::Pause {
         let body = chrome(area).body;
         frame.render_widget(Clear, body);
@@ -100,12 +112,20 @@ pub fn draw(frame: &mut Frame, area: Rect, modal: &Modal, board: &BoardScreen, c
         }
         (Modal::HowToPlay(state), None) => how_to_play::draw(frame, area, state, ctx),
         (Modal::CommandLine(state), None) => command_line::draw(frame, area, state, ctx),
+        (Modal::Guide(state), None) => {
+            return guide_window::draw(frame, area, state, board, ctx);
+        }
         (_, None) => help::draw(frame, area, ctx),
     }
+    FooterMap::default()
 }
 
-fn toggle_focus(modal: &mut Modal) -> bool {
+fn step_focus(modal: &mut Modal, forward: bool) -> bool {
     match modal {
+        Modal::Search(progress) => {
+            progress.step_focus(forward);
+            true
+        }
         Modal::Confirm { yes_focused, .. } => {
             *yes_focused = !*yes_focused;
             true
@@ -122,6 +142,7 @@ fn focused_index(modal: &Modal) -> usize {
     match modal {
         Modal::Confirm { yes_focused, .. } => usize::from(!yes_focused),
         Modal::Win { menu_focused } => usize::from(*menu_focused),
+        Modal::Search(progress) => progress.focus,
         _ => 0,
     }
 }
@@ -132,6 +153,7 @@ fn press(modal: &Modal, index: usize) -> Effect {
         Modal::Confirm { on_yes, .. } if index == 0 => (**on_yes).clone(),
         Modal::Win { .. } if index == 0 => Effect::Goto(Screen::GameSelect),
         Modal::Win { .. } => Effect::Goto(Screen::MainMenu),
+        Modal::Search(progress) => Effect::SearchStep(search::command_at(progress, index)),
         _ => Effect::None,
     }
 }
@@ -212,6 +234,9 @@ pub fn handle_for(
     action: Option<Action>,
     rules: Rules,
 ) -> Option<Effect> {
+    if let Modal::Guide(state) = modal {
+        return guide_window::handle(state, key, action);
+    }
     if let Some(tab) = tab_of(modal) {
         if let Some(target) = tab_target(tab, key, action) {
             *modal = modal_for(target, rules);
@@ -228,10 +253,14 @@ pub fn handle_for(
         action,
         Action::Left | Action::Right | Action::Up | Action::Down
     ) || tab_forward(action).is_some();
-    if moves_focus && toggle_focus(modal) {
+    let forward = tab_forward(action).unwrap_or(!matches!(action, Action::Left | Action::Up));
+    if moves_focus && step_focus(modal, forward) {
         return None;
     }
     match action {
+        Action::Back if matches!(modal, Modal::Search(_)) => {
+            Some(Effect::SearchStep(SearchCommand::Cancel))
+        }
         Action::Select => Some(press(modal, focused_index(modal))),
         Action::Back => Some(Effect::None),
         Action::Pause if *modal == Modal::Pause => Some(Effect::None),
@@ -248,6 +277,9 @@ pub fn handle_mouse(
     now: Instant,
     event: &MouseEvent,
 ) -> Option<Effect> {
+    if let Modal::Guide(state) = modal {
+        return guide_window::handle_mouse(state, area, event);
+    }
     if let Some(tab) = tab_of(modal) {
         if let Some(target) = clicked_tab(tab, area, event) {
             *modal = modal_for(target, rules_of(board));

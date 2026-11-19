@@ -14,7 +14,7 @@ use std::time::Instant;
 
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
-use crate::app::{Modal, Screen};
+use crate::app::{Modal, Screen, SearchCommand};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
@@ -47,6 +47,8 @@ pub enum Effect {
         seed: Option<u64>,
         undo_allowed: bool,
     },
+    /// A button of the search dialog for a winnable deal.
+    SearchStep(SearchCommand),
     /// Restore the saved game.
     Resume,
     /// Deal the running game again from its seed, with an empty history.

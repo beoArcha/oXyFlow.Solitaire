@@ -87,6 +87,72 @@ fn section(key: &str, body: Vec<Line<'static>>, ctx: &ViewCtx<'_>) -> Vec<Line<'
     lines
 }
 
+/// A section with the rank at which a short panel drops it: 0 is never dropped, a higher rank goes
+/// first.
+type Ranked = (u8, Vec<Line<'static>>);
+
+fn sections(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Ranked> {
+    vec![
+        (
+            0,
+            section(
+                "board.guide.goal_title",
+                keys::goal(guide.variant, width, ctx),
+                ctx,
+            ),
+        ),
+        (
+            0,
+            section("board.guide.keys_title", keys::keys(guide, width, ctx), ctx),
+        ),
+        (
+            2,
+            section(
+                "board.guide.mouse_title",
+                keys::mouse(guide.variant, width, ctx),
+                ctx,
+            ),
+        ),
+        (
+            1,
+            section("board.guide.legend_title", legend::lines(width, ctx), ctx),
+        ),
+    ]
+}
+
+/// The sections that fit `rows` rows: the mouse section goes first and the legend next, so a
+/// short panel never shows a heading without its lines.
+fn fitted(mut sections: Vec<Ranked>, rows: usize) -> Vec<Vec<Line<'static>>> {
+    let total = |sections: &[Ranked]| sections.iter().map(|(_, lines)| lines.len()).sum::<usize>();
+    while total(&sections) > rows {
+        let Some(index) = sections
+            .iter()
+            .enumerate()
+            .filter(|(_, (rank, _))| *rank > 0)
+            .max_by_key(|(_, (rank, _))| *rank)
+            .map(|(index, _)| index)
+        else {
+            break;
+        };
+        sections.remove(index);
+    }
+    sections.into_iter().map(|(_, lines)| lines).collect()
+}
+
+/// Every line of the guide, for the window: the `Game` facts, then every section, a blank row
+/// between them.
+pub fn window_lines(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
+    let mut game = vec![heading("board.guide.game_title", ctx)];
+    game.extend(guide.game.iter().cloned());
+    let mut all = vec![game];
+    all.extend(
+        sections(guide, width, ctx)
+            .into_iter()
+            .map(|(_, lines)| lines),
+    );
+    stacked(all, usize::MAX)
+}
+
 /// The sections one after another, with a blank row between them when all of them still fit.
 fn stacked(sections: Vec<Vec<Line<'static>>>, rows: usize) -> Vec<Line<'static>> {
     let total: usize = sections.iter().map(Vec::len).sum();
@@ -170,19 +236,6 @@ pub fn draw(buf: &mut Buffer, area: Rect, guide: &Guide<'_>, ctx: &ViewCtx<'_>) 
         ctx,
     );
     let rest = Rect::new(top.x, rule + 1, top.width, last - rule - 1);
-    let sections = vec![
-        section(
-            "board.guide.goal_title",
-            keys::goal(guide.variant, width, ctx),
-            ctx,
-        ),
-        section("board.guide.keys_title", keys::keys(guide, width, ctx), ctx),
-        section(
-            "board.guide.mouse_title",
-            keys::mouse(guide.variant, width, ctx),
-            ctx,
-        ),
-        section("board.guide.legend_title", legend::lines(width, ctx), ctx),
-    ];
+    let sections = fitted(sections(guide, width, ctx), usize::from(rest.height));
     Paragraph::new(stacked(sections, usize::from(rest.height))).render(rest, buf);
 }

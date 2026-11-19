@@ -4,10 +4,12 @@ use std::time::Duration;
 
 use oxysol_core::{Session, Variant};
 
+use super::deals::Origin;
 use super::{App, Modal, Screen};
 use crate::screens::Effect;
 use crate::screens::board::Start;
 use crate::settings::Settings;
+use crate::solver::{DealCheck, Proof};
 use crate::widgets::overlay::{HowToPlay, Rules};
 
 impl App {
@@ -20,6 +22,7 @@ impl App {
                 seed,
                 undo_allowed,
             } => self.start_game(variant, seed, undo_allowed),
+            Effect::SearchStep(command) => self.search_step(command),
             Effect::Resume => self.resume_game(),
             Effect::Restart => self.board.restart(self.now),
             Effect::Apply(settings) => self.apply_settings(settings),
@@ -98,9 +101,27 @@ impl App {
     }
 
     fn start_game(&mut self, variant: Variant, seed: Option<u64>, undo_allowed: bool) {
+        match seed {
+            Some(seed) => self.begin_game(variant, seed, undo_allowed, Origin::Chosen),
+            None if self.settings.winnable_only => self.begin_search(variant, undo_allowed),
+            None => {
+                let seed = (self.seeds)();
+                self.begin_game(variant, seed, undo_allowed, Origin::Fresh);
+            }
+        }
+    }
+
+    pub(super) fn begin_game(
+        &mut self,
+        variant: Variant,
+        seed: u64,
+        undo_allowed: bool,
+        origin: Origin,
+    ) {
         self.abandon_saved();
-        let seed = seed.unwrap_or_else(|| (self.seeds)());
-        tracing::info!(?variant, seed, "new game dealt");
+        self.solver.cancel();
+        self.check = None;
+        tracing::info!(?variant, seed, ?origin, "new game dealt");
         let recorded = self.storage.start_game(variant, seed, undo_allowed);
         let id = recorded.as_ref().ok().copied();
         let start = Start {
@@ -112,6 +133,16 @@ impl App {
             .begin(Session::new(variant, seed), start, self.now);
         self.enter_board();
         self.note_write(recorded.map(drop), "the new game could not be recorded");
+        match origin {
+            Origin::Fresh => {}
+            Origin::Searched(proof) => {
+                self.board.set_deal(DealCheck::Known(proof));
+                if proof == Proof::Winnable {
+                    self.record_proof(proof);
+                }
+            }
+            Origin::Chosen => self.start_check(variant, seed),
+        }
     }
 
     fn resume_game(&mut self) {
@@ -128,8 +159,11 @@ impl App {
                     elapsed,
                     undo_allowed: saved.undo_allowed,
                 };
+                let (variant, seed) = (session.variant(), session.seed());
                 self.board.begin(session, start, self.now);
                 self.enter_board();
+                self.solver.cancel();
+                self.start_check(variant, seed);
             }
             Err(error) => {
                 tracing::warn!(%error, "the saved game could not be restored; removing it");

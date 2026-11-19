@@ -7,6 +7,7 @@ use ratatui::crossterm::event::{KeyModifiers, MouseButton, MouseEvent, MouseEven
 use super::finish::{KLONDIKE, KLONDIKE_SEED, at_forced_win, is_won, win_open};
 use super::start;
 use crate::action::Action;
+use crate::app::Modal;
 use crate::i18n::tf;
 use crate::input::primary_key;
 use crate::screens::board::guidance::{Guidance, part};
@@ -32,15 +33,14 @@ fn finishing(h: &Harness) -> bool {
 }
 
 #[test]
-fn the_guide_button_is_shown_and_its_click_toggles_the_guide_panel() {
+fn the_guide_button_is_shown_on_a_compact_board_and_its_click_opens_the_guide_window() {
     let mut h = start(KLONDIKE, KLONDIKE_SEED);
     let text = do_text(Action::Guide, "board.action.guide");
     let Some((column, row)) = h.find(&text) else {
         panic!("{text:?} is not drawn");
     };
-    let before = h.app.settings().guide_panel;
     click(&mut h, column + 1, row);
-    assert_eq!(h.app.settings().guide_panel, !before);
+    assert!(matches!(h.app.modal(), Some(Modal::Guide(_))));
 }
 
 #[test]

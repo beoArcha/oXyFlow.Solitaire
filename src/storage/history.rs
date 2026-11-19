@@ -4,8 +4,8 @@ use oxysol_tui::{GameId, GameRecord};
 use rusqlite::{Connection, Row};
 
 use super::convert::{
-    count_from_column, millis_from_column, outcome_from_column, seed_from_column,
-    variant_from_column,
+    count_from_column, millis_from_column, outcome_from_column, proof_from_column,
+    seed_from_column, variant_from_column,
 };
 use super::error::Fault;
 
@@ -19,6 +19,7 @@ struct RawRow {
     elapsed_ms: Option<i64>,
     moves: Option<i64>,
     undo_allowed: i64,
+    proof: Option<String>,
 }
 
 impl RawRow {
@@ -33,6 +34,7 @@ impl RawRow {
             elapsed_ms: row.get(6)?,
             moves: row.get(7)?,
             undo_allowed: row.get(8)?,
+            proof: row.get(9)?,
         })
     }
 
@@ -51,13 +53,15 @@ impl RawRow {
             elapsed_ms: self.elapsed_ms.map(millis_from_column).transpose()?,
             moves: self.moves.map(count_from_column).transpose()?,
             undo_allowed: self.undo_allowed != 0,
+            proof: self.proof.as_deref().map(proof_from_column).transpose()?,
         })
     }
 }
 
 pub(super) fn read_all(conn: &Connection) -> Result<Vec<GameRecord>, Fault> {
     let mut statement = conn.prepare(
-        "SELECT id, variant, seed, started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed
+        "SELECT id, variant, seed, started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed,
+                proof
          FROM games ORDER BY id",
     )?;
     let rows = statement.query_map([], RawRow::read)?;

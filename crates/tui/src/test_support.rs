@@ -2,6 +2,7 @@
 //! and a harness that drives `App` on a `TestBackend` terminal.
 
 use std::cell::RefCell;
+use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
@@ -18,6 +19,7 @@ use crate::caps::{ColorDepth, TerminalCaps};
 use crate::clipboard::{Clipboard, ClipboardError};
 use crate::input::Input;
 use crate::settings::Settings;
+use crate::solver::{Answer, Proof, Query, Solver};
 use crate::storage::memory::MemoryStorage;
 use crate::storage::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 
@@ -77,6 +79,10 @@ impl Storage for SharedStorage {
             .finish_game(id, outcome, elapsed_ms, moves)
     }
 
+    fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
+        self.0.borrow_mut().record_proof(id, proof)
+    }
+
     fn history(&self) -> Result<Vec<GameRecord>, StorageError> {
         self.0.borrow().history()
     }
@@ -134,12 +140,91 @@ impl Clipboard for RecordingClipboard {
     }
 }
 
+/// What the stub solver is told to do and what it was asked.
+#[derive(Debug, Default)]
+pub struct StubState {
+    /// Every query ever submitted, in order.
+    pub submitted: Vec<Query>,
+    pending: VecDeque<Query>,
+    /// The n-th submitted query (counting from 1) is proven winnable.
+    pub accept_nth: Option<usize>,
+    /// Verdicts by seed, which win over `accept_nth`.
+    pub verdicts: HashMap<u64, Proof>,
+    /// Without it, every poll answers all pending queries; with it, only the released ones.
+    pub held: bool,
+    released: usize,
+    pub cancels: u32,
+}
+
+impl StubState {
+    /// Lets the next `count` pending queries be answered by the next poll (with `held`).
+    pub fn release(&mut self, count: usize) {
+        self.released += count;
+    }
+
+    pub fn pending(&self) -> usize {
+        self.pending.len()
+    }
+
+    fn verdict(&self, query: Query) -> Proof {
+        if let Some(proof) = self.verdicts.get(&query.seed) {
+            return *proof;
+        }
+        let number = self
+            .submitted
+            .iter()
+            .position(|sent| sent.id == query.id)
+            .map(|index| index + 1);
+        if number.is_some() && number == self.accept_nth {
+            Proof::Winnable
+        } else {
+            Proof::Unknown
+        }
+    }
+}
+
+pub struct StubSolver(pub Rc<RefCell<StubState>>);
+
+impl Solver for StubSolver {
+    fn submit(&mut self, query: Query) {
+        let mut state = self.0.borrow_mut();
+        state.submitted.push(query);
+        state.pending.push_back(query);
+    }
+
+    fn cancel(&mut self) {
+        let mut state = self.0.borrow_mut();
+        state.pending.clear();
+        state.cancels += 1;
+    }
+
+    fn poll(&mut self) -> Vec<Answer> {
+        let mut state = self.0.borrow_mut();
+        let count = if state.held {
+            let count = state.released.min(state.pending.len());
+            state.released -= count;
+            count
+        } else {
+            state.pending.len()
+        };
+        let queries: Vec<Query> = state.pending.drain(..count).collect();
+        queries
+            .into_iter()
+            .map(|query| Answer {
+                id: query.id,
+                proof: state.verdict(query),
+            })
+            .collect()
+    }
+}
+
 pub struct Harness {
     pub app: App,
     pub terminal: Terminal<TestBackend>,
     pub storage: Rc<RefCell<MemoryStorage>>,
     pub audio: Rc<RefCell<AudioLog>>,
     pub clipboard: Rc<RefCell<ClipboardLog>>,
+    pub solver: Rc<RefCell<StubState>>,
     pub now: Instant,
 }
 
@@ -167,6 +252,7 @@ impl Harness {
         let storage = Rc::new(RefCell::new(storage));
         let audio = Rc::new(RefCell::new(AudioLog::default()));
         let clipboard = Rc::new(RefCell::new(ClipboardLog::default()));
+        let solver = Rc::new(RefCell::new(StubState::default()));
         let mut next_seed = 41_u64;
         let app = App::new(Deps {
             storage: Box::new(SharedStorage(Rc::clone(&storage))),
@@ -179,6 +265,7 @@ impl Harness {
             }),
             start_seed,
             sound_styles: sound_styles(),
+            solver: Box::new(StubSolver(Rc::clone(&solver))),
         });
         Self {
             app,
@@ -187,6 +274,7 @@ impl Harness {
             storage,
             audio,
             clipboard,
+            solver,
             now: Instant::now(),
         }
     }

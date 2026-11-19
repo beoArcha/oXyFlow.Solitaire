@@ -50,6 +50,9 @@ pub struct Settings {
     /// The undo mode offered in the game selection and used for the next game: `true` allows undo
     /// and redo. An older saved value without the field loads as `true`.
     pub undo_allowed: bool,
+    /// Whether a new game with a fresh seed searches for a deal the solver proves winnable.
+    /// An older saved value without the field loads as `false`.
+    pub winnable_only: bool,
     /// Whether a forced win is played out automatically move by move. An older saved value without
     /// the field loads as `true`.
     pub auto_finish: bool,
@@ -70,6 +73,7 @@ impl Default for Settings {
             volume: 70,
             guide_panel: true,
             undo_allowed: true,
+            winnable_only: false,
             auto_finish: true,
         }
     }
@@ -167,6 +171,20 @@ mod tests {
         assert!(matches!(parsed, Ok(ref s) if s.undo_allowed));
         let off = toml::from_str::<Settings>("undo_allowed = false");
         assert!(matches!(off, Ok(ref s) if !s.undo_allowed));
+    }
+
+    #[test]
+    fn winnable_only_is_off_by_default_and_round_trips() {
+        assert!(!Settings::default().winnable_only);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if !s.winnable_only));
+        let settings = Settings {
+            winnable_only: true,
+            ..Settings::default()
+        };
+        let text = toml::to_string(&settings).unwrap_or_default();
+        let back = toml::from_str::<Settings>(&text);
+        assert!(matches!(back, Ok(ref s) if s.winnable_only));
     }
 
     #[test]

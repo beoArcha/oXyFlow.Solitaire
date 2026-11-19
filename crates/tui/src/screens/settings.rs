@@ -110,6 +110,7 @@ impl SettingsScreen {
                     ctx.settings,
                     ctx.audio_status.is_ready(),
                     ctx.sound_styles,
+                    area.width,
                 )
             })
             .collect();

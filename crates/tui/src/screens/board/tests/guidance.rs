@@ -26,6 +26,7 @@ fn sized(variant: Variant, width: u16, height: u16) -> Harness {
         seed: Some(5),
         undo_allowed: true,
     });
+    h.lines();
     h
 }
 

@@ -32,6 +32,9 @@ pub(super) const MIGRATIONS: &[&str] = &[
     ALTER TABLE games ADD COLUMN moves INTEGER;
     ALTER TABLE games ADD COLUMN undo_allowed INTEGER NOT NULL DEFAULT 1;
 ",
+    "
+    ALTER TABLE games ADD COLUMN proof TEXT;
+",
 ];
 
 /// The schema version this build writes.

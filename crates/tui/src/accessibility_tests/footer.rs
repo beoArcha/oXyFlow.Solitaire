@@ -25,8 +25,7 @@ fn harness(locale: Locale, history: Vec<HistoryRow>) -> Harness {
     sized(locale, history, SIZE)
 }
 
-/// A harness of the given size. The board is drawn wider, so that every button of its `Do:` row
-/// fits in both locales.
+/// A harness of the given size.
 fn sized(locale: Locale, history: Vec<HistoryRow>, size: (u16, u16)) -> Harness {
     let storage = MemoryStorage {
         settings: Some(Settings {
@@ -181,7 +180,7 @@ fn every_button_of_the_statistics_does_what_its_key_does() {
 fn every_button_of_the_board_does_what_its_key_does() {
     each_locale(|locale| {
         let setup = |locale| {
-            let mut h = sized(locale, Vec::new(), (160, 40));
+            let mut h = sized(locale, Vec::new(), (120, 40));
             h.app.apply(Effect::Start {
                 variant: Variant::Klondike(DrawCount::One),
                 seed: Some(7),
@@ -234,4 +233,37 @@ fn a_button_under_the_pointer_is_drawn_reversed_and_only_that_one() {
         panic!("help is not drawn");
     };
     assert!(!reversed(&mut h, help_column + 1));
+}
+
+#[test]
+fn the_close_button_of_the_guide_window_closes_it_like_its_key() {
+    each_locale(|locale| {
+        let mut h = sized(locale, Vec::new(), (120, 40));
+        h.app.apply(Effect::Start {
+            variant: Variant::Klondike(DrawCount::One),
+            seed: Some(7),
+            undo_allowed: true,
+        });
+        let guide = tf(
+            "board.action.guide",
+            &[("key", &primary_key(Action::Guide).unwrap_or_default())],
+        );
+        let Some((column, row)) = h.find(&guide) else {
+            panic!("{guide:?} is not drawn");
+        };
+        h.click(column + 1, row);
+        assert!(matches!(h.app.modal(), Some(crate::app::Modal::Guide(_))));
+        let close = tf(
+            "board.guide.window_close",
+            &[
+                ("key", &primary_key(Action::Guide).unwrap_or_default()),
+                ("back", &primary_key(Action::Back).unwrap_or_default()),
+            ],
+        );
+        let Some((column, row)) = h.find(&close) else {
+            panic!("{close:?} is not drawn in the guide window ({locale:?})");
+        };
+        h.click(column + 1, row);
+        assert!(h.app.modal().is_none(), "{locale:?}");
+    });
 }

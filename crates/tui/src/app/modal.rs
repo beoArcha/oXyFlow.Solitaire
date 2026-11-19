@@ -1,7 +1,8 @@
 //! The modal layer's state: which dialog is open and what confirming it does.
 
+use super::search::SearchProgress;
 use crate::screens::Effect;
-use crate::widgets::overlay::{CommandLine, HowToPlay};
+use crate::widgets::overlay::{CommandLine, GuideWindow, HowToPlay};
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
@@ -11,6 +12,8 @@ pub enum Modal {
     HowToPlay(HowToPlay),
     /// The options of `oxysol --help`, the third tab of the help window.
     CommandLine(CommandLine),
+    /// The content of the guide panel as a window, on a screen too narrow for the panel.
+    Guide(GuideWindow),
     Pause,
     /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
     Confirm {
@@ -22,6 +25,8 @@ pub enum Modal {
     Alert {
         message: &'static str,
     },
+    /// The search for a winnable deal: progress, then the choices once the cap is reached.
+    Search(SearchProgress),
     /// The win screen; `menu_focused` picks which of its two buttons has the focus.
     Win {
         menu_focused: bool,

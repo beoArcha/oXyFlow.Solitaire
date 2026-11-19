@@ -1,9 +1,10 @@
 //! The parts of the board screen and the size class that decides them.
 //!
-//! Compact screens (fewer than 130 columns or fewer than 36 rows) show the game information in a
-//! header row. Standard (130 to 179 columns) and Wide (180 and more) screens show it in the top
-//! box of a framed side panel instead, so the header row disappears. Under the board there are
-//! always the two rows of the controls strip.
+//! Compact screens (fewer than 130 columns) show the game information in a header row. Standard
+//! (130 to 179 columns) and Wide (180 and more) screens show it in the top box of a framed side
+//! panel instead, so the header row disappears, whatever the height: the terminal is never
+//! smaller than the board's minimum, and the board keeps its 100 columns beside the panel. Under
+//! the board there are always the two rows of the controls strip.
 
 use ratatui::layout::{Constraint, Layout, Rect};
 
@@ -13,8 +14,6 @@ pub const BOARD_MIN_WIDTH: u16 = 100;
 pub const STANDARD_MIN_WIDTH: u16 = 130;
 /// Columns from which the screen is Wide.
 pub const WIDE_MIN_WIDTH: u16 = 180;
-/// Rows below which the screen is Compact whatever its width.
-pub const STANDARD_MIN_HEIGHT: u16 = 36;
 /// Columns of the side panel of a Standard screen, its frame included.
 pub const GUIDE_WIDTH: u16 = 30;
 /// Columns of the side panel of a Wide screen, its frame included.
@@ -31,7 +30,7 @@ pub enum Class {
 impl Class {
     /// The class of a screen of `area`'s size.
     pub const fn of(area: Rect) -> Self {
-        if area.width < STANDARD_MIN_WIDTH || area.height < STANDARD_MIN_HEIGHT {
+        if area.width < STANDARD_MIN_WIDTH {
             Self::Compact
         } else if area.width < WIDE_MIN_WIDTH {
             Self::Standard

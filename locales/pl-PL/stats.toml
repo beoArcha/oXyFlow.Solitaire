@@ -38,6 +38,13 @@ seed = "Ziarno"
 outcome = "Wynik"
 time = "Czas"
 moves = "Ruchy"
+winnable = "Wygrana?"
+
+[winnable]
+yes = "tak"
+no = "nie"
+unknown = "nieznane"
+unchecked = "-"
 
 [button]
 replay = "Zagraj to ziarno ponownie"

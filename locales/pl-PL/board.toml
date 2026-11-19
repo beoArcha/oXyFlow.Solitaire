@@ -3,6 +3,10 @@ seed = "ziarno {seed}"
 time = "Czas {time}"
 moves = "Ruchy: {moves}"
 no_undo = "Bez cofania"
+winnable_checking = "Do wygrania: sprawdzam..."
+winnable_yes = "Do wygrania: tak"
+winnable_unknown = "Do wygrania: nie wiadomo"
+winnable_no = "Do wygrania: nie"
 
 [rank]
 ace = "A"
@@ -138,6 +142,9 @@ deals_left = "Rozdań: {count}"
 
 [guide]
 title = "Przewodnik ({key}: ukryj)"
+window_title = "Przewodnik"
+window_scroll = "{up}/{down}/PgUp/PgDn: przewijanie"
+window_close = "{key}/{back}: zamknij"
 game_title = "Gra"
 goal_title = "Cel"
 keys_title = "Klawisze"
