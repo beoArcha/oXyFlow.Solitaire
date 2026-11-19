@@ -19,8 +19,6 @@ mod status;
 mod tests;
 mod view;
 
-pub(super) use controls::DoMap;
-
 use std::time::{Duration, Instant};
 
 use oxysol_core::{Move, PileRef, Session};
@@ -39,6 +37,7 @@ use crate::audio::SoundCue;
 use crate::clock::GameClock;
 use crate::settings::Settings;
 use crate::storage::GameId;
+use crate::widgets::footer::FooterMap;
 use crate::widgets::pile::Marks;
 
 const DEFAULT_SCREEN: Rect = Rect::new(0, 0, 120, 40);
@@ -82,10 +81,8 @@ pub struct BoardScreen {
     screen: Rect,
     covered: bool,
     pointer: Pointer,
-    /// The click/focus map for the `Do:` row, updated after each draw.
-    pub(super) do_map: DoMap,
-    /// Tab-focused index into the `Do:` row's entries; `None` when not focused.
-    pub(super) do_focus: Option<usize>,
+    /// The buttons of the `Do:` row as drawn last.
+    do_map: FooterMap,
 }
 
 /// The request to show the guide panel when it is hidden and to hide it when it is shown.
@@ -122,8 +119,7 @@ impl Default for BoardScreen {
             screen: DEFAULT_SCREEN,
             covered: false,
             pointer: Pointer::default(),
-            do_map: DoMap::default(),
-            do_focus: None,
+            do_map: FooterMap::default(),
         }
     }
 }
@@ -261,57 +257,9 @@ impl BoardScreen {
         self.auto_finish = ctx.settings.auto_finish;
         match action {
             Some(Action::Guide) => toggle_guide(ctx),
-            Some(Action::FocusNext) => {
-                self.step_do_focus(true);
-                Effect::None
-            }
-            Some(Action::FocusPrevious) => {
-                self.step_do_focus(false);
-                Effect::None
-            }
-            Some(Action::Select) if self.do_focus.is_some() => {
-                self.activate_do_focus(ctx)
-            }
-            Some(action) => {
-                self.do_focus = None;
-                self.dispatch(action)
-            }
+            Some(action) => self.dispatch(action),
             None => Effect::None,
         }
-    }
-
-    fn step_do_focus(&mut self, forward: bool) {
-        let len = self.do_map.len();
-        if len == 0 {
-            self.do_focus = None;
-            return;
-        }
-        self.do_focus = Some(match self.do_focus {
-            None => {
-                if forward { 0 } else { len.saturating_sub(1) }
-            }
-            Some(i) => {
-                if forward {
-                    (i + 1) % len
-                } else {
-                    (i + len - 1) % len
-                }
-            }
-        });
-    }
-
-    fn activate_do_focus(&mut self, ctx: &ViewCtx<'_>) -> Effect {
-        let Some(index) = self.do_focus else {
-            return Effect::None;
-        };
-        let Some(action) = self.do_map.entries.get(index).map(|e| e.action) else {
-            return Effect::None;
-        };
-        self.do_focus = None;
-        if action == Action::Guide {
-            return toggle_guide(ctx);
-        }
-        self.dispatch(action)
     }
 
     /// Draws the board screen.
@@ -319,6 +267,11 @@ impl BoardScreen {
         self.screen = area;
         self.guide_panel = ctx.settings.guide_panel;
         self.auto_finish = ctx.settings.auto_finish;
-        view::draw(frame, area, self, ctx);
+        self.do_map = view::draw(frame, area, self, ctx);
+    }
+
+    /// The action of the `Do:` button under `cell`, if any.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        self.do_map.action_at(cell)
     }
 }

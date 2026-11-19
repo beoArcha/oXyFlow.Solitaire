@@ -47,6 +47,7 @@ impl Fixture {
             audio_status,
             sound_styles: &self.sound_styles,
             has_saved_game: false,
+            pointer: None,
             now: Instant::now(),
         }
     }

@@ -1,0 +1,101 @@
+//! The `Do:` row as buttons: `g` and `f` are shown and clickable, a click on the board interrupts
+//! a running finish and a click on the `f` button starts it, and a narrow row keeps the way to the
+//! key list and the way out.
+
+use ratatui::crossterm::event::{KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
+
+use super::finish::{KLONDIKE, KLONDIKE_SEED, at_forced_win, is_won, win_open};
+use super::start;
+use crate::action::Action;
+use crate::i18n::tf;
+use crate::input::primary_key;
+use crate::screens::board::guidance::{Guidance, part};
+use crate::test_support::Harness;
+
+fn click(h: &mut Harness, column: u16, row: u16) {
+    h.send(crate::input::Input::Mouse(MouseEvent {
+        kind: MouseEventKind::Down(MouseButton::Left),
+        column,
+        row,
+        modifiers: KeyModifiers::NONE,
+    }));
+}
+
+/// The drawn text of an action in the `Do:` row, for example `f: finish game`.
+fn do_text(action: Action, key: &str) -> String {
+    let name = primary_key(action).unwrap_or_default();
+    tf(key, &[("key", &name)])
+}
+
+fn finishing(h: &Harness) -> bool {
+    h.app.board().is_finishing()
+}
+
+#[test]
+fn the_guide_button_is_shown_and_its_click_toggles_the_guide_panel() {
+    let mut h = start(KLONDIKE, KLONDIKE_SEED);
+    let text = do_text(Action::Guide, "board.action.guide");
+    let Some((column, row)) = h.find(&text) else {
+        panic!("{text:?} is not drawn");
+    };
+    let before = h.app.settings().guide_panel;
+    click(&mut h, column + 1, row);
+    assert_eq!(h.app.settings().guide_panel, !before);
+}
+
+#[test]
+fn the_finish_button_is_shown_when_offered_and_its_click_plays_the_win() {
+    let (mut h, _, _) = at_forced_win(KLONDIKE, KLONDIKE_SEED, false);
+    let text = do_text(Action::Finish, "board.action.finish");
+    let Some((column, row)) = h.find(&text) else {
+        panic!("{text:?} is not drawn");
+    };
+    click(&mut h, column + 1, row);
+    assert!(is_won(&h));
+    assert!(win_open(&h));
+}
+
+#[test]
+fn a_click_on_the_board_interrupts_a_running_finish_and_the_finish_button_starts_it_again() {
+    let (mut h, _, _) = at_forced_win(KLONDIKE, KLONDIKE_SEED, true);
+    h.advance(1);
+    assert!(finishing(&h), "the finish runs on the clock");
+    click(&mut h, 0, 0);
+    assert!(!finishing(&h), "a click on the board stops it");
+    let text = do_text(Action::Finish, "board.action.finish");
+    let Some((column, row)) = h.find(&text) else {
+        panic!("{text:?} is not drawn after the interruption");
+    };
+    click(&mut h, column + 1, row);
+    assert!(finishing(&h), "the finish button starts it again");
+}
+
+#[test]
+fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
+    let guidance = Guidance {
+        now: String::new(),
+        possible: vec![
+            part(Action::Undo, "board.action.undo", 3),
+            part(Action::Guide, "board.action.guide", 8),
+            part(Action::Rules, "board.action.rules", 9),
+        ],
+        tail: vec![
+            part(Action::Help, "board.action.help", 0),
+            part(Action::Back, "board.action.menu", 0),
+        ],
+        usable: Vec::new(),
+    };
+    let text = |width: usize| -> String {
+        guidance
+            .do_segments(width)
+            .iter()
+            .map(|segment| segment.text.as_str())
+            .collect()
+    };
+    assert_eq!(
+        text(200),
+        "Do: u: undo | g: guide | i: how to play | ?: keys | Esc: menu"
+    );
+    assert_eq!(text(40), "Do: u: undo | ?: keys | Esc: menu");
+    assert_eq!(text(30), "Do: ?: keys | Esc: menu");
+}

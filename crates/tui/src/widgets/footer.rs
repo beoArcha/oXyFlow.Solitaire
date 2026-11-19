@@ -1,162 +1,163 @@
-//! The key-hint line at the bottom of a screen, generated from the key table. Each entry is a
-//! mouse button: a click runs the same action as the key. The hovered or Tab-focused entry is
-//! shown in reverse video without color.
+//! The key-hint line of a screen and the `Do:` row of the board: a row of segments, where each
+//! button is a mouse button and a click runs the same action as its key. The drawn columns of
+//! every button are recorded, so the mouse meets the row as it is drawn. The button under the
+//! pointer is shown in reverse video, so the hover is visible without color.
 
 use ratatui::Frame;
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Alignment, Rect};
 use ratatui::style::{Modifier, Style};
-use ratatui::text::{Line, Span};
-use ratatui::widgets::{Paragraph, Widget};
+use ratatui::text::Span;
+use ratatui::widgets::Widget;
 
 use crate::action::Action;
 use crate::i18n::t;
 use crate::input::primary_key;
+use crate::mouse::contains;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 
-/// One entry in the footer strip: an action and the column span it occupies after the last draw.
+/// One piece of a row: text, and the action a click on it runs when it is a button.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Segment {
+    pub text: String,
+    pub action: Option<Action>,
+}
+
+impl Segment {
+    /// Text that is shown but does nothing when clicked.
+    pub fn plain(text: impl Into<String>) -> Self {
+        Self {
+            text: text.into(),
+            action: None,
+        }
+    }
+
+    /// A button: a click runs `action`.
+    pub fn button(action: Action, text: impl Into<String>) -> Self {
+        Self {
+            text: text.into(),
+            action: Some(action),
+        }
+    }
+}
+
+/// A button drawn on the last draw: its action and the columns it covers, `col_start` inclusive
+/// and `col_end` exclusive.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct FooterEntry {
     pub action: Action,
-    /// Start column (inclusive) in terminal coordinates, set by `draw`.
     pub col_start: u16,
-    /// End column (exclusive) in terminal coordinates, set by `draw`.
     pub col_end: u16,
 }
 
-/// The column-to-action map recorded after the last `draw`; used for click and hover routing.
-#[derive(Debug, Default, Clone)]
+/// The buttons of the last draw of a row, all on `row`.
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct FooterMap {
     pub row: u16,
     pub entries: Vec<FooterEntry>,
 }
 
 impl FooterMap {
-    /// The action for a click at `(column, row)`, or `None` when it misses every entry.
-    pub fn action_at(&self, column: u16, row: u16) -> Option<Action> {
+    /// The action of the button at the cell `(column, row)`, or `None` when the cell misses.
+    pub fn action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        let (column, row) = cell;
         if row != self.row {
             return None;
         }
         self.entries
             .iter()
-            .find(|e| column >= e.col_start && column < e.col_end)
-            .map(|e| e.action)
+            .find(|entry| column >= entry.col_start && column < entry.col_end)
+            .map(|entry| entry.action)
     }
+}
 
-    /// The index of the entry at `column`, or `None`.
-    pub fn index_at(&self, column: u16, row: u16) -> Option<usize> {
-        if row != self.row {
-            return None;
+/// The segments of a key line: each action as `key label`, separated by three spaces. Actions
+/// without a key are left out.
+pub fn key_segments(actions: &[Action]) -> Vec<Segment> {
+    let mut segments = Vec::with_capacity(actions.len() * 2);
+    for action in actions {
+        let Some(key) = primary_key(*action) else {
+            continue;
+        };
+        if !segments.is_empty() {
+            segments.push(Segment::plain("   "));
         }
-        self.entries
-            .iter()
-            .position(|e| column >= e.col_start && column < e.col_end)
+        segments.push(Segment::button(
+            *action,
+            format!("{key} {}", t(action.label_key())),
+        ));
     }
-
-    /// Number of entries.
-    pub fn len(&self) -> usize {
-        self.entries.len()
-    }
-
-    /// Whether the map is empty.
-    pub fn is_empty(&self) -> bool {
-        self.entries.is_empty()
-    }
+    segments
 }
 
-/// The footer text for `actions`, for example `Enter Select   Esc Back`.
-pub fn hints(actions: &[Action]) -> String {
-    actions
-        .iter()
-        .filter_map(|action| {
-            primary_key(*action).map(|key| format!("{key} {}", t(action.label_key())))
-        })
-        .collect::<Vec<_>>()
-        .join("   ")
-}
-
-/// Draws the hints of `actions` centered in `area`, makes each entry a clickable button, and
-/// returns the hit map. The entry at `focused` (by index) is shown in reverse video.
+/// Draws `segments` in `area` aligned by `align` and returns the buttons. `base` is the style of
+/// the text; a button under the pointer is drawn with it reversed.
 pub fn draw(
     frame: &mut Frame,
     area: Rect,
-    actions: &[Action],
+    segments: &[Segment],
+    align: Alignment,
+    base: Style,
     ctx: &ViewCtx<'_>,
-    focused: Option<usize>,
 ) -> FooterMap {
-    draw_to(frame.buffer_mut(), area, actions, ctx, focused)
+    draw_to(frame.buffer_mut(), area, segments, align, base, ctx)
 }
 
 /// Like [`draw`] but writes directly to `buf`.
 pub fn draw_to(
     buf: &mut Buffer,
     area: Rect,
-    actions: &[Action],
+    segments: &[Segment],
+    align: Alignment,
+    base: Style,
     ctx: &ViewCtx<'_>,
-    focused: Option<usize>,
 ) -> FooterMap {
-    let entries_text: Vec<(Action, String)> = actions
+    let width: u16 = segments
         .iter()
-        .filter_map(|action| {
-            primary_key(*action)
-                .map(|key| (*action, format!("{key} {}", t(action.label_key()))))
-        })
-        .collect();
-
-    let sep = "   ";
-    let sep_len = sep.chars().count() as u16;
-
-    let total_len: u16 = entries_text
-        .iter()
-        .enumerate()
-        .map(|(i, (_, text))| {
-            let w = text.chars().count() as u16;
-            if i == 0 { w } else { w + sep_len }
-        })
+        .map(|segment| text_width(&segment.text))
         .sum();
-
-    let start_x = if total_len >= area.width {
-        area.x
-    } else {
-        area.x + (area.width - total_len) / 2
+    let mut x = match align {
+        Alignment::Center => area.x + area.width.saturating_sub(width) / 2,
+        Alignment::Left | Alignment::Right => area.x,
     };
-
-    let muted = ctx.theme.style(Token::TextMuted, Token::Background);
-    let highlighted = muted.add_modifier(Modifier::REVERSED);
-
+    let hovered = base.add_modifier(Modifier::REVERSED);
     let mut map = FooterMap {
         row: area.y,
-        entries: Vec::with_capacity(entries_text.len()),
+        entries: Vec::with_capacity(segments.len()),
     };
-
-    let mut x = start_x;
-    for (i, (action, text)) in entries_text.iter().enumerate() {
-        if i > 0 {
-            Span::styled(sep, muted).render(Rect::new(x, area.y, sep_len, 1), buf);
-            x += sep_len;
-        }
-        let w = text.chars().count() as u16;
-        let w_clamped = w.min(area.right().saturating_sub(x));
-        if w_clamped == 0 {
+    for segment in segments {
+        let room = area.right().saturating_sub(x);
+        let w = text_width(&segment.text).min(room);
+        if w == 0 {
             break;
         }
-        let style = if focused == Some(i) {
-            highlighted
-        } else {
-            muted
+        let rect = Rect::new(x, area.y, w, 1);
+        let style = match segment.action {
+            Some(action) => {
+                let over = ctx.pointer.is_some_and(|cell| contains(rect, cell));
+                map.entries.push(FooterEntry {
+                    action,
+                    col_start: x,
+                    col_end: x + w,
+                });
+                if over { hovered } else { base }
+            }
+            None => base,
         };
-        Span::styled(text.as_str(), style)
-            .render(Rect::new(x, area.y, w_clamped, 1), buf);
-        map.entries.push(FooterEntry {
-            action: *action,
-            col_start: x,
-            col_end: x + w_clamped,
-        });
-        x += w_clamped;
+        Span::styled(segment.text.as_str(), style).render(rect, buf);
+        x += w;
     }
-
     map
+}
+
+fn text_width(text: &str) -> u16 {
+    u16::try_from(text.chars().count()).unwrap_or(u16::MAX)
+}
+
+/// The muted style of a key line on the background.
+pub fn key_style(ctx: &ViewCtx<'_>) -> Style {
+    ctx.theme.style(Token::TextMuted, Token::Background)
 }
 
 #[cfg(test)]
@@ -164,8 +165,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn hints_pair_each_key_with_its_label() {
-        let text = hints(&[Action::Select, Action::Back]);
-        assert_eq!(text, "Enter Select   Esc Back");
+    fn a_cell_inside_a_button_gives_its_action() {
+        let map = FooterMap {
+            row: 5,
+            entries: vec![FooterEntry {
+                action: Action::Hint,
+                col_start: 3,
+                col_end: 9,
+            }],
+        };
+        assert_eq!(map.action_at((3, 5)), Some(Action::Hint));
+        assert_eq!(map.action_at((8, 5)), Some(Action::Hint));
+        assert_eq!(map.action_at((9, 5)), None);
+        assert_eq!(map.action_at((4, 6)), None);
+    }
+
+    #[test]
+    fn key_segments_pair_each_key_with_its_label_and_separate_them() {
+        let segments = key_segments(&[Action::Select, Action::Back]);
+        let texts: Vec<&str> = segments.iter().map(|s| s.text.as_str()).collect();
+        assert_eq!(texts, ["Enter Select", "   ", "Esc Back"]);
+        assert_eq!(segments[0].action, Some(Action::Select));
+        assert_eq!(segments[1].action, None);
     }
 }

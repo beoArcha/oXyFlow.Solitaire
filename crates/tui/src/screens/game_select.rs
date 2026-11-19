@@ -18,11 +18,11 @@ use crate::input::primary_key;
 use crate::mouse::{contains, left_press};
 use crate::settings::Settings;
 use crate::theme::Token;
-use crate::widgets::footer;
+use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::menu_list::MenuList;
 use oxysol_core::Variant;
 
-const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
+pub(crate) const FOOTER: [Action; 3] = [Action::Select, Action::Back, Action::Help];
 
 /// The focus ring of the screen: the variants list, then the undo toggle.
 const LIST: usize = 0;
@@ -36,6 +36,7 @@ pub struct GameSelect {
     seed: Option<u64>,
     focus: usize,
     toggle: Rect,
+    footer: FooterMap,
 }
 
 impl GameSelect {
@@ -108,6 +109,11 @@ impl GameSelect {
         self.list
             .on_mouse(event, Variant::ALL.len())
             .map_or(Effect::None, |index| self.start(index, ctx))
+    }
+
+    /// The footer button under `cell`, if any.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        self.footer.action_at(cell)
     }
 
     fn title(&self) -> String {
@@ -183,7 +189,14 @@ impl GameSelect {
         self.list
             .draw(frame, list_area, &labels, ctx, self.focus == LIST);
         self.draw_toggle(frame, [toggle_area, hint_area], ctx);
-        footer::draw(frame, footer_area, &FOOTER, ctx);
+        self.footer = footer::draw(
+            frame,
+            footer_area,
+            &footer::key_segments(&FOOTER),
+            Alignment::Center,
+            footer::key_style(ctx),
+            ctx,
+        );
     }
 }
 

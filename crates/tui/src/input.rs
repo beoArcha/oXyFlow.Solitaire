@@ -191,6 +191,14 @@ pub fn primary_key(action: Action) -> Option<String> {
         .map(KeySpec::display)
 }
 
+/// The key press that performs `action` through its primary key: what a click on its footer
+/// button sends through the same path as the key.
+pub fn primary_key_event(action: Action) -> Option<KeyEvent> {
+    binding_for(action)
+        .and_then(|binding| binding.keys.first())
+        .map(|spec| KeyEvent::new(spec.code, spec.modifiers))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -326,6 +334,15 @@ mod tests {
             binding_for(Action::FocusPrevious).map(|binding| binding.group),
             Some(HelpGroup::Navigation)
         );
+    }
+
+    #[test]
+    fn the_primary_key_event_maps_back_to_its_action() {
+        for action in Action::ALL {
+            if let Some(key) = primary_key_event(action) {
+                assert_eq!(action_for_key(&key), Some(action), "{action:?}");
+            }
+        }
     }
 
     #[test]

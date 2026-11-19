@@ -1,7 +1,10 @@
 # Strings of the statistics screen: the summary per game, the history list and copying a seed.
 label = "Statystyki"
 title = "Statystyki"
-footer = "Góra Dół Wybór   Enter Zagraj to ziarno ponownie   c Kopiuj ziarno   Esc Wstecz"
+footer_list = "Góra Dół Wybór"
+footer_replay = "Enter Zagraj to ziarno ponownie"
+footer_copy = "c Kopiuj ziarno"
+footer_back = "Esc Wstecz"
 empty = "Nie rozegrano jeszcze żadnej gry. Zacznij ją z menu głównego."
 load_failed = "Nie można odczytać historii gier."
 position = "Gra {current} z {total}"

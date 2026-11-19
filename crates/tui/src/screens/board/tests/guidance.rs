@@ -170,7 +170,7 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     assert!(row(&mut h, "Now:").starts_with("Now: Game won"));
     let possible = row(&mut h, "Do:");
     assert!(
-        possible.starts_with("Do: n: new game | ?: keys | Esc: menu"),
+        possible.starts_with("Do: n: new game | g: guide | ?: keys | Esc: menu"),
         "{possible}"
     );
 }

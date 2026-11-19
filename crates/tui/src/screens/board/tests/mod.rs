@@ -5,6 +5,7 @@ mod commands;
 mod counters;
 mod finish;
 mod focus;
+mod footer;
 mod guidance;
 mod layout;
 mod mouse;

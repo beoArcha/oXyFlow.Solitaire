@@ -63,6 +63,7 @@ fn render(
         audio_status: AudioStatus::NoDevice,
         sound_styles: &[],
         has_saved_game: false,
+        pointer: None,
         now,
     };
     let board = timed_board(now);

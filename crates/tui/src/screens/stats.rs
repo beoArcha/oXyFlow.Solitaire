@@ -22,6 +22,7 @@ use crate::action::Action;
 use crate::app::Screen;
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::storage::GameRecord;
+use crate::widgets::footer::FooterMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Button {
@@ -57,6 +58,7 @@ pub struct StatsScreen {
     stop: Stop,
     buttons: Vec<(Button, Rect)>,
     rows: Vec<(usize, Rect)>,
+    footer: FooterMap,
 }
 
 impl StatsScreen {
@@ -186,6 +188,11 @@ impl StatsScreen {
             _ => {}
         }
         Effect::None
+    }
+
+    /// The footer button under `cell`, if any.
+    pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
+        self.footer.action_at(cell)
     }
 
     /// Handles a mouse event: the wheel moves the selection, a click selects a row or presses a

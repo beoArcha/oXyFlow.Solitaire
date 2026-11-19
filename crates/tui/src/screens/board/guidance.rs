@@ -11,6 +11,7 @@ use super::{BoardScreen, Pick, now};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
+use crate::widgets::footer::Segment;
 use crate::widgets::text::clip;
 
 /// One thing the player can do, as a short text with its key; the part with the highest
@@ -107,49 +108,50 @@ impl Guidance {
         clip(&tf("board.action.now", &[("text", &self.now)]), width)
     }
 
-    /// All parts in display order (possible then tail), trimmed to fit `width`, least useful
-    /// dropped first. Returns the parts that are shown.
-    pub(super) fn visible_parts(&self, width: usize) -> Vec<&Part> {
-        let mut parts = self.possible.clone();
-        loop {
-            let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
-            let line = tf("board.action.possible", &[("text", &join(&all))]);
-            if line.chars().count() <= width || parts.is_empty() {
-                return parts.iter().chain(&self.tail).collect();
+    /// The `Do:` row as segments: the prefix, the parts that fit `width` columns (least useful
+    /// dropped first, the tail always kept) with their separators, and the suffix. Parts with an
+    /// action are buttons.
+    pub(super) fn do_segments(&self, width: usize) -> Vec<Segment> {
+        let template = t("board.action.possible");
+        let (before, after) = template.split_once("{text}").unwrap_or(("", ""));
+        let separator = t("board.action.separator");
+        let mut segments = vec![Segment::plain(before)];
+        for (index, part) in self.visible_parts(width).iter().enumerate() {
+            if index > 0 {
+                segments.push(Segment::plain(separator.as_ref()));
             }
-            let least = parts
-                .iter()
-                .enumerate()
-                .max_by_key(|(_, part)| part.drop_order)
-                .map(|(index, _)| index);
-            if let Some(index) = least {
-                parts.remove(index);
-            } else {
-                break;
-            }
+            segments.push(match part.action {
+                Some(action) => Segment::button(action, part.text.as_str()),
+                None => Segment::plain(part.text.as_str()),
+            });
         }
-        parts.iter().chain(&self.tail).collect()
+        segments.push(Segment::plain(after));
+        segments
     }
 
-    /// The `Do:` row: the parts that fit `width` columns, least useful dropped first, then the
-    /// tail, which always stays.
-    pub(super) fn possible_line(&self, width: usize) -> String {
+    fn visible_parts(&self, width: usize) -> Vec<Part> {
         let mut parts = self.possible.clone();
-        loop {
-            let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
-            let line = tf("board.action.possible", &[("text", &join(&all))]);
-            if line.chars().count() <= width || parts.is_empty() {
-                return clip(&line, width);
-            }
-            let least = parts
+        while !self.do_row_fits(&parts, width) {
+            let Some(index) = parts
                 .iter()
                 .enumerate()
                 .max_by_key(|(_, part)| part.drop_order)
-                .map(|(index, _)| index);
-            if let Some(index) = least {
-                parts.remove(index);
-            }
+                .map(|(index, _)| index)
+            else {
+                break;
+            };
+            parts.remove(index);
         }
+        parts.extend(self.tail.iter().cloned());
+        parts
+    }
+
+    fn do_row_fits(&self, parts: &[Part], width: usize) -> bool {
+        let all: Vec<Part> = parts.iter().chain(&self.tail).cloned().collect();
+        tf("board.action.possible", &[("text", &join(&all))])
+            .chars()
+            .count()
+            <= width
     }
 
     fn closed(now_key: &str, possible: Vec<Part>, mut usable: Vec<Action>) -> Self {
@@ -197,6 +199,14 @@ impl BoardScreen {
     /// The guidance for the position on the board; `None` without a game and while the board is
     /// covered.
     pub(super) fn guidance(&self) -> Option<Guidance> {
+        let mut guidance = self.position_guidance()?;
+        guidance
+            .possible
+            .push(part(Action::Guide, "board.action.guide", 8));
+        Some(guidance)
+    }
+
+    fn position_guidance(&self) -> Option<Guidance> {
         let session = self.session.as_ref().filter(|_| !self.covered)?;
         let game = session.game();
         if game.is_won() {
@@ -273,7 +283,6 @@ impl BoardScreen {
             usable.push(Action::Redo);
         }
         possible.push(part(Action::Rules, "board.action.rules", 9));
-        possible.push(part(Action::Guide, "board.action.guide", 8));
         usable.extend(ALWAYS);
         Guidance {
             now: self.now_text(piles),

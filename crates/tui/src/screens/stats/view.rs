@@ -8,10 +8,12 @@ use ratatui::widgets::Paragraph;
 
 use super::format::{history_header, history_row, summary_lines};
 use super::{Button, Notice, StatsScreen, Stop};
+use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::screens::ViewCtx;
 use crate::screens::focus::{button_style, marker};
 use crate::theme::Token;
+use crate::widgets::footer::{self, Segment};
 
 /// Rows of the screen that are not the summary or the history list: title, two gaps, the history
 /// heading and column header, the buttons, the status line and the key line.
@@ -35,6 +37,19 @@ fn text_width(text: &str) -> u16 {
 
 fn block_x(area: Rect, width: u16) -> u16 {
     area.x + area.width.saturating_sub(width) / 2
+}
+
+/// The key line: the list keys as text, then the three keys that are buttons.
+fn key_line() -> Vec<Segment> {
+    vec![
+        Segment::plain(t("stats.footer_list")),
+        Segment::plain("   "),
+        Segment::button(Action::Select, t("stats.footer_replay")),
+        Segment::plain("   "),
+        Segment::button(Action::CopySeed, t("stats.footer_copy")),
+        Segment::plain("   "),
+        Segment::button(Action::Back, t("stats.footer_back")),
+    ]
 }
 
 fn button_label(button: Button) -> String {
@@ -82,7 +97,6 @@ impl StatsScreen {
         ])
         .areas(area);
         let accent = ctx.theme.style(Token::Accent, Token::Background);
-        let muted = ctx.theme.style(Token::TextMuted, Token::Background);
         centered(frame, title_area, t("stats.title").into_owned(), accent);
         self.rows.clear();
         if self.records.is_empty() {
@@ -95,7 +109,14 @@ impl StatsScreen {
         }
         self.draw_buttons(frame, buttons_area, ctx);
         self.draw_status(frame, status_area, ctx);
-        centered(frame, footer_area, t("stats.footer").into_owned(), muted);
+        self.footer = footer::draw(
+            frame,
+            footer_area,
+            &key_line(),
+            Alignment::Center,
+            footer::key_style(ctx),
+            ctx,
+        );
     }
 
     fn draw_empty(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
