@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.3 (2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings). Later tasks may refine it.
+Status: contract v0.4 (2026-11-19: P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -264,29 +264,47 @@ pub struct NullClipboard;                                // every copy fails wit
   `Glyphs::aura_focus`), the picked-up run (`Token::AuraCarry`, `aura_carry`) and, weaker, every drop
   target (`Token::Target`, `aura_target`). It paints only free table cells, never a card, so the layout
   does not change and hit tests are unaffected; the three halos use three different symbols, so they
-  read without color. The two aura tokens are in `TEXT_PAIRS` against `Table`. *Action line:* two rows
-  under the status line, `Now:` (browsing / carrying with the target count / no legal moves / game won)
-  and `Possible:` (the actions of this exact state with their keys from `KEY_TABLE`; parts are dropped,
-  least useful first, when the row is wider than the screen). `screens/board/guidance.rs` builds both
-  from the controller state and `Session` (`legal_moves`, `hint`, `can_undo`/`can_redo`); no rule is
-  decided in the TUI. It replaces the first-steps hint; the announcer line (focus and last event) stays.
-  *Guide panel:* `widgets/guide.rs`, a 30-column panel at the right of the board (goal of the game, the
-  key groups generated from `KEY_TABLE`, the mouse gestures); the keys usable now carry a marker symbol
-  and bold type. `Settings::guide_panel` (default `true`; an older saved value without the field loads
-  as `true`) switches it; `Action::Guide`, key `g`, and a click on the panel title toggle it through
-  `Effect::Apply`. `layout::chrome_with(area, guide)` returns the panel only when the screen is at
-  least `BOARD_MIN_WIDTH + GUIDE_WIDTH` = 130 columns wide, so the board always keeps 100 columns.
-- **Board counters, no-undo mode and seed copying (P3-12):** the header reads `variant | seed | time |
-  Moves: N` (`Session::moves_made()`; the win dialog shows the time and the moves too). The stock counter
+  read without color. The two aura tokens are in `TEXT_PAIRS` against `Table`. *Controls strip (P3-15; it replaces the P3-11 action line, the announcer row and the footer on the board):*
+  two rows under the board, as wide as the board only (`screens/board/controls.rs`). `Now:` says what is
+  focused, carried or hinted in the colon form `{pile}: {what}` (`Tableau 3: ace of clubs`, `Carrying: ace of
+  clubs (from Tableau 3), 4 targets`, `Hint: ace of clubs to Foundation 1`, `Game won`, `No legal moves`; a pile
+  name is never the object of a verb, so Polish needs no declension; the texts are built in
+  `screens/board/now.rs`) and carries the last event right-aligned on the same row in the Success or Error token
+  (`board.status.*` and `board.error.*`, at most 40 columns, tested; cleared by the next action). `Do:` lists the
+  actions of this exact state with their keys from `KEY_TABLE`; parts are dropped, least useful first, when the row
+  is wider than the board, but a fixed tail always stays: `?: keys` and `Esc: menu` (while cards are carried Esc
+  puts them back, so the tail is `?: keys` only). `screens/board/guidance.rs` builds both rows from the
+  controller state and `Session` (`legal_moves`, `hint`, `can_undo`/`can_redo`); no rule is decided in the TUI.
+  The strip is drawn on `Surface`, so `Text`, `Success` and `Error` use pairs that `TEXT_PAIRS` tests. The `Now:`
+  text is what a screen reader reads; `announce.rs` keeps only the names (`pile_name`, `card_name`, `look_text`,
+  `targets_text`), the separate announcer line and its `focus`/`announce` functions are gone. The texts `Cards
+  picked up…` and the stock counter are not in `Now:`.
+  *Guide panel (P3-11, framed by P3-15):* `widgets/guide/` (`mod.rs` frame and layout, `keys.rs` goal, keys and
+  mouse sections, `legend.rs`). A framed panel (WGL4 light box `┌─┐│└─┘`, ASCII `+-+|`) with its title in the
+  top border (`Guide (g: hide)`; a click on the top border toggles it), full height at the right of the board:
+  30 columns at Standard, 40 at Wide. From the top: a `Game` compartment (heading plus the game facts, closed by a
+  rule `├──┤`), then `Goal`, `Keys` (usable ones carry a marker symbol and bold type), `Mouse` and `Legend` (`►`
+  focus, `●` picked, `+` target, `?→` hint, in the symbols of the glyph set). Blank rows between the sections
+  appear only when every section still fits. It never repeats a fact of the controls strip. `Settings::guide_panel`
+  (default `true`; an older saved value without the field loads as `true`) switches it; `Action::Guide`, key `g`,
+  and the title click toggle it through `Effect::Apply`.
+  *Size classes:* `layout::Class::of(area)` is decided at every draw: Compact below 130 columns or below 36
+  rows, Standard from 130 columns, Wide from 180 columns. The panel exists in Standard and Wide only, and only when
+  the setting is on; the board keeps at least 100 columns. Chrome rows: Compact has the header row plus the two
+  strip rows; Standard and Wide have the two strip rows only, the facts moving into the `Game` compartment. When
+  the panel is off (setting) the header row comes back, so the game information has exactly one place at all
+  times. A Compact screen has no panel (P3-18 opens the guide as a window there).
+- **Board counters, no-undo mode and seed copying (P3-12):** the game information (`screens/board/header.rs`, `Facts`) reads
+  `variant | seed N | Time m:ss | Moves: N | stock counter | No undo` in one header row at Compact size or as the
+  lines of the `Game` compartment at Standard and Wide size (the counter is the first fact dropped when the header
+  row is too narrow; the best time of the variant is not shown yet, the board has no access to the history) (`Session::moves_made()`; the win dialog shows the time and the moves too). The stock counter
   comes from `Game::stock_status` (`screens/board/counters.rs`): Klondike "Turned over: N", Pyramid
   "Pass N of M" (`recycles + 1` of `recycles + recycles_left + 1`), "Last pass (N of N)" when no recycle
   is left, "No passes left" once the last pass has emptied the stock, Spider "Deals left: N", FreeCell
-  none. It is drawn in the row under the stock when neither a card nor a halo can reach that row (a
-  pyramid in a window taller than the board), else appended to the `Now:` line; the guide panel always
-  lists it. *No-undo mode:* every game is dealt with `undo_allowed` (`Effect::Start`, `Storage::start_game`,
+  none. It is game information and is shown only there, never in `Now:` and never beside the stock. *No-undo mode:* every game is dealt with `undo_allowed` (`Effect::Start`, `Storage::start_game`,
   `SavedGame`, `BoardScreen::begin`); the engine keeps the history for replay and restore, the board
   refuses `Action::Undo` and `Action::Redo` (status `board.status.undo_off`, an illegal-move cue), leaves
-  them out of the action line, footer and guide panel and adds a "No undo" badge to the header.
+  them out of the `Do:` row and the guide panel and adds a "No undo" badge to the game information.
   `Settings::undo_allowed` (default `true`, an older value without the field loads as `true`) is the last
   choice; the game selection (also behind "New game from seed" and `--seed`) shows `[ Undo: on|off ]`,
   switched by `Action::Undo` (`u`) or a click, through `Effect::Apply`. A new game from the board keeps
@@ -294,9 +312,9 @@ pub struct NullClipboard;                                // every copy fails wit
   saved game keeps the mode: `SavedGame::undo_allowed` has a serde default of `true`, and `SqliteStorage`
   reads it from the `games` row of the saved game's id (a left join), so the database schema is unchanged.
   *Copy the seed:* `Action::CopySeed`, key `c` (help group Game; the statistics screen's own `c` is the same
-  key and the same effect), and a click on the seed in the header, return `Effect::CopySeed`; `App::copy_seed`
-  announces the result on both the statistics screen and the board status line ("Seed N copied", or the
-  failure text with the seed). The statistics summary shows every group (up to 8 games × 2 modes = 16
+  key and the same effect), and a click on the seed (underlined, in the header row or in the `Game` compartment), return
+  `Effect::CopySeed`; `App::copy_seed` announces the result on the statistics screen and as the last event of
+  the board ("Seed N copied", or "Could not copy the seed"; the seed is always visible as text). The statistics summary shows every group (up to 8 games × 2 modes = 16
   rows) and leaves the history list at least 5 rows at the minimum size.
 - **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
   selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
@@ -338,10 +356,11 @@ pub struct NullClipboard;                                // every copy fails wit
   (`BoardScreen::set_covered`); the clock stops for every modal and after a win.
 - **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
   and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
-  header, `body`, status line, the two rows of the action line and footer; `chrome_with(area, guide)` also
-  reserves the guide panel at the right (see Board guidance). The same result drives rendering and hit-testing. Two layouts:
+  an optional header row, `body` and the two rows of the controls strip; `chrome_with(area, guide)` also
+  reserves the full-height guide panel at the right and drops the header row when the panel is there (see Board
+  guidance; `Chrome { class, header: Option<Rect>, body, guide: Option<Rect>, now, possible }`). The same result drives rendering and hit-testing. Two layouts:
   columns (Klondike, Spider, FreeCell) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
-  that fits the window (a column of a king-to-ace run plus a margin must fit); a column compresses
+  that fits the window (a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.
   Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).
 - **Themes:** `ThemeId { Dark, Light, HighContrast }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
@@ -379,9 +398,10 @@ pub struct NullClipboard;                                // every copy fails wit
   described by the style's `style.toml`. `Font` is opt-in through the graphics-check screen.
 - **Terminal capabilities:** `TerminalCaps { color, unicode, remote }` from detection, overridden by
   settings and arguments. `remote` (an SSH session) switches audio off.
-- **Accessibility:** every `Action` has a key binding and a mouse path. `announce` produces a
-  one-line plain-text description of the focus and the last event ("Tableau 3: seven of hearts
-  selected, 2 targets") shown in the status area, followed by the last event. The `Unicode` glyph set
+- **Accessibility:** every `Action` has a key binding and a mouse path. The `Now:` row
+  of the controls strip is the one-line plain-text description of the focus ("Tableau 3: seven of hearts",
+  "Carrying: seven of hearts (from Tableau 3), 2 targets") and carries the last event at its right end;
+  `announce` supplies the localized names. The `Unicode` glyph set
   uses only WGL4 symbols (no `▶ ◀`, rounded, heavy, dashed or dotted lines). Sound cues duplicate,
   never replace, visible feedback.
 - **Clock:** `GameClock` computes elapsed time from a passed-in `Instant`; pause and modals stop it.
