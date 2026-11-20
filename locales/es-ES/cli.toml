@@ -1,53 +1,53 @@
 # Strings of the cli area.
 
 version = "oXySol {version}"
-version_legal = "Copyright (c) {year} {authors}. {license} License."
+version_legal = "Copyright (c) {year} {authors}. Licencia {license}."
 help = """
-oXySol: Ultimate Office Solitaire for the terminal
+oXySol: El solitario de oficina definitivo para el terminal
 
-Usage: oxysol [options]
+Uso: oxysol [opciones]
 
-Options:
-  --version                    print the version and license, and exit
-  --help                       print this help and exit
+Opciones:
+  --version                    muestra la versión y licencia, y sale
+  --help                       muestra esta ayuda y sale
 
-Display:
-  --ascii                      draw cards with ASCII characters only
-  --colors <16|256|truecolor>  color depth of the terminal
-  --fullscreen                 start in full screen, whatever the setting says
-  --no-fullscreen              start in a window, whatever the setting says
+Pantalla:
+  --ascii                      dibuja cartas solo con caracteres ASCII
+  --colors <16|256|truecolor>  profundidad de color del terminal
+  --fullscreen                 inicia en pantalla completa, según o no los ajustes
+  --no-fullscreen              inicia en ventana, según o no los ajustes
 
-Game:
-  --seed <u64>                 choose a game for this seed at once
+Juego:
+  --seed <u64>                 elige una partida con esta semilla al instante
 
-Window:
-  -n, --new-window             open the game in a new console window and
-                               return to the prompt at once
+Ventana:
+  -n, --new-window             abre el juego en una nueva ventana de consola
+                               y regresa al intérprete de inmediato
 
-Double-click or console:
-  A double-click opens the game in its own console window, which closes
-  when the game exits. Started from a console, the game runs inside that
-  console, unless --new-window is given. After an error at startup the
-  window waits for Enter.
+Doble clic o consola:
+  Un doble clic abre el juego en su propia ventana de consola, que se cierra
+  al salir del juego. Si se inicia desde consola, el juego corre en ella,
+  a menos que se use --new-window. Tras un error de inicio, la ventana
+  espera a que se pulse Enter.
 
-Full screen:
-  The setting Full screen (Auto, On, Off) is in Settings. Auto goes full
-  screen only in a window the game opened itself. A classic Windows console
-  is switched by the game; elsewhere press Alt+Enter or F11 (Ctrl+Cmd+F on
-  macOS). The game never relaunches itself for this.
+Pantalla completa:
+  El ajuste Pantalla completa (Auto, Sí, No) está en Ajustes. Auto solo activa
+  pantalla completa en una ventana que haya abierto el propio juego. En una
+  consola clásica de Windows, el juego cambia solo; en otros casos, pulsa
+  Alt+Enter o F11 (Ctrl+Cmd+F en macOS). El juego nunca se reinicia para esto.
 
-Files:
-  OXYSOL_HOME      folder for the database and the log (always wins)
-  oxysol.portable  marker file next to the program: the files then live
-                   in a data folder there
-  OXYSOL_LOG       log level: error, warn, info, debug or trace
+Archivos:
+  OXYSOL_HOME      carpeta para la base de datos y el registro (prioritaria)
+  oxysol.portable  archivo marcador junto al programa: los archivos quedan
+                   en una subcarpeta data en esa misma ruta
+  OXYSOL_LOG       nivel de registro: error, warn, info, debug o trace
 """
-usage_error = "oxysol: {error}\nTry `oxysol --help` for the list of options."
-paths_failed = "oXySol cannot find a folder for its files. Set OXYSOL_HOME to a writable folder."
-storage_failed = "oXySol cannot open its database. The details are in the log file."
-terminal_failed = "oXySol stopped because the terminal failed. The details are in the log file."
-output_failed = "oXySol cannot write to the terminal."
-new_window_failed = "oXySol cannot open a new console window (tried: {tried}). Run it without --new-window."
-log_unavailable = "oXySol cannot write its log file {path}. It continues without a log."
-panic = "oXySol stopped unexpectedly at {location}. The details are in {path}."
-press_enter = "Press Enter to close this window."
+usage_error = "oxysol: {error}\nPrueba `oxysol --help` para ver la lista de opciones."
+paths_failed = "oXySol no encuentra una carpeta para sus archivos. Define OXYSOL_HOME con una carpeta con permisos de escritura."
+storage_failed = "oXySol no puede abrir su base de datos. Los detalles están en el archivo de registro."
+terminal_failed = "oXySol se detuvo por un fallo en el terminal. Los detalles están en el archivo de registro."
+output_failed = "oXySol no puede escribir en el terminal."
+new_window_failed = "oXySol no puede abrir una nueva ventana de consola (intentos: {tried}). Ejecútalo sin --new-window."
+log_unavailable = "oXySol no puede escribir en su archivo de registro {path}. Continúa sin registro."
+panic = "oXySol se detuvo inesperadamente en {location}. Los detalles están en {path}."
+press_enter = "Pulsa Enter para cerrar esta ventana."
