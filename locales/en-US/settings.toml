@@ -20,10 +20,14 @@ moves_panel = "Possible moves panel"
 target_marks = "Target marks"
 auto_finish = "Auto-finish"
 aura = "Aura"
+aura_colour = "Aura color"
+aura_style = "Aura style"
+aura_size = "Aura size"
 line = "{label} {value}"
 
 [group]
 display = "Display"
+interface = "Interface"
 sound = "Sound"
 hints = "Hints and help"
 
@@ -56,6 +60,9 @@ music = "Background music while a game is open."
 volume = "The loudness of sound and music, in steps of 10%."
 auto_finish = "Plays the last moves by itself once the win is certain."
 aura = "Glow: Full marks the focus, carried cards and targets; Focus only, the focus."
+aura_colour = "The color of the glow around the focus, a carried run and targets. Theme uses the theme's own colors."
+aura_style = "Halo shades the cells around cards; Frame draws a line around them; Marks only draws no glow."
+aura_size = "How many cells wide the glow is. Thick needs free space around the cards."
 target_marks = "Marks the places a carried run can go with + and a glow."
 guide_panel = "A side panel with hints for the focused card and the keys."
 moves_panel = "A side panel listing every action with its key, active or not."
@@ -123,3 +130,28 @@ back = "Back: {tile}, centre {mosaic}"
 hint_windows_terminal = "Windows Terminal: set the profile font face to \"oXySol Mono\", or to a list that ends with it: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (lists work from Windows Terminal 1.20.11381)."
 question = "Do they look like card symbols, not like squares or blanks?"
 declined = "The Unicode symbols stay. To see the card font, install oXySol Mono first (wiki page \"Card font\"), then choose it again under Symbols."
+
+[aura_colour]
+theme = "Theme"
+text = "Text color"
+selection = "Selection color"
+hint = "Hint color"
+
+[aura_style]
+halo = "Halo"
+frame = "Frame"
+marks_only = "Marks only"
+
+[aura_size]
+thin = "Thin"
+thick = "Thick"
+
+[sample]
+aura = "Aura:"
+
+[preview]
+note = "Preview. Leaving this screen asks whether to keep the interface changes."
+position = "row {row} of {total}"
+
+[confirm]
+keep_interface = "Keep the changed interface settings?"

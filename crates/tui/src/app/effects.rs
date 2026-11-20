@@ -19,7 +19,7 @@ impl App {
     pub(crate) fn apply(&mut self, effect: Effect) {
         match effect {
             Effect::None => {}
-            Effect::Goto(screen) => self.goto(screen),
+            Effect::Goto(screen) => self.leave_or_ask(screen),
             Effect::Start {
                 variant,
                 seed,
@@ -30,6 +30,8 @@ impl App {
             Effect::SameSeed => self.same_seed(),
             Effect::Restart => self.restart_game(),
             Effect::Apply(settings) => self.apply_settings(settings),
+            Effect::Preview(settings) => self.preview_settings(settings),
+            Effect::LeaveSettings { keep, to } => self.leave_settings(keep, to),
             Effect::Open(modal) => self.open_modal(modal),
             Effect::CardSize(size) => self.set_card_size(size),
             Effect::Quick(aids) => self.set_quick(aids),
@@ -227,7 +229,14 @@ impl App {
         self.apply_settings(settings);
     }
 
-    pub(super) fn apply_settings(&mut self, mut settings: Settings) {
+    pub(super) fn apply_settings(&mut self, settings: Settings) {
+        self.show_settings(settings);
+        self.persist_settings();
+    }
+
+    /// Makes `settings` the ones in use: the console, the theme and the running view follow. Nothing
+    /// is saved.
+    pub(super) fn show_settings(&mut self, mut settings: Settings) {
         let full_screen_changed = self.settings.full_screen != settings.full_screen;
         let console_font_changed = self.settings.console_font != settings.console_font;
         let check = self.needs_graphics_check(&settings);
@@ -246,13 +255,16 @@ impl App {
         }
         self.refresh_running();
         self.refresh_view();
-        self.persist_settings();
     }
 
     /// Saves the settings through storage. The first failure since the last successful write is
     /// logged and shown as an alert; later failures stay silent until a write succeeds again.
     pub(super) fn persist_settings(&mut self) {
-        let Err(error) = self.storage.save_settings(&self.settings) else {
+        let saved = match &self.interface_baseline {
+            Some(baseline) => self.settings.with_interface_of(baseline),
+            None => self.settings.clone(),
+        };
+        let Err(error) = self.storage.save_settings(&saved) else {
             self.settings_write_failed = false;
             return;
         };

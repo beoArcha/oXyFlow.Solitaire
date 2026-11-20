@@ -235,6 +235,7 @@ fn focused_button_is_marked_and_styled_without_color() {
     let focused_yes = Modal::Confirm {
         prompt: "board.confirm.quit",
         on_yes: Box::new(Effect::Quit),
+        on_no: None,
         yes_focused: true,
     };
     let terminal = render(&focused_yes, caps(false), Locale::PlPl, (100, 30), now);

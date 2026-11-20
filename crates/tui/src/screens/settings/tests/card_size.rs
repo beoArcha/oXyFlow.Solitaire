@@ -1,4 +1,4 @@
-//! The `Card size` row: its place in the Display group, its values in both locales and how it steps.
+//! The `Card size` row: its place in the Interface group, its values in both locales and how it steps.
 
 use super::{changed, row, value};
 use crate::i18n::{Locale, set_locale};
@@ -23,7 +23,7 @@ fn the_row_cycles_every_value_in_both_directions() {
         changed(Field::CardSize, &Settings::default(), Step::Previous).card_size,
         CardSizeSetting::Huge
     );
-    assert_eq!(Field::CardSize.group(), Group::Display);
+    assert_eq!(Field::CardSize.group(), Group::Interface);
 }
 
 #[test]

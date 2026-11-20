@@ -7,6 +7,7 @@ mod console_font;
 mod focus;
 mod guide;
 mod hints;
+mod interface;
 mod language;
 mod screen;
 mod styles;
@@ -258,11 +259,12 @@ fn every_row_changes_by_keyboard_and_reaches_storage() {
         h.press(KeyCode::Enter);
         let expected = changed(*field, &before, Step::Next);
         assert_eq!(h.app.settings(), &expected, "{field:?}");
-        assert_eq!(
-            h.storage.borrow().settings.clone(),
-            Some(expected),
-            "{field:?}"
-        );
+        let saved = h.storage.borrow().settings.clone();
+        if field.is_interface() {
+            assert_eq!(saved, None, "{field:?} is saved only when it is kept");
+        } else {
+            assert_eq!(saved, Some(expected), "{field:?}");
+        }
     }
 }
 
@@ -402,8 +404,5 @@ fn a_click_on_a_row_reaches_the_settings_through_the_app() {
     let (column, row) = found.unwrap_or_default();
     h.click(column, row);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
-    assert_eq!(
-        h.storage.borrow().settings.as_ref().map(|s| s.theme),
-        Some(ThemeId::Light)
-    );
+    assert_eq!(h.storage.borrow().settings, None);
 }

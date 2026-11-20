@@ -2,6 +2,7 @@
 
 mod assist;
 mod aura;
+mod aura_look;
 mod commands;
 mod counters;
 mod finish;

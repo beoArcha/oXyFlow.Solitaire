@@ -27,7 +27,7 @@ fn card_backs_cycle_both_ways() {
     assert!(row(Field::CardBack, &base, true).starts_with("Card back"));
     assert_eq!(
         Field::CardBack.group(),
-        super::super::options::Group::Display
+        super::super::options::Group::Interface
     );
 }
 
