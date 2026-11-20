@@ -69,6 +69,15 @@ pub enum Effect {
     Restart,
     /// Replace the settings; the application applies and saves them.
     Apply(Settings),
+    /// Show `Settings` at once without saving them: a change of the Interface section. It is kept
+    /// or undone when the player leaves the settings screen.
+    Preview(Settings),
+    /// Leave the settings screen for `to`, keeping the previewed interface changes (`keep`) or
+    /// undoing them.
+    LeaveSettings {
+        keep: bool,
+        to: Screen,
+    },
     Open(Modal),
     /// Set the card size and save it with the settings (the zoom keys of the board).
     CardSize(CardSizeSetting),

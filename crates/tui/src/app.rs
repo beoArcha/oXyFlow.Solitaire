@@ -84,6 +84,7 @@ pub struct App {
     caps: TerminalCaps,
     sound_styles: Vec<StyleInfo>,
     settings: Settings,
+    interface_baseline: Option<Settings>,
     quick: Aids,
     running: Settings,
     theme: Theme,
@@ -145,6 +146,7 @@ impl App {
             ),
             quick: settings.aids(),
             running: settings.clone(),
+            interface_baseline: None,
             settings,
             saved: None,
             write_failed: false,
@@ -278,6 +280,7 @@ mod effects;
 mod event;
 mod finish;
 mod font;
+mod interface;
 mod modal;
 mod persist;
 mod quick;

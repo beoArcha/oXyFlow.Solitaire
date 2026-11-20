@@ -73,7 +73,7 @@ fn act(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, action: Action) -> Effect
 
 fn render(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>) -> Vec<String> {
     let mut terminal =
-        Terminal::new(TestBackend::new(100, 30)).unwrap_or_else(|never| match never {});
+        Terminal::new(TestBackend::new(100, 40)).unwrap_or_else(|never| match never {});
     terminal
         .draw(|frame| screen.draw(frame, frame.area(), ctx))
         .unwrap_or_else(|never| match never {});
@@ -93,7 +93,7 @@ fn position_of(lines: &[String], needle: &str) -> Option<(u16, u16)> {
 }
 
 fn row_label(field: Field) -> String {
-    t(field.label_key()).into_owned()
+    format!("{} .", t(field.label_key()))
 }
 
 fn row_at(lines: &[String], field: Field) -> (u16, u16) {
@@ -112,7 +112,7 @@ fn a_click_changes_the_clicked_row_forward() {
     let effect = screen.handle_mouse(&click(column, row), &ctx);
     assert_eq!(
         effect,
-        Effect::Apply(changed(Field::Theme, &fixture.settings, Step::Next))
+        Effect::Preview(changed(Field::Theme, &fixture.settings, Step::Next))
     );
 }
 
@@ -128,11 +128,13 @@ fn every_row_changes_by_mouse() {
         let lines = render(&mut screen, &ctx);
         let (column, row) = row_at(&lines, field);
         let effect = screen.handle_mouse(&click(column, row), &ctx);
-        assert_eq!(
-            effect,
-            Effect::Apply(changed(field, &fixture.settings, Step::Next)),
-            "{field:?}"
-        );
+        let next = changed(field, &fixture.settings, Step::Next);
+        let expected = if field.is_interface() {
+            Effect::Preview(next)
+        } else {
+            Effect::Apply(next)
+        };
+        assert_eq!(effect, expected, "{field:?}");
     }
 }
 

@@ -20,10 +20,14 @@ moves_panel = "Painel de movimentos"
 target_marks = "Marcas de destino"
 auto_finish = "Conclusão automática"
 aura = "Aura"
+aura_colour = "Cor da aura"
+aura_style = "Estilo da aura"
+aura_size = "Tamanho da aura"
 line = "{label} {value}"
 
 [group]
 display = "Vídeo"
+interface = "Interface"
 sound = "Áudio"
 hints = "Dicas e ajuda"
 
@@ -56,6 +60,9 @@ music = "Música de fundo enquanto um jogo estiver aberto."
 volume = "O volume do som e da música, em passos de 10%."
 auto_finish = "Joga as últimas cartas sozinho quando a vitória é certa."
 aura = "Brilho: Completa marca foco, cartas e destinos; Só foco marca o foco."
+aura_colour = "A cor do brilho ao redor do foco, de uma sequência carregada e dos destinos. Tema usa as cores do tema."
+aura_style = "Halo sombreia as células ao redor das cartas; Moldura desenha uma linha; Só marcas não desenha brilho."
+aura_size = "Quantas células de largura tem o brilho. Grosso precisa de espaço livre ao redor das cartas."
 target_marks = "Marca os locais válidos para a sequência com + e brilho."
 guide_panel = "Painel lateral com dicas para a carta em foco e teclas."
 moves_panel = "Painel lateral com todas as ações e teclas, ativas ou não."
@@ -123,3 +130,28 @@ back = "Verso: {tile}, centro {mosaic}"
 hint_windows_terminal = "Windows Terminal: defina a fonte do perfil como \"oXySol Mono\" ou como uma lista que termine com ela: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (listas funcionam a partir do Windows Terminal 1.20.11381)."
 question = "Parecem símbolos de cartas, e não quadrados ou espaços em branco?"
 declined = "Os símbolos Unicode permanecem. Para ver a fonte das cartas, instale primeiro a oXySol Mono (página da wiki \"Card font\") e escolha-a de novo em Símbolos."
+
+[aura_colour]
+theme = "Tema"
+text = "Cor do texto"
+selection = "Cor da seleção"
+hint = "Cor da dica"
+
+[aura_style]
+halo = "Halo"
+frame = "Moldura"
+marks_only = "Só marcas"
+
+[aura_size]
+thin = "Fino"
+thick = "Grosso"
+
+[sample]
+aura = "Aura:"
+
+[preview]
+note = "Pré-visualização. Ao sair desta tela, pergunta-se se as alterações ficam."
+position = "linha {row} de {total}"
+
+[confirm]
+keep_interface = "Manter as configurações de interface alteradas?"

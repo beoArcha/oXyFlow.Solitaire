@@ -20,10 +20,14 @@ moves_panel = "Züge-Leiste"
 target_marks = "Zielmarkierungen"
 auto_finish = "Automatisches Beenden"
 aura = "Leuchten"
+aura_colour = "Leuchtfarbe"
+aura_style = "Leuchtstil"
+aura_size = "Leuchtbreite"
 line = "{label} {value}"
 
 [group]
 display = "Anzeige"
+interface = "Oberfläche"
 sound = "Ton"
 hints = "Hinweise und Hilfe"
 
@@ -56,6 +60,9 @@ music = "Hintergrundmusik bei geöffnetem Spiel."
 volume = "Die Lautstärke von Ton und Musik, in Schritten von 10%."
 auto_finish = "Führt die letzten Züge automatisch aus, sobald der Sieg sicher ist."
 aura = "Leuchten: Voll markiert Fokus, gehaltene Karten und Ziele; Nur Fokus nur den Fokus."
+aura_colour = "Die Farbe des Leuchtens um den Fokus, einen getragenen Stapel und Ziele. Design nimmt die Farben des Designs."
+aura_style = "Hof schattiert die Felder um Karten; Rahmen zeichnet eine Linie darum; Nur Marken zeichnet kein Leuchten."
+aura_size = "Wie viele Zellen breit das Leuchten ist. Dick braucht freien Platz um die Karten."
 target_marks = "Markiert mögliche Ablagestellen für eine gehaltene Folge mit + und einem Leuchten."
 guide_panel = "Eine Seitenleiste mit Hinweisen zur fokussierten Karte und den Tasten."
 moves_panel = "Eine Seitenleiste mit allen Aktionen und deren Tasten, aktiv oder nicht."
@@ -123,3 +130,28 @@ back = "Rückseite: {tile}, Mitte {mosaic}"
 hint_windows_terminal = "Windows Terminal: Schriftart des Profils auf \"oXySol Mono\" setzen oder auf eine Liste, die damit endet: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (Listen funktionieren ab Windows Terminal 1.20.11381)."
 question = "Sehen sie wie Kartensymbole aus, nicht wie Quadrate oder Lücken?"
 declined = "Die Unicode-Symbole bleiben. Um die Kartenschrift zu sehen, installiere zuerst oXySol Mono (Wiki-Seite \"Card font\") und wähle sie dann unter Symbole erneut."
+
+[aura_colour]
+theme = "Design"
+text = "Textfarbe"
+selection = "Auswahlfarbe"
+hint = "Hinweisfarbe"
+
+[aura_style]
+halo = "Hof"
+frame = "Rahmen"
+marks_only = "Nur Marken"
+
+[aura_size]
+thin = "Dünn"
+thick = "Dick"
+
+[sample]
+aura = "Leuchten:"
+
+[preview]
+note = "Vorschau. Beim Verlassen dieses Bildschirms wird gefragt, ob die Änderungen bleiben."
+position = "Zeile {row} von {total}"
+
+[confirm]
+keep_interface = "Die geänderten Oberflächen-Einstellungen behalten?"

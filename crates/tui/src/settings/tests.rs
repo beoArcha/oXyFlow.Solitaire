@@ -1,0 +1,242 @@
+use super::*;
+
+const TRUE_COLOR: TerminalCaps = TerminalCaps {
+    color: ColorDepth::TrueColor,
+    unicode: true,
+    remote: false,
+};
+
+#[test]
+fn toml_round_trip_is_lossless() {
+    let settings = Settings {
+        locale: Locale::PlPl,
+        theme: ThemeId::HighContrast,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings);
+    assert!(text.is_ok());
+    let back = text.map(|t| toml::from_str::<Settings>(&t));
+    assert!(matches!(back, Ok(Ok(ref s)) if *s == settings));
+}
+
+#[test]
+fn missing_fields_take_defaults() {
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.volume == 10 && s.cues));
+}
+
+#[test]
+fn the_guide_panel_is_on_by_default_and_old_values_without_it_keep_it_on() {
+    assert!(Settings::default().guide_panel);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.guide_panel));
+    let off = toml::from_str::<Settings>("guide_panel = false");
+    assert!(matches!(off, Ok(ref s) if !s.guide_panel));
+}
+
+#[test]
+fn the_help_window_is_centred_by_default_and_old_values_load_centred() {
+    assert_eq!(Settings::default().help_dock, DockSide::Centre);
+    let old = toml::from_str::<Settings>("guide_panel = false");
+    assert!(matches!(old, Ok(ref s) if s.help_dock == DockSide::Centre));
+    let left = toml::from_str::<Settings>("help_dock = \"left\"");
+    assert!(matches!(left, Ok(ref s) if s.help_dock == DockSide::Left));
+}
+
+#[test]
+fn the_moves_panel_is_on_by_default_and_old_values_without_it_keep_it_on() {
+    assert!(Settings::default().moves_panel);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.moves_panel));
+    let off = toml::from_str::<Settings>("moves_panel = false");
+    assert!(matches!(off, Ok(ref s) if !s.moves_panel));
+}
+
+#[test]
+fn the_moves_panel_round_trips() {
+    let settings = Settings {
+        moves_panel: false,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings && !s.moves_panel));
+}
+
+#[test]
+fn the_guide_panel_round_trips() {
+    let settings = Settings {
+        guide_panel: false,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings);
+    assert!(text.is_ok());
+    let back = text.map(|t| toml::from_str::<Settings>(&t));
+    assert!(matches!(back, Ok(Ok(ref s)) if *s == settings && !s.guide_panel));
+}
+
+#[test]
+fn undo_is_allowed_by_default_and_old_values_without_it_keep_it_allowed() {
+    assert!(Settings::default().undo_allowed);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.undo_allowed));
+    let off = toml::from_str::<Settings>("undo_allowed = false");
+    assert!(matches!(off, Ok(ref s) if !s.undo_allowed));
+}
+
+#[test]
+fn winnable_only_is_off_by_default_and_round_trips() {
+    assert!(!Settings::default().winnable_only);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if !s.winnable_only));
+    let settings = Settings {
+        winnable_only: true,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if s.winnable_only));
+}
+
+#[test]
+fn caps_without_unicode_give_ascii_glyphs() {
+    let caps = TerminalCaps {
+        unicode: false,
+        ..TRUE_COLOR
+    };
+    assert_eq!(Settings::for_caps(&caps).glyph_mode, GlyphMode::Ascii);
+    assert_eq!(
+        Settings::for_caps(&TRUE_COLOR).glyph_mode,
+        GlyphMode::Unicode
+    );
+}
+
+#[test]
+fn forced_color_mode_overrides_detection() {
+    let mut settings = Settings::default();
+    assert_eq!(settings.color_depth(&TRUE_COLOR), ColorDepth::TrueColor);
+    settings.color_mode = ColorMode::Ansi16;
+    assert_eq!(settings.color_depth(&TRUE_COLOR), ColorDepth::Ansi16);
+}
+
+#[test]
+fn audio_volume_is_clamped() {
+    let settings = Settings {
+        volume: 250,
+        ..Settings::default()
+    };
+    assert_eq!(settings.audio().volume, 100);
+}
+
+#[test]
+fn auto_finish_is_on_by_default_and_old_values_without_it_keep_it_on() {
+    assert!(Settings::default().auto_finish);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.auto_finish));
+    let off = toml::from_str::<Settings>("auto_finish = false");
+    assert!(matches!(off, Ok(ref s) if !s.auto_finish));
+}
+
+#[test]
+fn the_aura_is_full_by_default_and_old_values_without_it_keep_it_full() {
+    assert_eq!(Settings::default().aura, AuraMode::Full);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.aura == AuraMode::Full));
+}
+
+#[test]
+fn the_aura_focus_only_round_trips() {
+    let settings = Settings {
+        aura: AuraMode::FocusOnly,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("aura = \"focus_only\""));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}
+
+#[test]
+fn target_marks_are_on_by_default_and_old_values_without_them_keep_them_on() {
+    assert!(Settings::default().target_marks);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.target_marks));
+    let off = toml::from_str::<Settings>("target_marks = false");
+    assert!(matches!(off, Ok(ref s) if !s.target_marks));
+}
+
+#[test]
+fn auto_finish_round_trips() {
+    let settings = Settings {
+        auto_finish: false,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings);
+    assert!(text.is_ok());
+    let back = text.map(|t| toml::from_str::<Settings>(&t));
+    assert!(matches!(back, Ok(Ok(ref s)) if *s == settings && !s.auto_finish));
+}
+
+#[test]
+fn card_back_is_theme_by_default_and_old_values_without_it_keep_theme() {
+    assert_eq!(Settings::default().card_back, CardBack::Theme);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.card_back == CardBack::Theme));
+}
+
+#[test]
+fn card_back_round_trips() {
+    let settings = Settings {
+        card_back: CardBack::Monokai,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("card_back = \"monokai\""));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}
+
+#[test]
+fn the_aura_look_is_halo_thin_theme_by_default_and_old_values_keep_it() {
+    let settings = Settings::default();
+    assert_eq!(settings.aura_colour, AuraColour::Theme);
+    assert_eq!(settings.aura_style, AuraStyle::Halo);
+    assert_eq!(settings.aura_size, AuraSize::Thin);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(
+        matches!(parsed, Ok(ref s) if s.aura_style == AuraStyle::Halo
+        && s.aura_size == AuraSize::Thin && s.aura_colour == AuraColour::Theme)
+    );
+}
+
+#[test]
+fn the_aura_look_round_trips() {
+    let settings = Settings {
+        aura_colour: AuraColour::Hint,
+        aura_style: AuraStyle::Frame,
+        aura_size: AuraSize::Thick,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("aura_style = \"frame\""));
+    assert!(text.contains("aura_size = \"thick\""));
+    assert!(text.contains("aura_colour = \"hint\""));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}
+
+#[test]
+fn the_interface_fields_come_from_the_saved_settings_and_the_rest_stays() {
+    let previewed = Settings {
+        theme: ThemeId::Dracula,
+        aura_size: AuraSize::Thick,
+        card_size: CardSizeSetting::Huge,
+        volume: 20,
+        ..Settings::default()
+    };
+    let kept = previewed.with_interface_of(&Settings::default());
+    assert_eq!(kept.theme, ThemeId::Dark);
+    assert_eq!(kept.aura_size, AuraSize::Thin);
+    assert_eq!(kept.card_size, CardSizeSetting::Auto);
+    assert_eq!(kept.volume, 20);
+}

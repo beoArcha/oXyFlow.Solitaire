@@ -5,21 +5,26 @@
 use crate::app::{CardFontState, FontFacts};
 use crate::card_style::CardStyles;
 use crate::i18n::t;
-use crate::settings::{Aid, CardBack, ColorMode, FullScreen, GlyphMode, TerminalKind};
+use crate::settings::{
+    Aid, AuraColour, AuraSize, AuraStyle, CardBack, ColorMode, FullScreen, GlyphMode, TerminalKind,
+};
 
 /// One row of the settings screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Field {
     Language,
+    Colors,
+    FullScreen,
     Theme,
     CardBack,
     FrontStyle,
     BackStyle,
     Glyphs,
     ConsoleFont,
-    Colors,
     CardSize,
-    FullScreen,
+    AuraColour,
+    AuraStyle,
+    AuraSize,
     SoundStyle,
     Cues,
     Music,
@@ -32,17 +37,20 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 19] = [
+pub const FIELDS: [Field; 22] = [
     Field::Language,
+    Field::Colors,
+    Field::FullScreen,
     Field::Theme,
     Field::CardBack,
     Field::FrontStyle,
     Field::BackStyle,
     Field::Glyphs,
     Field::ConsoleFont,
-    Field::Colors,
     Field::CardSize,
-    Field::FullScreen,
+    Field::AuraColour,
+    Field::AuraStyle,
+    Field::AuraSize,
     Field::SoundStyle,
     Field::Cues,
     Field::Music,
@@ -58,18 +66,20 @@ pub const FIELDS: [Field; 19] = [
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Group {
     Display,
+    Interface,
     Sound,
     Hints,
 }
 
 impl Group {
     /// The groups, top to bottom.
-    pub const ALL: [Group; 3] = [Group::Display, Group::Sound, Group::Hints];
+    pub const ALL: [Group; 4] = [Group::Display, Group::Interface, Group::Sound, Group::Hints];
 
     /// Localization key of the heading.
     pub const fn label_key(self) -> &'static str {
         match self {
             Group::Display => "settings.group.display",
+            Group::Interface => "settings.group.interface",
             Group::Sound => "settings.group.sound",
             Group::Hints => "settings.group.hints",
         }
@@ -101,6 +111,10 @@ pub fn back_styles() -> Vec<&'static str> {
         .collect()
 }
 
+pub(super) const AURA_COLOURS: [AuraColour; 4] = AuraColour::ALL;
+pub(super) const AURA_STYLES: [AuraStyle; 3] = AuraStyle::ALL;
+pub(super) const AURA_SIZES: [AuraSize; 2] = AuraSize::ALL;
+
 pub(super) const CARD_BACKS: [CardBack; 3] =
     [CardBack::Theme, CardBack::Monokai, CardBack::Dracula];
 
@@ -128,6 +142,12 @@ impl Field {
         }
     }
 
+    /// Whether the row belongs to the Interface section: its changes show at once and are kept only
+    /// after confirmation.
+    pub const fn is_interface(self) -> bool {
+        matches!(self.group(), Group::Interface)
+    }
+
     /// Whether the row needs the sound output.
     pub const fn is_audio(self) -> bool {
         matches!(
@@ -151,6 +171,9 @@ impl Field {
             Field::ConsoleFont => "settings.row.console_font",
             Field::Colors => "settings.row.colors",
             Field::CardSize => "settings.row.card_size",
+            Field::AuraColour => "settings.row.aura_colour",
+            Field::AuraStyle => "settings.row.aura_style",
+            Field::AuraSize => "settings.row.aura_size",
             Field::FullScreen => "settings.row.full_screen",
             Field::SoundStyle => "settings.row.sound_style",
             Field::Cues => "settings.row.cues",
@@ -162,16 +185,17 @@ impl Field {
     /// The group whose heading the row follows.
     pub const fn group(self) -> Group {
         match self {
-            Field::Language
-            | Field::Theme
+            Field::Language | Field::Colors | Field::FullScreen => Group::Display,
+            Field::Theme
             | Field::CardBack
             | Field::FrontStyle
             | Field::BackStyle
             | Field::Glyphs
             | Field::ConsoleFont
-            | Field::Colors
             | Field::CardSize
-            | Field::FullScreen => Group::Display,
+            | Field::AuraColour
+            | Field::AuraStyle
+            | Field::AuraSize => Group::Interface,
             Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
             Field::Aura
             | Field::TargetMarks
@@ -212,6 +236,9 @@ impl Field {
             Field::ConsoleFont => "settings.desc.console_font",
             Field::Colors => "settings.desc.colors",
             Field::CardSize => "settings.desc.card_size",
+            Field::AuraColour => "settings.desc.aura_colour",
+            Field::AuraStyle => "settings.desc.aura_style",
+            Field::AuraSize => "settings.desc.aura_size",
             Field::FullScreen => "settings.desc.full_screen",
             Field::SoundStyle => "settings.desc.sound_style",
             Field::Cues => "settings.desc.cues",

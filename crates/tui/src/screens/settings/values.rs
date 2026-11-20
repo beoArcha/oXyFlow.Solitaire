@@ -1,8 +1,8 @@
 //! What a row of the settings screen shows and how one step changes [`Settings`].
 
 use super::options::{
-    CARD_BACKS, COLOR_MODES, FIELDS, FULL_SCREEN_MODES, Field, GLYPH_MODES, Step, back_styles,
-    front_styles,
+    AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FIELDS, FULL_SCREEN_MODES,
+    Field, GLYPH_MODES, Step, back_styles, front_styles,
 };
 use crate::app::{CardFontState, FontFacts};
 use crate::audio::{AudioStatus, StyleInfo};
@@ -144,6 +144,9 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::ConsoleFont => switch_text(settings.console_font),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
         Field::CardSize => t(settings.card_size.label_key()).into_owned(),
+        Field::AuraColour => t(settings.aura_colour.label_key()).into_owned(),
+        Field::AuraStyle => t(settings.aura_style.label_key()).into_owned(),
+        Field::AuraSize => t(settings.aura_size.label_key()).into_owned(),
         Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
@@ -252,6 +255,11 @@ pub fn changed(
         Field::CardSize => {
             next.card_size = cycle(&CardSizeSetting::ALL, settings.card_size, step);
         }
+        Field::AuraColour => {
+            next.aura_colour = cycle(&AURA_COLOURS, settings.aura_colour, step);
+        }
+        Field::AuraStyle => next.aura_style = cycle(&AURA_STYLES, settings.aura_style, step),
+        Field::AuraSize => next.aura_size = cycle(&AURA_SIZES, settings.aura_size, step),
         Field::FullScreen => {
             next.full_screen = cycle(&FULL_SCREEN_MODES, settings.full_screen, step);
         }
