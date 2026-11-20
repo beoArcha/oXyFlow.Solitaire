@@ -400,66 +400,69 @@
 <rect x="0" y="323" width="990" height="19" fill="#287850"/>
 <rect x="990" y="323" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 323h1v10h-1zM994 332h1v10h-1zM1255 323h1v10h-1zM1255 332h1v10h-1z"/>
-<text x="1008" y="337" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="337" fill="#e8ecf4" font-weight="bold">s</text>
-<text x="1098 1107 1116 1125" y="337" fill="#e8ecf4" font-weight="bold">deal</text>
-<text x="1143" y="337" fill="#e8ecf4" font-weight="bold">a</text>
-<text x="1161 1170 1179" y="337" fill="#e8ecf4" font-weight="bold">row</text>
+<text x="1026 1035 1044 1053 1062" y="337" fill="#b8c2d6">]/[/0</text>
+<text x="1098 1107 1116 1125" y="337" fill="#b8c2d6">card</text>
+<text x="1143 1152 1161 1170" y="337" fill="#b8c2d6">size</text>
 <rect x="0" y="342" width="990" height="19" fill="#287850"/>
 <rect x="990" y="342" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 342h1v10h-1zM994 351h1v10h-1zM1255 342h1v10h-1zM1255 351h1v10h-1z"/>
-<text x="1026 1035 1044" y="356" fill="#b8c2d6">u/r</text>
-<text x="1098 1107 1116 1125" y="356" fill="#b8c2d6">undo</text>
-<text x="1143" y="356" fill="#b8c2d6">/</text>
-<text x="1161 1170 1179 1188" y="356" fill="#b8c2d6">redo</text>
+<text x="1008" y="356" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1026" y="356" fill="#e8ecf4" font-weight="bold">s</text>
+<text x="1098 1107 1116 1125" y="356" fill="#e8ecf4" font-weight="bold">deal</text>
+<text x="1143" y="356" fill="#e8ecf4" font-weight="bold">a</text>
+<text x="1161 1170 1179" y="356" fill="#e8ecf4" font-weight="bold">row</text>
 <rect x="0" y="361" width="990" height="19" fill="#287850"/>
 <rect x="990" y="361" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 361h1v10h-1zM994 370h1v10h-1zM1255 361h1v10h-1zM1255 370h1v10h-1z"/>
-<text x="1008" y="375" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="375" fill="#e8ecf4" font-weight="bold">h</text>
-<text x="1098 1107 1116 1125" y="375" fill="#e8ecf4" font-weight="bold">hint</text>
+<text x="1026 1035 1044" y="375" fill="#b8c2d6">u/r</text>
+<text x="1098 1107 1116 1125" y="375" fill="#b8c2d6">undo</text>
+<text x="1143" y="375" fill="#b8c2d6">/</text>
+<text x="1161 1170 1179 1188" y="375" fill="#b8c2d6">redo</text>
 <rect x="0" y="380" width="990" height="19" fill="#287850"/>
 <rect x="990" y="380" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 380h1v10h-1zM994 389h1v10h-1zM1255 380h1v10h-1zM1255 389h1v10h-1z"/>
-<text x="1026" y="394" fill="#b8c2d6">c</text>
-<text x="1098 1107 1116 1125" y="394" fill="#b8c2d6">copy</text>
-<text x="1143 1152 1161 1170" y="394" fill="#b8c2d6">seed</text>
+<text x="1008" y="394" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1026" y="394" fill="#e8ecf4" font-weight="bold">h</text>
+<text x="1098 1107 1116 1125" y="394" fill="#e8ecf4" font-weight="bold">hint</text>
 <rect x="0" y="399" width="990" height="19" fill="#287850"/>
 <rect x="990" y="399" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 399h1v10h-1zM994 408h1v10h-1zM1255 399h1v10h-1zM1255 408h1v10h-1z"/>
-<text x="1008" y="413" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="413" fill="#e8ecf4" font-weight="bold">i</text>
-<text x="1098 1107 1116" y="413" fill="#e8ecf4" font-weight="bold">how</text>
-<text x="1134 1143" y="413" fill="#e8ecf4" font-weight="bold">to</text>
-<text x="1161 1170 1179 1188" y="413" fill="#e8ecf4" font-weight="bold">play</text>
+<text x="1026" y="413" fill="#b8c2d6">c</text>
+<text x="1098 1107 1116 1125" y="413" fill="#b8c2d6">copy</text>
+<text x="1143 1152 1161 1170" y="413" fill="#b8c2d6">seed</text>
 <rect x="0" y="418" width="990" height="19" fill="#287850"/>
 <rect x="990" y="418" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 418h1v10h-1zM994 427h1v10h-1zM1255 418h1v10h-1zM1255 427h1v10h-1z"/>
 <text x="1008" y="432" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="432" fill="#e8ecf4" font-weight="bold">?</text>
-<text x="1098 1107 1116" y="432" fill="#e8ecf4" font-weight="bold">all</text>
-<text x="1134 1143 1152 1161" y="432" fill="#e8ecf4" font-weight="bold">keys</text>
+<text x="1026" y="432" fill="#e8ecf4" font-weight="bold">i</text>
+<text x="1098 1107 1116" y="432" fill="#e8ecf4" font-weight="bold">how</text>
+<text x="1134 1143" y="432" fill="#e8ecf4" font-weight="bold">to</text>
+<text x="1161 1170 1179 1188" y="432" fill="#e8ecf4" font-weight="bold">play</text>
 <rect x="0" y="437" width="990" height="19" fill="#287850"/>
 <rect x="990" y="437" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 437h1v10h-1zM994 446h1v10h-1zM1255 437h1v10h-1zM1255 446h1v10h-1z"/>
-<text x="1008 1017 1026 1035 1044 1053" y="451" fill="#8cbeff" font-weight="bold">Legend</text>
+<text x="1008" y="451" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1026" y="451" fill="#e8ecf4" font-weight="bold">?</text>
+<text x="1098 1107 1116" y="451" fill="#e8ecf4" font-weight="bold">all</text>
+<text x="1134 1143 1152 1161" y="451" fill="#e8ecf4" font-weight="bold">keys</text>
 <rect x="0" y="456" width="990" height="19" fill="#287850"/>
 <rect x="990" y="456" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 456h1v10h-1zM994 465h1v10h-1zM1255 456h1v10h-1zM1255 465h1v10h-1z"/>
-<text x="1008" y="470" fill="#e8ecf4">►</text>
-<text x="1026 1035 1044 1053 1062" y="470" fill="#e8ecf4">focus</text>
-<text x="1089" y="470" fill="#e8ecf4">●</text>
-<text x="1107 1116 1125 1134 1143 1152" y="470" fill="#e8ecf4">picked</text>
+<text x="1008 1017 1026 1035 1044 1053" y="470" fill="#8cbeff" font-weight="bold">Legend</text>
 <rect x="0" y="475" width="990" height="19" fill="#287850"/>
 <rect x="990" y="475" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 475h1v10h-1zM994 484h1v10h-1zM1255 475h1v10h-1zM1255 484h1v10h-1z"/>
-<text x="1008" y="489" fill="#e8ecf4">+</text>
-<text x="1026 1035 1044 1053 1062 1071" y="489" fill="#e8ecf4">target</text>
-<text x="1098 1107" y="489" fill="#e8ecf4">?→</text>
-<text x="1125 1134 1143 1152" y="489" fill="#e8ecf4">hint</text>
+<text x="1008" y="489" fill="#e8ecf4">►</text>
+<text x="1026 1035 1044 1053 1062" y="489" fill="#e8ecf4">focus</text>
+<text x="1089" y="489" fill="#e8ecf4">●</text>
+<text x="1107 1116 1125 1134 1143 1152" y="489" fill="#e8ecf4">picked</text>
 <rect x="0" y="494" width="990" height="19" fill="#287850"/>
 <rect x="990" y="494" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 494h1v10h-1zM994 503h1v10h-1zM1255 494h1v10h-1zM1255 503h1v10h-1z"/>
+<text x="1008" y="508" fill="#e8ecf4">+</text>
+<text x="1026 1035 1044 1053 1062 1071" y="508" fill="#e8ecf4">target</text>
+<text x="1098 1107" y="508" fill="#e8ecf4">?→</text>
+<text x="1125 1134 1143 1152" y="508" fill="#e8ecf4">hint</text>
 <rect x="0" y="513" width="990" height="19" fill="#287850"/>
 <rect x="990" y="513" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 513h1v10h-1zM994 522h5v1h-5zM999 522h5v1h-5zM1003 522h5v1h-5zM1008 522h5v1h-5zM1012 522h5v1h-5zM1017 522h5v1h-5zM1021 522h5v1h-5zM1026 522h5v1h-5zM1030 522h5v1h-5zM1035 522h5v1h-5zM1039 522h5v1h-5zM1044 522h5v1h-5zM1048 522h5v1h-5zM1053 522h5v1h-5zM1057 522h5v1h-5zM1062 522h5v1h-5zM1066 522h5v1h-5zM1071 522h5v1h-5zM1075 522h5v1h-5zM1080 522h5v1h-5zM1084 522h5v1h-5zM1089 522h5v1h-5zM1093 522h5v1h-5zM1098 522h5v1h-5zM1102 522h5v1h-5zM1107 522h5v1h-5zM1111 522h5v1h-5zM1116 522h5v1h-5zM1120 522h5v1h-5zM1125 522h5v1h-5zM1129 522h5v1h-5zM1134 522h5v1h-5zM1138 522h5v1h-5zM1143 522h5v1h-5zM1147 522h5v1h-5zM1152 522h5v1h-5zM1156 522h5v1h-5zM1161 522h5v1h-5zM1165 522h5v1h-5zM1170 522h5v1h-5zM1174 522h5v1h-5zM1179 522h5v1h-5zM1183 522h5v1h-5zM1188 522h5v1h-5zM1192 522h5v1h-5zM1197 522h5v1h-5zM1201 522h5v1h-5zM1206 522h5v1h-5zM1210 522h5v1h-5zM1215 522h5v1h-5zM1219 522h5v1h-5zM1224 522h5v1h-5zM1228 522h5v1h-5zM1233 522h5v1h-5zM1237 522h5v1h-5zM1242 522h5v1h-5zM1246 522h5v1h-5zM1255 513h1v10h-1zM1251 522h5v1h-5z"/>
@@ -550,21 +553,25 @@
 <text x="108" y="755" fill="#e8ecf4">a</text>
 <text x="126 135 144" y="755" fill="#e8ecf4">row</text>
 <text x="162" y="755" fill="#e8ecf4">|</text>
-<text x="180 189 198 207 216 225 234" y="755" fill="#e8ecf4">Arrows:</text>
-<text x="252 261 270 279" y="755" fill="#e8ecf4">move</text>
-<text x="297" y="755" fill="#e8ecf4">|</text>
-<text x="315 324" y="755" fill="#e8ecf4">h:</text>
-<text x="342 351 360 369" y="755" fill="#e8ecf4">hint</text>
-<text x="387" y="755" fill="#e8ecf4">|</text>
-<text x="405 414" y="755" fill="#e8ecf4">i:</text>
-<text x="432 441 450" y="755" fill="#e8ecf4">how</text>
-<text x="468 477" y="755" fill="#e8ecf4">to</text>
-<text x="495 504 513 522" y="755" fill="#e8ecf4">play</text>
+<text x="180 189" y="755" fill="#e8ecf4">h:</text>
+<text x="207 216 225 234" y="755" fill="#e8ecf4">hint</text>
+<text x="252" y="755" fill="#e8ecf4">|</text>
+<text x="270 279 288 297 306 315 324 333" y="755" fill="#e8ecf4">Shift+R:</text>
+<text x="351 360 369 378 387 396 405" y="755" fill="#e8ecf4">restart</text>
+<text x="423" y="755" fill="#e8ecf4">|</text>
+<text x="441 450" y="755" fill="#e8ecf4">o:</text>
+<text x="468 477 486 495 504 513 522" y="755" fill="#e8ecf4">options</text>
 <text x="540" y="755" fill="#e8ecf4">|</text>
-<text x="558 567" y="755" fill="#e8ecf4">?:</text>
-<text x="585 594 603 612" y="755" fill="#e8ecf4">keys</text>
-<text x="630" y="755" fill="#e8ecf4">|</text>
-<text x="648 657 666 675" y="755" fill="#e8ecf4">Esc:</text>
-<text x="693 702 711 720" y="755" fill="#e8ecf4">menu</text>
+<text x="558 567" y="755" fill="#e8ecf4">p:</text>
+<text x="585 594 603 612 621" y="755" fill="#e8ecf4">pause</text>
+<text x="639" y="755" fill="#e8ecf4">|</text>
+<text x="657 666" y="755" fill="#e8ecf4">v:</text>
+<text x="684 693 702 711 720" y="755" fill="#e8ecf4">moves</text>
+<text x="738" y="755" fill="#e8ecf4">|</text>
+<text x="756 765" y="755" fill="#e8ecf4">?:</text>
+<text x="783 792 801 810" y="755" fill="#e8ecf4">keys</text>
+<text x="828" y="755" fill="#e8ecf4">|</text>
+<text x="846 855 864 873" y="755" fill="#e8ecf4">Esc:</text>
+<text x="891 900 909 918" y="755" fill="#e8ecf4">menu</text>
 </g>
 </svg>

@@ -2,10 +2,6 @@
 
 # Schermafbeeldingen en animaties
 
-> **Let op:** de interface van het spel is nu beschikbaar in het Engels en het Pools; Duits, Frans, Italiaans,
-> Braziliaans Portugees, Oekraïens, Nederlands en Spaans zijn in de maak. De schermafbeeldingen tonen de Engelse
-> versie.
-
 Elke afbeelding op deze pagina wordt door `cargo xtask screenshots` uit het echte spel gemaakt en laat dus zien wat het
 programma tekent.
 
@@ -13,51 +9,51 @@ programma tekent.
 
 ### Klondike
 
-![Klondike met het gidspaneel en het paneel met mogelijke zetten naast het speelveld](../img/en/klondike.svg)
+![Klondike met het gidspaneel en het paneel met mogelijke zetten naast het speelveld](../img/nl/klondike.svg)
 
 ### Spider
 
-![Spider met twee kleuren](../img/en/spider.svg)
+![Spider met twee kleuren](../img/nl/spider.svg)
 
 ### FreeCell
 
-![FreeCell](../img/en/freecell.svg)
+![FreeCell](../img/nl/freecell.svg)
 
 ### Piramide
 
-![Piramide](../img/en/pyramid.svg)
+![Piramide](../img/nl/pyramid.svg)
 
 ## Schermen
 
 ### Hoofdmenu
 
-![Het hoofdmenu van oXySol](../img/en/menu.svg)
+![Het hoofdmenu van oXySol](../img/nl/menu.svg)
 
 ### Instellingen
 
-![Het scherm Instellingen](../img/en/settings.svg)
+![Het scherm Instellingen](../img/nl/settings.svg)
 
 ### Help
 
-![Het helpvenster met alle toetsen](../img/en/help.svg)
+![Het helpvenster met alle toetsen](../img/nl/help.svg)
 
 ### Hints en het gidspaneel
 
-![Een hint, gemarkeerd op het speelveld en uitgelegd in het gidspaneel](../img/en/guide.svg)
+![Een hint, gemarkeerd op het speelveld en uitgelegd in het gidspaneel](../img/nl/guide.svg)
 
 ## Animaties
 
 ### Een zet
 
-![Animatie: de cursor pakt klaveren aas op en legt hem op een aflegstapel](../img/en/anim-move.svg)
+![Animatie: de cursor pakt klaveren aas op en legt hem op een aflegstapel](../img/nl/anim-move.svg)
 
 ### Automatisch afmaken
 
-![Animatie: automatisch afmaken speelt een gewonnen spel zet voor zet uit](../img/en/anim-auto-finish.svg)
+![Animatie: automatisch afmaken speelt een gewonnen spel zet voor zet uit](../img/nl/anim-auto-finish.svg)
 
 ### Een overwinning
 
-![Animatie: de laatste zetten van een gewonnen spel en het winvenster](../img/en/anim-win.svg)
+![Animatie: de laatste zetten van een gewonnen spel en het winvenster](../img/nl/anim-win.svg)
 
 Als je systeem om minder beweging vraagt, tonen de animaties hun laatste beeld in plaats van te bewegen.
 

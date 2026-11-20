@@ -1,15 +1,11 @@
-[English](../index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · [Français](../fr/index.md) · **Italiano** · [Nederlands](../nl/index.md) · [Português (Brasil)](../pt-br/index.md) · [Українська](../uk/index.md)
+[English](../en/index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · [Français](../fr/index.md) · **Italiano** · [Nederlands](../nl/index.md) · [Português (Brasil)](../pt-br/index.md) · [Українська](../uk/index.md)
 
 # oXySol
-
-> **Nota:** l’interfaccia del gioco oggi è disponibile in inglese e in polacco; tedesco, francese, italiano,
-> portoghese brasiliano, ucraino, olandese e spagnolo sono in lavorazione. Gli screenshot mostrano la versione
-> inglese.
 
 Il solitario nel terminale: **Klondike, Spider, FreeCell e Piramide** in un unico programma, il singolo file `oxysol`.
 Funziona in qualsiasi terminale moderno e si gioca con la tastiera o con il mouse.
 
-![Klondike in oXySol: il tavolo, il pannello della guida e il pannello delle mosse possibili](../img/en/klondike.svg)
+![Klondike in oXySol: il tavolo, il pannello della guida e il pannello delle mosse possibili](../img/it/klondike.svg)
 
 **Stato:** versione preliminare, in sviluppo.
 

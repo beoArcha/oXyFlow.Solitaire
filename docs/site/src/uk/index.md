@@ -1,15 +1,11 @@
-[English](../index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · [Français](../fr/index.md) · [Italiano](../it/index.md) · [Nederlands](../nl/index.md) · [Português (Brasil)](../pt-br/index.md) · **Українська**
+[English](../en/index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · [Français](../fr/index.md) · [Italiano](../it/index.md) · [Nederlands](../nl/index.md) · [Português (Brasil)](../pt-br/index.md) · **Українська**
 
 # oXySol
-
-> **Зверніть увагу:** наразі інтерфейс гри доступний англійською та польською; німецька, французька, італійська,
-> бразильська португальська, українська, нідерландська та іспанська версії в роботі. Знімки екрана показують
-> англійську версію.
 
 Пасьянс у терміналі: **Клондайк, Павук, FreeCell і Піраміда** в одній програмі, єдиному файлі `oxysol`.
 Працює в будь-якому сучасному терміналі, грати можна клавіатурою або мишею.
 
-![Клондайк в oXySol: ігрове поле, панель посібника і панель можливих ходів](../img/en/klondike.svg)
+![Клондайк в oXySol: ігрове поле, панель посібника і панель можливих ходів](../img/uk/klondike.svg)
 
 **Стан:** попередня версія, у розробці.
 

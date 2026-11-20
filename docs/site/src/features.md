@@ -68,8 +68,7 @@ modes are planned; they are not in the game yet.
 
 ## Languages
 
-The game interface is available in **English** and **Polish** today; German, French, Italian, Brazilian Portuguese,
-Ukrainian, Dutch and Spanish are in progress. Pick the language with the flag selector in the top-left corner of the
+The game interface is available in nine languages: English, Polish, German, Spanish, French, Italian, Dutch, Brazilian Portuguese and Ukrainian. Pick the language with the flag selector in the top-left corner of the
 main menu, or in Settings; it applies at once.
 
 This website is available in nine languages: the links at the top of every page switch between them.

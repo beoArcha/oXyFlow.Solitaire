@@ -286,10 +286,9 @@
 <text x="639 648" y="337" fill="#101014">6♣</text>
 <text x="765 774" y="337" fill="#101014">Q♠</text>
 <text x="891 900" y="337" fill="#a61414">5♦</text>
-<text x="1026 1035 1044" y="337" fill="#b8c2d6">u/r</text>
-<text x="1098 1107 1116 1125" y="337" fill="#b8c2d6">undo</text>
-<text x="1143" y="337" fill="#b8c2d6">/</text>
-<text x="1161 1170 1179 1188" y="337" fill="#b8c2d6">redo</text>
+<text x="1026 1035 1044 1053 1062" y="337" fill="#b8c2d6">]/[/0</text>
+<text x="1098 1107 1116 1125" y="337" fill="#b8c2d6">card</text>
+<text x="1143 1152 1161 1170" y="337" fill="#b8c2d6">size</text>
 <rect x="0" y="342" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="342" width="27" height="19" fill="#287850"/>
 <rect x="126" y="342" width="99" height="19" fill="#fafaf4"/>
@@ -326,9 +325,10 @@
 <text x="810" y="356" fill="#101014" font-weight="bold">♠</text>
 <text x="918" y="356" fill="#a61414" font-weight="bold">5</text>
 <text x="936" y="356" fill="#a61414" font-weight="bold">♦</text>
-<text x="1008" y="356" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="356" fill="#e8ecf4" font-weight="bold">h</text>
-<text x="1098 1107 1116 1125" y="356" fill="#e8ecf4" font-weight="bold">hint</text>
+<text x="1026 1035 1044" y="356" fill="#b8c2d6">u/r</text>
+<text x="1098 1107 1116 1125" y="356" fill="#b8c2d6">undo</text>
+<text x="1143" y="356" fill="#b8c2d6">/</text>
+<text x="1161 1170 1179 1188" y="356" fill="#b8c2d6">redo</text>
 <rect x="0" y="361" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="361" width="27" height="19" fill="#287850"/>
 <rect x="126" y="361" width="99" height="19" fill="#fafaf4"/>
@@ -349,9 +349,9 @@
 <path fill="#101014" d="M256 361h1v10h-1zM256 370h1v10h-1zM346 361h1v10h-1zM346 370h1v10h-1zM634 361h1v10h-1zM634 370h1v10h-1zM724 361h1v10h-1zM724 370h1v10h-1zM760 361h1v10h-1zM760 370h1v10h-1zM850 361h1v10h-1zM850 370h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 361h1v10h-1zM994 370h1v10h-1zM1255 361h1v10h-1zM1255 370h1v10h-1z"/>
 <path fill="#a61414" d="M4 361h1v10h-1zM4 370h1v10h-1zM94 361h1v10h-1zM94 370h1v10h-1zM130 361h1v10h-1zM130 370h1v10h-1zM220 361h1v10h-1zM220 370h1v10h-1zM382 361h1v10h-1zM382 370h1v10h-1zM472 361h1v10h-1zM472 370h1v10h-1zM508 361h1v10h-1zM508 370h1v10h-1zM598 361h1v10h-1zM598 370h1v10h-1zM886 361h1v10h-1zM886 370h1v10h-1zM976 361h1v10h-1zM976 370h1v10h-1z"/>
-<text x="1026" y="375" fill="#b8c2d6">c</text>
-<text x="1098 1107 1116 1125" y="375" fill="#b8c2d6">copy</text>
-<text x="1143 1152 1161 1170" y="375" fill="#b8c2d6">seed</text>
+<text x="1008" y="375" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1026" y="375" fill="#e8ecf4" font-weight="bold">h</text>
+<text x="1098 1107 1116 1125" y="375" fill="#e8ecf4" font-weight="bold">hint</text>
 <rect x="0" y="380" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="380" width="27" height="19" fill="#287850"/>
 <rect x="126" y="380" width="99" height="19" fill="#fafaf4"/>
@@ -380,11 +380,9 @@
 <text x="639 648" y="394" fill="#101014">A♠</text>
 <text x="765 774" y="394" fill="#a61414">A♦</text>
 <text x="891 900" y="394" fill="#101014">8♠</text>
-<text x="1008" y="394" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="394" fill="#e8ecf4" font-weight="bold">i</text>
-<text x="1098 1107 1116" y="394" fill="#e8ecf4" font-weight="bold">how</text>
-<text x="1134 1143" y="394" fill="#e8ecf4" font-weight="bold">to</text>
-<text x="1161 1170 1179 1188" y="394" fill="#e8ecf4" font-weight="bold">play</text>
+<text x="1026" y="394" fill="#b8c2d6">c</text>
+<text x="1098 1107 1116 1125" y="394" fill="#b8c2d6">copy</text>
+<text x="1143 1152 1161 1170" y="394" fill="#b8c2d6">seed</text>
 <rect x="0" y="399" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="399" width="27" height="19" fill="#287850"/>
 <rect x="126" y="399" width="99" height="19" fill="#fafaf4"/>
@@ -422,9 +420,10 @@
 <text x="918" y="413" fill="#101014" font-weight="bold">8</text>
 <text x="936" y="413" fill="#101014" font-weight="bold">♠</text>
 <text x="1008" y="413" fill="#e8ecf4" font-weight="bold">►</text>
-<text x="1026" y="413" fill="#e8ecf4" font-weight="bold">?</text>
-<text x="1098 1107 1116" y="413" fill="#e8ecf4" font-weight="bold">all</text>
-<text x="1134 1143 1152 1161" y="413" fill="#e8ecf4" font-weight="bold">keys</text>
+<text x="1026" y="413" fill="#e8ecf4" font-weight="bold">i</text>
+<text x="1098 1107 1116" y="413" fill="#e8ecf4" font-weight="bold">how</text>
+<text x="1134 1143" y="413" fill="#e8ecf4" font-weight="bold">to</text>
+<text x="1161 1170 1179 1188" y="413" fill="#e8ecf4" font-weight="bold">play</text>
 <rect x="0" y="418" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="418" width="27" height="19" fill="#287850"/>
 <rect x="126" y="418" width="99" height="19" fill="#fafaf4"/>
@@ -445,6 +444,10 @@
 <path fill="#101014" d="M4 418h1v10h-1zM4 427h1v10h-1zM94 418h1v10h-1zM94 427h1v10h-1zM256 418h1v10h-1zM256 427h1v10h-1zM346 418h1v10h-1zM346 427h1v10h-1zM634 418h1v10h-1zM634 427h1v10h-1zM724 418h1v10h-1zM724 427h1v10h-1zM886 418h1v10h-1zM886 427h1v10h-1zM976 418h1v10h-1zM976 427h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 418h1v10h-1zM994 427h1v10h-1zM1255 418h1v10h-1zM1255 427h1v10h-1z"/>
 <path fill="#a61414" d="M130 418h1v10h-1zM130 427h1v10h-1zM220 418h1v10h-1zM220 427h1v10h-1zM382 418h1v10h-1zM382 427h1v10h-1zM472 418h1v10h-1zM472 427h1v10h-1zM508 418h1v10h-1zM508 427h1v10h-1zM598 418h1v10h-1zM598 427h1v10h-1zM760 418h1v10h-1zM760 427h1v10h-1zM850 418h1v10h-1zM850 427h1v10h-1z"/>
+<text x="1008" y="432" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1026" y="432" fill="#e8ecf4" font-weight="bold">?</text>
+<text x="1098 1107 1116" y="432" fill="#e8ecf4" font-weight="bold">all</text>
+<text x="1134 1143 1152 1161" y="432" fill="#e8ecf4" font-weight="bold">keys</text>
 <rect x="0" y="437" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="437" width="27" height="19" fill="#287850"/>
 <rect x="126" y="437" width="99" height="19" fill="#fafaf4"/>
@@ -473,7 +476,6 @@
 <text x="639 648" y="451" fill="#a61414">7♦</text>
 <text x="765 774" y="451" fill="#101014">K♣</text>
 <text x="891 900" y="451" fill="#a61414">Q♦</text>
-<text x="1008 1017 1026 1035 1044 1053" y="451" fill="#8cbeff" font-weight="bold">Legend</text>
 <rect x="0" y="456" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="456" width="27" height="19" fill="#287850"/>
 <rect x="126" y="456" width="99" height="19" fill="#fafaf4"/>
@@ -510,10 +512,7 @@
 <text x="810" y="470" fill="#101014" font-weight="bold">♣</text>
 <text x="918" y="470" fill="#a61414" font-weight="bold">Q</text>
 <text x="936" y="470" fill="#a61414" font-weight="bold">♦</text>
-<text x="1008" y="470" fill="#e8ecf4">►</text>
-<text x="1026 1035 1044 1053 1062" y="470" fill="#e8ecf4">focus</text>
-<text x="1089" y="470" fill="#e8ecf4">●</text>
-<text x="1107 1116 1125 1134 1143 1152" y="470" fill="#e8ecf4">picked</text>
+<text x="1008 1017 1026 1035 1044 1053" y="470" fill="#8cbeff" font-weight="bold">Legend</text>
 <rect x="0" y="475" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="475" width="27" height="19" fill="#287850"/>
 <rect x="126" y="475" width="99" height="19" fill="#fafaf4"/>
@@ -534,10 +533,10 @@
 <path fill="#101014" d="M130 475h1v10h-1zM130 484h1v10h-1zM220 475h1v10h-1zM220 484h1v10h-1zM256 475h1v10h-1zM256 484h1v10h-1zM346 475h1v10h-1zM346 484h1v10h-1zM760 475h1v10h-1zM760 484h1v10h-1zM850 475h1v10h-1zM850 484h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 475h1v10h-1zM994 484h1v10h-1zM1255 475h1v10h-1zM1255 484h1v10h-1z"/>
 <path fill="#a61414" d="M4 475h1v10h-1zM4 484h1v10h-1zM94 475h1v10h-1zM94 484h1v10h-1zM382 475h1v10h-1zM382 484h1v10h-1zM472 475h1v10h-1zM472 484h1v10h-1zM508 475h1v10h-1zM508 484h1v10h-1zM598 475h1v10h-1zM598 484h1v10h-1zM634 475h1v10h-1zM634 484h1v10h-1zM724 475h1v10h-1zM724 484h1v10h-1zM886 475h1v10h-1zM886 484h1v10h-1zM976 475h1v10h-1zM976 484h1v10h-1z"/>
-<text x="1008" y="489" fill="#e8ecf4">+</text>
-<text x="1026 1035 1044 1053 1062 1071" y="489" fill="#e8ecf4">target</text>
-<text x="1098 1107" y="489" fill="#e8ecf4">?→</text>
-<text x="1125 1134 1143 1152" y="489" fill="#e8ecf4">hint</text>
+<text x="1008" y="489" fill="#e8ecf4">►</text>
+<text x="1026 1035 1044 1053 1062" y="489" fill="#e8ecf4">focus</text>
+<text x="1089" y="489" fill="#e8ecf4">●</text>
+<text x="1107 1116 1125 1134 1143 1152" y="489" fill="#e8ecf4">picked</text>
 <rect x="0" y="494" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="494" width="27" height="19" fill="#287850"/>
 <rect x="126" y="494" width="99" height="19" fill="#fafaf4"/>
@@ -566,6 +565,10 @@
 <text x="639 648" y="508" fill="#a61414">5♥</text>
 <text x="765 774 783" y="508" fill="#a61414">10♦</text>
 <text x="891 900" y="508" fill="#101014">Q♣</text>
+<text x="1008" y="508" fill="#e8ecf4">+</text>
+<text x="1026 1035 1044 1053 1062 1071" y="508" fill="#e8ecf4">target</text>
+<text x="1098 1107" y="508" fill="#e8ecf4">?→</text>
+<text x="1125 1134 1143 1152" y="508" fill="#e8ecf4">hint</text>
 <rect x="0" y="513" width="99" height="19" fill="#fafaf4"/>
 <rect x="99" y="513" width="27" height="19" fill="#287850"/>
 <rect x="126" y="513" width="99" height="19" fill="#fafaf4"/>
@@ -878,6 +881,10 @@
 <text x="144 153 162 171" y="736" fill="#e8ecf4">king</text>
 <text x="189 198" y="736" fill="#e8ecf4">of</text>
 <text x="216 225 234 243 252 261" y="736" fill="#e8ecf4">spades</text>
+<text x="819 828" y="736" fill="#e8ecf4">p:</text>
+<text x="846 855 864 873 882" y="736" fill="#e8ecf4">pause</text>
+<text x="918 927" y="736" fill="#e8ecf4">v:</text>
+<text x="945 954 963 972 981" y="736" fill="#e8ecf4">moves</text>
 <text x="1017" y="736" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1035 1044 1053" y="736" fill="#e8ecf4" font-weight="bold">New</text>
 <text x="1071 1080 1089 1098" y="736" fill="#e8ecf4" font-weight="bold">game</text>
@@ -893,21 +900,18 @@
 <text x="216 225 234 243 252" y="755" fill="#e8ecf4">quick</text>
 <text x="270 279 288 297" y="755" fill="#e8ecf4">move</text>
 <text x="315" y="755" fill="#e8ecf4">|</text>
-<text x="333 342 351 360 369 378 387" y="755" fill="#e8ecf4">Arrows:</text>
-<text x="405 414 423 432" y="755" fill="#e8ecf4">move</text>
-<text x="450" y="755" fill="#e8ecf4">|</text>
-<text x="468 477" y="755" fill="#e8ecf4">h:</text>
-<text x="495 504 513 522" y="755" fill="#e8ecf4">hint</text>
-<text x="540" y="755" fill="#e8ecf4">|</text>
-<text x="558 567 576 585" y="755" fill="#e8ecf4">+/-:</text>
-<text x="603 612 621 630 639 648" y="755" fill="#e8ecf4">change</text>
-<text x="666 675 684" y="755" fill="#e8ecf4">run</text>
-<text x="702 711 720 729" y="755" fill="#e8ecf4">size</text>
-<text x="747" y="755" fill="#e8ecf4">|</text>
-<text x="765 774" y="755" fill="#e8ecf4">?:</text>
-<text x="792 801 810 819" y="755" fill="#e8ecf4">keys</text>
-<text x="837" y="755" fill="#e8ecf4">|</text>
-<text x="855 864 873 882" y="755" fill="#e8ecf4">Esc:</text>
-<text x="900 909 918 927" y="755" fill="#e8ecf4">menu</text>
+<text x="333 342 351 360" y="755" fill="#e8ecf4">+/-:</text>
+<text x="378 387 396 405 414 423" y="755" fill="#e8ecf4">change</text>
+<text x="441 450 459" y="755" fill="#e8ecf4">run</text>
+<text x="477 486 495 504" y="755" fill="#e8ecf4">size</text>
+<text x="522" y="755" fill="#e8ecf4">|</text>
+<text x="540 549 558 567 576 585 594 603" y="755" fill="#e8ecf4">Shift+R:</text>
+<text x="621 630 639 648 657 666 675" y="755" fill="#e8ecf4">restart</text>
+<text x="693" y="755" fill="#e8ecf4">|</text>
+<text x="711 720" y="755" fill="#e8ecf4">o:</text>
+<text x="738 747 756 765 774 783 792" y="755" fill="#e8ecf4">options</text>
+<text x="810" y="755" fill="#e8ecf4">|</text>
+<text x="828 837 846 855" y="755" fill="#e8ecf4">Esc:</text>
+<text x="873 882 891 900" y="755" fill="#e8ecf4">menu</text>
 </g>
 </svg>
