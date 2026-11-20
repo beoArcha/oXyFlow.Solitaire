@@ -110,8 +110,15 @@ gh workflow run release.yml --ref release
    (`about.toml`, `about.hbs`) with the features of that target's build, so it lists the crates that
    the binary includes. `tag` and `build` use no rust cache: published binaries come from clean builds;
    only `check` reads the cache of `main`.
+   `build` also writes a CycloneDX 1.5 SBOM per target, `oxysol-<tag>-<target>.sbom.cdx.json`, from
+   `Cargo.lock` with a pinned `cargo-cyclonedx`, using the features of that target's build, and
+   attests the build provenance of every archive and SBOM (`actions/attest-build-provenance`; the job
+   alone has `id-token: write` and `attestations: write`). Verify a download with
+   `gh attestation verify <file> --repo beoArcha/oXyFlow.Solitare`.
 5. `publish` writes `SHA256SUMS`, creates the tag on the tested commit and a GitHub Release with
-   every archive and `SHA256SUMS`. It is a pre-release unless `stable` is set.
+   every archive, SBOM and `SHA256SUMS`. It is a pre-release unless `stable` is set. It fails when
+   the release already exists: published assets are never edited, replaced or re-uploaded (no
+   `--clobber`). To change a release, publish a new version.
 6. `site` builds `docs/site` with a pinned mdBook (v0.4.52, SHA-256 checked), inserts the tag and the
    release link into every page (`{{VERSION}}` and `{{RELEASE_URL}}`, English and Polish, and fails if a
    placeholder is left), and deploys GitHub Pages. The link points at the release that this run just
@@ -195,6 +202,15 @@ The version is `major.minor.patch`.
 
 3. Pages (Settings, Pages): source "GitHub Actions" (used by `release.yml`).
 
+4. Immutable releases (Settings, General, Releases): enable "Immutable releases", so a published
+   release's tag and assets cannot be changed or deleted. It applies to releases published after it
+   is enabled. `publish` creates the release with all assets in one `gh release create`, which is
+   compatible with it.
+
+5. Check that the repository has exactly one write deploy key, because the `release` ruleset bypass
+   covers every deploy key: `gh repo deploy-key list --repo beoArcha/oXyFlow.Solitare` must show
+   one key titled `release promotion`.
+
 ## Parallel work and shared files
 
 Two tasks run in parallel only when their file lists do not overlap. Some files are touched by most
@@ -259,5 +275,7 @@ repository, make this much faster:
 
 ## Limitations
 
-- `promote` trusts the `github.com` host key obtained with `ssh-keyscan` on each run.
+- `promote` trusts the GitHub SSH host keys pinned in `.github/known_hosts` (`StrictHostKeyChecking
+  yes`). If GitHub rotates them, promotion fails until the file is refreshed with
+  `gh api meta --jq '.ssh_keys[] | "github.com " + .' > .github/known_hosts`.
 - Windows and macOS run the full check only on `main` and `release`, not on pull requests (R-16).
