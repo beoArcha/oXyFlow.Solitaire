@@ -5,6 +5,7 @@ pub mod card;
 pub mod edge;
 pub mod footer;
 pub mod guide;
+pub mod language_picker;
 pub mod logo;
 pub mod menu_list;
 pub mod moves;

@@ -5,9 +5,11 @@ use serde::{Deserialize, Serialize};
 
 mod aids;
 mod card_back;
+mod card_size;
 mod full_screen;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
+pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 
 use crate::audio::AudioSettings;
@@ -85,6 +87,8 @@ pub struct Settings {
     pub full_screen: FullScreen,
     /// Which pattern and palette face-down cards use.
     pub card_back: CardBack,
+    /// The card size on the board. An older saved value without the field loads as `Auto`.
+    pub card_size: CardSizeSetting,
 }
 
 impl Default for Settings {
@@ -109,6 +113,7 @@ impl Default for Settings {
             target_marks: true,
             full_screen: FullScreen::Auto,
             card_back: CardBack::Theme,
+            card_size: CardSizeSetting::Auto,
         }
     }
 }

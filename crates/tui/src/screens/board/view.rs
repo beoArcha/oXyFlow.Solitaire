@@ -38,7 +38,8 @@ pub(super) struct Scene<'a> {
 
 fn draw_board(frame: &mut Frame, body: Rect, session: &Session, marks: &Marks, ctx: &ViewCtx<'_>) {
     let piles = session.game().piles();
-    let geometry = layout::compute(session.variant(), &piles, body);
+    let limit = ctx.settings.card_size.size();
+    let geometry = layout::compute_within(session.variant(), &piles, body, limit);
     let recycle = counters::can_recycle(session);
     for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
         pile::draw(frame.buffer_mut(), snapshot, placed, marks, recycle, ctx);

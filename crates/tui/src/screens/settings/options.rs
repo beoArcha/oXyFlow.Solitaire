@@ -14,6 +14,7 @@ pub enum Field {
     BackStyle,
     Glyphs,
     Colors,
+    CardSize,
     FullScreen,
     SoundStyle,
     Cues,
@@ -35,6 +36,7 @@ pub const FIELDS: [Field; 17] = [
     Field::BackStyle,
     Field::Glyphs,
     Field::Colors,
+    Field::CardSize,
     Field::FullScreen,
     Field::SoundStyle,
     Field::Cues,
@@ -128,6 +130,7 @@ impl Field {
             Field::BackStyle => "settings.row.back_style",
             Field::Glyphs => "settings.row.glyphs",
             Field::Colors => "settings.row.colors",
+            Field::CardSize => "settings.row.card_size",
             Field::FullScreen => "settings.row.full_screen",
             Field::SoundStyle => "settings.row.sound_style",
             Field::Cues => "settings.row.cues",
@@ -146,6 +149,7 @@ impl Field {
             | Field::BackStyle
             | Field::Glyphs
             | Field::Colors
+            | Field::CardSize
             | Field::FullScreen => Group::Display,
             Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
             Field::Aura
@@ -169,6 +173,7 @@ impl Field {
             Field::BackStyle => "settings.desc.back_style",
             Field::Glyphs => "settings.desc.glyphs",
             Field::Colors => "settings.desc.colors",
+            Field::CardSize => "settings.desc.card_size",
             Field::FullScreen => "settings.desc.full_screen",
             Field::SoundStyle => "settings.desc.sound_style",
             Field::Cues => "settings.desc.cues",

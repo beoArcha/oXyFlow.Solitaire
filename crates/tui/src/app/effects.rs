@@ -10,7 +10,7 @@ use crate::action::Action;
 use crate::input::primary_key_event;
 use crate::screens::Effect;
 use crate::screens::board::Start;
-use crate::settings::Settings;
+use crate::settings::{CardSizeSetting, Settings};
 use crate::solver::{DealCheck, Proof};
 use crate::widgets::overlay::{HowToPlay, Rules};
 
@@ -30,6 +30,7 @@ impl App {
             Effect::Restart => self.restart_game(),
             Effect::Apply(settings) => self.apply_settings(settings),
             Effect::Open(modal) => self.open_modal(modal),
+            Effect::CardSize(size) => self.set_card_size(size),
             Effect::Quick(aids) => self.set_quick(aids),
             Effect::SaveAids => self.save_quick(),
             Effect::Board(action) => self.run_board_action(action),
@@ -207,6 +208,15 @@ impl App {
                 self.open_modal(Modal::alert("common.error.resume"));
             }
         }
+    }
+
+    /// Changes the card size alone, so the quick choices of the running game are not saved with it.
+    fn set_card_size(&mut self, card_size: CardSizeSetting) {
+        let settings = Settings {
+            card_size,
+            ..self.settings.clone()
+        };
+        self.apply_settings(settings);
     }
 
     pub(super) fn apply_settings(&mut self, settings: Settings) {

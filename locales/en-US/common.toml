@@ -2,6 +2,10 @@
 title = "oXySol"
 tagline = "Ultimate Office Solitaire for the terminal"
 
+[language]
+# The name of this language in itself: shown in the language selector whatever language is on.
+name = "English (US)"
+
 [menu]
 title = "Main menu"
 new_game = "New game"
@@ -35,7 +39,7 @@ title = "Settings"
 title = "Terminal too small"
 current = "Current size: {width} x {height}"
 required = "Required size: {width} x {height}"
-hint = "Enlarge the window or reduce the font size."
+hint = "Enlarge the window or zoom out: Ctrl+Minus (Cmd+Minus on a Mac)."
 
 [dialog]
 ok = "OK"

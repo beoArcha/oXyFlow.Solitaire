@@ -49,9 +49,18 @@ const EVENTS: [&str; 6] = [
     "board.status.restarted",
 ];
 
+/// Rows of the main menu's language selector, whose arrows are not a focus marker of a list.
+const MENU_CORNER_ROWS: usize = 3;
+
 fn focused(h: &mut Harness) -> Option<String> {
     let glyphs = Glyphs::new(GlyphMode::Unicode);
-    marked_text(&h.lines(), glyphs.focus_left)
+    let lines = h.lines();
+    let skip = if h.app.screen() == Screen::MainMenu {
+        MENU_CORNER_ROWS
+    } else {
+        0
+    };
+    marked_text(lines.get(skip..).unwrap_or_default(), glyphs.focus_left)
 }
 
 /// The labels of a list in the order `key` visits them; the list wraps, so the walk ends where it

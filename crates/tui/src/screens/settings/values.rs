@@ -6,7 +6,7 @@ use super::options::{
 };
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
-use crate::settings::{CardBack, ColorMode, FullScreen, GlyphMode, Settings};
+use crate::settings::{CardBack, CardSizeSetting, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::theme::ThemeId;
 use crate::widgets::card::back;
 
@@ -134,6 +134,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::BackStyle => card_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
+        Field::CardSize => t(settings.card_size.label_key()).into_owned(),
         Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
@@ -223,6 +224,9 @@ pub fn changed(
         }
         Field::Glyphs => next.glyph_mode = cycle(&GLYPH_MODES, settings.glyph_mode, step),
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
+        Field::CardSize => {
+            next.card_size = cycle(&CardSizeSetting::ALL, settings.card_size, step);
+        }
         Field::FullScreen => {
             next.full_screen = cycle(&FULL_SCREEN_MODES, settings.full_screen, step);
         }

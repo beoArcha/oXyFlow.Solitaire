@@ -1,0 +1,8 @@
+[glyphs]
+"fronts/international/spade" = "E6BC"
+"backs/lattice/tile" = "E6D8"
+
+[[reserved]]
+first = "E6BD"
+last = "E6FF"
+use = "test registry: every other slot"

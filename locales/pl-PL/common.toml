@@ -2,6 +2,10 @@
 title = "oXySol"
 tagline = "Najlepszy biurowy pasjans w terminalu"
 
+[language]
+# The name of this language in itself: shown in the language selector whatever language is on.
+name = "Polski"
+
 [menu]
 title = "Menu główne"
 new_game = "Nowa gra"
@@ -35,7 +39,7 @@ title = "Ustawienia"
 title = "Zbyt mały terminal"
 current = "Bieżący rozmiar: {width} x {height}"
 required = "Wymagany rozmiar: {width} x {height}"
-hint = "Powiększ okno lub zmniejsz rozmiar czcionki."
+hint = "Powiększ okno lub pomniejsz widok: Ctrl+Minus (Cmd+Minus na Macu)."
 
 [dialog]
 ok = "OK"

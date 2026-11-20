@@ -8,6 +8,7 @@ front_style = "Styl awersów"
 back_style = "Styl rewersów"
 glyphs = "Symbole"
 colors = "Kolory"
+card_size = "Rozmiar kart"
 full_screen = "Pełny ekran"
 sound_style = "Styl dźwięku"
 cues = "Efekty dźwiękowe"
@@ -37,6 +38,7 @@ front_style = "Wygląd awersów kart."
 back_style = "Wygląd rewersów kart zakrytych."
 glyphs = "Unicode rysuje kolory i symbole; ASCII używa tylko zwykłych znaków."
 colors = "Ile kolorów pokazuje terminal. Automatycznie: wykrywane samo."
+card_size = "Auto dopasowuje do okna; rozmiar, który się nie mieści, zmniejsza się sam. Klawisze ] [ 0 lub Ctrl+kółko."
 full_screen = "Auto: tylko w oknie, które gra otworzyła sama. W konsoli: Alt+Enter lub F11."
 sound_style = "Brzmienie efektów i muzyki."
 cues = "Krótkie dźwięki przy ruchach i przy wygranej."
@@ -56,6 +58,13 @@ needs_columns = "{value} (potrzeba {needed} kolumn, jest {now})"
 
 [full_screen]
 auto = "Auto"
+
+[card_size]
+auto = "Auto"
+small = "Małe"
+medium = "Średnie"
+large = "Duże"
+huge = "Ogromne"
 
 [aura]
 full = "Pełna"
