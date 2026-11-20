@@ -516,9 +516,18 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   only `q` and Ctrl+C work.
 - **Localization:** `i18n::t(key)` and `tf(key, params)`; the locale is a per-thread setting
   (`set_locale`). A key is `<area>.<table path>.<name>`, the area being the file name under
-  `locales/<lang>/` (`common.menu.new_game` is `[menu] new_game` in `common.toml`). Fallback is
-  `en-US`, then the key. Tests keep the key sets of all locales identical (apart from plural forms)
-  and check that every `"<area>.…"` literal in the sources exists.
+  `locales/<lang>/` (`common.menu.new_game` is `[menu] new_game` in `common.toml`). Fallback is per
+  key (T-38): a key the locale lacks reads the `en-US` text, then the key itself; a counted text
+  (`tn`) the locale lacks in the needed form reads the `en-US` text of the same form, then the
+  `_other` text (the locale's, then `en-US`'s). Parity is checked by `i18n::diff::diff`, which
+  compares a locale with `en-US` (plural groups by the forms of the locale's rule) and reports
+  missing keys, extra keys and `{placeholder}` mismatches. A complete locale must have none of the
+  three; an incomplete locale may miss keys but has no extra key and no placeholder mismatch
+  (`Diff::passes`). So a new English key goes into `locales/en-US/` and every complete locale, or a
+  locale that cannot get it yet is set back to `complete = false` and shows English for it.
+  `cargo xtask locale-diff [<lang>] [--ref <git-ref>]` prints the same report for one
+  locale (or a one-line summary per locale) and exits non-zero when anything differs. Tests also
+  check that every `"<area>.…"` literal in the sources exists.
 - **Locales (O-41, T-36):** `i18n/locale.rs` holds the one list of locales: each line names the
   `Locale` variant, its folder (also its serde name), its plural rule and its flag constant; the
   macro builds `Locale::ALL`, `id()`, `plural_rule()`, `flag()` and the embedded sources. Each folder
@@ -533,7 +542,8 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `i18n::tn(key, count, params)`, which picks the form by the locale's CLDR rule for whole numbers
   (`PluralRule`: `OneOther` for en, de, nl, it, es; `ZeroOneOther` for fr, pt-BR; `Polish`;
   `EastSlavic` for uk). A locale has exactly the forms of its rule (`PluralRule::forms`: one/other
-  or one/few/many); the key-parity test enforces it. A plural group is recognized by en-US having
+  or one/few/many); the parity test enforces it for every locale (a form of the rule may be missing
+  only in an incomplete locale, which then reads the English text). A plural group is recognized by en-US having
   both `<key>_one` and `<key>_other`.
 - **Adding or translating a locale:** a new language adds one line to the list in
   `i18n/locale.rs` (variant, folder, plural rule, flag), its flag in `i18n/flags.rs`, and
