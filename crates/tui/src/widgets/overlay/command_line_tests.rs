@@ -118,7 +118,7 @@ fn keys_step_through_the_tabs_in_both_directions() {
     h.press(KeyCode::Left);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Right);
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     h.press(KeyCode::BackTab);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Left);
@@ -126,7 +126,7 @@ fn keys_step_through_the_tabs_in_both_directions() {
     h.press(KeyCode::Right);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.type_char('?');
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     h.press(KeyCode::Right);
     h.press(KeyCode::Right);
     h.type_char('i');
@@ -144,7 +144,7 @@ fn clicking_the_tabs_switches_between_all_three() {
     assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
     click_text(&mut h, "Command line");
     click_text(&mut h, "Keys");
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
 }
 
 #[test]

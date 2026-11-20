@@ -10,6 +10,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Button, Geometry};
+use super::help_keys::HelpKeys;
 use super::tabs::{HelpTab, draw_top_tabs};
 use crate::action::{Action, HelpGroup};
 use crate::i18n::{t, tf};
@@ -17,12 +18,25 @@ use crate::input::{KEY_TABLE, KeySpec, primary_key};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, Segment};
+use crate::widgets::scrollbar;
 
 const GAP: u16 = 4;
 const KEY_PADDING: usize = 2;
 const LEFT_TOPICS: usize = 2;
 const BODY_ROWS: u16 = 24;
 const DIALOG_MIN_WIDTH: u16 = 80;
+/// Text rows of the Keys tab: the box body less the tab row and the footer row.
+pub(super) const VIEW_ROWS: usize = 22;
+/// The top tab row, the text and the footer row of the box body.
+pub(super) fn parts(body: Rect) -> (Rect, Rect, Rect) {
+    let [top, text, footer] = Layout::vertical([
+        Constraint::Length(1),
+        Constraint::Fill(1),
+        Constraint::Length(1),
+    ])
+    .areas(body);
+    (top, text, footer)
+}
 
 const GESTURES: [(&str, &str); 5] = [
     ("help.mouse_keys.click_card", "help.mouse.click_card"),
@@ -92,14 +106,14 @@ pub fn sections() -> Vec<Section> {
 }
 
 /// The two columns of help and the width of their key column.
-struct Columns {
-    left: Vec<Section>,
-    right: Vec<Section>,
+pub(super) struct Columns {
+    pub(super) left: Vec<Section>,
+    pub(super) right: Vec<Section>,
     key_width: usize,
 }
 
 impl Columns {
-    fn new() -> Self {
+    pub(super) fn new() -> Self {
         let mut sections = sections();
         let right = sections.split_off(LEFT_TOPICS.min(sections.len()));
         let key_width = sections
@@ -117,7 +131,7 @@ impl Columns {
         }
     }
 
-    fn width_of(&self, sections: &[Section]) -> u16 {
+    pub(super) fn width_of(&self, sections: &[Section]) -> u16 {
         let text = sections
             .iter()
             .flat_map(|section| &section.rows)
@@ -127,7 +141,7 @@ impl Columns {
         u16::try_from(self.key_width + text).unwrap_or(u16::MAX)
     }
 
-    fn lines(&self, sections: &[Section], ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
+    pub(super) fn lines(&self, sections: &[Section], ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
         let mut lines = Vec::new();
         for section in sections {
             lines.push(Line::styled(
@@ -158,7 +172,7 @@ pub(crate) fn buttons() -> Vec<Button> {
 }
 
 /// The box of the help window, centered in `area`.
-pub fn geometry(area: Rect) -> Geometry {
+pub(super) fn geometry(area: Rect) -> Geometry {
     let columns = Columns::new();
     let width = (columns.width_of(&columns.left) + GAP + columns.width_of(&columns.right) + 4)
         .max(DIALOG_MIN_WIDTH);
@@ -177,31 +191,40 @@ fn close_segments() -> Vec<Segment> {
 }
 
 /// Draws the help window over `area` and returns its footer buttons.
-pub fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) -> FooterMap {
+pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let columns = Columns::new();
-    let [top_tab_row, body, footer] = Layout::vertical([
-        Constraint::Length(1),
-        Constraint::Fill(1),
-        Constraint::Length(1),
-    ])
-    .areas(geometry.body);
+    let (top_tab_row, text, footer) = parts(geometry.body);
     draw_top_tabs(frame, top_tab_row, HelpTab::Keys, true, ctx);
+    let body = Rect {
+        width: text.width.saturating_sub(1),
+        ..text
+    };
     let [left, _, right] = Layout::horizontal([
         Constraint::Length(columns.width_of(&columns.left)),
         Constraint::Length(GAP),
         Constraint::Fill(1),
     ])
     .areas(body);
+    let first = usize::from(state.scroll);
+    let column = |sections: &[Section]| -> Vec<Line<'static>> {
+        columns
+            .lines(sections, ctx)
+            .into_iter()
+            .skip(first)
+            .take(VIEW_ROWS)
+            .collect()
+    };
     frame.render_widget(
-        Paragraph::new(columns.lines(&columns.left, ctx)).style(ctx.theme.surface()),
+        Paragraph::new(column(&columns.left)).style(ctx.theme.surface()),
         left,
     );
     frame.render_widget(
-        Paragraph::new(columns.lines(&columns.right, ctx)).style(ctx.theme.surface()),
+        Paragraph::new(column(&columns.right)).style(ctx.theme.surface()),
         right,
     );
+    scrollbar::draw(frame, scrollbar::track_of(text), state.metrics(), ctx);
     let buttons_drawn = footer::draw(
         frame,
         footer,

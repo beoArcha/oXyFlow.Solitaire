@@ -1,5 +1,6 @@
 //! Tests of the card widget. This module holds the fixtures; the tests live in the children.
 
+mod back;
 mod board;
 mod dump;
 mod faces;

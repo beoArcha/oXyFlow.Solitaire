@@ -2,13 +2,14 @@
 //! them. What a row shows and how one step changes [`Settings`] is in `values`. Front and back styles
 //! are fixed to the ids that exist today; the sound styles are the list the application passes in.
 
-use crate::settings::{Aid, ColorMode, FullScreen, GlyphMode};
+use crate::settings::{Aid, CardBack, ColorMode, FullScreen, GlyphMode};
 
 /// One row of the settings screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Field {
     Language,
     Theme,
+    CardBack,
     FrontStyle,
     BackStyle,
     Glyphs,
@@ -27,9 +28,10 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 17] = [
+pub const FIELDS: [Field; 18] = [
     Field::Language,
     Field::Theme,
+    Field::CardBack,
     Field::FrontStyle,
     Field::BackStyle,
     Field::Glyphs,
@@ -81,6 +83,9 @@ pub const FRONT_STYLES: [&str; 1] = ["international"];
 /// Back style ids offered today.
 pub const BACK_STYLES: [&str; 1] = ["default"];
 
+pub(super) const CARD_BACKS: [CardBack; 3] =
+    [CardBack::Theme, CardBack::Monokai, CardBack::Dracula];
+
 pub(super) const GLYPH_MODES: [GlyphMode; 2] = [GlyphMode::Unicode, GlyphMode::Ascii];
 pub(super) const COLOR_MODES: [ColorMode; 4] = [
     ColorMode::Auto,
@@ -120,6 +125,7 @@ impl Field {
         match self {
             Field::Language => "settings.row.language",
             Field::Theme => "settings.row.theme",
+            Field::CardBack => "settings.row.card_back",
             Field::FrontStyle => "settings.row.front_style",
             Field::BackStyle => "settings.row.back_style",
             Field::Glyphs => "settings.row.glyphs",
@@ -138,6 +144,7 @@ impl Field {
         match self {
             Field::Language
             | Field::Theme
+            | Field::CardBack
             | Field::FrontStyle
             | Field::BackStyle
             | Field::Glyphs
@@ -161,6 +168,7 @@ impl Field {
         match self {
             Field::Language => "settings.desc.language",
             Field::Theme => "settings.desc.theme",
+            Field::CardBack => "settings.desc.card_back",
             Field::FrontStyle => "settings.desc.front_style",
             Field::BackStyle => "settings.desc.back_style",
             Field::Glyphs => "settings.desc.glyphs",

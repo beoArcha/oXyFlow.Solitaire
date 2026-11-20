@@ -53,7 +53,7 @@ fn every_item_is_reached_by_keyboard() {
     h.press(KeyCode::Esc);
     h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     h.press(KeyCode::Esc);
     h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
@@ -77,7 +77,7 @@ fn every_item_is_reached_by_mouse() {
             "Statistics" => assert_eq!(h.app.screen(), Screen::Stats),
             "Settings" => assert_eq!(h.app.screen(), Screen::Settings),
             "How to play" => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
-            "Help" => assert!(matches!(h.app.modal(), Some(Modal::Help))),
+            "Help" => assert!(matches!(h.app.modal(), Some(Modal::Help(_)))),
             "Quit" => assert!(h.app.should_quit()),
             _ => assert!(h.text().contains("New game from seed")),
         }

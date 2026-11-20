@@ -87,7 +87,7 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | DONE |
 | X-01 | Spike: card font in real terminals | Sonnet + User | P0-01 | DONE |
 | F-02 | Checkpoint: graphics delivery | Opus | X-01 | DONE |
-| P5-01 | Font builder and preview sheet | Haiku | F-02 | TODO |
+| P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
 | P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05 | TODO |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
@@ -135,7 +135,7 @@ the PR descriptions; cards that exist are in the phase files.
 | U-04 | Interface review for usability and readability (Fable with Opus) | P3-12, P3-13, O-14 | DONE |
 | P3-14 | Readable card faces (replace the block-art rank) (#75) | U-04 | DONE |
 | P3-15 | Screen layout: game information apart from controls; framed guide panel (#80) | U-04, P3-14 | DONE |
-| P3-16 | Zoom: card size by keyboard, console font on Windows, terminal zoom in Help | U-04, P3-15 | TODO |
+| P3-16 | Zoom: card size by keyboard, console font on Windows, terminal zoom in Help | U-04, P3-15 | DONE |
 | P3-17 | Tab and Shift+Tab move the focus through menus, buttons and dialogs (#76) | U-04 | DONE |
 | O-18 | Task cards for the owner's feedback of 2026-11-16 (second round) | — | DONE |
 | P3-18 | Guide panel on screens slightly too small (the panel as a window below 130 columns) (#83) | U-04, P3-15 | DONE |
@@ -150,10 +150,10 @@ the PR descriptions; cards that exist are in the phase files.
 | P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | DONE |
 | P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | DONE |
 | O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows (#91) | P3-18, P3-25 | DONE |
-| P3-28 | Docking modals to a side of the screen | O-23 | TODO |
+| P3-28 | Docking modals to a side of the screen | O-23 | DONE |
 | P3-29 | Settings: Interface section (colors, aura color/style/size, interface size, font) | P3-16, P3-21, P3-24, P3-27 | TODO |
 | P3-30 | Themes Monokai and Dracula | P3-23 | DONE |
-| P3-31 | Card back selection (Theme, Monokai, Dracula) | P3-30 | TODO |
+| P3-31 | Card back selection (Theme, Monokai, Dracula) | P3-30 | DONE |
 | P4-06 | Automatic moves in statistics: failed attempts and streaks, "assisted" games | P4-05 | TODO |
 | O-25 | UI inventory of colors, sizes and fonts (`docs/tech/ui-inventory.md`) | — | DONE |
 | O-26 | Contrast fixes found by the UI inventory (focus frame, card back edge, field edge) (#92) | O-25 | DONE |
@@ -170,12 +170,21 @@ the PR descriptions; cards that exist are in the phase files.
 | O-37 | Mouse path for Pause and Possible moves on every screen width | P3-16, P3-28 | TODO |
 | O-38 | Settings save failure: alert and log once per session | — | TODO |
 | O-39 | Split files over 300 LOC found by the P3-09 gate | — | TODO |
+| O-40 | Player site in nine languages and a refreshed README | O-30 | DONE |
+| O-41 | Seven more interface languages in code, offered once translated | P3-37 | TODO |
+| O-42 | Interface translation: German (de-DE) | O-41 | TODO |
+| O-43 | Interface translation: French (fr-FR) | O-41 | TODO |
+| O-44 | Interface translation: Italian (it-IT) | O-41 | TODO |
+| O-45 | Interface translation: Brazilian Portuguese (pt-BR) | O-41 | TODO |
+| O-46 | Interface translation: Ukrainian (uk-UA) | O-41 | TODO |
+| O-47 | Interface translation: Dutch (nl-NL) | O-41 | TODO |
+| O-48 | Interface translation: Spanish (es-ES) | O-41 | TODO |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
 | P3-35 | Color-blind modes (protanopia, deuteranopia, tritanopia, monochrome; four-color deck) | O-26, P3-29 | TODO |
 | P3-36 | Themes as data and the interface size scale | P3-29, P3-30 | TODO |
-| P3-37 | Language selector with flags in the main menu corner (tooltip, arrows, drop-down list) | P3-24 | TODO |
+| P3-37 | Language selector with flags in the main menu corner (tooltip, arrows, drop-down list) | P3-24 | DONE |
 | P3-38 | Run selection wraps around: Down or `-` on the top card selects the whole run | P3-26 | DONE |
 | P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
 | P2-08 | Solver for winnable deals (#78) | P2-07 | DONE |

@@ -6,24 +6,26 @@ use ratatui::backend::TestBackend;
 use ratatui::crossterm::event::KeyCode;
 use ratatui::style::Modifier;
 
-use super::{HowToPlay, PersonalBest, Rules, draw};
+use super::{HelpKeys, HowToPlay, PersonalBest, Rules, draw};
 use crate::app::Modal;
 use crate::audio::AudioStatus;
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
 use crate::i18n::{self, Locale};
+use crate::input::action_for_key;
 use crate::screens::board::{BoardScreen, Start};
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
 use crate::theme::{Theme, ThemeId};
+use ratatui::crossterm::event::{KeyEvent, KeyModifiers};
 
 const SIZES: [(u16, u16); 2] = [(100, 30), (160, 50)];
 const FORBIDDEN_UNICODE: [char; 6] = ['▶', '◀', '╭', '╮', '╰', '╯'];
 
 fn all_modals() -> Vec<Modal> {
     vec![
-        Modal::Help,
+        Modal::help(),
         Modal::HowToPlay(HowToPlay::new(Rules::Klondike)),
         Modal::pause(true),
         Modal::win(),
@@ -148,36 +150,65 @@ fn every_overlay_renders_in_both_locales_and_glyph_modes() {
 #[test]
 fn borders_are_double_in_unicode_and_plain_ascii_otherwise() {
     let now = Instant::now();
-    let terminal = render(&Modal::Help, caps(true), Locale::EnUs, (100, 30), now);
+    let terminal = render(&Modal::help(), caps(true), Locale::EnUs, (100, 30), now);
     let text = text_of(&terminal);
     assert!(text.contains('╔') && text.contains('╝'));
-    let terminal = render(&Modal::Help, caps(false), Locale::EnUs, (100, 30), now);
+    let terminal = render(&Modal::help(), caps(false), Locale::EnUs, (100, 30), now);
     assert!(text_of(&terminal).contains("+-"));
 }
 
 #[test]
-fn help_lists_every_binding_and_the_gestures_in_a_100_by_30_window() {
+fn every_help_binding_is_reachable_by_scrolling_the_keys_tab_at_100_by_30_and_130_by_40() {
     let now = Instant::now();
-    for locale in Locale::offered() {
-        let terminal = render(&Modal::Help, caps(true), locale, (100, 30), now);
-        let text = text_of(&terminal);
-        for section in crate::widgets::overlay::help::sections() {
-            assert!(text.contains(&section.title), "{}", section.title);
-            for row in section.rows {
-                assert!(text.contains(&row.keys), "{}", row.keys);
-                assert!(text.contains(&row.text), "{}", row.text);
+    for (width, height) in [(100, 30), (130, 40)] {
+        for locale in Locale::offered() {
+            let mut seen = String::new();
+            let mut max_scroll = 0;
+            let mut keys = HelpKeys::default();
+            max_scroll = max_scroll.max(keys.max_scroll());
+            for scroll in 0..=max_scroll {
+                keys.scroll = scroll;
+                let terminal = render(&Modal::Help(keys), caps(true), locale, (width, height), now);
+                seen.push_str(&text_of(&terminal));
+                assert!(text_of(&terminal).contains('╚'));
             }
+            for section in crate::widgets::overlay::help::sections() {
+                assert!(seen.contains(&section.title), "{}", section.title);
+                for row in section.rows {
+                    assert!(seen.contains(&row.keys), "{}", row.keys);
+                    assert!(seen.contains(&row.text), "{}", row.text);
+                }
+            }
+            assert!(
+                max_scroll > 0,
+                "the Keys tab fits {width} x {height} without scrolling"
+            );
         }
-        assert!(text.contains(&crate::i18n::t("help.overlay.close_rest").into_owned()));
-        assert!(text.contains('╚'));
     }
     i18n::set_locale(Locale::EnUs);
 }
 
 #[test]
+fn the_keys_tab_scrolls_by_keys_and_stops_at_both_ends() {
+    let mut keys = HelpKeys::default();
+    let end_key = KeyEvent::new(KeyCode::End, KeyModifiers::NONE);
+    let down = KeyEvent::new(KeyCode::Down, KeyModifiers::NONE);
+    let mut modal = Modal::Help(keys);
+    super::handle(&mut modal, &end_key, action_for_key(&end_key));
+    let Modal::Help(state) = modal else {
+        panic!("the Keys tab stays open");
+    };
+    keys = state;
+    assert_eq!(keys.scroll, keys.max_scroll());
+    let mut modal = Modal::Help(keys);
+    super::handle(&mut modal, &down, action_for_key(&down));
+    assert!(matches!(modal, Modal::Help(state) if state.scroll == keys.max_scroll()));
+}
+
+#[test]
 fn help_is_drawn_inside_the_terminal_at_both_sizes() {
     let now = Instant::now();
-    let terminal = render(&Modal::Help, caps(false), Locale::EnUs, (100, 30), now);
+    let terminal = render(&Modal::help(), caps(false), Locale::EnUs, (100, 30), now);
     let lines = lines_of(&terminal);
     assert!(lines[0].trim().is_empty());
     assert!(lines[29].trim().is_empty());

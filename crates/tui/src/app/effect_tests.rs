@@ -72,7 +72,7 @@ fn the_clock_runs_on_the_board_and_stops_in_modals() {
     h.advance(65);
     assert!(h.text().contains("seed 42 | Time 1:05"));
     h.type_char('?');
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     h.advance(30);
     h.press(KeyCode::Esc);
     h.advance(5);

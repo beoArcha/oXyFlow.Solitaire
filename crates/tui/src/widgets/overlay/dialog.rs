@@ -239,7 +239,7 @@ pub fn markers(ctx: &ViewCtx<'_>) -> (&'static str, &'static str) {
     }
 }
 
-fn border_set(ctx: &ViewCtx<'_>) -> border::Set<'static> {
+pub(super) fn border_set(ctx: &ViewCtx<'_>) -> border::Set<'static> {
     if ctx.glyphs.unicode {
         border::DOUBLE
     } else {

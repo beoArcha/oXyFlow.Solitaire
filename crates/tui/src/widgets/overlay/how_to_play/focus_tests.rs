@@ -108,7 +108,7 @@ fn left_and_right_switch_the_top_tab_while_the_tabs_row_has_the_focus() {
     h.press(KeyCode::Left);
     assert_eq!(state(&h).focus, Focus::Tabs);
     h.press(KeyCode::Left);
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
 }
 
 #[test]

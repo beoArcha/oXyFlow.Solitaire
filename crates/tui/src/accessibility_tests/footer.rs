@@ -347,7 +347,7 @@ fn the_keys_tab_buttons_close_the_help_window_like_their_keys() {
     each_locale(|locale| {
         assert!(matches!(
             help_open(locale).app.modal(),
-            Some(crate::app::Modal::Help)
+            Some(crate::app::Modal::Help(_))
         ));
         let line = t("help.overlay.close_rest").into_owned();
         let buttons = [

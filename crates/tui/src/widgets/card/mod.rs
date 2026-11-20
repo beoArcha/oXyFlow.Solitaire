@@ -13,6 +13,7 @@ use ratatui::layout::Rect;
 use ratatui::style::Style;
 
 mod art;
+pub(crate) mod back;
 mod face;
 mod frame;
 mod mark;
@@ -83,7 +84,7 @@ fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
     let theme = ctx.theme;
     let fill = match face {
         Face::Up(card) => theme.style(color_token(card), Token::CardFace),
-        Face::Down => theme.style(Token::CardBackMark, Token::CardBack),
+        Face::Down => back::style(ctx.settings.card_back, ctx),
         Face::Slot(_) => theme.style(Token::Slot, Token::Table),
     };
     let border = match mark.token() {
@@ -116,7 +117,11 @@ pub fn draw(
     let interior = Rect::new(area.x + 1, area.y + 1, area.width - 2, area.height - 2);
     match face {
         Face::Up(_) => painter.fill(interior, " ", look.fill),
-        Face::Down => painter.fill(interior, ctx.glyphs.face_down, look.fill),
+        Face::Down => painter.fill(
+            interior,
+            back::pattern(ctx.settings.card_back, ctx.glyphs),
+            look.fill,
+        ),
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);
@@ -149,7 +154,8 @@ pub fn draw_back_row(buf: &mut Buffer, area: Rect, mark: Mark, ctx: &ViewCtx<'_>
     let look = look(Face::Down, mark, ctx);
     let mut painter = Painter { buf, clip: top };
     let edges = edges_for(ctx.glyphs, mark);
-    paint_patterned_top(&mut painter, top, edges, ctx.glyphs.face_down, look.border);
+    let pattern = back::pattern(ctx.settings.card_back, ctx.glyphs);
+    paint_patterned_top(&mut painter, top, edges, pattern, look.border);
 }
 
 /// Draws a card of a fan that the next card covers from `visible` columns on: the whole card, then
@@ -178,9 +184,10 @@ pub fn draw_fanned(
 
 /// Draws the one-row stand-in for `count` collapsed face-down cards.
 pub fn draw_collapsed(buf: &mut Buffer, area: Rect, count: usize, ctx: &ViewCtx<'_>) {
-    let style = ctx.theme.style(Token::CardBackMark, Token::CardBack);
+    let style = back::style(ctx.settings.card_back, ctx);
     let mut painter = Painter { buf, clip: area };
-    painter.fill(area, ctx.glyphs.face_down, style);
+    let pattern = back::pattern(ctx.settings.card_back, ctx.glyphs);
+    painter.fill(area, pattern, style);
     let text = format!(" {} ", badge_text(count));
     painter.text(centered(area, &text), area.y, &text, style);
 }
