@@ -20,6 +20,10 @@ Affichage :
 Jeu :
   --seed <u64>                 choisir directement une partie pour cette graine
 
+Performances :
+  --priority <niveau>          priorité du processus, prime sur le réglage :
+                               highest, high, normal, low, lowest
+
 Fenêtre :
   -n, --new-window             ouvrir le jeu dans une nouvelle fenêtre de console et
                                revenir immédiatement à l'invite de commande

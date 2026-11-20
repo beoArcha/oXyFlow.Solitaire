@@ -10,6 +10,7 @@ mod console_face;
 mod dock;
 mod full_screen;
 mod interface;
+mod priority;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
 pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
@@ -17,6 +18,7 @@ pub use console_face::{CONSOLE_FONT_SIZES, ConsoleFace};
 pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 pub use interface::{AuraColour, AuraSize, AuraStyle};
+pub use priority::ProcessPriority;
 
 use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -118,6 +120,9 @@ pub struct Settings {
     pub aura_style: AuraStyle,
     /// How wide the aura is. An older saved value without the field loads as `Thin`.
     pub aura_size: AuraSize,
+    /// The process priority asked of the system. An older saved value without the field loads as
+    /// `Normal`; `--priority` overrides it for one run.
+    pub process_priority: ProcessPriority,
     pub favourites: Vec<oxysol_core::Variant>,
 }
 
@@ -152,6 +157,7 @@ impl Default for Settings {
             aura_colour: AuraColour::Theme,
             aura_style: AuraStyle::Halo,
             aura_size: AuraSize::Thin,
+            process_priority: ProcessPriority::Normal,
             favourites: Vec::new(),
         }
     }

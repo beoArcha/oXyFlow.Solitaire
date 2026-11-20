@@ -121,6 +121,7 @@ impl Settings {
             aura_colour: saved.aura_colour,
             aura_style: saved.aura_style,
             aura_size: saved.aura_size,
+            process_priority: saved.process_priority,
             ..self.clone()
         }
     }

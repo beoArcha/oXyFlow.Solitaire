@@ -6,6 +6,7 @@ mod arrows;
 mod font_rows;
 mod list;
 pub(crate) mod options;
+mod priority_row;
 mod sample;
 #[cfg(test)]
 mod tests;

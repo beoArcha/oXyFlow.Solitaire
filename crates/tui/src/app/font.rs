@@ -6,6 +6,7 @@
 
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 
+use super::priority::PriorityOutcome;
 use crate::settings::TerminalKind;
 
 /// What a font key asks of the console.
@@ -46,11 +47,15 @@ pub struct FontFacts {
     pub face: CardFontState,
     /// The size of a character cell in pixels, where the console tells it.
     pub cell_px: Option<(u16, u16)>,
+    /// What the system answered when the process priority was last asked for; the Settings row of
+    /// the priority shows a refusal.
+    pub priority: PriorityOutcome,
 }
 
 impl Default for FontFacts {
     fn default() -> Self {
         Self {
+            priority: PriorityOutcome::Applied,
             terminal: TerminalKind::Linux,
             card_font: CardFontState::Unavailable,
             face: CardFontState::Unavailable,

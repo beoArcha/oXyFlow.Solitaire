@@ -25,6 +25,7 @@ aura = "Aura"
 aura_colour = "Colore dell'aura"
 aura_style = "Stile dell'aura"
 aura_size = "Dimensione dell'aura"
+priority = "Priorità del processo"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "Quante celle è largo l'alone. Spesso richiede spazio libero attorn
 target_marks = "Segna i punti dove una sequenza può andare con + e un bagliore."
 guide_panel = "Pannello laterale con suggerimenti per la carta attiva e i tasti."
 moves_panel = "Pannello laterale con tutte le azioni e i relativi tasti."
+priority = "Quanto tempo di CPU chiede il gioco. Su Linux e macOS, alzarla richiede privilegi."
 
 [value]
 on = "Sì"
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (richiede {needed} colonne, ora {now})"
 
+needs_privileges = "richiede privilegi"
 [full_screen]
 auto = "Auto"
 
@@ -175,3 +178,10 @@ keep_interface = "Mantenere le impostazioni dell'interfaccia modificate?"
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Massima"
+high = "Alta"
+normal = "Normale"
+low = "Bassa"
+lowest = "Minima"

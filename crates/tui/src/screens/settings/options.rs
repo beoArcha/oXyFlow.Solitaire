@@ -27,6 +27,7 @@ pub enum Field {
     AuraColour,
     AuraStyle,
     AuraSize,
+    Priority,
     SoundStyle,
     Cues,
     Music,
@@ -39,7 +40,7 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 24] = [
+pub const FIELDS: [Field; 25] = [
     Field::Language,
     Field::Colors,
     Field::FullScreen,
@@ -55,6 +56,7 @@ pub const FIELDS: [Field; 24] = [
     Field::AuraColour,
     Field::AuraStyle,
     Field::AuraSize,
+    Field::Priority,
     Field::SoundStyle,
     Field::Cues,
     Field::Music,
@@ -206,6 +208,7 @@ impl Field {
             Field::AuraColour => "settings.row.aura_colour",
             Field::AuraStyle => "settings.row.aura_style",
             Field::AuraSize => "settings.row.aura_size",
+            Field::Priority => "settings.row.priority",
             Field::FullScreen => "settings.row.full_screen",
             Field::SoundStyle => "settings.row.sound_style",
             Field::Cues => "settings.row.cues",
@@ -229,7 +232,8 @@ impl Field {
             | Field::CardSize
             | Field::AuraColour
             | Field::AuraStyle
-            | Field::AuraSize => Group::Interface,
+            | Field::AuraSize
+            | Field::Priority => Group::Interface,
             Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
             Field::Aura
             | Field::TargetMarks
@@ -269,6 +273,7 @@ impl Field {
             Field::AuraColour => "settings.desc.aura_colour",
             Field::AuraStyle => "settings.desc.aura_style",
             Field::AuraSize => "settings.desc.aura_size",
+            Field::Priority => "settings.desc.priority",
             Field::FullScreen => "settings.desc.full_screen",
             Field::SoundStyle => "settings.desc.sound_style",
             Field::Cues => "settings.desc.cues",

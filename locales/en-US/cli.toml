@@ -20,6 +20,10 @@ Display:
 Game:
   --seed <u64>                 choose a game for this seed at once
 
+Performance:
+  --priority <level>           process priority, beats the setting:
+                               highest, high, normal, low, lowest
+
 Window:
   -n, --new-window             open the game in a new console window and
                                return to the prompt at once

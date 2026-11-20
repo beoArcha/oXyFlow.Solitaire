@@ -25,6 +25,7 @@ aura = "Aura"
 aura_colour = "Kolor aury"
 aura_style = "Styl aury"
 aura_size = "Rozmiar aury"
+priority = "Priorytet procesu"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "Ile pól szeroka jest poświata. Gruba potrzebuje wolnego miejsca w
 target_marks = "Oznacza plusem i poświatą miejsca, gdzie można położyć niesiony ciąg."
 guide_panel = "Boczny panel z podpowiedziami dla zaznaczonej karty i klawiszy."
 moves_panel = "Boczny panel z listą wszystkich działań i ich klawiszy, także niedostępnych."
+priority = "Ile czasu procesora zajmuje gra. W Linuksie i macOS podniesienie wymaga uprawnień."
 
 [value]
 on = "Tak"
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (potrzeba {needed} kolumn, jest {now})"
 
+needs_privileges = "wymaga uprawnień"
 [full_screen]
 auto = "Auto"
 
@@ -175,3 +178,10 @@ keep_interface = "Zachować zmienione ustawienia interfejsu?"
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Najwyższy"
+high = "Wysoki"
+normal = "Normalny"
+low = "Niski"
+lowest = "Najniższy"

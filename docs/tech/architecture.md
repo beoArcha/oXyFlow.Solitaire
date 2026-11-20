@@ -743,7 +743,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
 - **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed`,
-  `--fullscreen`, `--no-fullscreen` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed only by the root `build.rs` with `xtask/src/version_scheme.rs`; the binary gives it to the TUI as `Deps::version` for the main menu label, so `oxysol-tui` has no build script and does not rebuild after a commit; it is also the Windows file version) and the
+  `--fullscreen`, `--no-fullscreen`, `--priority <level>` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed only by the root `build.rs` with `xtask/src/version_scheme.rs`; the binary gives it to the TUI as `Deps::version` for the main menu label, so `oxysol-tui` has no build script and does not rebuild after a commit; it is also the Windows file version) and the
   copyright with the license, built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE` through `cli.version_legal`. With `--new-window`, `main` starts only the log and calls
   `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
   with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS
@@ -767,6 +767,20 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   asks the pure `target_height(start, current, FontStep)` (±2 px, 8 to 72, Reset to the start height) and sets the same font with only
   the size changed (the face, family, weight and index are kept; a step passes width 0, Reset restores the start width). A refusal is
   logged at `info` and the step reports no change. `main` builds it only for `TerminalKind::ClassicConsole` and when the font can be read.
+- **Process priority (P4-13):** `Settings::process_priority` (`ProcessPriority`: `Highest`, `High`, `Normal` default, `Low`,
+  `Lowest`; never real time) is a row of the Interface group, so a change is previewed and confirmed like the other
+  Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
+  setting. `App` asks the `PriorityControl` trait (`DisplayDeps::priority`) at start and on every change of the level, once
+  per level; the answer is a `PriorityOutcome` (`Applied`, `NeedsPrivileges`, `Failed`) that the row shows beside the value
+  (`FontFacts::priority`), never an error log per frame. `src/priority.rs` holds the pure `native_value(Flavour, level)` and
+  `ProcessControl`; `trait Native` (`set_process`, `lower_current_thread`) is the only code that talks to the system, in
+  `src/priority/system.rs` (`SystemPriority`, hand-declared FFI, one justified `unsafe` each, no new dependency). Windows:
+  `SetPriorityClass` with `HIGH`, `ABOVE_NORMAL`, `NORMAL`, `BELOW_NORMAL`, `IDLE`. Linux and macOS: `setpriority` with nice
+  -10, -5, 0, 5, 10; a negative nice, and any raise back after a lower one, needs privileges (`EPERM` / `EACCES` is
+  `NeedsPrivileges` and the priority stays). On Linux the nice value is per thread: the UI thread is set and the sound thread
+  started before keeps 0. The solver worker (`ThreadSolver::spawn_with`) calls `Native::lower_current_thread` first:
+  `SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL)` on Windows, nice 15 (`SOLVER_NICE`, above every level) on Linux, nothing
+  on macOS (reported at `info`). Tests use `priority::fake::FakeNative`.
 - **Clipboard (T-27):** `src/clipboard.rs` implements `Clipboard` with `SystemClipboard`: the native clipboard
   through `arboard` (kept alive between copies), else, or when the session is remote, the OSC 52 escape
   sequence written to standard output. A terminal does not answer OSC 52, so that path reports "sent".

@@ -25,6 +25,7 @@ aura = "Аура"
 aura_colour = "Колір ауры"
 aura_style = "Стиль ауры"
 aura_size = "Розмір ауры"
+priority = "Пріоритет процесу"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "Скільки клітинок завширшки сяйво. То
 target_marks = "Позначає знаком + і сяйвом місця, куди можна покласти взятий ряд."
 guide_panel = "Бічна панель із підказками для вибраної карти та клавіш."
 moves_panel = "Бічна панель з усіма діями та їхніми клавішами, активними чи ні."
+priority = "Скільки часу процесора просить гра. У Linux і macOS підвищення потребує прав."
 
 [value]
 on = "Увімк."
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (потрібно {needed} стовпців, є {now})"
 
+needs_privileges = "потрібні права"
 [full_screen]
 auto = "Авто"
 
@@ -175,3 +178,10 @@ keep_interface = "Зберегти змінені налаштування ін�
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Найвищий"
+high = "Високий"
+normal = "Звичайний"
+low = "Низький"
+lowest = "Найнижчий"

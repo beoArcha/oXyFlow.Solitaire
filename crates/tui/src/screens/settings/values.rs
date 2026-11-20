@@ -5,6 +5,7 @@ use super::options::{
     AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FIELDS, FULL_SCREEN_MODES,
     Field, GLYPH_MODES, Step, back_styles, front_styles,
 };
+use super::priority_row;
 use crate::app::{CardFontState, FontFacts};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
@@ -12,7 +13,7 @@ use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{
     CONSOLE_FONT_SIZES, CardBack, CardSizeSetting, ColorMode, ConsoleFace, FullScreen, GlyphMode,
-    Settings,
+    ProcessPriority, Settings,
 };
 use crate::theme::ThemeId;
 use crate::widgets::card::back;
@@ -152,6 +153,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::AuraColour => t(settings.aura_colour.label_key()).into_owned(),
         Field::AuraStyle => t(settings.aura_style.label_key()).into_owned(),
         Field::AuraSize => t(settings.aura_size.label_key()).into_owned(),
+        Field::Priority => t(settings.process_priority.label_key()).into_owned(),
         Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
@@ -195,6 +197,9 @@ pub fn line(
     }
     if matches!(field, Field::FontFace | Field::FontSize) {
         value = font_rows::value(field, settings, facts);
+    }
+    if field == Field::Priority {
+        value = priority_row::value(settings, facts);
     }
     if field.is_audio() && !audio_available {
         value = format!("{value} ({})", t("settings.value.unavailable"));
@@ -274,6 +279,9 @@ pub fn changed(
         }
         Field::AuraStyle => next.aura_style = cycle(&AURA_STYLES, settings.aura_style, step),
         Field::AuraSize => next.aura_size = cycle(&AURA_SIZES, settings.aura_size, step),
+        Field::Priority => {
+            next.process_priority = cycle(&ProcessPriority::ALL, settings.process_priority, step);
+        }
         Field::FullScreen => {
             next.full_screen = cycle(&FULL_SCREEN_MODES, settings.full_screen, step);
         }

@@ -20,6 +20,10 @@ Vídeo:
 Jogo:
   --seed <u64>                 inicia um jogo com esta semente diretamente
 
+Desempenho:
+  --priority <nível>           prioridade do processo, vale mais que o ajuste:
+                               highest, high, normal, low, lowest
+
 Janela:
   -n, --new-window             abre o jogo em uma nova janela de console e
                                retorna ao prompt imediatamente

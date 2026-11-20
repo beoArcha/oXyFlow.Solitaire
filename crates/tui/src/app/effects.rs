@@ -241,6 +241,7 @@ impl App {
         let console_font_changed = self.settings.console_font != settings.console_font
             || self.settings.console_face != settings.console_face
             || self.settings.console_font_size != settings.console_font_size;
+        let priority_changed = self.settings.process_priority != settings.process_priority;
         let check = self.needs_graphics_check(&settings);
         if check {
             settings.glyph_mode = self.settings.glyph_mode;
@@ -251,6 +252,9 @@ impl App {
         }
         if console_font_changed {
             self.console_font_setting_changed();
+        }
+        if priority_changed {
+            self.priority_setting_changed();
         }
         if check {
             self.open_graphics_check();

@@ -25,6 +25,7 @@ aura = "Gloed"
 aura_colour = "Aurakleur"
 aura_style = "Aurastijl"
 aura_size = "Auragrootte"
+priority = "Procesprioriteit"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "Hoeveel cellen breed de gloed is. Dik heeft vrije ruimte rond de ka
 target_marks = "Markeert mogelijke doelen voor een reeks met + en een gloed."
 guide_panel = "Een zijpaneel met hints voor de geselecteerde kaart en toetsen."
 moves_panel = "Een zijpaneel met alle acties en hun toetsen, actief of niet."
+priority = "Hoeveel processortijd het spel vraagt. Op Linux en macOS vereist verhogen rechten."
 
 [value]
 on = "Aan"
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (vereist {needed} kolommen, nu {now})"
 
+needs_privileges = "vereist rechten"
 [full_screen]
 auto = "Auto"
 
@@ -175,3 +178,10 @@ keep_interface = "De gewijzigde interface-instellingen bewaren?"
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Hoogste"
+high = "Hoog"
+normal = "Normaal"
+low = "Laag"
+lowest = "Laagste"
