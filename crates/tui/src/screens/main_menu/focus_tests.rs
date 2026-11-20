@@ -22,7 +22,10 @@ fn focused(h: &mut Harness) -> Option<String> {
 }
 
 fn selector_focused(h: &mut Harness) -> bool {
-    h.lines().get(1).is_some_and(|line| line.contains("►◄"))
+    focused(h).is_none()
+        && Locale::offered()
+            .iter()
+            .any(|loc| h.text().contains(loc.own_name()))
 }
 
 fn seed_entry() -> Harness {
@@ -41,6 +44,57 @@ fn tab_moves_the_focus_down_the_items() {
     assert_eq!(focused(&mut h).as_deref(), Some(SEED_ITEM));
     h.press(KeyCode::Tab);
     assert_eq!(focused(&mut h).as_deref(), Some(STATISTICS));
+}
+
+#[test]
+fn up_from_first_menu_row_moves_focus_to_selector() {
+    let mut h = Harness::new();
+    assert_eq!(focused(&mut h).as_deref(), Some(FIRST));
+    h.press(KeyCode::Up);
+    assert!(selector_focused(&mut h));
+    assert_eq!(focused(&mut h), None);
+}
+
+#[test]
+fn up_from_resume_moves_focus_to_selector() {
+    use crate::storage::{GameId, SavedGame};
+    use oxysol_core::{Session, Variant};
+    let storage = MemoryStorage {
+        game: Some(SavedGame {
+            id: GameId(1),
+            record: Session::new(Variant::FreeCell, 1).record(),
+            elapsed_ms: 10_000,
+            undo_allowed: true,
+        }),
+        ..MemoryStorage::new()
+    };
+    let mut h = Harness::with(storage, crate::test_support::TRUE_COLOR, 100, 30);
+    assert!(
+        focused(&mut h)
+            .as_deref()
+            .is_some_and(|l| l.starts_with("Resume:"))
+    );
+    h.press(KeyCode::Up);
+    assert!(selector_focused(&mut h));
+    assert_eq!(focused(&mut h), None);
+}
+
+#[test]
+fn down_from_selector_returns_to_first_menu_row() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Up);
+    assert!(selector_focused(&mut h));
+    h.press(KeyCode::Down);
+    assert_eq!(focused(&mut h).as_deref(), Some(FIRST));
+}
+
+#[test]
+fn up_from_selector_wraps_to_quit() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Up);
+    assert!(selector_focused(&mut h));
+    h.press(KeyCode::Up);
+    assert_eq!(focused(&mut h).as_deref(), Some(QUIT));
 }
 
 #[test]

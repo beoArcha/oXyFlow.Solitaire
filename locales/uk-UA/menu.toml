@@ -38,3 +38,4 @@ label = "Як грати"
 [footer]
 open = "Відкрити"
 play = "Грати"
+language = "Мова"

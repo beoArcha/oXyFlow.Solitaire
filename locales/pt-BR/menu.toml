@@ -38,3 +38,4 @@ label = "Como jogar"
 [footer]
 open = "Abrir"
 play = "Jogar"
+language = "Idioma"
