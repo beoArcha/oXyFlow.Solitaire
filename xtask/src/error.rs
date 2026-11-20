@@ -7,6 +7,7 @@ use crate::fonts::FontsError;
 use crate::icon::IconError;
 use crate::locale_diff::LocaleDiffError;
 use crate::midi::MidiError;
+use crate::preflight::PreflightError;
 use crate::screenshots::ScreenshotError;
 use crate::sync_metadata::SyncMetadataError;
 use crate::version_scheme::GitError;
@@ -77,4 +78,6 @@ pub enum XtaskError {
     CheckResult(#[from] CheckResultError),
     #[error(transparent)]
     Worktrees(#[from] WorktreesError),
+    #[error(transparent)]
+    Preflight(#[from] PreflightError),
 }

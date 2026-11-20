@@ -58,7 +58,7 @@ with Klondike, Spider, FreeCell and Pyramid. Do not rename anything.
 - Decision IDs (`R-`, `T-`, `D-`) in `docs/tech/decisions.md` are assigned by the orchestrator in your
   card. Never pick the next free number yourself; if the card names none, ask in the report.
 - Tests are written together with the feature.
-- Before opening the PR run `cargo xtask check --quick` in the foreground and wait for it. It must pass.
+- Before opening the PR run `cargo xtask preflight --card <ID>` (branch against `origin/main`, lints, card files), then `cargo xtask check --quick` in the foreground and wait for it. It must pass.
   Never end your turn while a check runs in the background.
 - Do not edit the task list; status is updated by the phase gate.
 - Never claim a test you did not run or behavior you did not verify.
