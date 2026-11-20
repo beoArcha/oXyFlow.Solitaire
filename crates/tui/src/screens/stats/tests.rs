@@ -5,6 +5,7 @@ mod restarts;
 mod screen;
 mod scrollbar;
 mod support;
+mod winnable;
 
 use oxysol_core::{DrawCount, Variant};
 

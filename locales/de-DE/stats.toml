@@ -41,7 +41,7 @@ time = "Zeit"
 moves = "Züge"
 restarts = "Neust."
 winnable = "Lösbar"
-winnable_short = "?"
+winnable_short = "Lös?"
 
 [legend]
 winnable = "lösbar"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Diesen Seed erneut spielen"
 copy = "Seed kopieren"
 back = "Zurück"
+check = "Prüfen"
+check_all = "Alle prüfen"
+
+[check]
+hint = "w: dieses Spiel prüfen   W: alle ungeprüften"
+running = "Prüfung: {done} von {total}"
+finished = "Lösbarkeitsprüfung beendet ({total})"
+already = "Dieses Spiel ist bereits geprüft"
+nothing = "Alle Spiele sind bereits geprüft"

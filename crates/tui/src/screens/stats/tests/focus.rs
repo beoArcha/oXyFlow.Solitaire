@@ -11,6 +11,8 @@ use crate::test_support::Harness;
 
 const REPLAY: &str = "[ Play this seed again ]";
 const COPY: &str = "[ Copy seed ]";
+const CHECK: &str = "[ Check ]";
+const CHECK_ALL: &str = "[ Check all ]";
 const BACK: &str = "[ Back ]";
 
 fn focused(h: &mut Harness) -> Option<String> {
@@ -39,6 +41,10 @@ fn tab_walks_the_list_then_the_buttons_and_wraps_to_the_list() {
     h.press(KeyCode::Tab);
     assert!(on_button(focused(&mut h), COPY));
     h.press(KeyCode::Tab);
+    assert!(on_button(focused(&mut h), CHECK));
+    h.press(KeyCode::Tab);
+    assert!(on_button(focused(&mut h), CHECK_ALL));
+    h.press(KeyCode::Tab);
     assert_eq!(focused(&mut h).as_deref(), Some(BACK));
     h.press(KeyCode::Tab);
     assert!(on_list(focused(&mut h)));
@@ -50,7 +56,7 @@ fn shift_tab_from_the_list_wraps_to_back() {
     h.press(KeyCode::BackTab);
     assert_eq!(focused(&mut h).as_deref(), Some(BACK));
     h.press(KeyCode::BackTab);
-    assert!(on_button(focused(&mut h), COPY));
+    assert!(on_button(focused(&mut h), CHECK_ALL));
 }
 
 #[test]

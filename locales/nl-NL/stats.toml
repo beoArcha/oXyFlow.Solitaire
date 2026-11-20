@@ -41,7 +41,7 @@ time = "Tijd"
 moves = "Zet."
 restarts = "Herst."
 winnable = "Winkans"
-winnable_short = "?"
+winnable_short = "Winb?"
 
 [legend]
 winnable = "winbaar"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Speel deze seed opnieuw"
 copy = "Kopieer seed"
 back = "Terug"
+check = "Controleer"
+check_all = "Alles"
+
+[check]
+hint = "w: dit spel controleren   W: alle controleren"
+running = "Controleren: {done} van {total}"
+finished = "Controle klaar ({total})"
+already = "Dit spel is al gecontroleerd"
+nothing = "Alle spellen zijn al gecontroleerd"

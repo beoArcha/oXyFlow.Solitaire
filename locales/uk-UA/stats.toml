@@ -41,7 +41,7 @@ time = "Час"
 moves = "Ходи"
 restarts = "Спочатку"
 winnable = "Виграшна"
-winnable_short = "?"
+winnable_short = "Виг?"
 
 [legend]
 winnable = "виграшна"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Зіграти це зерно знову"
 copy = "Копіювати зерно"
 back = "Назад"
+check = "Перевірити"
+check_all = "Усі"
+
+[check]
+hint = "w: перевірити цю гру   W: перевірити всі"
+running = "Перевірка: {done} з {total}"
+finished = "Перевірку завершено ({total})"
+already = "Цю гру вже перевірено"
+nothing = "Усі ігри вже перевірено"

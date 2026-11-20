@@ -41,7 +41,7 @@ time = "Czas"
 moves = "Ruchy"
 restarts = "Od nowa"
 winnable = "Wygrana?"
-winnable_short = "?"
+winnable_short = "Wygr?"
 
 [legend]
 winnable = "do wygrania"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Zagraj to ziarno ponownie"
 copy = "Kopiuj ziarno"
 back = "Wstecz"
+check = "Sprawdź"
+check_all = "Wszystkie"
+
+[check]
+hint = "w: sprawdź tę grę   W: sprawdź wszystkie"
+running = "Sprawdzanie: {done} z {total}"
+finished = "Sprawdzanie zakończone ({total})"
+already = "Ta gra jest już sprawdzona"
+nothing = "Wszystkie gry są już sprawdzone"

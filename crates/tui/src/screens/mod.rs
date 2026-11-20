@@ -80,6 +80,8 @@ pub enum Effect {
     HowToPlay,
     /// Copy the seed to the clipboard and announce the result.
     CopySeed(u64),
+    /// Ask the solver whether these games of the history were winnable; the answers are stored.
+    CheckWinnable(Vec<stats::Target>),
     Quit,
 }
 
