@@ -46,8 +46,7 @@ mod call {
     )]
     pub(super) fn set_process(value: i32) -> Result<(), PriorityError> {
         let class = u32::try_from(value).map_err(|_error| PriorityError::Unsupported)?;
-        // SAFETY: the pseudo handle of the current process needs no closing and the class is one
-        // of the documented priority classes, never the real-time class.
+        // SAFETY: the pseudo handle needs no closing; the class is a documented non-real-time one.
         let done = unsafe { SetPriorityClass(GetCurrentProcess(), class) };
         if done == 0 { Err(failure()) } else { Ok(()) }
     }
@@ -57,8 +56,7 @@ mod call {
         reason = "SetThreadPriority has no safe wrapper in std and the crate avoids windows-sys"
     )]
     pub(super) fn lower_current_thread() -> Result<(), PriorityError> {
-        // SAFETY: the pseudo handle of the calling thread needs no closing and the priority is
-        // the documented THREAD_PRIORITY_BELOW_NORMAL.
+        // SAFETY: the pseudo handle needs no closing; the priority is THREAD_PRIORITY_BELOW_NORMAL.
         let done = unsafe { SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL) };
         if done == 0 { Err(failure()) } else { Ok(()) }
     }
