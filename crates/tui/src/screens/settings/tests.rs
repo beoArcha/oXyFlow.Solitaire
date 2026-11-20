@@ -5,6 +5,7 @@ mod card_back;
 mod card_size;
 mod console_font;
 mod focus;
+mod font_rows;
 mod guide;
 mod hints;
 mod interface;
@@ -92,6 +93,14 @@ fn move_down(h: &mut Harness, rows: usize) {
     for _ in 0..rows {
         h.press(KeyCode::Down);
     }
+}
+
+/// The rows that only the classic Windows console lets the game change; the test terminal is not one.
+pub(super) fn is_console_font_row(field: Field) -> bool {
+    matches!(
+        field,
+        Field::ConsoleFont | Field::FontFace | Field::FontSize
+    )
 }
 
 fn is_style(field: Field) -> bool {
@@ -251,7 +260,7 @@ fn every_row_changes_by_keyboard_and_reaches_storage() {
     let console_independent = FIELDS
         .iter()
         .enumerate()
-        .filter(|(_, field)| **field != Field::ConsoleFont);
+        .filter(|(_, field)| !is_console_font_row(**field));
     for (index, field) in console_independent {
         let mut h = open_settings();
         move_down(&mut h, index);

@@ -169,7 +169,7 @@ impl App {
         app.load_stored_state();
         app.fit_sound_style();
         app.fit_card_styles();
-        app.sync_card_font();
+        app.sync_console_look();
         app.sync_full_screen();
         app.reset_quick();
         app.refresh_view();

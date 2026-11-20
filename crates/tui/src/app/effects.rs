@@ -238,7 +238,9 @@ impl App {
     /// is saved.
     pub(super) fn show_settings(&mut self, mut settings: Settings) {
         let full_screen_changed = self.settings.full_screen != settings.full_screen;
-        let console_font_changed = self.settings.console_font != settings.console_font;
+        let console_font_changed = self.settings.console_font != settings.console_font
+            || self.settings.console_face != settings.console_face
+            || self.settings.console_font_size != settings.console_font_size;
         let check = self.needs_graphics_check(&settings);
         if check {
             settings.glyph_mode = self.settings.glyph_mode;

@@ -3,6 +3,7 @@
 //! so the focus moves over the rows only.
 
 mod arrows;
+mod font_rows;
 mod list;
 pub(crate) mod options;
 mod sample;
@@ -14,7 +15,7 @@ use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
 use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::text::Line;
-use ratatui::widgets::Paragraph;
+use ratatui::widgets::{Paragraph, Wrap};
 
 use self::arrows::{Arrows, glyphs, locate};
 use self::list::{Entry, entries, first_shown};
@@ -37,8 +38,8 @@ pub(crate) const FOOTER: [KeyHint; 3] = [
 
 const HEADING_INDENT: &str = "  ";
 
-/// The rows of the screen that are not the list: title, two gaps, sample, description, note, footer.
-const CHROME_ROWS: u16 = 7;
+/// The rows of the screen that are not the list: title, two gaps, sample, two lines of description, note, footer.
+const CHROME_ROWS: u16 = 8;
 
 /// State of the settings screen: the focused row and where each row was drawn last.
 #[derive(Debug, Default)]
@@ -59,6 +60,9 @@ fn change_row(index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
         return Effect::None;
     }
     if field == Field::ConsoleFont && ctx.font.card_font == CardFontState::Unavailable {
+        return Effect::None;
+    }
+    if font_rows::is_inert(field, ctx.font) {
         return Effect::None;
     }
     let settings = changed(field, ctx.settings, step, ctx.sound_styles);
@@ -186,7 +190,7 @@ impl SettingsScreen {
             Constraint::Length(u16::try_from(shown).unwrap_or(0)),
             Constraint::Length(1),
             Constraint::Length(1),
-            Constraint::Length(1),
+            Constraint::Length(2),
             Constraint::Length(1),
             Constraint::Fill(1),
             Constraint::Length(1),
@@ -294,7 +298,9 @@ impl SettingsScreen {
         );
         let style = ctx.theme.style(Token::TextMuted, Token::Background);
         frame.render_widget(
-            Paragraph::new(Line::styled(text, style)).alignment(Alignment::Center),
+            Paragraph::new(Line::styled(text, style))
+                .alignment(Alignment::Center)
+                .wrap(Wrap { trim: true }),
             area,
         );
     }

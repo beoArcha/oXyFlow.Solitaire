@@ -6,12 +6,14 @@ use serde::{Deserialize, Serialize};
 mod aids;
 mod card_back;
 mod card_size;
+mod console_face;
 mod dock;
 mod full_screen;
 mod interface;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
 pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
+pub use console_face::{CONSOLE_FONT_SIZES, ConsoleFace};
 pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 pub use interface::{AuraColour, AuraSize, AuraStyle};
@@ -69,6 +71,12 @@ pub struct Settings {
     /// Whether the classic Windows console is asked to use the oXySol font ("Use the oXySol font in
     /// this console"). An older saved value without the field loads as `false`.
     pub console_font: bool,
+    /// The font face asked of the classic Windows console. An older saved value without the field
+    /// loads as `Default` (the face the console had).
+    pub console_face: ConsoleFace,
+    /// The font height in pixels asked of the classic Windows console; `0` is the size it had. An
+    /// older saved value without the field loads as `0`.
+    pub console_font_size: u8,
     pub color_mode: ColorMode,
     pub sound_style: String,
     pub cues: bool,
@@ -123,6 +131,8 @@ impl Default for Settings {
             glyph_mode: GlyphMode::Unicode,
             font_confirmed: false,
             console_font: false,
+            console_face: ConsoleFace::Default,
+            console_font_size: 0,
             color_mode: ColorMode::Auto,
             sound_style: DEFAULT_SOUND_STYLE.to_owned(),
             cues: true,

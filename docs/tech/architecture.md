@@ -437,6 +437,19 @@ pub struct NullClipboard;                                // every copy fails wit
   colour is one theme token for all three halos (still told apart by symbol); `Frame` draws a line frame (`┌─┐` for the focus, `╔═╗`
   for the carried run, plain ASCII `+-|` and `#=H` in ASCII mode; a target keeps its dot), `Thick` is two rings of free cells instead of
   one. `settings/sample.rs` draws a sample of the three halos under the list.
+  *Console font face and size:* two more Interface rows follow Console font: `Settings::console_face` (`ConsoleFace { Default,
+  Consolas, LucidaConsole, CascadiaMono }`, `settings/console_face.rs`; `Default` leaves the face the console had) and
+  `console_font_size` (pixels from `CONSOLE_FONT_SIZES`, `0` leaves the size; older values load as the default). Only the classic Windows
+  console lets the game change them: `ConsoleFont` gets `use_face(Option<&str>) -> CardFontState` and `use_size(Option<u16>) -> bool`
+  (default: unavailable). In Windows Terminal, Linux and macOS terminals both rows show the terminal's own zoom shortcut instead of a
+  value (`TerminalKind::font_keys_key`: `Ctrl+= / Ctrl+-`, `Ctrl+Shift+= / Ctrl+-`, `Cmd+= / Cmd+-`) and their description says the game
+  cannot change that font; a step on them does nothing. The oXySol font option and the face row share one owner: `FontZoom` in
+  `src/console/font.rs` keeps the font the console had before the game first changed its face (`saved`) and `start`, the font at launch.
+  The card font owns the face while it is in use (`use_face` then changes nothing and the row says "oXySol font"); turning it off puts
+  the player's face back through `App::sync_console_look` (card font, then face, then size). Putting a face back keeps the size chosen
+  meanwhile; at exit `FontZoom` sets `start` back whenever the game changed the face, the size or the card font. A face is checked by
+  reading it back, as for the card font: `Off` / `Active` / `NotRegistered` (shown "not installed") / `Refused`. The Settings
+  description of the focused row wraps over two lines.
   *Preview and confirmation:* a change of an Interface row returns `Effect::Preview(settings)`: `App` shows it at once
   (`show_settings`, which also drives the console font and the theme) without saving and keeps the settings as they were in
   `interface_baseline` (`app/interface.rs`). While it is set, `persist_settings` writes the baseline's interface fields

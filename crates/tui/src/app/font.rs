@@ -42,6 +42,8 @@ pub enum CardFontState {
 pub struct FontFacts {
     pub terminal: TerminalKind,
     pub card_font: CardFontState,
+    /// The state of the font face the player chose in Settings (`Off` when none is asked for).
+    pub face: CardFontState,
     /// The size of a character cell in pixels, where the console tells it.
     pub cell_px: Option<(u16, u16)>,
 }
@@ -51,6 +53,7 @@ impl Default for FontFacts {
         Self {
             terminal: TerminalKind::Linux,
             card_font: CardFontState::Unavailable,
+            face: CardFontState::Unavailable,
             cell_px: None,
         }
     }
@@ -68,6 +71,21 @@ pub trait ConsoleFont {
     fn use_card_font(&mut self, on: bool) -> CardFontState {
         let _ = on;
         CardFontState::Unavailable
+    }
+
+    /// Switches the console to the font face `face` (`None`: back to the face it had before). The
+    /// card font owns the face while it is in use, then this changes nothing. The face is checked
+    /// by reading it back, as for the card font; the game never installs a font.
+    fn use_face(&mut self, face: Option<&str>) -> CardFontState {
+        let _ = face;
+        CardFontState::Unavailable
+    }
+
+    /// Sets the font height in pixels (`None`: the size the console had when the game started).
+    /// Returns whether the console took it.
+    fn use_size(&mut self, height: Option<u16>) -> bool {
+        let _ = height;
+        false
     }
 
     /// The size of a character cell in pixels (width, height), or `None` when the console does not

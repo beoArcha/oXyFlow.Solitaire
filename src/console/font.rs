@@ -53,6 +53,8 @@ pub struct FontZoom {
     console: Box<dyn Console>,
     start: FontInfo,
     saved: Option<FontInfo>,
+    card_active: bool,
+    dirty: bool,
 }
 
 impl FontZoom {
@@ -64,6 +66,8 @@ impl FontZoom {
                 console,
                 start,
                 saved: None,
+                card_active: false,
+                dirty: false,
             }),
             Err(error) => {
                 tracing::info!(%error, "the console font cannot be read; no font zoom");
@@ -111,19 +115,65 @@ impl ConsoleFont for FontZoom {
     }
 
     fn use_card_font(&mut self, on: bool) -> CardFontState {
+        self.dirty = true;
         if on {
-            card_font::apply(&mut *self.console, &mut self.saved)
+            let state = card_font::apply(&mut *self.console, &mut self.saved);
+            self.card_active = state == CardFontState::Active;
+            state
         } else {
-            card_font::restore(&mut *self.console, &mut self.saved);
+            self.card_active = false;
+            card_font::restore_face(&mut *self.console, &mut self.saved);
             CardFontState::Off
+        }
+    }
+
+    fn use_face(&mut self, face: Option<&str>) -> CardFontState {
+        if self.card_active {
+            return CardFontState::Off;
+        }
+        self.dirty = true;
+        match face {
+            Some(name) => card_font::apply_face(&mut *self.console, &mut self.saved, name),
+            None => {
+                card_font::restore_face(&mut *self.console, &mut self.saved);
+                CardFontState::Off
+            }
+        }
+    }
+
+    fn use_size(&mut self, height: Option<u16>) -> bool {
+        self.dirty = true;
+        let result = self.console.font().and_then(|mut font| {
+            match height.and_then(|height| i16::try_from(height).ok()) {
+                Some(height) => {
+                    font.height = height;
+                    font.width = 0;
+                }
+                None => {
+                    font.height = self.start.height;
+                    font.width = self.start.width;
+                }
+            }
+            self.console.set_font(&font)
+        });
+        match result {
+            Ok(()) => true,
+            Err(error) => {
+                tracing::info!(%error, "the console refused the font size");
+                false
+            }
         }
     }
 }
 
 impl Drop for FontZoom {
-    /// Sets the font back that the card font option replaced, so the console is left as it was found.
+    /// Sets the font back that the game changed (card font, face or size from Settings), so the
+    /// console is left as it was found.
     fn drop(&mut self) {
-        card_font::restore(&mut *self.console, &mut self.saved);
+        if self.dirty || self.saved.is_some() {
+            self.saved = None;
+            card_font::put_back(&mut *self.console, &self.start);
+        }
     }
 }
 

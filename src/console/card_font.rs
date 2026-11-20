@@ -25,11 +25,12 @@ pub fn face_name(face: &[u16; 32]) -> String {
     String::from_utf16_lossy(&units)
 }
 
-fn card_face(font: &FontInfo) -> bool {
-    face_name(&font.face) == CARD_FACE
+fn shows(font: &FontInfo, face: &str) -> bool {
+    face_name(&font.face) == face
 }
 
-fn put_back(console: &mut dyn Console, font: &FontInfo) {
+/// Sets `font` on the console. A refusal is logged, never fatal: the console keeps what it has.
+pub fn put_back(console: &mut dyn Console, font: &FontInfo) {
     if let Err(error) = console.set_font(font) {
         tracing::info!(%error, "the previous console font could not be set back");
     }
@@ -38,6 +39,17 @@ fn put_back(console: &mut dyn Console, font: &FontInfo) {
 /// Switches `console` to the card face and keeps the font it had in `saved`, to restore later.
 /// Already showing the card face is a success with nothing to restore.
 pub fn apply(console: &mut dyn Console, saved: &mut Option<FontInfo>) -> CardFontState {
+    apply_face(console, saved, CARD_FACE)
+}
+
+/// Switches `console` to the face `name`, keeping in `saved` the font the console had before the
+/// game first changed it (a later change keeps that first font). The face is set, read back and
+/// compared: a console takes a face it does not have without complaint and keeps its own font.
+pub fn apply_face(
+    console: &mut dyn Console,
+    saved: &mut Option<FontInfo>,
+    name: &str,
+) -> CardFontState {
     let current = match console.font() {
         Ok(font) => font,
         Err(error) => {
@@ -45,11 +57,11 @@ pub fn apply(console: &mut dyn Console, saved: &mut Option<FontInfo>) -> CardFon
             return CardFontState::Refused;
         }
     };
-    if card_face(&current) {
+    if shows(&current, name) {
         return CardFontState::Active;
     }
     let wanted = FontInfo {
-        face: face_units(CARD_FACE),
+        face: face_units(name),
         ..current
     };
     if let Err(error) = console.set_font(&wanted) {
@@ -57,7 +69,7 @@ pub fn apply(console: &mut dyn Console, saved: &mut Option<FontInfo>) -> CardFon
         return CardFontState::Refused;
     }
     match console.font() {
-        Ok(now) if card_face(&now) => {
+        Ok(now) if shows(&now, name) => {
             saved.get_or_insert(current);
             CardFontState::Active
         }
@@ -74,7 +86,24 @@ pub fn apply(console: &mut dyn Console, saved: &mut Option<FontInfo>) -> CardFon
     }
 }
 
-/// Sets back the font `apply` replaced; nothing to do when it replaced none.
+/// Sets back the face `apply_face` replaced and keeps the size the console shows now, so a size the
+/// player chose meanwhile stays. Nothing to do when the game replaced no face.
+pub fn restore_face(console: &mut dyn Console, saved: &mut Option<FontInfo>) {
+    let Some(before) = saved.take() else {
+        return;
+    };
+    let font = match console.font() {
+        Ok(now) => FontInfo {
+            width: now.width,
+            height: now.height,
+            ..before
+        },
+        Err(_) => before,
+    };
+    put_back(console, &font);
+}
+
+/// Sets back the font `apply` replaced, size included; nothing to do when it replaced none.
 pub fn restore(console: &mut dyn Console, saved: &mut Option<FontInfo>) {
     if let Some(font) = saved.take() {
         put_back(console, &font);
@@ -257,7 +286,7 @@ mod tests {
     }
 
     #[test]
-    fn the_zoom_switches_the_card_font_on_and_off_and_keeps_the_face_when_it_resizes() {
+    fn the_zoom_switches_the_card_font_on_and_off_and_keeps_the_new_size_when_the_face_goes_back() {
         let (state, console) = console(true);
         let zoom = FontZoom::new(Box::new(console));
         let Some(mut zoom) = zoom else {
@@ -273,7 +302,7 @@ mod tests {
             font.map(|font| face_name(&font.face)).as_deref(),
             Some("Consolas")
         );
-        assert_eq!(font.map(|font| font.height), Some(20));
+        assert_eq!(font.map(|font| font.height), Some(22));
     }
 
     #[test]
