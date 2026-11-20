@@ -4,10 +4,13 @@ use std::path::PathBuf;
 
 use crate::check_result::CheckResultError;
 use crate::fonts::FontsError;
+#[cfg(feature = "art")]
 use crate::icon::IconError;
+#[cfg(feature = "art")]
 use crate::locale_diff::LocaleDiffError;
 use crate::midi::MidiError;
 use crate::preflight::PreflightError;
+#[cfg(feature = "art")]
 use crate::screenshots::ScreenshotError;
 use crate::sync_metadata::SyncMetadataError;
 use crate::version_scheme::GitError;
@@ -50,6 +53,9 @@ pub enum XtaskError {
         #[source]
         source: toml::de::Error,
     },
+    #[cfg(not(feature = "art"))]
+    #[error("`{command}` needs the `art` feature; run it as `cargo xtask-art {command}`")]
+    ArtRequired { command: &'static str },
     #[error("lint found {count} error(s)")]
     LintFailed { count: usize },
     #[error("`{path}` is not valid TOML")]
@@ -66,12 +72,15 @@ pub enum XtaskError {
     SyncMetadata(#[from] SyncMetadataError),
     #[error(transparent)]
     Midi(#[from] MidiError),
+    #[cfg(feature = "art")]
     #[error(transparent)]
     Icon(#[from] IconError),
+    #[cfg(feature = "art")]
     #[error(transparent)]
     LocaleDiff(#[from] LocaleDiffError),
     #[error(transparent)]
     Fonts(#[from] FontsError),
+    #[cfg(feature = "art")]
     #[error(transparent)]
     Screenshots(#[from] ScreenshotError),
     #[error(transparent)]

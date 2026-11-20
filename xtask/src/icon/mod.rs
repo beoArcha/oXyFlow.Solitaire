@@ -54,7 +54,7 @@ pub enum IconError {
         #[source]
         source: std::io::Error,
     },
-    #[error("`{path}` is out of date; run `cargo xtask icon` and commit the result")]
+    #[error("`{path}` is out of date; run `cargo xtask-art icon` and commit the result")]
     Stale { path: PathBuf },
 }
 

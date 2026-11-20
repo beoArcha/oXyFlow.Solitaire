@@ -66,3 +66,9 @@ fn comparison_tolerates_rounding_but_not_a_different_picture() {
     assert!(!pixels_match(&base, &nudged));
     assert!(!pixels_match(&base, &square(9)));
 }
+
+#[test]
+fn committed_icon_is_up_to_date() {
+    let root = crate::check::workspace_root().expect("workspace root");
+    super::run(&root, true).expect("generated icon files match the sources");
+}
