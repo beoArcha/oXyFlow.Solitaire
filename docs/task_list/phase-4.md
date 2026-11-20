@@ -270,6 +270,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   `codepoints.toml` and lies in U+E6BC–U+E6FF; the console font decision (registered, not registered,
   rejected, restored) is tested through a fake `Console`; the Windows Terminal hint appears only with
   `WT_SESSION`; the real switch is verified by hand in the classic console (say where); both locales.
+- **Done:** #170, #171 (styles from `assets/cards/*/*/style.toml`; console font option and graphics check; the real console switch still to be checked by hand; Font mode has no glyph art until M-19…M-24)
 
 ### O-34 — Windows Terminal: test the card font on a real machine
 
@@ -325,6 +326,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   JavaScript the start page lists nine languages in English; with JavaScript a browser set to Polish shows the Polish
   description (say how it was checked); `prefers-reduced-motion` stops the animation; no horizontal scroll at 320 px
   width; the audit list is in the PR description.
+- **Done:** #166 (landing page with nine flags; words and descriptions corrected after a native review (German Solitär, French Solitaire))
 
 ### P3-29 — Settings: an Interface section (colors, aura, size, font)
 
@@ -359,6 +361,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   decision log). The counters are information only; they never block a move.
 - **Acceptance:** tests for each counter on scripted games, the streak, the migration, the "assisted"
   mark at the threshold; both locales.
+- **Done:** #174 (schema v5 assist counters; assisted = quick moves above 80% of at least 10 moves (T-39))
 
 ### P4-08 — Card style: Swiss suits (Unicode)
 
@@ -403,6 +406,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** tests for the grouping order, the star marks in Unicode and ASCII, toggling a favourite and its
   persistence, the search filter and clearing it, and the keyboard and mouse paths; both locales; renders at 100 × 30
   and 130 × 40.
+- **Done:** #173 (families, stars, favourites (`f`), search (`/`); no footer buttons for `f` and `/`)
 
 ### P4-10 — Game: Yukon
 
@@ -442,6 +446,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
     (e.g. "Tab Język" / "Tab Language") following the footer's drop priorities.
 - **Acceptance:** a render test with the list open shows no extra `◄`; key tests for Up to the selector and Down
   back; the footer shows the Tab entry at 100 × 30 in every offered locale.
+- **Done:** #172 (the stray mark was the selector's focus marker; focus stays visible through the tooltip and the list's `►`)
 
 ### P4-12 — Statistics: a clear winnable column and a check for unchecked deals
 
@@ -461,6 +466,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   seed; the UI stays responsive while checking (background or step-wise).
 
 ## Done before the 2026-11 replan
+- **Done:** #169 (`w` / `W` check one or all unchecked deals off the UI thread; header `Win?`)
 
 ### P4-01 — SQLite persistence
 

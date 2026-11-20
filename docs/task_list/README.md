@@ -221,14 +221,14 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-38 | Settings save failure: alert and log once per session | Haiku | — | DONE |
 | O-39 | Split files over 300 LOC found by the P3-09 gate | Antigravity | — | DONE |
 | O-35 | Release archives carry the font licence (OFL) | Haiku | P5-01 (the font, `assets/fonts/OFL.txt` and `assets/fonts/NOTICE.md` exist) | DONE |
-| P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the | TODO |
+| P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the | DONE |
 | O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | DONE |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
-| P4-07 | Site: language landing page | Sonnet | O-40, O-62 | TODO |
+| P4-07 | Site: language landing page | Sonnet | O-40, O-62 | DONE |
 | P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | TODO |
-| P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | TODO |
+| P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | DONE |
 | P4-08 | Card style: Swiss suits (Unicode) | Haiku | P5-02 | TODO |
-| P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | TODO |
+| P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | DONE |
 | P4-10 | Game: Yukon | Sonnet | P4-09, P1-02 | DRAFT |
 | P4-01 | SQLite persistence | Sonnet | P3-01 | DONE |
 | P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | DONE |
@@ -241,9 +241,8 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-11 | `--seed` starts the game directly; typed keys stay in text fields | not recorded (follow-up) | P3-10 | DONE |
 | O-15 | `--new-window` flag and the command-line options in Help | not recorded (follow-up) | O-05, O-14 | DONE |
 | O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | not recorded (follow-up) | O-15 | DONE |
-| P4-11 | Language selector: stray glyph, reachable with Up, Tab hint in the footer | Haiku | P3-37 | TODO |
-| P4-12 | Statistics: a clear winnable column and a check for unchecked deals | Haiku | P4-04, P2-08 | TODO |
-
+| P4-11 | Language selector: stray glyph, reachable with Up, Tab hint in the footer | Haiku | P3-37 | DONE |
+| P4-12 | Statistics: a clear winnable column and a check for unchecked deals | Haiku | P4-04, P2-08 | DONE |
 ### Phase 5 (0.5.x) — Themes, colour vision, Spanish cards, Golf
 
 | ID | Task | Owner | Depends on | Status |
