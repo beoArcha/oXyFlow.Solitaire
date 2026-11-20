@@ -86,6 +86,7 @@ pub const fn is_wgl4(c: char) -> bool {
             | '♫'
             | '✓'
             | '✗'
+            | '★'
             | '\n'
             | '\r'
             | '\t'

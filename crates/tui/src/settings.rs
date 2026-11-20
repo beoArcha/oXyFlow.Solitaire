@@ -18,6 +18,7 @@ use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::i18n::Locale;
 use crate::theme::ThemeId;
+use oxysol_core::Variant;
 
 /// The sound style used when none is saved or the saved one no longer exists.
 pub const DEFAULT_SOUND_STYLE: &str = "default";
@@ -94,6 +95,9 @@ pub struct Settings {
     pub card_back: CardBack,
     /// The card size on the board. An older saved value without the field loads as `Auto`.
     pub card_size: CardSizeSetting,
+    /// The variants the player put in the favourites group of the game menu. An older saved value
+    /// without the field loads as empty.
+    pub favourites: Vec<Variant>,
 }
 
 impl Default for Settings {
@@ -120,6 +124,7 @@ impl Default for Settings {
             full_screen: FullScreen::Auto,
             card_back: CardBack::Theme,
             card_size: CardSizeSetting::Auto,
+            favourites: Vec::new(),
         }
     }
 }
