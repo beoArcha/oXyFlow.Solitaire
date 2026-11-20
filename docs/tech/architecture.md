@@ -628,6 +628,17 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
 
 Logs go only to `oxysol.log`; nothing is written to stdout or stderr while the TUI runs.
 
+## Card font build (`cargo xtask fonts`)
+
+`cargo xtask fonts` writes `assets/fonts/oXySolMono-Regular.ttf` (family `oXySol Mono`, D-06, T-16): the base
+`assets/fonts/base/CascadiaMono.ttf` (Cascadia Mono 2407.24, OFL 1.1, see `assets/fonts/NOTICE.md`) plus every
+card glyph SVG under `assets/cards/{fronts,backs}/<style>/glyphs/`. The registry `assets/cards/codepoints.toml`
+maps each key `<fronts|backs>/<style>/<name>` to one code point in U+E6BC–U+E6FF; Rust checks it (unique, in
+range, every SVG has an entry, an entry without an SVG is skipped with a note) and runs `xtask/fonts/build_font.py`
+with Python 3.11 or newer and the versions pinned in `xtask/fonts/requirements.txt` (`fontTools`, `skia-pathops`).
+Python is used by this command only, never by `cargo build`, `cargo test` or `cargo xtask check`. The same command
+writes the contact sheet `target/fonts/preview.html`. Two runs give identical bytes.
+
 ## Quality gates
 
 | Command | Steps | Where |
