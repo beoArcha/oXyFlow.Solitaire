@@ -19,6 +19,7 @@ mod version;
     reason = "the file is shared with the build scripts; xtask uses only the git-based part"
 )]
 mod version_scheme;
+mod worktrees;
 
 use std::env;
 use std::error::Error;
@@ -28,7 +29,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | locale-diff [<lang>] [--ref <git-ref>] | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--base | --tag]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | locale-diff [<lang>] [--ref <git-ref>] | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | worktrees [--remove [--force]] | version [--base | --tag]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -66,6 +67,10 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
         "locale-diff" => Ok(locale_diff::run(
             &check::workspace_root()?,
             &parse_locale_diff(flags)?,
+        )?),
+        "worktrees" => Ok(worktrees::run(
+            &check::workspace_root()?,
+            worktrees::parse_options(flags).ok_or_else(usage)?,
         )?),
         "version" => version::run(parse_version_flags(flags)?),
         _ => Err(usage()),
