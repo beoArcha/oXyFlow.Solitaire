@@ -179,10 +179,10 @@ the PR descriptions; cards that exist are in the phase files.
 | O-42 | Interface translation: German (de-DE) | O-41 | DONE |
 | O-43 | Interface translation: French (fr-FR) | O-41 | DONE |
 | O-44 | Interface translation: Italian (it-IT) | O-41 | DONE |
-| O-45 | Interface translation: Brazilian Portuguese (pt-BR) | O-41 | TODO |
-| O-46 | Interface translation: Ukrainian (uk-UA) | O-41 | TODO |
-| O-47 | Interface translation: Dutch (nl-NL) | O-41 | TODO |
-| O-48 | Interface translation: Spanish (es-ES) | O-41 | TODO |
+| O-45 | Interface translation: Brazilian Portuguese (pt-BR) | O-41 | DONE |
+| O-46 | Interface translation: Ukrainian (uk-UA) | O-41 | DONE |
+| O-47 | Interface translation: Dutch (nl-NL) | O-41 | DONE |
+| O-48 | Interface translation: Spanish (es-ES) | O-41 | DONE |
 | O-49 | Workflow review: CI, release and agent workflows | — | DONE |
 | O-50 | Require up-to-date branches and auto-merge on main (repository setting) | O-49 | TODO |
 | O-51 | `check --quick` runs every test target in one cargo call | O-49 | TODO |

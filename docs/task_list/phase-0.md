@@ -296,6 +296,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #136 (fit fixes, where needed, in that locale only)
 
 ### O-46 — Interface translation: Ukrainian (uk-UA)
 
@@ -305,6 +306,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #137 (fit fixes, where needed, in that locale only)
 
 ### O-47 — Interface translation: Dutch (nl-NL)
 
@@ -314,6 +316,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #138 (fit fixes, where needed, in that locale only)
 
 ### O-48 — Interface translation: Spanish (es-ES)
 
@@ -323,6 +326,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #139 (fit fixes, where needed, in that locale only)
 
 ### O-49 — Workflow review: CI, release and agent workflows
 
