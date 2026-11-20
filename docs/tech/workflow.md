@@ -166,7 +166,7 @@ before dispatching the second. Current hotspots:
 
 - `crates/tui/src/app.rs`, `crates/tui/src/settings.rs`, `crates/tui/src/input.rs`
 - `crates/tui/src/screens/settings/**` and the settings row-count tests in `accessibility_tests.rs`
-- `locales/en-US/*.toml` (every new key must reach every locale folder, see below)
+- `locales/en-US/*.toml` (a new key must reach every complete locale folder, see below)
 - `docs/tech/decisions.md` (IDs are assigned by the orchestrator in the card)
 - `docs/task_list/**` (edited by the orchestrator only)
 
@@ -179,7 +179,11 @@ A locale is offered to players only when `locales/<lang>/meta.toml` says `comple
 (architecture: "Adding or translating a locale"). Translation tasks are text-only and run one
 language at a time: the translator replaces the ten area files of a locale, keeps keys, order and
 `{placeholders}`, sets `complete = true` and writes `docs/tech/glossaries/<lang>.md`. The
-orchestrator then merges `main`, compares the keys with `en-US`, and runs the check; the fit tests
+orchestrator then merges `main`, compares the keys with `en-US` (`cargo xtask locale-diff <lang>`
+lists missing, extra and placeholder-mismatched keys; `--ref <git-ref>` reads another commit), and
+runs the check. An incomplete locale may lack keys and shows the English text for them (decision
+T-38); a complete locale must have every key, so mark a locale `complete = true` only when
+`locale-diff` is clean. The fit tests
 (footer, `Do:` row, header, statistics, help, `Now:` row) run for every offered locale, and texts
 that do not fit are shortened in that locale only. A test that hard-codes English or Polish text is
 a test bug: it reads the expected text from the locale instead.
