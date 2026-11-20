@@ -1,0 +1,40 @@
+# Strings of the menu area: the main menu, the seed entry and the game selection.
+# Items shared with the rest of the interface (New game, Settings, Quit, the variant names)
+# live in common.toml.
+resume = "Fortsetzen"
+resume_full = "Fortsetzen: {game}, {time}, Züge {moves}"
+resume_time = "Fortsetzen: {game}, {time}"
+resume_game = "Fortsetzen: {game}"
+new_game_from_seed = "Neues Spiel mit Seed"
+help = "Hilfe"
+select_seed = "Wähle ein Spiel für Seed {seed}"
+version = "v{version}"
+variant_hint = "{level}: {description}"
+
+[difficulty]
+easy = "Einfach"
+medium = "Mittel"
+hard = "Schwer"
+
+[game_hint]
+klondike = "Fundamente nach Farbe ab Assen aufbauen; der Talon speist die Spalten."
+spider = "Acht Folgen von König bis Ass bilden, jede in einer Farbe."
+freecell = "Alle Karten liegen offen; vier freie Zellen schaffen Bewegungsspielraum."
+pyramid = "Kartenpaare mit Summe 13 abräumen; Könige zählen einzeln."
+
+[seed]
+title = "Neues Spiel mit Seed"
+prompt = "Gib einen Seed ein: eine ganze Zahl von 0 bis 18446744073709551615."
+continue = "Weiter"
+back = "Zurück"
+keys = "Ziffern Seed eingeben   Backspace Löschen   Enter Weiter   Esc Zurück"
+error_empty = "Gib zuerst einen Seed ein."
+error_not_numeric = "Ein Seed ist eine ganze Zahl: Nutze nur die Ziffern 0 bis 9."
+error_out_of_range = "Dieser Seed ist zu groß. Der größte Seed ist 18446744073709551615."
+
+[how_to_play]
+label = "Spielanleitung"
+
+[footer]
+open = "Öffnen"
+play = "Spielen"

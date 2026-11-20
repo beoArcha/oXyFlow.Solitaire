@@ -1,0 +1,86 @@
+# Strings of the "How to play" window. Placeholders such as {hint} are replaced with the key bound
+# to that action in the key table, so the text never names a key that can change.
+
+[game]
+klondike = "Klondike"
+spider = "Spider"
+freecell = "FreeCell"
+pyramid = "Pyramide"
+
+[section]
+goal = "Ziel"
+layout = "Aufbau"
+moves = "Züge"
+controls = "Steuerung"
+tips = "Tipps"
+
+[control]
+navigate = "Bewege den Cursor. Nach oben und unten wählt auch eine Karte innerhalb einer Spalte."
+select = "Nimm die Karten unter dem Cursor auf und drücke erneut auf einem Zielstapel, um sie abzulegen."
+select_pair = "Wähle eine freie Karte und dann eine zweite freie Karte, um das Paar abzuräumen."
+back = "Nimm aufgenommene Karten zurück oder verlasse das Spiel."
+stock = "Ziehe eine Karte vom Talon."
+deal = "Teile eine neue Reihe vom Talon aus."
+run = "Nimm mehr oder weniger Karten einer Spalte auf."
+quick_move = "Bringe die Karten unter dem Cursor auf das beste Ziel."
+undo = "Nimm den letzten Zug zurück."
+hint = "Hebe einen möglichen Zug hervor."
+mouse = "Mit der Maus: Klicke eine Karte an und dann ihr Ziel; Doppelklick bewegt zum besten Ziel; Klick auf den Talon zieht."
+
+[klondike]
+goal = "Bewege alle 52 Karten auf die vier Fundamente. Jedes Fundament wird nach Farbe von Ass bis König aufgebaut."
+layout_1 = "Sieben Spalten enthalten 1 bis 7 Karten. Nur die oberste Karte jeder Spalte liegt offen."
+layout_2 = "Die restlichen 24 Karten bilden den Talon. Gezogene Karten wandern auf den Ablagestapel."
+layout_3 = "1 Karte deckt jeweils eine Karte auf. 3 Karten deckt drei Karten auf, und nur die oberste Karte des Ablagestapels ist spielbar."
+moves_1 = "Baue Spalten absteigend in wechselnden Farben auf, zum Beispiel eine rote 6 auf eine schwarze 7."
+moves_2 = "Eine Folge geordneter offener Karten bewegt sich gemeinsam. Nur ein König oder eine mit einem König beginnende Folge darf auf eine leere Spalte gelegt werden."
+moves_3 = "Ein Ass beginnt ein Fundament. Darauf folgt die nächste Karte derselben Farbe."
+moves_4 = "Eine verdeckte Karte wird aufgedeckt, sobald sie frei liegt."
+moves_5 = "Ist der Talon leer, wird der Ablagestapel wieder zum Talon. Dies kann beliebig oft wiederholt werden."
+tips_1 = "Decke zuerst die verdeckten Karten auf. Sie verbergen die Karten, die du brauchst."
+tips_2 = "Bringe Asse und Zweien früh auf die Fundamente, behalte aber Karten, die beim Bau der Spalten helfen."
+tips_3 = "Leere eine Spalte nur, wenn du einen König bereit hast, um ihn hineinzulegen."
+tips_4 = "Kommst du nicht weiter? Drücke {hint} für einen Hinweis oder {undo}, um einen Zug zurückzunehmen."
+
+[spider]
+goal = "Bilde acht vollständige Folgen einer Farbe von König bis Ass. Jede fertige Folge verlässt die Spalten für ein Fundament."
+layout_1 = "Zehn Spalten enthalten je 5 oder 6 Karten. Nur die oberste Karte jeder Spalte liegt offen."
+layout_2 = "Die restlichen 50 Karten bilden den Talon."
+layout_3 = "Spider nutzt 104 Karten in 1, 2 oder 4 Farben. Weniger Farben machen das Spiel einfacher."
+moves_1 = "Baue Spalten nach Rang absteigend in beliebiger Farbe auf, zum Beispiel eine Herz-6 auf eine Pik-7."
+moves_2 = "Nur eine einfarbige absteigende Folge kann als Gruppe bewegt werden."
+moves_3 = "Eine leere Spalte nimmt jede Karte oder Folge auf."
+moves_4 = "Eine vollständige Folge von König bis Ass wird automatisch aus der Spalte entfernt."
+moves_5 = "Der Talon teilt eine Karte auf jede Spalte aus. Er kann nicht genutzt werden, solange eine Spalte leer ist."
+tips_1 = "Halte Folgen nach Möglichkeit einfarbig. Eine gemischte Folge kann nicht als Gruppe bewegt werden."
+tips_2 = "Leere frühzeitig eine Spalte. Sie ist das nützlichste Werkzeug in Spider."
+tips_3 = "Fülle jede leere Spalte, bevor du mit {stock} vom Talon austeilst."
+tips_4 = "Suche nach anderen Zügen, bevor du austeilst. Ein Austeilen bedeckt jede Spalte."
+
+[freecell]
+goal = "Bewege alle 52 Karten auf die vier Fundamente. Jedes Fundament wird nach Farbe von Ass bis König aufgebaut."
+layout_1 = "Alle 52 Karten werden offen auf acht Spalten verteilt, sodass du jede Karte sehen kannst."
+layout_2 = "Vier freie Zellen halten je eine Karte. Es gibt keinen Talon."
+moves_1 = "Baue Spalten absteigend in wechselnden Farben auf."
+moves_2 = "Lege eine Karte in eine freie Zelle, um den Weg freizumachen, und nimm sie wieder heraus, wenn sie passt."
+moves_3 = "Fundamente wachsen nach Farbe ab dem Ass. Karten können sie nicht mehr verlassen."
+moves_4 = "Um mehrere Karten auf einmal zu bewegen, brauchst du freie Zellen oder leere Spalten. Je mehr du hast, desto länger ist die bewegbare Folge."
+moves_5 = "Eine leere Spalte nimmt jede Karte oder Folge auf."
+tips_1 = "Plane voraus. Fast jedes Spiel kann gewonnen werden."
+tips_2 = "Versuche, nicht alle vier freien Zellen zu füllen. Sie sind dein Arbeitsbereich."
+tips_3 = "Eine leere Spalte ist wertvoller als eine freie Zelle."
+tips_4 = "Nutze {undo}, um einen Zug zurückzunehmen, der nicht aufging."
+
+[pyramid]
+goal = "Räume Karten paarweise ab, deren Werte zusammen 13 ergeben. Ein König zählt für sich allein 13."
+layout_1 = "28 Karten bilden eine Pyramide aus sieben Reihen. Eine Karte ist erst frei, wenn beide sie verdeckenden Karten weg sind."
+layout_2 = "Die restlichen 24 Karten bilden den Talon. Gezogene Karten wandern auf den Ablagestapel."
+layout_3 = "Werte: Ass 1, Bube 11, Dame 12, König 13, jede andere Karte ihren aufgedruckten Wert."
+layout_4 = "Entspannt erlaubt 3 Durchläufe durch den Talon und ist gewonnen, wenn die Pyramide leer ist. Klassisch erlaubt 1 Durchlauf und ist gewonnen, wenn alle 52 Karten abgeräumt sind."
+moves_1 = "Freie Karten sind die freiliegenden Pyramidenkarten, die oberste Karte des Talons und die oberste Karte des Ablagestapels."
+moves_2 = "Wähle eine freie Karte und dann eine zweite freie Karte, sodass ihre Werte zusammen 13 ergeben. Beide Karten werden entfernt."
+moves_3 = "Ein freier König wird einzeln abgeräumt: Wähle ihn einfach aus."
+moves_4 = "Wenn kein Paar mehr möglich ist, ziehe vom Talon."
+tips_1 = "Räume zuerst die unteren Reihen ab, damit mehr Pyramidenkarten frei werden."
+tips_2 = "Prüfe vor dem Entfernen einer Karte, ob ihr Partner nicht für ein anderes Paar gebraucht wird."
+tips_3 = "Drücke {hint}, um ein mögliches Paar oder das Ziehen anzuzeigen."

@@ -1,0 +1,73 @@
+[app]
+title = "oXySol"
+tagline = "Das ultimative Büro-Solitaire für das Terminal"
+
+[language]
+# The name of this language in itself: shown in the language selector whatever language is on.
+name = "Deutsch"
+
+[menu]
+title = "Hauptmenü"
+new_game = "Neues Spiel"
+settings = "Einstellungen"
+quit = "Beenden"
+
+[select]
+title = "Spiel wählen"
+undo = "[ Rückgängig: {state} ]"
+on = "ein"
+off = "aus"
+undo_hint = "{key} oder Klick schaltet Rückgängig für das nächste Spiel ein oder aus"
+winnable = "[ Nur lösbare Spiele: {state} ]"
+winnable_hint = "Ein neues Spiel sucht nachweislich lösbare Spiele; ein eingegebener Seed wird direkt ausgeteilt"
+slow_search = "{variant}  (Suche kann lange dauern)"
+
+[variant]
+klondike_one = "Klondike, 1 Karte"
+klondike_three = "Klondike, 3 Karten"
+spider_one = "Spider, 1 Farbe"
+spider_two = "Spider, 2 Farben"
+spider_four = "Spider, 4 Farben"
+free_cell = "FreeCell"
+pyramid_relaxed = "Pyramide, entspannt"
+pyramid_classic = "Pyramide, klassisch"
+
+[settings]
+title = "Einstellungen"
+
+[size]
+title = "Terminal zu klein"
+current = "Aktuelle Größe: {width} x {height}"
+required = "Erforderliche Größe: {width} x {height}"
+hint = "Fenster vergrößern oder herauszoomen: Ctrl+Minus (Cmd+Minus auf dem Mac)."
+
+[dialog]
+ok = "OK"
+yes = "Ja"
+no = "Nein"
+help_title = "Hilfe"
+pause_title = "Pause"
+pause_body = "Drücke Esc zum Fortsetzen."
+win_title = "Gewonnen"
+win_body = "Das Spiel ist gelöst."
+win_moves = "Züge: {moves}"
+alert_title = "Hinweis"
+confirm_title = "Bitte bestätigen"
+
+[search]
+title = "Suche nach lösbarem Spiel"
+running = "Suche nach lösbarem Spiel für {variant}..."
+progress = "Geprüfte Seeds: {tried} von {cap}"
+slow = "Dieses Spiel ist selten nachweislich lösbar, daher kann die Suche lange dauern."
+escape = "Esc bricht die Suche ab."
+capped = "In {cap} Seeds wurde kein lösbares Spiel gefunden."
+capped_offer = "Mit dem besten Kandidaten mit unbekannter Lösbarkeit spielen oder weitersuchen?"
+capped_offer_none = "Keiner der Seeds konnte als unbekannt gespielt werden. Weitersuchen?"
+play_unproven = "Als unbekannt spielen"
+more = "Weitersuchen"
+cancel = "Abbrechen"
+
+[error]
+storage = "Speichern in der Datenbank fehlgeschlagen. Das Spiel wird ohne Speichern fortgesetzt."
+settings_load = "Gespeicherte Einstellungen konnten nicht gelesen werden. Standardwerte werden verwendet."
+resume = "Das gespeicherte Spiel konnte nicht wiederhergestellt werden."

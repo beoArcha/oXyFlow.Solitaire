@@ -1,0 +1,54 @@
+# Strings of the cli area.
+
+version = "oXySol {version}"
+version_legal = "Copyright (c) {year} {authors}. {license}-Lizenz."
+help = """
+oXySol: Das ultimative Büro-Solitaire für das Terminal
+
+Aufruf: oxysol [Optionen]
+
+Optionen:
+  --version                    Version und Lizenz ausgeben und beenden
+  --help                       diese Hilfe ausgeben und beenden
+
+Anzeige:
+  --ascii                      Karten nur mit ASCII-Zeichen zeichnen
+  --colors <16|256|truecolor>  Farbtiefe des Terminals
+  --fullscreen                 im Vollbild starten, unabhängig von Einstellungen
+  --no-fullscreen              im Fenster starten, unabhängig von Einstellungen
+
+Spiel:
+  --seed <u64>                 direkt ein Spiel für diesen Seed wählen
+
+Fenster:
+  -n, --new-window             Spiel in neuem Konsolenfenster öffnen und sofort
+                               zur Eingabeaufforderung zurückkehren
+
+Doppelklick oder Konsole:
+  Ein Doppelklick öffnet das Spiel in einem eigenen Konsolenfenster, das
+  sich beim Beenden schließt. Aus einer Konsole gestartet, läuft das Spiel
+  darin, außer wenn --new-window angegeben ist. Nach einem Startfehler
+  wartet das Fenster auf Enter.
+
+Vollbild:
+  Die Einstellung Vollbild (Auto, Ein, Aus) ist in den Einstellungen. Auto
+  wechselt nur in Fenstern ins Vollbild, die das Spiel selbst geöffnet hat.
+  Eine klassische Windows-Konsole schaltet das Spiel um; andernorts drücke
+  Alt+Enter oder F11 (Ctrl+Cmd+F auf macOS). Das Spiel startet sich dafür
+  nie neu.
+
+Dateien:
+  OXYSOL_HOME      Ordner für Datenbank und Protokoll (hat stets Vorrang)
+  oxysol.portable  Markierungsdatei neben dem Programm: Dateien liegen dann
+                   dort in einem data-Ordner
+  OXYSOL_LOG       Protokollstufe: error, warn, info, debug oder trace
+"""
+usage_error = "oxysol: {error}\nVersuche `oxysol --help` für die Liste der Optionen."
+paths_failed = "oXySol kann keinen Ordner für seine Dateien finden. Setze OXYSOL_HOME auf einen beschreibbaren Ordner."
+storage_failed = "oXySol kann seine Datenbank nicht öffnen. Details stehen in der Protokolldatei."
+terminal_failed = "oXySol wurde beendet, weil das Terminal fehlgeschlagen ist. Details stehen in der Protokolldatei."
+output_failed = "oXySol kann nicht in das Terminal schreiben."
+new_window_failed = "oXySol kann kein neues Konsolenfenster öffnen (versucht: {tried}). Führe es ohne --new-window aus."
+log_unavailable = "oXySol kann die Protokolldatei {path} nicht schreiben. Es wird ohne Protokoll fortgesetzt."
+panic = "oXySol wurde unerwartet bei {location} beendet. Details stehen in {path}."
+press_enter = "Drücke Enter, um dieses Fenster zu schließen."

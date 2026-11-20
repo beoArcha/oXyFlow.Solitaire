@@ -1,0 +1,101 @@
+[group]
+navigation = "Navigation"
+board = "Züge"
+display = "Anzeige"
+game = "Spiel"
+general = "Programm"
+mouse = "Maus"
+
+[action]
+up = "Hoch"
+down = "Runter"
+left = "Links"
+right = "Rechts"
+focus_next = "Nächstes Element"
+focus_previous = "Vorheriges Element"
+select = "Auswählen"
+back = "Zurück"
+quit = "Beenden"
+force_quit = "Sofort beenden"
+help = "Hilfe"
+rules = "Spielanleitung"
+stock = "Talon"
+quick_move = "Schneller Zug"
+run_more = "Mehr Karten wählen"
+run_less = "Weniger Karten wählen"
+zoom_in = "Größere Karten"
+zoom_out = "Kleinere Karten"
+zoom_auto = "Karten: Auto-Größe"
+undo = "Rückgängig"
+redo = "Wiederholen"
+hint = "Hinweis"
+finish = "Spiel fertigstellen"
+guide = "Leitfaden-Leiste"
+moves = "Züge-Leiste"
+options = "Schnelloptionen"
+restart = "Neu starten"
+new_game = "Neues Spiel"
+pause = "Pause"
+menu = "Menü"
+copy_seed = "Seed kopieren"
+
+[display]
+terminal_keys = "Ctrl +/-/0"
+terminal_text = "Terminal-Zoom (Mac: Cmd)"
+
+[mouse_keys]
+click_card = "Klick auf Karte"
+click_stock = "Klick auf Talon"
+double_click = "Doppelklick"
+right_click = "Rechtsklick"
+drag = "Ziehen"
+
+[mouse]
+click_card = "Aufnehmen, dann auf Ziel ablegen"
+click_stock = "Vom Talon ziehen"
+double_click = "Schneller Zug auf Ziel"
+right_click = "Aufnahme abbrechen"
+drag = "Karte auf Ziel ziehen"
+
+[overlay]
+continue = "Fortsetzen"
+restart = "Neu starten"
+new_game = "Neues Spiel"
+menu = "Menü"
+win_time = "Zeit: {time}"
+same_seed = "Gleicher Seed"
+best_time = "Beste Zeit für {game}!"
+best_moves = "Wenigste Züge für {game}!"
+close_or = " oder "
+close_rest = " schließt dieses Fenster."
+
+[rules]
+title = "Spielanleitung"
+close = "Schließen [{key}]"
+footer_tabs = "{left}/{right}: Reiter   {down}: Spiele"
+footer_games = "{left}/{right}: Spiel   {up}/{down}: Fokus bewegen"
+footer_text = "{up}/{down}/PgUp/PgDn: Scrollen   {up} ganz oben: Spiele"
+footer_close = "{back}: Schließen"
+position = "{from}-{to} / {total}"
+
+[tab]
+keys = "Tasten"
+rules = "Regeln"
+command_line = "Befehlszeile"
+
+[command_line]
+footer_tab = "{key}: Nächster Reiter"
+footer_move = "{up}/{down}/PgUp/PgDn: Scrollen"
+footer_close = "{back}: Schließen"
+
+[key]
+up = "Hoch"
+down = "Runter"
+left = "Links"
+right = "Rechts"
+space = "Leertaste"
+enter = "Enter"
+esc = "Esc"
+tab = "Tab"
+shift = "Shift"
+ctrl = "Ctrl"

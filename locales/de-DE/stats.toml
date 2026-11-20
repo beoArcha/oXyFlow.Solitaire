@@ -1,0 +1,61 @@
+# Strings of the statistics screen: the summary per game, the history list and copying a seed.
+label = "Statistik"
+title = "Statistik"
+footer_list = "Auf Ab Auswahl"
+footer_replay = "Enter Diesen Seed erneut spielen"
+footer_copy = "c Seed kopieren"
+footer_back = "Esc Zurück"
+empty = "Noch keine Spiele gespielt. Starte eines im Hauptmenü."
+load_failed = "Der Spielverlauf konnte nicht gelesen werden."
+position = "Spiel {current} von {total}"
+copied = "Seed {seed} kopiert"
+copy_failed = "Seed konnte nicht kopiert werden — er wird hier angezeigt: {seed}"
+
+[mode]
+undo = "mit Rückgängig"
+no_undo = "ohne Rückgängig"
+
+[outcome]
+won = "Gewonnen"
+abandoned = "Aufgegeben"
+open = "Laufend"
+
+[summary]
+game = "Spiel"
+played = "Gespielt"
+won = "Gewonnen"
+clean = "Ohne Neustart"
+rate = "Gewinnquote"
+best_time = "Beste Zeit"
+fewest_moves = "Wenigste Züge"
+streak = "Serie"
+longest = "Beste Serie"
+
+[history]
+title = "Verlauf, neueste zuerst, Zeiten in UTC"
+date = "Datum"
+variant = "Spiel"
+seed = "Seed"
+outcome = "Ergebnis"
+time = "Zeit"
+moves = "Züge"
+restarts = "Neustarts"
+winnable = "Lösbar"
+winnable_short = "?"
+
+[legend]
+winnable = "lösbar"
+unwinnable = "nicht lösbar"
+unknown = "unbekannt"
+unchecked = "nicht geprüft"
+
+[winnable]
+yes = "ja"
+no = "nein"
+unknown = "unbekannt"
+unchecked = "-"
+
+[button]
+replay = "Diesen Seed erneut spielen"
+copy = "Seed kopieren"
+back = "Zurück"

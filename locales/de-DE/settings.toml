@@ -1,0 +1,99 @@
+# Strings of the settings area.
+
+[row]
+language = "Sprache"
+theme = "Design"
+front_style = "Vorderseiten-Stil"
+back_style = "Rückseiten-Stil"
+glyphs = "Symbole"
+colors = "Farben"
+card_size = "Kartengröße"
+full_screen = "Vollbild"
+sound_style = "Klangstil"
+cues = "Soundeffekte"
+music = "Musik"
+volume = "Lautstärke"
+guide_panel = "Leitfaden-Leiste"
+moves_panel = "Züge-Leiste"
+target_marks = "Zielmarkierungen"
+auto_finish = "Automatisches Beenden"
+aura = "Leuchten"
+line = "{label} {value}"
+
+[group]
+display = "Anzeige"
+sound = "Ton"
+hints = "Hinweise und Hilfe"
+
+[style]
+international = "International"
+default = "Standard"
+
+[desc]
+language = "Die Sprache aller Texte. Ändert sich sofort."
+theme = "Die Farben der Benutzeroberfläche."
+front_style = "Das Aussehen der Kartenvorderseiten."
+back_style = "Das Aussehen der verdeckten Karten."
+glyphs = "Unicode zeichnet Farben und Symbole; ASCII nutzt nur einfache Zeichen."
+colors = "Wie viele Farben das Terminal anzeigen soll. Auto erkennt es automatisch."
+card_size = "Auto passt sich ans Fenster an; passt eine Größe nicht, wird sie reduziert. Tasten ] [ 0 oder Ctrl+Mausrad."
+full_screen = "Auto: Vollbild nur in Fenstern, die das Spiel selbst geöffnet hat. In der Konsole: Alt+Enter oder F11."
+sound_style = "Der Klang der Effekte und der Musik."
+cues = "Kurze Töne bei Zügen und beim Gewinn."
+music = "Hintergrundmusik bei geöffnetem Spiel."
+volume = "Die Lautstärke von Ton und Musik, in Schritten von 10%."
+auto_finish = "Führt die letzten Züge automatisch aus, sobald der Sieg sicher ist."
+aura = "Leuchten: Voll markiert Fokus, gehaltene Karten und Ziele; Nur Fokus nur den Fokus."
+target_marks = "Markiert mögliche Ablagestellen für eine gehaltene Folge mit + und einem Leuchten."
+guide_panel = "Eine Seitenleiste mit Hinweisen zur fokussierten Karte und den Tasten."
+moves_panel = "Eine Seitenleiste mit allen Aktionen und deren Tasten, aktiv oder nicht."
+
+[value]
+on = "Ein"
+off = "Aus"
+unavailable = "nicht verfügbar"
+needs_columns = "{value} (benötigt {needed} Spalten, aktuell {now})"
+
+[full_screen]
+auto = "Auto"
+
+[card_size]
+auto = "Auto"
+small = "Klein"
+medium = "Mittel"
+large = "Groß"
+huge = "Riesig"
+
+[aura]
+full = "Voll"
+focus_only = "Nur Fokus"
+
+[locale]
+en_us = "Englisch"
+pl_pl = "Polnisch"
+
+[theme]
+dark = "Dunkel"
+light = "Hell"
+high_contrast = "Hoher Kontrast"
+monokai = "Monokai"
+dracula = "Dracula"
+
+[glyph]
+unicode = "Unicode"
+ascii = "ASCII"
+
+[color]
+auto = "Auto"
+ansi16 = "16 Farben"
+ansi256 = "256 Farben"
+true_color = "True Color"
+
+[audio]
+no_device = "Ton nicht verfügbar: Kein funktionierendes Audiogerät gefunden."
+remote = "Ton nicht verfügbar: Dies ist eine Remote-Sitzung."
+not_built = "Ton ist in dieser Version nicht enthalten."
+style_failed = "Ton nicht verfügbar: Der gewählte Klangstil kann nicht geladen werden."
+
+[footer]
+change = "Ändern"
