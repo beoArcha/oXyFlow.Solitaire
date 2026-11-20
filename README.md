@@ -9,6 +9,7 @@ Klondike, Spider, FreeCell and Pyramid in one small program.</p>
   <a href="https://github.com/beoArcha/oXyFlow.Solitare/releases"><img alt="Latest pre-release" src="https://img.shields.io/github/v/release/beoArcha/oXyFlow.Solitare?include_prereleases&label=latest%20build"></a>
   <a href="https://www.rust-lang.org/"><img alt="Rust 1.99" src="https://img.shields.io/badge/Rust-1.99-orange?logo=rust"></a>
   <a href="https://ratatui.rs/"><img alt="TUI: Ratatui" src="https://img.shields.io/badge/TUI-Ratatui%200.30-blueviolet"></a>
+  <img alt="Languages" src="https://img.shields.io/badge/languages-9-green">
   <a href="https://beoarcha.github.io/oXyFlow.Solitare/"><img alt="Website" src="https://img.shields.io/badge/website-9%20languages-blue"></a>
 </p>
 
@@ -37,9 +38,9 @@ binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it pla
   classic Windows console, Ctrl+Plus, Ctrl+Minus and Ctrl+0 change the console font size.
 - **Five themes:** Dark, Light, High contrast (for low vision), Monokai and Dracula. Color is never the only signal.
   Color-vision modes are planned, not built yet.
-- **Languages.** The game interface is available in English and Polish today; German, French, Italian, Brazilian
-  Portuguese, Ukrainian, Dutch and Spanish are in progress. Switch the language with the flag selector in the top-left
-  corner of the main menu, or in Settings.
+- **Nine languages.** English, Polish, German, French, Italian, Brazilian Portuguese, Ukrainian, Dutch and Spanish.
+  Switch the language with the flag selector in the top-left corner of the main menu, or in Settings. On first start
+  the game follows the system language.
 
 ## Screenshots
 
@@ -226,8 +227,8 @@ The website is built from [`docs/site`](docs/site) with mdBook and published wit
 ## Links
 
 - Website: <https://beoarcha.github.io/oXyFlow.Solitare/>, in nine languages: English, Polski, Deutsch, Español,
-  Français, Italiano, Nederlands, Português (Brasil) and Українська. The game interface itself is in English and
-  Polish today, with the other seven in progress; the screenshots show the English version.
+  Français, Italiano, Nederlands, Português (Brasil) and Українська. The game interface is available in the same nine
+  languages; the screenshots show the English version.
 - Po polsku: pasjans w terminalu z czterema grami. Polska wersja strony:
   <https://beoarcha.github.io/oXyFlow.Solitare/pl/index.html>
 
