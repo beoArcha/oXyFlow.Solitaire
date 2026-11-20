@@ -352,6 +352,8 @@ pub struct NullClipboard;                                // every copy fails wit
   is wider than the board, but a fixed tail always stays: `?: keys` and `Esc: menu` (while cards are carried Esc
   puts them back, so the tail is `?: keys` only). `screens/board/guidance.rs` builds both rows from the
   controller state and `Session` (`legal_moves`, `hint`, `can_undo`/`can_redo`); no rule is decided in the TUI.
+  The `Do:` row carries `p: pause` and `v: moves` in its tail (O-37, drop order 4); when it has no room for them the `Now:` row
+  ends with the same buttons (`controls::Buttons`), so both stay clickable at every width.
   The strip is drawn on `Surface`, so `Text`, `Success` and `Error` use pairs that `TEXT_PAIRS` tests. The `Now:`
   text is what a screen reader reads; `announce.rs` keeps only the names (`pile_name`, `card_name`, `look_text`,
   `targets_text`), the separate announcer line and its `focus`/`announce` functions are gone. The texts `Cards

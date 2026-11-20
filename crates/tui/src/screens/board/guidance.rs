@@ -132,6 +132,19 @@ impl Guidance {
         segments
     }
 
+    /// The Pause and Moves parts that the `Do:` row of `width` columns does not show; the `Now:`
+    /// row takes them so that they are always clickable.
+    pub(super) fn fallback(&self, width: usize) -> Vec<Part> {
+        let shown = self.visible_parts(width);
+        self.possible
+            .iter()
+            .chain(&self.tail)
+            .filter(|part| matches!(part.action, Some(Action::Pause | Action::Moves)))
+            .filter(|part| !shown.contains(part))
+            .cloned()
+            .collect()
+    }
+
     fn visible_parts(&self, width: usize) -> Vec<Part> {
         let mut parts = self.possible.clone();
         parts.extend(self.tail.iter().cloned());

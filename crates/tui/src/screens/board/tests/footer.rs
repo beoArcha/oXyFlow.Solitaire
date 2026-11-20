@@ -5,7 +5,7 @@
 use ratatui::crossterm::event::{KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 
 use super::finish::{KLONDIKE, KLONDIKE_SEED, at_forced_win, is_won, win_open};
-use super::start;
+use super::{drag, first_transfer, start};
 use crate::action::Action;
 use crate::app::Modal;
 use crate::i18n::{Locale, set_locale, tf};
@@ -104,7 +104,7 @@ fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
     assert_eq!(text(30), "Do: ?: keys | Esc: menu");
 }
 
-fn board_in(locale: Locale, width: u16, height: u16) -> Harness {
+fn board_game(locale: Locale, variant: Variant, seed: u64, width: u16, height: u16) -> Harness {
     let storage = MemoryStorage {
         settings: Some(Settings {
             locale,
@@ -114,8 +114,8 @@ fn board_in(locale: Locale, width: u16, height: u16) -> Harness {
     };
     let mut h = Harness::with(storage, TRUE_COLOR, width, height);
     h.app.apply(Effect::Start {
-        variant: Variant::Klondike(DrawCount::One),
-        seed: Some(5),
+        variant,
+        seed: Some(seed),
         undo_allowed: true,
     });
     set_locale(locale);
@@ -123,8 +123,56 @@ fn board_in(locale: Locale, width: u16, height: u16) -> Harness {
     h
 }
 
+fn board_in(locale: Locale, width: u16, height: u16) -> Harness {
+    board_game(locale, Variant::Klondike(DrawCount::One), 5, width, height)
+}
+
 fn board_at(width: u16, height: u16) -> Harness {
     board_in(Locale::EnUs, width, height)
+}
+
+#[test]
+fn pause_and_moves_stay_clickable_after_one_move_at_100_columns_in_every_locale() {
+    for locale in Locale::offered() {
+        for variant in [Variant::Klondike(DrawCount::One), Variant::FreeCell] {
+            for (width, height) in [(100, 30), (130, 40)] {
+                let mut h = board_game(locale, variant, 5, width, height);
+                let Some((from, to, _)) = first_transfer(&h) else {
+                    panic!("{variant:?} seed 5 has a transfer");
+                };
+                drag(&mut h, from, to);
+                h.lines();
+                for (action, key) in [
+                    (Action::Pause, "board.action.pause"),
+                    (Action::Moves, "board.action.moves"),
+                ] {
+                    let text = do_text(action, key);
+                    assert!(
+                        h.find(&text).is_some(),
+                        "{locale:?} {variant:?} {width}x{height} after one move: {text:?}\n{}",
+                        h.text()
+                    );
+                }
+            }
+        }
+    }
+    set_locale(Locale::EnUs);
+}
+
+#[test]
+fn a_fallback_button_on_the_now_row_runs_its_action_after_one_move() {
+    let mut h = board_game(Locale::EnUs, Variant::Klondike(DrawCount::One), 5, 100, 30);
+    let Some((from, to, _)) = first_transfer(&h) else {
+        panic!("seed 5 has a transfer");
+    };
+    drag(&mut h, from, to);
+    let lines = h.lines();
+    let (now, possible) = (&lines[lines.len() - 2], &lines[lines.len() - 1]);
+    assert!(now.starts_with("Now:"), "{now}");
+    assert!(now.contains("p: pause"), "the Now row carries Pause: {now}");
+    assert!(!possible.contains("p: pause"), "{possible}");
+    click_button(&mut h, Action::Pause, "board.action.pause");
+    assert!(matches!(h.app.modal(), Some(Modal::Pause { .. })));
 }
 
 fn click_button(h: &mut Harness, action: Action, key: &str) {

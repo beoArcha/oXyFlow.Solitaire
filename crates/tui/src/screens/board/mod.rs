@@ -42,7 +42,7 @@ use crate::clock::GameClock;
 use crate::settings::{Aid, CardSizeSetting};
 use crate::solver::DealCheck;
 use crate::storage::GameId;
-use crate::widgets::footer::FooterMap;
+
 use crate::widgets::moves::PanelMap;
 use crate::widgets::overlay::QuickOptions;
 use crate::widgets::pile::Marks;
@@ -95,8 +95,8 @@ pub struct BoardScreen {
     screen: Rect,
     covered: bool,
     pointer: Pointer,
-    /// The buttons of the `Do:` row as drawn last.
-    do_map: FooterMap,
+    /// The buttons of the `Do:` and `Now:` rows as drawn last.
+    buttons: controls::Buttons,
     /// The active entries of the possible moves panel as drawn last.
     moves_map: PanelMap,
 }
@@ -140,7 +140,7 @@ impl Default for BoardScreen {
             screen: DEFAULT_SCREEN,
             covered: false,
             pointer: Pointer::default(),
-            do_map: FooterMap::default(),
+            buttons: controls::Buttons::default(),
             moves_map: PanelMap::default(),
         }
     }
@@ -351,13 +351,13 @@ impl BoardScreen {
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         self.screen = area;
         self.follow(ctx);
-        let (do_map, moves_map) = view::draw(frame, self, ctx);
-        self.do_map = do_map;
+        let (buttons, moves_map) = view::draw(frame, self, ctx);
+        self.buttons = buttons;
         self.moves_map = moves_map;
     }
 
-    /// The action of the `Do:` button under `cell`, if any.
+    /// The action of the `Do:` or `Now:` button under `cell`, if any.
     pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
-        self.do_map.action_at(cell)
+        self.buttons.action_at(cell)
     }
 }
