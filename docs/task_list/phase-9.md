@@ -1,12 +1,12 @@
 # Phase 9 (0.9) — Final tests, polish and the stable release
 
-Goal: the final round before the plan ends. A UI/UX test plan with keyboard and mouse journeys per screen and per game; locale fit at the minimum size; an accessibility audit; the E2E scenarios; the terminal matrix on real machines (U-03); the last card style (Portuguese) and the last game (La Belle Lucie); new themes; fixes and polish; the final review; and the stable release 0.9.0 that ends the plan. Version 0.9.x. The plan ends when this phase is done: nothing raises the minor after it, and 1.0.0 is a later decision of the owner (R-25).
+Goal: the final round before the plan ends. A UI/UX test plan with keyboard and mouse journeys per screen and per game; locale fit at the minimum size; an accessibility audit; the E2E scenarios; the terminal matrix on real machines (U-03); the last card style (Portuguese) and the last game (La Belle Lucie); new themes; fixes and polish; the final review; and the stable 0.9 release that ends the plan. Version 0.9.x. The plan ends when this phase is done: nothing raises the minor after it, and 1.0.0 is a later decision of the owner (R-25).
 
 Exit criteria:
 
 - the U-03 table is filled in by the user, and every finding is fixed or listed as a known limitation in the player FAQ;
 - the P8-02 report and the F-03 verdict are go;
-- the tag `v0.9.0` exists as a stable release with binaries for Windows, Linux and macOS, and the card fonts.
+- a `v0.9.<patch>` tag exists as a stable release with binaries for Windows, Linux and macOS, and the card fonts.
 
 Order of work: the test plan first; then the E2E scenarios and the journeys; the fit and accessibility audits; the terminal matrix; the last card style, game and themes; then the fixes and polish, the final review, and the release.
 
@@ -177,13 +177,13 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
   graphics, mobile, more deck styles) as a short backlog in `decisions.md`.
 - **Acceptance:** a go / no-go verdict with reasons.
 
-### P8-03 — Release 0.9.0: the stable release that ends the plan
+### P8-03 — Stable 0.9 release that ends the plan
 
 - **Owner:** Haiku + User
 - **Depends on:** F-03, P7-02
 - **Files:** `metadata.toml`, `Cargo.toml`, `Cargo.lock`
-- **Scope:** Haiku: `metadata.toml` already reads `0.9.0` when phase 8 closes (R-25); if it does not, a
-  `chore` PR sets it and runs `cargo xtask sync-metadata`. User: merge that PR if there was one, wait for `main.yml` to promote to `release`, run
+- **Scope:** Haiku: `metadata.toml` reads `0.9.0` from the PR that closed phase 8 (R-23, R-25); the version
+  released is the current `0.9.<patch>` (patch = merges since then). User: wait for `main.yml` to promote to `release`, run
   `release.yml` by hand with `stable: true`, download the artifacts and start the binary on at least one system.
-- **Acceptance:** tag `v0.9.0` (stable); a GitHub Release with binaries for Windows, Linux and macOS and the
+- **Acceptance:** tag `v0.9.<patch>` (stable); a GitHub Release with binaries for Windows, Linux and macOS and the
   card fonts; the web page updated.

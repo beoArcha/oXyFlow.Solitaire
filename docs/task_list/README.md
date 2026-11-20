@@ -21,7 +21,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
-| 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9.0 that ends the plan | planned | 0 | 13 |
+| 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
 
 ## Roles
 
@@ -81,7 +81,7 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
    final). **Milestone: 0.8.**
 9. Phase 9 (0.9): P9-01 test plan (Sonnet) → P7-01 (Haiku) → P9-02 (Sonnet) with P9-03 (Haiku) and P9-04 (Sonnet) → U-03 (User) →
    P9-05 (Haiku), P9-06 (Sonnet) and P9-07 (Haiku), each after its DRAFT is final → P8-01 (Sonnet) → P8-02 (Sonnet) → F-03 (Opus) →
-   P8-03 (Haiku + User). **Milestone: 0.9.0 stable, the plan ends.**
+   P8-03 (Haiku + User). **Milestone: the stable 0.9 release; the plan ends.**
 
 Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of them need only P0-01.
 
@@ -303,7 +303,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P8-01 | Fixes and visual polish | Sonnet | U-03 | TODO |
 | P8-02 | Final review | Sonnet | P8-01 | TODO |
 | F-03 | Checkpoint: release sign-off | Opus (Fable only on escalation — R-14) | P8-02 | TODO |
-| P8-03 | Release 0.9.0: the stable release that ends the plan | Haiku + User | F-03, P7-02 | TODO |
+| P8-03 | Stable 0.9 release that ends the plan | Haiku + User | F-03, P7-02 | TODO |
 
 Micro cards (`micro.md`, not in this index): open ones are M-19…M-24 (phase 4, READY, artwork), M-30, M-31, M-33 (phase 8,
 READY) and M-32 (phase 8, DRAFT until P5-02 is merged), M-28 and M-29 (phase 9, DRAFT until P7-01 is merged).

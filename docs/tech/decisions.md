@@ -95,7 +95,7 @@ code point table and the artwork rules are in the style guide on the shared card
 
 | ID | Decision | Amends |
 |---|---|---|
-| R-23 | (2026-11-19) Every successful merge to `main` raises the patch by 1 (T-21). The minor counts completed plan phases: completing phase N gives minor N+1, so phases 0–3 done means 0.4.x, and the plan ends at 0.9.0 with phase 9 (R-25). The whole plan (phases 0–9), with the fixes and new ideas that come with it, ends at **0.9**. 1.0.0 is a later, deliberate decision of the owner. The owner raises the minor with one PR that edits `metadata.toml` when a phase closes (`docs/tech/workflow.md`, Versions). | T-21 |
+| R-23 | (2026-11-19) Every successful merge to `main` raises the patch by 1 (T-21). The minor counts completed plan phases: completing phase N gives minor N+1, so phases 0–3 done means 0.4.x, phase 9 runs as 0.9.x, and the plan ends with a stable 0.9 release when phase 9 is done (R-25). The whole plan (phases 0–9), with the fixes and new ideas that come with it, ends at **0.9**. 1.0.0 is a later, deliberate decision of the owner. The owner raises the minor with one PR that edits `metadata.toml` when a phase closes (`docs/tech/workflow.md`, Versions). | T-21 |
 
 ## Resolved by the user (2026-11-20) — zoom keys
 
