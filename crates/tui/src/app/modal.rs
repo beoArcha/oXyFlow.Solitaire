@@ -27,10 +27,12 @@ pub enum Modal {
         undo_allowed: bool,
         restart_focused: bool,
     },
-    /// A question; `on_yes` is applied only when the player confirms. Focus starts on "No".
+    /// A question; `on_yes` is applied only when the player confirms. "No" and Esc apply `on_no`,
+    /// or only close the dialog without one. Focus starts on "No".
     Confirm {
         prompt: &'static str,
         on_yes: Box<Effect>,
+        on_no: Option<Box<Effect>>,
         yes_focused: bool,
     },
     /// The graphics check: samples in the oXySol card font and the question whether they look right.
@@ -76,6 +78,17 @@ impl Modal {
         Modal::Confirm {
             prompt,
             on_yes: Box::new(on_yes),
+            on_no: None,
+            yes_focused: false,
+        }
+    }
+
+    /// A question whose "No" and Esc do something: `on_no` is applied instead of only closing.
+    pub fn confirm_or(prompt: &'static str, on_yes: Effect, on_no: Effect) -> Self {
+        Modal::Confirm {
+            prompt,
+            on_yes: Box::new(on_yes),
+            on_no: Some(Box::new(on_no)),
             yes_focused: false,
         }
     }

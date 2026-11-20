@@ -20,10 +20,14 @@ moves_panel = "Panel możliwych ruchów"
 target_marks = "Znaczniki celów"
 auto_finish = "Automatyczne kończenie"
 aura = "Aura"
+aura_colour = "Kolor aury"
+aura_style = "Styl aury"
+aura_size = "Rozmiar aury"
 line = "{label} {value}"
 
 [group]
 display = "Wyświetlanie"
+interface = "Interfejs"
 sound = "Dźwięk"
 hints = "Podpowiedzi i pomoc"
 
@@ -56,6 +60,9 @@ music = "Muzyka w tle, gdy otwarta jest gra."
 volume = "Głośność dźwięku i muzyki, w krokach po 10%."
 auto_finish = "Sam dokłada ostatnie ruchy, gdy wygrana jest pewna."
 aura = "Poświata: pełna – fokus, niesione karty i cele; tylko fokus – sam fokus."
+aura_colour = "Kolor poświaty wokół fokusu, niesionego ciągu i celów. Motyw używa kolorów motywu."
+aura_style = "Halo cieniuje pola wokół kart; Ramka rysuje wokół nich linię; Tylko znaczniki nie rysuje poświaty."
+aura_size = "Ile pól szeroka jest poświata. Gruba potrzebuje wolnego miejsca wokół kart."
 target_marks = "Oznacza plusem i poświatą miejsca, gdzie można położyć niesiony ciąg."
 guide_panel = "Boczny panel z podpowiedziami dla zaznaczonej karty i klawiszy."
 moves_panel = "Boczny panel z listą wszystkich działań i ich klawiszy, także niedostępnych."
@@ -123,3 +130,28 @@ back = "Rewers: {tile}, środek {mosaic}"
 hint_windows_terminal = "Windows Terminal: ustaw czcionkę profilu na \"oXySol Mono\" lub na listę, która się nią kończy: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (listy działają od Windows Terminal 1.20.11381)."
 question = "Czy wyglądają jak symbole kart, a nie kwadraty lub puste miejsca?"
 declined = "Zostają symbole Unicode. Aby zobaczyć czcionkę kart, najpierw zainstaluj oXySol Mono (strona wiki \"Card font\"), a potem wybierz ją ponownie w Symbolach."
+
+[aura_colour]
+theme = "Motyw"
+text = "Kolor tekstu"
+selection = "Kolor zaznaczenia"
+hint = "Kolor podpowiedzi"
+
+[aura_style]
+halo = "Halo"
+frame = "Ramka"
+marks_only = "Tylko znaczniki"
+
+[aura_size]
+thin = "Cienka"
+thick = "Gruba"
+
+[sample]
+aura = "Aura:"
+
+[preview]
+note = "Podgląd. Przy wyjściu z tego ekranu pojawi się pytanie, czy zachować zmiany."
+position = "wiersz {row} z {total}"
+
+[confirm]
+keep_interface = "Zachować zmienione ustawienia interfejsu?"

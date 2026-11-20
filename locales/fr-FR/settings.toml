@@ -20,10 +20,14 @@ moves_panel = "Panneau des coups possibles"
 target_marks = "Marques de cible"
 auto_finish = "Fin automatique"
 aura = "Aura"
+aura_colour = "Couleur de l'aura"
+aura_style = "Style de l'aura"
+aura_size = "Taille de l'aura"
 line = "{label} {value}"
 
 [group]
 display = "Affichage"
+interface = "Interface"
 sound = "Son"
 hints = "Indices et aide"
 
@@ -56,6 +60,9 @@ music = "Musique d'ambiance pendant une partie."
 volume = "Volume des sons et de la musique, par paliers de 10 %."
 auto_finish = "Joue automatiquement les derniers coups une fois la victoire certaine."
 aura = "Lueur : Complète sur focus, cartes portées et cibles ; Focus seul, sur le focus."
+aura_colour = "La couleur de la lueur autour du focus, d'une suite portée et des cibles. Thème reprend les couleurs du thème."
+aura_style = "Halo ombre les cases autour des cartes ; Cadre trace une ligne autour ; Repères seuls ne trace aucune lueur."
+aura_size = "La largeur de la lueur en cases. Épais demande de la place libre autour des cartes."
 target_marks = "Marque les destinations possibles d'une suite avec + et une lueur."
 guide_panel = "Panneau latéral avec des indices sur la carte ciblée et les touches."
 moves_panel = "Panneau latéral listant chaque action et sa touche, active ou non."
@@ -123,3 +130,28 @@ back = "Dos : {tile}, centre {mosaic}"
 hint_windows_terminal = "Windows Terminal : réglez la police du profil sur \"oXySol Mono\", ou sur une liste qui se termine par elle : \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (les listes fonctionnent à partir de Windows Terminal 1.20.11381)."
 question = "Ressemblent-ils à des symboles de cartes, et non à des carrés ou des blancs ?"
 declined = "Les symboles Unicode restent. Pour voir la police des cartes, installez d'abord oXySol Mono (page du wiki \"Card font\"), puis choisissez-la de nouveau dans Symboles."
+
+[aura_colour]
+theme = "Thème"
+text = "Couleur du texte"
+selection = "Couleur de sélection"
+hint = "Couleur d'indice"
+
+[aura_style]
+halo = "Halo"
+frame = "Cadre"
+marks_only = "Repères seuls"
+
+[aura_size]
+thin = "Fin"
+thick = "Épais"
+
+[sample]
+aura = "Aura :"
+
+[preview]
+note = "Aperçu. En quittant cet écran, on demande si les changements sont conservés."
+position = "ligne {row} sur {total}"
+
+[confirm]
+keep_interface = "Conserver les réglages d'interface modifiés ?"

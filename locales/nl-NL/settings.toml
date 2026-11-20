@@ -20,10 +20,14 @@ moves_panel = "Zettenpaneel"
 target_marks = "Doelmarkeringen"
 auto_finish = "Automatisch voltooien"
 aura = "Gloed"
+aura_colour = "Aurakleur"
+aura_style = "Aurastijl"
+aura_size = "Auragrootte"
 line = "{label} {value}"
 
 [group]
 display = "Beeld"
+interface = "Interface"
 sound = "Geluid"
 hints = "Hints en hulp"
 
@@ -56,6 +60,9 @@ music = "Achtergrondmuziek tijdens het spelen."
 volume = "De geluidssterkte van effecten en muziek, in stappen van 10%."
 auto_finish = "Voert de laatste zetten zelf uit zodra de winst zeker is."
 aura = "Gloed: Volledig markeert focus, vastgehouden kaarten en doelen; Alleen focus markeert focus."
+aura_colour = "De kleur van de gloed rond de focus, een opgepakte reeks en de doelen. Thema gebruikt de kleuren van het thema."
+aura_style = "Halo arceert de cellen rond kaarten; Kader trekt een lijn eromheen; Alleen markeringen tekent geen gloed."
+aura_size = "Hoeveel cellen breed de gloed is. Dik heeft vrije ruimte rond de kaarten nodig."
 target_marks = "Markeert mogelijke doelen voor een reeks met + en een gloed."
 guide_panel = "Een zijpaneel met hints voor de geselecteerde kaart en toetsen."
 moves_panel = "Een zijpaneel met alle acties en hun toetsen, actief of niet."
@@ -123,3 +130,28 @@ back = "Achterkant: {tile}, midden {mosaic}"
 hint_windows_terminal = "Windows Terminal: stel het lettertype van het profiel in op \"oXySol Mono\", of op een lijst die ermee eindigt: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (lijsten werken vanaf Windows Terminal 1.20.11381)."
 question = "Zien ze eruit als kaartsymbolen, niet als vierkantjes of lege plekken?"
 declined = "De Unicode-symbolen blijven. Installeer eerst oXySol Mono (wikipagina \"Card font\") om het kaartlettertype te zien en kies het daarna opnieuw bij Symbolen."
+
+[aura_colour]
+theme = "Thema"
+text = "Tekstkleur"
+selection = "Selectiekleur"
+hint = "Hintkleur"
+
+[aura_style]
+halo = "Halo"
+frame = "Kader"
+marks_only = "Alleen markeringen"
+
+[aura_size]
+thin = "Dun"
+thick = "Dik"
+
+[sample]
+aura = "Aura:"
+
+[preview]
+note = "Voorbeeld. Bij het verlaten van dit scherm wordt gevraagd of de wijzigingen blijven."
+position = "rij {row} van {total}"
+
+[confirm]
+keep_interface = "De gewijzigde interface-instellingen bewaren?"

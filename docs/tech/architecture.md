@@ -260,7 +260,7 @@ pub struct NullClipboard;                                // every copy fails wit
 
 - **Flow:** terminal event → `input` maps it to a semantic `Action` → `App` hands key and action to the
   current screen (or to the open modal) → the screen returns an `Effect` (`None`, `Goto`, `Start`, `Resume`,
-  `Restart`, `SameSeed`, `Apply(Settings)`, `Quick(Aids)`, `SaveAids`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
+  `Restart`, `SameSeed`, `Apply(Settings)`, `Preview(Settings)`, `LeaveSettings { keep, to }`, `Quick(Aids)`, `SaveAids`, `Open(Modal)`, `Board(Action)`, `HowToPlay`, `CopySeed(u64)`, `Quit`; `Start` is
   `{ variant, seed: Option<u64>, undo_allowed: bool }`) → `App` applies it. Screens read a `ViewCtx` (theme, glyphs,
   settings, caps, `audio_status`, `sound_styles`, `saved: Option<SavedSummary>` (variant, elapsed, moves of the saved game, for the Resume row), clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
@@ -430,9 +430,24 @@ pub struct NullClipboard;                                // every copy fails wit
   "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
   closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
   are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
+- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound and Hints. Interface
+  holds every row about look: theme, card back, front style, back style, symbols, console font, card size and the aura look
+  (`Settings::aura_colour` `AuraColour { Theme, Text, Selection, Hint }`, `aura_style` `AuraStyle { Halo, Frame, MarksOnly }`,
+  `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
+  colour is one theme token for all three halos (still told apart by symbol); `Frame` draws a line frame (`┌─┐` for the focus, `╔═╗`
+  for the carried run, plain ASCII `+-|` and `#=H` in ASCII mode; a target keeps its dot), `Thick` is two rings of free cells instead of
+  one. `settings/sample.rs` draws a sample of the three halos under the list.
+  *Preview and confirmation:* a change of an Interface row returns `Effect::Preview(settings)`: `App` shows it at once
+  (`show_settings`, which also drives the console font and the theme) without saving and keeps the settings as they were in
+  `interface_baseline` (`app/interface.rs`). While it is set, `persist_settings` writes the baseline's interface fields
+  (`Settings::with_interface_of`), so a row outside the section saves without the preview and a closed program never keeps one. A
+  preview that returns to its start clears the baseline. Leaving the settings screen with a preview open (`leave_or_ask`) opens a
+  `Modal::Confirm` built with `Modal::confirm_or(prompt, on_yes, on_no)`: Yes is `Effect::LeaveSettings { keep: true, to }`, No and Esc are
+  `keep: false`, which restores the interface fields and saves. A note under the list says a preview is open. The list scrolls when
+  the screen is too low for all rows (`settings/list.rs::first_shown`); the title then shows the position of the focused row.
 - **Zoom (P3-16, R-24):** `Settings::card_size` is `CardSizeSetting { Auto, Small, Medium, Large, Huge }` (`settings/card_size.rs`;
   default `Auto`, an older value without the field loads as `Auto`; Small 7 × 5 … Huge 13 × 11) and the Settings row `Card size` in
-  the Display group. `Auto` is the largest size that fits, a named size is the largest the player wants: a window too small for it falls
+  the Interface group. `Auto` is the largest size that fits, a named size is the largest the player wants: a window too small for it falls
   back to the largest that fits (`CardSize::largest_fit_within`) and the game information gets the fact `Cards: <size>` (dropped first
   when the header row is narrow), `Cards: <size> (auto)` when it fell back; with `Auto` there is no such fact. `Action::ZoomIn` (`]`),
   `ZoomOut` (`[`) and `ZoomAuto` (`0`) are rows of `KEY_TABLE` in the help group Display, and Ctrl+mouse wheel up or down is the same

@@ -194,6 +194,9 @@ fn focused_index(modal: &Modal) -> usize {
 fn press(modal: &Modal, index: usize) -> Effect {
     match modal {
         Modal::Confirm { on_yes, .. } if index == 0 => (**on_yes).clone(),
+        Modal::Confirm {
+            on_no: Some(on_no), ..
+        } => (**on_no).clone(),
         Modal::GraphicsCheck(check) => check.press(index),
         Modal::Pause { undo_allowed, .. } if index == pause::RESTART => {
             let prompt = if *undo_allowed {
@@ -272,7 +275,9 @@ pub fn handle_for(
             Some(Effect::SearchStep(SearchCommand::Cancel))
         }
         Action::Select => Some(press(modal, focused_index(modal))),
-        Action::Back if matches!(modal, Modal::GraphicsCheck(_)) => Some(press(modal, 1)),
+        Action::Back if matches!(modal, Modal::GraphicsCheck(_) | Modal::Confirm { .. }) => {
+            Some(press(modal, 1))
+        }
         Action::Back => Some(Effect::None),
         Action::Pause if matches!(modal, Modal::Pause { .. }) => Some(Effect::None),
         _ => None,

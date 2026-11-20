@@ -20,10 +20,14 @@ moves_panel = "Pannello mosse possibili"
 target_marks = "Indicatori destinazione"
 auto_finish = "Completamento auto"
 aura = "Aura"
+aura_colour = "Colore dell'aura"
+aura_style = "Stile dell'aura"
+aura_size = "Dimensione dell'aura"
 line = "{label} {value}"
 
 [group]
 display = "Visualizzazione"
+interface = "Interfaccia"
 sound = "Suono"
 hints = "Suggerimenti e aiuto"
 
@@ -56,6 +60,9 @@ music = "Musica di sottofondo durante la partita."
 volume = "Il volume di suoni e musica, a passi del 10%."
 auto_finish = "Gioca da solo le ultime mosse quando la vittoria è certa."
 aura = "Bagliore: Completa evidenzia cursore, carte e mete; Solo cursore, il cursore."
+aura_colour = "Il colore dell'alone attorno al fuoco, a una sequenza portata e alle destinazioni. Tema usa i colori del tema."
+aura_style = "Alone sfuma le celle attorno alle carte; Cornice disegna una linea; Solo segni non disegna alcun alone."
+aura_size = "Quante celle è largo l'alone. Spesso richiede spazio libero attorno alle carte."
 target_marks = "Segna i punti dove una sequenza può andare con + e un bagliore."
 guide_panel = "Pannello laterale con suggerimenti per la carta attiva e i tasti."
 moves_panel = "Pannello laterale con tutte le azioni e i relativi tasti."
@@ -123,3 +130,28 @@ back = "Dorso: {tile}, centro {mosaic}"
 hint_windows_terminal = "Windows Terminal: imposta il carattere del profilo su \"oXySol Mono\", o su un elenco che termina con esso: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (gli elenchi funzionano da Windows Terminal 1.20.11381)."
 question = "Sembrano simboli di carte, non quadrati o spazi vuoti?"
 declined = "Restano i simboli Unicode. Per vedere il carattere delle carte, installa prima oXySol Mono (pagina wiki \"Card font\"), poi sceglilo di nuovo in Simboli."
+
+[aura_colour]
+theme = "Tema"
+text = "Colore del testo"
+selection = "Colore di selezione"
+hint = "Colore del suggerimento"
+
+[aura_style]
+halo = "Alone"
+frame = "Cornice"
+marks_only = "Solo segni"
+
+[aura_size]
+thin = "Sottile"
+thick = "Spesso"
+
+[sample]
+aura = "Aura:"
+
+[preview]
+note = "Anteprima. Uscendo da questa schermata si chiede se tenere le modifiche."
+position = "riga {row} di {total}"
+
+[confirm]
+keep_interface = "Mantenere le impostazioni dell'interfaccia modificate?"

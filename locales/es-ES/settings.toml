@@ -20,10 +20,14 @@ moves_panel = "Panel de jugadas posibles"
 target_marks = "Marcas de destino"
 auto_finish = "Autoterminar"
 aura = "Aura"
+aura_colour = "Color del aura"
+aura_style = "Estilo del aura"
+aura_size = "Tamaño del aura"
 line = "{label} {value}"
 
 [group]
 display = "Pantalla"
+interface = "Interfaz"
 sound = "Sonido"
 hints = "Pistas y ayuda"
 
@@ -56,6 +60,9 @@ music = "Música de fondo mientras juegas."
 volume = "Volumen del sonido y de la música, en pasos del 10%."
 auto_finish = "Juega los últimos movimientos cuando la victoria es segura."
 aura = "Brillo: Completa resalta foco, cartas y destinos; Solo foco, el foco."
+aura_colour = "El color del brillo alrededor del foco, una serie llevada y los destinos. Tema usa los colores del tema."
+aura_style = "Halo sombrea las celdas alrededor de las cartas; Marco dibuja una línea; Solo marcas no dibuja brillo."
+aura_size = "Cuántas celdas de ancho tiene el brillo. Grueso necesita espacio libre alrededor de las cartas."
 target_marks = "Marca con + y brillo los lugares donde puede ir una secuencia."
 guide_panel = "Panel lateral con pistas sobre la carta enfocada y las teclas."
 moves_panel = "Panel lateral con todas las acciones y sus teclas, activas o no."
@@ -123,3 +130,28 @@ back = "Reverso: {tile}, centro {mosaic}"
 hint_windows_terminal = "Windows Terminal: pon la fuente del perfil en \"oXySol Mono\", o en una lista que termine con ella: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (las listas funcionan desde Windows Terminal 1.20.11381)."
 question = "¿Parecen símbolos de cartas y no cuadrados o espacios en blanco?"
 declined = "Se mantienen los símbolos Unicode. Para ver la fuente de cartas, instala primero oXySol Mono (página de la wiki \"Card font\") y elígela de nuevo en Símbolos."
+
+[aura_colour]
+theme = "Tema"
+text = "Color del texto"
+selection = "Color de selección"
+hint = "Color de pista"
+
+[aura_style]
+halo = "Halo"
+frame = "Marco"
+marks_only = "Solo marcas"
+
+[aura_size]
+thin = "Fino"
+thick = "Grueso"
+
+[sample]
+aura = "Aura:"
+
+[preview]
+note = "Vista previa. Al salir de esta pantalla se pregunta si se conservan los cambios."
+position = "fila {row} de {total}"
+
+[confirm]
+keep_interface = "¿Conservar los ajustes de interfaz cambiados?"

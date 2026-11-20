@@ -33,7 +33,8 @@ fn the_guide_panel_row_toggles_and_reaches_storage() {
 #[test]
 fn the_guide_row_names_the_columns_the_panel_needs_on_a_narrow_screen() {
     let mut h = open_settings();
-    h.resize(100, 30);
+    h.resize(100, 40);
+    move_to_guide(&mut h);
     assert!(
         bare(&line_of(&mut h, "Guide panel")).ends_with("On (needs 130 columns, now 100)"),
         "{}",
@@ -41,7 +42,7 @@ fn the_guide_row_names_the_columns_the_panel_needs_on_a_narrow_screen() {
     );
     h.resize(129, 40);
     assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("On (needs 130 columns, now 129)"));
-    h.resize(130, 30);
+    h.resize(130, 40);
     assert!(bare(&line_of(&mut h, "Guide panel")).ends_with("On"));
     assert!(!h.text().contains("needs"));
 }
@@ -60,7 +61,8 @@ fn the_guide_row_adds_no_note_when_the_panel_is_off() {
 #[test]
 fn the_guide_row_note_is_polish_in_polish() {
     let mut h = open_settings();
-    h.resize(100, 30);
+    h.resize(100, 40);
+    move_to_guide(&mut h);
     h.app.apply(Effect::Apply(Settings {
         locale: Locale::PlPl,
         ..Settings::default()

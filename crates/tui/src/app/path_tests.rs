@@ -4,7 +4,6 @@ use super::*;
 use crate::i18n::t;
 use crate::screens::variant_label_key;
 use crate::test_support::Harness;
-use crate::theme::ThemeId;
 use oxysol_core::Variant;
 use ratatui::crossterm::event::KeyCode;
 
@@ -64,10 +63,10 @@ fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_keyboard() {
         focus_menu_item(&mut h, &t("common.menu.settings"));
         h.press(KeyCode::Enter);
         assert_eq!(h.app.screen(), Screen::Settings, "{variant:?}");
-        let before = h.app.settings().theme;
+        let before = h.app.settings().color_mode;
         h.press(KeyCode::Down);
         h.press(KeyCode::Right);
-        assert_ne!(h.app.settings().theme, before, "{variant:?}");
+        assert_ne!(h.app.settings().color_mode, before, "{variant:?}");
         assert!(h.storage.borrow().settings.is_some(), "{variant:?}");
         h.press(KeyCode::Esc);
         assert_eq!(h.app.screen(), Screen::MainMenu, "{variant:?}");
@@ -102,10 +101,10 @@ fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_mouse() {
 
         click_text(&mut h, &t("common.menu.settings"));
         assert_eq!(h.app.screen(), Screen::Settings, "{variant:?}");
-        let before: ThemeId = h.app.settings().theme;
+        let before = h.app.settings().color_mode;
         h.press(KeyCode::Down);
         click_text(&mut h, "►");
-        assert_ne!(h.app.settings().theme, before, "{variant:?}");
+        assert_ne!(h.app.settings().color_mode, before, "{variant:?}");
         h.press(KeyCode::Esc);
         assert_eq!(h.app.screen(), Screen::MainMenu, "{variant:?}");
 
