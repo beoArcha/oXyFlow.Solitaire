@@ -241,8 +241,10 @@ fn the_last_event_is_right_aligned_and_the_next_action_clears_it() {
     let lines = h.lines();
     assert!(lines[28].starts_with("Now: "), "{}", lines[28]);
     assert!(
-        lines[28].ends_with("Dealt from the stock."),
-        "{}",
+        lines[28]
+            .trim_end()
+            .ends_with("Dealt from the stock.   v: moves"),
+        "the event sits right before the Now row's fallback buttons: {}",
         lines[28]
     );
     h.press(KeyCode::Right);

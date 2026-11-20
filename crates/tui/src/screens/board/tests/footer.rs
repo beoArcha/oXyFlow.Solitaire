@@ -5,13 +5,17 @@
 use ratatui::crossterm::event::{KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 
 use super::finish::{KLONDIKE, KLONDIKE_SEED, at_forced_win, is_won, win_open};
-use super::start;
+use super::{drag, first_transfer, start};
 use crate::action::Action;
 use crate::app::Modal;
-use crate::i18n::tf;
+use crate::i18n::{Locale, set_locale, tf};
 use crate::input::primary_key;
+use crate::screens::Effect;
 use crate::screens::board::guidance::{Guidance, part};
-use crate::test_support::Harness;
+use crate::settings::Settings;
+use crate::storage::memory::MemoryStorage;
+use crate::test_support::{Harness, TRUE_COLOR};
+use oxysol_core::{DrawCount, Variant};
 
 fn click(h: &mut Harness, column: u16, row: u16) {
     h.send(crate::input::Input::Mouse(MouseEvent {
@@ -98,4 +102,132 @@ fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
     );
     assert_eq!(text(40), "Do: u: undo | ?: keys | Esc: menu");
     assert_eq!(text(30), "Do: ?: keys | Esc: menu");
+}
+
+fn board_game(locale: Locale, variant: Variant, seed: u64, width: u16, height: u16) -> Harness {
+    let storage = MemoryStorage {
+        settings: Some(Settings {
+            locale,
+            ..Settings::default()
+        }),
+        ..MemoryStorage::default()
+    };
+    let mut h = Harness::with(storage, TRUE_COLOR, width, height);
+    h.app.apply(Effect::Start {
+        variant,
+        seed: Some(seed),
+        undo_allowed: true,
+    });
+    set_locale(locale);
+    h.lines();
+    h
+}
+
+fn board_in(locale: Locale, width: u16, height: u16) -> Harness {
+    board_game(locale, Variant::Klondike(DrawCount::One), 5, width, height)
+}
+
+fn board_at(width: u16, height: u16) -> Harness {
+    board_in(Locale::EnUs, width, height)
+}
+
+#[test]
+fn pause_and_moves_stay_clickable_after_one_move_at_100_columns_in_every_locale() {
+    for locale in Locale::offered() {
+        for variant in [Variant::Klondike(DrawCount::One), Variant::FreeCell] {
+            for (width, height) in [(100, 30), (130, 40)] {
+                let mut h = board_game(locale, variant, 5, width, height);
+                let Some((from, to, _)) = first_transfer(&h) else {
+                    panic!("{variant:?} seed 5 has a transfer");
+                };
+                drag(&mut h, from, to);
+                h.lines();
+                for (action, key) in [
+                    (Action::Pause, "board.action.pause"),
+                    (Action::Moves, "board.action.moves"),
+                ] {
+                    let text = do_text(action, key);
+                    assert!(
+                        h.find(&text).is_some(),
+                        "{locale:?} {variant:?} {width}x{height} after one move: {text:?}\n{}",
+                        h.text()
+                    );
+                }
+            }
+        }
+    }
+    set_locale(Locale::EnUs);
+}
+
+#[test]
+fn a_fallback_button_on_the_now_row_runs_its_action_after_one_move() {
+    let mut h = board_game(Locale::EnUs, Variant::Klondike(DrawCount::One), 5, 100, 30);
+    let Some((from, to, _)) = first_transfer(&h) else {
+        panic!("seed 5 has a transfer");
+    };
+    drag(&mut h, from, to);
+    let lines = h.lines();
+    let (now, possible) = (&lines[lines.len() - 2], &lines[lines.len() - 1]);
+    assert!(now.starts_with("Now:"), "{now}");
+    assert!(now.contains("p: pause"), "the Now row carries Pause: {now}");
+    assert!(!possible.contains("p: pause"), "{possible}");
+    click_button(&mut h, Action::Pause, "board.action.pause");
+    assert!(matches!(h.app.modal(), Some(Modal::Pause { .. })));
+}
+
+fn click_button(h: &mut Harness, action: Action, key: &str) {
+    let text = do_text(action, key);
+    let Some((column, row)) = h.find(&text) else {
+        panic!("{text:?} is not drawn");
+    };
+    click(h, column + 1, row);
+}
+
+#[test]
+fn the_pause_button_is_drawn_and_its_click_opens_pause_at_100_and_130_columns() {
+    for (width, height) in [(100, 30), (130, 40)] {
+        let mut h = board_at(width, height);
+        click_button(&mut h, Action::Pause, "board.action.pause");
+        assert!(
+            matches!(h.app.modal(), Some(Modal::Pause { .. })),
+            "{width} x {height}"
+        );
+    }
+}
+
+#[test]
+fn pause_and_moves_are_drawn_in_every_locale_at_the_narrowest_width_and_at_130_columns() {
+    for locale in Locale::offered() {
+        for (width, height) in [(100, 30), (130, 40)] {
+            let mut h = board_in(locale, width, height);
+            for (action, key) in [
+                (Action::Pause, "board.action.pause"),
+                (Action::Moves, "board.action.moves"),
+            ] {
+                let text = do_text(action, key);
+                assert!(
+                    h.find(&text).is_some(),
+                    "{locale:?} {width}x{height}: {text:?}"
+                );
+            }
+        }
+    }
+    set_locale(Locale::EnUs);
+}
+
+#[test]
+fn the_moves_button_opens_the_moves_window_at_100_columns() {
+    let mut h = board_at(100, 30);
+    click_button(&mut h, Action::Moves, "board.action.moves");
+    assert!(matches!(h.app.modal(), Some(Modal::Moves(_))));
+}
+
+#[test]
+fn the_moves_button_toggles_the_moves_panel_at_130_columns() {
+    let mut h = board_at(130, 40);
+    assert!(h.app.aids().moves_panel);
+    click_button(&mut h, Action::Moves, "board.action.moves");
+    assert!(!h.app.aids().moves_panel);
+    click_button(&mut h, Action::Moves, "board.action.moves");
+    assert!(h.app.aids().moves_panel);
 }

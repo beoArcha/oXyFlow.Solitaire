@@ -16,7 +16,6 @@ use super::{BoardScreen, counters};
 use crate::layout;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
-use crate::widgets::footer::FooterMap;
 use crate::widgets::guide::{self, Guide};
 use crate::widgets::moves::{self, MoveEntry, PanelMap};
 use crate::widgets::pile::{self, Marks};
@@ -67,7 +66,7 @@ pub(super) fn render(
     frame: &mut Frame,
     scene: &Scene<'_>,
     ctx: &ViewCtx<'_>,
-) -> (FooterMap, PanelMap) {
+) -> (controls::Buttons, PanelMap) {
     let parts = scene.chrome;
     if let (Some(rect), Some(facts)) = (parts.header, scene.facts) {
         let row = facts.row(rect, ctx.theme.style(Token::Accent, Token::Background));
@@ -104,7 +103,7 @@ pub(super) fn draw(
     frame: &mut Frame,
     board: &BoardScreen,
     ctx: &ViewCtx<'_>,
-) -> (FooterMap, PanelMap) {
+) -> (controls::Buttons, PanelMap) {
     let guidance = board.guidance();
     let entries = board.move_entries();
     let facts = board.facts(ctx.now);
