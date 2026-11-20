@@ -205,3 +205,33 @@ shared file already has its final shape so later tasks do not collide.
   the Windows file version and the release tags (`v0.4.P`) use the effective version; without git it is `0.4.0+src`.
 - **Acceptance:** unit and temporary-repository tests; `cargo xtask version` and `oxysol --version` shown in the PR.
 - **Done:** #119
+
+### O-37 — Mouse path for Pause and Possible moves on every screen width
+
+- **Owner:** Haiku
+- **Depends on:** P3-16, P3-28
+- **Files:** `crates/tui/src/screens/board/guidance.rs`, the board footer and moves panel, locales, tests
+- **Scope:** P3-09 finding: `p` (pause) has no clickable control on the board and `v` (possible moves) has none
+  below 130 columns, so both are keyboard-only (AGENTS.md: every action by keyboard and mouse). Give both a
+  clickable entry (the `Do:` row or the footer, following its drop priorities) at every supported width.
+- **Acceptance:** click tests at 100 × 30 and 130 × 40 for both actions; both locales.
+
+### O-38 — Settings save failure: alert and log once per session
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/app/effects.rs`, `crates/tui/src/screens/settings/tests.rs`, tests
+- **Scope:** P3-09 finding, decided by the orchestrator 2026-11-20: `apply_settings` alerts and logs on every
+  failed settings write, unlike game writes. Make it alert and log once per session, like game writes; later
+  failures stay silent until a write succeeds again. Update the test that pins the old behaviour.
+- **Acceptance:** tests for the first failure (alert and log), a second failure (silent) and recovery.
+
+### O-39 — Split files over 300 LOC found by the P3-09 gate
+
+- **Owner:** Antigravity
+- **Depends on:** —
+- **Files:** `crates/tui/src/app.rs`, `crates/tui/src/input.rs`, the oversized test files named in #121
+- **Scope:** P3-09 finding (warnings only): `app.rs` (399) and `input.rs` (337) above 300 LOC; several test files
+  above 300 and three card tests nested 5–6 deep. Split by responsibility without behaviour changes.
+  `glyphs/wgl4.rs` is a data table and stays.
+- **Acceptance:** no LOC or nesting warnings for these files; `cargo xtask check --quick` passes.

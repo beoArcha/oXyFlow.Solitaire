@@ -14,8 +14,15 @@ const SEED_ITEM: &str = "New game from seed";
 const STATISTICS: &str = "Statistics";
 const QUIT: &str = "Quit";
 
+const CORNER_ROWS: usize = 3;
+
 fn focused(h: &mut Harness) -> Option<String> {
-    marked_text(&h.lines(), "►")
+    let lines = h.lines();
+    marked_text(lines.get(CORNER_ROWS..).unwrap_or_default(), "►")
+}
+
+fn selector_focused(h: &mut Harness) -> bool {
+    h.lines().get(1).is_some_and(|line| line.contains("►◄"))
 }
 
 fn seed_entry() -> Harness {
@@ -37,8 +44,11 @@ fn tab_moves_the_focus_down_the_items() {
 }
 
 #[test]
-fn shift_tab_from_the_first_item_wraps_to_the_last() {
+fn shift_tab_from_the_first_item_goes_to_the_selector_then_wraps_to_the_last() {
     let mut h = Harness::new();
+    h.press(KeyCode::BackTab);
+    assert!(selector_focused(&mut h));
+    assert_eq!(focused(&mut h), None);
     h.press(KeyCode::BackTab);
     assert_eq!(focused(&mut h).as_deref(), Some(QUIT));
     h.press(KeyCode::BackTab);
@@ -46,9 +56,12 @@ fn shift_tab_from_the_first_item_wraps_to_the_last() {
 }
 
 #[test]
-fn tab_from_the_last_item_wraps_to_the_first() {
+fn tab_from_the_last_item_goes_to_the_selector_then_wraps_to_the_first() {
     let mut h = Harness::new();
     h.press(KeyCode::BackTab);
+    h.press(KeyCode::BackTab);
+    h.press(KeyCode::Tab);
+    assert!(selector_focused(&mut h));
     h.press(KeyCode::Tab);
     assert_eq!(focused(&mut h).as_deref(), Some(FIRST));
 }
@@ -74,14 +87,15 @@ fn the_marker_sits_directly_before_the_focused_label() {
     h.press(KeyCode::Tab);
     let lines = h.lines();
     assert!(lines.iter().any(|line| line.contains("► Statistics")));
-    assert_eq!(lines.iter().filter(|line| line.contains('►')).count(), 1);
+    let below = lines.get(CORNER_ROWS..).unwrap_or_default();
+    assert_eq!(below.iter().filter(|line| line.contains('►')).count(), 1);
 }
 
 #[test]
 fn tab_reaches_every_item_of_the_menu_once() {
     let mut h = Harness::new();
     let mut seen = Vec::new();
-    for _ in 0..7 {
+    for _ in 0..8 {
         seen.extend(focused(&mut h));
         h.press(KeyCode::Tab);
     }

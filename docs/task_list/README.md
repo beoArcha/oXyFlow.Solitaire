@@ -81,7 +81,7 @@ Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of 
 | P3-06 | Mouse | Haiku | P3-03 | DONE |
 | P3-07 | Overlays: help, pause, win, dialogs | Haiku | P3-03 | DONE |
 | P3-08 | Accessibility: announcer and tests | Haiku | P3-03 | DONE |
-| P3-09 | Gate: TUI | Sonnet | P3-04…P3-08, P4-03 | TODO |
+| P3-09 | Gate: TUI | Sonnet | P3-04…P3-08, P4-03 | DONE |
 | P4-01 | SQLite persistence | Sonnet | P3-01 | DONE |
 | P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | DONE |
 | P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | DONE |
@@ -167,6 +167,9 @@ the PR descriptions; cards that exist are in the phase files.
 | O-36 | Version scheme: patch counts merges, minor counts phases, the plan ends at 0.9 | — | DONE |
 | O-34 | Windows Terminal: test the card font on a real machine | P5-02 | TODO |
 | O-35 | Release archives carry the font licence (OFL) | P5-01 | TODO |
+| O-37 | Mouse path for Pause and Possible moves on every screen width | P3-16, P3-28 | TODO |
+| O-38 | Settings save failure: alert and log once per session | — | TODO |
+| O-39 | Split files over 300 LOC found by the P3-09 gate | — | TODO |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |

@@ -1,0 +1,49 @@
+# Card glyph registry (D-06, T-16; style guide on the card of M-19…M-24 in docs/task_list/micro.md).
+#
+# One key per glyph: `<fronts|backs>/<style>/<name>`, and its code point in U+E6BC–U+E6FF.
+# A code point never changes once assigned and is used once. A new glyph takes a free slot of its
+# reserved range, or the first spare one. `cargo xtask fonts` fails on a key with a bad code point,
+# a duplicate code point, or an SVG without an entry. An entry without an SVG is skipped.
+# The TUI reads this file as well (P5-02).
+
+[glyphs]
+"fronts/international/spade" = "E6BC"
+"fronts/international/heart" = "E6BD"
+"fronts/international/diamond" = "E6BE"
+"fronts/international/club" = "E6BF"
+"fronts/german/acorn" = "E6C0"
+"fronts/german/leaf" = "E6C1"
+"fronts/german/heart" = "E6C2"
+"fronts/german/bell" = "E6C3"
+"fronts/italian/baton" = "E6C4"
+"fronts/italian/sword" = "E6C5"
+"fronts/italian/cup" = "E6C6"
+"fronts/italian/coin" = "E6C7"
+"fronts/international/jack" = "E6D0"
+"fronts/international/queen" = "E6D1"
+"fronts/international/king" = "E6D2"
+"backs/lattice/tile" = "E6D8"
+"backs/lattice/mosaic-tl" = "E6D9"
+"backs/lattice/mosaic-tr" = "E6DA"
+"backs/lattice/mosaic-bl" = "E6DB"
+"backs/lattice/mosaic-br" = "E6DC"
+"backs/ornament/tile" = "E6DD"
+"backs/ornament/mosaic-tl" = "E6DE"
+"backs/ornament/mosaic-tr" = "E6DF"
+"backs/ornament/mosaic-bl" = "E6E0"
+"backs/ornament/mosaic-br" = "E6E1"
+
+[[reserved]]
+first = "E6C8"
+last = "E6CF"
+use = "more suit sets (8)"
+
+[[reserved]]
+first = "E6D3"
+last = "E6D7"
+use = "more court emblems (5)"
+
+[[reserved]]
+first = "E6E2"
+last = "E6FF"
+use = "spare: further back styles and decorations (30)"

@@ -2,6 +2,10 @@
 title = "oXySol"
 tagline = "Ultimate Office Solitaire for the terminal"
 
+[language]
+# The name of this language in itself: shown in the language selector whatever language is on.
+name = "English (US)"
+
 [menu]
 title = "Main menu"
 new_game = "New game"

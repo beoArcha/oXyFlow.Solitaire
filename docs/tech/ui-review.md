@@ -479,7 +479,7 @@ it already, Tab is not `KeyCode::Char`).
 ### 5.2 Zoom keys (P3-16)
 
 > **Revised by R-24 (2026-11-20):** `+` and `-` stay `RunMore` / `RunLess` and Shift+Up / Shift+Down are not
-> bound; the card-size keys are `]`, `[` and `0`; Ctrl+Plus / Minus / 0 only change the console font (T-34).
+> bound; the card-size keys are `]`, `[` and `0`; Ctrl+Plus / Minus / 0 only change the console font (T-35).
 > The table below is the original proposal.
 
 Facts about the terminals in scope:
