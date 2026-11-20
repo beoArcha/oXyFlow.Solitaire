@@ -56,29 +56,10 @@ pub fn run(mode: Mode) -> Result<(), XtaskError> {
 }
 
 fn run_quick_tests(cargo: &str, root: &Path) -> Result<(), XtaskError> {
-    run_step(
-        cargo,
-        root,
-        "test",
-        &["test", "--workspace", "--exclude", ROOT, "--tests"],
-    )?;
-    run_step(
-        cargo,
-        root,
-        "test",
-        &[
-            "test",
-            "-p",
-            ROOT,
-            "--lib",
-            "--bins",
-            "--test",
-            "integration",
-        ],
-    )
+    run_step(cargo, root, "test", &["test", "--workspace", "--tests"])
 }
 
-fn run_pr_tests(cargo: &str, root: &Path, base: &str) -> Result<(), XtaskError> {
+fn run_ci_only_tests(cargo: &str, root: &Path) -> Result<(), XtaskError> {
     run_step(
         cargo,
         root,
@@ -91,7 +72,10 @@ fn run_pr_tests(cargo: &str, root: &Path, base: &str) -> Result<(), XtaskError> 
             "--test",
             "e2e",
         ],
-    )?;
+    )
+}
+
+fn run_pr_tests(cargo: &str, root: &Path, base: &str) -> Result<(), XtaskError> {
     let paths = affected::changed_paths(root, base)?;
     match affected::select(paths.iter().map(String::as_str)) {
         Affected::All => {
@@ -100,6 +84,7 @@ fn run_pr_tests(cargo: &str, root: &Path, base: &str) -> Result<(), XtaskError> 
         }
         Affected::Packages(packages) => {
             println!("==> affected packages since {base}: {packages:?}");
+            run_ci_only_tests(cargo, root)?;
             for package in packages {
                 run_package_tests(cargo, root, package)?;
             }
