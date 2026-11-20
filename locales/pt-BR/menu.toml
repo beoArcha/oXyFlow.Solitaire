@@ -11,6 +11,10 @@ select_seed = "Selecione um jogo para a semente {seed}"
 version = "v{version}"
 variant_hint = "{level}: {description}"
 
+favourites = "Favoritos"
+legend = "{star} popular   {favourite} favorito ({key})"
+no_match = "Nenhum jogo corresponde: {text}"
+
 [difficulty]
 easy = "Fácil"
 medium = "Médio"
@@ -39,3 +43,13 @@ label = "Como jogar"
 open = "Abrir"
 play = "Jogar"
 language = "Idioma"
+
+[family]
+klondike = "Família Klondike"
+spider = "Família Spider"
+free_cell = "Família FreeCell"
+pyramid = "Família Pirâmide"
+
+[search]
+label = "Buscar"
+clear = "Esc limpa"

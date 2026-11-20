@@ -11,6 +11,10 @@ select_seed = "Kies een spel voor seed {seed}"
 version = "v{version}"
 variant_hint = "{level}: {description}"
 
+favourites = "Favorieten"
+legend = "{star} populair   {favourite} favoriet ({key})"
+no_match = "Geen spel past: {text}"
+
 [difficulty]
 easy = "Makkelijk"
 medium = "Gemiddeld"
@@ -40,3 +44,13 @@ label = "Spelregels"
 open = "Openen"
 play = "Spelen"
 language = "Taal"
+
+[family]
+klondike = "Klondike-familie"
+spider = "Spider-familie"
+free_cell = "FreeCell-familie"
+pyramid = "Piramide-familie"
+
+[search]
+label = "Zoeken"
+clear = "Esc wist"

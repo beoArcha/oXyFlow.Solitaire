@@ -144,12 +144,21 @@ impl MainMenu {
 
     /// Whether the seed field has the focus, so that typed characters are text.
     pub fn captures_text(&self) -> bool {
-        matches!(&self.stage, Stage::Seed(field) if field.captures_text())
+        match &self.stage {
+            Stage::Seed(field) => field.captures_text(),
+            Stage::Variants { picker, .. } => picker.captures_text(),
+            Stage::Items => false,
+        }
+    }
+
+    fn searching_games(&self) -> bool {
+        matches!(&self.stage, Stage::Variants { picker, .. } if picker.searching())
     }
 
     /// Handles a key press mapped to `action`.
     pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
-        if action == Some(Action::Back) && !matches!(self.stage, Stage::Items) {
+        let leaves = !matches!(self.stage, Stage::Items) && !self.searching_games();
+        if action == Some(Action::Back) && leaves {
             return self.back();
         }
         match &mut self.stage {

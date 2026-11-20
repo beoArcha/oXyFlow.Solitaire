@@ -102,6 +102,7 @@ pub struct Settings {
     pub card_back: CardBack,
     /// The card size on the board. An older saved value without the field loads as `Auto`.
     pub card_size: CardSizeSetting,
+    pub favourites: Vec<oxysol_core::Variant>,
 }
 
 impl Default for Settings {
@@ -130,6 +131,7 @@ impl Default for Settings {
             full_screen: FullScreen::Auto,
             card_back: CardBack::Theme,
             card_size: CardSizeSetting::Auto,
+            favourites: Vec::new(),
         }
     }
 }

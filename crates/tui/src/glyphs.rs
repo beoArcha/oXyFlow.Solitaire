@@ -64,6 +64,12 @@ pub struct Glyphs {
     pub proof_unknown: &'static str,
     /// Sign of a game not checked by the solver.
     pub proof_unchecked: &'static str,
+    /// Mark of a popular game in the game menu.
+    pub star: &'static str,
+    /// Mark of a game in the favourites.
+    pub favourite: &'static str,
+    /// Mark of a game that is not in the favourites.
+    pub not_favourite: &'static str,
     pub border: BorderType,
 }
 
@@ -94,6 +100,9 @@ const UNICODE: Glyphs = Glyphs {
     proof_unwinnable: "✗",
     proof_unknown: "?",
     proof_unchecked: "·",
+    star: "★",
+    favourite: "♥",
+    not_favourite: "·",
     border: BorderType::Plain,
 };
 
@@ -124,6 +133,9 @@ const ASCII: Glyphs = Glyphs {
     proof_unwinnable: "x",
     proof_unknown: "?",
     proof_unchecked: ".",
+    star: "*",
+    favourite: "!",
+    not_favourite: ".",
     border: BorderType::Plain,
 };
 
@@ -230,6 +242,9 @@ mod tests {
             &glyphs.proof_unwinnable,
             &glyphs.proof_unknown,
             &glyphs.proof_unchecked,
+            &glyphs.star,
+            &glyphs.favourite,
+            &glyphs.not_favourite,
         ]);
         for text in all {
             assert!(text.is_ascii(), "{text}");

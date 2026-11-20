@@ -27,6 +27,16 @@ fn click_text(h: &mut Harness, needle: &str) {
     h.click(column, row);
 }
 
+/// Clicks the name of a variant in the game list. The name is found after the star of its row,
+/// because a family heading can contain the same word.
+fn click_variant(h: &mut Harness, variant: Variant) {
+    let label = t(variant_label_key(variant));
+    let found = h.find(&format!("★ {label}"));
+    assert!(found.is_some(), "{label} is not drawn: {}", h.text());
+    let (column, row) = found.unwrap_or_default();
+    h.click(column + 2, row);
+}
+
 fn board_variant(h: &Harness) -> Option<Variant> {
     h.app.board().session().map(|session| session.variant())
 }
@@ -83,7 +93,7 @@ fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_mouse() {
 
         click_text(&mut h, &t("common.menu.new_game"));
         assert_eq!(h.app.screen(), Screen::GameSelect, "{variant:?}");
-        click_text(&mut h, &t(variant_label_key(variant)));
+        click_variant(&mut h, variant);
         assert_eq!(h.app.screen(), Screen::Board, "{variant:?}");
         assert_eq!(board_variant(&h), Some(variant));
 
