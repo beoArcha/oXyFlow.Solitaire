@@ -1,6 +1,6 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::{SETTINGS_ITEM, changed, move_down, open_settings, value};
+use super::{changed, index_of, move_down, open_settings, settings_menu_index, value};
 use crate::i18n::{Locale, set_locale};
 use crate::screens::settings::options::{Field, Step};
 use crate::screens::settings::values::line;
@@ -28,7 +28,7 @@ fn only_the_focused_row_shows_its_value_between_arrows() {
     let language = format!("◄ {} ►", value(Field::Language, h.app.settings()));
     assert!(h.text().contains(&language), "{}", h.text());
     assert_eq!(h.text().matches('◄').count(), 1);
-    move_down(&mut h, 1);
+    move_down(&mut h, index_of(Field::Theme));
     let theme = format!("◄ {} ►", value(Field::Theme, h.app.settings()));
     assert!(h.text().contains(&theme), "{}", h.text());
     assert_eq!(h.text().matches('◄').count(), 1);
@@ -58,7 +58,7 @@ fn the_values_line_up_with_and_without_arrows() {
 fn a_click_on_the_left_arrow_steps_back_and_one_on_the_right_arrow_forward() {
     set_locale(Locale::EnUs);
     let mut h = open_settings();
-    move_down(&mut h, 1);
+    move_down(&mut h, index_of(Field::Theme));
 
     let before = h.app.settings().clone();
     let (left, _) = arrow_cells(&mut h).unwrap_or_default();
@@ -80,7 +80,7 @@ fn a_click_on_the_left_arrow_steps_back_and_one_on_the_right_arrow_forward() {
 #[test]
 fn ascii_arrows_are_angle_brackets() {
     let mut h = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
-    move_down(&mut h, SETTINGS_ITEM);
+    move_down(&mut h, settings_menu_index());
     h.press(KeyCode::Enter);
     let text = h.text();
     assert!(text.is_ascii());
