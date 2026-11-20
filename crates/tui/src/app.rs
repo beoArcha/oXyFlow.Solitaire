@@ -455,4 +455,7 @@ mod deals_tests;
 mod effect_tests;
 
 #[cfg(test)]
+mod path_tests;
+
+#[cfg(test)]
 mod persist_tests;
