@@ -143,6 +143,11 @@ impl Locale {
         })
     }
 
+    /// The names of the area files every locale folder has, without `.toml`.
+    pub fn area_names() -> [&'static str; AREA_COUNT] {
+        Locale::EnUs.sources().areas.map(|(name, _)| name)
+    }
+
     /// The name of the language in itself: `Deutsch`, `Polski`.
     pub fn own_name(self) -> &'static str {
         &self.meta().own_name
