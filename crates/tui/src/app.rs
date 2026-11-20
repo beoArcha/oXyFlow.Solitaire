@@ -117,6 +117,7 @@ impl App {
             sound_styles,
             solver,
             display,
+            version,
         } = deps;
         let settings = Settings::for_caps(&caps);
         let mut app = Self {
@@ -142,7 +143,7 @@ impl App {
             screen: Screen::MainMenu,
             modal: None,
             dock: overlay::dock::DockState::default(),
-            menu: start_seed.map_or_else(MainMenu::new, MainMenu::for_seed),
+            menu: MainMenu::start(start_seed, version),
             select: GameSelect::new(),
             settings_screen: SettingsScreen::new(),
             stats: StatsScreen::new(),
