@@ -90,6 +90,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/pr.yml`
 - **Scope:** S6 (P2): Windows-only code (console font, full screen, widening) is compiled only on `main`. Add a cached Windows job to `pr.yml`.
 - **Acceptance:** A PR shows both jobs; the owner updates the required checks.
+- **Done:** #157 (`check-windows` job; the owner adds it to the required checks)
 
 ### O-59 — Tests derive row counts instead of hard-coding them
 
@@ -107,6 +108,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/**`, `docs/tech/workflow.md`
 - **Scope:** C4 (P2): list worktrees whose branch is merged into `origin/main` or whose PR is closed, `--remove` to delete them, and report orphan directories.
 - **Acceptance:** Tests with a temporary repository.
+- **Done:** #159 (`cargo xtask worktrees [--remove [--force]]`; the T3 worktree folder is not scanned for orphans)
 
 ### O-61 — main: re-run jobs that never got a runner before failing
 
@@ -124,6 +126,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/pr.yml`, `xtask/src/screenshots/**`
 - **Scope:** B8 (P2): build the mdBook site on PRs that touch `docs/site/**`; add a staleness check for committed screenshots and the font.
 - **Acceptance:** A broken link in a test PR fails the check.
+- **Done:** #160 (`site` job builds mdBook and checks relative links when `docs/site/**` changes; screenshot staleness not done)
 
 ### O-63 — Take the version from the binary instead of a TUI build script
 
@@ -132,6 +135,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `crates/tui/build.rs`, `build.rs`, `src/**`, the TUI version display
 - **Scope:** F2 (P2): the git-derived version recompiles `oxysol-tui` after every commit, even docs-only ones. Compute it in the binary crate and pass it to the TUI.
 - **Acceptance:** A docs-only commit does not rebuild `oxysol-tui`; the version shown is unchanged.
+- **Done:** #162 (`crates/tui/build.rs` removed; `Deps::version` from the binary)
 
 ### O-64 — `cargo xtask preflight` and a local CI mode
 
@@ -140,6 +144,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/**`, `docs/tech/workflow.md`, `AGENTS.md`
 - **Scope:** C2, C3 (P2): `preflight [--card <ID>]` fetches `origin/main`, reports how far behind the branch is, runs the marker and decision-ID lints and lists changed files the card does not name.
 - **Acceptance:** Tests with a temporary repository.
+- **Done:** #161 (`cargo xtask preflight [--card] [--base] [--ci]`)
 
 ### O-65 — Release provenance, SBOM, immutable releases; pinned host key
 
@@ -148,6 +153,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/release.yml`, the promotion step, `docs/tech/workflow.md`
 - **Scope:** S4, S5 (P2): provenance attestations and an SBOM per archive; immutable releases; a pinned GitHub SSH host key for promotion instead of a fresh `ssh-keyscan`.
 - **Acceptance:** A release dry run shows the attestations; promotion works with the pinned key.
+- **Done:** #163 (attestations, CycloneDX SBOM per target, pinned `.github/known_hosts`; the owner enables Immutable releases)
 
 ### O-66 — Optimize the engine in test builds
 
@@ -175,6 +181,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   below 130 columns, so both are keyboard-only (AGENTS.md: every action by keyboard and mouse). Give both a
   clickable entry (the `Do:` row or the footer, following its drop priorities) at every supported width.
 - **Acceptance:** click tests at 100 × 30 and 130 × 40 for both actions; both locales.
+- **Done:** #158 (`p: pause` and `v: moves` in the `Do:` row; the `Now:` row shows the ones the `Do:` row drops)
 
 ### O-38 — Settings save failure: alert and log once per session
 
@@ -196,6 +203,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   above 300 and three card tests nested 5–6 deep. Split by responsibility without behaviour changes.
   `glyphs/wgl4.rs` is a data table and stays.
 - **Acceptance:** no LOC or nesting warnings for these files; `cargo xtask check --quick` passes.
+- **Done:** #164 (`app/event.rs`, `input/table.rs`, `input/tests.rs`; the oversized test files stay)
 
 ### O-35 — Release archives carry the font licence (OFL)
 
