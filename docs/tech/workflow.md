@@ -21,6 +21,7 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 | `cargo xtask report` | prints the last check result as Markdown; paste it into the PR's "Check result" section | run after `check` |
 | `cargo xtask locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |
 | `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
+| `cargo xtask worktrees [--remove [--force]]` | lists every worktree with its state (`main`, `merged`, `open`) and the orphan folders git no longer knows; `--remove` deletes the clean merged ones and prunes; a dry run without it | run by hand (see "Worktrees") |
 
 Affected packages (T-22): `crates/core` selects `oxysol-core`, `oxysol-tui` and `oxysol`;
 `crates/tui` selects `oxysol-tui` and `oxysol`; `src/` and `tests/` select `oxysol`; `xtask/`
@@ -223,6 +224,16 @@ is merged or closed, the orchestrator removes it: `git worktree remove <path>`, 
 `git branch -D <branch>` (GitHub deletes the remote branch on merge). A worktree whose agent stopped
 with uncommitted work is committed as `wip(...)` and pushed before removal, so another agent can
 finish it.
+
+`cargo xtask worktrees` does the hygiene in one step. A branch is `merged` when its upstream is `[gone]`
+(a squash merge with the branch deleted), when its pushed tip is an ancestor of `origin/main`, or when
+its pull request is closed or merged (checked with `gh`; without `gh` that check is skipped). A branch
+that was never pushed is never merged by ancestry, so a fresh worktree is not removed. Otherwise it is
+`open`; the main checkout is `main`. Without flags the command is a dry run. `--remove` deletes the
+merged worktrees that have no uncommitted changes (`git worktree remove`, never `--force` unless
+`--force` is also passed) and then prunes. It never touches the main checkout, and it reports the
+worktree folders under `.claude/worktrees/` and beside the main checkout that git no longer knows,
+without deleting them. Branches are not deleted by the command; `git branch -D` stays a manual step.
 
 ## Local setup on Windows
 
