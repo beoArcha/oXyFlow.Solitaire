@@ -25,7 +25,7 @@ run_more = "Sélectionner plus de cartes"
 run_less = "Sélectionner moins de cartes"
 zoom_in = "Cartes plus grandes"
 zoom_out = "Cartes plus petites"
-zoom_auto = "Cartes : taille auto"
+zoom_auto = "Cartes: taille auto"
 undo = "Annuler"
 redo = "Rétablir"
 hint = "Indice"
@@ -38,12 +38,12 @@ new_game = "Nouvelle partie"
 pause = "Pause"
 menu = "Menu"
 copy_seed = "Copier la graine"
-dock = "Ancrer la fenêtre d'aide"
-dock_focus = "Cibler la fenêtre ancrée"
+dock = "Ancrer l'aide"
+dock_focus = "Focus sur l'aide"
 
 [display]
 terminal_keys = "Ctrl +/-/0"
-terminal_text = "Zoom terminal (Mac : Cmd)"
+terminal_text = "Zoom (Mac: Cmd)"
 
 [mouse_keys]
 click_card = "Cliquer sur une carte"
@@ -53,11 +53,11 @@ right_click = "Clic droit"
 drag = "Glisser-déposer"
 
 [mouse]
-click_card = "Prendre, puis poser sur une cible"
+click_card = "Prendre puis poser"
 click_stock = "Tirer de la pioche"
-double_click = "Coup rapide vers une cible"
+double_click = "Coup rapide"
 right_click = "Annuler la prise"
-drag = "Déplacer une carte sur sa cible"
+drag = "Déplacer sur cible"
 
 [overlay]
 continue = "Continuer"

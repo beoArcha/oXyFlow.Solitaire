@@ -12,8 +12,8 @@ copied = "Graine {seed} copiée"
 copy_failed = "Impossible de copier la graine — elle est affichée ici : {seed}"
 
 [mode]
-undo = "avec annulation"
-no_undo = "sans annulation"
+undo = "avec annul."
+no_undo = "sans annul."
 
 [outcome]
 won = "Gagnée"
@@ -25,9 +25,9 @@ game = "Jeu"
 played = "Jouées"
 won = "Gagnées"
 clean = "Sans reprise"
-rate = "% victoires"
-best_time = "Meilleur temps"
-fewest_moves = "Moins de coups"
+rate = "Victoires %"
+best_time = "Meill. temps"
+fewest_moves = "Moins coups"
 streak = "Série"
 longest = "Meilleure série"
 

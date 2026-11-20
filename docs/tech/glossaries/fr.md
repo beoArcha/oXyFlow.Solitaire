@@ -10,9 +10,13 @@ French texts in oXySol must use this glossary for consistency.
 | waste | défausse | Cartes tirées de la pioche |
 | free cell | cellule libre | Emplacement temporaire dans FreeCell (Pluriel : cellules libres) |
 | run | suite | Suite ordonnée de cartes |
-| run size | taille de la suite | Nombre de cartes déplacées ensemble |
-| restart (a game) | recommencer | Recommencer la partie (En-tête : `Repris : N`, Bouton : `Recommencer`) |
+| run size | taille suite | Nombre de cartes déplacées ensemble (Barre d'actions : `+/-: taille suite`) |
+| restart (a game) | recommencer | Recommencer la partie (En-tête : `Repris: N`, Bouton : `Recommencer`) |
 | win without a restart | sans reprise | Colonne de statistiques : `Sans reprise` |
+| no undo | sans annul. | Abrégé dans l'en-tête et les statistiques : `Sans annul.` |
+| win rate | Victoires % | Colonne de statistiques |
+| best time | Meill. temps | Colonne de statistiques |
+| fewest moves | Moins coups | Colonne de statistiques |
 | hints and help | indices et aide | Groupe dans les paramètres |
 | target marks | marques de cible | Indicateurs d'emplacements valides |
 | quick options | options rapides | Panneau d'options en jeu |
@@ -29,4 +33,4 @@ French texts in oXySol must use this glossary for consistency.
 | Draw 1 / Draw 3 | 1 carte / 3 cartes | Mode de tirage dans Klondike |
 | Relaxed / Classic | détente / classique | Variantes de Pyramide |
 | tab (UI) | onglet | Onglet d'interface (Touche clavier : Tab) |
-| dock (help window) | ancrer | Ancrer l'aide sur le côté |
+| dock (help window) | ancrer | Ancrer l'aide sur le côté ; `Focus sur l'aide` pour la fenêtre ancrée |
