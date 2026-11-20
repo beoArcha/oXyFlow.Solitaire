@@ -726,9 +726,11 @@ writes the contact sheet `target/fonts/preview.html`. Two runs give identical by
 
 | Command | Steps | Where |
 |---|---|---|
-| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint` (including conflict markers in every tracked file), every test target in one `cargo test --workspace --tests` call | locally before a PR |
+| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint` (including conflict markers in every tracked file and decision-ID uniqueness), every test target in one `cargo test --workspace --tests` call | locally before a PR |
 | `cargo xtask check --pr <base>` | fmt, Clippy, lint, the `architecture` and `e2e` suites, unit and integration tests of the packages that `affected --base <base>` selects | `pr.yml` (Linux) |
 | `cargo xtask check` | everything: all test targets and `sync-metadata --check` | `main.yml` and `release.yml` on three systems |
+| `cargo xtask report` | prints `target/check-result.txt` (written by every `check`) as Markdown for the PR body | local |
+| `cargo xtask locale-diff [<lang>] [--ref <git-ref>]` | missing, extra and placeholder-mismatched keys of a locale against `en-US` (plural-aware) | local, translations |
 
 Definitions used by `xtask lint`:
 

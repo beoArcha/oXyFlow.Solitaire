@@ -45,6 +45,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/lint*`, tests, `docs/tech/decisions.md` (ordering only)
 - **Scope:** B3 (P1): parse the table rows of `decisions.md`; fail on a duplicate `R-`/`T-`/`D-` ID; warn on a reference under `docs/` to an ID that does not exist.
 - **Acceptance:** Tests with fixtures; `check --quick` passes on `main`.
+- **Done:** #155 (also accepts ID headings such as `### D-06`; unknown references warn)
 
 ### O-54 — `check` writes a result file; `cargo xtask report`; PR template
 
@@ -53,6 +54,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/check*`, `xtask/src/main.rs`, `.github/pull_request_template.md`
 - **Scope:** C1 (P1): `check` writes `target/check-result.txt` with the commit SHA, mode, steps, result and the last lines of a failing step; `cargo xtask report` prints it as Markdown for the PR body. A PR template with What / Files / Check result / Deviations / Limitations.
 - **Acceptance:** Unit tests for the file format; the template shows on a new PR.
+- **Done:** #153 (cargo output piped, so no colour or progress bar during `check`)
 
 ### O-55 — Pin GitHub Actions by SHA and add Dependabot
 
@@ -70,6 +72,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `deny.toml`, `.github/workflows/pr.yml`, `docs/tech/decisions.md` (ID assigned in the card)
 - **Scope:** S2 (P1): licenses (the T-31 list), advisories and sources checked on every PR, not only at release.
 - **Acceptance:** `pr.yml` runs it; a disallowed license fails it.
+- **Done:** #152 (T-37; transitive unmaintained crates do not block)
 
 ### O-57 — English fallback for incomplete locales and `cargo xtask locale-diff`
 
@@ -78,6 +81,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `crates/tui/src/i18n*`, `xtask/src/**`, locale tests, `docs/tech/architecture.md`
 - **Scope:** B6 (P1): an incomplete locale need not mirror every English key; missing keys fall back to en-US, so a new English key no longer touches nine folders. Complete locales keep full parity. `cargo xtask locale-diff <lang>` lists missing, extra and placeholder-mismatched keys.
 - **Acceptance:** Parity enforced for complete locales only; locale-diff tests.
+- **Done:** #151 (T-38; all nine locales complete, so new keys still go to every locale unless one is set `complete = false`)
 
 ### O-58 — Check pull requests on Windows as well
 
@@ -111,6 +115,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/main.yml`
 - **Scope:** B4 (P2): macOS jobs cancelled after about 15 minutes without a runner turn `main` red and skip promotion. Retry once, or tell a never-started job from a failed one.
 - **Acceptance:** A documented retry path.
+- **Done:** #154 (macOS runs as `check-macos`, outside `promote`'s needs; re-run by hand)
 
 ### O-62 — Build the site on pull requests; check screenshots are current
 
@@ -209,6 +214,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** the archive listing of a local run of the packaging step shows the three font files in both
   archives of one target; the generated `THIRD-PARTY-LICENSES.md` contains the Fonts section; the check fails
   when `OFL.txt` is removed; the release workflow itself was not run (say so).
+- **Done:** #150 (by Antigravity Dad; `cargo about` not run locally, release workflow not run)
 
 ### P5-02 — Style-driven cards and graphics check
 

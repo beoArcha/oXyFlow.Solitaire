@@ -18,6 +18,8 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 | `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages | `pr.yml` |
 | `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS (`check-macos`, not gating `promote`) |
 | `cargo xtask affected --base origin/main` | prints the affected packages (`*` means all) | used by `check --pr` |
+| `cargo xtask report` | prints the last check result as Markdown; paste it into the PR's "Check result" section | run after `check` |
+| `cargo xtask locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |
 | `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
 
 Affected packages (T-22): `crates/core` selects `oxysol-core`, `oxysol-tui` and `oxysol`;
