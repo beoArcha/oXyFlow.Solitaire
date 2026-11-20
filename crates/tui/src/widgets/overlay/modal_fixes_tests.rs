@@ -62,7 +62,7 @@ fn track(window: Window) -> Rect {
     let (y, height) = match window {
         Window::Guide => (body.y, 17),
         Window::CommandLine => (body.y + 1, 21),
-        Window::Keys => (body.y + 1, 21),
+        Window::Keys => (body.y + 1, 22),
     };
     Rect::new(body.right() - 1, y, 1, height)
 }
@@ -134,8 +134,8 @@ fn the_close_button_names_its_key_in_ascii_too() {
 }
 
 #[test]
-fn the_command_line_and_guide_windows_draw_a_scroll_bar_and_the_keys_tab_does_not() {
-    for window in [Window::CommandLine, Window::Guide] {
+fn the_keys_command_line_and_guide_windows_draw_a_scroll_bar_that_follows_the_text() {
+    for window in [Window::Keys, Window::CommandLine, Window::Guide] {
         let mut h = open(window, Locale::EnUs, TRUE_COLOR);
         let column = bar(&mut h, track(window));
         assert_eq!(column[0], "█", "{window:?}");
@@ -145,9 +145,6 @@ fn the_command_line_and_guide_windows_draw_a_scroll_bar_and_the_keys_tab_does_no
         assert_eq!(column[0], "░", "{window:?}");
         assert_eq!(column.last().map(String::as_str), Some("█"), "{window:?}");
     }
-    let mut h = open(Window::Keys, Locale::EnUs, TRUE_COLOR);
-    let column = bar(&mut h, track(Window::Keys));
-    assert!(column.iter().all(|symbol| symbol != "█" && symbol != "░"));
 }
 
 #[test]
@@ -219,7 +216,7 @@ fn assert_renders_cleanly(window: Window, locale: Locale, caps: TerminalCaps) {
 
 #[test]
 fn every_window_renders_at_100_by_30_in_both_locales_with_only_wgl4_or_ascii() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             for window in [Window::Keys, Window::CommandLine, Window::Guide] {
                 assert_renders_cleanly(window, locale, caps);

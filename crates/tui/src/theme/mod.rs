@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 pub use palette::{GRAPHIC_PAIRS, MARK_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
 
 use crate::caps::ColorDepth;
+use crate::settings::CardBack;
 
 /// A built-in theme.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -109,6 +110,21 @@ impl Theme {
     /// The focused list item.
     pub fn focus(&self) -> Style {
         self.style(Token::FocusFg, Token::FocusBg)
+    }
+
+    /// A style for the given card back.
+    pub fn card_back_style(&self, card_back: CardBack) -> Style {
+        match card_back {
+            CardBack::Theme => self.style(Token::CardBackMark, Token::CardBack),
+            CardBack::Monokai => {
+                let monokai = Theme::new(ThemeId::Monokai, self.depth);
+                monokai.style(Token::CardBackMark, Token::CardBack)
+            }
+            CardBack::Dracula => {
+                let dracula = Theme::new(ThemeId::Dracula, self.depth);
+                dracula.style(Token::CardBackMark, Token::CardBack)
+            }
+        }
     }
 }
 

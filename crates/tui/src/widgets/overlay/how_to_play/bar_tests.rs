@@ -119,7 +119,7 @@ fn the_wheel_still_scrolls_and_a_click_on_the_bar_does_not_close_the_window() {
 
 #[test]
 fn every_state_of_the_window_renders_at_100_by_30_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             let mut h = opened(locale, caps);
             for step in [KeyCode::Up, KeyCode::Down, KeyCode::Down, KeyCode::End] {

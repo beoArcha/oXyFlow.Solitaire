@@ -131,7 +131,7 @@ fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
             2 => assert_eq!(h.app.screen(), Screen::Stats),
             3 => assert_eq!(h.app.screen(), Screen::Settings),
             4 => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
-            5 => assert!(matches!(h.app.modal(), Some(Modal::Help))),
+            5 => assert!(matches!(h.app.modal(), Some(Modal::Help(_)))),
             _ => assert!(h.app.should_quit()),
         }
     }
@@ -175,7 +175,7 @@ fn every_settings_row_is_reached_by_keyboard() {
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);
-    assert_eq!(rows.len(), 17, "{rows:?}");
+    assert_eq!(rows.len(), 18, "{rows:?}");
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn every_main_menu_item_and_settings_row_is_also_reached_by_tab() {
     assert_eq!(rows_by_tab(&mut Harness::new()), rows(&mut Harness::new()));
     let mut h = menu_at(3);
     h.press(KeyCode::Enter);
-    assert_eq!(rows_by_tab(&mut h).len(), 17);
+    assert_eq!(rows_by_tab(&mut h).len(), 18);
 }
 
 #[test]
@@ -195,7 +195,7 @@ fn every_dialog_closes_and_confirm_takes_yes_by_keyboard() {
         undo_allowed: true,
     });
     h.type_char('?');
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     h.type_char('i');
@@ -236,14 +236,14 @@ fn every_theme_meets_its_contrast_target_for_the_text_pairs() {
 
 #[test]
 fn every_rejection_and_board_event_is_announced_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
-        let prefix = match locale {
-            Locale::EnUs => "Illegal move: ",
-            Locale::PlPl => "Zły ruch: ",
-        };
+        let prefix = t(REJECTIONS[0])
+            .split_once(':')
+            .map(|(head, _)| format!("{head}: "))
+            .unwrap_or_default();
         for key in REJECTIONS {
-            assert!(t(key).starts_with(prefix), "{locale:?} {key}: {}", t(key));
+            assert!(t(key).starts_with(&prefix), "{locale:?} {key}: {}", t(key));
         }
         for key in EVENTS.iter().chain(&REJECTIONS) {
             assert_ne!(t(key), *key, "{locale:?} {key}");

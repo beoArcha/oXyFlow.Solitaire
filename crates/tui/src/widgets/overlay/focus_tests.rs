@@ -158,7 +158,7 @@ fn enter_on_restart_in_pause_opens_confirm() {
 
 #[test]
 fn tab_cycles_the_help_tabs_and_shift_tab_steps_back() {
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     assert_eq!(tab(&mut modal), None);
     assert!(matches!(modal, Modal::HowToPlay(_)));
     tab(&mut modal);
@@ -167,7 +167,7 @@ fn tab_cycles_the_help_tabs_and_shift_tab_steps_back() {
     assert_eq!(tab(&mut modal), None);
     assert!(matches!(modal, Modal::CommandLine(_)));
     assert_eq!(tab(&mut modal), None);
-    assert!(matches!(modal, Modal::Help));
+    assert!(matches!(modal, Modal::Help(_)));
     assert_eq!(back_tab(&mut modal), None);
     assert!(matches!(modal, Modal::CommandLine(_)));
 }

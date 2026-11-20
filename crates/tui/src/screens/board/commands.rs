@@ -55,6 +55,8 @@ impl BoardScreen {
             Action::ForceQuit
             | Action::Help
             | Action::Rules
+            | Action::Dock
+            | Action::DockFocus
             | Action::Guide
             | Action::Moves
             | Action::Options => Effect::None,

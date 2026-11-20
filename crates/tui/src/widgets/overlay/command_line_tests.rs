@@ -74,7 +74,7 @@ fn the_third_tab_shows_the_help_text_with_the_new_window_option() {
 
 #[test]
 fn the_help_text_is_the_cli_text_fits_the_window_and_names_the_new_option_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         i18n::set_locale(locale);
         let lines = command_line::lines();
         assert!(lines.len() > VIEW_ROWS, "{locale:?} should scroll");
@@ -118,7 +118,7 @@ fn keys_step_through_the_tabs_in_both_directions() {
     h.press(KeyCode::Left);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Right);
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     h.press(KeyCode::BackTab);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Left);
@@ -126,7 +126,7 @@ fn keys_step_through_the_tabs_in_both_directions() {
     h.press(KeyCode::Right);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.type_char('?');
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     h.press(KeyCode::Right);
     h.press(KeyCode::Right);
     h.type_char('i');
@@ -144,7 +144,7 @@ fn clicking_the_tabs_switches_between_all_three() {
     assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
     click_text(&mut h, "Command line");
     click_text(&mut h, "Keys");
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
 }
 
 #[test]
@@ -184,7 +184,7 @@ fn escape_and_the_close_button_close_the_window() {
 
 #[test]
 fn renders_cleanly_at_100x30_in_both_locales_and_glyph_modes_at_both_ends() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             let mut h = harness_in(locale, caps);
             h.type_char('?');

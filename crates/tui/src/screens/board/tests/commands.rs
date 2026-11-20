@@ -359,7 +359,7 @@ fn every_move_error_has_a_message_in_every_locale() {
         MoveError::Blocked,
     ];
     let mut seen = Vec::new();
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
         for error in &errors {
             let key = error_key(error);
@@ -385,7 +385,7 @@ fn every_status_key_exists_in_every_locale() {
         "board.confirm.new_game",
         "board.confirm.quit",
     ];
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
         for key in keys {
             assert_ne!(t(key), key, "{key}");

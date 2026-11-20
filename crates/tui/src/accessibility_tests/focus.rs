@@ -36,7 +36,7 @@ fn closer(caps: &TerminalCaps) -> &'static str {
 }
 
 fn each_setup(mut check: impl FnMut(Locale, &TerminalCaps)) {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             set_locale(locale);
             check(locale, &caps);

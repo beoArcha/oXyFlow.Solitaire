@@ -1,4 +1,4 @@
-[English](gallery.md) · [Polski](pl/gallery.md)
+**English** · [Polski](pl/gallery.md) · [Deutsch](de/gallery.md) · [Español](es/gallery.md) · [Français](fr/gallery.md) · [Italiano](it/gallery.md) · [Nederlands](nl/gallery.md) · [Português (Brasil)](pt-br/gallery.md) · [Українська](uk/gallery.md)
 
 # Screenshots and animations
 

@@ -3,7 +3,7 @@ use ratatui::crossterm::event::KeyCode;
 
 use super::*;
 use crate::glyphs::is_wgl4;
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, t};
 use crate::screens::board::counters::{stock_text, stock_text_of};
 use crate::settings::Settings;
 use crate::storage::memory::MemoryStorage;
@@ -278,7 +278,7 @@ fn a_click_on_the_seed_in_the_header_copies_it() {
 
 #[test]
 fn the_board_draws_at_100_by_30_in_both_locales_with_only_wgl4_or_ascii_glyphs() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             for variant in [KLONDIKE, PYRAMID] {
                 let settings = Settings {
@@ -305,12 +305,9 @@ fn the_board_draws_at_100_by_30_in_both_locales_with_only_wgl4_or_ascii_glyphs()
                 }
                 let header = header_row(&mut h);
                 assert!(header.contains(&SEED.to_string()), "{header}");
-                let badge = if locale == Locale::EnUs {
-                    "No undo"
-                } else {
-                    "Bez cofania"
-                };
-                assert!(header.contains(badge), "{header}");
+                set_locale(locale);
+                let badge = t("board.header.no_undo").into_owned();
+                assert!(header.contains(&badge), "{header}");
             }
         }
     }

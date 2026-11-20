@@ -160,7 +160,7 @@ fn the_longest_streak_column_is_shown_from_110_columns() {
 #[test]
 fn a_row_with_restarts_stays_as_wide_as_the_header_in_both_locales() {
     let glyphs = Glyphs::new(GlyphMode::Unicode);
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         crate::i18n::set_locale(locale);
         let worst = GameRecord {
             seed: u64::MAX,

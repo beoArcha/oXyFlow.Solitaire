@@ -1,5 +1,6 @@
 //! Tests of the card widget. This module holds the fixtures; the tests live in the children.
 
+mod back;
 mod board;
 mod dump;
 mod faces;
@@ -66,7 +67,7 @@ fn card(rank: Rank, suit: Suit) -> Card {
 }
 
 fn each_locale(mut check: impl FnMut(Locale)) {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
         check(locale);
     }

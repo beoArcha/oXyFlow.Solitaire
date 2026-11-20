@@ -223,7 +223,7 @@ fn the_chosen_tab_and_the_close_button_show_focus_without_color() {
 
 #[test]
 fn every_game_draws_inside_100_by_30_with_only_wgl4_or_ascii_glyphs() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             for rules in Rules::ALL {
                 let mut h = harness(caps);
@@ -252,7 +252,7 @@ fn every_game_draws_inside_100_by_30_with_only_wgl4_or_ascii_glyphs() {
 
 #[test]
 fn the_first_and_the_last_line_of_every_page_can_be_read() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for rules in Rules::ALL {
             let mut h = harness(TRUE_COLOR);
             i18n::set_locale(locale);

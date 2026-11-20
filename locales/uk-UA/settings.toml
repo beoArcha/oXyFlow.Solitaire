@@ -1,0 +1,102 @@
+# Strings of the settings area.
+
+[row]
+language = "Language"
+theme = "Theme"
+card_back = "Card back"
+front_style = "Front style"
+back_style = "Back style"
+glyphs = "Symbols"
+colors = "Colors"
+card_size = "Card size"
+full_screen = "Full screen"
+sound_style = "Sound style"
+cues = "Sound cues"
+music = "Music"
+volume = "Volume"
+guide_panel = "Guide panel"
+moves_panel = "Possible moves panel"
+target_marks = "Target marks"
+auto_finish = "Auto-finish"
+aura = "Aura"
+line = "{label} {value}"
+
+[group]
+display = "Display"
+sound = "Sound"
+hints = "Hints and help"
+
+[style]
+international = "International"
+default = "Default"
+
+[desc]
+language = "The language of all text. Changes at once."
+theme = "The colors of the interface."
+card_back = "The colors and pattern of the backs of face-down cards."
+front_style = "The design of the card faces."
+back_style = "The design of the backs of face-down cards."
+glyphs = "Unicode draws suits and symbols; ASCII uses plain characters only."
+colors = "How many colors the terminal is asked to show. Auto detects it."
+card_size = "Auto fits the window; a size that does not fit falls back. Keys ] [ 0 or Ctrl+wheel."
+full_screen = "Auto: on only in the window the game opened itself. In a console: Alt+Enter or F11."
+sound_style = "The sound of the cues and the music."
+cues = "Short sounds for moves and for a win."
+music = "Background music while a game is open."
+volume = "The loudness of sound and music, in steps of 10%."
+auto_finish = "Plays the last moves by itself once the win is certain."
+aura = "Glow: Full marks the focus, carried cards and targets; Focus only, the focus."
+target_marks = "Marks the places a carried run can go with + and a glow."
+guide_panel = "A side panel with hints for the focused card and the keys."
+moves_panel = "A side panel listing every action with its key, active or not."
+
+[value]
+on = "On"
+off = "Off"
+unavailable = "unavailable"
+needs_columns = "{value} (needs {needed} columns, now {now})"
+
+[full_screen]
+auto = "Auto"
+
+[card_size]
+auto = "Auto"
+small = "Small"
+medium = "Medium"
+large = "Large"
+huge = "Huge"
+
+[aura]
+full = "Full"
+focus_only = "Focus only"
+
+[card_back]
+theme = "Theme"
+monokai = "Monokai"
+dracula = "Dracula"
+
+[theme]
+dark = "Dark"
+light = "Light"
+high_contrast = "High contrast"
+monokai = "Monokai"
+dracula = "Dracula"
+
+[glyph]
+unicode = "Unicode"
+ascii = "ASCII"
+
+[color]
+auto = "Auto"
+ansi16 = "16 colors"
+ansi256 = "256 colors"
+true_color = "True color"
+
+[audio]
+no_device = "Sound is unavailable: no working audio device was found."
+remote = "Sound is unavailable: this is a remote session."
+not_built = "Sound is not included in this build."
+style_failed = "Sound is unavailable: the selected sound style cannot be loaded."
+
+[footer]
+change = "Change"

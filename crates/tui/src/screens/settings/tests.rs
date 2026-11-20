@@ -1,10 +1,12 @@
 use ratatui::crossterm::event::KeyCode;
 
 mod arrows;
+mod card_back;
 mod card_size;
 mod focus;
 mod guide;
 mod hints;
+mod language;
 mod screen;
 mod styles;
 
@@ -97,8 +99,12 @@ fn themes_and_languages_cycle_both_ways() {
     let polish = changed(Field::Language, &base, Step::Next);
     assert_eq!(polish.locale, Locale::PlPl);
     assert_eq!(
-        changed(Field::Language, &polish, Step::Next).locale,
+        changed(Field::Language, &polish, Step::Previous).locale,
         Locale::EnUs
+    );
+    assert_eq!(
+        Some(changed(Field::Language, &base, Step::Previous).locale),
+        Locale::offered().last().copied()
     );
 }
 
@@ -184,7 +190,7 @@ fn the_aura_row_cycles_between_full_and_focus_only() {
 #[test]
 fn values_name_the_theme_locale_and_volume() {
     let base = Settings::default();
-    assert_eq!(value(Field::Language, &base), "English");
+    assert_eq!(value(Field::Language, &base), "English (US)");
     assert_eq!(value(Field::Theme, &base), "Dark");
     assert_eq!(value(Field::Volume, &base), "70%");
     assert_eq!(value(Field::Cues, &base), "On");
@@ -258,8 +264,8 @@ fn a_language_change_switches_the_locale_at_once() {
     let mut h = open_settings();
     h.press(KeyCode::Right);
     assert_eq!(locale(), Locale::PlPl);
-    let expected = t("settings.locale.pl_pl").into_owned();
-    assert!(bare(&line_of(&mut h, &t("settings.row.language"))).ends_with(&expected));
+    let expected = Locale::PlPl.own_name();
+    assert!(bare(&line_of(&mut h, &t("settings.row.language"))).ends_with(expected));
     set_locale(Locale::EnUs);
 }
 

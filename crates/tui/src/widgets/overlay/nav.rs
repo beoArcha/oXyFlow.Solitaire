@@ -13,7 +13,7 @@ use crate::mouse;
 
 pub fn tab_of(modal: &Modal) -> Option<HelpTab> {
     match modal {
-        Modal::Help => Some(HelpTab::Keys),
+        Modal::Help(_) => Some(HelpTab::Keys),
         Modal::HowToPlay(_) => Some(HelpTab::Rules),
         Modal::CommandLine(_) => Some(HelpTab::CommandLine),
         _ => None,
@@ -31,7 +31,7 @@ fn rules_focus(modal: &Modal) -> Option<Focus> {
 /// the key that led there left it.
 pub fn modal_for(tab: HelpTab, rules: Rules, entry: Option<Focus>) -> Modal {
     match tab {
-        HelpTab::Keys => Modal::Help,
+        HelpTab::Keys => Modal::help(),
         HelpTab::Rules => {
             Modal::HowToPlay(HowToPlay::new(rules).focused(entry.unwrap_or(Focus::Games)))
         }

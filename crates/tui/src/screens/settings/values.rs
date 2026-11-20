@@ -1,21 +1,16 @@
 //! What a row of the settings screen shows and how one step changes [`Settings`].
 
 use super::options::{
-    BACK_STYLES, COLOR_MODES, FIELDS, FRONT_STYLES, FULL_SCREEN_MODES, Field, GLYPH_MODES, Step,
+    BACK_STYLES, CARD_BACKS, COLOR_MODES, FIELDS, FRONT_STYLES, FULL_SCREEN_MODES, Field,
+    GLYPH_MODES, Step,
 };
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
-use crate::settings::{CardSizeSetting, ColorMode, FullScreen, GlyphMode, Settings};
+use crate::settings::{CardBack, CardSizeSetting, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::theme::ThemeId;
+use crate::widgets::card::back;
 
 const VOLUME_STEP: u8 = 10;
-
-const fn locale_key(locale: Locale) -> &'static str {
-    match locale {
-        Locale::EnUs => "settings.locale.en_us",
-        Locale::PlPl => "settings.locale.pl_pl",
-    }
-}
 
 const fn theme_key(theme: ThemeId) -> &'static str {
     match theme {
@@ -24,6 +19,14 @@ const fn theme_key(theme: ThemeId) -> &'static str {
         ThemeId::HighContrast => "settings.theme.high_contrast",
         ThemeId::Monokai => "settings.theme.monokai",
         ThemeId::Dracula => "settings.theme.dracula",
+    }
+}
+
+const fn card_back_key(card_back: CardBack) -> &'static str {
+    match card_back {
+        CardBack::Theme => "settings.card_back.theme",
+        CardBack::Monokai => "settings.card_back.monokai",
+        CardBack::Dracula => "settings.card_back.dracula",
     }
 }
 
@@ -113,8 +116,13 @@ fn toggled_aid(field: Field, settings: &Settings) -> Settings {
 /// The value of a row as the player reads it.
 pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo]) -> String {
     match field {
-        Field::Language => t(locale_key(settings.locale)).into_owned(),
+        Field::Language => settings.locale.own_name().to_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
+        Field::CardBack => format!(
+            "{} {}",
+            t(card_back_key(settings.card_back)),
+            back::preview(settings.card_back, settings.glyph_mode)
+        ),
         Field::FrontStyle => card_style_name(&settings.front_style),
         Field::BackStyle => card_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
@@ -198,8 +206,9 @@ pub fn changed(
 ) -> Settings {
     let mut next = settings.clone();
     match field {
-        Field::Language => next.locale = cycle(&Locale::ALL, settings.locale, step),
+        Field::Language => next.locale = cycle(&Locale::offered(), settings.locale, step),
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
+        Field::CardBack => next.card_back = cycle(&CARD_BACKS, settings.card_back, step),
         Field::FrontStyle => {
             next.front_style = cycle_str(&FRONT_STYLES, &settings.front_style, step);
         }

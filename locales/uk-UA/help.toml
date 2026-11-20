@@ -1,0 +1,110 @@
+[group]
+navigation = "Navigation"
+board = "Moves"
+display = "Display"
+game = "Game"
+general = "App"
+mouse = "Mouse"
+
+[action]
+up = "Up"
+down = "Down"
+left = "Left"
+right = "Right"
+focus_next = "Next item"
+focus_previous = "Previous item"
+select = "Select"
+back = "Back"
+quit = "Quit"
+force_quit = "Quit now"
+help = "Help"
+rules = "How to play"
+stock = "Stock"
+quick_move = "Quick move"
+run_more = "Select more cards"
+run_less = "Select fewer cards"
+zoom_in = "Bigger cards"
+zoom_out = "Smaller cards"
+zoom_auto = "Cards: auto size"
+undo = "Undo"
+redo = "Redo"
+hint = "Hint"
+finish = "Finish game"
+guide = "Guide panel"
+moves = "Possible moves panel"
+options = "Quick options"
+restart = "Restart"
+new_game = "New game"
+pause = "Pause"
+menu = "Menu"
+copy_seed = "Copy seed"
+dock = "Dock the help window"
+dock_focus = "Focus the docked window"
+
+[display]
+terminal_keys = "Ctrl +/-/0"
+terminal_text = "Terminal zoom (Mac: Cmd)"
+
+[mouse_keys]
+click_card = "Click a card"
+click_stock = "Click stock"
+double_click = "Double-click"
+right_click = "Right-click"
+drag = "Drag"
+
+[mouse]
+click_card = "Pick up, then drop on a target"
+click_stock = "Draw from the stock"
+double_click = "Quick move to a target"
+right_click = "Cancel the pick"
+drag = "Move a card onto its target"
+
+[overlay]
+continue = "Continue"
+restart = "Restart"
+new_game = "New game"
+menu = "Menu"
+win_time = "Time: {time}"
+same_seed = "Same seed"
+best_time = "Best time for {game}!"
+best_moves = "Fewest moves for {game}!"
+close_or = " or "
+close_rest = " closes this window."
+
+[rules]
+title = "How to play"
+close = "Close [{key}]"
+footer_tabs = "{left}/{right}: tab   {down}: games"
+footer_games = "{left}/{right}: game   {up}/{down}: move focus"
+footer_text = "{up}/{down}/PgUp/PgDn: scroll   {up} at top: games"
+footer_close = "{back}: close"
+position = "{from}-{to} / {total}"
+
+[tab]
+keys = "Keys"
+rules = "Rules"
+command_line = "Command line"
+
+[command_line]
+footer_tab = "{key}: next tab"
+footer_move = "{up}/{down}/PgUp/PgDn: scroll"
+footer_close = "{back}: close"
+
+[key]
+up = "Up"
+down = "Down"
+left = "Left"
+right = "Right"
+space = "Space"
+enter = "Enter"
+esc = "Esc"
+tab = "Tab"
+shift = "Shift"
+ctrl = "Ctrl"
+
+[dock]
+button = "Dock: {side}"
+side_centre = "centre"
+side_right = "right"
+side_left = "left"
+too_narrow = "Docking needs 130 columns; the window stays centred."

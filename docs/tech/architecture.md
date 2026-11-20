@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-20: P3-16 added `Settings::card_size`, the zoom keys `]` `[` `0` and the console font behind `ConsoleFont`; P3-37 added the language selector of the main menu (`widgets/language_picker/`, `i18n/flags.rs`, `i18n::t_in`); 2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
+Status: contract v0.6 (2026-11-20: O-41 added seven locales offered once translated (`i18n/locale.rs` list, `locales/<lang>/meta.toml`, `Locale::offered`, `i18n::tn` with CLDR plural rules in `i18n/plural.rs`) and removed `i18n::t_in`; P3-16 added `Settings::card_size`, the zoom keys `]` `[` `0` and the console font behind `ConsoleFont`; P3-37 added the language selector of the main menu (`widgets/language_picker/`, `i18n/flags.rs`, `i18n::t_in`); 2026-11-20: P3-28 docks the help window to the right or left side (`widgets/overlay/dock.rs`, `dock/dock_view.rs`, `Settings::help_dock`, actions `Dock` `d` and `DockFocus` F6); 2026-11-20: P3-16 added `Settings::card_size`, the zoom keys `]` `[` `0` and the console font behind `ConsoleFont`; P3-37 added the language selector of the main menu (`widgets/language_picker/`, `i18n/flags.rs`, `i18n::t_in`); 2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -30,10 +30,10 @@ crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
 crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
-                         i18n.rs (+ i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
+                         i18n.rs (+ i18n/locale.rs i18n/plural.rs i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
-locales/<lang>/          common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml audio.toml
-                         rules.toml stats.toml
+locales/<lang>/          meta.toml common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml
+                         audio.toml rules.toml stats.toml
 assets/cards/fronts/<style>/   style.toml glyphs/*.svg
 assets/cards/backs/<style>/    style.toml glyphs/*.svg
 assets/cards/codepoints.toml   glyph → code point registry
@@ -279,20 +279,32 @@ pub struct NullClipboard;                                // every copy fails wit
   press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
   digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in
   ASCII) directly before its label and, for buttons, reverse video; `MenuList` draws the marker next to the label.
+- **Docked help window (P3-28):** only the help window (`Modal::Help`, `HowToPlay`, `CommandLine`, with its
+  tabs) docks; the Guide window and the confirm, pause, win and alert dialogs stay centred. `d` cycles the
+  placement centre → right → left, also by a click on the placement button on the top border (`Dock: <side>`);
+  the choice is `Settings::help_dock` (serde default Centre), saved at once. A docked window is a column at full
+  height, `overlay::dock::split`: its width is the room beyond the board's minimum width (`BOARD_MIN_WIDTH`),
+  between 30 and 60 columns, and the rest of the screen (the board) draws beside it. Below 130 columns it stays
+  centred and a note says so. Its text is word-wrapped and scrolls by wrapped lines (`dock/dock_view.rs`);
+  Keys is one column. Keys: while it is open the board keeps the keys (its clock runs) until F6 gives the
+  window the focus (F6 again returns it); the window then takes Tab, Left/Right, Up/Down, PgUp/PgDn, Home/End,
+  Esc and Enter (close); `?` closes it from the board. The wheel and clicks over the window go to it; the arrows
+  of its tab and game rows and its Close button are clickable. Focus shows without colour: the title carries
+  a marker and reversed text.
 - **Language selector (P3-37):** the top-left corner of the main menu (`widgets/language_picker/`, state `LanguagePicker`,
   drawn by `MainMenu::draw_items` last, over the logo area). It is a ring element before the items (Tab from the last item and
   Shift+Tab from the first reach it; Tab and Shift+Tab leave it) and carries the marker and the focus style like any other.
   Layout in Unicode with colors: `◄ [flag] ► ▼` over two rows (the flag is 4 × 2 cells of `▀` with foreground and background
   from the 4 × 4 pixel grid of `i18n::flags::flag(locale)`, the language code under the right arrow). In ASCII glyph mode or at
   16 colors the code replaces the flag: `< EN > v`. Keys while it has the focus: Left/Right choose the previous/next
-  `Locale::ALL` entry, Down, Enter and Space open the list; in the open list Up/Down move, Enter chooses, Esc closes, and every
+  `Locale::offered()` entry (complete locales only, T-36), Down, Enter and Space open the list; in the open list Up/Down move, Enter chooses, Esc closes, and every
   other key is swallowed. Mouse: a click on an arrow chooses or opens, a click on the flag or code gives it the focus, in the
   open list a row chooses (hover and wheel move the highlight) and a click outside closes it without reaching what lies below.
   The picker never changes the settings: a choice becomes `Effect::Apply(Settings { locale, .. })`, the same effect as the Language
   row of the settings screen, so the language applies and is saved at once. The tooltip is a framed box under the corner with the
-  language's own name (`common.language.name` read with `i18n::t_in(locale, key)`, independent of the current language); it shows
+  language's own name (`Locale::own_name()`, from `meta.toml`, independent of the current language); it shows
   while the pointer (`ViewCtx::pointer`) is over the corner or the selector has the focus. A flag is data in `i18n/flags.rs`
-  (`Flag { code, pixels }`); a new locale adds its flag there and its `[language] name` to `common.toml`. Flag colors are
+  (`Flag { code, pixels }`); a new locale adds its flag there and names it in the locale list. Flag colors are
   content, not theme tokens (T-34).
 - **How to play (P3-10, O-14, O-15):** `Modal::Help` (the keys table), `Modal::HowToPlay(HowToPlay { rules, scroll })`
   (the rules pages) and `Modal::CommandLine(CommandLine { scroll })` (the options of `oxysol --help`) form the help
@@ -505,8 +517,31 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
 - **Localization:** `i18n::t(key)` and `tf(key, params)`; the locale is a per-thread setting
   (`set_locale`). A key is `<area>.<table path>.<name>`, the area being the file name under
   `locales/<lang>/` (`common.menu.new_game` is `[menu] new_game` in `common.toml`). Fallback is
-  `en-US`, then the key. Tests keep the key sets of all locales identical and check that every
-  `"<area>.…"` literal in the sources exists.
+  `en-US`, then the key. Tests keep the key sets of all locales identical (apart from plural forms)
+  and check that every `"<area>.…"` literal in the sources exists.
+- **Locales (O-41, T-36):** `i18n/locale.rs` holds the one list of locales: each line names the
+  `Locale` variant, its folder (also its serde name), its plural rule and its flag constant; the
+  macro builds `Locale::ALL`, `id()`, `plural_rule()`, `flag()` and the embedded sources. Each folder
+  has the ten area files and `meta.toml` (`own_name`, the language's name in itself, shown in the
+  selector and the Settings Language row; `complete`). Only complete locales are offered:
+  `Locale::offered()` feeds the main-menu selector and the Settings Language row; a saved setting
+  (on load in `App`) or an environment language (`LC_ALL`, `LC_MESSAGES`, `LANG`, matched on the
+  language part by `Locale::from_language_tag`, so any `pt` is `pt-BR`) naming an incomplete locale
+  falls back to `en-US` through `Locale::or_source()`. UI tests that check fit or text iterate
+  `Locale::offered()`, so a translation is checked as soon as it is marked complete.
+- **Plurals:** a counted text is a key group `<key>_one`, `_few`, `_many`, `_other`, read with
+  `i18n::tn(key, count, params)`, which picks the form by the locale's CLDR rule for whole numbers
+  (`PluralRule`: `OneOther` for en, de, nl, it, es; `ZeroOneOther` for fr, pt-BR; `Polish`;
+  `EastSlavic` for uk). A locale has exactly the forms of its rule (`PluralRule::forms`: one/other
+  or one/few/many); the key-parity test enforces it. A plural group is recognized by en-US having
+  both `<key>_one` and `<key>_other`.
+- **Adding or translating a locale:** a new language adds one line to the list in
+  `i18n/locale.rs` (variant, folder, plural rule, flag), its flag in `i18n/flags.rs`, and
+  `locales/<lang>/` as a copy of `en-US` with `meta.toml` saying `complete = false` (plural groups
+  given the forms of its rule). It ships hidden. A translation PR then only replaces the ten area
+  files of that folder (same keys, same `{placeholders}`, the plural forms of the rule) and sets
+  `complete = true` in its `meta.toml`; `cargo xtask check --quick` then runs the key-parity,
+  placeholder, fit and layout tests for it as well. No code changes.
 - **Board interaction is shared by all games:** after a source is picked, the TUI filters
   `legal_moves()` by `Move::source()`, highlights targets and applies the matching move. A move with
   no target (a king in Pyramid) applies immediately. A Pyramid pair is picked from either card.
