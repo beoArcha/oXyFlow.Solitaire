@@ -2,10 +2,6 @@
 
 # Screenshots und Animationen
 
-> **Hinweis:** Die Oberfläche des Spiels gibt es heute auf Englisch und Polnisch; Deutsch, Französisch, Italienisch,
-> brasilianisches Portugiesisch, Ukrainisch, Niederländisch und Spanisch sind in Arbeit. Die Screenshots zeigen die
-> englische Version.
-
 Jedes Bild auf dieser Seite wird von `cargo xtask screenshots` aus dem echten Spiel erzeugt und zeigt also, was das
 Programm zeichnet.
 
@@ -13,51 +9,51 @@ Programm zeichnet.
 
 ### Klondike
 
-![Klondike mit dem Hilfe-Panel und dem Panel der möglichen Züge neben dem Spielfeld](../img/en/klondike.svg)
+![Klondike mit dem Hilfe-Panel und dem Panel der möglichen Züge neben dem Spielfeld](../img/de/klondike.svg)
 
 ### Spider
 
-![Spider mit zwei Farben](../img/en/spider.svg)
+![Spider mit zwei Farben](../img/de/spider.svg)
 
 ### FreeCell
 
-![FreeCell](../img/en/freecell.svg)
+![FreeCell](../img/de/freecell.svg)
 
 ### Pyramide
 
-![Pyramide](../img/en/pyramid.svg)
+![Pyramide](../img/de/pyramid.svg)
 
 ## Bildschirme
 
 ### Hauptmenü
 
-![Das Hauptmenü von oXySol](../img/en/menu.svg)
+![Das Hauptmenü von oXySol](../img/de/menu.svg)
 
 ### Einstellungen
 
-![Der Bildschirm Einstellungen](../img/en/settings.svg)
+![Der Bildschirm Einstellungen](../img/de/settings.svg)
 
 ### Hilfe
 
-![Das Hilfefenster mit allen Tasten](../img/en/help.svg)
+![Das Hilfefenster mit allen Tasten](../img/de/help.svg)
 
 ### Tipps und das Hilfe-Panel
 
-![Ein Tipp, auf dem Spielfeld markiert und im Hilfe-Panel erklärt](../img/en/guide.svg)
+![Ein Tipp, auf dem Spielfeld markiert und im Hilfe-Panel erklärt](../img/de/guide.svg)
 
 ## Animationen
 
 ### Ein Zug
 
-![Animation: Der Cursor nimmt das Kreuz-Ass auf und legt es auf einen Ablagestapel](../img/en/anim-move.svg)
+![Animation: Der Cursor nimmt das Kreuz-Ass auf und legt es auf einen Ablagestapel](../img/de/anim-move.svg)
 
 ### Automatisches Beenden
 
-![Animation: Das automatische Beenden spielt ein gewonnenes Spiel Zug um Zug zu Ende](../img/en/anim-auto-finish.svg)
+![Animation: Das automatische Beenden spielt ein gewonnenes Spiel Zug um Zug zu Ende](../img/de/anim-auto-finish.svg)
 
 ### Ein Sieg
 
-![Animation: die letzten Züge eines gewonnenen Spiels und das Siegesfenster](../img/en/anim-win.svg)
+![Animation: die letzten Züge eines gewonnenen Spiels und das Siegesfenster](../img/de/anim-win.svg)
 
 Wenn dein System reduzierte Bewegung wünscht, zeigen die Animationen ihr letztes Bild, statt sich zu bewegen.
 

@@ -1,15 +1,11 @@
-[English](../index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · [Français](../fr/index.md) · [Italiano](../it/index.md) · **Nederlands** · [Português (Brasil)](../pt-br/index.md) · [Українська](../uk/index.md)
+[English](../en/index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · [Français](../fr/index.md) · [Italiano](../it/index.md) · **Nederlands** · [Português (Brasil)](../pt-br/index.md) · [Українська](../uk/index.md)
 
 # oXySol
 
-> **Let op:** de interface van het spel is nu beschikbaar in het Engels en het Pools; Duits, Frans, Italiaans,
-> Braziliaans Portugees, Oekraïens, Nederlands en Spaans zijn in de maak. De schermafbeeldingen tonen de Engelse
-> versie.
-
-Patience in je terminal: **Klondike, Spider, FreeCell en Piramide** in één programma, het enkele bestand `oxysol`.
+Patience in je terminal: **Klondike, Spider, FreeCell en Piramide** in één programma — één enkel bestand: `oxysol`.
 Het werkt in elke moderne terminal en je speelt het met het toetsenbord of de muis.
 
-![Klondike in oXySol: het speelveld, het gidspaneel en het paneel met mogelijke zetten](../img/en/klondike.svg)
+![Klondike in oXySol: het speelveld, het gidspaneel en het paneel met mogelijke zetten](../img/nl/klondike.svg)
 
 **Status:** voorlopige versie, in ontwikkeling.
 

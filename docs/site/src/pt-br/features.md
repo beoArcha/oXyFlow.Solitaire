@@ -2,10 +2,6 @@
 
 # Recursos
 
-> **Observação:** hoje a interface do jogo está disponível em inglês e em polonês; alemão, francês, italiano,
-> português do Brasil, ucraniano, holandês e espanhol estão em andamento. As capturas de tela mostram a versão em
-> inglês. Por isso os nomes dos menus também aparecem aqui em inglês, entre parênteses.
-
 ## Quatro jogos
 
 - **Klondike**: virando 1 ou 3 cartas.
@@ -24,7 +20,7 @@ devolve ao lugar. A lista completa de teclas está na janela de ajuda (`?`).
 ## Tamanho das cartas
 
 `]` aumenta as cartas e `[` as diminui; `0` volta ao tamanho automático, que se ajusta à janela. Ctrl+roda do mouse e a
-configuração Tamanho das cartas (Card size) fazem o mesmo. Um tamanho que não cabe na janela diminui sozinho. No console
+configuração Tamanho das cartas  fazem o mesmo. Um tamanho que não cabe na janela diminui sozinho. No console
 clássico do Windows, Ctrl+Mais, Ctrl+Menos e Ctrl+0 mudam o tamanho da fonte do console.
 
 ## Ajuda durante o jogo
@@ -34,13 +30,13 @@ clássico do Windows, Ctrl+Mais, Ctrl+Menos e Ctrl+0 mudam o tamanho da fonte do
 - **Painel de jogadas possíveis** (`v`): todas as jogadas que você pode fazer agora, cada uma com sua tecla.
 - **Dicas** (`h`): o jogo marca uma jogada na mesa e diz qual é.
 - **Finalização automática**: quando a vitória é certa, o próprio jogo faz as jogadas restantes. Dá para desligar
-  isso nas Configurações (Settings).
+  isso nas Configurações.
 - **Desfazer e refazer** (`u`, `r`), com a opção de jogar sem desfazer.
 
 ## Sementes, partidas vencíveis, estatísticas
 
 Cada partida tem uma **semente** (seed). Copie-a (`c`) para jogar de novo ou compartilhar uma partida, ou comece um
-jogo a partir de qualquer semente com “Novo jogo a partir de semente” (New game from seed). Uma opção faz o novo jogo
+jogo a partir de qualquer semente com “Novo jogo a partir de semente”. Uma opção faz o novo jogo
 procurar uma distribuição que comprovadamente pode ser vencida. A tela de **estatísticas** mostra os resultados de cada
 jogo e o histórico de todas as partidas, da mais recente para a mais antiga, e permite jogar uma semente de novo.
 
@@ -50,21 +46,21 @@ Cinco temas, escolhidos nas Configurações. Cada um aparece aqui na mesma posi�
 
 **Dark** (escuro) e **Light** (claro) para o dia a dia.
 
-![O tema Dark](../img/en/theme-dark.svg)
+![O tema Dark](../img/pt/theme-dark.svg)
 
-![O tema Light](../img/en/theme-light.svg)
+![O tema Light](../img/pt/theme-light.svg)
 
 **High contrast** (alto contraste) foi feito para pessoas com baixa visão: texto branco sobre preto puro com detalhes
 em amarelo vivo e ciano, uma moldura em volta da área de jogo e contraste de texto de pelo menos 7:1 (os outros temas
 mantêm pelo menos 4,5:1; testes verificam os dois valores).
 
-![O tema High contrast](../img/en/theme-high-contrast.svg)
+![O tema High contrast](../img/pt/theme-high-contrast.svg)
 
 **Monokai** e **Dracula** também estão disponíveis.
 
-![O tema Monokai](../img/en/theme-monokai.svg)
+![O tema Monokai](../img/pt/theme-monokai.svg)
 
-![O tema Dracula](../img/en/theme-dracula.svg)
+![O tema Dracula](../img/pt/theme-dracula.svg)
 
 **A cor nunca é a única portadora de informação.** Os naipes aparecem como símbolos (♠ ♥ ♦ ♣) ao lado do valor, o
 item selecionado é marcado com um símbolo, cartas pegas e destinos têm marcas próprias, e uma linha abaixo da mesa diz
@@ -73,8 +69,7 @@ específicos para daltonismo estão planejados, mas ainda não estão no jogo.
 
 ## Idiomas
 
-Hoje a interface do jogo está disponível em **inglês** e em **polonês**; alemão, francês, italiano, português do
-Brasil, ucraniano, holandês e espanhol estão em andamento. Escolha o idioma no seletor com bandeiras, no canto
+A interface do jogo está disponível em nove idiomas: inglês, polonês, alemão, espanhol, francês, italiano, holandês, português do Brasil e ucraniano. Escolha o idioma no seletor com bandeiras, no canto
 superior esquerdo do menu principal, ou nas Configurações; a mudança vale na hora.
 
 Este site está disponível em nove idiomas: os links no topo de cada página alternam entre eles.

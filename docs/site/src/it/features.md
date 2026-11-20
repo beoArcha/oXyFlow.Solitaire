@@ -2,10 +2,6 @@
 
 # Funzionalità
 
-> **Nota:** l’interfaccia del gioco oggi è disponibile in inglese e in polacco; tedesco, francese, italiano,
-> portoghese brasiliano, ucraino, olandese e spagnolo sono in lavorazione. Gli screenshot mostrano la versione
-> inglese. Per questo anche qui i nomi dei menu sono indicati in inglese tra parentesi.
-
 ## Quattro giochi
 
 - **Klondike**: pescando 1 o 3 carte.
@@ -24,7 +20,7 @@ clic destro la rimette al suo posto. L’elenco completo dei tasti è nella fine
 ## Dimensione delle carte
 
 `]` ingrandisce le carte e `[` le rimpicciolisce; `0` torna alla dimensione automatica, adattata alla finestra.
-Ctrl+rotellina e l’impostazione Dimensione carte (Card size) fanno lo stesso. Una dimensione che non entra nella
+Ctrl+rotellina e l’impostazione Dimensione carte  fanno lo stesso. Una dimensione che non entra nella
 finestra si riduce da sola. Nella console classica di Windows, Ctrl+Più, Ctrl+Meno e Ctrl+0 cambiano la dimensione del
 carattere della console.
 
@@ -35,13 +31,13 @@ carattere della console.
 - **Pannello delle mosse possibili** (`v`): tutte le mosse che puoi fare adesso, ognuna con il suo tasto.
 - **Suggerimenti** (`h`): il gioco evidenzia una mossa sul tavolo e la descrive.
 - **Completamento automatico**: quando la vittoria è certa, le mosse rimanenti vengono giocate per te. Si può
-  disattivare nelle Impostazioni (Settings).
+  disattivare nelle Impostazioni.
 - **Annulla e ripeti** (`u`, `r`), con un’opzione per giocare senza annullare.
 
 ## Seed, smazzate vincibili, statistiche
 
 Ogni smazzata ha un **seed** (seme di generazione). Copialo (`c`) per rigiocare o condividere una smazzata, oppure
-inizia una partita da qualsiasi seed con «Nuova partita da seed» (New game from seed). Un’opzione fa sì che una nuova
+inizia una partita da qualsiasi seed con «Nuova partita da seed». Un’opzione fa sì che una nuova
 partita cerchi una smazzata di cui è dimostrato che si può vincere. La schermata delle **statistiche** mostra i
 risultati di ogni gioco e la cronologia di tutte le smazzate, dalla più recente, e permette di rigiocare un seed.
 
@@ -51,21 +47,21 @@ Cinque temi, da scegliere nelle Impostazioni. Ognuno è mostrato qui sulla stess
 
 **Dark** (scuro) e **Light** (chiaro) per tutti i giorni.
 
-![Il tema Dark](../img/en/theme-dark.svg)
+![Il tema Dark](../img/it/theme-dark.svg)
 
-![Il tema Light](../img/en/theme-light.svg)
+![Il tema Light](../img/it/theme-light.svg)
 
 **High contrast** (contrasto elevato) è pensato per chi ha una vista ridotta: testo bianco su nero puro con accenti
 giallo acceso e ciano, una cornice intorno all’area di gioco e un contrasto del testo di almeno 7:1 (gli altri temi
 mantengono almeno 4,5:1; i test verificano entrambi i valori).
 
-![Il tema High contrast](../img/en/theme-high-contrast.svg)
+![Il tema High contrast](../img/it/theme-high-contrast.svg)
 
 Sono disponibili anche **Monokai** e **Dracula**.
 
-![Il tema Monokai](../img/en/theme-monokai.svg)
+![Il tema Monokai](../img/it/theme-monokai.svg)
 
-![Il tema Dracula](../img/en/theme-dracula.svg)
+![Il tema Dracula](../img/it/theme-dracula.svg)
 
 **Il colore non è mai l’unico portatore di informazioni.** I semi sono disegnati come simboli (♠ ♥ ♦ ♣) accanto al
 valore, l’elemento selezionato è segnato da un simbolo, le carte prese e le destinazioni hanno segni propri e una riga
@@ -74,8 +70,7 @@ daltonico. Sono previste modalità dedicate alla visione dei colori, ma non sono
 
 ## Lingue
 
-L’interfaccia del gioco oggi è disponibile in **inglese** e in **polacco**; tedesco, francese, italiano, portoghese
-brasiliano, ucraino, olandese e spagnolo sono in lavorazione. Scegli la lingua con il selettore a bandierine
+L’interfaccia del gioco è disponibile in nove lingue: inglese, polacco, tedesco, spagnolo, francese, italiano, olandese, portoghese brasiliano e ucraino. Scegli la lingua con il selettore a bandierine
 nell’angolo in alto a sinistra del menu principale, oppure nelle Impostazioni; il cambio è immediato.
 
 Questo sito è disponibile in nove lingue: i link in cima a ogni pagina permettono di passare dall’una all’altra.

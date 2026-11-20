@@ -2,10 +2,6 @@
 
 # Installeren
 
-> **Let op:** de interface van het spel is nu beschikbaar in het Engels en het Pools; Duits, Frans, Italiaans,
-> Braziliaans Portugees, Oekraïens, Nederlands en Spaans zijn in de maak. De schermafbeeldingen tonen de Engelse
-> versie.
-
 ## Een kant-en-klare versie downloaden
 
 De nieuwste versie is [{{VERSION}}]({{RELEASE_URL}}) (voorlopige versies inbegrepen). Alle versies staan op de
