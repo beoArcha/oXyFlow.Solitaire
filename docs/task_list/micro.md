@@ -35,10 +35,10 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 | M-27 | Music loops | Son | P6-03 | DONE |
 | M-28 | E2E: Spider and FreeCell | Beo | P7-01 | DRAFT |
 | M-29 | E2E: Pyramid and settings | Oxy | P7-01 | DRAFT |
-| M-30 | Wiki: installation and requirements | Son | P3-09 | DRAFT |
-| M-31 | Wiki: controls | Beo | P3-09 | DRAFT |
+| M-30 | Wiki: installation and requirements | Son | P3-09 | READY |
+| M-31 | Wiki: controls | Beo | P3-09 | READY |
 | M-32 | Wiki: decks, themes, sound | Oxy | P5-02, P6-02 | DRAFT |
-| M-33 | Wiki: accessibility and FAQ | Son | P3-09 | DRAFT |
+| M-33 | Wiki: accessibility and FAQ | Son | P3-09 | READY |
 | M-34 | Polish translation, part 2 (#62) | Beo | P5-02, P6-02 | DONE |
 | M-35 | Polish copy edit and glossary (external review of 2026-11-19) (#84) | Son | — | DONE |
 
@@ -429,14 +429,70 @@ Count: 12 suit glyphs + 3 court emblems + 10 back glyphs = **25 assigned**; rese
 
 ### M-30 … M-33 — Player documentation
 
-- **Status:** DRAFT · **Finalized by:** P3-09 (final behavior, sources to read for each page)
-- **Branch:** `docs/M-XX-wiki-<page>` · **File:** one page under `docs/wiki/`
-- **Cards:** M-30 installation and requirements (terminal size, installing the card font);
-  M-31 controls (keyboard and mouse, generated from the key table); M-32 decks, themes and sound;
-  M-33 accessibility (what is supported and the limits of a TUI — no claim of screen-reader
-  support) and FAQ.
-- **Do:** describe only what the named sources show. No feature that is not in the game.
+- **Status:** M-30, M-31 and M-33 READY (finalized by P3-09, 2026-11-20); M-32 DRAFT until P5-02 merges (the card
+  styles and the graphics check do not exist yet).
+- **Branch:** `docs/M-XX-wiki-<page>` · **File:** one page under `docs/wiki/` (the Polish copy follows the
+  glossary in `docs/tech/pl-glossary.md` when one is written)
+- **Cards:** M-30 installation and requirements; M-31 controls (keyboard and mouse, from the key table);
+  M-32 decks, themes and sound; M-33 accessibility (what is supported and the limits of a TUI — no claim of
+  screen-reader support) and FAQ.
+- **Do:** describe only what the named sources show. No feature that is not in the game; a planned one (color-vision
+  modes, the card font, card styles) is not described as present. Quote a number only from its source.
 - **Done when:** every statement can be traced to a source named in the card.
+
+**M-30 sources (final behavior).**
+
+- Screen: the terminal must be at least 100 × 30 cells, otherwise only a notice with the current and the required
+  size is drawn (`crates/tui/src/widgets/too_small.rs`, `locales/en-US/common.toml` `[size]`). The side panels
+  (guide, possible moves) need 130 columns; below that the same content opens in windows (`docs/tech/architecture.md`,
+  "Board guidance" and "Size classes"). A double-clicked Windows build widens its window to 130 columns or goes full
+  screen (`README.md`, "What it is").
+- Install: the download, the build from source and the Rust and C toolchain notes are in `README.md` ("Install");
+  Linux builds have no sound (`architecture.md`, "Audio"). Archive names come from `.github/workflows/release.yml`.
+- Starting: `oxysol --help` is the text of `locales/en-US/cli.toml` `help`; `src/cli.rs` for the options (`--ascii`,
+  `--colors`, `--seed`, `--fullscreen`, `--no-fullscreen`, `--new-window` / `-n`, `--version`, `--help`).
+- Terminal capabilities and fallbacks (colors 16/256/true color, Unicode or ASCII): `crates/tui/src/caps.rs`,
+  `crates/tui/src/glyphs/`. Windows double-click, console and full screen: `src/console.rs`, `src/console/display.rs`,
+  `architecture.md` ("Full screen").
+- Files: `OXYSOL_HOME`, the `oxysol.portable` marker with its `data` folder, `oxysol.db`, `oxysol.log` and the
+  `OXYSOL_LOG` levels are in `src/paths.rs` and `src/logging.rs`; a corrupt database is renamed to `*.corrupt`
+  (`architecture.md`, "Persistence").
+- Card font: do not write the installation of the font until P5-02 and O-34 are merged; say only that cards are
+  drawn with Unicode or ASCII characters now.
+
+**M-31 sources (final behavior).**
+
+- Keys: every row of `KEY_TABLE` in `crates/tui/src/input.rs` (28 rows), grouped as the Keys tab of the help window
+  groups them (`locales/en-US/help.toml` `[group]`, `[action]`, `[key]`). Generate the table from the code, do not
+  retype it; a key shown there is the single truth. Tab and Shift+Tab cycle the focus on every screen
+  (`architecture.md`, "Focus").
+- Mouse: a left click on a card picks it up, a second click on a target drops it, a click on the stock draws, a
+  double click moves a card to the best place, a right click puts the picked cards back, press-and-release on another
+  pile also moves (`locales/en-US/help.toml` `[mouse]`, `crates/tui/src/mouse.rs`, `crates/tui/src/screens/board/mouse.rs`).
+  The wheel scrolls lists and windows; every footer hint and dialog button is clickable
+  (`crates/tui/src/widgets/footer.rs`, `crates/tui/src/accessibility_tests/footer.rs`).
+- Known gaps to list as limits, not as features (P3-09 findings): `p` (pause) and, below 130 columns, `v` (possible
+  moves window) have no button; they are keys only.
+
+**M-33 sources (final behavior).**
+
+- Supported: every action by keyboard and by mouse; the focus marker `►` (`>` in ASCII) and reverse video on every
+  screen; selection, targets, hints and the four suits told apart without color; the one-line `Now:` text of the
+  controls strip; five themes with contrast targets (4.5, High contrast 7.0); WGL4 characters only in Unicode mode and
+  an ASCII mode (`architecture.md`, "Accessibility", "Themes", "Focus"; `crates/tui/src/accessibility_tests/`,
+  `crates/tui/src/theme/`, `crates/tui/src/glyphs/`).
+- Limits to state plainly: it is a terminal program; no claim of screen-reader support (the `Now:` text is plain text
+  in a fixed place, nothing more); color-vision modes and a low-vision mode are planned (P3-34), not built; sound
+  duplicates visible feedback and is optional (`architecture.md`, "Accessibility", "Audio"; `locales/en-US/settings.toml`
+  `[audio]` for why sound is unavailable).
+- FAQ topics, each with its source: where the files are kept (`src/paths.rs`); how to replay or share a deal (seed,
+  `c` copies it; `architecture.md` "Copy the seed"); what "Winnable" means and its limits (`architecture.md`
+  "Winnable deals"); what Restart does without undo (`architecture.md` "Restarts"); why a screen shows a size notice;
+  how to change the language (Settings, `locales/en-US/settings.toml`).
+
+**M-32 sources (will be final with P5-02).** Themes: `crates/tui/src/theme/` and `locales/en-US/settings.toml`
+`[theme]`; sound styles and the cue list: `assets/audio/README.md`, `assets/audio/<style>/style.toml`,
+`architecture.md` ("Audio"); card styles and the graphics check wait for P5-02.
 
 ### M-35 — Polish copy edit and glossary
 
