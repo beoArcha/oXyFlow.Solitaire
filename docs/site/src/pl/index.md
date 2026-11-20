@@ -2,7 +2,7 @@
 
 # oXySol
 
-Pasjans w terminalu: **Klondike, Pająk, FreeCell i Piramida** w jednym programie, w jednym pliku `oxysol`.
+Pasjans w terminalu: **Klondike, Pająk, FreeCell i Piramida** w jednym programie — pojedynczym pliku `oxysol`.
 Działa w każdym nowoczesnym terminalu, a grać można klawiaturą lub myszą.
 
 ![Klondike w oXySol: plansza, panel przewodnika i panel możliwych ruchów](../img/pl/klondike.svg)

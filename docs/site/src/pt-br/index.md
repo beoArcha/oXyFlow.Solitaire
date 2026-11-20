@@ -2,8 +2,8 @@
 
 # oXySol
 
-Paciência no terminal: **Klondike, Spider, FreeCell e Pirâmide** em um único programa, o arquivo único `oxysol`.
-Funciona em qualquer terminal moderno e se joga com o teclado ou com o mouse.
+Paciência no terminal: **Klondike, Spider, FreeCell e Pirâmide** em um único programa, um só arquivo: `oxysol`.
+Funciona em qualquer terminal moderno e pode ser jogado com teclado ou mouse.
 
 ![Klondike no oXySol: a mesa, o painel do guia e o painel de jogadas possíveis](../img/pt/klondike.svg)
 

@@ -10,42 +10,42 @@
       pages: ['en/index.html', 'features.html', 'gallery.html', 'install.html']
     },
     pl: {
-      description: 'Pasjans w terminalu: Klondike, Pająk, FreeCell i Piramida w jednym programie, w jednym pliku oxysol. Działa w każdym nowoczesnym terminalu, a grać można klawiaturą lub myszą.',
+      description: 'Pasjans w terminalu: Klondike, Pająk, FreeCell i Piramida w jednym programie — pojedynczym pliku oxysol. Działa w każdym nowoczesnym terminalu, a grać można klawiaturą lub myszą.',
       links: ['Wprowadzenie', 'Funkcje', 'Zrzuty ekranu i animacje', 'Instalacja'],
       pages: ['pl/index.html', 'pl/features.html', 'pl/gallery.html', 'pl/install.html']
     },
     de: {
-      description: 'Patience im Terminal: Klondike, Spider, FreeCell und Pyramide in einem Programm, der einzelnen Datei oxysol. Es läuft in jedem modernen Terminal und wird mit der Tastatur oder der Maus gespielt.',
+      description: 'Solitär im Terminal: Klondike, Spider, FreeCell und Pyramide in einem Programm, einer einzigen Datei: oxysol. Es läuft in jedem modernen Terminal und wird mit der Tastatur oder der Maus gespielt.',
       links: ['Einführung', 'Funktionen', 'Screenshots und Animationen', 'Installation'],
       pages: ['de/index.html', 'de/features.html', 'de/gallery.html', 'de/install.html']
     },
     es: {
-      description: 'Solitario en la terminal: Klondike, Spider, FreeCell y Pirámide en un solo programa, el archivo único oxysol. Funciona en cualquier terminal moderna y se juega con el teclado o con el ratón.',
+      description: 'Solitario en la terminal: Klondike, Spider, FreeCell y Pirámide en un solo programa, un único archivo: oxysol. Funciona en cualquier terminal moderna y se juega con el teclado o el ratón.',
       links: ['Introducción', 'Funciones', 'Capturas de pantalla y animaciones', 'Instalación'],
       pages: ['es/index.html', 'es/features.html', 'es/gallery.html', 'es/install.html']
     },
     fr: {
-      description: 'Le solitaire dans votre terminal : Klondike, Spider, FreeCell et Pyramide réunis dans un seul programme, le fichier unique oxysol. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.',
+      description: 'Le solitaire dans votre terminal : Klondike, Spider, FreeCell et Pyramide réunis dans un seul programme, un fichier unique : oxysol. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.',
       links: ['Introduction', 'Fonctionnalités', 'Captures d’écran et animations', 'Installation'],
       pages: ['fr/index.html', 'fr/features.html', 'fr/gallery.html', 'fr/install.html']
     },
     it: {
-      description: 'Il solitario nel terminale: Klondike, Spider, FreeCell e Piramide in un unico programma, il singolo file oxysol. Funziona in qualsiasi terminale moderno e si gioca con la tastiera o con il mouse.',
+      description: 'Il solitario nel terminale: Klondike, Spider, FreeCell e Piramide in un unico programma, un solo file: oxysol. Funziona in qualsiasi terminale moderno e si gioca con la tastiera o con il mouse.',
       links: ['Introduzione', 'Funzionalità', 'Screenshot e animazioni', 'Installazione'],
       pages: ['it/index.html', 'it/features.html', 'it/gallery.html', 'it/install.html']
     },
     nl: {
-      description: 'Patience in je terminal: Klondike, Spider, FreeCell en Piramide in één programma, het enkele bestand oxysol. Het werkt in elke moderne terminal en je speelt het met het toetsenbord of de muis.',
+      description: 'Patience in je terminal: Klondike, Spider, FreeCell en Piramide in één programma — één enkel bestand: oxysol. Het werkt in elke moderne terminal en je speelt het met het toetsenbord of de muis.',
       links: ['Inleiding', 'Functies', 'Schermafbeeldingen en animaties', 'Installeren'],
       pages: ['nl/index.html', 'nl/features.html', 'nl/gallery.html', 'nl/install.html']
     },
     'pt-br': {
-      description: 'Paciência no terminal: Klondike, Spider, FreeCell e Pirâmide em um único programa, o arquivo único oxysol. Funciona em qualquer terminal moderno e se joga com o teclado ou com o mouse.',
+      description: 'Paciência no terminal: Klondike, Spider, FreeCell e Pirâmide em um único programa, um só arquivo: oxysol. Funciona em qualquer terminal moderno e pode ser jogado com teclado ou mouse.',
       links: ['Introdução', 'Recursos', 'Capturas de tela e animações', 'Instalação'],
       pages: ['pt-br/index.html', 'pt-br/features.html', 'pt-br/gallery.html', 'pt-br/install.html']
     },
     uk: {
-      description: 'Пасьянс у терміналі: Клондайк, Павук, FreeCell і Піраміда в одній програмі, єдиному файлі oxysol. Працює в будь-якому сучасному терміналі, грати можна клавіатурою або мишею.',
+      description: 'Пасьянс у терміналі: Klondike, Павук, FreeCell і Піраміда в одній програмі — єдиному файлі oxysol. Працює в будь-якому сучасному терміналі, грати можна клавіатурою або мишею.',
       links: ['Вступ', 'Можливості', 'Знімки екрана та анімації', 'Встановлення'],
       pages: ['uk/index.html', 'uk/features.html', 'uk/gallery.html', 'uk/install.html']
     }

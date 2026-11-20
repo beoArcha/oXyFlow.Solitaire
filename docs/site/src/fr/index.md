@@ -2,8 +2,8 @@
 
 # oXySol
 
-Le solitaire dans votre terminal : **Klondike, Spider, FreeCell et Pyramide** réunis dans un seul programme, le
-fichier unique `oxysol`. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.
+Le solitaire dans votre terminal : **Klondike, Spider, FreeCell et Pyramide** réunis dans un seul programme, un
+fichier unique : `oxysol`. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.
 
 ![Klondike dans oXySol : le plateau, le panneau du guide et le panneau des coups possibles](../img/fr/klondike.svg)
 

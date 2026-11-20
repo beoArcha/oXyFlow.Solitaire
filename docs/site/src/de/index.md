@@ -2,7 +2,7 @@
 
 # oXySol
 
-Patience im Terminal: **Klondike, Spider, FreeCell und Pyramide** in einem Programm, der einzelnen Datei `oxysol`.
+Solitär im Terminal: **Klondike, Spider, FreeCell und Pyramide** in einem Programm, einer einzigen Datei: `oxysol`.
 Es läuft in jedem modernen Terminal und wird mit der Tastatur oder der Maus gespielt.
 
 ![Klondike in oXySol: das Spielfeld, das Hilfe-Panel und das Panel der möglichen Züge](../img/de/klondike.svg)

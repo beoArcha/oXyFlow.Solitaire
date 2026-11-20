@@ -2,7 +2,7 @@
 
 # oXySol
 
-Il solitario nel terminale: **Klondike, Spider, FreeCell e Piramide** in un unico programma, il singolo file `oxysol`.
+Il solitario nel terminale: **Klondike, Spider, FreeCell e Piramide** in un unico programma, un solo file: `oxysol`.
 Funziona in qualsiasi terminale moderno e si gioca con la tastiera o con il mouse.
 
 ![Klondike in oXySol: il tavolo, il pannello della guida e il pannello delle mosse possibili](../img/it/klondike.svg)
