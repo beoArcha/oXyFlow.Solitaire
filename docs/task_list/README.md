@@ -208,7 +208,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-56 | cargo-deny on pull requests | Sonnet | O-49 | TODO |
 | O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | Sonnet | O-49, O-41 | TODO |
 | O-58 | Check pull requests on Windows as well | Haiku | O-49 | TODO |
-| O-59 | Tests derive row counts instead of hard-coding them | Haiku | O-49 | TODO |
+| O-59 | Tests derive row counts instead of hard-coding them | Haiku | O-49 | DONE |
 | O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | Haiku | O-49 | TODO |
 | O-61 | main: re-run jobs that never got a runner before failing | Haiku | O-49 | TODO |
 | O-62 | Build the site on pull requests; check screenshots are current | Haiku | O-49 | TODO |

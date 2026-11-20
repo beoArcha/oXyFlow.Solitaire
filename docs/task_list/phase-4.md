@@ -94,6 +94,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `crates/tui/src/accessibility_tests.rs`, `crates/tui/src/screens/settings/tests/**`
 - **Scope:** B7 (P2): settings and menu tests break whenever a row is added (fixed counts and step loops). Derive counts from `FIELDS` and find rows by field.
 - **Acceptance:** Adding a settings row needs no test edit.
+- **Done:** #144 (`pub(crate) mod options`; a new main menu item still needs a `MENU_KEYS` outcome, by design)
 
 ### O-60 — `cargo xtask worktrees`: list and remove worktrees of merged branches
 
