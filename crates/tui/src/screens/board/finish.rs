@@ -13,6 +13,7 @@ use super::status;
 use crate::action::Action;
 use crate::audio::SoundCue;
 use crate::screens::Effect;
+use crate::storage::counters::MoveSource;
 
 /// The time between two finishing moves: slow enough to follow, fast enough not to drag.
 pub(super) const STEP: Duration = Duration::from_millis(400);
@@ -99,7 +100,7 @@ impl BoardScreen {
             return Effect::None;
         };
         let before = self.moves_made();
-        let effect = self.play(mv);
+        let effect = self.play_from(mv, MoveSource::Finish);
         if self.moves_made() == before {
             self.finishing = None;
             self.declined = true;
@@ -120,7 +121,7 @@ impl BoardScreen {
         let mut effect = Effect::None;
         for mv in moves {
             let before = self.moves_made();
-            effect = self.play(mv);
+            effect = self.play_from(mv, MoveSource::Finish);
             if self.moves_made() == before {
                 break;
             }
@@ -128,7 +129,7 @@ impl BoardScreen {
         effect
     }
 
-    fn moves_made(&self) -> usize {
+    pub(super) fn moves_made(&self) -> usize {
         self.session
             .as_ref()
             .map_or(0, |session| session.moves_made())

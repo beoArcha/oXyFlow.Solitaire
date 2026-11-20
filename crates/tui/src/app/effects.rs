@@ -201,9 +201,10 @@ impl App {
                     self.reset_quick();
                 }
                 self.board.begin(session, start, self.now);
+                let counters = self.stored_counters(id);
+                self.board.set_assist(counters.assist);
                 if !undo_allowed {
-                    let restarts = self.stored_restarts(id);
-                    self.board.set_restarts(restarts);
+                    self.board.set_restarts(counters.restarts);
                 }
                 self.enter_board();
                 self.solver.cancel();

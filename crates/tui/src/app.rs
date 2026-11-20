@@ -25,7 +25,7 @@ use crate::screens::settings::SettingsScreen;
 use crate::screens::stats::StatsScreen;
 use crate::settings::{Aids, DEFAULT_SOUND_STYLE, Settings};
 use crate::solver::Solver;
-use crate::storage::{SavedGame, Storage, StorageError};
+use crate::storage::{AssistCounters, GameId, SavedGame, Storage, StorageError};
 use crate::theme::Theme;
 use crate::widgets::footer::FooterMap;
 use crate::widgets::overlay;
@@ -86,6 +86,7 @@ pub struct App {
     glyphs: Glyphs,
     saved: Option<SavedGame>,
     write_failed: bool,
+    assist_written: Option<(GameId, AssistCounters)>,
     settings_write_failed: bool,
     screen: Screen,
     modal: Option<Modal>,
@@ -139,6 +140,7 @@ impl App {
             settings,
             saved: None,
             write_failed: false,
+            assist_written: None,
             settings_write_failed: false,
             screen: Screen::MainMenu,
             modal: None,

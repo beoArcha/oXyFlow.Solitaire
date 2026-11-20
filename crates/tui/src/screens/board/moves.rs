@@ -8,6 +8,7 @@ use super::{BoardScreen, Pick};
 use crate::app::Modal;
 use crate::audio::SoundCue;
 use crate::screens::Effect;
+use crate::storage::counters::MoveSource;
 
 /// Why the cards under the cursor cannot be picked up.
 pub(super) enum Refusal {
@@ -33,9 +34,9 @@ impl BoardScreen {
                 .map(|(_, found)| found),
         };
         match found.map(|found| quick(&found)) {
-            Ok(Some(choice)) => self.play(choice.mv),
-            Ok(None) => self.refuse(Refusal::NoTargets),
-            Err(refusal) => self.refuse(refusal),
+            Ok(Some(choice)) => self.play_from(choice.mv, MoveSource::Quick),
+            Ok(None) => self.refuse_quick(Refusal::NoTargets),
+            Err(refusal) => self.refuse_quick(refusal),
         }
     }
 
@@ -117,6 +118,24 @@ impl BoardScreen {
         })
     }
 
+    fn refuse_quick(&mut self, refusal: Refusal) -> Effect {
+        match refusal {
+            Refusal::Probe(mv) => {
+                let before = self.moves_made();
+                let effect = self.play_from(mv, MoveSource::Quick);
+                if self.moves_made() == before {
+                    self.count_failed_quick();
+                }
+                effect
+            }
+            Refusal::NoTargets => {
+                self.count_failed_quick();
+                self.refuse(Refusal::NoTargets)
+            }
+            other => self.refuse(other),
+        }
+    }
+
     fn refuse(&mut self, refusal: Refusal) -> Effect {
         match refusal {
             Refusal::Error(error) => self.reject(&error),
@@ -139,6 +158,10 @@ impl BoardScreen {
     }
 
     pub(super) fn play(&mut self, mv: Move) -> Effect {
+        self.play_from(mv, MoveSource::Manual)
+    }
+
+    pub(super) fn play_from(&mut self, mv: Move, source: MoveSource) -> Effect {
         let Some(session) = self.session.as_mut() else {
             return Effect::None;
         };
@@ -146,6 +169,7 @@ impl BoardScreen {
         match session.apply(mv) {
             Ok(()) => {
                 let flipped = face_down(&session.game().piles()) < before;
+                self.count_move(source);
                 self.after_move(mv, flipped)
             }
             Err(error) => {

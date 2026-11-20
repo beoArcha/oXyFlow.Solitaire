@@ -30,6 +30,7 @@ best_time = "Tempo record"
 fewest_moves = "Meno mosse"
 streak = "Serie"
 longest = "Miglior serie"
+assisted = "Assist."
 
 [history]
 title = "Cronologia, dalla più recente, orari in UTC"
@@ -68,3 +69,10 @@ running = "Verifica: {done} di {total}"
 finished = "Verifica conclusa ({total})"
 already = "Questa partita è già verificata"
 nothing = "Tutte le partite sono già verificate"
+
+[assist]
+share = "Automatiche {share}% ({auto} su {total})"
+failed = "falliti {failed}"
+run = "serie {run}"
+finish = "finale {finish}"
+tag = "partita assistita"

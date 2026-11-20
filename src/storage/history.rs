@@ -1,6 +1,6 @@
 //! The game history: every dealt seed with its variant, times and outcome (R-18).
 
-use oxysol_tui::{GameCounters, GameId, GameRecord};
+use oxysol_tui::{AssistCounters, GameCounters, GameId, GameRecord};
 use rusqlite::{Connection, Row};
 
 use super::convert::{
@@ -21,6 +21,7 @@ struct RawRow {
     undo_allowed: i64,
     proof: Option<String>,
     restarts: i64,
+    assist: [i64; 5],
 }
 
 impl RawRow {
@@ -37,6 +38,13 @@ impl RawRow {
             undo_allowed: row.get(8)?,
             proof: row.get(9)?,
             restarts: row.get(10)?,
+            assist: [
+                row.get(11)?,
+                row.get(12)?,
+                row.get(13)?,
+                row.get(14)?,
+                row.get(15)?,
+            ],
         })
     }
 
@@ -58,6 +66,13 @@ impl RawRow {
             proof: self.proof.as_deref().map(proof_from_column).transpose()?,
             counters: GameCounters {
                 restarts: count_from_column(self.restarts)?,
+                assist: AssistCounters {
+                    manual: count_from_column(self.assist[0])?,
+                    quick: count_from_column(self.assist[1])?,
+                    finish: count_from_column(self.assist[2])?,
+                    failed: count_from_column(self.assist[3])?,
+                    longest_streak: count_from_column(self.assist[4])?,
+                },
             },
         })
     }
@@ -66,7 +81,7 @@ impl RawRow {
 pub(super) fn read_all(conn: &Connection) -> Result<Vec<GameRecord>, Fault> {
     let mut statement = conn.prepare(
         "SELECT id, variant, seed, started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed,
-                proof, restarts
+                proof, restarts, manual_moves, quick_moves, finish_moves, failed_quick, quick_streak
          FROM games ORDER BY id",
     )?;
     let rows = statement.query_map([], RawRow::read)?;

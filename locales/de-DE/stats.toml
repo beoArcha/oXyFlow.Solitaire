@@ -30,6 +30,7 @@ best_time = "Bestzeit"
 fewest_moves = "Min. Züge"
 streak = "Serie"
 longest = "Beste Serie"
+assisted = "Assist."
 
 [history]
 title = "Verlauf, neueste zuerst, Zeiten in UTC"
@@ -68,3 +69,10 @@ running = "Prüfung: {done} von {total}"
 finished = "Lösbarkeitsprüfung beendet ({total})"
 already = "Dieses Spiel ist bereits geprüft"
 nothing = "Alle Spiele sind bereits geprüft"
+
+[assist]
+share = "Auto {share} % ({auto} von {total})"
+failed = "Fehl {failed}"
+run = "Folge {run}"
+finish = "Ende {finish}"
+tag = "unterstützt"

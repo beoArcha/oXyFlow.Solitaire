@@ -11,8 +11,8 @@ use oxysol_tui::app::DisplayDeps;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::{
-    App, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio, NullClipboard, NullSolver,
-    Outcome, Proof, SavedGame, Screen, Settings, Storage, StorageError,
+    App, AssistCounters, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio,
+    NullClipboard, NullSolver, Outcome, Proof, SavedGame, Screen, Settings, Storage, StorageError,
 };
 use rusqlite::Connection;
 use tempfile::TempDir;
@@ -291,6 +291,10 @@ impl Storage for FailingSaves {
 
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
         self.0.record_restart(id)
+    }
+
+    fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError> {
+        self.0.record_assist(id, assist)
     }
 
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {

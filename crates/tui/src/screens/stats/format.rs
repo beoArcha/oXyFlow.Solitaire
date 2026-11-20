@@ -161,6 +161,7 @@ fn summary_row(summary: &Summary, show_mode: bool, with_clean: bool) -> Vec<Stri
         format_count(summary.fewest_moves),
         summary.current_streak.to_string(),
         summary.longest_streak.to_string(),
+        summary.assisted.to_string(),
     ]);
     row
 }
@@ -180,11 +181,12 @@ fn summary_header(with_clean: bool) -> Vec<String> {
         "stats.summary.fewest_moves",
         "stats.summary.streak",
         "stats.summary.longest",
+        "stats.summary.assisted",
     ]);
     keys.into_iter().map(|key| t(key).into_owned()).collect()
 }
 
-/// The narrowest terminal that has room for the longest-streak column of the summary.
+/// The narrowest terminal that has room for the longest-streak and assisted columns of the summary.
 pub const LONGEST_STREAK_MIN_WIDTH: u16 = 110;
 /// The narrowest terminal that has room for the winnable text column beside the mark.
 pub const WINNABLE_TEXT_MIN_WIDTH: u16 = 110;
@@ -202,7 +204,7 @@ pub fn summary_lines(summaries: &[Summary], show_mode: bool, with_longest: bool)
     );
     if !with_longest {
         for row in &mut rows {
-            row.pop();
+            row.truncate(row.len().saturating_sub(2));
         }
     }
     table(&rows, 1)

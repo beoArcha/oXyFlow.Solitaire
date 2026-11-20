@@ -2,7 +2,9 @@
 
 use oxysol_core::Variant;
 
-use super::{GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
+use super::{
+    AssistCounters, GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
+};
 use crate::settings::Settings;
 use crate::solver::Proof;
 
@@ -187,6 +189,19 @@ impl Storage for MemoryStorage {
         }
     }
 
+    fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError> {
+        self.check()?;
+        match self.history.iter_mut().find(|row| row.id == id) {
+            Some(row) => {
+                row.counters.assist = assist;
+                Ok(())
+            }
+            None => Err(StorageError::Corrupt {
+                reason: format!("no game with id {}", id.0),
+            }),
+        }
+    }
+
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {
         self.check()?;
         match self.history.iter_mut().find(|row| row.id == id) {
@@ -264,6 +279,11 @@ mod tests {
         assert!(storage.start_game(Variant::FreeCell, 1, true).is_err());
         assert!(storage.record_proof(GameId(1), Proof::Winnable).is_err());
         assert!(storage.record_restart(GameId(1)).is_err());
+        assert!(
+            storage
+                .record_assist(GameId(1), AssistCounters::default())
+                .is_err()
+        );
         assert!(storage.history().is_err());
     }
 
@@ -299,6 +319,32 @@ mod tests {
             panic!("history failed");
         };
         assert_eq!(records[0].proof, Some(Proof::Winnable));
+    }
+
+    #[test]
+    fn recorded_assist_counters_replace_those_of_their_row_only() {
+        let mut storage = MemoryStorage::new();
+        let (Ok(first), Ok(_)) = (
+            storage.start_game(Variant::FreeCell, 1, true),
+            storage.start_game(Variant::FreeCell, 2, true),
+        ) else {
+            panic!("start_game failed");
+        };
+        let assist = AssistCounters {
+            quick: 7,
+            ..AssistCounters::default()
+        };
+        assert!(
+            storage
+                .record_assist(first, AssistCounters { quick: 1, ..assist })
+                .is_ok()
+        );
+        assert!(storage.record_assist(first, assist).is_ok());
+        let Ok(records) = storage.history() else {
+            panic!("history failed");
+        };
+        assert_eq!(records[0].counters.assist, assist);
+        assert_eq!(records[1].counters.assist, AssistCounters::default());
     }
 
     #[test]

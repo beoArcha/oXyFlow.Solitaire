@@ -30,6 +30,7 @@ best_time = "Beste tijd"
 fewest_moves = "Min. zetten"
 streak = "Reeks"
 longest = "Beste reeks"
+assisted = "Hulp"
 
 [history]
 title = "Geschiedenis, nieuwste eerst, tijden in UTC"
@@ -68,3 +69,10 @@ running = "Controleren: {done} van {total}"
 finished = "Controle klaar ({total})"
 already = "Dit spel is al gecontroleerd"
 nothing = "Alle spellen zijn al gecontroleerd"
+
+[assist]
+share = "Automatisch {share}% ({auto} van {total})"
+failed = "mislukt {failed}"
+run = "reeks {run}"
+finish = "afronding {finish}"
+tag = "geholpen spel"

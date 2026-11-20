@@ -2,7 +2,9 @@
 //! `Fault`; the trait methods convert it to `StorageError` at the boundary.
 
 use oxysol_core::{SessionRecord, Variant};
-use oxysol_tui::{GameId, GameRecord, Outcome, Proof, SavedGame, Settings, Storage, StorageError};
+use oxysol_tui::{
+    AssistCounters, GameId, GameRecord, Outcome, Proof, SavedGame, Settings, Storage, StorageError,
+};
 use rusqlite::{OptionalExtension, params};
 
 use super::convert::{
@@ -150,6 +152,28 @@ impl SqliteStorage {
         Ok(())
     }
 
+    fn write_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), Fault> {
+        let tx = self.conn.transaction()?;
+        let changed = tx.execute(
+            "UPDATE games SET manual_moves = ?1, quick_moves = ?2, finish_moves = ?3,
+                 failed_quick = ?4, quick_streak = ?5
+             WHERE id = ?6",
+            params![
+                count_to_column(assist.manual),
+                count_to_column(assist.quick),
+                count_to_column(assist.finish),
+                count_to_column(assist.failed),
+                count_to_column(assist.longest_streak),
+                id.0
+            ],
+        )?;
+        if changed == 0 {
+            return Err(Fault::invalid(format!("no game with id {}", id.0)));
+        }
+        tx.commit()?;
+        Ok(())
+    }
+
     fn write_proof(&mut self, id: GameId, proof: Proof) -> Result<(), Fault> {
         let tx = self.conn.transaction()?;
         let changed = tx.execute(
@@ -206,6 +230,10 @@ impl Storage for SqliteStorage {
 
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
         Ok(self.bump_restarts(id)?)
+    }
+
+    fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError> {
+        Ok(self.write_assist(id, assist)?)
     }
 
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {

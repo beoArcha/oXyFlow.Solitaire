@@ -1,10 +1,10 @@
-//! Forward migration of the database: a version 1, 2 or 3 file with rows opens as the current
+//! Forward migration of the database: a version 1, 2, 3 or 4 file with rows opens as the current
 //! version and keeps every row.
 
 use oxysol::paths::AppPaths;
 use oxysol::storage::SqliteStorage;
 use oxysol_core::{DrawCount, Variant};
-use oxysol_tui::{Outcome, Proof, Storage};
+use oxysol_tui::{AssistCounters, Outcome, Proof, Storage};
 use rusqlite::Connection;
 use tempfile::TempDir;
 
@@ -116,7 +116,7 @@ fn a_migrated_database_is_stamped_with_the_current_version_and_records_new_games
     };
     let version: Result<u32, _> = conn.pragma_query_value(None, "user_version", |row| row.get(0));
     assert!(matches!(version, Ok(v) if v == SqliteStorage::supported_schema_version()));
-    assert_eq!(SqliteStorage::supported_schema_version(), 4);
+    assert_eq!(SqliteStorage::supported_schema_version(), 5);
     assert!(rows.iter().all(|row| row.counters.restarts == 0));
     assert!(rows.iter().all(|row| row.proof.is_none()));
 }
@@ -215,7 +215,7 @@ fn a_version_three_database_reads_its_old_rows_with_no_restarts() {
         std::process::abort();
     };
     let version: Result<u32, _> = conn.pragma_query_value(None, "user_version", |row| row.get(0));
-    assert!(matches!(version, Ok(4)));
+    assert!(matches!(version, Ok(v) if v == SqliteStorage::supported_schema_version()));
 }
 
 #[test]
@@ -234,4 +234,77 @@ fn a_restart_recorded_after_the_migration_survives_a_reopen() {
     };
     assert_eq!(rows[3].counters.restarts, 2);
     assert!(rows[..3].iter().all(|row| row.counters.restarts == 0));
+}
+
+fn version_four_database() -> (TempDir, AppPaths) {
+    let (dir, paths) = version_three_database();
+    let conn = Connection::open(paths.database_file());
+    let Ok(conn) = conn else {
+        std::process::abort();
+    };
+    assert!(
+        conn.execute_batch("ALTER TABLE games ADD COLUMN restarts INTEGER NOT NULL DEFAULT 0;")
+            .is_ok()
+    );
+    assert!(
+        conn.execute("UPDATE games SET restarts = 2 WHERE id = 4", [])
+            .is_ok()
+    );
+    assert!(conn.pragma_update(None, "user_version", 4).is_ok());
+    (dir, paths)
+}
+
+#[test]
+fn a_version_four_database_reads_its_old_rows_with_zero_assist_counters() {
+    let (_dir, paths) = version_four_database();
+    let storage = open(&paths);
+    let Ok(rows) = storage.history() else {
+        std::process::abort();
+    };
+    assert!(
+        rows.iter()
+            .all(|row| row.counters.assist == AssistCounters::default())
+    );
+    assert!(
+        rows.iter()
+            .all(|row| row.counters.assist.share_percent().is_none())
+    );
+    assert_eq!(rows[3].counters.restarts, 2);
+}
+
+#[test]
+fn assist_counters_written_after_the_migration_survive_a_reopen() {
+    let (_dir, paths) = version_four_database();
+    let assist = AssistCounters {
+        manual: 9,
+        quick: 41,
+        finish: 12,
+        failed: 3,
+        longest_streak: 17,
+    };
+    let target = oxysol_tui::GameId(2);
+    {
+        let mut storage = open(&paths);
+        assert!(storage.record_assist(target, assist).is_ok());
+        assert!(
+            storage
+                .record_assist(oxysol_tui::GameId(999), assist)
+                .is_err()
+        );
+    }
+    let storage = open(&paths);
+    let Ok(rows) = storage.history() else {
+        std::process::abort();
+    };
+    let target_row = rows.iter().find(|row| row.id == target);
+    assert!(
+        target_row
+            .is_some_and(|row| row.counters.assist == assist && row.counters.assist.is_assisted())
+    );
+    assert!(
+        rows.iter()
+            .filter(|row| row.id != target)
+            .all(|row| row.counters.assist == AssistCounters::default())
+    );
+    assert_eq!(rows[3].counters.restarts, 2);
 }

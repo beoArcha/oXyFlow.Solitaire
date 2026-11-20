@@ -1,3 +1,4 @@
+mod assist;
 mod focus;
 mod math;
 mod render;

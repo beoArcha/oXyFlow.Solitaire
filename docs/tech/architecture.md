@@ -213,6 +213,7 @@ pub trait Storage {
     fn start_game(&mut self, variant: Variant, seed: u64, undo_allowed: bool) -> Result<GameId, StorageError>;  // history row
     fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64, moves: u32) -> Result<(), StorageError>;
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError>;   // +1 restart of a game without undo (P4-05)
+    fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError>;   // replaces the assist counters (P4-06)
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError>;   // winnability of a history row (P3-20)
     fn history(&self) -> Result<Vec<GameRecord>, StorageError>;   // every row, oldest first
 }
@@ -227,7 +228,7 @@ pub struct GameRecord {                   // one history row
     pub proof: Option<Proof>,             // what the solver said about the deal; None while unchecked (P3-20)
     pub counters: GameCounters,           // per-game counters (P4-05); later counters are new fields, the trait stays
 }
-pub struct GameCounters { pub restarts: u32 }   // restarts of a game without undo; 0 for older rows and for games with undo
+pub struct GameCounters { pub restarts: u32, pub assist: AssistCounters }   // restarts of a game without undo; 0 for older rows and for games with undo
 pub struct SavedGame { pub id: GameId, pub record: SessionRecord, pub elapsed_ms: u64, pub undo_allowed: bool }  // serde default true
 pub enum StorageError {
     Io(std::io::Error),                              // file-level failure
@@ -499,6 +500,14 @@ pub struct NullClipboard;                                // every copy fails wit
   proof of the running deal is written to its history row with `Storage::record_proof` (a failure is logged, not
   alerted: the mark is advisory). The statistics history has a `Winnable` column (`yes`, `no`, `unknown`, `-` when
   unchecked). Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
+- **Assist counters (P4-06):** `AssistCounters` (`storage/counters.rs`) counts per game the moves made by hand (`manual`), by
+  the quick move key or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
+  target (`failed`) and the longest run of quick moves (`longest_streak`; a manual move ends the run, the finish and a failed
+  attempt do not). `BoardScreen` tallies them in `play_from` (`board/assist.rs`); `App::save_board` writes them with the saved
+  game through `Storage::record_assist`, a resume reads them back and starts a new run, a restart or a new game starts from
+  zero. The share is quick moves over manual plus quick moves, the finish excluded; a game is assisted when the share is above
+  `ASSISTED_ABOVE_PERCENT` (80) with at least `ASSISTED_MIN_MOVES` (10) such moves. The counters are information only and never
+  block a move. The game has no separate auto-move to the foundations, so only the quick move and the finish are counted.
 - **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
   selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
@@ -507,7 +516,10 @@ pub struct NullClipboard;                                // every copy fails wit
 without a restart, `-` for the undo rows; only finished games count, an abandoned game ends a streak, wins without a move
   count are skipped for "fewest moves") sits above the history list, newest first: UTC date and time (the
   standard library cannot convert to local time and no dependency was added), game, seed, result, playing
-  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed
+  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). The status line under the buttons shows the
+  assist line of the selected game (P4-06; `stats/assist.rs`): the share of automatic moves, the failed quick moves, the longest
+  run of quick moves, the auto-finish moves and the tag "assisted game"; the check keys show instead for a row without counted
+  moves. The summary has an "Assisted" column (finished games above the threshold) from 110 columns. Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed
   (`Effect::CopySeed`); both are buttons too, as is Back; Up/Down/PgUp/PgDn/Home/End and the wheel move the
   selection; the selected row is marked with the focus glyphs. `App::copy_seed` calls `Clipboard::copy` and tells
   the screen, which announces "Seed N copied" or "Could not copy the seed — it is shown here: N" on its status
@@ -658,7 +670,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
 - **Persistence:** `SqliteStorage` implements `Storage` over `oxysol.db` in the data directory
   (`OXYSOL_HOME` overrides; an `oxysol.portable` file beside the executable selects `data/` beside it, R-21). Tables: `settings` (one row, JSON), `games` (id, variant, seed,
   started_at, finished_at, outcome, elapsed_ms, moves, undo_allowed, proof, restarts) and `saved_game` (one row: game id, `SessionRecord`
-  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (4: v4 added `games.restarts INTEGER NOT NULL DEFAULT 0`, so older rows read 0; 3: v3 added `games.proof TEXT`, NULL until the solver has answered; 2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
+  as JSON, elapsed_ms, app_version). Schema version in `PRAGMA user_version` (5: v5 added `games.manual_moves`, `quick_moves`, `finish_moves`, `failed_quick` and `quick_streak`, each `INTEGER NOT NULL DEFAULT 0`, so older rows read 0 and show no assist line; 4: v4 added `games.restarts INTEGER NOT NULL DEFAULT 0`, so older rows read 0; 3: v3 added `games.proof TEXT`, NULL until the solver has answered; 2: v2 added `games.moves` — NULL for older rows — and `games.undo_allowed INTEGER NOT NULL DEFAULT 1`, by forward migration); a version newer than
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
