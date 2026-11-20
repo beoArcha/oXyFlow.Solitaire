@@ -11,7 +11,7 @@ use super::options::{FIELDS, Field, Step};
 use super::values::{line, value_text};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
-use crate::settings::{AuraMode, ColorMode, FullScreen, GlyphMode, Settings};
+use crate::settings::{AuraMode, CardBack, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR, sound_styles};
 use crate::theme::ThemeId;
@@ -99,6 +99,57 @@ fn themes_and_languages_cycle_both_ways() {
         changed(Field::Language, &polish, Step::Next).locale,
         Locale::EnUs
     );
+}
+
+#[test]
+fn card_backs_cycle_both_ways() {
+    let base = Settings::default();
+    assert_eq!(base.card_back, CardBack::Theme);
+    let monokai = changed(Field::CardBack, &base, Step::Next);
+    assert_eq!(monokai.card_back, CardBack::Monokai);
+    let dracula = changed(Field::CardBack, &monokai, Step::Next);
+    assert_eq!(dracula.card_back, CardBack::Dracula);
+    assert_eq!(
+        changed(Field::CardBack, &dracula, Step::Next).card_back,
+        CardBack::Theme
+    );
+    assert_eq!(
+        changed(Field::CardBack, &base, Step::Previous).card_back,
+        CardBack::Dracula
+    );
+    assert_eq!(value(Field::CardBack, &base), "Theme");
+    assert_eq!(value(Field::CardBack, &monokai), "Monokai");
+    assert_eq!(value(Field::CardBack, &dracula), "Dracula");
+    assert!(row(Field::CardBack, &base, true).starts_with("Card back"));
+    assert_eq!(Field::CardBack.group(), super::options::Group::Display);
+}
+
+#[test]
+fn card_back_names_in_polish() {
+    set_locale(Locale::PlPl);
+    let base = Settings::default();
+    assert_eq!(value(Field::CardBack, &base), "Motyw");
+    let monokai = Settings {
+        card_back: CardBack::Monokai,
+        ..base
+    };
+    assert_eq!(value(Field::CardBack, &monokai), "Monokai");
+    let dracula = Settings {
+        card_back: CardBack::Dracula,
+        ..base
+    };
+    assert_eq!(value(Field::CardBack, &dracula), "Dracula");
+    assert_eq!(t("settings.row.card_back"), "Rewers kart");
+    set_locale(Locale::EnUs);
+}
+
+#[test]
+fn a_card_back_change_is_shown_at_once() {
+    let mut h = open_settings();
+    move_down(&mut h, 2);
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().card_back, CardBack::Monokai);
+    assert!(bare(&line_of(&mut h, "Card back")).ends_with("Monokai"));
 }
 
 #[test]

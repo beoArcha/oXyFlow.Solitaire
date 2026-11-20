@@ -3,6 +3,7 @@
 [row]
 language = "Język"
 theme = "Motyw"
+card_back = "Rewers kart"
 front_style = "Styl awersów"
 back_style = "Styl rewersów"
 glyphs = "Symbole"
@@ -31,6 +32,7 @@ default = "Domyślny"
 [desc]
 language = "Język wszystkich tekstów. Zmienia się od razu."
 theme = "Kolory interfejsu."
+card_back = "Kolory i wzór rewersów kart zakrytych."
 front_style = "Wygląd awersów kart."
 back_style = "Wygląd rewersów kart zakrytych."
 glyphs = "Unicode rysuje kolory i symbole; ASCII używa tylko zwykłych znaków."
@@ -58,6 +60,11 @@ auto = "Auto"
 [aura]
 full = "Pełna"
 focus_only = "Tylko fokus"
+
+[card_back]
+theme = "Motyw"
+monokai = "Monokai"
+dracula = "Dracula"
 
 [locale]
 en_us = "Angielski"

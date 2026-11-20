@@ -1,5 +1,6 @@
 use super::contrast::contrast_ratio;
 use super::*;
+use crate::settings::CardBack;
 
 fn rgb(theme: ThemeId, token: Token) -> [u8; 3] {
     theme.palette().swatch(token).rgb
@@ -182,4 +183,32 @@ fn the_aura_pairs_are_checked_for_contrast_and_differ() {
         assert_ne!(palette.aura_focus.ansi16, palette.table.ansi16, "{id:?}");
         assert_ne!(palette.aura_carry.ansi16, palette.table.ansi16, "{id:?}");
     }
+}
+
+#[test]
+fn card_back_count_mark_reaches_contrast_target_on_every_back() {
+    for id in ThemeId::ALL {
+        let (fg, bg) = (rgb(id, Token::CardBackMark), rgb(id, Token::CardBack));
+        let ratio = contrast_ratio(fg, bg);
+        assert!(
+            ratio >= 4.5,
+            "{id:?}: theme card back count mark contrast is {ratio}"
+        );
+    }
+    let monokai_ratio = contrast_ratio(
+        rgb(ThemeId::Monokai, Token::CardBackMark),
+        rgb(ThemeId::Monokai, Token::CardBack),
+    );
+    assert!(
+        monokai_ratio >= 4.5,
+        "Monokai card back count mark contrast is {monokai_ratio}"
+    );
+    let dracula_ratio = contrast_ratio(
+        rgb(ThemeId::Dracula, Token::CardBackMark),
+        rgb(ThemeId::Dracula, Token::CardBack),
+    );
+    assert!(
+        dracula_ratio >= 4.5,
+        "Dracula card back count mark contrast is {dracula_ratio}"
+    );
 }
