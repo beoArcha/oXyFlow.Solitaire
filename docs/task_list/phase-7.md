@@ -1,52 +1,43 @@
-# Phase 7 — E2E tests, documentation, deployment
+# Phase 7 (0.7) — Hungarian cards and Scorpion
 
-Goal: the full player journey covered by tests on `main`, documentation for players and
-developers, and a one-click deployment from `release`.
+Goal: the third new card style after phase 4 (Hungarian suits) and the next new game (Scorpion). Version 0.7.x.
 
-### P7-01 — E2E harness and core scenarios
+Exit criteria:
 
-- **Owner:** Haiku
-- **Depends on:** P3-09, P4-02
-- **Files:** `tests/e2e/**`
-- **Scope:** in-process tests (decision T-12): a `Harness` combining `App`, a 120 × 40
-  `TestBackend`, `SqliteStorage` in a temp dir, a recording `Audio` double and a fixed seed, with
-  helpers to press keys, click cells and read the screen. Core scenarios:
-  1. start → menu → quit;
-  2. Klondike: new game → legal moves → undo → redo → hint;
-  3. an illegal move shows a message and leaves the board unchanged;
-  4. save → new instance → resume the same game; the same seed gives the same deal;
-  5. a corrupt save → alert → menu;
-  6. pause stops the clock;
-  7. binary smoke test: `--version`, `--help`, `--seed`, an unknown argument (exit code 2).
-  Finalize micro cards M-28 and M-29 with a worked example and mark them `READY`.
-- **Acceptance:** all scenarios pass in `main.yml` on the three systems; tests depend neither on
-  real time nor on the home directory.
+- P7-04 and P7-05 are DONE, each with its rules confirmed by Opus and its names checked against a cited source.
 
-### P7-02 — Player site and stable release procedure
+Order of work: the card style, then the game.
+
+### P7-04 — Card style: Hungarian suits (Unicode)
 
 - **Owner:** Haiku
-- **Depends on:** P0-04, P5-01, M-30…M-33
-- **Files:** `docs/site/**`, `.github/workflows/release.yml`, `docs/tech/workflow.md`
-- **Scope:** the build, tag and release pipeline already exists (P0-04). Grow `docs/site/` into the
-  player wiki (rules from `docs/wiki/rules/`, installation, controls, decks, accessibility, FAQ),
-  add the card fonts to the release assets, and describe the stable release procedure in
-  `workflow.md`: version in `metadata.toml` → `main` → promotion → `release.yml` with `stable: true`.
-- **Acceptance:** the site builds locally with mdBook; the font files appear in a pre-release made
-  from the PR's merge; state plainly what was observed on GitHub.
-- **Out of scope:** a browser version of the game.
+- **Depends on:** P6-04
+- **Files:** `assets/cards/fronts/hungarian/style.toml` (new), `locales/*/cards.toml` (the style name key)
+- **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
+- **Scope:**
+  - The fourth new card style: the Hungarian suits Makk, Tök, Zöld and Piros, drawn with Unicode symbols. The suit names
+    and the court labels (Alsó, Felső, Király) are taken from a cited source named in the PR; the card does not rely on
+    memory.
+  - The same rules as P4-08 (symbol coverage, ASCII letters, colour tokens, no font glyphs needed).
+- **Acceptance:** the same tests as P4-08 for this style; the cited source for every name is in the PR description; both
+  locales carry the style name.
 
-### P7-03 — Technical documentation and README
+### P7-05 — Game: Scorpion
 
-- **Owner:** Haiku
-- **Depends on:** P3-09
-- **Files:** `docs/tech/**` (except `master_prompt.md` and `spikes/`), `README.md`
-- **Scope:** reconcile `architecture.md` with the code (signatures, layout). Add `conventions.md`
-  (code rules, error handling, localization, themes, accessibility rules, lint exceptions) and
-  `testing.md` (test categories, what runs on a PR and what on `main`, how to run each locally).
-  Keep `decisions.md` current. `README`: description, installation, running, key summary, links to
-  the wiki and releases.
-- **Acceptance:** every signature and path in the documents exists in the code; nothing is stated
-  twice across files; `README` promises nothing outside MVP.
+- **Owner:** Sonnet
+- **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a public-domain rules source the owner names)
+- **Depends on:** P6-05
+- **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/scorpion/**`, the variant list of `oxysol-core`
+  where the games are matched, `crates/tui/src/screens/main_menu/**` (the entry only), `locales/*/rules.toml`,
+  `locales/*/menu.toml`, `docs/wiki/rules/scorpion.md` (new), `docs/tech/architecture.md` (the games list)
+- **Shared files:** `locales/en-US/menu.toml`, `locales/pl-PL/menu.toml`
+- **Scope:** Scorpion as a module of `oxysol-core` on the game contract, the rules as in the confirmed rules text, the
+  entry in the game menu, the rules tab and the rules page. A solver is out of this card; the winnable option stays off
+  for Scorpion until a solver card exists.
+- **Acceptance:** engine tests on scripted deals (legal and illegal moves, the face-down cards, the foundations); the
+  same seed gives the same deal; the variant is stored and read back; the menu entry and the rules tab in both locales.
+
+## Done before the 2026-11 replan
 
 ### O-30 — Player site: screenshots, both languages, latest release, build from source
 
@@ -66,4 +57,3 @@ developers, and a one-click deployment from `release`.
 - **Done:** #110
 - **Scope added (owner, 2026-11-19):** the build instructions use the `release` branch; a Features section (themes, High Contrast for low vision, color never the only signal, languages); the main README rewritten as a GitHub landing page.
 - **Deviation (accepted):** `xtask` depends on the workspace crates `oxysol-tui`, `oxysol-core` and `ratatui` for the screenshot command; animations are CSS-animated SVG; the rules pages link to the English wiki; Linux and macOS commands are marked not verified.
-

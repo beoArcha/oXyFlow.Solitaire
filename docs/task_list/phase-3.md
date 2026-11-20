@@ -624,23 +624,7 @@ Rules for the whole phase:
   the choice remembered; keyboard and mouse; both locales.
 - **Done:** #126 (only the help window docks; `d` cycles, F6 moves focus, Esc closes the docked help first; Keys tab scrolls at small heights)
 
-### P3-29 — Settings: an Interface section (colors, aura, size, font)
-
-- **Owner:** Sonnet
-- **Depends on:** P3-16, P3-21, P3-24, P3-27
-- **Files:** `crates/tui/src/settings.rs` and the settings screen, `crates/tui/src/widgets/aura.rs`,
-  `crates/tui/src/layout/**`, `src/` (console font on Windows), locales, tests
-- **Scope:** owner request 2026-11-19: Settings gets an "Interface" (UI/UX) section that gathers
-  everything about look and readability in one place: theme (interface colors, P3-30), card back
-  (P3-31), aura color, aura style (halo, frame, marks only) and aura size (thin or thick), interface
-  size (card size and spacing, the setting of P3-16), font size and font choice. Font size and font face
-  can only be changed by the program in the classic Windows console (`SetCurrentConsoleFontEx`, shared
-  with P3-16; offer the fonts installed that cover WGL4, e.g. Consolas, Lucida Console, Cascadia Mono).
-  In Windows Terminal, Linux and macOS terminals the rows show the terminal's own shortcut instead of a
-  value and say why. Every change is previewed at once and kept only after confirmation.
-- **Acceptance:** tests for each row (value, persistence, immediate preview, revert on cancel); the
-  unsupported-terminal note; the console font change verified by hand in the classic console (say
-  where); both locales.
+P3-29 — Moved to phase-4.md (R-25).
 
 ### P3-30 — Themes Monokai and Dracula
 
@@ -691,80 +675,15 @@ Rules for the whole phase:
 - **Deviation (accepted):** High Contrast keeps the black field (Table on Background 1:1, listed in GRAPHIC_GAPS); the field edge becomes a drawn frame in P3-23. The Light focus frame is near-black, and the Dark card backs are light blue with a dark mark (forced by the 3:1 bar).
 - **Done:** #92
 
-### P3-32 — Table color and feel
+P3-32 — Moved to phase-5.md (R-25).
 
-- **Owner:** Haiku
-- **Depends on:** O-26, P3-29
-- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/screens/board/view.rs`, `crates/tui/src/settings.rs`
-  and the Interface section, locales, tests
-- **Scope:** owner request 2026-11-19: the table is set apart from the theme. Color presets (green felt,
-  blue, red, grey, brown, black, "theme default") and a feel: plain, felt (a sparse, low-contrast
-  texture with a shade or dot glyph and an ASCII form) or lined. The texture never sits under text or
-  card frames. A combination that fails the contrast tests for the cards, slots and auras on that table
-  is shown with a warning and the nearest passing shade is offered.
-- **Acceptance:** every preset and feel rendered in every theme; the contrast tests run on each
-  combination; the choice remembered; both locales.
+P3-33 — Moved to phase-5.md (R-25).
 
-### P3-33 — Card face tint
+P3-34 — Moved to phase-5.md (R-25).
 
-- **Owner:** Haiku
-- **Depends on:** O-26, P3-29
-- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/settings.rs` and the
-  Interface section, locales, tests
-- **Scope:** owner request 2026-11-19: the card face color is set apart from the theme: white, ivory,
-  light grey and a dark face (light text) for dark themes, plus "theme default". Suit colors adapt so red
-  and black suits keep their contrast on the chosen face (tested).
-- **Acceptance:** every tint at every card size in every theme; suit contrast tests per tint; the choice
-  remembered; both locales.
+P3-35 — Moved to phase-5.md (R-25).
 
-### P3-34 — Low-vision mode
-
-- **Owner:** Sonnet
-- **Depends on:** O-26, P3-16, P3-29
-- **Files:** `crates/tui/src/settings.rs` and the Interface section, `crates/tui/src/theme/**`,
-  `crates/tui/src/widgets/{aura,card}/**`, `crates/tui/src/layout/**`, locales, tests, `docs/wiki/`
-- **Scope:** owner request 2026-11-19: one switch "Low vision" that sets a readable bundle and leaves each
-  part adjustable afterwards: High Contrast colors (or a 7:1 variant of the chosen theme), the largest
-  card size that fits, thick aura, bold rank and suit, no dim text, larger focus and target marks, wider
-  fan steps, and a hint to enlarge the terminal font (classic console: the font change of P3-16/P3-29).
-  The mode is offered on the first start and in Settings.
-- **Acceptance:** the bundle applied and reverted; every text pair at 7:1 in the mode; renders at
-  100 × 30 and 130 × 40; both locales; a wiki page section.
-
-### P3-35 — Color-blind modes
-
-- **Owner:** Sonnet
-- **Depends on:** O-26, P3-29
-- **Files:** `crates/tui/src/theme/**` (palettes and a simulation used by tests),
-  `crates/tui/src/widgets/{card,aura}/**`, `crates/tui/src/screens/board/{controls,now}.rs`,
-  `crates/tui/src/settings.rs` and the Interface section, locales, tests
-- **Scope:** owner request 2026-11-19: a setting "Color vision": normal, protanopia, deuteranopia,
-  tritanopia, monochrome. Each mode remaps the meaning tokens to a palette safe for that type (based on
-  Okabe–Ito), and every mode removes color-only meaning found by the inventory (§7): focus, target and
-  hint get distinct shapes as well as colors; success and error events get a sign (`✓` / `✗` with ASCII
-  forms); a four-color deck option (spades black, hearts red, diamonds blue, clubs green) for every
-  mode. Tests simulate each color vision type (Machado or Brettel matrices) and assert a minimum color
-  difference between tokens that must be told apart.
-- **Acceptance:** the simulation tests per mode; the four-color deck at every card size; the signs on
-  events; renders per mode; both locales.
-
-### P3-36 — Themes as data and the interface size scale
-
-- **Owner:** Sonnet
-- **Depends on:** P3-29, P3-30
-- **Files:** `crates/tui/src/theme/**`, `assets/themes/` (new), `crates/tui/src/layout/**`,
-  `crates/tui/src/settings.rs`, `src/` (loading a user theme), `docs/tech/ui-inventory.md`, tests
-- **Scope:** owner request 2026-11-19: every item of `docs/tech/ui-inventory.md` is changed in one of
-  three ways, recorded as a column in the inventory: by the theme (colors and text styles), by the
-  interface size (one scale S / M / L / XL that sets the card size cap, fan steps, gaps, side panel and
-  modal widths together, building on P3-16), or by its own setting (table, card face, card back, aura,
-  glyphs, color vision). Themes move from Rust tables to embedded TOML files under `assets/themes/`
-  (Dark, Light, High Contrast, Monokai, Dracula), validated by the contrast tests at build or test
-  time. A user theme file in the data folder is loaded at start, checked with the same contrast rules
-  and rejected with a readable message when it fails.
-- **Acceptance:** the built-in themes render exactly as before; a valid and an invalid user theme; the
-  size scale renders at 100 × 30, 130 × 40 and 200 × 60 per step; the inventory column filled; both
-  locales.
+P3-36 — Moved to phase-6.md (R-25).
 
 ### P3-10 — How-to-play overlay and first-steps hint
 
@@ -999,4 +918,3 @@ Rules for the whole phase:
 - **Acceptance:** tests for the scroll bar on the history (thumb, track click, drag, wheel, ASCII), the mark for each
   proof value in both glyph modes, the legend in both locales; renders at 100 × 30 and 130 × 40 in Polish.
 - **Done:** #116 (the mark replaces the text column below 110 columns).
-

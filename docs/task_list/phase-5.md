@@ -1,8 +1,120 @@
-# Phase 5 — Card graphics
+# Phase 5 (0.5) — Themes and colour vision, Spanish cards, Golf and the Spider solver
 
-Goal: card fronts and backs drawn as vector art, delivered to the terminal as oXySol's own complete
-monospace font (D-06, T-16), with a Unicode and an ASCII rendering for everyone who does not install it.
-The delivery method was confirmed by spike X-01 and decided at checkpoint F-02.
+Goal: the table, the card face and the aura are set apart from the theme; the low-vision mode and the colour-vision modes are built on the Interface section of phase 4; the second new card style (Spanish) and the second new game (Golf, with its solver) are added; the Spider solver gets its 2-suit and 4-suit results improved. Version 0.5.x.
+
+Exit criteria:
+
+- P3-32, P3-33, P3-34, P3-35, P5-03, P5-04 and P5-05 are DONE;
+- every new theme option passes the contrast tests, and the four-colour deck works at every card size;
+- Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
+
+Order of work: the Interface options first, then the card style and the games, which do not touch those files.
+
+### P3-32 — Table color and feel
+
+- **Owner:** Haiku
+- **Depends on:** O-26, P3-29
+- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/screens/board/view.rs`, `crates/tui/src/settings.rs`
+  and the Interface section, locales, tests
+- **Scope:** owner request 2026-11-19: the table is set apart from the theme. Color presets (green felt,
+  blue, red, grey, brown, black, "theme default") and a feel: plain, felt (a sparse, low-contrast
+  texture with a shade or dot glyph and an ASCII form) or lined. The texture never sits under text or
+  card frames. A combination that fails the contrast tests for the cards, slots and auras on that table
+  is shown with a warning and the nearest passing shade is offered.
+- **Acceptance:** every preset and feel rendered in every theme; the contrast tests run on each
+  combination; the choice remembered; both locales.
+
+### P3-33 — Card face tint
+
+- **Owner:** Haiku
+- **Depends on:** O-26, P3-29
+- **Files:** `crates/tui/src/theme/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/settings.rs` and the
+  Interface section, locales, tests
+- **Scope:** owner request 2026-11-19: the card face color is set apart from the theme: white, ivory,
+  light grey and a dark face (light text) for dark themes, plus "theme default". Suit colors adapt so red
+  and black suits keep their contrast on the chosen face (tested).
+- **Acceptance:** every tint at every card size in every theme; suit contrast tests per tint; the choice
+  remembered; both locales.
+
+### P3-34 — Low-vision mode
+
+- **Owner:** Sonnet
+- **Depends on:** O-26, P3-16, P3-29
+- **Files:** `crates/tui/src/settings.rs` and the Interface section, `crates/tui/src/theme/**`,
+  `crates/tui/src/widgets/{aura,card}/**`, `crates/tui/src/layout/**`, locales, tests, `docs/wiki/`
+- **Scope:** owner request 2026-11-19: one switch "Low vision" that sets a readable bundle and leaves each
+  part adjustable afterwards: High Contrast colors (or a 7:1 variant of the chosen theme), the largest
+  card size that fits, thick aura, bold rank and suit, no dim text, larger focus and target marks, wider
+  fan steps, and a hint to enlarge the terminal font (classic console: the font change of P3-16/P3-29).
+  The mode is offered on the first start and in Settings.
+- **Acceptance:** the bundle applied and reverted; every text pair at 7:1 in the mode; renders at
+  100 × 30 and 130 × 40; both locales; a wiki page section.
+
+### P3-35 — Color-blind modes
+
+- **Owner:** Sonnet
+- **Depends on:** O-26, P3-29
+- **Files:** `crates/tui/src/theme/**` (palettes and a simulation used by tests),
+  `crates/tui/src/widgets/{card,aura}/**`, `crates/tui/src/screens/board/{controls,now}.rs`,
+  `crates/tui/src/settings.rs` and the Interface section, locales, tests
+- **Scope:** owner request 2026-11-19: a setting "Color vision": normal, protanopia, deuteranopia,
+  tritanopia, monochrome. Each mode remaps the meaning tokens to a palette safe for that type (based on
+  Okabe–Ito), and every mode removes color-only meaning found by the inventory (§7): focus, target and
+  hint get distinct shapes as well as colors; success and error events get a sign (`✓` / `✗` with ASCII
+  forms); a four-color deck option (spades black, hearts red, diamonds blue, clubs green) for every
+  mode. Tests simulate each color vision type (Machado or Brettel matrices) and assert a minimum color
+  difference between tokens that must be told apart.
+- **Acceptance:** the simulation tests per mode; the four-color deck at every card size; the signs on
+  events; renders per mode; both locales.
+
+### P5-03 — Card style: Spanish suits (Unicode)
+
+- **Owner:** Haiku
+- **Depends on:** P4-08
+- **Files:** `assets/cards/fronts/spanish/style.toml` (new), `locales/*/cards.toml` (the style name key)
+- **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
+- **Scope:**
+  - The second new card style, Spanish: the suits Oros, Copas, Espadas and Bastos, drawn with Unicode symbols, with
+    the court labels Sota, Caballo and Rey.
+  - The same rules as P4-08: no font glyphs needed (Font mode draws the Unicode symbol), the symbol coverage recorded in
+    the PR, ASCII letters (suggested O, C, E, B), colour tokens, and colour never the only signal.
+- **Acceptance:** the same tests as P4-08 for this style; both locales carry the style name; the symbol table with its
+  coverage is in the PR description.
+
+### P5-04 — Game: Golf
+
+- **Owner:** Sonnet
+- **Depends on:** P4-10
+- **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/golf/**`, `crates/core/src/solver/golf*` (new, with
+  the solver), the variant list of `oxysol-core` where the games are matched, `crates/tui/src/screens/main_menu/**`
+  (the entry only), `locales/*/rules.toml`, `locales/*/menu.toml`, `docs/wiki/rules/golf.md` (new),
+  `docs/tech/architecture.md` (the games list)
+- **Shared files:** `locales/en-US/menu.toml`, `locales/pl-PL/menu.toml`
+- **Scope:**
+  - Golf (traditional, public domain): seven columns of five cards dealt face up, a stock and one waste pile. A card of a
+    column may be played onto the waste when its rank is one higher or one lower than the waste top; the stock turns one
+    card onto the waste. Whether King and Ace are adjacent is stated in the rules tab text.
+  - A solver in this card, depth-first with a visited set and a budget in positions as T-29 describes, so the
+    winnable-deals option (P3-20) works for Golf.
+  - Rules tab, menu entry and the rules page as in P4-10.
+- **Acceptance:** engine tests for each legal and illegal move and for the stock; on 50 seeds (0 to 49) every solver
+  verdict of "winnable" replays on the engine, and the timing is recorded in the PR; both locales.
+
+### P5-05 — Solver: Spider with 2 and 4 suits
+
+- **Owner:** Sonnet
+- **Depends on:** P2-08
+- **Files:** `crates/core/src/solver/spider/**`, `crates/core/src/solver/mod.rs` (only if the budget type changes),
+  `docs/tech/decisions.md` (T-29 numbers and any budget change)
+- **Scope:** T-29 measured Spider with 2 suits at 14 winnable, 0 unwinnable and 86 % unknown, and with 4 suits at 2
+  winnable and 98 % unknown, on seeds 0 to 49. Improve the search so that fewer deals stay unknown at the same or a
+  stated budget; the 1-suit result must not get worse. Any budget change is recorded in T-29, and the measured table is
+  replaced in the same PR.
+- **Acceptance:** before and after tables for 2 and 4 suits on seeds 0 to 49 (winnable, unwinnable, unknown, average
+  and slowest time); every "winnable" replays on the engine; no "unwinnable" without an exhausted search; the 1-suit row
+  does not get worse.
+
+## Done before the 2026-11 replan
 
 ### X-01 — Spike: card font in real terminals
 
@@ -92,72 +204,3 @@ The delivery method was confirmed by spike X-01 and decided at checkpoint F-02.
   Python discovery. An invalid SVG fails with a message naming the file and the rule; the committed font
   contains every code point of the base font; running the command twice yields identical bytes.
 - **Done:** #124 (Cascadia Mono 2407.24 static Regular; name ID 7 removed; xtask main/error touched)
-
-### P5-02 — Style-driven cards and graphics check
-
-- **Owner:** Haiku
-- **Depends on:** P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the
-  console font. If P3-16 is not merged when this card starts, say so in the report.
-- **Files:** `crates/tui/build.rs`, `crates/tui/src/{card_style.rs,widgets/card.rs,screens/graphics_check.rs}`,
-  the Font mode row of the settings screen, `src/` (console font, with the P3-16 trait),
-  `assets/cards/**/style.toml`, `locales/*/{cards,settings}.toml`
-- **Scope (D-06):**
-  - `style.toml` for a front: per suit a name key, the font glyph (a registry key of `codepoints.toml`,
-    resolved to its code point at build time), the Unicode symbol, the ASCII letter and a color token;
-    labels for ace and court ranks. For a back: the tile glyph and the mosaic keys, the Unicode and ASCII
-    patterns and color tokens.
-  - A build script embeds every style folder and `codepoints.toml`; the settings screen lists what was
-    found.
-  - The card widget draws any front and any back in the three glyph modes at every size step. Font mode
-    draws the Private Use Area glyphs of the oXySol font: suits, court emblems and back tiles. The 2 × 2
-    mosaic decoration is drawn only at the Large and Huge card sizes (and, on the classic console where
-    the cell size is known, only from 10 × 24 px); elsewhere the single tile is used.
-  - Write the manifests for fronts `international` (the default), `french`, `german`, `italian` and
-    the two backs `lattice` and `ornament`. A skin may reuse glyphs of another style: `french` uses the
-    International suits with its own court labels; German and Italian use the International court emblems.
-  - **Classic Windows console, console font option:** a Settings option, part of the Font render mode,
-    "Use the oXySol font in this console". The game checks that the font is registered (set the face with
-    `SetCurrentConsoleFontEx` and read it back with `GetCurrentConsoleFontEx`; the exact check is chosen
-    here and verified by hand, X-01 did not exercise it), keeps the previous face and size, and restores
-    them when the option is turned off and at exit. The size stays as it is. Not registered, or the console
-    does not accept the face: the option says so, points to the installation page of the wiki and the mode
-    falls back (below). The game never installs the font.
-  - **Fallback:** when the font is not in use (not registered, not accepted, not the classic console and the
-    player has not confirmed Font mode in the graphics check) the game draws the Unicode glyphs, never
-    Private Use Area code points, which would show as squares.
-  - **Windows Terminal** (environment variable `WT_SESSION`): the graphics-check screen and the Settings row
-    show a localized hint to set the profile font face to `oXySol Mono`, or to a list that ends with it
-    (`"font": { "face": "Cascadia Mono, oXySol Mono" }`; a list works from Windows Terminal 1.20.11381).
-    This is from documentation, tested later in O-34.
-  - Graphics-check screen: shows sample glyphs in Font mode and asks whether they look right; "yes"
-    switches glyph mode to Font, "no" keeps Unicode and points to the installation page of the wiki.
-- **Acceptance:** snapshot tests front × back × glyph mode × size; the four suits differ by shape in
-  every mode; a rank is readable at the smallest size; adding a style folder needs no code change
-  (a test style folder proves it); no color outside the tokens; every font key in a `style.toml` exists in
-  `codepoints.toml` and lies in U+E6BC–U+E6FF; the console font decision (registered, not registered,
-  rejected, restored) is tested through a fake `Console`; the Windows Terminal hint appears only with
-  `WT_SESSION`; the real switch is verified by hand in the classic console (say where); both locales.
-
-### U-02 — Artwork review
-
-- **Owner:** User
-- **Depends on:** P5-02, M-19…M-24
-- **Scope:** open `target/fonts/preview.html`, then play one game in Font mode with each front and
-  back. Accept each style or list the glyphs to redraw.
-- **Acceptance:** every MVP style accepted, or a redraw list attached to the micro cards.
-
-### O-34 — Windows Terminal: test the card font on a real machine
-
-- **Owner:** User + Sonnet
-- **Depends on:** P5-02
-- **Files:** `docs/tech/spikes/o-34-windows-terminal.md` (new); the hint texts in `locales/*/{cards,settings}.toml`
-  and the installation page of the wiki (M-30) only if the test shows them wrong
-- **Scope:** D-06 point 4: Windows Terminal is a supported target from documentation, not yet tested because it
-  is not installed on the owner's Windows 10 machine. When the owner installs it: install the font, set the
-  profile font face as the in-game hint says (a single face, and a face list on 1.20.11381 or newer), and
-  run the graphics check and a game in Font mode with each front and back. Record: glyph alignment and one-cell
-  width, the 2 × 2 mosaic seams (vertical ones were the weak point in conhost), text next to box-drawing
-  characters, the behavior without the font.
-- **Acceptance:** a results table with screenshots in the form of X-01 section 4, this time with the Windows
-  Terminal version, Windows build, display scale, font size and launch method written down; the hint is
-  confirmed or corrected; Windows Terminal is marked tested or documented-only in `decisions.md` D-06.
