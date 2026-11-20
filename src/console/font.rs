@@ -6,7 +6,8 @@
 
 use std::io;
 
-use oxysol_tui::app::{ConsoleFont, FontStep};
+use super::card_font;
+use oxysol_tui::app::{CardFontState, ConsoleFont, FontStep};
 
 /// The pixels a larger or a smaller font differs by.
 pub const STEP: i16 = 2;
@@ -51,6 +52,7 @@ pub fn target_height(start: i16, current: i16, step: FontStep) -> Option<i16> {
 pub struct FontZoom {
     console: Box<dyn Console>,
     start: FontInfo,
+    saved: Option<FontInfo>,
 }
 
 impl FontZoom {
@@ -58,7 +60,11 @@ impl FontZoom {
     /// for example when the output is not a console.
     pub fn new(console: Box<dyn Console>) -> Option<Self> {
         match console.font() {
-            Ok(start) => Some(Self { console, start }),
+            Ok(start) => Some(Self {
+                console,
+                start,
+                saved: None,
+            }),
             Err(error) => {
                 tracing::info!(%error, "the console font cannot be read; no font zoom");
                 None
@@ -93,6 +99,31 @@ impl ConsoleFont for FontZoom {
                 false
             }
         }
+    }
+
+    fn cell_size(&self) -> Option<(u16, u16)> {
+        let font = self.console.font().ok()?;
+        let width = u16::try_from(font.width).ok().filter(|width| *width > 0)?;
+        let height = u16::try_from(font.height)
+            .ok()
+            .filter(|height| *height > 0)?;
+        Some((width, height))
+    }
+
+    fn use_card_font(&mut self, on: bool) -> CardFontState {
+        if on {
+            card_font::apply(&mut *self.console, &mut self.saved)
+        } else {
+            card_font::restore(&mut *self.console, &mut self.saved);
+            CardFontState::Off
+        }
+    }
+}
+
+impl Drop for FontZoom {
+    /// Sets the font back that the card font option replaced, so the console is left as it was found.
+    fn drop(&mut self) {
+        card_font::restore(&mut *self.console, &mut self.saved);
     }
 }
 

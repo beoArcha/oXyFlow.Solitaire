@@ -33,7 +33,9 @@ use crate::widgets::overlay;
 
 pub use deps::Deps;
 pub use display::{ConsoleDisplay, DisplayDeps, DisplayFacts, NullConsoleDisplay};
-pub use font::{ConsoleFont, FontStep, NullConsoleFont, font_step_for_key};
+pub use font::{
+    CardFontState, ConsoleFont, FontFacts, FontStep, NullConsoleFont, font_step_for_key,
+};
 pub use modal::Modal;
 pub use search::{SEED_CAP, SearchCommand, SearchProgress};
 
@@ -63,6 +65,7 @@ macro_rules! view_ctx {
             saved: $app.saved_summary(),
             pointer: $app.pointer,
             now: $app.now,
+            font: $app.font_facts(),
         }
     };
 }
@@ -135,7 +138,7 @@ impl App {
             sound_styles,
             theme: Theme::new(settings.theme, settings.color_depth(&caps)),
             glyphs: Glyphs::styled(
-                settings.drawn_glyph_mode(),
+                settings.drawn_glyph_mode(false),
                 &settings.front_style,
                 &settings.back_style,
             ),
@@ -162,6 +165,7 @@ impl App {
         app.load_stored_state();
         app.fit_sound_style();
         app.fit_card_styles();
+        app.sync_card_font();
         app.sync_full_screen();
         app.reset_quick();
         app.refresh_view();
@@ -223,7 +227,8 @@ impl App {
     fn refresh_view(&mut self) {
         self.theme = Theme::new(self.settings.theme, self.settings.color_depth(&self.caps));
         self.glyphs = Glyphs::styled(
-            self.settings.drawn_glyph_mode(),
+            self.settings
+                .drawn_glyph_mode(self.console_shows_card_font()),
             &self.settings.front_style,
             &self.settings.back_style,
         );
@@ -277,6 +282,8 @@ mod quick;
 mod records;
 mod search;
 
+#[cfg(test)]
+mod card_font_tests;
 #[cfg(test)]
 mod display_tests;
 #[cfg(test)]

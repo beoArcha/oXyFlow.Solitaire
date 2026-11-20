@@ -3,6 +3,7 @@ use ratatui::crossterm::event::KeyCode;
 mod arrows;
 mod card_back;
 mod card_size;
+mod console_font;
 mod focus;
 mod guide;
 mod hints;
@@ -12,7 +13,7 @@ mod styles;
 
 use super::options::{FIELDS, Field, Step};
 use super::values::{line, value_text};
-use crate::app::{Modal, Screen};
+use crate::app::{FontFacts, Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
 use crate::settings::{AuraMode, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::storage::memory::MemoryStorage;
@@ -24,7 +25,14 @@ fn changed(field: Field, settings: &Settings, step: Step) -> Settings {
 }
 
 fn row(field: Field, settings: &Settings, audio_available: bool) -> String {
-    line(field, settings, audio_available, &sound_styles(), 200, None)
+    line(
+        field,
+        settings,
+        audio_available,
+        &sound_styles(),
+        (200, FontFacts::default()),
+        None,
+    )
 }
 
 fn value(field: Field, settings: &Settings) -> String {
@@ -141,7 +149,17 @@ fn glyph_and_color_modes_cycle() {
     );
     assert_eq!(
         changed(Field::Glyphs, &base, Step::Previous).glyph_mode,
-        GlyphMode::Ascii
+        GlyphMode::Font
+    );
+    let ascii = changed(Field::Glyphs, &base, Step::Next);
+    assert_eq!(
+        changed(Field::Glyphs, &ascii, Step::Next).glyph_mode,
+        GlyphMode::Font
+    );
+    let font = changed(Field::Glyphs, &ascii, Step::Next);
+    assert_eq!(
+        changed(Field::Glyphs, &font, Step::Next).glyph_mode,
+        GlyphMode::Unicode
     );
     assert_eq!(base.color_mode, ColorMode::Auto);
     assert_eq!(
@@ -229,7 +247,11 @@ fn unavailable_sound_rows_say_so_in_their_text() {
 
 #[test]
 fn every_row_changes_by_keyboard_and_reaches_storage() {
-    for (index, field) in FIELDS.iter().enumerate() {
+    let console_independent = FIELDS
+        .iter()
+        .enumerate()
+        .filter(|(_, field)| **field != Field::ConsoleFont);
+    for (index, field) in console_independent {
         let mut h = open_settings();
         move_down(&mut h, index);
         let before = h.app.settings().clone();

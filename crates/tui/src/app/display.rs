@@ -2,8 +2,10 @@
 //! result reaches the player. The decision itself is the pure [`decide`].
 
 use super::App;
-use super::font::{ConsoleFont, NullConsoleFont};
-use crate::settings::{Decision, TerminalKind, decide};
+use super::font::{CardFontState, ConsoleFont, FontFacts, NullConsoleFont};
+use crate::screens::Effect;
+use crate::settings::{Decision, GlyphMode, Settings, TerminalKind, decide};
+use crate::widgets::overlay::GraphicsCheck;
 
 /// Switches the console window between full screen and its window. The application (`oxysol`)
 /// implements it with the console API; the TUI never touches the console itself.
@@ -65,17 +67,24 @@ pub(super) struct FullScreenState {
     pub(super) hint: Option<&'static str>,
     pub(super) hinted: bool,
     pub(super) font: Box<dyn ConsoleFont>,
+    pub(super) card_font: CardFontState,
 }
 
 impl FullScreenState {
     pub(super) fn new(deps: DisplayDeps) -> Self {
+        let facts = deps.facts;
         Self {
             display: deps.display,
-            facts: deps.facts,
+            facts,
             active: false,
             hint: None,
             hinted: false,
             font: deps.font,
+            card_font: if facts.kind == TerminalKind::ClassicConsole {
+                CardFontState::Off
+            } else {
+                CardFontState::Unavailable
+            },
         }
     }
 
@@ -121,6 +130,66 @@ impl App {
     pub(super) fn full_screen_setting_changed(&mut self) {
         self.full_screen.facts.flag = None;
         self.sync_full_screen();
+    }
+
+    /// Brings the console font in line with the option "Use the oXySol font in this console": asks
+    /// for the card font when it is on and sets the old font back when it is off. A refusal is a
+    /// state the Settings row shows, never an error.
+    pub(super) fn sync_card_font(&mut self) {
+        let wanted = self.settings.console_font;
+        let state = &mut self.full_screen;
+        state.card_font = match (wanted, state.card_font) {
+            (true, CardFontState::Active) => CardFontState::Active,
+            (true, _) => state.font.use_card_font(true),
+            (false, CardFontState::Active) => state.font.use_card_font(false),
+            (false, CardFontState::NotRegistered | CardFontState::Refused) => CardFontState::Off,
+            (false, other) => other,
+        };
+    }
+
+    /// The option was changed: switches the console font and, when the card font is in use now,
+    /// the symbols to it (the font is known to be there, so no graphics check is needed).
+    pub(super) fn console_font_setting_changed(&mut self) {
+        self.sync_card_font();
+        if self.settings.console_font && self.full_screen.card_font == CardFontState::Active {
+            self.settings.glyph_mode = GlyphMode::Font;
+        }
+    }
+
+    /// What the screens know about the console font.
+    pub(super) fn font_facts(&self) -> FontFacts {
+        FontFacts {
+            terminal: self.full_screen.facts.kind,
+            card_font: self.full_screen.card_font,
+            cell_px: self.full_screen.font.cell_size(),
+        }
+    }
+
+    /// Whether the card font is in use because the console shows it.
+    pub(super) fn console_shows_card_font(&self) -> bool {
+        self.full_screen.card_font == CardFontState::Active
+    }
+
+    /// Whether the settings ask for the Font glyphs although nothing yet shows that the font is
+    /// there: the player must pass the graphics check first.
+    pub(super) fn needs_graphics_check(&self, next: &Settings) -> bool {
+        next.glyph_mode == GlyphMode::Font
+            && self.settings.glyph_mode != GlyphMode::Font
+            && !next.font_confirmed
+            && !self.console_shows_card_font()
+    }
+
+    /// Opens the graphics check: samples in the card font and the question. "Yes" switches the
+    /// glyph mode to Font and remembers the confirmation.
+    pub(super) fn open_graphics_check(&mut self) {
+        let confirmed = Settings {
+            glyph_mode: GlyphMode::Font,
+            font_confirmed: true,
+            ..self.settings.clone()
+        };
+        let windows_terminal = self.full_screen.facts.kind == TerminalKind::WindowsTerminal;
+        let check = GraphicsCheck::new(&self.settings, windows_terminal, Effect::Apply(confirmed));
+        self.open_modal(super::Modal::GraphicsCheck(check));
     }
 
     /// Puts the waiting hint, if any, into the `Now:` event slot of the board.

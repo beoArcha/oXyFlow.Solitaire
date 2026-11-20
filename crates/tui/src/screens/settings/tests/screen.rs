@@ -49,6 +49,7 @@ impl Fixture {
             saved: None,
             pointer: None,
             now: Instant::now(),
+            font: crate::app::FontFacts::default(),
         }
     }
 }
@@ -119,7 +120,10 @@ fn a_click_changes_the_clicked_row_forward() {
 fn every_row_changes_by_mouse() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let ctx = fixture.ctx(AudioStatus::Ready);
-    for field in FIELDS {
+    for field in FIELDS
+        .into_iter()
+        .filter(|field| *field != Field::ConsoleFont)
+    {
         let mut screen = SettingsScreen::new();
         let lines = render(&mut screen, &ctx);
         let (column, row) = row_at(&lines, field);

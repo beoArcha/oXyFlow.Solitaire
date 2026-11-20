@@ -4,6 +4,7 @@ use super::options::{
     CARD_BACKS, COLOR_MODES, FIELDS, FULL_SCREEN_MODES, Field, GLYPH_MODES, Step, back_styles,
     front_styles,
 };
+use crate::app::{CardFontState, FontFacts};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
 use crate::glyphs::Glyphs;
@@ -34,7 +35,8 @@ const fn card_back_key(card_back: CardBack) -> &'static str {
 
 const fn glyph_key(mode: GlyphMode) -> &'static str {
     match mode {
-        GlyphMode::Font | GlyphMode::Unicode => "settings.glyph.unicode",
+        GlyphMode::Font => "settings.glyph.font",
+        GlyphMode::Unicode => "settings.glyph.unicode",
         GlyphMode::Ascii => "settings.glyph.ascii",
     }
 }
@@ -139,6 +141,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::FrontStyle => front_style_name(&settings.front_style),
         Field::BackStyle => back_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
+        Field::ConsoleFont => switch_text(settings.console_font),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
         Field::CardSize => t(settings.card_size.label_key()).into_owned(),
         Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
@@ -154,6 +157,18 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     }
 }
 
+/// The value of the console font row: the option, and why it does not work when it does not.
+fn console_font_value(settings: &Settings, facts: FontFacts) -> String {
+    let option = switch_text(settings.console_font);
+    let reason = match facts.card_font {
+        CardFontState::Unavailable => return t("settings.value.unavailable").into_owned(),
+        CardFontState::NotRegistered if settings.console_font => "settings.value.not_installed",
+        CardFontState::Refused if settings.console_font => "settings.value.refused",
+        _ => return option,
+    };
+    format!("{option} ({})", t(reason))
+}
+
 /// The text of a row: the label, leaders of dots up to the value column, then the value. Sound rows
 /// say when sound is unavailable, and a side panel row says which columns it needs when the screen
 /// of `columns` is too narrow. `arrows` are the glyphs (left, right) that frame the value of the
@@ -163,10 +178,13 @@ pub fn line(
     settings: &Settings,
     audio_available: bool,
     sound_styles: &[StyleInfo],
-    columns: u16,
+    (columns, facts): (u16, FontFacts),
     arrows: Option<(&str, &str)>,
 ) -> String {
     let mut value = value_text(field, settings, sound_styles);
+    if field == Field::ConsoleFont {
+        value = console_font_value(settings, facts);
+    }
     if field.is_audio() && !audio_available {
         value = format!("{value} ({})", t("settings.value.unavailable"));
     }
@@ -229,6 +247,7 @@ pub fn changed(
             next.back_style = cycle_str(&back_styles(), &settings.back_style, step);
         }
         Field::Glyphs => next.glyph_mode = cycle(&GLYPH_MODES, settings.glyph_mode, step),
+        Field::ConsoleFont => next.console_font = !settings.console_font,
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
         Field::CardSize => {
             next.card_size = cycle(&CardSizeSetting::ALL, settings.card_size, step);

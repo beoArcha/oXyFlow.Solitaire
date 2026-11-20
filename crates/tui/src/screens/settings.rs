@@ -15,12 +15,12 @@ use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
 use self::arrows::{Arrows, glyphs, locate};
-use self::options::{FIELDS, Group, Step};
+use self::options::{FIELDS, Field, Group, Step};
 use self::values::{changed, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
 use super::{Effect, ViewCtx};
 use crate::action::Action;
-use crate::app::Screen;
+use crate::app::{CardFontState, Screen};
 use crate::i18n::t;
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::theme::Token;
@@ -74,6 +74,9 @@ fn change_row(index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
         return Effect::None;
     };
     if field.is_audio() && !ctx.audio_status.is_ready() {
+        return Effect::None;
+    }
+    if field == Field::ConsoleFont && ctx.font.card_font == CardFontState::Unavailable {
         return Effect::None;
     }
     Effect::Apply(changed(field, ctx.settings, step, ctx.sound_styles))
@@ -265,7 +268,7 @@ impl SettingsScreen {
                         ctx.settings,
                         ctx.audio_status.is_ready(),
                         ctx.sound_styles,
-                        columns,
+                        (columns, ctx.font),
                         focused.then(|| glyphs(ctx)),
                     )
                 });
@@ -275,12 +278,13 @@ impl SettingsScreen {
     }
 
     fn draw_description(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
-        let key = FIELDS
-            .get(self.focus)
-            .map_or("settings.desc.language", |field| field.description_key());
+        let text = FIELDS.get(self.focus).map_or_else(
+            || t("settings.desc.language").into_owned(),
+            |field| field.describe(ctx.font),
+        );
         let style = ctx.theme.style(Token::TextMuted, Token::Background);
         frame.render_widget(
-            Paragraph::new(Line::styled(t(key).into_owned(), style)).alignment(Alignment::Center),
+            Paragraph::new(Line::styled(text, style)).alignment(Alignment::Center),
             area,
         );
     }
