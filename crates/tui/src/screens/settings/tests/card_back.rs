@@ -1,7 +1,7 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::super::options::{Field, Step};
-use super::{bare, changed, line_of, move_down, open_settings, row, value};
+use super::{bare, changed, index_of, line_of, move_down, open_settings, row, value};
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::{CardBack, Settings};
 
@@ -53,7 +53,7 @@ fn card_back_names_in_polish() {
 #[test]
 fn a_card_back_change_is_shown_at_once() {
     let mut h = open_settings();
-    move_down(&mut h, 2);
+    move_down(&mut h, index_of(Field::CardBack));
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().card_back, CardBack::Monokai);
     assert!(bare(&line_of(&mut h, "Card back")).contains("Monokai "));

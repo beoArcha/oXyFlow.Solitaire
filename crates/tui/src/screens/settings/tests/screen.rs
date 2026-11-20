@@ -6,7 +6,7 @@ use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 
-use super::{bare, changed};
+use super::{bare, changed, index_of};
 use crate::action::Action;
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -150,12 +150,13 @@ fn sound_rows_do_nothing_without_audio() {
         clicked.handle_mouse(&click(column, row), &ctx),
         Effect::None
     );
-    for _ in 0..9 {
+    let sound_style = index_of(Field::SoundStyle);
+    for _ in 0..sound_style {
         act(&mut screen, &ctx, Action::Down);
     }
     assert_eq!(act(&mut screen, &ctx, Action::Select), Effect::None);
     assert_eq!(act(&mut screen, &ctx, Action::Right), Effect::None);
-    for _ in 0..9 {
+    for _ in 0..sound_style {
         act(&mut screen, &ctx, Action::Up);
     }
     assert_eq!(

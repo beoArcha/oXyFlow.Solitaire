@@ -17,6 +17,7 @@ use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, set_locale, t};
 use crate::input::{binding_for, primary_key};
 use crate::screens::focus::marked_text;
+use crate::screens::settings::options::FIELDS;
 use crate::settings::GlyphMode;
 use crate::test_support::Harness;
 use crate::theme::contrast::contrast_ratio;
@@ -94,6 +95,44 @@ fn menu_at(index: usize) -> Harness {
     h
 }
 
+/// The position of a main menu item, by the localization key of its label.
+fn menu_index(key: &str) -> usize {
+    let label = t(key).into_owned();
+    rows(&mut Harness::new())
+        .iter()
+        .position(|row| *row == label)
+        .unwrap_or_default()
+}
+
+/// Every main menu item that a new game without a saved game shows, by the localization key of its
+/// label. Each needs an expected outcome in `check_menu_outcome`.
+const MENU_KEYS: [&str; 7] = [
+    "common.menu.new_game",
+    "menu.new_game_from_seed",
+    "stats.label",
+    "common.menu.settings",
+    "menu.how_to_play.label",
+    "menu.help",
+    "common.menu.quit",
+];
+
+fn check_menu_outcome(key: &str, h: &mut Harness) {
+    match key {
+        "common.menu.new_game" => assert_eq!(h.app.screen(), Screen::GameSelect),
+        "menu.new_game_from_seed" => {
+            h.type_char('4');
+            h.type_char('2');
+            assert!(h.text().contains("42"), "seed field takes digits");
+        }
+        "stats.label" => assert_eq!(h.app.screen(), Screen::Stats),
+        "common.menu.settings" => assert_eq!(h.app.screen(), Screen::Settings),
+        "menu.how_to_play.label" => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
+        "menu.help" => assert!(matches!(h.app.modal(), Some(Modal::Help(_)))),
+        "common.menu.quit" => assert!(h.app.should_quit()),
+        other => panic!("{other} has no expected outcome"),
+    }
+}
+
 #[test]
 fn every_action_has_a_key_and_a_help_line() {
     for action in Action::ALL {
@@ -117,23 +156,20 @@ fn every_action_has_a_key_and_a_help_line() {
 #[test]
 fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
     let labels = rows(&mut Harness::new());
-    assert_eq!(labels.len(), 7, "{labels:?}");
-    for index in 0..labels.len() {
+    for key in MENU_KEYS {
+        let label = t(key).into_owned();
+        assert!(labels.contains(&label), "{key} is not reached: {labels:?}");
+    }
+    for (index, label) in labels.iter().enumerate() {
+        let Some(key) = MENU_KEYS
+            .into_iter()
+            .find(|key| t(key).as_ref() == label.as_str())
+        else {
+            panic!("{label:?} has no key in MENU_KEYS");
+        };
         let mut h = menu_at(index);
         h.press(KeyCode::Enter);
-        match index {
-            0 => assert_eq!(h.app.screen(), Screen::GameSelect),
-            1 => {
-                h.type_char('4');
-                h.type_char('2');
-                assert!(h.text().contains("42"), "seed field takes digits");
-            }
-            2 => assert_eq!(h.app.screen(), Screen::Stats),
-            3 => assert_eq!(h.app.screen(), Screen::Settings),
-            4 => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
-            5 => assert!(matches!(h.app.modal(), Some(Modal::Help(_)))),
-            _ => assert!(h.app.should_quit()),
-        }
+        check_menu_outcome(key, &mut h);
     }
 }
 
@@ -159,7 +195,7 @@ fn every_variant_is_reached_and_dealt_by_keyboard() {
 
 #[test]
 fn a_seed_typed_by_keyboard_deals_the_chosen_variant() {
-    let mut h = menu_at(1);
+    let mut h = menu_at(menu_index("menu.new_game_from_seed"));
     h.press(KeyCode::Enter);
     for digit in "771".chars() {
         h.type_char(digit);
@@ -171,19 +207,19 @@ fn a_seed_typed_by_keyboard_deals_the_chosen_variant() {
 
 #[test]
 fn every_settings_row_is_reached_by_keyboard() {
-    let mut h = menu_at(3);
+    let mut h = menu_at(menu_index("common.menu.settings"));
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);
-    assert_eq!(rows.len(), 18, "{rows:?}");
+    assert_eq!(rows.len(), FIELDS.len(), "{rows:?}");
 }
 
 #[test]
 fn every_main_menu_item_and_settings_row_is_also_reached_by_tab() {
     assert_eq!(rows_by_tab(&mut Harness::new()), rows(&mut Harness::new()));
-    let mut h = menu_at(3);
+    let mut h = menu_at(menu_index("common.menu.settings"));
     h.press(KeyCode::Enter);
-    assert_eq!(rows_by_tab(&mut h).len(), 18);
+    assert_eq!(rows_by_tab(&mut h).len(), FIELDS.len());
 }
 
 #[test]
