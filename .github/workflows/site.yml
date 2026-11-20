@@ -1,0 +1,66 @@
+name: Deploy site
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+      MDBOOK_VERSION: v0.4.52
+      MDBOOK_SHA256: c0b903f01dd8f4edc644372ad2b80b1fdddd12552d37b6a098657cbd8eddd768
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Determine release tag
+        id: tag
+        run: |
+          set -eu
+          TAG=$(gh release view --repo "$REPO" --json tagName --jq .tagName 2>/dev/null || cargo xtask version --tag)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Install mdBook
+        run: |
+          set -eu
+          dir="$RUNNER_TEMP/mdbook"
+          mkdir -p "$dir"
+          curl -fsSL -o "$dir/mdbook.tar.gz" "https://github.com/rust-lang/mdBook/releases/download/${MDBOOK_VERSION}/mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          echo "${MDBOOK_SHA256}  $dir/mdbook.tar.gz" | sha256sum -c -
+          tar -xzf "$dir/mdbook.tar.gz" -C "$dir"
+          echo "$dir" >> "$GITHUB_PATH"
+      - name: Insert the version and the release link in every page, both languages
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -eu
+          find docs/site/src -name '*.md' -print0 | xargs -0 sed -i \
+            -e "s|{{VERSION}}|$TAG|g" \
+            -e "s|{{RELEASE_URL}}|https://github.com/$REPO/releases/tag/$TAG|g"
+          if grep -rn '{{' docs/site/src --include='*.md'; then
+            echo "::error::a placeholder was left in the site pages"
+            exit 1
+          fi
+      - name: Build the site
+        run: mdbook build docs/site
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.1
+        with:
+          path: docs/site/book
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.0

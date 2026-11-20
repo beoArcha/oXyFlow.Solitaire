@@ -19,6 +19,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** repository settings only
 - **Scope:** S1 (P1): branch protection on `main` requires branches to be up to date before merging; enable auto-merge so a PR merges itself once green. Land first: every later PR is then tested against the latest `main`.
 - **Acceptance:** The setting is visible in Settings → Branches; an out-of-date PR cannot merge until updated.
+- **Done:** owner, 2026-11-20 (up-to-date branches, auto-merge, `check-windows`, `deny` and `site` required; Immutable releases on; one deploy key)
 
 ### O-51 — `check --quick` runs every test target in one cargo call
 
@@ -90,6 +91,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/pr.yml`
 - **Scope:** S6 (P2): Windows-only code (console font, full screen, widening) is compiled only on `main`. Add a cached Windows job to `pr.yml`.
 - **Acceptance:** A PR shows both jobs; the owner updates the required checks.
+- **Done:** #157 (`check-windows` job; the owner adds it to the required checks)
 
 ### O-59 — Tests derive row counts instead of hard-coding them
 
@@ -107,6 +109,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/**`, `docs/tech/workflow.md`
 - **Scope:** C4 (P2): list worktrees whose branch is merged into `origin/main` or whose PR is closed, `--remove` to delete them, and report orphan directories.
 - **Acceptance:** Tests with a temporary repository.
+- **Done:** #159 (`cargo xtask worktrees [--remove [--force]]`; the T3 worktree folder is not scanned for orphans)
 
 ### O-61 — main: re-run jobs that never got a runner before failing
 
@@ -124,6 +127,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/pr.yml`, `xtask/src/screenshots/**`
 - **Scope:** B8 (P2): build the mdBook site on PRs that touch `docs/site/**`; add a staleness check for committed screenshots and the font.
 - **Acceptance:** A broken link in a test PR fails the check.
+- **Done:** #160 (`site` job builds mdBook and checks relative links when `docs/site/**` changes; screenshot staleness not done)
 
 ### O-63 — Take the version from the binary instead of a TUI build script
 
@@ -132,6 +136,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `crates/tui/build.rs`, `build.rs`, `src/**`, the TUI version display
 - **Scope:** F2 (P2): the git-derived version recompiles `oxysol-tui` after every commit, even docs-only ones. Compute it in the binary crate and pass it to the TUI.
 - **Acceptance:** A docs-only commit does not rebuild `oxysol-tui`; the version shown is unchanged.
+- **Done:** #162 (`crates/tui/build.rs` removed; `Deps::version` from the binary)
 
 ### O-64 — `cargo xtask preflight` and a local CI mode
 
@@ -140,6 +145,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/**`, `docs/tech/workflow.md`, `AGENTS.md`
 - **Scope:** C2, C3 (P2): `preflight [--card <ID>]` fetches `origin/main`, reports how far behind the branch is, runs the marker and decision-ID lints and lists changed files the card does not name.
 - **Acceptance:** Tests with a temporary repository.
+- **Done:** #161 (`cargo xtask preflight [--card] [--base] [--ci]`)
 
 ### O-65 — Release provenance, SBOM, immutable releases; pinned host key
 
@@ -148,6 +154,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/release.yml`, the promotion step, `docs/tech/workflow.md`
 - **Scope:** S4, S5 (P2): provenance attestations and an SBOM per archive; immutable releases; a pinned GitHub SSH host key for promotion instead of a fresh `ssh-keyscan`.
 - **Acceptance:** A release dry run shows the attestations; promotion works with the pinned key.
+- **Done:** #163 (attestations, CycloneDX SBOM per target, pinned `.github/known_hosts`; the owner enables Immutable releases)
 
 ### O-66 — Optimize the engine in test builds
 
@@ -165,6 +172,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** as named in the review (B9, C7, F4, F5)
 - **Scope:** P3 items of `docs/tech/workflow-review-2026-11.md`, one PR each.
 - **Acceptance:** Each item as in the review.
+- **Progress:** B9, C7 and F5 done in #165 (manual `site.yml`); F4 (xtask compiles the TUI before the first gate) open
 
 ### O-37 — Mouse path for Pause and Possible moves on every screen width
 
@@ -175,6 +183,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   below 130 columns, so both are keyboard-only (AGENTS.md: every action by keyboard and mouse). Give both a
   clickable entry (the `Do:` row or the footer, following its drop priorities) at every supported width.
 - **Acceptance:** click tests at 100 × 30 and 130 × 40 for both actions; both locales.
+- **Done:** #158 (`p: pause` and `v: moves` in the `Do:` row; the `Now:` row shows the ones the `Do:` row drops)
 
 ### O-38 — Settings save failure: alert and log once per session
 
@@ -196,6 +205,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   above 300 and three card tests nested 5–6 deep. Split by responsibility without behaviour changes.
   `glyphs/wgl4.rs` is a data table and stays.
 - **Acceptance:** no LOC or nesting warnings for these files; `cargo xtask check --quick` passes.
+- **Done:** #164 (`app/event.rs`, `input/table.rs`, `input/tests.rs`; the oversized test files stay)
 
 ### O-35 — Release archives carry the font licence (OFL)
 
@@ -276,6 +286,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** a results table with screenshots in the form of X-01 section 4, this time with the Windows
   Terminal version, Windows build, display scale, font size and launch method written down; the hint is
   confirmed or corrected; Windows Terminal is marked tested or documented-only in `decisions.md` D-06.
+- **Done:** owner, 2026-11-20 (oXySol Mono in Windows Terminal: menu, language list and statistics render correctly)
 
 ### U-02 — Artwork review
 
@@ -415,6 +426,39 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** engine tests on scripted deals (legal and illegal moves, a face-down card turned over, the
   foundations); the same seed gives the same deal; the variant is stored and read back by the storage; the menu entry
   and the rules tab in both locales; the architecture games list updated in the same PR.
+
+### P4-11 — Language selector: stray glyph, reachable with Up, Tab hint in the footer
+
+- **Owner:** Haiku
+- **Depends on:** P3-37
+- **Files:** the main menu and language selector code under `crates/tui/src/screens/main_menu*`, the main menu footer, `locales/*/menu.toml` (all nine), tests
+- **Scope:** owner finding 2026-11-20 (Windows Terminal, oXySol Mono):
+  - With the drop-down list open, a stray `◄` is drawn left of the flag in the top-left corner, in addition to the
+    selector's own `◄ flag ► ▼`; remove the extra glyph.
+  - The selector cannot be reached with Up from the first menu row; Up on the first row (or on "Wznów") moves the
+    focus to the language selector, and Down from the selector returns to the menu (wrap rules stay as they are
+    otherwise).
+  - The main menu footer does not say that Tab moves between the menu and the language selector; add a `Tab` entry
+    (e.g. "Tab Język" / "Tab Language") following the footer's drop priorities.
+- **Acceptance:** a render test with the list open shows no extra `◄`; key tests for Up to the selector and Down
+  back; the footer shows the Tab entry at 100 × 30 in every offered locale.
+
+### P4-12 — Statistics: a clear winnable column and a check for unchecked deals
+
+- **Owner:** Haiku
+- **Depends on:** P4-04, P2-08
+- **Files:** `crates/tui/src/screens/stats/**`, `locales/*/stats.toml` (all nine), tests; the solver call goes through
+  `Session`/core APIs only
+- **Scope:** owner finding 2026-11-20: the history table's winnable column has only a `?` header, and almost every
+  game shows `·` (not checked), so the player cannot see whether a deal was winnable.
+  - Give the column a readable header (e.g. "Do wygr." / "Winnable") and keep the legend line visible below the table
+    at every supported height.
+  - Add an action on the statistics screen (key and mouse button, e.g. `w: check winnable`) that runs the solver for
+    the selected game, or for all unchecked games in the background with a visible progress and a time limit per deal,
+    and stores the result like the winnable-deals option does (T-29). Results: ✓ winnable, ✗ not winnable,
+    ? unknown (limit reached).
+- **Acceptance:** tests for the header and legend at 100 × 30; a test that the action turns `·` into ✓/✗/? for a known
+  seed; the UI stays responsive while checking (background or step-wise).
 
 ## Done before the 2026-11 replan
 

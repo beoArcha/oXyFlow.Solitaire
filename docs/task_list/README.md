@@ -199,7 +199,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 
 | ID | Task | Owner | Depends on | Status |
 |---|---|---|---|---|
-| O-50 | Require up-to-date branches and auto-merge on main (repository setting) | Owner | O-49 | TODO |
+| O-50 | Require up-to-date branches and auto-merge on main (repository setting) | Owner | O-49 | DONE |
 | O-51 | `check --quick` runs every test target in one cargo call | Haiku | O-49 | DONE |
 | O-52 | Lint: conflict markers in every tracked file | Haiku | O-49 | DONE |
 | O-53 | Lint: decision ID uniqueness and references | Haiku | O-49 | DONE |
@@ -207,22 +207,22 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-55 | Pin GitHub Actions by SHA and add Dependabot | Haiku | O-49 | DONE |
 | O-56 | cargo-deny on pull requests | Sonnet | O-49 | DONE |
 | O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | Sonnet | O-49, O-41 | DONE |
-| O-58 | Check pull requests on Windows as well | Haiku | O-49 | TODO |
+| O-58 | Check pull requests on Windows as well | Haiku | O-49 | DONE |
 | O-59 | Tests derive row counts instead of hard-coding them | Haiku | O-49 | DONE |
-| O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | Haiku | O-49 | TODO |
+| O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | Haiku | O-49 | DONE |
 | O-61 | main: re-run jobs that never got a runner before failing | Haiku | O-49 | DONE |
-| O-62 | Build the site on pull requests; check screenshots are current | Haiku | O-49 | TODO |
-| O-63 | Take the version from the binary instead of a TUI build script | Sonnet | O-49 | TODO |
-| O-64 | `cargo xtask preflight` and a local CI mode | Haiku | O-49 | TODO |
-| O-65 | Release provenance, SBOM, immutable releases; pinned host key | Sonnet | O-49 | TODO |
+| O-62 | Build the site on pull requests; check screenshots are current | Haiku | O-49 | DONE |
+| O-63 | Take the version from the binary instead of a TUI build script | Sonnet | O-49 | DONE |
+| O-64 | `cargo xtask preflight` and a local CI mode | Haiku | O-49 | DONE |
+| O-65 | Release provenance, SBOM, immutable releases; pinned host key | Sonnet | O-49 | DONE |
 | O-66 | Optimize the engine in test builds | Haiku | O-49 | DONE |
 | O-67 | Small cleanups: pycache, site redeploy, xtask split, apt cache | Antigravity / Haiku | O-49 | TODO |
-| O-37 | Mouse path for Pause and Possible moves on every screen width | Haiku | P3-16, P3-28 | TODO |
+| O-37 | Mouse path for Pause and Possible moves on every screen width | Haiku | P3-16, P3-28 | DONE |
 | O-38 | Settings save failure: alert and log once per session | Haiku | — | DONE |
-| O-39 | Split files over 300 LOC found by the P3-09 gate | Antigravity | — | TODO |
+| O-39 | Split files over 300 LOC found by the P3-09 gate | Antigravity | — | DONE |
 | O-35 | Release archives carry the font licence (OFL) | Haiku | P5-01 (the font, `assets/fonts/OFL.txt` and `assets/fonts/NOTICE.md` exist) | DONE |
 | P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the | TODO |
-| O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | TODO |
+| O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | DONE |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
 | P4-07 | Site: language landing page | Sonnet | O-40, O-62 | TODO |
 | P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | TODO |
@@ -241,6 +241,8 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-11 | `--seed` starts the game directly; typed keys stay in text fields | not recorded (follow-up) | P3-10 | DONE |
 | O-15 | `--new-window` flag and the command-line options in Help | not recorded (follow-up) | O-05, O-14 | DONE |
 | O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | not recorded (follow-up) | O-15 | DONE |
+| P4-11 | Language selector: stray glyph, reachable with Up, Tab hint in the footer | Haiku | P3-37 | TODO |
+| P4-12 | Statistics: a clear winnable column and a check for unchecked deals | Haiku | P4-04, P2-08 | TODO |
 
 ### Phase 5 (0.5.x) — Themes, colour vision, Spanish cards, Golf
 
@@ -256,6 +258,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | X-01 | Spike: card font in real terminals | Sonnet (prototype) + User (testing) | P0-01 | DONE |
 | F-02 | Checkpoint: graphics delivery | Opus (Fable only on escalation — R-14) | X-01 | DONE |
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
+| P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 
