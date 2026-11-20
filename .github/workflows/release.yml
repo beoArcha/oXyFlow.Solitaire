@@ -165,14 +165,28 @@ jobs:
       - name: Archive (Unix)
         if: runner.os != 'Windows'
         run: |
+          font_files=(
+            "assets/fonts/oXySolMono-Regular.ttf"
+            "assets/fonts/OFL.txt"
+            "assets/fonts/NOTICE.md"
+          )
+          for f in "${font_files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "::error::required font file is missing: $f"
+              exit 1
+            fi
+          done
+
           name="oxysol-$TAG-$TARGET"
-          mkdir -p "dist/$name"
+          mkdir -p "dist/$name/fonts"
           cp "target/$TARGET/release/oxysol" README.md LICENSE THIRD-PARTY-LICENSES.md "dist/$name/"
+          cp "${font_files[@]}" "dist/$name/fonts/"
           tar -C dist -czf "dist/$name.tar.gz" "$name"
 
           pname="oxysol-$TAG-$TARGET-portable"
-          mkdir -p "dist/$pname"
+          mkdir -p "dist/$pname/fonts"
           cp "target/$TARGET/release/oxysol" README.md LICENSE THIRD-PARTY-LICENSES.md "dist/$pname/"
+          cp "${font_files[@]}" "dist/$pname/fonts/"
           printf '%s\n' \
             'This copy of oXySol is portable: it keeps its database and log in the "data" folder next to the program.' \
             'Delete this file to use the system data folder instead.' \
@@ -182,14 +196,28 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          $fontFiles = @(
+            "assets/fonts/oXySolMono-Regular.ttf",
+            "assets/fonts/OFL.txt",
+            "assets/fonts/NOTICE.md"
+          )
+          foreach ($f in $fontFiles) {
+            if (-not (Test-Path -LiteralPath $f -PathType Leaf)) {
+              Write-Error "Required font file is missing: $f"
+              exit 1
+            }
+          }
+
           $name = "oxysol-$env:TAG-$env:TARGET"
-          New-Item -ItemType Directory -Force -Path "dist/$name" | Out-Null
+          New-Item -ItemType Directory -Force -Path "dist/$name/fonts" | Out-Null
           Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE", "THIRD-PARTY-LICENSES.md" -Destination "dist/$name"
+          Copy-Item -Path $fontFiles -Destination "dist/$name/fonts"
           Compress-Archive -Path "dist/$name" -DestinationPath "dist/$name.zip"
 
           $pname = "oxysol-$env:TAG-$env:TARGET-portable"
-          New-Item -ItemType Directory -Force -Path "dist/$pname" | Out-Null
+          New-Item -ItemType Directory -Force -Path "dist/$pname/fonts" | Out-Null
           Copy-Item -Path "target/$env:TARGET/release/oxysol.exe", "README.md", "LICENSE", "THIRD-PARTY-LICENSES.md" -Destination "dist/$pname"
+          Copy-Item -Path $fontFiles -Destination "dist/$pname/fonts"
           $lines = @(
             'This copy of oXySol is portable: it keeps its database and log in the "data" folder next to the program.',
             'Delete this file to use the system data folder instead.'
