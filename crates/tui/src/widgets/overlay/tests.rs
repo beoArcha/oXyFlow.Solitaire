@@ -34,10 +34,10 @@ fn click_button(modal: &mut Modal, index: usize) -> Option<Effect> {
 #[test]
 fn simple_modals_close_on_select_and_back() {
     for action in [Action::Select, Action::Back] {
-        let mut modal = Modal::Help;
+        let mut modal = Modal::help();
         assert_eq!(handle(&mut modal, &key(), Some(action)), Some(Effect::None));
     }
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     assert_eq!(handle(&mut modal, &key(), Some(Action::Hint)), None);
     assert_eq!(handle(&mut modal, &key(), None), None);
 }
@@ -142,7 +142,7 @@ fn clicks_press_the_button_under_them() {
             Effect::Restart
         )))
     );
-    let mut help = Modal::Help;
+    let mut help = Modal::help();
     assert_eq!(click_button(&mut help, 0), Some(Effect::None));
 }
 
@@ -208,7 +208,7 @@ fn help_topics_follow_the_help_groups_and_end_with_the_mouse() {
 
 #[test]
 fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let tab_key = KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE);
     assert_eq!(handle(&mut modal, &tab_key, None), None);
     let rules = HowToPlay::new(Rules::Klondike);
@@ -220,7 +220,7 @@ fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
     assert_eq!(modal, Modal::CommandLine(CommandLine::new()));
 
     assert_eq!(handle(&mut modal, &tab_key, None), None);
-    assert_eq!(modal, Modal::Help);
+    assert_eq!(modal, Modal::help());
 
     assert_eq!(handle(&mut modal, &key(), Some(Action::Right)), None);
     assert_eq!(modal, Modal::HowToPlay(rules.focused(Focus::Tabs)));

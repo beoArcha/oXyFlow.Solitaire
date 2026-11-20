@@ -92,7 +92,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 31] = [
+pub const KEY_TABLE: [Binding; 33] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -168,6 +168,12 @@ pub const KEY_TABLE: [Binding; 31] = [
         &[KeySpec::ch('?'), KeySpec::plain(KeyCode::F(1))],
     ),
     bind(Action::Rules, HelpGroup::General, &[KeySpec::ch('i')]),
+    bind(Action::Dock, HelpGroup::General, &[KeySpec::ch('d')]),
+    bind(
+        Action::DockFocus,
+        HelpGroup::General,
+        &[KeySpec::plain(KeyCode::F(6))],
+    ),
 ];
 
 /// The action bound to a key press, if any. Key releases never map to an action.

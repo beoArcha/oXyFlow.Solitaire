@@ -246,6 +246,11 @@ impl BoardScreen {
         self.clock.is_running()
     }
 
+    /// Whether a card is picked up (Esc puts it back before it does anything else).
+    pub fn carrying(&self) -> bool {
+        self.pick.is_some()
+    }
+
     /// Stops the clock (a modal opened).
     pub fn pause_clock(&mut self, now: Instant) {
         self.clock.pause(now);

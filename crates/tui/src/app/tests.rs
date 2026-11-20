@@ -194,7 +194,7 @@ fn escape_from_the_games_of_a_command_line_seed_returns_to_the_seed_field() {
 fn help_and_rules_keys_open_their_overlays_outside_a_text_field() {
     let mut h = Harness::new();
     h.type_char('?');
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     h.press(KeyCode::Esc);
     h.type_char('i');
     assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
@@ -214,7 +214,7 @@ fn help_and_rules_keys_are_typed_into_the_seed_field() {
     assert!(h.text().contains("A seed is a whole number"));
     h.press(KeyCode::Esc);
     h.type_char('?');
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
 }
 
 #[test]
@@ -223,5 +223,5 @@ fn f1_opens_help_while_a_seed_is_typed() {
     h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
     h.press(KeyCode::F(1));
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
 }

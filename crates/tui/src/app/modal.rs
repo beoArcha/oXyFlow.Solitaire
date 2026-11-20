@@ -3,13 +3,14 @@
 use super::search::SearchProgress;
 use crate::screens::Effect;
 use crate::widgets::overlay::{
-    CommandLine, GuideWindow, HowToPlay, MovesWindow, PersonalBest, QuickOptions,
+    CommandLine, GuideWindow, HelpKeys, HowToPlay, MovesWindow, PersonalBest, QuickOptions,
 };
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Modal {
-    Help,
+    /// The keys of the help window, with the scroll of its Keys tab.
+    Help(HelpKeys),
     /// The rules of one game, with tabs for the others.
     HowToPlay(HowToPlay),
     /// The options of `oxysol --help`, the third tab of the help window.
@@ -32,20 +33,20 @@ pub enum Modal {
         yes_focused: bool,
     },
     /// A notice with one button; `message` is a localization key.
-    Alert {
-        message: &'static str,
-    },
+    Alert { message: &'static str },
     /// The search for a winnable deal: progress, then the choices once the cap is reached.
     Search(SearchProgress),
     /// The win screen; `focus` is the index of the focused button and `best` the personal bests
     /// the game set (filled in when the dialog opens).
-    Win {
-        focus: usize,
-        best: PersonalBest,
-    },
+    Win { focus: usize, best: PersonalBest },
 }
 
 impl Modal {
+    /// The help window on its Keys tab, at the top.
+    pub fn help() -> Self {
+        Modal::Help(HelpKeys::default())
+    }
+
     /// A notice showing the text of the localization key `message`.
     pub fn alert(message: &'static str) -> Self {
         Modal::Alert { message }

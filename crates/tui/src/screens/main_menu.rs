@@ -85,7 +85,7 @@ fn effect_of(item: Item) -> Effect {
         Item::Statistics => Effect::Goto(Screen::Stats),
         Item::Settings => Effect::Goto(Screen::Settings),
         Item::HowToPlay => Effect::HowToPlay,
-        Item::Help => Effect::Open(Modal::Help),
+        Item::Help => Effect::Open(Modal::help()),
         Item::Quit => Effect::Quit,
     }
 }

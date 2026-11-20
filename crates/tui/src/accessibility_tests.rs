@@ -131,7 +131,7 @@ fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
             2 => assert_eq!(h.app.screen(), Screen::Stats),
             3 => assert_eq!(h.app.screen(), Screen::Settings),
             4 => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
-            5 => assert!(matches!(h.app.modal(), Some(Modal::Help))),
+            5 => assert!(matches!(h.app.modal(), Some(Modal::Help(_)))),
             _ => assert!(h.app.should_quit()),
         }
     }
@@ -195,7 +195,7 @@ fn every_dialog_closes_and_confirm_takes_yes_by_keyboard() {
         undo_allowed: true,
     });
     h.type_char('?');
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
     h.type_char('i');

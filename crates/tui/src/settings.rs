@@ -6,10 +6,12 @@ use serde::{Deserialize, Serialize};
 mod aids;
 mod card_back;
 mod card_size;
+mod dock;
 mod full_screen;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
 pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
+pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 
 use crate::audio::AudioSettings;
@@ -68,6 +70,9 @@ pub struct Settings {
     /// Whether the board shows the possible moves panel beside it (a window below 130 columns). An
     /// older saved value without the field loads as `true`.
     pub moves_panel: bool,
+    /// Where the help window sits: centred, or docked to the right or left side (P3-28). An older
+    /// saved value without the field loads as centred.
+    pub help_dock: DockSide,
     /// The undo mode offered in the game selection and used for the next game: `true` allows undo
     /// and redo. An older saved value without the field loads as `true`.
     pub undo_allowed: bool,
@@ -106,6 +111,7 @@ impl Default for Settings {
             volume: 70,
             guide_panel: true,
             moves_panel: true,
+            help_dock: DockSide::Centre,
             undo_allowed: true,
             winnable_only: false,
             auto_finish: true,
@@ -189,6 +195,15 @@ mod tests {
         assert!(matches!(parsed, Ok(ref s) if s.guide_panel));
         let off = toml::from_str::<Settings>("guide_panel = false");
         assert!(matches!(off, Ok(ref s) if !s.guide_panel));
+    }
+
+    #[test]
+    fn the_help_window_is_centred_by_default_and_old_values_load_centred() {
+        assert_eq!(Settings::default().help_dock, DockSide::Centre);
+        let old = toml::from_str::<Settings>("guide_panel = false");
+        assert!(matches!(old, Ok(ref s) if s.help_dock == DockSide::Centre));
+        let left = toml::from_str::<Settings>("help_dock = \"left\"");
+        assert!(matches!(left, Ok(ref s) if s.help_dock == DockSide::Left));
     }
 
     #[test]
