@@ -121,7 +121,12 @@ pub fn draw(
         Face::Up(_) => painter.fill(interior, " ", look.fill),
         Face::Down => {
             painter.fill(interior, back::pattern(ctx.glyphs), look.fill);
-            back::paint_mosaic(&mut painter, area, ctx.glyphs, look.fill);
+            back::paint_mosaic(
+                &mut painter,
+                area,
+                ctx.glyphs,
+                (look.fill, ctx.font.cell_px),
+            );
         }
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }

@@ -3,7 +3,8 @@
 use super::search::SearchProgress;
 use crate::screens::Effect;
 use crate::widgets::overlay::{
-    CommandLine, GuideWindow, HelpKeys, HowToPlay, MovesWindow, PersonalBest, QuickOptions,
+    CommandLine, GraphicsCheck, GuideWindow, HelpKeys, HowToPlay, MovesWindow, PersonalBest,
+    QuickOptions,
 };
 
 /// A dialog over the current screen. While one is open it takes all input and the clock stops.
@@ -32,6 +33,8 @@ pub enum Modal {
         on_yes: Box<Effect>,
         yes_focused: bool,
     },
+    /// The graphics check: samples in the oXySol card font and the question whether they look right.
+    GraphicsCheck(GraphicsCheck),
     /// A notice with one button; `message` is a localization key.
     Alert { message: &'static str },
     /// The search for a winnable deal: progress, then the choices once the cap is reached.

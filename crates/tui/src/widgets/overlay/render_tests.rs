@@ -67,6 +67,7 @@ fn render(
         saved: None,
         pointer: None,
         now,
+        font: crate::app::FontFacts::default(),
     };
     let board = timed_board(now);
     let mut terminal =

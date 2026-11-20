@@ -64,6 +64,9 @@ pub struct Settings {
     /// `Font` glyph mode draws the card font only with this set; without it the Unicode glyphs
     /// are drawn. An older saved value without the field loads as `false`.
     pub font_confirmed: bool,
+    /// Whether the classic Windows console is asked to use the oXySol font ("Use the oXySol font in
+    /// this console"). An older saved value without the field loads as `false`.
+    pub console_font: bool,
     pub color_mode: ColorMode,
     pub sound_style: String,
     pub cues: bool,
@@ -110,6 +113,7 @@ impl Default for Settings {
             back_style: DEFAULT_BACK.to_owned(),
             glyph_mode: GlyphMode::Unicode,
             font_confirmed: false,
+            console_font: false,
             color_mode: ColorMode::Auto,
             sound_style: DEFAULT_SOUND_STYLE.to_owned(),
             cues: true,
@@ -144,11 +148,12 @@ impl Settings {
         }
     }
 
-    /// The glyph mode to draw with: `Font` only when the player confirmed the oXySol font, else the
-    /// Unicode glyphs, so the Private Use Area code points never show as squares.
-    pub fn drawn_glyph_mode(&self) -> GlyphMode {
+    /// The glyph mode to draw with: `Font` only when the player confirmed the oXySol font or the
+    /// console shows it (`console_shows_font`), else the Unicode glyphs, so the Private Use Area
+    /// code points never show as squares.
+    pub fn drawn_glyph_mode(&self, console_shows_font: bool) -> GlyphMode {
         match self.glyph_mode {
-            GlyphMode::Font if !self.font_confirmed => GlyphMode::Unicode,
+            GlyphMode::Font if !self.font_confirmed && !console_shows_font => GlyphMode::Unicode,
             mode => mode,
         }
     }

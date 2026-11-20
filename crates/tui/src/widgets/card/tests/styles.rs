@@ -165,16 +165,17 @@ fn font_mode_without_font_glyphs_in_the_style_draws_the_unicode_symbols() {
 }
 
 #[test]
-fn the_font_is_drawn_only_after_the_player_confirmed_it() {
+fn the_font_is_drawn_only_after_the_player_confirmed_it_or_the_console_shows_it() {
     let mut settings = Settings {
         glyph_mode: GlyphMode::Font,
         ..Settings::default()
     };
-    assert_eq!(settings.drawn_glyph_mode(), GlyphMode::Unicode);
+    assert_eq!(settings.drawn_glyph_mode(false), GlyphMode::Unicode);
+    assert_eq!(settings.drawn_glyph_mode(true), GlyphMode::Font);
     settings.font_confirmed = true;
-    assert_eq!(settings.drawn_glyph_mode(), GlyphMode::Font);
+    assert_eq!(settings.drawn_glyph_mode(false), GlyphMode::Font);
     settings.glyph_mode = GlyphMode::Ascii;
-    assert_eq!(settings.drawn_glyph_mode(), GlyphMode::Ascii);
+    assert_eq!(settings.drawn_glyph_mode(true), GlyphMode::Ascii);
 }
 
 #[test]
