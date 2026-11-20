@@ -16,7 +16,7 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 |---|---|---|
 | `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, lint (including conflict markers in every tracked file), every test target in one cargo call | run before opening a PR |
 | `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages | `pr.yml` |
-| `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS |
+| `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS (`check-macos`, not gating `promote`) |
 | `cargo xtask affected --base origin/main` | prints the affected packages (`*` means all) | used by `check --pr` |
 | `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
 
@@ -31,7 +31,7 @@ package. Changes under `docs/` and to `*.md` select none.
 | File | Trigger | Runs |
 |---|---|---|
 | `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu, then Clippy and tests of `oxysol` with `--no-default-features` (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`) |
-| `.github/workflows/main.yml` | push to `main`, manual dispatch | `cargo xtask check` on Ubuntu, Windows and macOS, plus the no-sound Clippy and tests on Ubuntu; then `promote` (main only). It is the only workflow that saves the rust cache |
+| `.github/workflows/main.yml` | push to `main`, manual dispatch | `check` runs `cargo xtask check` on Ubuntu and Windows, plus the no-sound Clippy and tests on Ubuntu; `check-macos` runs `cargo xtask check` on macOS and does not gate `promote` (see "macOS and jobs that never started"); `promote` (main only) needs `check`. It is the only workflow that saves the rust cache |
 | `.github/workflows/release.yml` | manual dispatch only (R-20), input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
 
 `promote` runs one at a time and is never cancelled. It stops when `release` already contains the
@@ -40,6 +40,31 @@ secret `RELEASE_DEPLOY_KEY`, as a plain push (no force), so an old run cannot mo
 backwards. It starts no release: building and publishing is the owner's decision (R-20).
 
 If the secret is empty, `promote` fails with a message that points here.
+
+### macOS and jobs that never started
+
+`promote` waits for `check` (Ubuntu and Windows) only. `check-macos` is reported in the same run but
+does not hold back `promote`. A real macOS test failure still makes the `Main` run red, so it stays
+visible in `gh run list`. Nothing ships unchecked on macOS: `release.yml` runs `check` on macOS before
+it publishes anything.
+
+Hosted macOS runners sometimes never start a job. Such a job is cancelled after about 15 minutes with an
+empty runner name and no steps. That is infrastructure, not code. Tell the two cases apart with:
+
+```sh
+gh api repos/beoArcha/oXyFlow.Solitare/actions/runs/<run-id>/jobs \
+  --jq '.jobs[] | {name, conclusion, runner_name, steps: (.steps | length)}'
+```
+
+A job with `"runner_name": ""` and `"steps": 0` never started: re-run the failed jobs of that run once:
+
+```sh
+gh run rerun <run-id> --failed
+```
+
+If the job has steps, a test failed: read the log (`gh run view <run-id> --log-failed`) and fix the code.
+The re-run does not touch `promote`, which already ran when Ubuntu and Windows passed. There is no automatic
+re-run: a run cannot re-run itself while it is still in progress.
 
 ## Release workflow
 
@@ -64,8 +89,9 @@ gh workflow run release.yml --ref release
 4. `build` checks out the full history (the version needs it) and makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
    `x86_64-unknown-linux-musl` (`musl-tools`), `aarch64-unknown-linux-musl` (`musl-tools`)
    and `aarch64-apple-darwin`. Each target produces two archives: a normal archive
-   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md`, `LICENSE` and
-   `THIRD-PARTY-LICENSES.md`) and a portable archive `oxysol-<tag>-<target>-portable` with the same
+   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md`, `LICENSE`,
+   `THIRD-PARTY-LICENSES.md` and `fonts/` with `oXySolMono-Regular.ttf`, `OFL.txt` and
+   `NOTICE.md`) and a portable archive `oxysol-<tag>-<target>-portable` with the same
    files plus `oxysol.portable`:
    `.zip` on Windows, `.tar.gz` elsewhere. Archives are workflow artifacts named
    `archive-<target>`. `THIRD-PARTY-LICENSES.md` is generated per target by a pinned `cargo-about`
@@ -166,7 +192,7 @@ before dispatching the second. Current hotspots:
 
 - `crates/tui/src/app.rs`, `crates/tui/src/settings.rs`, `crates/tui/src/input.rs`
 - `crates/tui/src/screens/settings/**` and the settings row-count tests in `accessibility_tests.rs`
-- `locales/en-US/*.toml` (every new key must reach every locale folder, see below)
+- `locales/en-US/*.toml` (a new key must reach every complete locale folder, see below)
 - `docs/tech/decisions.md` (IDs are assigned by the orchestrator in the card)
 - `docs/task_list/**` (edited by the orchestrator only)
 
@@ -179,7 +205,11 @@ A locale is offered to players only when `locales/<lang>/meta.toml` says `comple
 (architecture: "Adding or translating a locale"). Translation tasks are text-only and run one
 language at a time: the translator replaces the ten area files of a locale, keeps keys, order and
 `{placeholders}`, sets `complete = true` and writes `docs/tech/glossaries/<lang>.md`. The
-orchestrator then merges `main`, compares the keys with `en-US`, and runs the check; the fit tests
+orchestrator then merges `main`, compares the keys with `en-US` (`cargo xtask locale-diff <lang>`
+lists missing, extra and placeholder-mismatched keys; `--ref <git-ref>` reads another commit), and
+runs the check. An incomplete locale may lack keys and shows the English text for them (decision
+T-38); a complete locale must have every key, so mark a locale `complete = true` only when
+`locale-diff` is clean. The fit tests
 (footer, `Do:` row, header, statistics, help, `Now:` row) run for every offered locale, and texts
 that do not fit are shortened in that locale only. A test that hard-codes English or Polish text is
 a test bug: it reads the expected text from the locale instead.
