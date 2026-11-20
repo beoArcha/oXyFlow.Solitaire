@@ -14,7 +14,7 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 
 | Command | What it runs | CI |
 |---|---|---|
-| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, lint, every test target except `architecture` and `e2e` | run before opening a PR |
+| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, lint (including conflict markers in every tracked file), every test target in one cargo call | run before opening a PR |
 | `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages | `pr.yml` |
 | `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS |
 | `cargo xtask affected --base origin/main` | prints the affected packages (`*` means all) | used by `check --pr` |

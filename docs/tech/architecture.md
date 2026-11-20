@@ -716,7 +716,7 @@ writes the contact sheet `target/fonts/preview.html`. Two runs give identical by
 
 | Command | Steps | Where |
 |---|---|---|
-| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint`, every test target except `architecture` and `e2e` | locally before a PR |
+| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint` (including conflict markers in every tracked file), every test target in one `cargo test --workspace --tests` call | locally before a PR |
 | `cargo xtask check --pr <base>` | fmt, Clippy, lint, the `architecture` and `e2e` suites, unit and integration tests of the packages that `affected --base <base>` selects | `pr.yml` (Linux) |
 | `cargo xtask check` | everything: all test targets and `sync-metadata --check` | `main.yml` and `release.yml` on three systems |
 

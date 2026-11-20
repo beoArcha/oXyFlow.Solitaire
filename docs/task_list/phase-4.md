@@ -27,6 +27,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/check*`
 - **Scope:** B1 (P1): `--quick` skips the `e2e` and `architecture` targets although they cost under 0.1 s, and the split run compiles core and the TUI twice. Run all test targets in one cargo call.
 - **Acceptance:** An e2e failure (like the O-36 version test) fails `--quick` locally; a warm `--quick` is not slower.
+- **Done:** #143 (one `cargo test --workspace --tests` call; docs updated in this PR)
 
 ### O-52 — Lint: conflict markers in every tracked file
 
@@ -35,6 +36,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `xtask/src/lint*`, tests
 - **Scope:** B2 (P1): conflict markers are caught only in `.rs` files by the compiler. Add a lint over the tracked text files that fails on conflict-marker lines (seven `<`, `=` or `>` at the start of a line), naming file and line.
 - **Acceptance:** A test with a fixture; the rule runs in `check --quick` and passes on `main`.
+- **Done:** #142 (`=======` flagged only inside an open block)
 
 ### O-53 — Lint: decision ID uniqueness and references
 
@@ -59,6 +61,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `.github/workflows/*.yml`, `.github/dependabot.yml`
 - **Scope:** S3 (P1): pin every action by full commit SHA with the version as a comment; Dependabot for `github-actions` and `cargo`, weekly and grouped.
 - **Acceptance:** Workflows still pass; the Dependabot config validates.
+- **Done:** #145 (Dependabot weekly, grouped)
 
 ### O-56 — cargo-deny on pull requests
 
@@ -147,6 +150,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** `Cargo.toml` (profiles)
 - **Scope:** F3 (P2): solver tests dominate debug test time; raise `opt-level` for `oxysol-core` in the dev/test profile.
 - **Acceptance:** Test time before and after in the PR.
+- **Done:** #146 (warm core tests 2m41s → 11s; warm `--quick` 1m58s → 28s)
 
 ### O-67 — Small cleanups: pycache, site redeploy, xtask split, apt cache
 
