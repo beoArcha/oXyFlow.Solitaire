@@ -29,7 +29,8 @@ crates/core/src/solver/  mod.rs (API) face.rs hash.rs search/ (depth-first, best
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
-crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
+crates/tui/build.rs      embeds assets/cards/{fronts,backs}/*/style.toml and codepoints.toml (reruns only on assets/cards)
+crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs card_style.rs (+ card_style/manifest.rs)
                          i18n.rs (+ i18n/locale.rs i18n/plural.rs i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          meta.toml common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml
@@ -639,9 +640,25 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   covered waste card shows its left border and corner label only (label width plus one column, 3 or 4), the rows
   under its top row and its bottom border stay blank in that strip (`draw_fanned`); only the playable card shows a
   bottom index.
-- **Card rendering:** front style and back style are selected independently. Each is drawn in one of
-  three glyph modes — `Font` (Private Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` —
-  described by the style's `style.toml`. `Font` is opt-in through the graphics-check screen.
+- **Card rendering (P5-02):** front style and back style are selected independently (`Settings::front_style`,
+  `back_style`; defaults `international`, `lattice`). Each is drawn in one of three glyph modes — `Font` (Private
+  Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` — described by the style's `style.toml`.
+  `crates/tui/build.rs` embeds every style folder and `codepoints.toml`, so a new folder needs no code change;
+  `card_style::CardStyles::embedded()` reads them once, resolves the font keys through the registry (a code point
+  outside U+E6BC–U+E6FF or an unknown key rejects the style), checks the symbols (Unicode: WGL4; ASCII: one
+  lowercase letter per suit) and the color tokens (a front: `card_red` or `card_black`; a back: any token), and
+  leaves a style that fails out with a log line. A front gives per suit a name key, an optional font glyph, the
+  Unicode symbol, the ASCII letter and a color token; `[ranks]` replaces the localized labels of ace and court
+  ranks; `[courts]` names the court emblem glyphs; a front without font keys is valid and draws Unicode in `Font`
+  mode. A back gives the `tile` that fills it, a 2 × 2 `mosaic` and the tokens `fg` and `bg`. `Glyphs::styled(mode,
+  front, back)` puts the styles into the glyph set (`suits`, `face_down`, `front`, `back`, `font`); an unknown id
+  uses the default style and `App` rewrites a saved unknown id to the default. The mosaic is drawn only on a back of
+  at least 11 × 9 (Large, Huge); smaller backs use the tile. *Interaction with `card_back` (P3-31):* the back style
+  chooses the pattern, `card_back` (`Theme`, `Monokai`, `Dracula`) chooses the palette only: `Theme` resolves the
+  tokens of the back style in the current theme, the others in the theme of that name. `Font` is opt-in: it is
+  drawn only when `Settings::font_confirmed` is set (the graphics check), `Settings::drawn_glyph_mode()` gives
+  `Unicode` otherwise, so Private Use Area code points never show as squares. In `Font` mode a face-up card
+  of 9 × 7 or more shows one glyph in the centre: the court emblem of a court card, else the suit.
 - **Terminal capabilities:** `TerminalCaps { color, unicode, remote }` from detection, overridden by
   settings and arguments. `remote` (an SSH session) switches audio off.
 - **Accessibility:** every `Action` has a key binding and a mouse path. The `Now:` row

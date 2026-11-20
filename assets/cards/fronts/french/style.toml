@@ -1,0 +1,42 @@
+# French deck: the International suits with the French court labels (valet, dame, roi).
+
+name = "settings.style.french"
+
+[ranks]
+ace = "A"
+jack = "V"
+queen = "D"
+king = "R"
+
+[suits.clubs]
+name = "board.word.clubs"
+font = "fronts/international/club"
+unicode = "♣"
+ascii = "c"
+color = "card_black"
+
+[suits.diamonds]
+name = "board.word.diamonds"
+font = "fronts/international/diamond"
+unicode = "♦"
+ascii = "d"
+color = "card_red"
+
+[suits.hearts]
+name = "board.word.hearts"
+font = "fronts/international/heart"
+unicode = "♥"
+ascii = "h"
+color = "card_red"
+
+[suits.spades]
+name = "board.word.spades"
+font = "fronts/international/spade"
+unicode = "♠"
+ascii = "s"
+color = "card_black"
+
+[courts]
+jack = "fronts/international/jack"
+queen = "fronts/international/queen"
+king = "fronts/international/king"

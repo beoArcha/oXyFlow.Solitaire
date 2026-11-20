@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "acorns"
+bell = "bells"
+leaf = "leaves"
+baton = "batons"
+coin = "coins"
+cup = "cups"
+sword = "swords"

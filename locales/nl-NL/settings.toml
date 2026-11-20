@@ -28,7 +28,11 @@ hints = "Hints en hulp"
 
 [style]
 international = "Internationaal"
-default = "Standaard"
+lattice = "Rooster"
+ornament = "Ornament"
+french = "Frans"
+german = "Duits"
+italian = "Italiaans"
 
 [desc]
 language = "De taal van alle tekst. Verandert direct."

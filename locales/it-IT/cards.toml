@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "ghiande"
+bell = "sonagli"
+leaf = "foglie"
+baton = "bastoni"
+coin = "denari"
+cup = "coppe"
+sword = "spade"

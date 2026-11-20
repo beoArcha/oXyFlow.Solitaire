@@ -15,6 +15,7 @@ use self::display::FullScreenState;
 use self::search::Search;
 use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
+use crate::card_style::{CardStyles, DEFAULT_BACK, DEFAULT_FRONT};
 use crate::clipboard::Clipboard;
 use crate::glyphs::Glyphs;
 use crate::i18n;
@@ -133,7 +134,11 @@ impl App {
             caps,
             sound_styles,
             theme: Theme::new(settings.theme, settings.color_depth(&caps)),
-            glyphs: Glyphs::new(settings.glyph_mode),
+            glyphs: Glyphs::styled(
+                settings.drawn_glyph_mode(),
+                &settings.front_style,
+                &settings.back_style,
+            ),
             quick: settings.aids(),
             running: settings.clone(),
             settings,
@@ -156,6 +161,7 @@ impl App {
         };
         app.load_stored_state();
         app.fit_sound_style();
+        app.fit_card_styles();
         app.sync_full_screen();
         app.reset_quick();
         app.refresh_view();
@@ -170,6 +176,17 @@ impl App {
             .any(|style| style.id == self.settings.sound_style);
         if !known {
             self.settings.sound_style = DEFAULT_SOUND_STYLE.to_owned();
+        }
+    }
+
+    /// A saved front or back style that no longer exists falls back to the default style.
+    fn fit_card_styles(&mut self) {
+        let styles = CardStyles::embedded();
+        if !styles.has_front(&self.settings.front_style) {
+            self.settings.front_style = DEFAULT_FRONT.to_owned();
+        }
+        if !styles.has_back(&self.settings.back_style) {
+            self.settings.back_style = DEFAULT_BACK.to_owned();
         }
     }
 
@@ -205,7 +222,11 @@ impl App {
 
     fn refresh_view(&mut self) {
         self.theme = Theme::new(self.settings.theme, self.settings.color_depth(&self.caps));
-        self.glyphs = Glyphs::new(self.settings.glyph_mode);
+        self.glyphs = Glyphs::styled(
+            self.settings.drawn_glyph_mode(),
+            &self.settings.front_style,
+            &self.settings.back_style,
+        );
         i18n::set_locale(self.settings.locale);
         self.audio.configure(&self.settings.audio());
     }

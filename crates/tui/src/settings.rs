@@ -16,6 +16,7 @@ pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 
 use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
+use crate::card_style::{DEFAULT_BACK, DEFAULT_FRONT};
 use crate::i18n::Locale;
 use crate::theme::ThemeId;
 
@@ -59,6 +60,10 @@ pub struct Settings {
     pub front_style: String,
     pub back_style: String,
     pub glyph_mode: GlyphMode,
+    /// Whether the player confirmed that the oXySol card font shows right (the graphics check).
+    /// `Font` glyph mode draws the card font only with this set; without it the Unicode glyphs
+    /// are drawn. An older saved value without the field loads as `false`.
+    pub font_confirmed: bool,
     pub color_mode: ColorMode,
     pub sound_style: String,
     pub cues: bool,
@@ -102,9 +107,10 @@ impl Default for Settings {
         Self {
             locale: Locale::EnUs,
             theme: ThemeId::Dark,
-            front_style: "international".to_owned(),
-            back_style: "default".to_owned(),
+            front_style: DEFAULT_FRONT.to_owned(),
+            back_style: DEFAULT_BACK.to_owned(),
             glyph_mode: GlyphMode::Unicode,
+            font_confirmed: false,
             color_mode: ColorMode::Auto,
             sound_style: DEFAULT_SOUND_STYLE.to_owned(),
             cues: true,
@@ -137,6 +143,15 @@ impl Settings {
         Self {
             glyph_mode,
             ..Self::default()
+        }
+    }
+
+    /// The glyph mode to draw with: `Font` only when the player confirmed the oXySol font, else the
+    /// Unicode glyphs, so the Private Use Area code points never show as squares.
+    pub fn drawn_glyph_mode(&self) -> GlyphMode {
+        match self.glyph_mode {
+            GlyphMode::Font if !self.font_confirmed => GlyphMode::Unicode,
+            mode => mode,
         }
     }
 

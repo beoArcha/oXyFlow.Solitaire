@@ -1,20 +1,30 @@
-//! Symbols for markers and card suits in the Unicode and ASCII sets. `Font` mode (the oXySol
-//! card font) uses the Unicode set until the font exists. The Unicode set uses only WGL4 symbols,
-//! which every common terminal font draws.
+//! Symbols for markers and card suits in the Unicode and ASCII sets. `Glyphs::new` is the plain set
+//! of a mode (`Font` draws the Unicode set); `Glyphs::styled` adds the card styles of the settings:
+//! the suit symbols and rank labels of a front, the tile of a back and, in `Font` mode, the Private
+//! Use Area glyphs of the oXySol card font. The Unicode set uses only WGL4 symbols, which every
+//! common terminal font draws.
 
-use oxysol_core::Suit;
+use oxysol_core::{Color as SuitColor, Rank, Suit};
 use ratatui::widgets::BorderType;
 
 pub mod wgl4;
 pub use wgl4::is_wgl4;
 
+use crate::card_style::{BackStyle, CardStyles, FrontStyle};
 use crate::settings::GlyphMode;
 use crate::solver::Proof;
+use crate::theme::Token;
 
 /// The symbols one glyph mode draws with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Glyphs {
     pub unicode: bool,
+    /// Whether the card font is in use: `Font` mode with a style. Never set without a style.
+    pub font: bool,
+    /// The front style the suit symbols come from, if any.
+    pub front: Option<&'static FrontStyle>,
+    /// The back style the tile comes from, if any.
+    pub back: Option<&'static BackStyle>,
     pub suits: [&'static str; 4],
     pub focus_left: &'static str,
     pub focus_right: &'static str,
@@ -65,6 +75,9 @@ pub struct Glyphs {
 
 const UNICODE: Glyphs = Glyphs {
     unicode: true,
+    font: false,
+    front: None,
+    back: None,
     suits: ["♣", "♦", "♥", "♠"],
     focus_left: "►",
     focus_right: "◄",
@@ -95,6 +108,9 @@ const UNICODE: Glyphs = Glyphs {
 
 const ASCII: Glyphs = Glyphs {
     unicode: false,
+    font: false,
+    front: None,
+    back: None,
     suits: ["c", "d", "h", "s"],
     focus_left: ">",
     focus_right: "<",
@@ -130,6 +146,50 @@ impl Glyphs {
             GlyphMode::Font | GlyphMode::Unicode => UNICODE,
             GlyphMode::Ascii => ASCII,
         }
+    }
+
+    /// The set of a mode with the symbols of the front and the back style with these ids. An id that
+    /// is not a style falls back to the default style.
+    pub fn styled(mode: GlyphMode, front: &str, back: &str) -> Self {
+        let styles = CardStyles::embedded();
+        let mut glyphs = Self::new(mode);
+        if let Some(front) = styles.front_or_default(front) {
+            glyphs.suits = front.suit_symbols(mode);
+            glyphs.front = Some(front);
+        }
+        if let Some(back) = styles.back_or_default(back) {
+            glyphs.face_down = back.tile(mode);
+            glyphs.back = Some(back);
+        }
+        glyphs.font = mode == GlyphMode::Font && (glyphs.front.is_some() || glyphs.back.is_some());
+        glyphs
+    }
+
+    /// The mode the set draws: `Font` only when the card font is in use.
+    pub fn mode(&self) -> GlyphMode {
+        if self.font {
+            GlyphMode::Font
+        } else if self.unicode {
+            GlyphMode::Unicode
+        } else {
+            GlyphMode::Ascii
+        }
+    }
+
+    /// The label the front style gives to a rank; `None` keeps the localized label.
+    pub fn rank_label(&self, rank: Rank) -> Option<&'static str> {
+        self.front.and_then(|front| front.rank_label(rank))
+    }
+
+    /// The token of the color a suit is drawn in.
+    pub fn suit_token(&self, suit: Suit) -> Token {
+        self.front.map_or_else(
+            || match suit.color() {
+                SuitColor::Red => Token::CardRed,
+                SuitColor::Black => Token::CardBlack,
+            },
+            |front| front.suit(suit).token,
+        )
     }
 
     /// The symbol of a suit.

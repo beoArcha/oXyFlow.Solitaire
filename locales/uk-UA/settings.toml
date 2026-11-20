@@ -28,7 +28,11 @@ hints = "Підказки та допомога"
 
 [style]
 international = "Міжнародний"
-default = "Типовий"
+lattice = "Ґратка"
+ornament = "Орнамент"
+french = "Французький"
+german = "Німецький"
+italian = "Італійський"
 
 [desc]
 language = "Мова всього тексту. Змінюється одразу."

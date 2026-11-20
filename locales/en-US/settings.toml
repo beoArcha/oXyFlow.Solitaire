@@ -28,7 +28,11 @@ hints = "Hints and help"
 
 [style]
 international = "International"
-default = "Default"
+lattice = "Lattice"
+ornament = "Ornament"
+french = "French"
+german = "German"
+italian = "Italian"
 
 [desc]
 language = "The language of all text. Changes at once."
