@@ -37,6 +37,7 @@ fn with_storage(
 ) -> (Harness, Asked) {
     let asked = Asked::default();
     let display = DisplayDeps {
+        priority: crate::app::PriorityDeps::none(),
         display: Box::new(NullConsoleDisplay),
         facts: DisplayFacts {
             owns_window: false,

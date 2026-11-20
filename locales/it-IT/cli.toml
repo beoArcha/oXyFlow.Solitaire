@@ -20,6 +20,10 @@ Visualizzazione:
 Partita:
   --seed <u64>                 scegli una partita per questo seed
 
+Prestazioni:
+  --priority <livello>         priorità del processo, prevale sull'impostazione:
+                               highest, high, normal, low, lowest
+
 Finestra:
   -n, --new-window             apri il gioco in una nuova console
                                e torna subito al prompt

@@ -20,6 +20,10 @@ Pantalla:
 Juego:
   --seed <u64>                 elige una partida con esta semilla al instante
 
+Rendimiento:
+  --priority <nivel>           prioridad del proceso, prevalece sobre el ajuste:
+                               highest, high, normal, low, lowest
+
 Ventana:
   -n, --new-window             abre el juego en una nueva ventana de consola
                                y regresa al intérprete de inmediato

@@ -20,6 +20,10 @@ Weergave:
 Spel:
   --seed <u64>                 kies direct een spel voor deze seed
 
+Prestaties:
+  --priority <niveau>          procesprioriteit, wint van de instelling:
+                               highest, high, normal, low, lowest
+
 Venster:
   -n, --new-window             open het spel in een nieuw consolevenster en
                                keer direct terug naar de prompt

@@ -66,6 +66,7 @@ fn harness(
 ) -> (Harness, Shared) {
     let calls = Shared::default();
     let display = DisplayDeps {
+        priority: crate::app::PriorityDeps::none(),
         display: Box::new(NullConsoleDisplay),
         facts: DisplayFacts {
             owns_window: false,

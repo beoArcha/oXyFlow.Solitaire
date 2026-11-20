@@ -25,6 +25,7 @@ aura = "Leuchten"
 aura_colour = "Leuchtfarbe"
 aura_style = "Leuchtstil"
 aura_size = "Leuchtbreite"
+priority = "Prozesspriorität"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "Wie viele Zellen breit das Leuchten ist. Dick braucht freien Platz 
 target_marks = "Markiert mögliche Ablagestellen für eine gehaltene Folge mit + und einem Leuchten."
 guide_panel = "Eine Seitenleiste mit Hinweisen zur fokussierten Karte und den Tasten."
 moves_panel = "Eine Seitenleiste mit allen Aktionen und deren Tasten, aktiv oder nicht."
+priority = "Wie viel Rechenzeit das Spiel anfordert. Linux und macOS: Erhöhen braucht Rechte."
 
 [value]
 on = "Ein"
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (benötigt {needed} Spalten, aktuell {now})"
 
+needs_privileges = "braucht Rechte"
 [full_screen]
 auto = "Auto"
 
@@ -175,3 +178,10 @@ keep_interface = "Die geänderten Oberflächen-Einstellungen behalten?"
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Höchste"
+high = "Hoch"
+normal = "Normal"
+low = "Niedrig"
+lowest = "Niedrigste"

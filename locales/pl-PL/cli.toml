@@ -20,6 +20,10 @@ Wygląd:
 Gra:
   --seed <u64>                 od razu wybierz grę dla tego ziarna
 
+Wydajność:
+  --priority <poziom>          priorytet procesu, wygrywa z ustawieniem:
+                               highest, high, normal, low, lowest
+
 Okno:
   -n, --new-window             otwórz grę w nowym oknie konsoli i od razu
                                wróć do wiersza poleceń

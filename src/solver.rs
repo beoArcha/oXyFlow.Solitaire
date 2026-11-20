@@ -12,6 +12,8 @@ use oxysol_core::{SolveBudget, Verdict, solve};
 use oxysol_tui::{Answer, Proof, Query, Solver};
 use thiserror::Error;
 
+use crate::priority::{Native, SystemPriority, lower_solver_thread};
+
 /// The worker thread could not be started.
 #[derive(Debug, Error)]
 #[error("the solver thread could not be started")]
@@ -61,15 +63,23 @@ pub struct ThreadSolver {
 }
 
 impl ThreadSolver {
-    /// Starts the worker thread.
+    /// Starts the worker thread below the UI thread.
     pub fn spawn() -> Result<Self, SolverError> {
+        Self::spawn_with(Arc::new(SystemPriority))
+    }
+
+    /// Starts the worker thread; it lowers its own priority through `native` before it works.
+    pub fn spawn_with(native: Arc<dyn Native>) -> Result<Self, SolverError> {
         let (job_sender, job_receiver) = channel();
         let (answer_sender, answer_receiver) = channel();
         let generation = Arc::new(AtomicU64::new(0));
         let worker_generation = Arc::clone(&generation);
         thread::Builder::new()
             .name("oxysol-solver".to_owned())
-            .spawn(move || work(&job_receiver, &answer_sender, &worker_generation))?;
+            .spawn(move || {
+                lower_solver_thread(native.as_ref());
+                work(&job_receiver, &answer_sender, &worker_generation);
+            })?;
         Ok(Self {
             jobs: job_sender,
             answers: answer_receiver,
@@ -125,6 +135,8 @@ mod tests {
     use oxysol_core::{DrawCount, Variant};
 
     use super::*;
+    use crate::priority::Flavour;
+    use crate::priority::fake::{Answer as FakeAnswer, FakeNative};
 
     const WAIT: Duration = Duration::from_secs(120);
 
@@ -169,6 +181,18 @@ mod tests {
         let answers = collect(&mut solver, 1);
         assert!(!answers.is_empty());
         assert!(answers.iter().all(|answer| answer.id == 99), "{answers:?}");
+    }
+
+    #[test]
+    fn the_worker_lowers_its_own_priority_before_it_answers() {
+        let fake = Arc::new(FakeNative::new(Flavour::Windows, FakeAnswer::Accept));
+        let Ok(mut solver) = ThreadSolver::spawn_with(fake.clone()) else {
+            panic!("the solver thread must start");
+        };
+        solver.submit(query(1, Variant::FreeCell, 0));
+        assert_eq!(collect(&mut solver, 1).len(), 1);
+        assert_eq!(fake.thread_calls(), 1);
+        assert!(fake.process_calls().is_empty());
     }
 
     #[test]

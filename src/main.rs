@@ -4,6 +4,7 @@
 use std::fs::File;
 use std::io::{self, Write};
 use std::process::ExitCode;
+use std::sync::Arc;
 
 use oxysol::about;
 use oxysol::audio;
@@ -13,10 +14,11 @@ use oxysol::console::font::{ClassicConsole, FontZoom};
 use oxysol::console::{self, display};
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
+use oxysol::priority::{Native, ProcessControl, SystemPriority};
 use oxysol::solver::ThreadSolver;
 use oxysol::storage::SqliteStorage;
 use oxysol::{logging, new_window, panic_hook, seed};
-use oxysol_tui::app::{ConsoleFont, DisplayDeps, DisplayFacts, NullConsoleFont};
+use oxysol_tui::app::{ConsoleFont, DisplayDeps, DisplayFacts, NullConsoleFont, PriorityDeps};
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
 use oxysol_tui::i18n::{self, Locale};
 use oxysol_tui::settings::TerminalKind;
@@ -90,12 +92,19 @@ fn start(args: &Cli) -> Result<(), AppError> {
     if let Some(seed) = args.seed {
         tracing::info!(seed, "seed given on the command line");
     }
+    if let Some(level) = args.priority {
+        tracing::info!(
+            level = level.flag_name(),
+            "priority given on the command line"
+        );
+    }
     panic_hook::panic_if_requested();
     let storage = SqliteStorage::open(&paths).map_err(|error| {
         tracing::error!(target: "oxysol::critical", %error, "the database cannot be opened");
         AppError::from(error)
     })?;
     let caps = terminal_caps(args);
+    let native: Arc<dyn Native> = Arc::new(SystemPriority);
     let deps = Deps {
         storage: Box::new(storage),
         audio: audio::create(&caps),
@@ -104,8 +113,8 @@ fn start(args: &Cli) -> Result<(), AppError> {
         seeds: Box::new(seed::fresh),
         start_seed: args.seed,
         sound_styles: audio::bank::style_list(),
-        solver: start_solver(),
-        display: display_deps(args),
+        solver: start_solver(Arc::clone(&native)),
+        display: display_deps(args, native),
         version: env!("OXYSOL_VERSION"),
     };
     oxysol_tui::run(deps).map_err(|error| {
@@ -114,7 +123,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
     })
 }
 
-fn display_deps(args: &Cli) -> DisplayDeps {
+fn display_deps(args: &Cli, native: Arc<dyn Native>) -> DisplayDeps {
     let kind = display::terminal_kind(platform(), &|key: &str| std::env::var(key).ok());
     DisplayDeps {
         display: Box::new(display::ConsoleWindow::default()),
@@ -124,6 +133,10 @@ fn display_deps(args: &Cli) -> DisplayDeps {
             flag: args.full_screen,
         },
         font: console_font(kind),
+        priority: PriorityDeps {
+            control: Box::new(ProcessControl::new(native)),
+            flag: args.priority,
+        },
     }
 }
 
@@ -138,8 +151,8 @@ fn console_font(kind: TerminalKind) -> Box<dyn ConsoleFont> {
     }
 }
 
-fn start_solver() -> Box<dyn Solver> {
-    match ThreadSolver::spawn() {
+fn start_solver(native: Arc<dyn Native>) -> Box<dyn Solver> {
+    match ThreadSolver::spawn_with(native) {
         Ok(solver) => Box::new(solver),
         Err(error) => {
             tracing::warn!(%error, "no solver thread; deals are never proven winnable");

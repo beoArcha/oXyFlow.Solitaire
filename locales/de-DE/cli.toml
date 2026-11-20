@@ -20,6 +20,10 @@ Anzeige:
 Spiel:
   --seed <u64>                 direkt ein Spiel für diesen Seed wählen
 
+Leistung:
+  --priority <Stufe>           Prozesspriorität, gilt vor der Einstellung:
+                               highest, high, normal, low, lowest
+
 Fenster:
   -n, --new-window             Spiel in neuem Konsolenfenster öffnen und sofort
                                zur Eingabeaufforderung zurückkehren

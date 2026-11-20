@@ -12,6 +12,7 @@ use ratatui::crossterm::event::KeyEventKind;
 
 use self::deals::Check;
 use self::display::FullScreenState;
+use self::priority::PriorityState;
 use self::search::Search;
 use crate::audio::{Audio, StyleInfo};
 use crate::caps::TerminalCaps;
@@ -37,6 +38,7 @@ pub use font::{
     CardFontState, ConsoleFont, FontFacts, FontStep, NullConsoleFont, font_step_for_key,
 };
 pub use modal::Modal;
+pub use priority::{NullPriority, PriorityControl, PriorityDeps, PriorityOutcome};
 pub use search::{SEED_CAP, SearchCommand, SearchProgress};
 
 /// The screen behind the modal layer.
@@ -78,6 +80,7 @@ pub struct App {
     seeds: Box<dyn FnMut() -> u64>,
     solver: Box<dyn Solver>,
     full_screen: FullScreenState,
+    priority: PriorityState,
     search: Option<Search>,
     check: Option<Check>,
     next_query: u64,
@@ -125,6 +128,7 @@ impl App {
             display,
             version,
         } = deps;
+        let (display, priority) = display.split_priority();
         let settings = Settings::for_caps(&caps);
         let mut app = Self {
             storage,
@@ -133,6 +137,7 @@ impl App {
             seeds,
             solver,
             full_screen: FullScreenState::new(display),
+            priority: PriorityState::new(priority),
             search: None,
             check: None,
             next_query: 0,
@@ -171,6 +176,7 @@ impl App {
         app.fit_card_styles();
         app.sync_console_look();
         app.sync_full_screen();
+        app.sync_priority();
         app.reset_quick();
         app.refresh_view();
         app
@@ -283,6 +289,7 @@ mod font;
 mod interface;
 mod modal;
 mod persist;
+mod priority;
 mod quick;
 mod records;
 mod search;
@@ -294,6 +301,8 @@ mod display_tests;
 #[cfg(test)]
 mod font_tests;
 
+#[cfg(test)]
+mod priority_tests;
 #[cfg(test)]
 mod records_tests;
 

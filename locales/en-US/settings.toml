@@ -25,6 +25,7 @@ aura = "Aura"
 aura_colour = "Aura color"
 aura_style = "Aura style"
 aura_size = "Aura size"
+priority = "Process priority"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "How many cells wide the glow is. Thick needs free space around the 
 target_marks = "Marks the places a carried run can go with + and a glow."
 guide_panel = "A side panel with hints for the focused card and the keys."
 moves_panel = "A side panel listing every action with its key, active or not."
+priority = "How much processor time the game asks for. Linux and macOS: raising it needs privileges."
 
 [value]
 on = "On"
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (needs {needed} columns, now {now})"
 
+needs_privileges = "needs privileges"
 [full_screen]
 auto = "Auto"
 
@@ -175,3 +178,10 @@ keep_interface = "Keep the changed interface settings?"
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Highest"
+high = "High"
+normal = "Normal"
+low = "Low"
+lowest = "Lowest"

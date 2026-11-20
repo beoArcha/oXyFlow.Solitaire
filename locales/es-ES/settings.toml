@@ -25,6 +25,7 @@ aura = "Aura"
 aura_colour = "Color del aura"
 aura_style = "Estilo del aura"
 aura_size = "Tamaño del aura"
+priority = "Prioridad del proceso"
 line = "{label} {value}"
 
 [group]
@@ -75,6 +76,7 @@ aura_size = "Cuántas celdas de ancho tiene el brillo. Grueso necesita espacio l
 target_marks = "Marca con + y brillo los lugares donde puede ir una secuencia."
 guide_panel = "Panel lateral con pistas sobre la carta enfocada y las teclas."
 moves_panel = "Panel lateral con todas las acciones y sus teclas, activas o no."
+priority = "Cuánto tiempo de procesador pide el juego. En Linux y macOS, subirla requiere privilegios."
 
 [value]
 on = "Sí"
@@ -90,6 +92,7 @@ font_keys_linux = "Ctrl+Shift+= / Ctrl+-"
 font_keys_macos = "Cmd+= / Cmd+-"
 needs_columns = "{value} (requiere {needed} columnas, actual {now})"
 
+needs_privileges = "requiere privilegios"
 [full_screen]
 auto = "Auto"
 
@@ -175,3 +178,10 @@ keep_interface = "¿Conservar los ajustes de interfaz cambiados?"
 consolas = "Consolas"
 lucida_console = "Lucida Console"
 cascadia_mono = "Cascadia Mono"
+
+[priority]
+highest = "Máxima"
+high = "Alta"
+normal = "Normal"
+low = "Baja"
+lowest = "Mínima"

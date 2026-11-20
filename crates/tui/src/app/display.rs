@@ -3,6 +3,7 @@
 
 use super::App;
 use super::font::{CardFontState, ConsoleFont, FontFacts, NullConsoleFont};
+use super::priority::PriorityDeps;
 use crate::screens::Effect;
 use crate::settings::{Decision, GlyphMode, Settings, TerminalKind, decide};
 use crate::widgets::overlay::GraphicsCheck;
@@ -42,6 +43,8 @@ pub struct DisplayDeps {
     pub facts: DisplayFacts,
     /// The console font behind Ctrl+Plus, Ctrl+Minus and Ctrl+0 (P3-16).
     pub font: Box<dyn ConsoleFont>,
+    /// The process priority control and the `--priority` flag (P4-13).
+    pub priority: PriorityDeps,
 }
 
 impl DisplayDeps {
@@ -55,7 +58,14 @@ impl DisplayDeps {
                 flag: None,
             },
             font: Box::new(NullConsoleFont),
+            priority: PriorityDeps::none(),
         }
+    }
+
+    /// The priority part, and the rest with a priority that does nothing.
+    pub(super) fn split_priority(mut self) -> (Self, PriorityDeps) {
+        let priority = std::mem::replace(&mut self.priority, PriorityDeps::none());
+        (self, priority)
     }
 }
 
@@ -204,6 +214,7 @@ impl App {
             card_font: self.full_screen.card_font,
             face: self.full_screen.face,
             cell_px: self.full_screen.font.cell_size(),
+            priority: self.priority.outcome,
         }
     }
 

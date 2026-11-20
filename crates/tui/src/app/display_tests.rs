@@ -34,6 +34,7 @@ fn harness(setting: FullScreen, facts: DisplayFacts, obeys: bool) -> (Harness, R
         ..MemoryStorage::default()
     };
     let display = DisplayDeps {
+        priority: crate::app::PriorityDeps::none(),
         display: Box::new(Recording {
             calls: Rc::clone(&calls),
             obeys,

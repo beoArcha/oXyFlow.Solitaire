@@ -1,5 +1,6 @@
 //! Command-line argument parsing.
 
+use oxysol_tui::settings::ProcessPriority;
 use thiserror::Error;
 
 /// Color depth argument.
@@ -21,6 +22,8 @@ pub struct Cli {
     pub seed: Option<u64>,
     /// `--fullscreen` (`Some(true)`) or `--no-fullscreen` (`Some(false)`); the last one given wins.
     pub full_screen: Option<bool>,
+    /// `--priority <level>`: the process priority for this run, whatever the setting says.
+    pub priority: Option<ProcessPriority>,
 }
 
 /// Command-line parsing error.
@@ -55,6 +58,7 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
         colors: None,
         seed: None,
         full_screen: None,
+        priority: None,
     };
     let mut it = args.into_iter();
     while let Some(arg) = it.next() {
@@ -80,6 +84,15 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
                     value: val,
                 })?;
                 cli.seed = Some(seed);
+            }
+            "--priority" => {
+                let val = it.next().ok_or(CliError::MissingValue("--priority"))?;
+                let level =
+                    ProcessPriority::from_flag_name(&val).ok_or(CliError::InvalidValue {
+                        flag: "--priority",
+                        value: val,
+                    })?;
+                cli.priority = Some(level);
             }
             _ => return Err(CliError::UnknownArgument(arg)),
         }
@@ -108,6 +121,7 @@ mod tests {
                 colors: None,
                 seed: None,
                 full_screen: None,
+                priority: None,
             }
         );
     }
@@ -231,6 +245,40 @@ mod tests {
     fn test_seed_without_value() {
         let err = parse(to_args(&["--seed"])).unwrap_err();
         assert_eq!(err, CliError::MissingValue("--seed"));
+    }
+
+    #[test]
+    fn test_priority_flag_takes_each_level_and_keeps_the_other_flags() {
+        for level in ProcessPriority::ALL {
+            let parsed = parse(to_args(&["--priority", level.flag_name(), "--seed", "9"])).unwrap();
+            assert_eq!(parsed.priority, Some(level));
+            assert_eq!(parsed.seed, Some(9));
+        }
+        assert_eq!(parse(to_args(&["--ascii"])).unwrap().priority, None);
+    }
+
+    #[test]
+    fn test_priority_flag_the_last_one_wins() {
+        let parsed = parse(to_args(&["--priority", "low", "--priority", "highest"])).unwrap();
+        assert_eq!(parsed.priority, Some(ProcessPriority::Highest));
+    }
+
+    #[test]
+    fn test_priority_flag_rejects_real_time_and_other_words() {
+        for bad in ["realtime", "Normal", "7", ""] {
+            let err = parse(to_args(&["--priority", bad])).unwrap_err();
+            assert_eq!(
+                err,
+                CliError::InvalidValue {
+                    flag: "--priority",
+                    value: bad.to_string(),
+                }
+            );
+        }
+        assert_eq!(
+            parse(to_args(&["--priority"])).unwrap_err(),
+            CliError::MissingValue("--priority")
+        );
     }
 
     #[test]
