@@ -70,7 +70,7 @@ fn docking_falls_back_to_centre_on_a_narrow_screen_and_for_the_centre_side() {
 
 #[test]
 fn only_the_help_window_is_dockable() {
-    assert!(dock_view::is_dockable(&Modal::Help));
+    assert!(dock_view::is_dockable(&Modal::help()));
     assert!(dock_view::is_dockable(&Modal::HowToPlay(HowToPlay::new(
         Rules::Klondike
     ))));
@@ -83,7 +83,7 @@ fn only_the_help_window_is_dockable() {
 
 #[test]
 fn the_placement_button_sits_on_the_top_border_and_is_clickable() {
-    let frame = dock_view::centred_frame(&Modal::Help, SCREEN_130);
+    let frame = dock_view::centred_frame(&Modal::help(), SCREEN_130);
     let frame = frame.unwrap_or_default();
     let button = dock::button_rect(frame, DockSide::Centre);
     assert_eq!(button.y, frame.y);
@@ -103,7 +103,7 @@ fn the_placement_button_sits_on_the_top_border_and_is_clickable() {
 #[test]
 fn every_wrapped_row_fits_the_docked_width() {
     let modals = [
-        Modal::Help,
+        Modal::help(),
         Modal::HowToPlay(HowToPlay::new(Rules::Klondike)),
         Modal::HowToPlay(HowToPlay::new(Rules::Pyramid)),
         Modal::CommandLine(CommandLine::new()),
@@ -120,14 +120,14 @@ fn every_wrapped_row_fits_the_docked_width() {
 
 #[test]
 fn the_keys_tab_is_one_column_that_needs_scrolling_at_thirty_columns() {
-    let rows = dock_view::body(&Modal::Help, 28);
+    let rows = dock_view::body(&Modal::help(), 28);
     assert!(rows.len() > 35, "{}", rows.len());
 }
 
 #[test]
 fn end_and_home_reach_the_last_and_the_first_line_and_stop_there() {
     let rect = dock_at(DockSide::Right, SCREEN_130);
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let mut state = DockState::default();
     let max = dock::max_scroll(&modal, rect);
     assert!(max > 0);
@@ -144,20 +144,20 @@ fn end_and_home_reach_the_last_and_the_first_line_and_stop_there() {
 #[test]
 fn tab_walks_the_three_tabs_and_wraps() {
     let rect = dock_at(DockSide::Right, SCREEN_130);
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let mut state = DockState::default();
     press(&mut state, &mut modal, rect, KeyCode::Tab);
     assert!(matches!(modal, Modal::HowToPlay(_)));
     press(&mut state, &mut modal, rect, KeyCode::Tab);
     assert!(matches!(modal, Modal::CommandLine(_)));
     press(&mut state, &mut modal, rect, KeyCode::Tab);
-    assert!(matches!(modal, Modal::Help));
+    assert!(matches!(modal, Modal::Help(_)));
 }
 
 #[test]
 fn left_and_right_switch_games_on_the_rules_tab_and_tabs_elsewhere() {
     let rect = dock_at(DockSide::Right, SCREEN_130);
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let mut state = DockState::default();
     press(&mut state, &mut modal, rect, KeyCode::Right);
     assert!(matches!(modal, Modal::HowToPlay(ref s) if s.rules == Rules::Klondike));
@@ -181,7 +181,7 @@ fn question_mark_and_i_jump_to_their_tabs_and_escape_or_enter_close() {
         &key,
         action_for_key(&key),
     );
-    assert!(matches!(modal, Modal::Help));
+    assert!(matches!(modal, Modal::Help(_)));
     assert_eq!(
         press(&mut state, &mut modal, rect, KeyCode::Esc),
         Some(Effect::None)
@@ -195,7 +195,7 @@ fn question_mark_and_i_jump_to_their_tabs_and_escape_or_enter_close() {
 #[test]
 fn the_wheel_scrolls_only_when_the_pointer_is_over_the_window() {
     let rect = dock_at(DockSide::Right, SCREEN_130);
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let mut state = DockState::default();
     let wheel_down = MouseEventKind::ScrollDown;
     let over = mouse(wheel_down, rect.x + 2, rect.y + 5);
@@ -212,7 +212,7 @@ fn a_click_on_the_next_arrow_of_the_tab_row_switches_the_tab() {
     let top = dock::parts(rect).top;
     let name_width = 4_u16;
     let end = top.x + (top.width - (name_width + 4)) / 2 + name_width + 4;
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let mut state = DockState::default();
     let outcome = dock::handle_mouse(
         &mut state,
@@ -229,7 +229,7 @@ fn a_click_on_the_next_arrow_of_the_tab_row_switches_the_tab() {
 fn a_click_on_close_closes_the_window() {
     let rect = dock_at(DockSide::Right, SCREEN_130);
     let close = dock::close_rect(rect);
-    let mut modal = Modal::Help;
+    let mut modal = Modal::help();
     let mut state = DockState::default();
     let outcome = dock::handle_mouse(
         &mut state,

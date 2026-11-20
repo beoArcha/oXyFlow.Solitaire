@@ -58,7 +58,7 @@ fn click_text(h: &mut Harness, needle: &str) {
 fn help_opens_on_keys_tab_with_uncolored_selection() {
     let mut h = harness(TRUE_COLOR);
     h.type_char('?');
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     let text = h.text();
     assert!(text.contains("[Keys]"));
     assert!(text.contains("Rules"));
@@ -75,7 +75,7 @@ fn help_opens_on_keys_tab_with_uncolored_selection() {
 fn switching_between_keys_and_rules_by_key_and_mouse() {
     let mut h = harness(TRUE_COLOR);
     h.type_char('?');
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
 
     h.press(KeyCode::Tab);
     assert_eq!(shown(&h), Some((Rules::Klondike, Focus::Tabs)));
@@ -88,7 +88,7 @@ fn switching_between_keys_and_rules_by_key_and_mouse() {
     }
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Tab);
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     assert!(h.text().contains("[Keys]"));
 
     click_text(&mut h, "Rules");
@@ -96,7 +96,7 @@ fn switching_between_keys_and_rules_by_key_and_mouse() {
     assert!(h.text().contains("[Rules]"));
 
     click_text(&mut h, "Keys");
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     assert!(h.text().contains("[Keys]"));
 
     h.press(KeyCode::Right);
@@ -115,7 +115,7 @@ fn rules_opens_on_current_game_from_board() {
     for (variant, rules) in cases {
         let mut h = playing(variant);
         h.type_char('?');
-        assert_eq!(h.app.modal(), Some(&Modal::Help));
+        assert_eq!(h.app.modal(), Some(&Modal::help()));
         h.press(KeyCode::Tab);
         assert_eq!(shown(&h).map(|state| state.0), Some(rules), "{variant:?}");
         let name = i18n::t(rules.name_key());
@@ -170,7 +170,7 @@ fn i_and_menu_item_show_rules_and_can_switch_to_keys() {
     assert!(h.text().contains("[Rules]"));
     h.press(KeyCode::BackTab);
     h.press(KeyCode::BackTab);
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     assert!(h.text().contains("[Keys]"));
     h.press(KeyCode::Esc);
     assert!(h.app.modal().is_none());
@@ -180,7 +180,7 @@ fn i_and_menu_item_show_rules_and_can_switch_to_keys() {
     assert!(h.text().contains("[Rules]"));
     h.press(KeyCode::BackTab);
     h.press(KeyCode::BackTab);
-    assert_eq!(h.app.modal(), Some(&Modal::Help));
+    assert_eq!(h.app.modal(), Some(&Modal::help()));
     assert!(h.text().contains("[Keys]"));
 }
 

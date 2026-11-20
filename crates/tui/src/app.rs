@@ -299,7 +299,7 @@ impl App {
         }
         if !self.types_text(&key) {
             match action {
-                Some(Action::Help) => return Effect::Open(Modal::Help),
+                Some(Action::Help) => return Effect::Open(Modal::help()),
                 Some(Action::Rules) => return Effect::HowToPlay,
                 _ => {}
             }

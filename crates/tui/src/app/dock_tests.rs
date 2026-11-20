@@ -66,7 +66,7 @@ fn a_narrow_screen_keeps_the_window_centred_with_a_note() {
     start_first_game(&mut h);
     h.type_char('?');
     h.type_char('d');
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     let text = h.text();
     assert!(text.contains("Docking needs 130 columns"), "{text}");
     assert!(column_of(&mut h, "Dock: right").is_some());
@@ -133,7 +133,7 @@ fn a_click_on_the_placement_button_cycles_the_side_and_keeps_the_window_open() {
     h.type_char('?');
     let (column, row) = h.find("Dock: centre").unwrap_or((0, 0));
     h.click(column + 2, row);
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     assert_eq!(h.app.settings().help_dock, DockSide::Right);
 }
 
@@ -161,7 +161,7 @@ fn the_wheel_outside_the_docked_window_does_not_reach_it() {
         row: 10,
         modifiers: ratatui::crossterm::event::KeyModifiers::NONE,
     }));
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     assert!(h.app.board().clock_running());
 }
 
@@ -185,7 +185,7 @@ fn esc_puts_a_picked_card_back_and_keeps_the_docked_help_window_open() {
     assert!(pick_up_a_card(&mut h));
     h.press(KeyCode::Esc);
     assert!(!h.app.board().carrying());
-    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     assert_eq!(h.app.screen(), Screen::Board);
 }
 

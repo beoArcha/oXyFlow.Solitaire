@@ -248,14 +248,14 @@ pub fn draw_placement(
 pub const fn is_dockable(modal: &Modal) -> bool {
     matches!(
         modal,
-        Modal::Help | Modal::HowToPlay(_) | Modal::CommandLine(_)
+        Modal::Help(_) | Modal::HowToPlay(_) | Modal::CommandLine(_)
     )
 }
 
 /// The box of a dockable modal drawn centred in `area`; `None` for any other modal.
 pub fn centred_frame(modal: &Modal, area: Rect) -> Option<Rect> {
     match modal {
-        Modal::Help => Some(help::geometry(area).frame),
+        Modal::Help(_) => Some(help::geometry(area).frame),
         Modal::HowToPlay(_) => Some(how_to_play::geometry(area).frame),
         Modal::CommandLine(_) => Some(command_line::geometry(area).frame),
         _ => None,

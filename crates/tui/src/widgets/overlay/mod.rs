@@ -11,6 +11,7 @@ pub mod dock;
 mod focus_tests;
 mod guide_window;
 mod help;
+mod help_keys;
 #[cfg(test)]
 mod help_rules_tests;
 mod how_to_play;
@@ -38,6 +39,7 @@ use ratatui::widgets::{Block, Clear};
 pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
 pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
+pub use self::help_keys::HelpKeys;
 pub use self::how_to_play::{Focus, HowToPlay, Rules};
 pub use self::moves_window::MovesWindow;
 pub use self::quick_options::QuickOptions;
@@ -55,7 +57,7 @@ use crate::widgets::footer::FooterMap;
 
 fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     match modal {
-        Modal::Help
+        Modal::Help(_)
         | Modal::HowToPlay(_)
         | Modal::CommandLine(_)
         | Modal::Guide(_)
@@ -139,7 +141,8 @@ pub fn draw(
             quick_options::draw(frame, area, state, ctx);
             FooterMap::default()
         }
-        (_, None) => help::draw(frame, area, ctx),
+        (Modal::Help(state), None) => help::draw(frame, area, state, ctx),
+        (_, None) => FooterMap::default(),
     }
 }
 
@@ -242,6 +245,7 @@ pub fn handle_for(
         return match modal {
             Modal::HowToPlay(state) => how_to_play::handle(state, key, action),
             Modal::CommandLine(state) => command_line::handle(state, key, action),
+            Modal::Help(state) => help_keys::handle_key(state, key, action),
             _ => nav::close_help(key, action),
         };
     }
@@ -291,6 +295,7 @@ pub fn handle_mouse(
         return match modal {
             Modal::HowToPlay(state) => how_to_play::handle_mouse(state, area, event),
             Modal::CommandLine(state) => command_line::handle_mouse(state, area, event),
+            Modal::Help(state) => help_keys::handle_mouse(state, area, event),
             _ => click_help_button(area, event),
         };
     }
