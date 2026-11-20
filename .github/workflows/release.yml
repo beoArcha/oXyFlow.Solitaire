@@ -38,8 +38,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v7
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           save-if: false
       - name: Install the ALSA development package for the audio feature
@@ -64,7 +64,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       STABLE: ${{ github.event_name == 'workflow_dispatch' && inputs.stable == true }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
       - name: Compute the tag and stop if this commit is already published
@@ -140,7 +140,7 @@ jobs:
       TAG: ${{ needs.tag.outputs.tag }}
       TARGET: ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
       - name: Install musl tools
@@ -155,7 +155,7 @@ jobs:
           FEATURES: ${{ matrix.features }}
         run: cargo build --release --locked $FEATURES --target "$TARGET" -p oxysol
       - name: Install cargo-about
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@75a7c0f87bd666af3cdb75c5b9e9d03ab6044e6f # v2.90.6
         with:
           tool: cargo-about@0.9.3
       - name: Generate the third-party licenses
@@ -196,7 +196,7 @@ jobs:
           )
           Set-Content -Path "dist/$pname/oxysol.portable" -Value $lines -Encoding Ascii
           Compress-Archive -Path "dist/$pname" -DestinationPath "dist/$pname.zip"
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: archive-${{ matrix.target }}
           path: |
@@ -216,7 +216,7 @@ jobs:
       TAG: ${{ needs.tag.outputs.tag }}
       STABLE: ${{ needs.tag.outputs.stable }}
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: archive-*
           merge-multiple: true
@@ -250,7 +250,7 @@ jobs:
       MDBOOK_VERSION: v0.4.52
       MDBOOK_SHA256: c0b903f01dd8f4edc644372ad2b80b1fdddd12552d37b6a098657cbd8eddd768
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install mdBook
         run: |
           set -eu
@@ -272,9 +272,9 @@ jobs:
           fi
       - name: Build the site
         run: mdbook build docs/site
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.1
         with:
           path: docs/site/book
       - name: Deploy to GitHub Pages
         id: deploy
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.0
