@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
+Status: contract v0.4 (2026-11-20: P3-37 added the language selector of the main menu (`widgets/language_picker/`, `i18n/flags.rs`, `i18n::t_in`); 2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -30,7 +30,7 @@ crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
 crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
-                         i18n.rs settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
+                         i18n.rs (+ i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml audio.toml
                          rules.toml stats.toml
@@ -272,13 +272,28 @@ pub struct NullClipboard;                                // every copy fails wit
 - **Focus (P3-17):** `Action::FocusNext` (Tab) and `Action::FocusPrevious` (Shift+Tab, `KeyCode::BackTab`) are
   rows of `KEY_TABLE` (group Navigation), so the help window lists them. Every screen and dialog owns a focus
   ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
-  Rings: main menu items; seed entry field, Continue, Back; game selection list, then the undo toggle; settings
+  Rings: main menu language selector, then its items (initial focus stays on the first item); seed entry field, Continue, Back; game selection list, then the undo toggle; settings
   rows; statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
   Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
   (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
   press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
   digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in
   ASCII) directly before its label and, for buttons, reverse video; `MenuList` draws the marker next to the label.
+- **Language selector (P3-37):** the top-left corner of the main menu (`widgets/language_picker/`, state `LanguagePicker`,
+  drawn by `MainMenu::draw_items` last, over the logo area). It is a ring element before the items (Tab from the last item and
+  Shift+Tab from the first reach it; Tab and Shift+Tab leave it) and carries the marker and the focus style like any other.
+  Layout in Unicode with colors: `◄ [flag] ► ▼` over two rows (the flag is 4 × 2 cells of `▀` with foreground and background
+  from the 4 × 4 pixel grid of `i18n::flags::flag(locale)`, the language code under the right arrow). In ASCII glyph mode or at
+  16 colors the code replaces the flag: `< EN > v`. Keys while it has the focus: Left/Right choose the previous/next
+  `Locale::ALL` entry, Down, Enter and Space open the list; in the open list Up/Down move, Enter chooses, Esc closes, and every
+  other key is swallowed. Mouse: a click on an arrow chooses or opens, a click on the flag or code gives it the focus, in the
+  open list a row chooses (hover and wheel move the highlight) and a click outside closes it without reaching what lies below.
+  The picker never changes the settings: a choice becomes `Effect::Apply(Settings { locale, .. })`, the same effect as the Language
+  row of the settings screen, so the language applies and is saved at once. The tooltip is a framed box under the corner with the
+  language's own name (`common.language.name` read with `i18n::t_in(locale, key)`, independent of the current language); it shows
+  while the pointer (`ViewCtx::pointer`) is over the corner or the selector has the focus. A flag is data in `i18n/flags.rs`
+  (`Flag { code, pixels }`); a new locale adds its flag there and its `[language] name` to `common.toml`. Flag colors are
+  content, not theme tokens (T-34).
 - **How to play (P3-10, O-14, O-15):** `Modal::Help` (the keys table), `Modal::HowToPlay(HowToPlay { rules, scroll })`
   (the rules pages) and `Modal::CommandLine(CommandLine { scroll })` (the options of `oxysol --help`) form the help
   window (`widgets/overlay/`): three top tabs ("Keys", "Rules" and "Command line") switch between them by

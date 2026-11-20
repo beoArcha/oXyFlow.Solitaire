@@ -1,4 +1,5 @@
-//! The main menu: Resume (when a save exists), the new-game entries, Statistics, Settings, How to play, Help and Quit.
+//! The main menu: Resume (when a save exists), the new-game entries, Statistics, Settings, How to play, Help and Quit,
+//! and the language selector in the top-left corner (first in the Tab order, before the items).
 //! "New game from seed" asks for a seed, then lists the games dealt from it; the menu keeps that
 //! flow to itself, so the seed travels in the `Effect::Start` it returns.
 
@@ -12,13 +13,17 @@ use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
 use self::seed::{SeedField, Step};
+use super::focus::tab_forward;
 use super::game_select::GameSelect;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
 use crate::app::{Modal, Screen};
-use crate::i18n::{t, tf};
+use crate::i18n::{Locale, t, tf};
+use crate::mouse::wheel_action;
+use crate::settings::Settings;
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, KeyHint};
+use crate::widgets::language_picker::{LanguagePicker, Pointed};
 use crate::widgets::logo::logo;
 use crate::widgets::menu_list::MenuList;
 
@@ -103,6 +108,8 @@ pub struct MainMenu {
     list: MenuList,
     stage: Stage,
     footer: FooterMap,
+    picker: LanguagePicker,
+    selector_focus: bool,
 }
 
 impl MainMenu {
@@ -120,6 +127,8 @@ impl MainMenu {
                 picker: GameSelect::for_seed(seed),
             },
             footer: FooterMap::default(),
+            picker: LanguagePicker::new(),
+            selector_focus: false,
         }
     }
 
@@ -149,14 +158,7 @@ impl MainMenu {
     /// Handles a mouse event: the wheel moves focus, a click activates an item or a button.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         match &mut self.stage {
-            Stage::Items => {
-                let items = items(ctx.saved.is_some());
-                let clicked = self.list.on_mouse(event, items.len());
-                match clicked.and_then(|index| items.get(index).copied()) {
-                    Some(item) => self.activate(item),
-                    None => Effect::None,
-                }
-            }
+            Stage::Items => self.handle_items_mouse(event, ctx),
             Stage::Seed(field) => {
                 let step = field.handle_mouse(event);
                 self.after_seed(step)
@@ -186,14 +188,74 @@ impl MainMenu {
 
     fn handle_items(&mut self, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         let items = items(ctx.saved.is_some());
-        match action {
-            Some(Action::Quit) => Effect::Quit,
-            Some(action) => match self.list.on_action(action, items.len()) {
-                Some(index) => items
-                    .get(index)
-                    .map_or(Effect::None, |item| self.activate(*item)),
-                None => Effect::None,
-            },
+        let Some(action) = action else {
+            return Effect::None;
+        };
+        if self.picker.is_open() {
+            let chosen = self.picker.on_action(action, ctx.settings.locale);
+            return language_effect(chosen, ctx.settings);
+        }
+        if action == Action::Quit {
+            return Effect::Quit;
+        }
+        if self.selector_focus {
+            return self.handle_selector(action, items.len(), ctx);
+        }
+        if let Some(forward) = tab_forward(action)
+            && self.leaves_list(forward, items.len())
+        {
+            self.selector_focus = true;
+            return Effect::None;
+        }
+        match self.list.on_action(action, items.len()) {
+            Some(index) => items
+                .get(index)
+                .map_or(Effect::None, |item| self.activate(*item)),
+            None => Effect::None,
+        }
+    }
+
+    fn leaves_list(&self, forward: bool, len: usize) -> bool {
+        if forward {
+            self.list.focus() + 1 >= len
+        } else {
+            self.list.focus() == 0
+        }
+    }
+
+    fn handle_selector(&mut self, action: Action, len: usize, ctx: &ViewCtx<'_>) -> Effect {
+        if let Some(forward) = tab_forward(action) {
+            self.selector_focus = false;
+            self.list = MenuList::new();
+            if !forward {
+                self.list.on_action(Action::Up, len);
+            }
+            return Effect::None;
+        }
+        let chosen = self.picker.on_action(action, ctx.settings.locale);
+        language_effect(chosen, ctx.settings)
+    }
+
+    fn handle_items_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
+        match self.picker.on_mouse(event, ctx.settings.locale) {
+            Pointed::Handled => return Effect::None,
+            Pointed::Focus => {
+                self.selector_focus = true;
+                return Effect::None;
+            }
+            Pointed::Choose(locale) => {
+                self.selector_focus = true;
+                return language_effect(Some(locale), ctx.settings);
+            }
+            Pointed::Ignored => {}
+        }
+        let items = items(ctx.saved.is_some());
+        let clicked = self.list.on_mouse(event, items.len());
+        if clicked.is_some() || wheel_action(event).is_some() {
+            self.selector_focus = false;
+        }
+        match clicked.and_then(|index| items.get(index).copied()) {
+            Some(item) => self.activate(item),
             None => Effect::None,
         }
     }
@@ -275,7 +337,8 @@ impl MainMenu {
                 _ => t(label_key(*item)).into_owned(),
             })
             .collect();
-        self.list.draw(frame, list_area, &labels, ctx, true);
+        self.list
+            .draw(frame, list_area, &labels, ctx, !self.selector_focus);
         self.footer = footer::draw(
             frame,
             footer_area,
@@ -293,11 +356,27 @@ impl MainMenu {
             .alignment(Alignment::Right),
             footer_area,
         );
+        self.picker
+            .draw(frame, area, ctx.settings.locale, self.selector_focus, ctx);
+    }
+}
+
+/// The effect of choosing `locale` in the selector: the same settings with the new language, which
+/// the application applies and saves at once.
+fn language_effect(locale: Option<Locale>, settings: &Settings) -> Effect {
+    match locale {
+        Some(locale) if locale != settings.locale => Effect::Apply(Settings {
+            locale,
+            ..settings.clone()
+        }),
+        _ => Effect::None,
     }
 }
 
 #[cfg(test)]
 mod focus_tests;
+#[cfg(test)]
+mod language_tests;
 #[cfg(test)]
 mod resume_tests;
 #[cfg(test)]
