@@ -256,6 +256,7 @@ shared file already has its final shape so later tasks do not collide.
   rules and layout tests over every complete locale. A locale is offered only when its `meta.toml` says
   `complete = true`; a translation PR (O-42…O-48) replaces the ten files and sets that flag.
 - **Acceptance:** see the PR; `cargo xtask check --quick` passes.
+- **Done:** #131 (only complete locales offered; Settings row shows own names; T-36)
 
 ### O-42 — Interface translation: German (de-DE)
 
@@ -265,6 +266,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #129 (fit fixes by Haiku; stats test reads texts from the locale)
 
 ### O-43 — Interface translation: French (fr-FR)
 
@@ -274,6 +276,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #132 (fit fixes by Haiku)
 
 ### O-44 — Interface translation: Italian (it-IT)
 
@@ -283,6 +286,7 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+- **Done:** #134 (menu test matches Esc as a whole word)
 
 ### O-45 — Interface translation: Brazilian Portuguese (pt-BR)
 
@@ -319,3 +323,156 @@ shared file already has its final shape so later tasks do not collide.
 - **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
   labels, one term per concept (glossary). Translations run one language at a time.
 - **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-49 — Workflow review: CI, release and agent workflows
+
+- **Owner:** Opus
+- **Depends on:** —
+- **Files:** `docs/tech/workflow-review-2026-11.md`
+- **Scope:** owner request 2026-11-20: review of the workflows for safer, better, more convenient and faster work.
+- **Done:** #133 (26 findings, cards O-50…O-67; the documentation-only items B3a, B5, the C4 rule, C5 and F1 were
+  applied directly in AGENTS.md, `workflow.md`, `architecture.md` and `decisions.md`)
+
+### O-50 — Require up-to-date branches and auto-merge on main (repository setting)
+
+- **Owner:** Owner
+- **Depends on:** O-49
+- **Files:** repository settings only
+- **Scope:** S1 (P1): branch protection on `main` requires branches to be up to date before merging; enable auto-merge so a PR merges itself once green. Land first: every later PR is then tested against the latest `main`.
+- **Acceptance:** The setting is visible in Settings → Branches; an out-of-date PR cannot merge until updated.
+
+### O-51 — `check --quick` runs every test target in one cargo call
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `xtask/src/check*`
+- **Scope:** B1 (P1): `--quick` skips the `e2e` and `architecture` targets although they cost under 0.1 s, and the split run compiles core and the TUI twice. Run all test targets in one cargo call.
+- **Acceptance:** An e2e failure (like the O-36 version test) fails `--quick` locally; a warm `--quick` is not slower.
+
+### O-52 — Lint: conflict markers in every tracked file
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `xtask/src/lint*`, tests
+- **Scope:** B2 (P1): conflict markers are caught only in `.rs` files by the compiler. Add a lint over the tracked text files that fails on conflict-marker lines (seven `<`, `=` or `>` at the start of a line), naming file and line.
+- **Acceptance:** A test with a fixture; the rule runs in `check --quick` and passes on `main`.
+
+### O-53 — Lint: decision ID uniqueness and references
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `xtask/src/lint*`, tests, `docs/tech/decisions.md` (ordering only)
+- **Scope:** B3 (P1): parse the table rows of `decisions.md`; fail on a duplicate `R-`/`T-`/`D-` ID; warn on a reference under `docs/` to an ID that does not exist.
+- **Acceptance:** Tests with fixtures; `check --quick` passes on `main`.
+
+### O-54 — `check` writes a result file; `cargo xtask report`; PR template
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `xtask/src/check*`, `xtask/src/main.rs`, `.github/pull_request_template.md`
+- **Scope:** C1 (P1): `check` writes `target/check-result.txt` with the commit SHA, mode, steps, result and the last lines of a failing step; `cargo xtask report` prints it as Markdown for the PR body. A PR template with What / Files / Check result / Deviations / Limitations.
+- **Acceptance:** Unit tests for the file format; the template shows on a new PR.
+
+### O-55 — Pin GitHub Actions by SHA and add Dependabot
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `.github/workflows/*.yml`, `.github/dependabot.yml`
+- **Scope:** S3 (P1): pin every action by full commit SHA with the version as a comment; Dependabot for `github-actions` and `cargo`, weekly and grouped.
+- **Acceptance:** Workflows still pass; the Dependabot config validates.
+
+### O-56 — cargo-deny on pull requests
+
+- **Owner:** Sonnet
+- **Depends on:** O-49
+- **Files:** `deny.toml`, `.github/workflows/pr.yml`, `docs/tech/decisions.md` (ID assigned in the card)
+- **Scope:** S2 (P1): licenses (the T-31 list), advisories and sources checked on every PR, not only at release.
+- **Acceptance:** `pr.yml` runs it; a disallowed license fails it.
+
+### O-57 — English fallback for incomplete locales and `cargo xtask locale-diff`
+
+- **Owner:** Sonnet
+- **Depends on:** O-49, O-41
+- **Files:** `crates/tui/src/i18n*`, `xtask/src/**`, locale tests, `docs/tech/architecture.md`
+- **Scope:** B6 (P1): an incomplete locale need not mirror every English key; missing keys fall back to en-US, so a new English key no longer touches nine folders. Complete locales keep full parity. `cargo xtask locale-diff <lang>` lists missing, extra and placeholder-mismatched keys.
+- **Acceptance:** Parity enforced for complete locales only; locale-diff tests.
+
+### O-58 — Check pull requests on Windows as well
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `.github/workflows/pr.yml`
+- **Scope:** S6 (P2): Windows-only code (console font, full screen, widening) is compiled only on `main`. Add a cached Windows job to `pr.yml`.
+- **Acceptance:** A PR shows both jobs; the owner updates the required checks.
+
+### O-59 — Tests derive row counts instead of hard-coding them
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `crates/tui/src/accessibility_tests.rs`, `crates/tui/src/screens/settings/tests/**`
+- **Scope:** B7 (P2): settings and menu tests break whenever a row is added (fixed counts and step loops). Derive counts from `FIELDS` and find rows by field.
+- **Acceptance:** Adding a settings row needs no test edit.
+
+### O-60 — `cargo xtask worktrees`: list and remove worktrees of merged branches
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `xtask/src/**`, `docs/tech/workflow.md`
+- **Scope:** C4 (P2): list worktrees whose branch is merged into `origin/main` or whose PR is closed, `--remove` to delete them, and report orphan directories.
+- **Acceptance:** Tests with a temporary repository.
+
+### O-61 — main: re-run jobs that never got a runner before failing
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `.github/workflows/main.yml`
+- **Scope:** B4 (P2): macOS jobs cancelled after about 15 minutes without a runner turn `main` red and skip promotion. Retry once, or tell a never-started job from a failed one.
+- **Acceptance:** A documented retry path.
+
+### O-62 — Build the site on pull requests; check screenshots are current
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `.github/workflows/pr.yml`, `xtask/src/screenshots/**`
+- **Scope:** B8 (P2): build the mdBook site on PRs that touch `docs/site/**`; add a staleness check for committed screenshots and the font.
+- **Acceptance:** A broken link in a test PR fails the check.
+
+### O-63 — Take the version from the binary instead of a TUI build script
+
+- **Owner:** Sonnet
+- **Depends on:** O-49
+- **Files:** `crates/tui/build.rs`, `build.rs`, `src/**`, the TUI version display
+- **Scope:** F2 (P2): the git-derived version recompiles `oxysol-tui` after every commit, even docs-only ones. Compute it in the binary crate and pass it to the TUI.
+- **Acceptance:** A docs-only commit does not rebuild `oxysol-tui`; the version shown is unchanged.
+
+### O-64 — `cargo xtask preflight` and a local CI mode
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `xtask/src/**`, `docs/tech/workflow.md`, `AGENTS.md`
+- **Scope:** C2, C3 (P2): `preflight [--card <ID>]` fetches `origin/main`, reports how far behind the branch is, runs the marker and decision-ID lints and lists changed files the card does not name.
+- **Acceptance:** Tests with a temporary repository.
+
+### O-65 — Release provenance, SBOM, immutable releases; pinned host key
+
+- **Owner:** Sonnet
+- **Depends on:** O-49
+- **Files:** `.github/workflows/release.yml`, the promotion step, `docs/tech/workflow.md`
+- **Scope:** S4, S5 (P2): provenance attestations and an SBOM per archive; immutable releases; a pinned GitHub SSH host key for promotion instead of a fresh `ssh-keyscan`.
+- **Acceptance:** A release dry run shows the attestations; promotion works with the pinned key.
+
+### O-66 — Optimize the engine in test builds
+
+- **Owner:** Haiku
+- **Depends on:** O-49
+- **Files:** `Cargo.toml` (profiles)
+- **Scope:** F3 (P2): solver tests dominate debug test time; raise `opt-level` for `oxysol-core` in the dev/test profile.
+- **Acceptance:** Test time before and after in the PR.
+
+### O-67 — Small cleanups: pycache, site redeploy, xtask split, apt cache
+
+- **Owner:** Antigravity / Haiku
+- **Depends on:** O-49
+- **Files:** as named in the review (B9, C7, F4, F5)
+- **Scope:** P3 items of `docs/tech/workflow-review-2026-11.md`, one PR each.
+- **Acceptance:** Each item as in the review.

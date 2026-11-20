@@ -157,6 +157,54 @@ The version is `major.minor.patch`.
 
 3. Pages (Settings, Pages): source "GitHub Actions" (used by `release.yml`).
 
+## Parallel work and shared files
+
+Two tasks run in parallel only when their file lists do not overlap. Some files are touched by most
+tasks (measured over 60 PRs in `workflow-review-2026-11.md`, C5); a card that edits one of them names
+it on a **Shared files** line, and the orchestrator either serializes such cards or merges the first
+before dispatching the second. Current hotspots:
+
+- `crates/tui/src/app.rs`, `crates/tui/src/settings.rs`, `crates/tui/src/input.rs`
+- `crates/tui/src/screens/settings/**` and the settings row-count tests in `accessibility_tests.rs`
+- `locales/en-US/*.toml` (every new key must reach every locale folder, see below)
+- `docs/tech/decisions.md` (IDs are assigned by the orchestrator in the card)
+- `docs/task_list/**` (edited by the orchestrator only)
+
+A merged PR changes the base of every open one: before merging the next PR the orchestrator merges
+`main` into it (or asks its agent to) and runs `cargo xtask check --quick` again.
+
+## Translations
+
+A locale is offered to players only when `locales/<lang>/meta.toml` says `complete = true`
+(architecture: "Adding or translating a locale"). Translation tasks are text-only and run one
+language at a time: the translator replaces the ten area files of a locale, keeps keys, order and
+`{placeholders}`, sets `complete = true` and writes `docs/tech/glossaries/<lang>.md`. The
+orchestrator then merges `main`, compares the keys with `en-US`, and runs the check; the fit tests
+(footer, `Do:` row, header, statistics, help, `Now:` row) run for every offered locale, and texts
+that do not fit are shortened in that locale only. A test that hard-codes English or Polish text is
+a test bug: it reads the expected text from the locale instead.
+
+## Worktrees
+
+Every agent task gets its own git worktree under `~/.t3/worktrees/oXyFlow.Solitare/`. After its PR
+is merged or closed, the orchestrator removes it: `git worktree remove <path>`, `git worktree prune`,
+`git branch -D <branch>` (GitHub deletes the remote branch on merge). A worktree whose agent stopped
+with uncommitted work is committed as `wip(...)` and pushed before removal, so another agent can
+finish it.
+
+## Local setup on Windows
+
+Each worktree has its own `target/`, so a first `cargo xtask check --quick` compiles every
+dependency again (about 7 minutes cold, 2 minutes warm). Two machine settings, not part of the
+repository, make this much faster:
+
+1. **sccache:** `cargo install sccache --locked`, then set the user environment variable
+   `RUSTC_WRAPPER=sccache` (System Properties → Environment Variables → User variables → New).
+   Dependencies then compile once for all worktrees. CI is unaffected.
+2. **Windows Defender exclusions:** Windows Security → Virus & threat protection → Manage settings →
+   Exclusions → Add an exclusion → Folder: `%USERPROFILE%\.t3\worktrees`, the repository folder and
+   `%LOCALAPPDATA%\Mozilla\sccache`. Real-time scanning of `target/` is a large slowdown.
+
 ## Limitations
 
 - `promote` trusts the `github.com` host key obtained with `ssh-keyscan` on each run.

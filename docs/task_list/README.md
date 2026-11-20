@@ -32,6 +32,10 @@ goes to Haiku; a Haiku task that fails its gate goes to Sonnet.
    pre-release and updates the site (R-17, T-21).
 7. The phase gate reviews the merged diff and updates the Status column here.
 
+Cards name their files on a **Files** line and, when they touch a hotspot file listed in
+`docs/tech/workflow.md` ("Parallel work and shared files"), on a **Shared files** line; cards that share
+one are serialized. Decision IDs a card needs are assigned in the card by the orchestrator.
+
 Micro tasks add three rules: a card is workable only when its status is `READY` (the owning phase
 task fills in exact signatures and flips `DRAFT` to `READY`); the agent reads only `AGENTS.md` and
 its card; the work must fit one short session.
@@ -171,14 +175,33 @@ the PR descriptions; cards that exist are in the phase files.
 | O-38 | Settings save failure: alert and log once per session | — | TODO |
 | O-39 | Split files over 300 LOC found by the P3-09 gate | — | TODO |
 | O-40 | Player site in nine languages and a refreshed README | O-30 | DONE |
-| O-41 | Seven more interface languages in code, offered once translated | P3-37 | TODO |
-| O-42 | Interface translation: German (de-DE) | O-41 | TODO |
-| O-43 | Interface translation: French (fr-FR) | O-41 | TODO |
-| O-44 | Interface translation: Italian (it-IT) | O-41 | TODO |
+| O-41 | Seven more interface languages in code, offered once translated | P3-37 | DONE |
+| O-42 | Interface translation: German (de-DE) | O-41 | DONE |
+| O-43 | Interface translation: French (fr-FR) | O-41 | DONE |
+| O-44 | Interface translation: Italian (it-IT) | O-41 | DONE |
 | O-45 | Interface translation: Brazilian Portuguese (pt-BR) | O-41 | TODO |
 | O-46 | Interface translation: Ukrainian (uk-UA) | O-41 | TODO |
 | O-47 | Interface translation: Dutch (nl-NL) | O-41 | TODO |
 | O-48 | Interface translation: Spanish (es-ES) | O-41 | TODO |
+| O-49 | Workflow review: CI, release and agent workflows | — | DONE |
+| O-50 | Require up-to-date branches and auto-merge on main (repository setting) | O-49 | TODO |
+| O-51 | `check --quick` runs every test target in one cargo call | O-49 | TODO |
+| O-52 | Lint: conflict markers in every tracked file | O-49 | TODO |
+| O-53 | Lint: decision ID uniqueness and references | O-49 | TODO |
+| O-54 | `check` writes a result file; `cargo xtask report`; PR template | O-49 | TODO |
+| O-55 | Pin GitHub Actions by SHA and add Dependabot | O-49 | TODO |
+| O-56 | cargo-deny on pull requests | O-49 | TODO |
+| O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | O-49, O-41 | TODO |
+| O-58 | Check pull requests on Windows as well | O-49 | TODO |
+| O-59 | Tests derive row counts instead of hard-coding them | O-49 | TODO |
+| O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | O-49 | TODO |
+| O-61 | main: re-run jobs that never got a runner before failing | O-49 | TODO |
+| O-62 | Build the site on pull requests; check screenshots are current | O-49 | TODO |
+| O-63 | Take the version from the binary instead of a TUI build script | O-49 | TODO |
+| O-64 | `cargo xtask preflight` and a local CI mode | O-49 | TODO |
+| O-65 | Release provenance, SBOM, immutable releases; pinned host key | O-49 | TODO |
+| O-66 | Optimize the engine in test builds | O-49 | TODO |
+| O-67 | Small cleanups: pycache, site redeploy, xtask split, apt cache | O-49 | TODO |
 | P3-32 | Table color and feel | O-26, P3-29 | TODO |
 | P3-33 | Card face tint | O-26, P3-29 | TODO |
 | P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
