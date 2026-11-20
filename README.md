@@ -44,7 +44,7 @@ binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it pla
 
 ## Screenshots
 
-Every image is generated from the real game by `cargo xtask screenshots`.
+Every image is generated from the real game by `cargo xtask-art screenshots`.
 
 <table>
   <tr>
@@ -211,7 +211,7 @@ The toolchain is pinned in `rust-toolchain.toml`. From the repository root:
 cargo run                    # play from source
 cargo xtask check --quick    # fmt, Clippy, lint and the fast tests: run before a pull request
 cargo xtask check            # everything, as CI does on main
-cargo xtask screenshots      # regenerate the SVG screenshots and animations of the website
+cargo xtask-art screenshots      # regenerate the SVG screenshots and animations of the website
 cargo xtask fonts            # build the oXySol Mono card font (needs Python 3.11+, see below)
 ```
 

@@ -1,2 +1,3 @@
 [alias]
 xtask = "run -p xtask --"
+xtask-art = "run -p xtask --features art --"

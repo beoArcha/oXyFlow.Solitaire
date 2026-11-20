@@ -5,11 +5,13 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use crate::affected::{self, Affected, ROOT};
+use crate::affected::{self, Affected, ROOT, XTASK};
 use crate::check_capture;
 use crate::check_result::{self, StepLog};
 use crate::error::XtaskError;
-use crate::{icon, lint, sync_metadata};
+use crate::{docs, lint, sync_metadata};
+
+const ART: &str = "xtask/art";
 
 pub enum Mode {
     Full,
@@ -70,6 +72,46 @@ struct Runner<'a> {
 
 impl Runner<'_> {
     fn gates(&mut self, mode: &Mode) -> Result<(), XtaskError> {
+        match mode {
+            Mode::Pr(base) => {
+                let paths = affected::changed_paths(self.root, base)?;
+                let affected = affected::select(paths.iter().map(String::as_str));
+                if affected == Affected::DocsOnly {
+                    println!("==> only documentation changed since {base}");
+                    return self.docs();
+                }
+                self.static_gates()?;
+                self.pr_tests(base, affected)
+            }
+            Mode::Full => {
+                self.static_gates()?;
+                self.run_cargo("test", &["test", "--workspace", "--features", ART])?;
+                self.in_process("sync-metadata", || {
+                    println!("==> sync-metadata --check");
+                    Ok(sync_metadata::run(true)?)
+                })?;
+                self.run_cargo(
+                    "icon",
+                    &[
+                        "run",
+                        "-p",
+                        "xtask",
+                        "--features",
+                        "art",
+                        "--",
+                        "icon",
+                        "--check",
+                    ],
+                )
+            }
+            Mode::Quick => {
+                self.static_gates()?;
+                self.quick_tests()
+            }
+        }
+    }
+
+    fn static_gates(&mut self) -> Result<(), XtaskError> {
         let root = self.root;
         self.run_cargo("fmt", &["fmt", "--all", "--", "--check"])?;
         self.run_cargo(
@@ -78,6 +120,8 @@ impl Runner<'_> {
                 "clippy",
                 "--workspace",
                 "--all-targets",
+                "--features",
+                ART,
                 "--",
                 "-D",
                 "warnings",
@@ -86,27 +130,22 @@ impl Runner<'_> {
         self.in_process("lint", || {
             println!("==> lint");
             lint::run(root)
-        })?;
-        match mode {
-            Mode::Full => {
-                self.run_cargo("test", &["test", "--workspace"])?;
-                self.in_process("sync-metadata", || {
-                    println!("==> sync-metadata --check");
-                    Ok(sync_metadata::run(true)?)
-                })?;
-                self.in_process("icon", || {
-                    println!("==> icon --check");
-                    Ok(icon::run(root, true)?)
-                })?;
-                Ok(())
-            }
-            Mode::Quick => self.quick_tests(),
-            Mode::Pr(base) => self.pr_tests(base),
-        }
+        })
+    }
+
+    fn docs(&mut self) -> Result<(), XtaskError> {
+        let root = self.root;
+        self.in_process("docs", || {
+            println!("==> docs");
+            docs::run(root)
+        })
     }
 
     fn quick_tests(&mut self) -> Result<(), XtaskError> {
-        self.run_cargo("test", &["test", "--workspace", "--tests"])
+        self.run_cargo(
+            "test",
+            &["test", "--workspace", "--features", ART, "--tests"],
+        )
     }
 
     fn ci_only_tests(&mut self) -> Result<(), XtaskError> {
@@ -115,6 +154,8 @@ impl Runner<'_> {
             &[
                 "test",
                 "--workspace",
+                "--features",
+                ART,
                 "--test",
                 "architecture",
                 "--test",
@@ -123,9 +164,9 @@ impl Runner<'_> {
         )
     }
 
-    fn pr_tests(&mut self, base: &str) -> Result<(), XtaskError> {
-        let paths = affected::changed_paths(self.root, base)?;
-        match affected::select(paths.iter().map(String::as_str)) {
+    fn pr_tests(&mut self, base: &str, affected: Affected) -> Result<(), XtaskError> {
+        match affected {
+            Affected::DocsOnly => self.docs(),
             Affected::All => {
                 println!("==> every package is affected by changes since {base}");
                 self.quick_tests()
@@ -152,6 +193,8 @@ impl Runner<'_> {
                 "--test",
                 "integration",
             ]
+        } else if package == XTASK {
+            &["test", "-p", package, "--features", "art", "--tests"]
         } else {
             &["test", "-p", package, "--tests"]
         };

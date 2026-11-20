@@ -1,17 +1,22 @@
 //! `cargo xtask`: development tooling for the oXySol workspace.
 
 mod affected;
+mod art;
 mod check;
 mod check_capture;
 mod check_result;
+mod docs;
 mod error;
 mod fonts;
+#[cfg(feature = "art")]
 mod icon;
 mod lint;
+#[cfg(feature = "art")]
 mod locale_diff;
 mod midi;
 mod preflight;
 mod report;
+#[cfg(feature = "art")]
 mod screenshots;
 mod sync_metadata;
 mod version;
@@ -30,7 +35,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | locale-diff [<lang>] [--ref <git-ref>] | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | worktrees [--remove [--force]] | preflight [--card <ID>] [--base <ref>] [--ci] | version [--base | --tag]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | docs | fonts | midi <style> | sync-metadata [--check] | worktrees [--remove [--force]] | preflight [--card <ID>] [--base <ref>] [--ci] | version [--base | --tag]> (cargo xtask-art: icon [--check] | locale-diff [<lang>] [--ref <git-ref>] | screenshots)";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -57,18 +62,11 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
         "report" if flags.is_empty() => Ok(report::run(&check::workspace_root()?)?),
         "affected" => affected::run(&check::workspace_root()?, &parse_base(flags)?),
         "lint" if flags.is_empty() => lint::run(&check::workspace_root()?),
+        "docs" if flags.is_empty() => docs::run(&check::workspace_root()?),
+        art_command if art::COMMANDS.contains(&art_command) => art::run(art_command, flags),
         "fonts" if flags.is_empty() => Ok(fonts::run(&check::workspace_root()?)?),
         "midi" => Ok(midi::run(&check::workspace_root()?, &parse_midi(flags)?)?),
-        "icon" => Ok(icon::run(
-            &check::workspace_root()?,
-            parse_flag(flags, "--check")?,
-        )?),
         "sync-metadata" => Ok(sync_metadata::run(parse_flag(flags, "--check")?)?),
-        "screenshots" if flags.is_empty() => Ok(screenshots::run(&check::workspace_root()?)?),
-        "locale-diff" => Ok(locale_diff::run(
-            &check::workspace_root()?,
-            &parse_locale_diff(flags)?,
-        )?),
         "worktrees" => Ok(worktrees::run(
             &check::workspace_root()?,
             worktrees::parse_options(flags).ok_or_else(usage)?,
@@ -100,10 +98,6 @@ fn parse_check(flags: &[String]) -> Result<Mode, XtaskError> {
     }
 }
 
-fn parse_locale_diff(flags: &[String]) -> Result<locale_diff::Options, XtaskError> {
-    locale_diff::parse_options(flags).ok_or_else(usage)
-}
-
 fn parse_midi(flags: &[String]) -> Result<String, XtaskError> {
     match flags {
         [style] => Ok(style.clone()),
@@ -118,7 +112,7 @@ fn parse_base(flags: &[String]) -> Result<String, XtaskError> {
     }
 }
 
-fn parse_flag(flags: &[String], allowed: &str) -> Result<bool, XtaskError> {
+pub(crate) fn parse_flag(flags: &[String], allowed: &str) -> Result<bool, XtaskError> {
     let mut present = false;
     for flag in flags {
         if flag != allowed {
@@ -129,6 +123,6 @@ fn parse_flag(flags: &[String], allowed: &str) -> Result<bool, XtaskError> {
     Ok(present)
 }
 
-fn usage() -> XtaskError {
+pub(crate) fn usage() -> XtaskError {
     XtaskError::Usage(USAGE.to_owned())
 }
