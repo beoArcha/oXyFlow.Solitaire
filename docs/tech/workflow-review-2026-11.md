@@ -415,7 +415,9 @@ checks drop to roughly the workspace-crate compile time.
 `rerun-if-changed` on `HEAD`, the current branch ref and `packed-refs`
 (`version_scheme.rs:177-190`). On a feature branch every commit adds one first-parent commit, so the
 value changes and cargo recompiles `oxysol-tui` — the largest crate (976 unit tests) — and
-everything above it, on every commit and after every rebase.
+everything above it, on every commit and after every rebase. Measured in this worktree: after
+committing only this Markdown file, the next `--quick` (144 s warm) printed
+`Compiling oxysol-tui` in all four cargo steps (xtask build, Clippy, both test builds).
 
 **Recommendation.** Compute the version only in the root `build.rs` and pass it to the TUI at
 runtime (a `&'static str` in the TUI's dependency bundle, set by `oxysol`'s `main`). Then only the
