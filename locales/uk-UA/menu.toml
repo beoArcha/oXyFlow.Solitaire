@@ -1,41 +1,40 @@
 # Strings of the menu area: the main menu, the seed entry and the game selection.
 # Items shared with the rest of the interface (New game, Settings, Quit, the variant names)
 # live in common.toml.
-resume = "Resume"
-resume_full = "Resume: {game}, {time}, Moves {moves}"
-resume_time = "Resume: {game}, {time}"
-resume_game = "Resume: {game}"
-new_game_from_seed = "New game from seed"
-help = "Help"
-select_seed = "Choose a game for seed {seed}"
+resume = "Продовжити"
+resume_full = "Продовжити: {game}, {time}, Ходи {moves}"
+resume_time = "Продовжити: {game}, {time}"
+resume_game = "Продовжити: {game}"
+new_game_from_seed = "Нова гра за зерном"
+help = "Довідка"
+select_seed = "Обери гру для зерна {seed}"
 version = "v{version}"
 variant_hint = "{level}: {description}"
 
 [difficulty]
-easy = "Easy"
-medium = "Medium"
-hard = "Hard"
+easy = "легкий"
+medium = "середній"
+hard = "складний"
 
 [game_hint]
-klondike = "Build the foundations from aces up by suit; the stock feeds the columns."
-spider = "Build eight runs from king down to ace, each in one suit."
-freecell = "Every card is face up; four free cells help you move them."
-pyramid = "Remove pairs that add up to 13; a king is removed alone."
-
+klondike = "Збирай бази за мастю від туза до короля; колода поповнює стовпці."
+spider = "Збери вісім рядів однієї масті від короля до туза."
+freecell = "Усі карти відкриті; чотири вільні комірки допомагають рухати їх."
+pyramid = "Вилучай пари карт із сумою 13; король вилучається сам."
 
 [seed]
-title = "New game from seed"
-prompt = "Type a seed: a whole number from 0 to 18446744073709551615."
-continue = "Continue"
-back = "Back"
-keys = "Digits type the seed   Backspace Delete   Enter Continue   Esc Back"
-error_empty = "Type a seed first."
-error_not_numeric = "A seed is a whole number: use the digits 0 to 9 only."
-error_out_of_range = "This seed is too large. The largest seed is 18446744073709551615."
+title = "Нова гра за зерном"
+prompt = "Введи зерно: ціле число від 0 до 18446744073709551615."
+continue = "Далі"
+back = "Назад"
+keys = "Цифри вводять зерно   Backspace Видалити   Enter Далі   Esc Назад"
+error_empty = "Спочатку введи зерно."
+error_not_numeric = "Зерно — це ціле число: використовуй лише цифри від 0 до 9."
+error_out_of_range = "Це зерно завелике. Найбільше можливе число: 18446744073709551615."
 
 [how_to_play]
-label = "How to play"
+label = "Як грати"
 
 [footer]
-open = "Open"
-play = "Play"
+open = "Відкрити"
+play = "Грати"

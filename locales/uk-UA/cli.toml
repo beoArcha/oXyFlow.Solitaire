@@ -1,53 +1,53 @@
 # Strings of the cli area.
 
 version = "oXySol {version}"
-version_legal = "Copyright (c) {year} {authors}. {license} License."
+version_legal = "Copyright (c) {year} {authors}. Ліцензія {license}."
 help = """
-oXySol: Ultimate Office Solitaire for the terminal
+oXySol: найкращий офісний пасьянс для термінала
 
-Usage: oxysol [options]
+Використання: oxysol [параметри]
 
-Options:
-  --version                    print the version and license, and exit
-  --help                       print this help and exit
+Параметри:
+  --version                    вивести версію та ліцензію й вийти
+  --help                       вивести цю довідку й вийти
 
-Display:
-  --ascii                      draw cards with ASCII characters only
-  --colors <16|256|truecolor>  color depth of the terminal
-  --fullscreen                 start in full screen, whatever the setting says
-  --no-fullscreen              start in a window, whatever the setting says
+Вигляд:
+  --ascii                      малювати карти лише знаками ASCII
+  --colors <16|256|truecolor>  глибина кольору термінала
+  --fullscreen                 старт на повний екран, попри налаштування
+  --no-fullscreen              старт у вікні, попри налаштування
 
-Game:
-  --seed <u64>                 choose a game for this seed at once
+Гра:
+  --seed <u64>                 одразу вибрати гру для цього зерна
 
-Window:
-  -n, --new-window             open the game in a new console window and
-                               return to the prompt at once
+Вікно:
+  -n, --new-window             відкрити гру в новому вікні консолі й
+                               одразу повернутися до командного рядка
 
-Double-click or console:
-  A double-click opens the game in its own console window, which closes
-  when the game exits. Started from a console, the game runs inside that
-  console, unless --new-window is given. After an error at startup the
-  window waits for Enter.
+Подвійний клік або консоль:
+  Подвійний клік відкриває гру у власному вікні консолі, яке
+  закривається після виходу з гри. Під час запуску з консолі гра
+  працює всередині неї, якщо не вказано --new-window. У разі помилки
+  запуску вікно чекає на Enter.
 
-Full screen:
-  The setting Full screen (Auto, On, Off) is in Settings. Auto goes full
-  screen only in a window the game opened itself. A classic Windows console
-  is switched by the game; elsewhere press Alt+Enter or F11 (Ctrl+Cmd+F on
-  macOS). The game never relaunches itself for this.
+Повний екран:
+  Налаштування «Повний екран» (Авто, Увімк., Вимк.) є в «Налаштуваннях».
+  Авто вмикає повний екран лише у вікні, відкритому самою грою.
+  Класичну консоль Windows перемикає гра; в інших місцях натисни
+  Alt+Enter або F11 (Ctrl+Cmd+F на macOS). Гра не перезапускається.
 
-Files:
-  OXYSOL_HOME      folder for the database and the log (always wins)
-  oxysol.portable  marker file next to the program: the files then live
-                   in a data folder there
-  OXYSOL_LOG       log level: error, warn, info, debug or trace
+Файли:
+  OXYSOL_HOME      папка для бази даних і журналу (має перевагу)
+  oxysol.portable  файл-маркер поруч із програмою: тоді файли
+                   зберігаються в папці data поруч
+  OXYSOL_LOG       рівень журналу: error, warn, info, debug або trace
 """
-usage_error = "oxysol: {error}\nTry `oxysol --help` for the list of options."
-paths_failed = "oXySol cannot find a folder for its files. Set OXYSOL_HOME to a writable folder."
-storage_failed = "oXySol cannot open its database. The details are in the log file."
-terminal_failed = "oXySol stopped because the terminal failed. The details are in the log file."
-output_failed = "oXySol cannot write to the terminal."
-new_window_failed = "oXySol cannot open a new console window (tried: {tried}). Run it without --new-window."
-log_unavailable = "oXySol cannot write its log file {path}. It continues without a log."
-panic = "oXySol stopped unexpectedly at {location}. The details are in {path}."
-press_enter = "Press Enter to close this window."
+usage_error = "oxysol: {error}\nСпробуй `oxysol --help` для перегляду списку параметрів."
+paths_failed = "oXySol не може знайти папку для своїх файлів. Вкажи доступну для запису папку в OXYSOL_HOME."
+storage_failed = "oXySol не може відкрити базу даних. Подробиці у файлі журналу."
+terminal_failed = "oXySol зупинився через помилку термінала. Подробиці у файлі журналу."
+output_failed = "oXySol не може виводити дані в термінал."
+new_window_failed = "oXySol не може відкрити нове вікно консолі (спроба: {tried}). Запусти без --new-window."
+log_unavailable = "oXySol не може записати файл журналу {path}. Продовжуємо без журналу."
+panic = "oXySol несподівано зупинився на {location}. Подробиці у {path}."
+press_enter = "Натисни Enter, щоб закрити це вікно."
