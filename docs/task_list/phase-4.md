@@ -465,6 +465,31 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** tests for the header and legend at 100 × 30; a test that the action turns `·` into ✓/✗/? for a known
   seed; the UI stays responsive while checking (background or step-wise).
 
+### P4-13 — Process priority: `--priority` flag, Settings row, solver threads below the UI thread
+
+- **Owner:** Sonnet
+- **Depends on:** P3-29 (Settings rows; start after it is merged)
+- **Files:** `src/` (argument parser, a new `src/console/priority.rs` or `src/priority.rs` next to the kernel32 FFI of
+  `src/console/font.rs`), `crates/tui/src/settings*` and the settings screen, the solver worker in
+  `crates/tui/src/app/deals.rs` (thread priority only), `locales/*` (all nine), `docs/tech/architecture.md`, tests
+- **Scope:** owner request 2026-11-20: under heavy CPU load from other programs the game reacts slowly.
+  - Five levels: Highest, High, Normal (default), Low, Lowest. Windows: `SetPriorityClass` with
+    `HIGH_PRIORITY_CLASS`, `ABOVE_NORMAL_PRIORITY_CLASS`, `NORMAL_PRIORITY_CLASS`, `BELOW_NORMAL_PRIORITY_CLASS`,
+    `IDLE_PRIORITY_CLASS`. Never `REALTIME_PRIORITY_CLASS`. Linux and macOS: `setpriority` with nice 0 / 5 / 10 for
+    Normal / Low / Lowest; High and Highest need privileges, so the row says so and the priority stays unchanged
+    (a failed call is reported once, not an error log per frame).
+  - `oxysol --priority <highest|high|normal|low|lowest>` sets it for this run and wins over the setting; Help lists the
+    flag with the other command-line options.
+  - A "Process priority" row in Settings (Interface or a System group), saved and applied at start; a change applies at
+    once (preview and confirm like the other rows of P3-29).
+  - The solver threads (winnable deals, the statistics check of P4-12) run below the UI thread (Windows
+    `SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL)`, Unix a higher nice for the thread where supported), so input and
+    drawing stay responsive while a solver runs.
+  - Behind a small trait (like `Console`) so tests use a fake; the FFI follows the existing `// SAFETY:` style.
+- **Acceptance:** tests through the fake for each level on Windows and Unix mappings, the privilege note, the flag
+  parsing (valid, invalid, flag beats setting), the setting persistence and the solver thread priority call; the real
+  priority checked by hand in Task Manager (Details → Priority) — say what to check; all nine locales.
+
 ## Done before the 2026-11 replan
 - **Done:** #169 (`w` / `W` check one or all unchecked deals off the UI thread; header `Win?`)
 
