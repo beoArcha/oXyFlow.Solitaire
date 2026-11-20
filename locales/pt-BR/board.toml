@@ -2,13 +2,13 @@
 seed = "semente {seed}"
 time = "Tempo {time}"
 moves = "Jogadas: {moves}"
-no_undo = "Sem desfazer"
-restarts = "Reinícios: {count}"
+no_undo = "Sem desf."
+restarts = "Reinic.: {count}"
 card_size = "Cartas: {size}"
 card_size_auto = "Cartas: {size} (auto)"
 winnable_checking = "Vencível: verificando..."
 winnable_yes = "Vencível: sim"
-winnable_unknown = "Vencível: desconhecido"
+winnable_unknown = "Vencível: incerto"
 winnable_no = "Vencível: não"
 
 [rank]

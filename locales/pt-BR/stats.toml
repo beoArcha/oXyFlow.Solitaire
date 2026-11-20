@@ -18,7 +18,7 @@ no_undo = "sem desfazer"
 [outcome]
 won = "Vitória"
 abandoned = "Abandonada"
-open = "Em andamento"
+open = "Em curso"
 
 [summary]
 game = "Jogo"
@@ -38,21 +38,21 @@ variant = "Jogo"
 seed = "Semente"
 outcome = "Resultado"
 time = "Tempo"
-moves = "Jogadas"
-restarts = "Reinícios"
+moves = "Jog."
+restarts = "Reinic."
 winnable = "Vencível"
 winnable_short = "?"
 
 [legend]
 winnable = "vencível"
 unwinnable = "não vencível"
-unknown = "desconhecido"
+unknown = "incerto"
 unchecked = "não verificado"
 
 [winnable]
 yes = "sim"
 no = "não"
-unknown = "desconhecido"
+unknown = "incerto"
 unchecked = "-"
 
 [button]
