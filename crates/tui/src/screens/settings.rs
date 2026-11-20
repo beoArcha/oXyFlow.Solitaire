@@ -3,7 +3,7 @@
 //! so the focus moves over the rows only.
 
 mod arrows;
-mod options;
+pub(crate) mod options;
 #[cfg(test)]
 mod tests;
 mod values;
