@@ -2,12 +2,15 @@
 
 mod affected;
 mod check;
+mod check_capture;
+mod check_result;
 mod error;
 mod fonts;
 mod icon;
 mod lint;
 mod locale_diff;
 mod midi;
+mod report;
 mod screenshots;
 mod sync_metadata;
 mod version;
@@ -25,7 +28,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | affected --base <ref> | lint | locale-diff [<lang>] [--ref <git-ref>] | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--base | --tag]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | locale-diff [<lang>] [--ref <git-ref>] | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--base | --tag]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -49,6 +52,7 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
     };
     match command.as_str() {
         "check" => check::run(parse_check(flags)?),
+        "report" if flags.is_empty() => Ok(report::run(&check::workspace_root()?)?),
         "affected" => affected::run(&check::workspace_root()?, &parse_base(flags)?),
         "lint" if flags.is_empty() => lint::run(&check::workspace_root()?),
         "fonts" if flags.is_empty() => Ok(fonts::run(&check::workspace_root()?)?),
