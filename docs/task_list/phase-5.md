@@ -84,7 +84,7 @@ Order of work: the Interface options first, then the card style and the games, w
 ### P5-04 — Game: Golf
 
 - **Owner:** Sonnet
-- **Depends on:** P4-10
+- **Depends on:** P4-10a
 - **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/golf/**`, `crates/core/src/solver/golf*` (new, with
   the solver), the variant list of `oxysol-core` where the games are matched, `crates/tui/src/screens/main_menu/**`
   (the entry only), `locales/*/rules.toml`, `locales/*/menu.toml`, `docs/wiki/rules/golf.md` (new),

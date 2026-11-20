@@ -410,28 +410,82 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   and 130 × 40.
 - **Done:** #173 (families, stars, favourites (`f`), search (`/`); no footer buttons for `f` and `/`)
 
-### P4-10 — Game: Yukon
+### P4-10a — Game: Yukon (classic)
+
+- **Owner:** Opus
+- **Depends on:** P4-09, P1-02
+- **Files:** `crates/core/src/games/yukon/**`, `crates/core/src/games/mod.rs` and the variant list where games are matched, `crates/tui/src/screens/game_select/catalog.rs` (the `Family` / variant entry), `locales/*/{common,rules,menu}.toml` (all nine locales), `docs/wiki/rules/yukon.md`, `docs/tech/architecture.md` (games list), tests
+- **Scope:** Rules sources: [Yukon (solitaire)](https://en.wikipedia.org/wiki/Yukon_(solitaire)), [Russian Solitaire](https://en.wikipedia.org/wiki/Russian_Solitaire) and the PySolFC rule descriptions (owner choice, 2026-11-20).
+  - One deck, no stock. Seven columns: column 1 one face-up card; columns 2–7 have 1…6 face-down cards with five
+    face-up cards on top (21 face down, 31 face up).
+  - Four foundations, ace to king by suit. Columns build down in alternating colours.
+  - Any face-up card moves together with every card above it, in or out of sequence; only the bottom card of the
+    moved group must fit. An uncovered face-down card turns face up. An empty column takes only a king or a group
+    with a king at the bottom. No redeal.
+  - Built so that the building rule and the deal are parameters of the Yukon module: P4-10b…e add variants
+    without new move code. Undo, hints (P3-26 possible moves), auto-finish when forced (P2-07), statistics and
+    autosave work as for the other games. Winnable deals stay off until P4-10f.
+  - Menu entry in a new Yukon family (P4-09), a rules tab in How to play, and `docs/wiki/rules/yukon.md`.
+- **Acceptance:** engine tests on scripted deals (group moves out of sequence, illegal moves, a face-down card
+  turned over, king to an empty column, foundations, win); the same seed gives the same deal; storage round trip
+  of the variant; the menu entry and rules tab in all nine locales; board fit at 100 × 30; architecture games list
+  updated.
+
+### P4-10b — Yukon variant: Russian Solitaire
+
+- **Owner:** Haiku
+- **Depends on:** P4-10a
+- **Files:** as P4-10a (variant only)
+- **Scope:** Yukon layout and moves; columns build down **in the same suit**. A variant of the Yukon family in the
+  menu, with its rules tab section and wiki section. No new move code beyond the building rule parameter.
+- **Acceptance:** tests for the same-suit rule (legal and illegal), storage round trip, menu and rules in all nine
+  locales.
+
+### P4-10c — Yukon variant: Alaska
+
+- **Owner:** Haiku
+- **Depends on:** P4-10b
+- **Files:** as P4-10a (variant only)
+- **Scope:** Yukon layout and moves; columns build **up or down in the same suit**. Menu entry, rules tab and wiki
+  section as P4-10b.
+- **Acceptance:** tests for building up and down by suit, storage round trip, menu and rules in all nine locales.
+
+### P4-10d — Yukon variant: Moosehide
+
+- **Owner:** Haiku
+- **Depends on:** P4-10c
+- **Files:** as P4-10a (variant only)
+- **Scope:** Yukon layout and moves; columns build down in **any suit except the card's own**. Menu entry, rules tab
+  and wiki section as P4-10b.
+- **Acceptance:** tests for the rule (same suit refused, other suits accepted), storage round trip, menu and rules in
+  all nine locales.
+
+### P4-10e — Yukon variant: Australian Patience (stock, one pass)
 
 - **Owner:** Sonnet
-- **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a public-domain rules source the owner names)
-- **Depends on:** P4-09, P1-02
-- **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/yukon/**`, the variant list of `oxysol-core` where
-  the games are matched, `crates/tui/src/screens/main_menu/**` (the entry only), `locales/*/rules.toml` (the rules
-  tab), `locales/*/menu.toml`, `docs/wiki/rules/yukon.md` (new), `docs/tech/architecture.md` (the games list; a
-  contract change, updated in the same PR)
-- **Shared files:** `locales/en-US/menu.toml`, `locales/pl-PL/menu.toml`
-- **Scope:**
-  - Yukon as a module of `oxysol-core` beside the four games, on the existing game contract (P1-02). The engine
-    enforces the rules; the TUI only shows them.
-  - Rules and the deal as stated in the confirmed rules text (the card does not repeat them until Opus confirms the
-    source).
-  - No solver in this card. The winnable-deals option (P3-20) stays off for Yukon until a solver card exists.
-  - An entry in the game menu (P4-09), a rules tab in How to play, and a rules page in `docs/wiki/rules/yukon.md`
-    written as M-07…M-10 were.
-  - No new key: the board keys and mouse actions of the other games apply.
-- **Acceptance:** engine tests on scripted deals (legal and illegal moves, a face-down card turned over, the
-  foundations); the same seed gives the same deal; the variant is stored and read back by the storage; the menu entry
-  and the rules tab in both locales; the architecture games list updated in the same PR.
+- **Depends on:** P4-10d
+- **Files:** as P4-10a, plus the stock and waste drawing the board already has for Klondike (reuse, no copy)
+- **Scope:** seven columns of four face-up cards; the remaining 24 cards form a stock dealt one card at a time to a
+  waste pile, one pass only, no redeal; columns build down by suit; Yukon group moves; an empty column takes only a
+  king (or a group with a king at the bottom). Stock counter as in Klondike (P2-06, P3-12). Menu entry, rules tab and
+  wiki section.
+- **Acceptance:** tests for the deal, the single pass, waste to column and foundation, group moves, storage round
+  trip; board fit at 100 × 30; menu and rules in all nine locales.
+
+### P4-10f — Solver for the Yukon family: winnable deals and the statistics check
+
+- **Owner:** Opus
+- **Depends on:** P4-10e, P2-08
+- **Files:** `crates/core/src/solver/**` (or the solver module of P2-08), `crates/core/src/games/yukon/**`, the
+  winnable-deals option and the statistics check wiring where a game opts in, `docs/tech/decisions.md` (the node
+  budget and the unknown share, ID assigned by the orchestrator), tests
+- **Scope:** a solver for Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience on the P2-08 solver
+  contract (proof of a win or of no win within a node budget; unknown otherwise). Yukon deals are open except the
+  face-down cards: the solver works on the hidden information the player has, as the Klondike solver does (T-29).
+  Enables the winnable-deals option (P3-20) and the statistics check (P4-12) for the family. Measure the share of
+  winnable / unwinnable / unknown deals per variant on a sample of seeds and record it.
+- **Acceptance:** tests on known winnable and unwinnable seeds per variant; a benchmark (ignored test) with the shares
+  and the time per deal; winnable deals on for the family; the decision row with the budget.
 
 ### P4-11 — Language selector: stray glyph, reachable with Up, Tab hint in the footer
 
