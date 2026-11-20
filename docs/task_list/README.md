@@ -202,15 +202,15 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-50 | Require up-to-date branches and auto-merge on main (repository setting) | Owner | O-49 | TODO |
 | O-51 | `check --quick` runs every test target in one cargo call | Haiku | O-49 | DONE |
 | O-52 | Lint: conflict markers in every tracked file | Haiku | O-49 | DONE |
-| O-53 | Lint: decision ID uniqueness and references | Haiku | O-49 | TODO |
-| O-54 | `check` writes a result file; `cargo xtask report`; PR template | Haiku | O-49 | TODO |
+| O-53 | Lint: decision ID uniqueness and references | Haiku | O-49 | DONE |
+| O-54 | `check` writes a result file; `cargo xtask report`; PR template | Haiku | O-49 | DONE |
 | O-55 | Pin GitHub Actions by SHA and add Dependabot | Haiku | O-49 | DONE |
-| O-56 | cargo-deny on pull requests | Sonnet | O-49 | TODO |
-| O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | Sonnet | O-49, O-41 | TODO |
+| O-56 | cargo-deny on pull requests | Sonnet | O-49 | DONE |
+| O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | Sonnet | O-49, O-41 | DONE |
 | O-58 | Check pull requests on Windows as well | Haiku | O-49 | TODO |
 | O-59 | Tests derive row counts instead of hard-coding them | Haiku | O-49 | DONE |
 | O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | Haiku | O-49 | TODO |
-| O-61 | main: re-run jobs that never got a runner before failing | Haiku | O-49 | TODO |
+| O-61 | main: re-run jobs that never got a runner before failing | Haiku | O-49 | DONE |
 | O-62 | Build the site on pull requests; check screenshots are current | Haiku | O-49 | TODO |
 | O-63 | Take the version from the binary instead of a TUI build script | Sonnet | O-49 | TODO |
 | O-64 | `cargo xtask preflight` and a local CI mode | Haiku | O-49 | TODO |
@@ -220,7 +220,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-37 | Mouse path for Pause and Possible moves on every screen width | Haiku | P3-16, P3-28 | TODO |
 | O-38 | Settings save failure: alert and log once per session | Haiku | — | DONE |
 | O-39 | Split files over 300 LOC found by the P3-09 gate | Antigravity | — | TODO |
-| O-35 | Release archives carry the font licence (OFL) | Haiku | P5-01 (the font, `assets/fonts/OFL.txt` and `assets/fonts/NOTICE.md` exist) | TODO |
+| O-35 | Release archives carry the font licence (OFL) | Haiku | P5-01 (the font, `assets/fonts/OFL.txt` and `assets/fonts/NOTICE.md` exist) | DONE |
 | P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the | TODO |
 | O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | TODO |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
