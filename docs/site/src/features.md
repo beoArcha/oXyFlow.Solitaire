@@ -1,4 +1,4 @@
-[English](features.md) · [Polski](pl/features.md)
+**English** · [Polski](pl/features.md) · [Deutsch](de/features.md) · [Español](es/features.md) · [Français](fr/features.md) · [Italiano](it/features.md) · [Nederlands](nl/features.md) · [Português (Brasil)](pt-br/features.md) · [Українська](uk/features.md)
 
 # Features
 
@@ -16,6 +16,12 @@ One binary, one menu, one set of keys.
 Every action works with the keyboard and with the mouse. Click a card to pick it up and click a target to drop it,
 double-click to send a card to a foundation, drag a card onto its target, right-click to put it back.
 The full key list is in the help window (`?`).
+
+## Card size
+
+Make the cards bigger with `]` and smaller with `[`; `0` goes back to the automatic size, which fits the window.
+Ctrl+wheel and the Card size setting do the same. A size that does not fit the window falls back by itself.
+In the classic Windows console, Ctrl+Plus, Ctrl+Minus and Ctrl+0 change the console font size.
 
 ## Help while you play
 
@@ -62,8 +68,11 @@ modes are planned; they are not in the game yet.
 
 ## Languages
 
-oXySol speaks **English** and **Polish**. Change the language in Settings; it applies at once. More languages may
-follow.
+The game interface is available in **English** and **Polish** today; German, French, Italian, Brazilian Portuguese,
+Ukrainian, Dutch and Spanish are in progress. Pick the language with the flag selector in the top-left corner of the
+main menu, or in Settings; it applies at once.
+
+This website is available in nine languages: the links at the top of every page switch between them.
 
 ## What it is not yet
 

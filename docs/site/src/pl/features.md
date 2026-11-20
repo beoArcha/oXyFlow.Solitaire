@@ -1,4 +1,4 @@
-[English](../features.md) · **Polski**
+[English](../features.md) · **Polski** · [Deutsch](../de/features.md) · [Español](../es/features.md) · [Français](../fr/features.md) · [Italiano](../it/features.md) · [Nederlands](../nl/features.md) · [Português (Brasil)](../pt-br/features.md) · [Українська](../uk/features.md)
 
 # Funkcje
 
@@ -16,6 +16,12 @@ Jeden program, jedno menu, jeden zestaw klawiszy.
 Każdą czynność wykonasz klawiaturą i myszą. Kliknij kartę, aby ją wziąć, i kliknij cel, aby ją położyć. Dwukrotne
 kliknięcie wysyła kartę na stos końcowy, przeciągnięcie przenosi kartę na cel, a prawy przycisk odkłada ją z powrotem.
 Pełna lista klawiszy jest w oknie pomocy (`?`).
+
+## Rozmiar kart
+
+Klawisz `]` powiększa karty, a `[` je zmniejsza; `0` przywraca rozmiar automatyczny, dopasowany do okna.
+To samo robi Ctrl+kółko myszy i ustawienie „Rozmiar kart”. Rozmiar, który nie mieści się w oknie, zmniejsza się sam.
+W klasycznej konsoli Windows Ctrl+Plus, Ctrl+Minus i Ctrl+0 zmieniają rozmiar czcionki konsoli.
 
 ## Pomoc w trakcie gry
 
@@ -63,8 +69,11 @@ widzenia barw są w planach; w grze jeszcze ich nie ma.
 
 ## Języki
 
-oXySol mówi po **angielsku** i **polsku**. Język zmienisz w Ustawieniach; działa od razu. Kolejne języki mogą
-się pojawić.
+Interfejs gry jest dziś dostępny po **angielsku** i **polsku**; niemiecki, francuski, włoski, portugalski
+(brazylijski), ukraiński, niderlandzki i hiszpański są w przygotowaniu. Język wybierzesz przełącznikiem z flagą w
+lewym górnym rogu menu głównego albo w Ustawieniach; zmiana działa od razu.
+
+Ta strona jest dostępna w dziewięciu językach: przełączają je odnośniki na górze każdej strony.
 
 ## Czego jeszcze brakuje
 
