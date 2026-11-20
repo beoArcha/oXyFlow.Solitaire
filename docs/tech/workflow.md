@@ -64,8 +64,9 @@ gh workflow run release.yml --ref release
 4. `build` checks out the full history (the version needs it) and makes release builds with `--locked` for `x86_64-pc-windows-msvc`,
    `x86_64-unknown-linux-musl` (`musl-tools`), `aarch64-unknown-linux-musl` (`musl-tools`)
    and `aarch64-apple-darwin`. Each target produces two archives: a normal archive
-   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md`, `LICENSE` and
-   `THIRD-PARTY-LICENSES.md`) and a portable archive `oxysol-<tag>-<target>-portable` with the same
+   `oxysol-<tag>-<target>` (with `oxysol` or `oxysol.exe`, `README.md`, `LICENSE`,
+   `THIRD-PARTY-LICENSES.md` and `fonts/` with `oXySolMono-Regular.ttf`, `OFL.txt` and
+   `NOTICE.md`) and a portable archive `oxysol-<tag>-<target>-portable` with the same
    files plus `oxysol.portable`:
    `.zip` on Windows, `.tar.gz` elsewhere. Archives are workflow artifacts named
    `archive-<target>`. `THIRD-PARTY-LICENSES.md` is generated per target by a pinned `cargo-about`
