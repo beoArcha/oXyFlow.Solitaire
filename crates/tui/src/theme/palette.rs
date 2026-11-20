@@ -86,6 +86,41 @@ impl Token {
         Token::AuraFocus,
         Token::AuraCarry,
     ];
+
+    /// The name a style manifest uses for the token: the variant in snake case.
+    pub const fn name(self) -> &'static str {
+        match self {
+            Token::Background => "background",
+            Token::Surface => "surface",
+            Token::Text => "text",
+            Token::TextMuted => "text_muted",
+            Token::Accent => "accent",
+            Token::Border => "border",
+            Token::BorderFocus => "border_focus",
+            Token::FocusFg => "focus_fg",
+            Token::FocusBg => "focus_bg",
+            Token::Error => "error",
+            Token::Success => "success",
+            Token::Table => "table",
+            Token::TableText => "table_text",
+            Token::Slot => "slot",
+            Token::CardFace => "card_face",
+            Token::CardBack => "card_back",
+            Token::CardBackMark => "card_back_mark",
+            Token::CardRed => "card_red",
+            Token::CardBlack => "card_black",
+            Token::Target => "target",
+            Token::Selection => "selection",
+            Token::Hint => "hint",
+            Token::AuraFocus => "aura_focus",
+            Token::AuraCarry => "aura_carry",
+        }
+    }
+
+    /// The token a manifest names, or `None` for a name that is no token.
+    pub fn from_name(name: &str) -> Option<Token> {
+        Token::ALL.into_iter().find(|token| token.name() == name)
+    }
 }
 
 /// One token's color for every color depth: exact RGB for true color (and, converted, for 256
