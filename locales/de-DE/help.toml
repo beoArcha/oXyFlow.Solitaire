@@ -38,6 +38,8 @@ new_game = "Neues Spiel"
 pause = "Pause"
 menu = "Menü"
 copy_seed = "Seed kopieren"
+dock = "Hilfefenster andocken"
+dock_focus = "Fokus auf angedocktes Fenster"
 
 [display]
 terminal_keys = "Ctrl +/-/0"
@@ -99,3 +101,10 @@ esc = "Esc"
 tab = "Tab"
 shift = "Shift"
 ctrl = "Ctrl"
+
+[dock]
+button = "Andocken: {side}"
+side_centre = "mittig"
+side_right = "rechts"
+side_left = "links"
+too_narrow = "Andocken benötigt 130 Spalten; das Fenster bleibt zentriert."

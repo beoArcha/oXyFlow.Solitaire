@@ -61,7 +61,7 @@ spades = "Pik"
 
 [announce]
 targets_one = "1 Ziel"
-targets_many = "{count} Ziele"
+targets_other = "{count} Ziele"
 
 [status]
 no_targets = "Diese Karten können nirgends abgelegt werden."

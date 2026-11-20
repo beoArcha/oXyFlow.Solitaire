@@ -2,10 +2,6 @@
 title = "oXySol"
 tagline = "Das ultimative Büro-Solitaire für das Terminal"
 
-[language]
-# The name of this language in itself: shown in the language selector whatever language is on.
-name = "Deutsch"
-
 [menu]
 title = "Hauptmenü"
 new_game = "Neues Spiel"

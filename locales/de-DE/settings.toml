@@ -3,6 +3,7 @@
 [row]
 language = "Sprache"
 theme = "Design"
+card_back = "Kartenrücken"
 front_style = "Vorderseiten-Stil"
 back_style = "Rückseiten-Stil"
 glyphs = "Symbole"
@@ -32,6 +33,7 @@ default = "Standard"
 [desc]
 language = "Die Sprache aller Texte. Ändert sich sofort."
 theme = "Die Farben der Benutzeroberfläche."
+card_back = "Farben und Muster der Rückseiten verdeckter Karten."
 front_style = "Das Aussehen der Kartenvorderseiten."
 back_style = "Das Aussehen der verdeckten Karten."
 glyphs = "Unicode zeichnet Farben und Symbole; ASCII nutzt nur einfache Zeichen."
@@ -68,9 +70,10 @@ huge = "Riesig"
 full = "Voll"
 focus_only = "Nur Fokus"
 
-[locale]
-en_us = "Englisch"
-pl_pl = "Polnisch"
+[card_back]
+theme = "Design"
+monokai = "Monokai"
+dracula = "Dracula"
 
 [theme]
 dark = "Dunkel"
