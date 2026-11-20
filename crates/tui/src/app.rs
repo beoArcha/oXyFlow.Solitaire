@@ -35,6 +35,7 @@ use crate::widgets::too_small::{self, is_too_small};
 
 pub use deps::Deps;
 pub use display::{ConsoleDisplay, DisplayDeps, DisplayFacts, NullConsoleDisplay};
+pub use font::{ConsoleFont, FontStep, NullConsoleFont, font_step_for_key};
 pub use modal::Modal;
 pub use search::{SEED_CAP, SearchCommand, SearchProgress};
 
@@ -270,6 +271,11 @@ impl App {
         if key.kind == KeyEventKind::Release {
             return Effect::None;
         }
+        if let Some(step) = font_step_for_key(&key)
+            && self.full_screen.font.step(step)
+        {
+            return Effect::None;
+        }
         let action = action_for_key(&key);
         self.run(key, action)
     }
@@ -430,6 +436,7 @@ mod deps;
 mod display;
 mod effects;
 mod finish;
+mod font;
 mod modal;
 mod persist;
 mod quick;
@@ -438,6 +445,8 @@ mod search;
 
 #[cfg(test)]
 mod display_tests;
+#[cfg(test)]
+mod font_tests;
 
 #[cfg(test)]
 mod records_tests;

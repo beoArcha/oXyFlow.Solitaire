@@ -2,6 +2,7 @@
 //! result reaches the player. The decision itself is the pure [`decide`].
 
 use super::App;
+use super::font::{ConsoleFont, NullConsoleFont};
 use crate::settings::{Decision, TerminalKind, decide};
 
 /// Switches the console window between full screen and its window. The application (`oxysol`)
@@ -37,6 +38,8 @@ pub struct DisplayFacts {
 pub struct DisplayDeps {
     pub display: Box<dyn ConsoleDisplay>,
     pub facts: DisplayFacts,
+    /// The console font behind Ctrl+Plus, Ctrl+Minus and Ctrl+0 (P3-16).
+    pub font: Box<dyn ConsoleFont>,
 }
 
 impl DisplayDeps {
@@ -49,17 +52,19 @@ impl DisplayDeps {
                 kind: TerminalKind::Linux,
                 flag: None,
             },
+            font: Box::new(NullConsoleFont),
         }
     }
 }
 
-/// The full-screen state of a running [`App`].
+/// The console state of a running [`App`]: full screen and the font size.
 pub(super) struct FullScreenState {
     pub(super) display: Box<dyn ConsoleDisplay>,
     pub(super) facts: DisplayFacts,
     pub(super) active: bool,
     pub(super) hint: Option<&'static str>,
     pub(super) hinted: bool,
+    pub(super) font: Box<dyn ConsoleFont>,
 }
 
 impl FullScreenState {
@@ -70,6 +75,7 @@ impl FullScreenState {
             active: false,
             hint: None,
             hinted: false,
+            font: deps.font,
         }
     }
 

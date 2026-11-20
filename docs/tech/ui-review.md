@@ -478,6 +478,10 @@ it already, Tab is not `KeyCode::Char`).
 
 ### 5.2 Zoom keys (P3-16)
 
+> **Revised by R-24 (2026-11-20):** `+` and `-` stay `RunMore` / `RunLess` and Shift+Up / Shift+Down are not
+> bound; the card-size keys are `]`, `[` and `0`; Ctrl+Plus / Minus / 0 only change the console font (T-34).
+> The table below is the original proposal.
+
 Facts about the terminals in scope:
 
 - Windows Terminal, GNOME Terminal, Konsole, iTerm2, Terminal.app, WezTerm and Alacritty all
@@ -581,6 +585,7 @@ options join the `Board` group of the settings screen.
   is a window on `g`.
 - D-U04-4: `+`/`=`/`-`/`0` are zoom; run size moves to Shift+Up/Down; Ctrl+Plus/Minus/0 are
   documented as the terminal's own zoom and act only where they arrive (the classic console).
+  *Revised by R-24 (2026-11-20): `+`/`-` stay the run size; the zoom keys are `]`, `[` and `0`.*
 - D-U04-5: Tab/Shift+Tab move a focus ring on every screen and dialog; the help window's tabs
   are that ring.
 - D-U04-6: ASCII suits are lowercase.

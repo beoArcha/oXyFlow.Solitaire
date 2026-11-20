@@ -5,6 +5,7 @@ use std::io::{self, IsTerminal, Write};
 use oxysol_tui::i18n;
 
 pub mod display;
+pub mod font;
 
 /// Minimum width for an owned console window, fitting the guide panel.
 pub const TARGET_COLUMNS: u16 = 130;

@@ -52,8 +52,12 @@ impl Table {
     }
 }
 
-pub(super) fn compute(piles: &[PileSnapshot], area: Rect) -> BoardGeometry {
-    let size = CardSize::largest_fit(|size| fits(size, area));
+pub(super) fn compute(
+    piles: &[PileSnapshot],
+    area: Rect,
+    limit: Option<CardSize>,
+) -> BoardGeometry {
+    let size = CardSize::largest_fit_within(limit, |size| fits(size, area));
     let margin = area.width.saturating_sub(ROWS * size.width) / 2;
     let table = Table {
         size,

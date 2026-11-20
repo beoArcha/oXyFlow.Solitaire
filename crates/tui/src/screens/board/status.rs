@@ -43,6 +43,9 @@ pub(super) const FINISHING: &str = "board.status.finishing";
 pub(super) const NO_FINISH: &str = "board.status.no_finish";
 pub(super) const NOT_POSSIBLE: &str = "board.status.not_possible";
 pub(super) const DEFAULTS_SAVED: &str = "board.status.defaults_saved";
+pub(super) const ZOOM_LARGEST: &str = "board.status.zoom_largest";
+pub(super) const ZOOM_SMALLEST: &str = "board.status.zoom_smallest";
+pub(super) const ZOOM_AUTO: &str = "board.status.zoom_auto";
 
 /// Localization key of the event announced after a move was played.
 pub(super) const fn done_of(mv: Move) -> &'static str {
@@ -71,12 +74,14 @@ pub(super) enum Tone {
     Error,
 }
 
-const REFUSALS: [&str; 5] = [
+const REFUSALS: [&str; 7] = [
     NO_TARGETS,
     NOTHING_TO_UNDO,
     NOTHING_TO_REDO,
     NO_HINT,
     UNDO_OFF,
+    ZOOM_LARGEST,
+    ZOOM_SMALLEST,
 ];
 
 /// The tone of the event with the localization key `key`.

@@ -21,6 +21,7 @@ mod quick;
 mod recycle;
 mod restarts;
 mod run_wrap;
+mod zoom;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
 use ratatui::crossterm::event::KeyCode;

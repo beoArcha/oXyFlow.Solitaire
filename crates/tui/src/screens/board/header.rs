@@ -104,6 +104,15 @@ impl Facts {
             .collect()
     }
 
+    /// Adds the card size as the fact to drop first, when there is one to show.
+    pub(super) fn with_card_size(mut self, text: Option<String>) -> Self {
+        if let Some(text) = text {
+            self.droppable.insert(0, self.facts.len());
+            self.facts.push(text);
+        }
+        self
+    }
+
     /// The facts that fit `width`: the stock counter goes first, the winnable mark next, so that
     /// the no-undo badge and the restart count stay.
     fn fitting(&self, width: usize) -> Vec<&String> {

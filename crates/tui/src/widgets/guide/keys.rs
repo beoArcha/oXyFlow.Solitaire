@@ -55,6 +55,10 @@ fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
             "board.guide.run",
         ));
     }
+    rows.push(entry(
+        &[Action::ZoomIn, Action::ZoomOut, Action::ZoomAuto],
+        "board.guide.zoom",
+    ));
     match variant {
         Variant::FreeCell => {}
         Variant::Spider(_) => rows.push(entry(&[Action::Stock], "board.guide.deal_row")),

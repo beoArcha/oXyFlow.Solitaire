@@ -1,6 +1,7 @@
 //! The help window: every binding of the key table grouped by topic, then the mouse gestures. It is
 //! generated from [`KEY_TABLE`], so a new binding appears here without further work. The topics
-//! sit in two columns so the whole list fits a 100 × 30 terminal.
+//! sit in two columns, one under the other without blank rows (the bold heading separates them), so
+//! the whole list fits a 100 × 30 terminal.
 
 use ratatui::Frame;
 use ratatui::layout::{Alignment, Constraint, Layout, Rect};
@@ -45,6 +46,16 @@ pub struct Section {
     pub rows: Vec<Row>,
 }
 
+/// The row that names the zoom of the terminal itself, which is the last row of the Display topic:
+/// nearly every terminal zooms its font with these keys and never passes them on, the classic
+/// Windows console passes them on and the game changes its font size.
+fn terminal_zoom(group: HelpGroup) -> Option<Row> {
+    (group == HelpGroup::Display).then(|| Row {
+        keys: t("help.display.terminal_keys").into_owned(),
+        text: t("help.display.terminal_text").into_owned(),
+    })
+}
+
 /// Every topic: the key table grouped by [`HelpGroup`], then the mouse gestures.
 pub fn sections() -> Vec<Section> {
     let mut sections: Vec<Section> = HelpGroup::ALL
@@ -63,6 +74,7 @@ pub fn sections() -> Vec<Section> {
                         .join(" / "),
                     text: t(binding.action.label_key()).into_owned(),
                 })
+                .chain(terminal_zoom(group))
                 .collect(),
         })
         .collect();
@@ -117,10 +129,7 @@ impl Columns {
 
     fn lines(&self, sections: &[Section], ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
         let mut lines = Vec::new();
-        for (index, section) in sections.iter().enumerate() {
-            if index > 0 {
-                lines.push(Line::raw(""));
-            }
+        for section in sections {
             lines.push(Line::styled(
                 section.title.clone(),
                 ctx.theme.surface().add_modifier(Modifier::BOLD),

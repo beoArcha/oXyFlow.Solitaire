@@ -9,15 +9,17 @@ use oxysol::about;
 use oxysol::audio;
 use oxysol::cli::{self, Cli, ColorArg};
 use oxysol::clipboard::SystemClipboard;
+use oxysol::console::font::{ClassicConsole, FontZoom};
 use oxysol::console::{self, display};
 use oxysol::error::AppError;
 use oxysol::paths::AppPaths;
 use oxysol::solver::ThreadSolver;
 use oxysol::storage::SqliteStorage;
 use oxysol::{logging, new_window, panic_hook, seed};
-use oxysol_tui::app::{DisplayDeps, DisplayFacts};
+use oxysol_tui::app::{ConsoleFont, DisplayDeps, DisplayFacts, NullConsoleFont};
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
 use oxysol_tui::i18n::{self, Locale};
+use oxysol_tui::settings::TerminalKind;
 use oxysol_tui::{Deps, NullSolver, Solver};
 
 fn main() -> ExitCode {
@@ -112,13 +114,26 @@ fn start(args: &Cli) -> Result<(), AppError> {
 }
 
 fn display_deps(args: &Cli) -> DisplayDeps {
+    let kind = display::terminal_kind(platform(), &|key: &str| std::env::var(key).ok());
     DisplayDeps {
         display: Box::new(display::ConsoleWindow::default()),
         facts: DisplayFacts {
             owns_window: console::owns_window(),
-            kind: display::terminal_kind(platform(), &|key: &str| std::env::var(key).ok()),
+            kind,
             flag: args.full_screen,
         },
+        font: console_font(kind),
+    }
+}
+
+/// The font zoom of the classic Windows console; every other terminal zooms its font by itself.
+fn console_font(kind: TerminalKind) -> Box<dyn ConsoleFont> {
+    if kind != TerminalKind::ClassicConsole {
+        return Box::new(NullConsoleFont);
+    }
+    match FontZoom::new(Box::new(ClassicConsole)) {
+        Some(zoom) => Box::new(zoom),
+        None => Box::new(NullConsoleFont),
     }
 }
 
