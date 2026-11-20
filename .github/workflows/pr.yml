@@ -60,3 +60,58 @@ jobs:
           tool: cargo-deny@0.22.0
       - name: Check licenses, advisories, sources and bans
         run: cargo deny --locked check licenses advisories sources bans
+
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MDBOOK_VERSION: v0.4.52
+      MDBOOK_SHA256: c0b903f01dd8f4edc644372ad2b80b1fdddd12552d37b6a098657cbd8eddd768
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Detect changes to docs/site
+        id: filter
+        run: |
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -q '^docs/site/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install mdBook
+        if: steps.filter.outputs.changed == 'true'
+        run: |
+          set -eu
+          dir="$RUNNER_TEMP/mdbook"
+          mkdir -p "$dir"
+          curl -fsSL -o "$dir/mdbook.tar.gz" "https://github.com/rust-lang/mdBook/releases/download/${MDBOOK_VERSION}/mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          echo "${MDBOOK_SHA256}  $dir/mdbook.tar.gz" | sha256sum -c -
+          tar -xzf "$dir/mdbook.tar.gz" -C "$dir"
+          echo "$dir" >> "$GITHUB_PATH"
+      - name: Build the site
+        if: steps.filter.outputs.changed == 'true'
+        run: mdbook build docs/site
+      - name: Check internal links
+        if: steps.filter.outputs.changed == 'true'
+        run: |
+          broken=0
+          while IFS= read -r html; do
+            dir="$(dirname "$html")"
+            while IFS= read -r link; do
+              [ -z "$link" ] && continue
+              if [[ "$link" =~ ^(https?:|mailto:|javascript:|#|/) || "$link" =~ (RELEASE_URL|\{\{|%7B%7B) ]]; then
+                continue
+              fi
+              target="${link%%[#?]*}"
+              [ -z "$target" ] && continue
+              if [ ! -e "$dir/$target" ]; then
+                echo "::error file=$html::Broken link '$link' (target '$dir/$target' not found)"
+                broken=$((broken + 1))
+              fi
+            done < <(grep -oE '(href|src)="[^"]+"' "$html" | sed -E 's/^(href|src)="([^"]+)"/\2/')
+          done < <(find docs/site/book -type f -name '*.html')
+          if [ "$broken" -gt 0 ]; then
+            echo "Found $broken broken link(s)"
+            exit 1
+          fi
