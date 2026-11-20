@@ -3,4 +3,4 @@
 own_name = "Português (Brasil)"
 # Whether the translation is finished. Only complete locales are offered to the player; an
 # unfinished one is never shown and a saved choice of it falls back to en-US.
-complete = false
+complete = true
