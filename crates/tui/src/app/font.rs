@@ -6,6 +6,8 @@
 
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 
+use crate::settings::TerminalKind;
+
 /// What a font key asks of the console.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FontStep {
@@ -17,11 +19,62 @@ pub enum FontStep {
     Reset,
 }
 
-/// Changes the font size of the console window. The application implements it for the classic
-/// Windows console; every other terminal uses [`NullConsoleFont`].
+/// Whether the console shows the oXySol card font (the option "Use the oXySol font in this
+/// console", P5-02).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum CardFontState {
+    /// The option is off, or the console font is as the game found it.
+    Off,
+    /// The console shows the card font.
+    Active,
+    /// The console does not have the font: it is not installed.
+    NotRegistered,
+    /// The console would not take the font, or its font could not be read.
+    Refused,
+    /// The console cannot be switched: it is not the classic Windows console.
+    #[default]
+    Unavailable,
+}
+
+/// What the screens know about the console font: the kind of terminal and the state of the card
+/// font option.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FontFacts {
+    pub terminal: TerminalKind,
+    pub card_font: CardFontState,
+    /// The size of a character cell in pixels, where the console tells it.
+    pub cell_px: Option<(u16, u16)>,
+}
+
+impl Default for FontFacts {
+    fn default() -> Self {
+        Self {
+            terminal: TerminalKind::Linux,
+            card_font: CardFontState::Unavailable,
+            cell_px: None,
+        }
+    }
+}
+
+/// Changes the font of the console window. The application implements it for the classic Windows
+/// console; every other terminal uses [`NullConsoleFont`].
 pub trait ConsoleFont {
     /// Applies `step`. Returns whether the font changed; a refusal or a limit is not an error.
     fn step(&mut self, step: FontStep) -> bool;
+
+    /// Switches the console to the oXySol card font (`on`) or back to the font it had before. The
+    /// face is checked by reading it back; the size never changes and the game never installs the
+    /// font.
+    fn use_card_font(&mut self, on: bool) -> CardFontState {
+        let _ = on;
+        CardFontState::Unavailable
+    }
+
+    /// The size of a character cell in pixels (width, height), or `None` when the console does not
+    /// tell it.
+    fn cell_size(&self) -> Option<(u16, u16)> {
+        None
+    }
 }
 
 /// A console whose font the game cannot change.

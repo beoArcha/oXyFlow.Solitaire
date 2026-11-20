@@ -659,6 +659,21 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   drawn only when `Settings::font_confirmed` is set (the graphics check), `Settings::drawn_glyph_mode()` gives
   `Unicode` otherwise, so Private Use Area code points never show as squares. In `Font` mode a face-up card
   of 9 × 7 or more shows one glyph in the centre: the court emblem of a court card, else the suit.
+  *The oXySol font (P5-02):* the Symbols row offers `Font` as a third value. Choosing it without a confirmation
+  opens `Modal::GraphicsCheck` (`widgets/overlay/graphics_check.rs`): samples in the card font (the suits with
+  their names, the court emblems, the tile and the mosaic of the chosen styles) and a Yes/No question. Yes applies
+  `glyph_mode = Font` and `font_confirmed = true`; No (or Esc) keeps Unicode and opens a notice that points to the
+  wiki. The Console font row (`Settings::console_font`, `Field::ConsoleFont`) asks `ConsoleFont::use_card_font(bool)
+  -> CardFontState { Off, Active, NotRegistered, Refused, Unavailable }`; `src/console/card_font.rs` implements it
+  for the classic console: it keeps the current `FontInfo`, sets the face `oXySol Mono` with the same size, reads the
+  font back and compares the face (an unregistered face is accepted by the console and silently not used, so only
+  the read-back tells), puts the previous font back when it is not in use, and restores it when the option is turned
+  off and when `FontZoom` is dropped at exit. `Active` also switches the symbols to `Font` (the font is known to be
+  there). The drawn mode is `Settings::drawn_glyph_mode(console_shows_font)`: `Font` only with `font_confirmed` or an
+  active console font, else Unicode. `ViewCtx::font: FontFacts { terminal, card_font, cell_px }` carries the state
+  (the terminal kind gives `WT_SESSION` through `TerminalKind::WindowsTerminal`); the Windows Terminal hint on the
+  font face is in the graphics check and in the description of the Console font row, nowhere else. `cell_px` (the
+  console's cell size in pixels, from `ConsoleFont::cell_size`) keeps the Font mosaic off a cell below 10 × 24.
 - **Terminal capabilities:** `TerminalCaps { color, unicode, remote }` from detection, overridden by
   settings and arguments. `remote` (an SSH session) switches audio off.
 - **Accessibility:** every `Action` has a key binding and a mouse path. The `Now:` row

@@ -7,6 +7,7 @@ card_back = "Reverso de carta"
 front_style = "Estilo de caras"
 back_style = "Estilo de reversos"
 glyphs = "Símbolos"
+console_font = "Fuente de la consola"
 colors = "Colores"
 card_size = "Tamaño de cartas"
 full_screen = "Pantalla completa"
@@ -40,7 +41,12 @@ theme = "Los colores de la interfaz."
 card_back = "Los colores y el diseño del reverso de las cartas boca abajo."
 front_style = "El diseño de las caras de las cartas."
 back_style = "El diseño del reverso de las cartas boca abajo."
-glyphs = "Unicode dibuja palos y símbolos; ASCII usa solo caracteres simples."
+glyphs = "Unicode dibuja palos y símbolos; ASCII usa solo caracteres simples; la fuente oXySol dibuja los glifos de las cartas tras una comprobación gráfica."
+console_font = "Cambia esta consola a la fuente oXySol, que dibuja los glifos de las cartas. Solo en la consola clásica de Windows."
+console_font_wt = "Windows Terminal: pon la fuente del perfil en \"oXySol Mono\" (consulta la comprobación gráfica)."
+console_font_other = "Este terminal conserva su propia fuente. Usa Símbolos y la comprobación gráfica."
+console_font_missing = "La fuente oXySol no está instalada en esta consola (página de la wiki \"Card font\"). Se mantienen los símbolos Unicode."
+console_font_refused = "La consola no aceptó la fuente oXySol. Se mantienen los símbolos Unicode."
 colors = "Cuántos colores mostrar en el terminal. Auto lo detecta."
 card_size = "Auto se ajusta a la ventana; si no cabe, se reduce. Teclas ] [ 0 o Ctrl+rueda."
 full_screen = "Auto: pantalla completa solo si la abre el juego. En consola: Alt+Enter o F11."
@@ -58,6 +64,8 @@ moves_panel = "Panel lateral con todas las acciones y sus teclas, activas o no."
 on = "Sí"
 off = "No"
 unavailable = "no disponible"
+not_installed = "no instalada"
+refused = "rechazada"
 needs_columns = "{value} (requiere {needed} columnas, actual {now})"
 
 [full_screen]
@@ -89,6 +97,7 @@ dracula = "Dracula"
 [glyph]
 unicode = "Unicode"
 ascii = "ASCII"
+font = "fuente oXySol"
 
 [color]
 auto = "Auto"
@@ -104,3 +113,13 @@ style_failed = "Sonido no disponible: no se pudo cargar el estilo de sonido sele
 
 [footer]
 change = "Cambiar"
+
+[graphics]
+title = "Comprobación gráfica"
+body = "Estos símbolos se dibujan con la fuente de cartas oXySol."
+suits = "Palos: {symbols}"
+courts = "Emblemas de figuras: {symbols}"
+back = "Reverso: {tile}, centro {mosaic}"
+hint_windows_terminal = "Windows Terminal: pon la fuente del perfil en \"oXySol Mono\", o en una lista que termine con ella: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (las listas funcionan desde Windows Terminal 1.20.11381)."
+question = "¿Parecen símbolos de cartas y no cuadrados o espacios en blanco?"
+declined = "Se mantienen los símbolos Unicode. Para ver la fuente de cartas, instala primero oXySol Mono (página de la wiki \"Card font\") y elígela de nuevo en Símbolos."

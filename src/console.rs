@@ -4,6 +4,7 @@ use std::io::{self, IsTerminal, Write};
 
 use oxysol_tui::i18n;
 
+pub mod card_font;
 pub mod display;
 pub mod font;
 

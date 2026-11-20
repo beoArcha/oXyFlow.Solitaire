@@ -138,6 +138,7 @@ mod tests {
             saved: None,
             pointer: None,
             now: Instant::now(),
+            font: crate::app::FontFacts::default(),
         }
     }
 

@@ -152,6 +152,7 @@ fn drawn(mode: GlyphMode, at: Metrics) -> Vec<String> {
         saved: None,
         pointer: None,
         now: Instant::now(),
+        font: crate::app::FontFacts::default(),
     };
     let mut terminal = Terminal::new(TestBackend::new(12, 24)).expect("terminal");
     terminal

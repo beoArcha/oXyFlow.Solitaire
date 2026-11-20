@@ -165,3 +165,31 @@ fn an_unknown_back_style_draws_the_default_back() {
     let default = Fixture::styled(GlyphMode::Unicode, "international", "lattice");
     assert_eq!(unknown.glyphs, default.glyphs);
 }
+
+#[test]
+fn the_font_mosaic_needs_a_cell_of_ten_by_twenty_four_pixels_where_the_cell_size_is_known() {
+    let area = Rect::new(0, 0, 11, 9);
+    let [top, _] = mosaic_of("lattice", GlyphMode::Font);
+    let drawn = |cell_px: Option<(u16, u16)>, mode: GlyphMode| {
+        let fixture = Fixture::styled(mode, "international", "lattice");
+        let mut ctx = fixture.ctx();
+        ctx.font.cell_px = cell_px;
+        let mut buf = Buffer::empty(area);
+        draw(&mut buf, area, Face::Down, Mark::default(), None, &ctx);
+        buf
+    };
+    for (cell, expected) in [
+        (None, true),
+        (Some((10, 24)), true),
+        (Some((12, 30)), true),
+        (Some((9, 24)), false),
+        (Some((10, 23)), false),
+        (Some((8, 16)), false),
+    ] {
+        let buf = drawn(cell, GlyphMode::Font);
+        assert_eq!(shows(&buf, area, &top), expected, "{cell:?}");
+    }
+    let [unicode_top, _] = mosaic_of("lattice", GlyphMode::Unicode);
+    let small = drawn(Some((8, 16)), GlyphMode::Unicode);
+    assert!(shows(&small, area, &unicode_top));
+}

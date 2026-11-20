@@ -15,6 +15,8 @@ use crate::theme::Token;
 const PREVIEW_WIDTH: usize = 4;
 /// The smallest card the mosaic is drawn on (the Large size, 11 × 9).
 const MOSAIC_MIN: (u16, u16) = (11, 9);
+/// The smallest character cell, in pixels, in which the 2 × 2 mosaic of the card font is drawn.
+const MOSAIC_MIN_CELL: (u16, u16) = (10, 24);
 
 /// The fill pattern symbol of the glyph set: the tile of its back style.
 pub(crate) fn pattern(glyphs: &Glyphs) -> &'static str {
@@ -42,10 +44,20 @@ pub(crate) fn preview(glyphs: &Glyphs) -> String {
 }
 
 /// Draws the 2 × 2 mosaic in the middle of a back of `area`, only when the card is Large or Huge
-/// and the style has a mosaic for the glyph mode. Elsewhere the single tile is used.
-pub(super) fn paint_mosaic(painter: &mut Painter<'_>, area: Rect, glyphs: &Glyphs, style: Style) {
+/// and the style has a mosaic for the glyph mode. In `Font` mode on a console that tells its cell
+/// size the cell must also be at least 10 × 24 pixels. Elsewhere the single tile is used.
+pub(super) fn paint_mosaic(
+    painter: &mut Painter<'_>,
+    area: Rect,
+    glyphs: &Glyphs,
+    (style, cell_px): (Style, Option<(u16, u16)>),
+) {
     let Some(back) = glyphs.back else { return };
     if area.width < MOSAIC_MIN.0 || area.height < MOSAIC_MIN.1 {
+        return;
+    }
+    let small_cell = cell_px.is_some_and(|(w, h)| w < MOSAIC_MIN_CELL.0 || h < MOSAIC_MIN_CELL.1);
+    if glyphs.font && small_cell {
         return;
     }
     let x = area.x + area.width.saturating_sub(2) / 2;
