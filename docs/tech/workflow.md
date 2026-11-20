@@ -45,6 +45,7 @@ package. Changes under `docs/` and to `*.md` select none.
 | `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu and Windows (`check-windows`), plus Clippy and tests of `oxysol` with `--no-default-features` on Ubuntu (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`); a separate `deny` job runs `cargo deny check licenses advisories sources bans` (`deny.toml`, T-37); a `site` job builds `docs/site` with mdBook and checks internal links when the PR touches `docs/site/**` |
 | `.github/workflows/main.yml` | push to `main`, manual dispatch | `check` runs `cargo xtask check` on Ubuntu and Windows, plus the no-sound Clippy and tests on Ubuntu; `check-macos` runs `cargo xtask check` on macOS and does not gate `promote` (see "macOS and jobs that never started"); `promote` (main only) needs `check`. It is the only workflow that saves the rust cache |
 | `.github/workflows/release.yml` | manual dispatch only (R-20), input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
+| `.github/workflows/site.yml` | manual dispatch only | redeploys the player site to GitHub Pages with the latest published release tag, without running a release build |
 
 `promote` runs one at a time and is never cancelled. It stops when `release` already contains the
 commit. Otherwise it pushes the tested commit to `release` over SSH with the deploy key from the
@@ -143,6 +144,14 @@ starts with a link to its twin in the other language. Text lives in the pages; t
 the `site` job. To check the site locally, install mdBook (the release binary of the pinned version, or
 `cargo install mdbook --version 0.4.52 --locked`) and run `mdbook build docs/site`. Locally the placeholders
 `{{VERSION}}` and `{{RELEASE_URL}}` stay as they are.
+
+### Redeploying the site without a release
+
+To redeploy the player site without publishing a new release (e.g. for typo fixes or documentation updates),
+trigger the `.github/workflows/site.yml` workflow via GitHub Actions (`Deploy site`) or `gh workflow run site.yml`.
+It rebuilds `docs/site` using the latest published release tag from GitHub Releases (falling back to
+`cargo xtask version --tag`) and deploys to GitHub Pages directly, keeping the release workflow and published
+binary assets untouched.
 
 ### Screenshots
 
