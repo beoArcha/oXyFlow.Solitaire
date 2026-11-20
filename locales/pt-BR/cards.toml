@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "bolotas"
+bell = "guizos"
+leaf = "folhas"
+baton = "paus"
+coin = "ouros"
+cup = "copas"
+sword = "espadas"

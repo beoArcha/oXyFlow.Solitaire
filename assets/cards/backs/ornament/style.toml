@@ -1,0 +1,15 @@
+# Ornament back: a cross-hatched fill with a double-line centre piece. See lattice/style.toml.
+
+name = "settings.style.ornament"
+fg = "card_back_mark"
+bg = "card_back"
+
+[tile]
+font = "backs/ornament/tile"
+unicode = "┼"
+ascii = "%"
+
+[mosaic]
+font = ["backs/ornament/mosaic-tl", "backs/ornament/mosaic-tr", "backs/ornament/mosaic-bl", "backs/ornament/mosaic-br"]
+unicode = ["╬═", "═╬"]
+ascii = ["%&", "&%"]

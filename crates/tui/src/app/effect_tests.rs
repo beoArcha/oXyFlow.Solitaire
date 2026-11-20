@@ -134,7 +134,10 @@ fn applying_settings_saves_them_and_reconfigures_theme_language_and_audio() {
     assert_eq!(h.app.settings(), &settings);
     assert_eq!(h.storage.borrow().settings.as_ref(), Some(&settings));
     assert_eq!(h.app.theme.id(), ThemeId::HighContrast);
-    assert_eq!(h.app.glyphs, Glyphs::new(GlyphMode::Ascii));
+    assert_eq!(
+        h.app.glyphs,
+        Glyphs::styled(GlyphMode::Ascii, "international", "lattice")
+    );
     assert_eq!(
         h.app.theme.color(crate::theme::Token::Text),
         ratatui::style::Color::White

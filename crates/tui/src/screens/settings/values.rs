@@ -1,10 +1,12 @@
 //! What a row of the settings screen shows and how one step changes [`Settings`].
 
 use super::options::{
-    BACK_STYLES, CARD_BACKS, COLOR_MODES, FIELDS, FRONT_STYLES, FULL_SCREEN_MODES, Field,
-    GLYPH_MODES, Step,
+    CARD_BACKS, COLOR_MODES, FIELDS, FULL_SCREEN_MODES, Field, GLYPH_MODES, Step, back_styles,
+    front_styles,
 };
 use crate::audio::{AudioStatus, StyleInfo};
+use crate::card_style::CardStyles;
+use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{CardBack, CardSizeSetting, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::theme::ThemeId;
@@ -82,13 +84,20 @@ pub fn sound_style_name<'a>(sound_styles: &'a [StyleInfo], id: &'a str) -> &'a s
         .map_or(id, |style| style.name.as_str())
 }
 
-/// The name of a card style: its localized name for the ids offered today, its id otherwise.
-fn card_style_name(id: &str) -> String {
-    match id {
-        "international" => t("settings.style.international").into_owned(),
-        "default" => t("settings.style.default").into_owned(),
-        other => other.to_owned(),
-    }
+fn front_style_name(id: &str) -> String {
+    CardStyles::embedded()
+        .fronts()
+        .iter()
+        .find(|style| style.id == id)
+        .map_or_else(|| id.to_owned(), |style| t(&style.name_key).into_owned())
+}
+
+fn back_style_name(id: &str) -> String {
+    CardStyles::embedded()
+        .backs()
+        .iter()
+        .find(|style| style.id == id)
+        .map_or_else(|| id.to_owned(), |style| t(&style.name_key).into_owned())
 }
 
 /// The widest label of the rows, in characters: the column the values start after.
@@ -121,10 +130,14 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::CardBack => format!(
             "{} {}",
             t(card_back_key(settings.card_back)),
-            back::preview(settings.card_back, settings.glyph_mode)
+            back::preview(&Glyphs::styled(
+                settings.glyph_mode,
+                &settings.front_style,
+                &settings.back_style
+            ))
         ),
-        Field::FrontStyle => card_style_name(&settings.front_style),
-        Field::BackStyle => card_style_name(&settings.back_style),
+        Field::FrontStyle => front_style_name(&settings.front_style),
+        Field::BackStyle => back_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
         Field::CardSize => t(settings.card_size.label_key()).into_owned(),
@@ -210,10 +223,10 @@ pub fn changed(
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
         Field::CardBack => next.card_back = cycle(&CARD_BACKS, settings.card_back, step),
         Field::FrontStyle => {
-            next.front_style = cycle_str(&FRONT_STYLES, &settings.front_style, step);
+            next.front_style = cycle_str(&front_styles(), &settings.front_style, step);
         }
         Field::BackStyle => {
-            next.back_style = cycle_str(&BACK_STYLES, &settings.back_style, step);
+            next.back_style = cycle_str(&back_styles(), &settings.back_style, step);
         }
         Field::Glyphs => next.glyph_mode = cycle(&GLYPH_MODES, settings.glyph_mode, step),
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),

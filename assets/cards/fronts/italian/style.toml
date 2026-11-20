@@ -1,0 +1,44 @@
+# Italian deck: batons, swords, cups and coins on the clubs, spades, hearts and diamonds of the
+# game; the Unicode and ASCII symbols are the closest WGL4 shapes and letters. Court labels: Fante,
+# Cavallo, Re. The court emblems are the International ones.
+
+name = "settings.style.italian"
+
+[ranks]
+ace = "A"
+jack = "F"
+queen = "C"
+king = "R"
+
+[suits.clubs]
+name = "cards.suit.baton"
+font = "fronts/italian/baton"
+unicode = "♣"
+ascii = "b"
+color = "card_black"
+
+[suits.diamonds]
+name = "cards.suit.coin"
+font = "fronts/italian/coin"
+unicode = "♦"
+ascii = "o"
+color = "card_red"
+
+[suits.hearts]
+name = "cards.suit.cup"
+font = "fronts/italian/cup"
+unicode = "♥"
+ascii = "u"
+color = "card_red"
+
+[suits.spades]
+name = "cards.suit.sword"
+font = "fronts/italian/sword"
+unicode = "♠"
+ascii = "w"
+color = "card_black"
+
+[courts]
+jack = "fronts/international/jack"
+queen = "fronts/international/queen"
+king = "fronts/international/king"

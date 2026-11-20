@@ -1,7 +1,8 @@
 //! The options of the settings screen: their order, the group each belongs to and the texts that name
 //! them. What a row shows and how one step changes [`Settings`] is in `values`. Front and back styles
-//! are fixed to the ids that exist today; the sound styles are the list the application passes in.
+//! are the folders found under `assets/cards`; the sound styles are the list the application passes in.
 
+use crate::card_style::CardStyles;
 use crate::settings::{Aid, CardBack, ColorMode, FullScreen, GlyphMode};
 
 /// One row of the settings screen.
@@ -78,10 +79,23 @@ pub enum Step {
     Previous,
 }
 
-/// Front style ids offered today.
-pub const FRONT_STYLES: [&str; 1] = ["international"];
-/// Back style ids offered today.
-pub const BACK_STYLES: [&str; 1] = ["default"];
+/// The ids of the front styles found, the default first.
+pub fn front_styles() -> Vec<&'static str> {
+    CardStyles::embedded()
+        .fronts()
+        .iter()
+        .map(|style| style.id.as_str())
+        .collect()
+}
+
+/// The ids of the back styles found, the default first.
+pub fn back_styles() -> Vec<&'static str> {
+    CardStyles::embedded()
+        .backs()
+        .iter()
+        .map(|style| style.id.as_str())
+        .collect()
+}
 
 pub(super) const CARD_BACKS: [CardBack; 3] =
     [CardBack::Theme, CardBack::Monokai, CardBack::Dracula];
