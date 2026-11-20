@@ -12,6 +12,8 @@ use std::sync::OnceLock;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+pub mod flags;
+
 /// A supported interface language. `en-US` is the source locale.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Locale {
@@ -151,6 +153,14 @@ pub fn t(key: &str) -> Cow<'_, str> {
         .get(key)
         .or_else(|| catalog(Locale::EnUs).get(key));
     match found {
+        Some(text) => Cow::Borrowed(text.as_str()),
+        None => Cow::Borrowed(key),
+    }
+}
+
+/// The text for `key` in `locale`, whatever the current locale is: a language's own name.
+pub fn t_in(locale: Locale, key: &str) -> Cow<'_, str> {
+    match catalog(locale).get(key) {
         Some(text) => Cow::Borrowed(text.as_str()),
         None => Cow::Borrowed(key),
     }
