@@ -233,11 +233,18 @@ impl App {
         self.persist_settings();
     }
 
-    /// Saves the settings through storage; a failure is logged and shown as an alert.
+    /// Saves the settings through storage. The first failure since the last successful write is
+    /// logged and shown as an alert; later failures stay silent until a write succeeds again.
     pub(super) fn persist_settings(&mut self) {
-        if let Err(error) = self.storage.save_settings(&self.settings) {
-            tracing::warn!(%error, "settings could not be saved; they hold for this session");
-            self.open_modal(Modal::alert("common.error.storage"));
+        let Err(error) = self.storage.save_settings(&self.settings) else {
+            self.settings_write_failed = false;
+            return;
+        };
+        if self.settings_write_failed {
+            return;
         }
+        self.settings_write_failed = true;
+        tracing::warn!(%error, "settings could not be saved; they hold for this session");
+        self.open_modal(Modal::alert("common.error.storage"));
     }
 }
