@@ -34,6 +34,8 @@ new_game = "New game"
 pause = "Pause"
 menu = "Menu"
 copy_seed = "Copy seed"
+dock = "Dock the help window"
+dock_focus = "Focus the docked window"
 
 [mouse_keys]
 click_card = "Click a card"
@@ -91,3 +93,10 @@ esc = "Esc"
 tab = "Tab"
 shift = "Shift"
 ctrl = "Ctrl"
+
+[dock]
+button = "Dock: {side}"
+side_centre = "centre"
+side_right = "right"
+side_left = "left"
+too_narrow = "Docking needs 130 columns; the window stays centred."

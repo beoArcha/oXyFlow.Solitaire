@@ -79,7 +79,7 @@ pub fn lines() -> Vec<String> {
     t("cli.help").lines().map(str::to_owned).collect()
 }
 
-fn is_heading(line: &str) -> bool {
+pub(super) fn is_heading(line: &str) -> bool {
     line.ends_with(HEADING_SUFFIX) && !line.starts_with(' ')
 }
 

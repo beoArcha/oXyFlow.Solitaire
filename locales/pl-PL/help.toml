@@ -34,6 +34,8 @@ new_game = "Nowa gra"
 pause = "Pauza"
 menu = "Menu"
 copy_seed = "Kopiuj ziarno"
+dock = "Dokuj okno pomocy"
+dock_focus = "Przejdź do dokowanego okna"
 
 [mouse_keys]
 click_card = "Kliknięcie karty"
@@ -91,3 +93,10 @@ esc = "Esc"
 tab = "Tab"
 shift = "Shift"
 ctrl = "Ctrl"
+
+[dock]
+button = "Dokowanie: {side}"
+side_centre = "na środku"
+side_right = "z prawej"
+side_left = "z lewej"
+too_narrow = "Dokowanie wymaga 130 kolumn; okno zostaje na środku."

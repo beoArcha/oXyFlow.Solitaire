@@ -6,6 +6,7 @@ mod command_line;
 #[cfg(test)]
 mod command_line_tests;
 mod dialog;
+pub mod dock;
 #[cfg(test)]
 mod focus_tests;
 mod guide_window;

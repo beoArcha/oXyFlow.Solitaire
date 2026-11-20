@@ -15,6 +15,8 @@ pub enum Action {
     ForceQuit,
     Help,
     Rules,
+    Dock,
+    DockFocus,
     Guide,
     Moves,
     Options,
@@ -35,7 +37,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 28] = [
+    pub const ALL: [Action; 30] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -64,6 +66,8 @@ impl Action {
         Action::ForceQuit,
         Action::Help,
         Action::Rules,
+        Action::Dock,
+        Action::DockFocus,
     ];
 
     /// Localization key of the short name shown in help and in the footer.
@@ -81,6 +85,8 @@ impl Action {
             Action::ForceQuit => "help.action.force_quit",
             Action::Help => "help.action.help",
             Action::Rules => "help.action.rules",
+            Action::Dock => "help.action.dock",
+            Action::DockFocus => "help.action.dock_focus",
             Action::Guide => "help.action.guide",
             Action::Moves => "help.action.moves",
             Action::Options => "help.action.options",

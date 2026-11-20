@@ -12,6 +12,7 @@ use crate::screens::Effect;
 use crate::screens::board::Start;
 use crate::settings::Settings;
 use crate::solver::{DealCheck, Proof};
+use crate::widgets::overlay::dock::DockState;
 use crate::widgets::overlay::{HowToPlay, Rules};
 
 impl App {
@@ -94,9 +95,10 @@ impl App {
 
     pub(super) fn open_modal(&mut self, modal: Modal) {
         let modal = self.with_personal_best(modal);
-        self.board.pause_clock(self.now);
+        self.dock = DockState::default();
         self.board.set_covered(matches!(modal, Modal::Pause { .. }));
         self.modal = Some(modal);
+        self.sync_clock();
     }
 
     /// Deals the game that was just played again from its seed, through the new-game path.
@@ -121,6 +123,7 @@ impl App {
 
     pub(super) fn close_modal(&mut self) {
         self.modal = None;
+        self.dock = DockState::default();
         self.board.set_covered(false);
         if self.screen == Screen::Board {
             self.board.resume_clock(self.now);
@@ -217,6 +220,11 @@ impl App {
         }
         self.refresh_running();
         self.refresh_view();
+        self.persist_settings();
+    }
+
+    /// Saves the settings through storage; a failure is logged and shown as an alert.
+    pub(super) fn persist_settings(&mut self) {
         if let Err(error) = self.storage.save_settings(&self.settings) {
             tracing::warn!(%error, "settings could not be saved; they hold for this session");
             self.open_modal(Modal::alert("common.error.storage"));

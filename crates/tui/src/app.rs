@@ -90,6 +90,7 @@ pub struct App {
     write_failed: bool,
     screen: Screen,
     modal: Option<Modal>,
+    dock: overlay::dock::DockState,
     menu: MainMenu,
     select: GameSelect,
     settings_screen: SettingsScreen,
@@ -140,6 +141,7 @@ impl App {
             write_failed: false,
             screen: Screen::MainMenu,
             modal: None,
+            dock: overlay::dock::DockState::default(),
             menu: start_seed.map_or_else(MainMenu::new, MainMenu::for_seed),
             select: GameSelect::new(),
             settings_screen: SettingsScreen::new(),
@@ -288,8 +290,8 @@ impl App {
                 Effect::None
             };
         }
-        if self.modal.is_some() {
-            return self.on_modal_key(&key, action);
+        if let Some(effect) = self.dock_route(&key, action) {
+            return effect;
         }
         if !self.types_text(&key) {
             match action {
@@ -310,7 +312,7 @@ impl App {
 
     /// The footer button under `cell` on the active screen, if any; no modal may be open.
     fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
-        if self.modal.is_some() {
+        if self.modal.is_some() && self.modal_takes_keys() {
             return self.modal_footer.action_at(cell);
         }
         match self.screen {
@@ -333,16 +335,6 @@ impl App {
     /// Whether `key` is typed text for the active screen, so that it is not a global shortcut.
     fn types_text(&self, key: &KeyEvent) -> bool {
         self.captures_text() && is_text_key(key)
-    }
-
-    fn on_modal_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
-        let rules = overlay::rules_of(&self.board);
-        let outcome = self
-            .modal
-            .as_mut()
-            .and_then(|modal| overlay::handle_for(modal, key, action, rules));
-        self.sync_quick();
-        self.finish_modal(outcome)
     }
 
     fn on_modal_mouse(&mut self, event: &MouseEvent) -> Effect {
@@ -381,8 +373,11 @@ impl App {
         if matches!(event.kind, MouseEventKind::Down(_)) {
             self.board.interrupt_finish();
         }
-        if self.modal.is_some() {
-            return self.on_modal_mouse(event);
+        if let Some(effect) = self.dock_mouse(event) {
+            return effect;
+        }
+        if let Some(effect) = self.dock_mouse(event) {
+            return effect;
         }
         let ctx = view_ctx!(self);
         match self.screen {
@@ -412,15 +407,39 @@ impl App {
             too_small::draw(frame, area, &ctx);
             return;
         }
+        let split = self.dock_split();
+        let screen = split.map_or(area, |(_, rest)| rest);
         match self.screen {
-            Screen::MainMenu => self.menu.draw(frame, area, &ctx),
-            Screen::GameSelect => self.select.draw(frame, area, &ctx),
-            Screen::Board => self.board.draw(frame, area, &ctx),
-            Screen::Settings => self.settings_screen.draw(frame, area, &ctx),
-            Screen::Stats => self.stats.draw(frame, area, &ctx),
+            Screen::MainMenu => self.menu.draw(frame, screen, &ctx),
+            Screen::GameSelect => self.select.draw(frame, screen, &ctx),
+            Screen::Board => self.board.draw(frame, screen, &ctx),
+            Screen::Settings => self.settings_screen.draw(frame, screen, &ctx),
+            Screen::Stats => self.stats.draw(frame, screen, &ctx),
         }
         if let Some(modal) = &self.modal {
-            self.modal_footer = overlay::draw(frame, area, modal, &self.board, &ctx);
+            match split {
+                Some((rect, _)) => {
+                    overlay::dock::dock_view::draw(
+                        frame,
+                        rect,
+                        modal,
+                        &self.dock,
+                        self.settings.help_dock,
+                        &ctx,
+                    );
+                    self.modal_footer = FooterMap::default();
+                }
+                None => {
+                    self.modal_footer = overlay::draw(frame, area, modal, &self.board, &ctx);
+                    overlay::dock::dock_view::draw_placement(
+                        frame,
+                        area,
+                        modal,
+                        self.settings.help_dock,
+                        &ctx,
+                    );
+                }
+            }
         }
     }
 }
@@ -428,6 +447,7 @@ impl App {
 mod deals;
 mod deps;
 mod display;
+mod dock;
 mod effects;
 mod finish;
 mod modal;
@@ -456,3 +476,6 @@ mod effect_tests;
 
 #[cfg(test)]
 mod persist_tests;
+
+#[cfg(test)]
+mod dock_tests;

@@ -5,7 +5,7 @@
 
 #[cfg(test)]
 mod bar_tests;
-mod content;
+pub(super) mod content;
 #[cfg(test)]
 mod focus_tests;
 mod pages;
