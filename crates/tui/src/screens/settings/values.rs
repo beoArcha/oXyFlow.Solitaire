@@ -8,6 +8,7 @@ use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{CardBack, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::theme::ThemeId;
+use crate::widgets::card::back;
 
 const VOLUME_STEP: u8 = 10;
 
@@ -124,7 +125,11 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     match field {
         Field::Language => t(locale_key(settings.locale)).into_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
-        Field::CardBack => t(card_back_key(settings.card_back)).into_owned(),
+        Field::CardBack => format!(
+            "{} {}",
+            t(card_back_key(settings.card_back)),
+            back::preview(settings.card_back, settings.glyph_mode)
+        ),
         Field::FrontStyle => card_style_name(&settings.front_style),
         Field::BackStyle => card_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
