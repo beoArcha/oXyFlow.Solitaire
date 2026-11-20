@@ -5,10 +5,17 @@ use oxysol_core::{DrawCount, Variant};
 use ratatui::crossterm::event::KeyCode;
 
 use crate::accessibility_tests::footer::{each_locale, harness, observed, sized};
+use crate::action::Action;
 use crate::app::Screen;
-use crate::i18n::{Locale, tf};
+use crate::i18n::{Locale, t, tf};
+use crate::input::primary_key;
 use crate::screens::Effect;
 use crate::test_support::Harness;
+
+/// A key and its label as a key line draws them, in the current locale.
+fn hint(action: Action, label: &str) -> String {
+    format!("{} {}", primary_key(action).unwrap_or_default(), t(label))
+}
 
 /// The drawn key line of a screen, one line per locale, as the player reads it.
 fn expect_drawn(h: &mut Harness, labels: &[&str]) {
@@ -22,22 +29,10 @@ fn expect_drawn(h: &mut Harness, labels: &[&str]) {
 fn the_main_menu_names_only_the_keys_that_work_there() {
     each_locale(|locale| {
         let mut h = harness(locale, Vec::new());
-        let open = if locale == Locale::PlPl {
-            "Enter Otwórz"
-        } else {
-            "Enter Open"
-        };
-        let quit = if locale == Locale::PlPl {
-            "q Zakończ"
-        } else {
-            "q Quit"
-        };
-        let help = if locale == Locale::PlPl {
-            "? Pomoc"
-        } else {
-            "? Help"
-        };
-        expect_drawn(&mut h, &[open, quit, help]);
+        let open = hint(Action::Select, "menu.footer.open");
+        let quit = hint(Action::Quit, "help.action.quit");
+        let help = hint(Action::Help, "help.action.help");
+        expect_drawn(&mut h, &[&open, &quit, &help]);
         assert!(
             !h.text().contains("Esc"),
             "{locale:?}: Esc is drawn in the item list"
@@ -56,17 +51,16 @@ fn esc_in_the_main_menu_item_list_does_nothing() {
 #[test]
 fn the_game_selection_and_settings_name_their_keys_in_their_own_words() {
     each_locale(|locale| {
-        let (play, change, back, help) = if locale == Locale::PlPl {
-            ("Enter Zagraj", "Enter Zmień", "Esc Wstecz", "? Pomoc")
-        } else {
-            ("Enter Play", "Enter Change", "Esc Back", "? Help")
-        };
+        let play = hint(Action::Select, "menu.footer.play");
+        let change = hint(Action::Select, "settings.footer.change");
+        let back = hint(Action::Back, "help.action.back");
+        let help = hint(Action::Help, "help.action.help");
         let mut games = harness(locale, Vec::new());
         games.app.apply(Effect::Goto(Screen::GameSelect));
-        expect_drawn(&mut games, &[play, back, help]);
+        expect_drawn(&mut games, &[&play, &back, &help]);
         let mut settings = harness(locale, Vec::new());
         settings.app.apply(Effect::Goto(Screen::Settings));
-        expect_drawn(&mut settings, &[change, back, help]);
+        expect_drawn(&mut settings, &[&change, &back, &help]);
     });
 }
 

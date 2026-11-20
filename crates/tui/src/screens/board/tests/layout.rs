@@ -62,7 +62,7 @@ fn panel_width(columns: u16) -> u16 {
 fn every_screen() -> Vec<(Variant, (u16, u16), Locale, TerminalCaps)> {
     let mut all = Vec::new();
     for size in SIZES {
-        for locale in Locale::ALL {
+        for locale in Locale::offered() {
             for caps in [TRUE_COLOR, PLAIN] {
                 all.extend(GAMES.map(|variant| (variant, size, locale, caps)));
             }
@@ -143,7 +143,7 @@ fn a_wide_screen_has_a_forty_column_panel() {
 
 #[test]
 fn the_panel_is_framed_in_both_glyph_sets_and_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let sets = [
             (TRUE_COLOR, ['┌', '┐', '└', '┘'], ['│', '├', '┤']),
             (PLAIN, ['+', '+', '+', '+'], ['|', '+', '+']),

@@ -75,10 +75,6 @@ theme = "Motyw"
 monokai = "Monokai"
 dracula = "Dracula"
 
-[locale]
-en_us = "Angielski"
-pl_pl = "Polski"
-
 [theme]
 dark = "Ciemny"
 light = "Jasny"

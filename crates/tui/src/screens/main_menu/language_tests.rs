@@ -109,7 +109,7 @@ fn the_flag_pixels_are_the_flag_colors() {
 #[test]
 fn the_menu_fits_with_the_selector_at_both_reference_sizes_in_both_locales() {
     for (width, height) in [(100, 30), (130, 40)] {
-        for locale in Locale::ALL {
+        for locale in Locale::offered() {
             let mut h = harness(locale, TRUE_COLOR, width, height);
             let lines = h.lines();
             assert!(lines[1].trim_start().starts_with(FLAG_ROW));
@@ -129,7 +129,7 @@ fn the_menu_fits_with_the_selector_at_both_reference_sizes_in_both_locales() {
 #[test]
 fn the_open_list_fits_at_both_reference_sizes_in_both_locales() {
     for (width, height) in [(100, 30), (130, 40)] {
-        for locale in Locale::ALL {
+        for locale in Locale::offered() {
             let mut h = harness(locale, TRUE_COLOR, width, height);
             focus_selector(&mut h);
             h.press(KeyCode::Down);
@@ -154,7 +154,7 @@ fn left_and_right_switch_the_language_at_once_and_save_it() {
     assert_eq!(locale(&h), Locale::EnUs);
     assert_eq!(stored(&h), Some(Locale::EnUs));
     h.press(KeyCode::Left);
-    assert_eq!(locale(&h), Locale::PlPl);
+    assert_eq!(Some(locale(&h)), Locale::offered().last().copied());
 }
 
 #[test]
@@ -200,7 +200,7 @@ fn up_in_the_list_wraps_and_escape_closes_it_without_a_change() {
     h.press(KeyCode::Enter);
     h.press(KeyCode::Up);
     h.press(KeyCode::Enter);
-    assert_eq!(locale(&h), Locale::PlPl);
+    assert_eq!(Some(locale(&h)), Locale::offered().last().copied());
 }
 
 #[test]

@@ -2,9 +2,11 @@ use oxysol_core::{DrawCount, Move, PyramidRules, SuitCount, Variant};
 use ratatui::crossterm::event::KeyCode;
 
 use super::*;
+use crate::action::Action;
 use crate::announce::{card_name, pile_name, targets_text};
 use crate::glyphs::is_wgl4;
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, tf};
+use crate::input::primary_key;
 use crate::settings::{Aids, Settings};
 
 const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
@@ -191,23 +193,24 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     );
 }
 
+fn action_prefix(key: &str) -> String {
+    tf(key, &[("text", "")]).trim_end().to_owned()
+}
+
 #[test]
-fn the_do_row_shows_restart_at_100_and_130_columns_in_both_locales() {
-    for locale in Locale::ALL {
+fn the_do_row_shows_restart_at_100_and_130_columns_in_every_offered_locale() {
+    for locale in Locale::offered() {
         set_locale(locale);
-        let expected = match locale {
-            Locale::EnUs => "Shift+R: restart",
-            Locale::PlPl => "Shift+R: od nowa",
-        };
+        let expected = tf(
+            "board.action.restart",
+            &[("key", &primary_key(Action::Restart).unwrap_or_default())],
+        );
+        let prefix = action_prefix("board.action.possible");
         for width in [100, 130] {
             let mut h = sized_in(locale, KLONDIKE, width, 30);
-            let prefix = match locale {
-                Locale::EnUs => "Do:",
-                Locale::PlPl => "Możesz:",
-            };
-            let possible = row(&mut h, prefix);
+            let possible = row(&mut h, &prefix);
             assert!(
-                possible.contains(expected),
+                possible.contains(&expected),
                 "locale {locale:?}, width {width}: {possible}"
             );
         }
@@ -229,18 +232,18 @@ fn the_action_line_follows_the_stock_of_each_game() {
 
 #[test]
 fn the_action_line_fits_the_smallest_terminal_in_every_game_and_locale() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for variant in Variant::ALL {
             let mut h = sized(variant, 100, 30);
             set_locale(locale);
             let lines = h.lines();
+            let prefixes = (
+                action_prefix("board.action.now"),
+                action_prefix("board.action.possible"),
+            );
             set_locale(Locale::EnUs);
-            let prefixes = match locale {
-                Locale::EnUs => ("Now:", "Do:"),
-                Locale::PlPl => ("Teraz:", "Możesz:"),
-            };
             let found = |prefix: &str| lines.iter().any(|line| line.trim().starts_with(prefix));
-            assert!(found(prefixes.0) && found(prefixes.1), "{variant:?}");
+            assert!(found(&prefixes.0) && found(&prefixes.1), "{variant:?}");
             for line in &lines {
                 assert!(line.chars().count() <= 100, "{variant:?}: {line}");
             }

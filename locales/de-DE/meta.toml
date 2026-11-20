@@ -1,0 +1,6 @@
+# The name of this language in itself: shown in the language selector and the Settings Language
+# row whatever language is on.
+own_name = "Deutsch"
+# Whether the translation is finished. Only complete locales are offered to the player; an
+# unfinished one is never shown and a saved choice of it falls back to en-US.
+complete = false

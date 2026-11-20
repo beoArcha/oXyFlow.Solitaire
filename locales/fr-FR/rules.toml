@@ -1,0 +1,86 @@
+# Strings of the "How to play" window. Placeholders such as {hint} are replaced with the key bound
+# to that action in the key table, so the text never names a key that can change.
+
+[game]
+klondike = "Klondike"
+spider = "Spider"
+freecell = "FreeCell"
+pyramid = "Pyramid"
+
+[section]
+goal = "Goal"
+layout = "Layout"
+moves = "Moves"
+controls = "Controls"
+tips = "Tips"
+
+[control]
+navigate = "Move the cursor. Up and Down also choose a card inside a column."
+select = "Pick up the cards under the cursor, then press again on a target pile to drop them."
+select_pair = "Pick a free card, then pick a second free card to remove the pair."
+back = "Cancel the cards you picked up, or leave the game."
+stock = "Draw a card from the stock."
+deal = "Deal a new row from the stock."
+run = "Pick up more or fewer cards of a column."
+quick_move = "Send the cards under the cursor to the best target."
+undo = "Take back the last move."
+hint = "Highlight a move you can make."
+mouse = "With the mouse: click a card, then click its target; double-click sends a card to its best target; click the stock to draw."
+
+[klondike]
+goal = "Move all 52 cards to the four foundations. Each foundation is built up by suit, from ace to king."
+layout_1 = "Seven columns hold 1 to 7 cards. Only the top card of each column is face up."
+layout_2 = "The other 24 cards form the stock. Cards drawn from it go to the waste."
+layout_3 = "Draw 1 turns one card at a time. Draw 3 turns three cards, and only the top card of the waste can be played."
+moves_1 = "Build columns downward in alternating colors, for example a red 6 on a black 7."
+moves_2 = "A run of face-up cards in order moves together. Only a king, or a run that starts with a king, can go to an empty column."
+moves_3 = "An ace starts a foundation. After it comes the next card of the same suit."
+moves_4 = "A face-down card turns over as soon as it is uncovered."
+moves_5 = "When the stock is empty, the waste turns back into the stock. This can be repeated without limit."
+tips_1 = "Uncover the face-down cards first. They hide the cards you need."
+tips_2 = "Move aces and twos to the foundations early, but keep cards that still help to build columns."
+tips_3 = "Empty a column only when you have a king ready to move into it."
+tips_4 = "Stuck? Press {hint} for a hint, or {undo} to take a move back."
+
+[spider]
+goal = "Build eight complete runs of one suit, from king down to ace. Each finished run leaves the columns for a foundation."
+layout_1 = "Ten columns hold 5 or 6 cards each. Only the top card of each column is face up."
+layout_2 = "The other 50 cards form the stock."
+layout_3 = "Spider uses 104 cards in 1, 2 or 4 suits. Fewer suits make the game easier."
+moves_1 = "Build columns downward by rank in any suit, for example a 6 of hearts on a 7 of spades."
+moves_2 = "Only a run of one suit in descending order can move as a group."
+moves_3 = "An empty column takes any card or run."
+moves_4 = "A complete run from king to ace is removed from the column by itself."
+moves_5 = "The stock deals one card onto each column. It cannot be used while a column is empty."
+tips_1 = "Keep runs in one suit when you can. A mixed run cannot move as a group."
+tips_2 = "Empty a column early. It is the most useful tool in Spider."
+tips_3 = "Fill every empty column before you deal from the stock with {stock}."
+tips_4 = "Look for other moves before you deal. A deal covers every column."
+
+[freecell]
+goal = "Move all 52 cards to the four foundations. Each foundation is built up by suit, from ace to king."
+layout_1 = "All 52 cards are dealt face up into eight columns, so you can see every card."
+layout_2 = "Four free cells hold one card each. There is no stock."
+moves_1 = "Build columns downward in alternating colors."
+moves_2 = "Put a card in a free cell to get it out of the way, and take it out again when it fits."
+moves_3 = "Foundations grow by suit from the ace. Cards cannot leave them."
+moves_4 = "To move several cards at once you need free cells or empty columns. The more you have, the longer the run you can move."
+moves_5 = "An empty column takes any card or run."
+tips_1 = "Plan ahead. Almost every deal can be won."
+tips_2 = "Try not to fill all four free cells. They are your working space."
+tips_3 = "An empty column is worth more than a free cell."
+tips_4 = "Use {undo} to take back a move that did not work out."
+
+[pyramid]
+goal = "Remove cards by pairing two cards whose values add up to 13. A king is worth 13 on its own."
+layout_1 = "28 cards form a pyramid of seven rows. A card is free only when both cards covering it are gone."
+layout_2 = "The other 24 cards form the stock. Cards drawn from it go to the waste."
+layout_3 = "Values: ace 1, jack 11, queen 12, king 13, every other card its number."
+layout_4 = "Relaxed allows 3 passes through the stock and is won when the pyramid is empty. Classic allows 1 pass and is won when all 52 cards are removed."
+moves_1 = "Free cards are the uncovered cards of the pyramid, the top card of the stock and the top card of the waste."
+moves_2 = "Pick a free card, then a second free card so that their values add up to 13. Both cards are removed."
+moves_3 = "A free king is removed on its own: just pick it."
+moves_4 = "When no pair is left, draw from the stock."
+tips_1 = "Clear the lower rows first, so that more cards of the pyramid become free."
+tips_2 = "Before you remove a card, check that its partner is not needed for another pair."
+tips_3 = "Press {hint} to see a pair or a draw that is available."

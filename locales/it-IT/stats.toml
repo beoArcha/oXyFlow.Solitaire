@@ -1,0 +1,61 @@
+# Strings of the statistics screen: the summary per game, the history list and copying a seed.
+label = "Statistics"
+title = "Statistics"
+footer_list = "Up Down Select"
+footer_replay = "Enter Play this seed again"
+footer_copy = "c Copy seed"
+footer_back = "Esc Back"
+empty = "No games played yet. Start one from the main menu."
+load_failed = "The game history could not be read."
+position = "Game {current} of {total}"
+copied = "Seed {seed} copied"
+copy_failed = "Could not copy the seed — it is shown here: {seed}"
+
+[mode]
+undo = "undo"
+no_undo = "no undo"
+
+[outcome]
+won = "Won"
+abandoned = "Abandoned"
+open = "In progress"
+
+[summary]
+game = "Game"
+played = "Played"
+won = "Won"
+clean = "No restart"
+rate = "Win rate"
+best_time = "Best time"
+fewest_moves = "Fewest moves"
+streak = "Streak"
+longest = "Best streak"
+
+[history]
+title = "History, newest first, times in UTC"
+date = "Date"
+variant = "Game"
+seed = "Seed"
+outcome = "Result"
+time = "Time"
+moves = "Moves"
+restarts = "Restarts"
+winnable = "Winnable"
+winnable_short = "?"
+
+[legend]
+winnable = "winnable"
+unwinnable = "not winnable"
+unknown = "unknown"
+unchecked = "not checked"
+
+[winnable]
+yes = "yes"
+no = "no"
+unknown = "unknown"
+unchecked = "-"
+
+[button]
+replay = "Play this seed again"
+copy = "Copy seed"
+back = "Back"

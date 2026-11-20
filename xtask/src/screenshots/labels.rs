@@ -58,7 +58,7 @@ pub fn label(name: &str, locale: Locale) -> &'static str {
         .iter()
         .find(|(known, _, _)| *known == name)
         .map_or("", |(_, english, polish)| match locale {
-            Locale::EnUs => english,
             Locale::PlPl => polish,
+            _ => english,
         })
 }

@@ -61,7 +61,8 @@ spades = "pik"
 
 [announce]
 targets_one = "1 cel"
-targets_many = "możliwe cele: {count}"
+targets_few = "{count} cele"
+targets_many = "{count} celów"
 
 [status]
 no_targets = "Te karty nie mają dokąd trafić."
