@@ -21,7 +21,16 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 | `cargo xtask report` | prints the last check result as Markdown; paste it into the PR's "Check result" section | run after `check` |
 | `cargo xtask locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |
 | `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
+| `cargo xtask preflight [--card <ID>] [--base <ref>] [--ci]` | fetches `origin`; reports how far the branch is behind and ahead of `origin/main` (a warning when behind); runs the conflict-marker and decision-ID lints; with `--card`, warns about changed files that the card's `Files` line does not name; `--ci` then runs `check --pr <base>` | run before `check --quick` (see "Before you open a PR") |
 | `cargo xtask worktrees [--remove [--force]]` | lists every worktree with its state (`main`, `merged`, `open`) and the orphan folders git no longer knows; `--remove` deletes the clean merged ones and prunes; a dry run without it | run by hand (see "Worktrees") |
+
+### Before you open a PR
+
+Run `cargo xtask preflight --card <ID>` first. It fetches `origin`, warns when the branch is behind
+`origin/main` (then run `git merge origin/main`), runs the marker and decision-ID lints, and warns about
+changed files the card does not name; only lint errors or an unknown card make it fail. Then run
+`cargo xtask check --quick`. For a change that touches only docs or a small part of the code, `cargo xtask
+check --pr origin/main` is the same gate CI runs (`preflight --ci` runs it after the preflight).
 
 Affected packages (T-22): `crates/core` selects `oxysol-core`, `oxysol-tui` and `oxysol`;
 `crates/tui` selects `oxysol-tui` and `oxysol`; `src/` and `tests/` select `oxysol`; `xtask/`

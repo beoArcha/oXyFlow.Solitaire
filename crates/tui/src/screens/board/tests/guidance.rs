@@ -187,7 +187,7 @@ fn a_won_game_offers_a_new_game_and_the_menu() {
     let possible = row(&mut h, "Do:");
     assert!(
         possible.starts_with(
-            "Do: n: new game | g: guide | Shift+R: restart | o: options | ?: keys | Esc: menu"
+            "Do: n: new game | g: guide | Shift+R: restart | o: options | p: pause | v: moves | ?: keys | Esc: menu"
         ),
         "{possible}"
     );
