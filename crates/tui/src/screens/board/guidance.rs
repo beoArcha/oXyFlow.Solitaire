@@ -167,12 +167,14 @@ impl Guidance {
     }
 }
 
-/// The parts that end every `Do:` row: restart and options, which are kept longest, the key list,
-/// and unless Esc is taken by a pick, the way to the menu.
+/// The parts that end every `Do:` row: restart, options, pause and moves, the key list, and unless
+/// Esc is taken by a pick, the way to the menu, which is kept longest of the tail.
 fn tail(with_menu: bool) -> Vec<Part> {
     let mut parts = vec![
         part(Action::Restart, "board.action.restart", 2),
         part(Action::Options, "board.action.options", 2),
+        part(Action::Pause, "board.action.pause", 4),
+        part(Action::Moves, "board.action.moves", 4),
         part(Action::Help, "board.action.help", 8),
     ];
     if with_menu {
@@ -269,7 +271,7 @@ impl BoardScreen {
             possible.push(part(Action::Stock, stock_key(variant), 2));
         }
         usable.extend(stock_ready.then_some(Action::Stock));
-        possible.push(plain("board.action.move", 6));
+        possible.push(plain("board.action.move", 9));
         if hint {
             possible.push(part(Action::Hint, "board.action.hint", 3));
             usable.push(Action::Hint);

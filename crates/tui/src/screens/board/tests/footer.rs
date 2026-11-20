@@ -10,8 +10,11 @@ use crate::action::Action;
 use crate::app::Modal;
 use crate::i18n::tf;
 use crate::input::primary_key;
+use crate::screens::Effect;
 use crate::screens::board::guidance::{Guidance, part};
-use crate::test_support::Harness;
+use crate::storage::memory::MemoryStorage;
+use crate::test_support::{Harness, TRUE_COLOR};
+use oxysol_core::{DrawCount, Variant};
 
 fn click(h: &mut Harness, column: u16, row: u16) {
     h.send(crate::input::Input::Mouse(MouseEvent {
@@ -98,4 +101,52 @@ fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
     );
     assert_eq!(text(40), "Do: u: undo | ?: keys | Esc: menu");
     assert_eq!(text(30), "Do: ?: keys | Esc: menu");
+}
+
+fn board_at(width: u16, height: u16) -> Harness {
+    let mut h = Harness::with(MemoryStorage::default(), TRUE_COLOR, width, height);
+    h.app.apply(Effect::Start {
+        variant: Variant::Klondike(DrawCount::One),
+        seed: Some(5),
+        undo_allowed: true,
+    });
+    h.lines();
+    h
+}
+
+fn click_button(h: &mut Harness, action: Action, key: &str) {
+    let text = do_text(action, key);
+    let Some((column, row)) = h.find(&text) else {
+        panic!("{text:?} is not drawn");
+    };
+    click(h, column + 1, row);
+}
+
+#[test]
+fn the_pause_button_is_drawn_and_its_click_opens_pause_at_100_and_130_columns() {
+    for (width, height) in [(100, 30), (130, 40)] {
+        let mut h = board_at(width, height);
+        click_button(&mut h, Action::Pause, "board.action.pause");
+        assert!(
+            matches!(h.app.modal(), Some(Modal::Pause { .. })),
+            "{width} x {height}"
+        );
+    }
+}
+
+#[test]
+fn the_moves_button_opens_the_moves_window_at_100_columns() {
+    let mut h = board_at(100, 30);
+    click_button(&mut h, Action::Moves, "board.action.moves");
+    assert!(matches!(h.app.modal(), Some(Modal::Moves(_))));
+}
+
+#[test]
+fn the_moves_button_toggles_the_moves_panel_at_130_columns() {
+    let mut h = board_at(130, 40);
+    assert!(h.app.aids().moves_panel);
+    click_button(&mut h, Action::Moves, "board.action.moves");
+    assert!(!h.app.aids().moves_panel);
+    click_button(&mut h, Action::Moves, "board.action.moves");
+    assert!(h.app.aids().moves_panel);
 }

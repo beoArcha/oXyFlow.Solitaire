@@ -194,6 +194,8 @@ fn every_button_of_the_board_does_what_its_key_does() {
             (Action::Rules, "board.action.rules"),
             (Action::Guide, "board.action.guide"),
             (Action::Options, "board.action.options"),
+            (Action::Pause, "board.action.pause"),
+            (Action::Moves, "board.action.moves"),
             (Action::Back, "board.action.menu"),
         ];
         let mut probe = setup(locale);
