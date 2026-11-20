@@ -34,6 +34,7 @@ impl BoardScreen {
                 self.adjust_depth(action == Action::RunMore);
                 Effect::None
             }
+            Action::ZoomIn | Action::ZoomOut | Action::ZoomAuto => self.zoom(action),
             Action::Select => self.select(),
             Action::Back => self.back(),
             Action::Menu => Effect::Goto(Screen::MainMenu),
@@ -69,10 +70,11 @@ impl BoardScreen {
 
     pub(super) fn geometry(&self, piles: &[PileSnapshot]) -> Option<BoardGeometry> {
         let session = self.session.as_ref()?;
-        Some(layout::compute(
+        Some(layout::compute_within(
             session.variant(),
             piles,
             self.chrome().body,
+            self.card_size.size(),
         ))
     }
 

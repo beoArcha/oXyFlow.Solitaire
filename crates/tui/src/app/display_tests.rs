@@ -39,6 +39,7 @@ fn harness(setting: FullScreen, facts: DisplayFacts, obeys: bool) -> (Harness, R
             obeys,
         }),
         facts,
+        font: Box::new(NullConsoleFont),
     };
     (Harness::with_display(storage, display), calls)
 }

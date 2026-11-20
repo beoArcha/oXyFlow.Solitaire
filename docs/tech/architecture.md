@@ -1,6 +1,6 @@
 # oXySol architecture — contract
 
-Status: contract v0.4 (2026-11-20: P3-37 added the language selector of the main menu (`widgets/language_picker/`, `i18n/flags.rs`, `i18n::t_in`); 2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
+Status: contract v0.4 (2026-11-20: P3-16 added `Settings::card_size`, the zoom keys `]` `[` `0` and the console font behind `ConsoleFont`; P3-37 added the language selector of the main menu (`widgets/language_picker/`, `i18n/flags.rs`, `i18n::t_in`); 2026-11-19: P3-24 part 2 added the saved game's summary in `ViewCtx::saved` (the Resume row names it), the personal bests and the `Same seed` button of the win dialog (`app/records.rs`, `Effect::SameSeed`), and the `◄ value ►` arrows of the focused settings row, clickable; P3-27 added the quick options dialog, `Settings::target_marks` and the "Hints and help" settings group; P4-05 added `Storage::record_restart`, `GameCounters` and schema v4; O-23 added the modal scroll bar, the Close key and the Rules selector focus; P3-18 added the guide window below 130 columns and the panel on short wide screens; P3-15 split the board screen into game information and a controls strip, framed the guide panel and added size classes; 2026-11-15: SQLite, seeds, CI — R-16…R-19; P3-01 refined the TUI section to match the code; P3-11 added board guidance; P2-06 added `Game::stock_status`; P2-07 added `Game::forced_finish`; P4-04 added history reads, schema v2 and the clipboard; P3-12 added board counters, the no-undo mode and seed copying; O-15 added `--new-window` and the Command line help tab; P3-17 added the Tab focus rings; P3-20 added the solver service, winnable deals and schema v3; P3-21 added the `aura` setting and the recycle rule of the empty stock; P3-26 added the possible moves panel). Later tasks may refine it.
 Any contract change lands in this file in the same PR. Rationale: `decisions.md`.
 
 ## Packages and dependency direction
@@ -187,7 +187,7 @@ pub struct Deps {
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
     pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
-    pub display: DisplayDeps,             // full screen (O-16): `Box<dyn ConsoleDisplay>` + `DisplayFacts { owns_window, kind, flag }`
+    pub display: DisplayDeps,             // console (O-16, P3-16): `Box<dyn ConsoleDisplay>`, `DisplayFacts { owns_window, kind, flag }`, `Box<dyn ConsoleFont>`
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
@@ -413,6 +413,22 @@ pub struct NullClipboard;                                // every copy fails wit
   "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
   closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
   are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
+- **Zoom (P3-16, R-24):** `Settings::card_size` is `CardSizeSetting { Auto, Small, Medium, Large, Huge }` (`settings/card_size.rs`;
+  default `Auto`, an older value without the field loads as `Auto`; Small 7 × 5 … Huge 13 × 11) and the Settings row `Card size` in
+  the Display group. `Auto` is the largest size that fits, a named size is the largest the player wants: a window too small for it falls
+  back to the largest that fits (`CardSize::largest_fit_within`) and the game information gets the fact `Cards: <size>` (dropped first
+  when the header row is narrow), `Cards: <size> (auto)` when it fell back; with `Auto` there is no such fact. `Action::ZoomIn` (`]`),
+  `ZoomOut` (`[`) and `ZoomAuto` (`0`) are rows of `KEY_TABLE` in the help group Display, and Ctrl+mouse wheel up or down is the same
+  as `]` or `[` where the terminal delivers it; `+` and `-` stay `RunMore` / `RunLess`. The step is the pure
+  `settings::zoom_step(shown, largest, Zoom) -> Zoomed::{To(setting), AtLimit}`: `shown` is the size drawn now and `largest` the size
+  of `layout::compute` for the same `chrome().body`, so the field inset of a theme with a frame (`FRAME_INSET`, only when
+  `Theme::field_edge`) counts. Zooming in stops at the largest that fits and zooming out at 7 × 5, and the event slot says so
+  (`board.status.zoom_largest` / `zoom_smallest`, both refusals). The board returns `Effect::CardSize(setting)`, which `App` saves
+  with the settings without taking the quick choices of the running game along; `0` says `board.status.zoom_auto`. The help window's
+  Display topic adds the row `Ctrl +/-/0` for the terminal's own zoom (`help.display.*`); to fit a 100 × 30 terminal the topics of the
+  Keys tab have no blank rows between them. The too-small notice names `Ctrl+Minus`. *Console font (T-35):* Ctrl+Plus, Ctrl+Minus and
+  Ctrl+0 reach `Deps::display.font` (`ConsoleFont::step(FontStep)`) before any other handling; `oxysol` wires `console::font::FontZoom`
+  only in the classic Windows console, every other terminal gets `NullConsoleFont`.
 - **Board counters, no-undo mode and seed copying (P3-12):** the game information (`screens/board/header.rs`, `Facts`) reads
   `variant | seed N | Time m:ss | Moves: N | stock counter | No undo` in one header row at Compact size or as the
   lines of the `Game` compartment at Standard and Wide size (the counter is the first fact dropped when the header
@@ -532,7 +548,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   mouse hit-testing and `commands.rs` share one `chrome()` (`chrome_panels` with the guide, moves and frame flags).
   `Chrome { class, header: Option<Rect>, field, body, guide: Option<Rect>, moves: Option<Rect>, now, possible }`. The same result drives rendering and hit-testing. Two layouts:
   columns (Klondike, Spider, FreeCell) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
-  that fits the window (a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
+  that fits the window and is not above `Settings::card_size` (`layout::compute_within`; `compute` has no limit; a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.
   Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).
 - **Themes:** `ThemeId { Dark, Light, HighContrast, Monokai, Dracula }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
@@ -616,6 +632,13 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `ConsoleDisplay` trait of `Deps::display`; `src/console/display.rs` implements it (`ConsoleWindow`) with
   `SetConsoleDisplayMode`, falling back to a posted Alt+Enter checked by `GetConsoleDisplayMode`, and leaves full screen
   when dropped. Terminals the game cannot switch get one hint in the `Now:` slot (`board.status.full_screen_*`).
+- **Console font (P3-16, T-35):** `src/console/font.rs`. `trait Console { fn font(&self) -> io::Result<FontInfo>; fn set_font(&mut self,
+  font: &FontInfo) -> io::Result<()> }` is the only code that talks to the system; `ClassicConsole` implements it with
+  `GetCurrentConsoleFontEx` / `SetCurrentConsoleFontEx` (kernel32, `extern "system"`, one justified `unsafe` each, no `windows-sys`) and
+  refuses with `Unsupported` off Windows. `FontZoom` (`ConsoleFont`) reads the start font once, then each step reads the font again and
+  asks the pure `target_height(start, current, FontStep)` (±2 px, 8 to 72, Reset to the start height) and sets the same font with only
+  the size changed (the face, family, weight and index are kept; a step passes width 0, Reset restores the start width). A refusal is
+  logged at `info` and the step reports no change. `main` builds it only for `TerminalKind::ClassicConsole` and when the font can be read.
 - **Clipboard (T-27):** `src/clipboard.rs` implements `Clipboard` with `SystemClipboard`: the native clipboard
   through `arboard` (kept alive between copies), else, or when the session is remote, the OSC 52 escape
   sequence written to standard output. A terminal does not answer OSC 52, so that path reports "sent".

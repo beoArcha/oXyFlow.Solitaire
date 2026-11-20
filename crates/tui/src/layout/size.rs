@@ -33,8 +33,16 @@ impl CardSize {
 
     /// The largest size for which `fits` holds, else the smallest.
     pub fn largest_fit(fits: impl Fn(CardSize) -> bool) -> Self {
+        Self::largest_fit_within(None, fits)
+    }
+
+    /// The largest size for which `fits` holds that is no larger than `limit` (any size when
+    /// `limit` is `None`), else the smallest. A limit that does not fit falls back to the largest
+    /// smaller size that does.
+    pub fn largest_fit_within(limit: Option<CardSize>, fits: impl Fn(CardSize) -> bool) -> Self {
         SIZES
             .into_iter()
+            .filter(|size| limit.is_none_or(|limit| size.width <= limit.width))
             .find(|size| fits(*size))
             .unwrap_or_else(Self::smallest)
     }

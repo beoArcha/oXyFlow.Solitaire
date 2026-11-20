@@ -20,6 +20,7 @@ mod status;
 #[cfg(test)]
 mod tests;
 mod view;
+mod zoom;
 
 use std::time::{Duration, Instant};
 
@@ -38,7 +39,7 @@ use crate::action::Action;
 use crate::app::Modal;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
-use crate::settings::Aid;
+use crate::settings::{Aid, CardSizeSetting};
 use crate::solver::DealCheck;
 use crate::storage::GameId;
 use crate::widgets::footer::FooterMap;
@@ -84,6 +85,7 @@ pub struct BoardScreen {
     target_marks: bool,
     panel_focus: Option<usize>,
     field_edge: bool,
+    card_size: CardSizeSetting,
     auto_finish: bool,
     forced: Option<Vec<Move>>,
     finishing: Option<Finishing>,
@@ -128,6 +130,7 @@ impl Default for BoardScreen {
             target_marks: true,
             panel_focus: None,
             field_edge: false,
+            card_size: CardSizeSetting::Auto,
             auto_finish: true,
             forced: None,
             finishing: None,
@@ -299,13 +302,14 @@ impl BoardScreen {
 
     fn facts(&self, now: Instant) -> Option<Facts> {
         let session = self.session.as_ref()?;
-        Some(Facts::new(
+        let facts = Facts::new(
             session,
             self.elapsed(now),
             self.undo_allowed,
             self.restarts,
             self.deal,
-        ))
+        );
+        Some(facts.with_card_size(self.card_size_note()))
     }
 
     /// Takes over the aids of the running game, which the application hands over as the settings,
@@ -316,6 +320,7 @@ impl BoardScreen {
         self.moves_panel = ctx.settings.moves_panel;
         self.target_marks = ctx.settings.target_marks;
         self.field_edge = ctx.theme.field_edge();
+        self.card_size = ctx.settings.card_size;
         self.auto_finish = ctx.settings.auto_finish;
     }
 

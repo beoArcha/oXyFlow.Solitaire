@@ -174,7 +174,8 @@ fn help_sections_list_every_binding_of_the_key_table_once() {
         .flat_map(|section| section.rows)
         .collect();
     let gestures = 5;
-    assert_eq!(rows.len(), KEY_TABLE.len() + gestures);
+    let terminal_zoom = 1;
+    assert_eq!(rows.len(), KEY_TABLE.len() + gestures + terminal_zoom);
     for binding in KEY_TABLE.iter() {
         let keys = binding
             .keys
