@@ -337,6 +337,7 @@ Rules for the whole phase:
   does not fit, the remembered setting, Shift+Up/Down as run size and the help section in both
   locales; the console font change verified by hand in the classic console (say where); `cargo xtask
   check --quick` passes.
+- **Done:** #125 (zoom keys `]` `[` `0` instead of `+`/`-`, R-24; console font T-35, not verified by hand on conhost)
 
 ### P3-17 — Tab moves the focus
 
@@ -621,6 +622,7 @@ Rules for the whole phase:
   board takes the keys, with a key to focus the modal).
 - **Acceptance:** renders docked left and right at 130 × 40 and 200 × 60, the fallback at 100 × 30;
   the choice remembered; keyboard and mouse; both locales.
+- **Done:** #126 (only the help window docks; `d` cycles, F6 moves focus, Esc closes the docked help first; Keys tab scrolls at small heights)
 
 ### P3-29 — Settings: an Interface section (colors, aura, size, font)
 
@@ -668,6 +670,7 @@ Rules for the whole phase:
   A row in Settings (Interface section once P3-29 exists) with a small preview.
 - **Acceptance:** every back at every card size in both glyph modes; the count mark contrast test; the
   choice remembered; both locales.
+- **Done:** #127 (written by Antigravity Son, finished by Haiku; settings row shows a pattern preview)
 
 ### O-26 — Contrast fixes found by the UI inventory
 
@@ -895,6 +898,7 @@ Rules for the whole phase:
 - **Acceptance:** tests for switching by arrows and by the list, keyboard and mouse, the tooltip on hover
   and on focus, the Tab order, persistence, the ASCII/16-color fallback; renders of the corner and the
   open list at 100 × 30 and 130 × 40 in both locales.
+- **Done:** #122 (flag colours are content, T-34)
 
 ### P3-38 — Run selection wraps around: Down or `-` on the top card selects the whole run
 

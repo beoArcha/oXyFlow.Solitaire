@@ -235,3 +235,87 @@ shared file already has its final shape so later tasks do not collide.
   above 300 and three card tests nested 5–6 deep. Split by responsibility without behaviour changes.
   `glyphs/wgl4.rs` is a data table and stays.
 - **Acceptance:** no LOC or nesting warnings for these files; `cargo xtask check --quick` passes.
+
+### O-40 — Player site in nine languages and a refreshed README
+
+- **Owner:** Opus
+- **Depends on:** O-30
+- **Files:** `docs/site/**`, `README.md`
+- **Scope:** owner request 2026-11-20: the site in German, French, Italian, Brazilian Portuguese, Ukrainian, Dutch and
+  Spanish next to English and Polish, reusing the English screenshots and saying the game interface is in English and
+  Polish today with the others in progress; README updated for P3-16, P3-37 and P5-01.
+- **Done:** #128 (mdBook 0.4.52 build and a link check of 39 pages; translations not reviewed by native speakers)
+
+### O-41 — Seven more interface languages in code, offered once translated
+
+- **Owner:** Opus
+- **Depends on:** P3-37
+- **Files:** `crates/tui/src/i18n*`, the language picker, settings, CLI locale handling, `locales/*/meta.toml`,
+  placeholder `locales/<code>/` copies, `docs/tech/{architecture,decisions}.md`, tests
+- **Scope:** owner request 2026-11-20: locales de-DE, fr-FR, it-IT, pt-BR, uk-UA, nl-NL, es-ES with flags, CLDR plural
+  rules and layout tests over every complete locale. A locale is offered only when its `meta.toml` says
+  `complete = true`; a translation PR (O-42…O-48) replaces the ten files and sets that flag.
+- **Acceptance:** see the PR; `cargo xtask check --quick` passes.
+
+### O-42 — Interface translation: German (de-DE)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/de-DE/*.toml`, `docs/tech/glossaries/de.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-43 — Interface translation: French (fr-FR)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/fr-FR/*.toml`, `docs/tech/glossaries/fr.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-44 — Interface translation: Italian (it-IT)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/it-IT/*.toml`, `docs/tech/glossaries/it.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-45 — Interface translation: Brazilian Portuguese (pt-BR)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/pt-BR/*.toml`, `docs/tech/glossaries/pt.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-46 — Interface translation: Ukrainian (uk-UA)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/uk-UA/*.toml`, `docs/tech/glossaries/uk.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-47 — Interface translation: Dutch (nl-NL)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/nl-NL/*.toml`, `docs/tech/glossaries/nl.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
+
+### O-48 — Interface translation: Spanish (es-ES)
+
+- **Owner:** Antigravity (text only), checked by Opus
+- **Depends on:** O-41
+- **Files:** `locales/es-ES/*.toml`, `docs/tech/glossaries/es.md`
+- **Scope:** owner request 2026-11-20: translate the ten en-US files; same keys and order, every placeholder kept, short
+  labels, one term per concept (glossary). Translations run one language at a time.
+- **Acceptance:** key and placeholder parity checked by script; after O-41, `complete = true` and the layout tests pass.
