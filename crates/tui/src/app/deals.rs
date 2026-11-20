@@ -6,7 +6,9 @@ use oxysol_core::Variant;
 
 use super::search::{SEED_CAP, Search, SearchCommand, Step};
 use super::{App, Modal};
+use crate::screens::stats::Target;
 use crate::solver::{Answer, DealCheck, Proof, Query};
+use crate::storage::GameId;
 
 /// A deal being checked in the background.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -129,6 +131,33 @@ impl App {
             self.on_search_answer(answer);
         } else if self.check.is_some_and(|check| check.id == answer.id) {
             self.on_check_answer(answer.proof);
+        } else if let Some(game) = self.stats.record_answer(answer) {
+            self.store_proof(game, answer.proof);
+        }
+    }
+
+    /// Queues the checks the statistics screen asked for. Each target gets its own query id; the
+    /// answers come back through `poll_solver` and are stored one by one.
+    pub(super) fn start_stats_check(&mut self, targets: Vec<Target>) {
+        let jobs = targets
+            .into_iter()
+            .map(|target| {
+                let id = self.next_query_id();
+                self.solver.submit(Query {
+                    id,
+                    variant: target.variant,
+                    seed: target.seed,
+                });
+                (id, target.game)
+            })
+            .collect();
+        self.stats.begin_run(jobs);
+    }
+
+    /// Ends the checks of the statistics screen and drops the queries the solver has not started.
+    pub(super) fn stop_stats_check(&mut self) {
+        if self.stats.end_run() {
+            self.solver.cancel();
         }
     }
 
@@ -180,6 +209,11 @@ impl App {
         let Some(id) = self.board.game_id() else {
             return;
         };
+        self.store_proof(id, proof);
+    }
+
+    /// Writes the proof of a game to its history row; a failure is logged, never alerted.
+    pub(super) fn store_proof(&mut self, id: GameId, proof: Proof) {
         if let Err(error) = self.storage.record_proof(id, proof) {
             tracing::warn!(%error, "the winnability of the deal could not be recorded");
         }

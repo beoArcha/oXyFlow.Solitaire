@@ -41,7 +41,7 @@ time = "Time"
 moves = "Moves"
 restarts = "Restarts"
 winnable = "Winnable"
-winnable_short = "?"
+winnable_short = "Win?"
 
 [legend]
 winnable = "winnable"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Play this seed again"
 copy = "Copy seed"
 back = "Back"
+check = "Check"
+check_all = "Check all"
+
+[check]
+hint = "w: check this game   W: check all unchecked"
+running = "Checking winnable: {done} of {total}"
+finished = "Winnable check finished ({total})"
+already = "This game is already checked"
+nothing = "Every game is already checked"

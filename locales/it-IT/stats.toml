@@ -41,7 +41,7 @@ time = "Tempo"
 moves = "Mosse"
 restarts = "Riavvii"
 winnable = "Vincibile"
-winnable_short = "?"
+winnable_short = "Vinc?"
 
 [legend]
 winnable = "vincibile"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Rigioca questo seed"
 copy = "Copia seed"
 back = "Indietro"
+check = "Verifica"
+check_all = "Verifica tutte"
+
+[check]
+hint = "w: verifica questa partita   W: verifica tutte"
+running = "Verifica: {done} di {total}"
+finished = "Verifica conclusa ({total})"
+already = "Questa partita è già verificata"
+nothing = "Tutte le partite sono già verificate"

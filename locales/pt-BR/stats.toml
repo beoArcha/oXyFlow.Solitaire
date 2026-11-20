@@ -41,7 +41,7 @@ time = "Tempo"
 moves = "Jog."
 restarts = "Reinic."
 winnable = "Vencível"
-winnable_short = "?"
+winnable_short = "Venc?"
 
 [legend]
 winnable = "vencível"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Jogar esta semente novamente"
 copy = "Copiar semente"
 back = "Voltar"
+check = "Verificar"
+check_all = "Todas"
+
+[check]
+hint = "w: verificar este jogo   W: verificar todos"
+running = "Verificando: {done} de {total}"
+finished = "Verificação concluída ({total})"
+already = "Este jogo já foi verificado"
+nothing = "Todos os jogos já foram verificados"

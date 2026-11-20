@@ -10,7 +10,7 @@ use super::format::{
     LONGEST_STREAK_MIN_WIDTH, WINNABLE_TEXT_MIN_WIDTH, history_header, history_row, legend_line,
     summary_lines,
 };
-use super::{Button, Notice, StatsScreen, Stop};
+use super::{Button, StatsScreen, Stop};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::screens::ViewCtx;
@@ -25,10 +25,10 @@ const FIXED_ROWS: u16 = 9;
 /// History rows that always stay visible. With every game in both undo modes the summary needs
 /// 17 rows (header and 16 groups), which leaves exactly this many at the minimum height of 30.
 const MIN_LIST_ROWS: u16 = 4;
-const BUTTON_GAP: u16 = 3;
+const BUTTON_GAP: u16 = 2;
 const MARKER_COLUMNS: u16 = 4;
 
-fn centered(frame: &mut Frame, area: Rect, text: String, style: Style) {
+pub(super) fn centered(frame: &mut Frame, area: Rect, text: String, style: Style) {
     frame.render_widget(
         Paragraph::new(Line::styled(text, style)).alignment(Alignment::Center),
         area,
@@ -51,7 +51,6 @@ fn key_line() -> Vec<Segment> {
         Segment::button(Action::Select, t("stats.footer_replay")),
         Segment::plain("   "),
         Segment::button(Action::CopySeed, t("stats.footer_copy")),
-        Segment::plain("   "),
         Segment::button(Action::Back, t("stats.footer_back")),
     ]
 }
@@ -60,6 +59,8 @@ fn button_label(button: Button) -> String {
     let key = match button {
         Button::Replay => "stats.button.replay",
         Button::Copy => "stats.button.copy",
+        Button::Check => "stats.button.check",
+        Button::CheckAll => "stats.button.check_all",
         Button::Back => "stats.button.back",
     };
     t(key).into_owned()
@@ -262,22 +263,5 @@ impl StatsScreen {
             Paragraph::new(Line::from(spans)).alignment(Alignment::Center),
             area,
         );
-    }
-
-    fn draw_status(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
-        let Some(notice) = self.notice else {
-            return;
-        };
-        let (text, token) = match notice {
-            Notice::Copied(seed) => (
-                tf("stats.copied", &[("seed", &seed.to_string())]),
-                Token::Accent,
-            ),
-            Notice::CopyFailed(seed) => (
-                tf("stats.copy_failed", &[("seed", &seed.to_string())]),
-                Token::Error,
-            ),
-        };
-        centered(frame, area, text, ctx.theme.style(token, Token::Background));
     }
 }

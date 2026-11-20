@@ -37,6 +37,7 @@ impl App {
             Effect::Board(action) => self.run_board_action(action),
             Effect::HowToPlay => self.open_how_to_play(),
             Effect::CopySeed(seed) => self.copy_seed(seed),
+            Effect::CheckWinnable(targets) => self.start_stats_check(targets),
             Effect::Quit => {
                 self.save_board();
                 self.quit = true;
@@ -58,6 +59,9 @@ impl App {
     pub(super) fn goto(&mut self, screen: Screen) {
         if self.screen == Screen::Board && screen != Screen::Board {
             self.save_board();
+        }
+        if self.screen == Screen::Stats && screen != Screen::Stats {
+            self.stop_stats_check();
         }
         self.screen = screen;
         if screen == Screen::Stats {
