@@ -28,7 +28,7 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 17] = [
+pub const FIELDS: [Field; 18] = [
     Field::Language,
     Field::Theme,
     Field::CardBack,
