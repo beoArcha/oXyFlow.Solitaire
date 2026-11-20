@@ -8,10 +8,11 @@ use super::finish::{KLONDIKE, KLONDIKE_SEED, at_forced_win, is_won, win_open};
 use super::start;
 use crate::action::Action;
 use crate::app::Modal;
-use crate::i18n::tf;
+use crate::i18n::{Locale, set_locale, tf};
 use crate::input::primary_key;
 use crate::screens::Effect;
 use crate::screens::board::guidance::{Guidance, part};
+use crate::settings::Settings;
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, TRUE_COLOR};
 use oxysol_core::{DrawCount, Variant};
@@ -103,15 +104,27 @@ fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
     assert_eq!(text(30), "Do: ?: keys | Esc: menu");
 }
 
-fn board_at(width: u16, height: u16) -> Harness {
-    let mut h = Harness::with(MemoryStorage::default(), TRUE_COLOR, width, height);
+fn board_in(locale: Locale, width: u16, height: u16) -> Harness {
+    let storage = MemoryStorage {
+        settings: Some(Settings {
+            locale,
+            ..Settings::default()
+        }),
+        ..MemoryStorage::default()
+    };
+    let mut h = Harness::with(storage, TRUE_COLOR, width, height);
     h.app.apply(Effect::Start {
         variant: Variant::Klondike(DrawCount::One),
         seed: Some(5),
         undo_allowed: true,
     });
+    set_locale(locale);
     h.lines();
     h
+}
+
+fn board_at(width: u16, height: u16) -> Harness {
+    board_in(Locale::EnUs, width, height)
 }
 
 fn click_button(h: &mut Harness, action: Action, key: &str) {
@@ -132,6 +145,26 @@ fn the_pause_button_is_drawn_and_its_click_opens_pause_at_100_and_130_columns() 
             "{width} x {height}"
         );
     }
+}
+
+#[test]
+fn pause_and_moves_are_drawn_in_every_locale_at_the_narrowest_width_and_at_130_columns() {
+    for locale in Locale::offered() {
+        for (width, height) in [(100, 30), (130, 40)] {
+            let mut h = board_in(locale, width, height);
+            for (action, key) in [
+                (Action::Pause, "board.action.pause"),
+                (Action::Moves, "board.action.moves"),
+            ] {
+                let text = do_text(action, key);
+                assert!(
+                    h.find(&text).is_some(),
+                    "{locale:?} {width}x{height}: {text:?}"
+                );
+            }
+        }
+    }
+    set_locale(Locale::EnUs);
 }
 
 #[test]
