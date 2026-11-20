@@ -83,10 +83,10 @@ jobs:
           chmod 700 "$HOME/.ssh"
           printf '%s\n' "$RELEASE_DEPLOY_KEY" > "$HOME/.ssh/release_deploy"
           chmod 600 "$HOME/.ssh/release_deploy"
-          ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts"
+          install -m 600 .github/known_hosts "$HOME/.ssh/known_hosts"
 
       - name: Fast-forward release to this commit
         if: env.PROMOTE == '1'
         env:
-          GIT_SSH_COMMAND: ssh -i ~/.ssh/release_deploy -o IdentitiesOnly=yes
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/release_deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes
         run: git push "git@github.com:${REPO}.git" "$GITHUB_SHA:refs/heads/release"

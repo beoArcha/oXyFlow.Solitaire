@@ -133,6 +133,10 @@ jobs:
             target: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     defaults:
       run:
         shell: bash
@@ -157,7 +161,7 @@ jobs:
       - name: Install cargo-about
         uses: taiki-e/install-action@75a7c0f87bd666af3cdb75c5b9e9d03ab6044e6f # v2.90.6
         with:
-          tool: cargo-about@0.9.3
+          tool: cargo-about@0.9.3,cargo-cyclonedx@0.5.10
       - name: Generate the third-party licenses
         env:
           FEATURES: ${{ matrix.features }}
@@ -224,12 +228,26 @@ jobs:
           )
           Set-Content -Path "dist/$pname/oxysol.portable" -Value $lines -Encoding Ascii
           Compress-Archive -Path "dist/$pname" -DestinationPath "dist/$pname.zip"
+      - name: Generate the SBOM (CycloneDX) from Cargo.lock
+        env:
+          FEATURES: ${{ matrix.features }}
+        run: |
+          set -eu
+          cargo cyclonedx --manifest-path Cargo.toml --format json --spec-version 1.5             --target "$TARGET" $FEATURES --override-filename "oxysol-$TAG-$TARGET.sbom.cdx"
+          mv "oxysol-$TAG-$TARGET.sbom.cdx.json" dist/
+      - name: Attest the build provenance of the archives
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            dist/*.zip
+            dist/*.tar.gz
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: archive-${{ matrix.target }}
           path: |
             dist/*.zip
             dist/*.tar.gz
+            dist/*.sbom.cdx.json
           if-no-files-found: error
 
   publish:
@@ -256,6 +274,10 @@ jobs:
           cat SHA256SUMS
       - name: Create the tag and the GitHub Release on the tested commit
         run: |
+          if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+            echo "::error::release $TAG already exists; published assets are never replaced or edited"
+            exit 1
+          fi
           args=(--target "$GITHUB_SHA" --title "oXySol $TAG" --generate-notes)
           if [ "$STABLE" != "true" ]; then
             args+=(--prerelease)
