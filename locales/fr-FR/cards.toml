@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "glands"
+bell = "grelots"
+leaf = "feuilles"
+baton = "bâtons"
+coin = "deniers"
+cup = "coupes"
+sword = "épées"

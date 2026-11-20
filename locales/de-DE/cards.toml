@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "Eicheln"
+bell = "Schellen"
+leaf = "Laub"
+baton = "Stäbe"
+coin = "Münzen"
+cup = "Kelche"
+sword = "Schwerter"

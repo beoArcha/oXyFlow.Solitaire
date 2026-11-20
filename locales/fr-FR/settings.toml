@@ -28,7 +28,11 @@ hints = "Indices et aide"
 
 [style]
 international = "International"
-default = "Par défaut"
+lattice = "Treillis"
+ornament = "Ornement"
+french = "Français"
+german = "Allemand"
+italian = "Italien"
 
 [desc]
 language = "La langue de tous les textes. Changement immédiat."

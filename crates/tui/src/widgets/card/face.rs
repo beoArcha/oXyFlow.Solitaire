@@ -1,6 +1,7 @@
 //! The centre of a face-up card: one row of bold text with the rank and the suit symbol, above a
-//! suit pictogram when the card is big enough. The text is the same localized label as the corner,
-//! so no rank looks like another. The smallest card keeps a single suit symbol.
+//! suit pictogram when the card is big enough. The text is the same label as the corner, so no rank
+//! looks like another. The smallest card keeps a single suit symbol. In `Font` mode the pictogram
+//! is one glyph of the oXySol font: the court emblem of a court card, else the suit.
 
 use oxysol_core::Card;
 use ratatui::layout::Rect;
@@ -8,7 +9,7 @@ use ratatui::style::{Modifier, Style};
 
 use super::art::{Scale, suit_art};
 use super::paint::{Painter, centered, width_of};
-use super::rank_text;
+use super::rank_in;
 use crate::glyphs::Glyphs;
 
 /// Rows the text and the air around it take above the pictogram of the smallest card that has one.
@@ -35,10 +36,17 @@ fn text_row(card: Card, glyphs: &Glyphs, interior: Rect) -> String {
     };
     format!(
         "{}{}{}",
-        rank_text(card.rank),
+        rank_in(card.rank, glyphs),
         " ".repeat(spaces),
         glyphs.suit(card.suit)
     )
+}
+
+fn font_glyph(card: Card, glyphs: &Glyphs) -> Option<&'static str> {
+    let front = glyphs.front.filter(|_| glyphs.font)?;
+    front
+        .court_emblem(card.rank)
+        .or_else(|| front.suit_glyph(card.suit))
 }
 
 fn art_offset(interior: Rect, scale: Scale) -> u16 {
@@ -59,6 +67,11 @@ fn paint_large(
         painter.text(centered(interior, &text), interior.y, &text, bold);
     }
     let top = interior.y + art_offset(interior, scale);
+    if let Some(glyph) = font_glyph(card, glyphs) {
+        let middle = top + scale.suit_height() / 2;
+        painter.text(centered(interior, glyph), middle, glyph, style);
+        return;
+    }
     for (offset, row) in (0..).zip(suit_art(scale, card.suit, glyphs.unicode)) {
         painter.text(centered(interior, row), top + offset, row, style);
     }

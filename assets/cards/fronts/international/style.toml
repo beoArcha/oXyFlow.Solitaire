@@ -1,0 +1,40 @@
+# Card front style (D-06, P5-02). `name` is a localization key. Per suit: `name` (localization key),
+# `font` (registry key of assets/cards/codepoints.toml, optional), `unicode` (a WGL4 symbol), `ascii`
+# (one lowercase letter) and `color` (a theme token: card_red or card_black). `[ranks]` replaces the
+# localized labels of ace and court ranks (absent: the localized labels). `[courts]` names the font
+# glyphs of the court emblems (optional).
+
+name = "settings.style.international"
+
+[suits.clubs]
+name = "board.word.clubs"
+font = "fronts/international/club"
+unicode = "♣"
+ascii = "c"
+color = "card_black"
+
+[suits.diamonds]
+name = "board.word.diamonds"
+font = "fronts/international/diamond"
+unicode = "♦"
+ascii = "d"
+color = "card_red"
+
+[suits.hearts]
+name = "board.word.hearts"
+font = "fronts/international/heart"
+unicode = "♥"
+ascii = "h"
+color = "card_red"
+
+[suits.spades]
+name = "board.word.spades"
+font = "fronts/international/spade"
+unicode = "♠"
+ascii = "s"
+color = "card_black"
+
+[courts]
+jack = "fronts/international/jack"
+queen = "fronts/international/queen"
+king = "fronts/international/king"

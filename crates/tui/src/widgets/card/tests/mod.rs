@@ -7,6 +7,7 @@ mod faces;
 mod focus;
 mod marks;
 mod slots;
+mod styles;
 
 use std::time::Instant;
 
@@ -40,6 +41,19 @@ impl Fixture {
             theme: Theme::new(ThemeId::Dark, TRUE_COLOR.color),
             glyphs: Glyphs::new(mode),
             settings: Settings::default(),
+        }
+    }
+
+    fn styled(mode: GlyphMode, front: &str, back: &str) -> Self {
+        let settings = Settings {
+            front_style: front.to_owned(),
+            back_style: back.to_owned(),
+            ..Settings::default()
+        };
+        Self {
+            theme: Theme::new(ThemeId::Dark, TRUE_COLOR.color),
+            glyphs: Glyphs::styled(mode, front, back),
+            settings,
         }
     }
 
