@@ -1,71 +1,67 @@
-# Phase 8 — Stabilization and release
+# Phase 8 (0.8) — Player documentation, Russian cards and Canfield
 
-Goal: the game checked on real terminals, polished, and released as 0.1.0.
+Goal: the player documentation (the wiki pages and the player site) and the stable release procedure are written against the features built so far; the Russian card style and the Canfield game are added. Version 0.8.x.
 
-### U-03 — Terminal matrix
+Exit criteria:
 
-- **Owner:** User
-- **Depends on:** P7-01
-- **Scope:** run the game in each environment and record the result (OK, or the problem with a
-  screenshot). Agents cannot verify this.
+- P7-02 and P7-03 are DONE, and the micro cards M-30, M-31, M-32 and M-33 are DONE (M-32 covers the card styles);
+- P8-04 and P8-05 are DONE.
 
-  | Environment | Start and exit | Symbols and colors | Keyboard | Mouse | Resize | Sound |
-  |---|---|---|---|---|---|---|
-  | Windows 10/11 CMD | | | | | | |
-  | Windows PowerShell | | | | | | |
-  | Windows Terminal | | | | | | |
-  | EXE by double click (own window, no second window) | | | | | | |
-  | Linux graphical terminal | | | | | | |
-  | macOS Terminal | | | | | | |
-  | SSH to Linux (musl build) | | | | | | n/a |
-  | PuTTY | | | | | | n/a |
+Order of work: the documentation cards first, because they describe what the game does; the micro cards M-30…M-33 (`micro.md`) run alongside them. The card style and the game last.
 
-  In one environment also: every theme, both locales, every front and back style in each glyph
-  mode, 16-color mode, a 100 × 30 window and a maximized one, both sound styles, keyboard-only and
-  mouse-only play of one full game, terminal state after exit and after a forced panic.
-- **Acceptance:** the table filled in here; problems described well enough to reproduce.
+Micro cards in this phase (micro.md): M-30, M-31 and M-33 (READY), M-32 (DRAFT until P5-02 is merged, which phase 4 does).
 
-### P8-01 — Fixes and visual polish
+### P7-02 — Player site and stable release procedure
+
+- **Owner:** Haiku
+- **Depends on:** P0-04, P5-01, M-30…M-33
+- **Files:** `docs/site/**`, `.github/workflows/release.yml`, `docs/tech/workflow.md`
+- **Scope:** the build, tag and release pipeline already exists (P0-04). Grow `docs/site/` into the
+  player wiki (rules from `docs/wiki/rules/`, installation, controls, decks, accessibility, FAQ),
+  add the card fonts to the release assets, and describe the stable release procedure in
+  `workflow.md`: version in `metadata.toml` → `main` → promotion → `release.yml` with `stable: true`.
+- **Acceptance:** the site builds locally with mdBook; the font files appear in a pre-release made
+  from the PR's merge; state plainly what was observed on GitHub.
+- **Out of scope:** a browser version of the game.
+
+### P7-03 — Technical documentation and README
+
+- **Owner:** Haiku
+- **Depends on:** P3-09
+- **Files:** `docs/tech/**` (except `master_prompt.md` and `spikes/`), `README.md`
+- **Scope:** reconcile `architecture.md` with the code (signatures, layout). Add `conventions.md`
+  (code rules, error handling, localization, themes, accessibility rules, lint exceptions) and
+  `testing.md` (test categories, what runs on a PR and what on `main`, how to run each locally).
+  Keep `decisions.md` current. `README`: description, installation, running, key summary, links to
+  the wiki and releases.
+- **Acceptance:** every signature and path in the documents exists in the code; nothing is stated
+  twice across files; `README` promises nothing outside MVP.
+
+### P8-04 — Card style: Russian suits (Unicode)
+
+- **Owner:** Haiku
+- **Depends on:** P7-04
+- **Files:** `assets/cards/fronts/russian/style.toml` (new), `locales/*/cards.toml` (the style name key)
+- **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
+- **Scope:**
+  - The fifth new card style: the Russian suit names Крести, Пики, Черви and Бубны, with the court labels Валет, Дама and
+    Король. The names and labels are checked against a cited source named in the PR. The suit symbols may be the French
+    symbols when the symbols are the same; the style is then distinct by its names and labels, which is the point of it.
+  - The same rules as P4-08 (ASCII letters, colour tokens, no font glyphs needed, colour never the only signal).
+- **Acceptance:** the same tests as P4-08; the cited source is in the PR description; both locales carry the style name.
+
+### P8-05 — Game: Canfield
 
 - **Owner:** Sonnet
-- **Depends on:** U-03
-- **Files:** as required by the U-03 findings
-- **Scope:** fix the matrix findings, each with a reproducing test where possible. Then a visual
-  pass against the product priorities: readability of board and cards, consistent borders and
-  spacing, hierarchy of header and footer, visibility of focus, the look at 100 × 30 and on a large window.
-- **Acceptance:** every U-03 finding closed or documented as a known limitation in the wiki FAQ;
-  `cargo xtask check` passes.
-- **Out of scope:** new features.
-
-### P8-02 — Final review
-
-- **Owner:** Sonnet
-- **Depends on:** P8-01
-- **Files:** fixes across the repository
-- **Scope:** review the whole project against `master_prompt.md` and `decisions.md`: architecture
-  boundaries, error handling and logging (one log at the boundary, `source` kept), justification of
-  every exception (`#[allow]`, `unsafe`, `lint-exceptions.toml`), comments, naming, needless
-  abstractions and dependencies, accessibility rules, test coverage of MVP requirements. Every
-  finding names a rule and a location; style preferences are not findings.
-- **Acceptance:** a report: each MVP requirement with a status (met / partial / missing) and
-  evidence (a test or a file); a list of known limitations; `cargo xtask check` passes.
-
-### F-03 — Checkpoint: release sign-off
-
-- **Owner:** Opus (Fable only on escalation — R-14)
-- **Depends on:** P8-02
-- **Scope:** read the P8-02 report and the U-03 table, not the code. Decide: release, or the list
-  of blocking items. Record post-MVP items (configurable per-game options, streaming music, raster
-  graphics, mobile, more deck styles) as a short backlog in `decisions.md`.
-- **Acceptance:** a go / no-go verdict with reasons.
-
-### P8-03 — Release 0.1.0
-
-- **Owner:** Haiku + User
-- **Depends on:** F-03, P7-02
-- **Files:** `metadata.toml`, `Cargo.toml`, `Cargo.lock`
-- **Scope:** Haiku: a `chore` PR that sets the version in `metadata.toml` and runs
-  `cargo xtask sync-metadata`. User: merge it, wait for `main.yml` to promote to `release`, run
-  `release.yml` by hand with `stable: true`, download the artifacts and start the binary on at least one system.
-- **Acceptance:** tag `v0.1.0`; a GitHub Release with binaries for Windows, Linux and macOS and the
-  card fonts; the web page updated.
+- **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a public-domain rules source the owner names)
+- **Depends on:** P7-05
+- **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/canfield/**`, `crates/core/src/solver/canfield*` (only if
+  the solver is in this card), the variant list of `oxysol-core` where the games are matched,
+  `crates/tui/src/screens/main_menu/**` (the entry only), `locales/*/rules.toml`, `locales/*/menu.toml`,
+  `docs/wiki/rules/canfield.md` (new), `docs/tech/architecture.md` (the games list)
+- **Shared files:** `locales/en-US/menu.toml`, `locales/pl-PL/menu.toml`
+- **Scope:** Canfield as a module of `oxysol-core` on the game contract, with its reserve pile, its stock and the
+  foundation rule as in the confirmed rules text. A solver only if it stays within the budget of T-29; otherwise the
+  winnable option stays off for Canfield and the PR says so. Entry, rules tab and rules page as in P4-10.
+- **Acceptance:** engine tests for the reserve, the stock and the foundations; the same seed gives the same deal; the
+  variant is stored and read back; both locales.

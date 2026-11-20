@@ -124,7 +124,7 @@ The version is `major.minor.patch`.
   `main` since the commit that last changed the `version` line of `metadata.toml`. Squash merges give one
   commit per merge, so every merge to `main` raises the patch by 1. Nobody edits it and no bot commits.
 - **Minor: raised by hand when a plan phase closes.** The minor counts completed phases: completing phase N
-  gives minor N+1 (phases 0–3 done: 0.4.x; the end of phase 8: 0.9.0; 1.0.0 is a later owner decision).
+  gives minor N+1 (phases 0–3 done: 0.4.x; the plan ends at 0.9 with phase 9, see R-25; 1.0.0 is a later owner decision).
   One PR does it: set `version = "0.<N+1>.0"` in `metadata.toml`, run `cargo xtask sync-metadata` (it updates
   `[workspace.package]` in `Cargo.toml`), run `cargo build` so `Cargo.lock` follows, and change nothing else.
   Once that PR is merged the patch counts again from 0.

@@ -1,7 +1,84 @@
-# Phase 6 — Audio
+# Phase 6 (0.6) — Themes as data, four-colour French, TriPeaks and game options
 
-Goal: MIDI sound organized as sound styles, each in its own folder under `assets/audio/`. Sound adds
-to visible feedback and never replaces it; the game is fully usable without it (decision T-17).
+Goal: themes and the interface size scale move to data files; the four-colour French card style and the TriPeaks game are added; the owner's game options are added to the games they belong to. Version 0.6.x.
+
+Exit criteria:
+
+- P3-36, P6-04 and P6-05 are DONE;
+- P6-06 is DONE for the options the owner chose (its DRAFT is finalized by Opus first).
+
+Order of work: the theme data first (P3-36), then the card style and the game, then the options.
+
+### P3-36 — Themes as data and the interface size scale
+
+- **Owner:** Sonnet
+- **Depends on:** P3-29, P3-30
+- **Files:** `crates/tui/src/theme/**`, `assets/themes/` (new), `crates/tui/src/layout/**`,
+  `crates/tui/src/settings.rs`, `src/` (loading a user theme), `docs/tech/ui-inventory.md`, tests
+- **Scope:** owner request 2026-11-19: every item of `docs/tech/ui-inventory.md` is changed in one of
+  three ways, recorded as a column in the inventory: by the theme (colors and text styles), by the
+  interface size (one scale S / M / L / XL that sets the card size cap, fan steps, gaps, side panel and
+  modal widths together, building on P3-16), or by its own setting (table, card face, card back, aura,
+  glyphs, color vision). Themes move from Rust tables to embedded TOML files under `assets/themes/`
+  (Dark, Light, High Contrast, Monokai, Dracula), validated by the contrast tests at build or test
+  time. A user theme file in the data folder is loaded at start, checked with the same contrast rules
+  and rejected with a readable message when it fails.
+- **Acceptance:** the built-in themes render exactly as before; a valid and an invalid user theme; the
+  size scale renders at 100 × 30, 130 × 40 and 200 × 60 per step; the inventory column filled; both
+  locales.
+
+### P6-04 — Card style: four-colour French
+
+- **Owner:** Haiku
+- **Depends on:** P5-03, P3-35
+- **Files:** `assets/cards/fronts/french-four-colour/style.toml` (new), `locales/*/cards.toml` (the style name key)
+- **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
+- **Scope:**
+  - The third new card style: the French suits with the four-colour deck of P3-35 (spades black, hearts red, diamonds
+    blue, clubs green), with the court labels Valet, Dame and Roi and the ASCII letters S, H, D, C.
+  - Each suit is told apart by its symbol first; the colour is an extra signal. In monochrome the four suits still differ.
+  - Colours come from the theme tokens of P3-35; no colour outside the tokens.
+- **Acceptance:** the four suits differ in monochrome and in ASCII; the four-colour option passes the contrast tests of
+  P3-35 at every card size; snapshot tests; both locales.
+
+### P6-05 — Game: TriPeaks
+
+- **Owner:** Sonnet
+- **Depends on:** P5-04
+- **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/tripeaks/**`, `crates/core/src/solver/tripeaks*` (new,
+  if the solver is in this card), the variant list of `oxysol-core` where the games are matched,
+  `crates/tui/src/screens/main_menu/**` (the entry only), `locales/*/rules.toml`, `locales/*/menu.toml`,
+  `docs/wiki/rules/tripeaks.md` (new), `docs/tech/architecture.md` (the games list)
+- **Shared files:** `locales/en-US/menu.toml`, `locales/pl-PL/menu.toml`
+- **Scope:**
+  - TriPeaks (traditional, public domain): three peaks of cards dealt face up on a stock; the waste starts with one
+    card; a peak card may be played onto the waste when its rank is adjacent to the waste top, as the rules tab text
+    states (including the King and Ace rule).
+  - A solver if the search stays within the budget of T-29; if the verdict is `Unknown` for most seeds, the winnable
+    option stays off for TriPeaks and the PR says so.
+  - Rules tab, menu entry and the rules page as in P4-10.
+- **Acceptance:** engine tests for the peaks, the stock and the waste; the same seed gives the same deal; the menu entry
+  and the rules tab in both locales; the solver result for seeds 0 to 49 is in the PR, if a solver is added.
+
+### P6-06 — More game options
+
+- **Owner:** Opus (finalizes the scope), then Haiku
+- **Status:** DRAFT (the owner chooses the options; Opus writes the final scope before dispatch)
+- **Depends on:** P4-09, P3-27
+- **Files:** `crates/core/src/games/**` (only the options of the games named), `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, `locales/*/menu.toml`, tests
+- **Shared files:** `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/en-US/settings.toml`, `locales/pl-PL/settings.toml`
+- **Scope:** owner request: more options for the existing games. Candidates to choose from, not yet decided:
+  - Klondike: a limit on the number of passes through the stock (today the passes are unlimited, see the assumed defaults
+    in `decisions.md`);
+  - FreeCell: the number of free cells;
+  - any other option the owner names.
+  An option that changes the rules is off by default, is shown in the game information, and is part of the seed's
+  record in the history.
+- **Acceptance:** the options chosen by the owner, each with engine tests for both values, the setting remembered, the
+  history records the option, both locales; the winnable-deals option (P3-20) is either correct for the option or turned
+  off for it, and the PR says which.
+
+## Done before the 2026-11 replan
 
 ### P6-01 — MIDI sequencer and synthesizer
 

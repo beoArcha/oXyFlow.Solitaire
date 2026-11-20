@@ -1,7 +1,27 @@
 # oXySol task list (MVP)
 
-Started 2026-11-10. Revised 2026-11-15 for R-14…R-19 (roles, CI, seeds, SQLite). Statuses synced with `main` on 2026-11-19.
+Started 2026-11-10. Revised 2026-11-20 for R-25: phases 4 to 9 are replanned, phases 0 to 3 are done.
+Statuses synced with `main` on 2026-11-20.
 Contract behind the cards: `docs/tech/architecture.md`. Decisions: `docs/tech/decisions.md`.
+
+## Phases
+
+Phase N is worked on during version 0.N.x (decision R-25). The plan ends when phase 9 is done, at 0.9.x; 1.0 is a later
+owner decision. Phase cards live in `docs/task_list/phase-N.md`. DONE and TODO count the cards of each file (TODO includes
+DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open ones.
+
+| Phase | Version | Name | Goal | Status | DONE | TODO |
+|---|---|---|---|---|---|---|
+| 0 | 0.0.x | Bootstrap | Repository, CI, release workflow and the first decisions | done | 21 | 0 |
+| 1 | 0.1.x | Engine | Domain model and the game contract | done | 4 | 0 |
+| 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
+| 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
+| 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | in progress (now) | 11 | 31 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | planned | 3 | 7 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
+| 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
+| 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
+| 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9.0 that ends the plan | planned | 0 | 13 |
 
 ## Roles
 
@@ -44,179 +64,249 @@ Statuses: `DRAFT`, `READY`, `TODO`, `IN PROGRESS`, `DONE`, `BLOCKED (reason)`.
 
 ## Claude-lane order
 
-1. P0-01, P0-02 (Haiku) — done
-2. P0-03 → P0-04 (Haiku) in parallel with P1-01 → P1-02 (Sonnet) → F-01 (Opus)
-3. X-01 prototype (Sonnet) — the user tests it on real terminals while work continues
-4. P1-03 (Haiku)
-5. P2-01, P2-02 (Sonnet) → P2-03, P2-04 (Haiku) → P2-05 (Sonnet) — **milestone: engine complete**
-6. P3-01, P3-02, P3-03 (Sonnet) — **milestone: playable in the terminal**
-7. P4-01, P4-02 (Haiku) → P4-03 (Sonnet)
-8. P3-04 … P3-08 (Haiku) → P3-09 (Sonnet)
-9. F-02 (Opus, needs X-01 results) → P5-01, P5-02 (Haiku) → U-02
-10. P6-01 (Sonnet) → P6-03, P6-02 (Haiku) — **milestone: feature complete**
-11. P7-01, P7-02, P7-03 (Haiku)
-12. U-03 → P8-01, P8-02 (Sonnet) → F-03 (Opus) → P8-03 (Haiku + user) — **milestone: 0.1.0**
+Cards that share a file (their **Shared files** line, or the same **Files** entry) run one after another; the rest may run in
+parallel. Each phase ends with its gate; the next phase starts when the gate is green.
+
+1. Phase 4 (0.4, now), workflow first: O-50 (user setting) and O-51 … O-57 (P1), then O-58 … O-66 (P2), O-67 (P3). Haiku and Sonnet
+   in parallel where the files differ.
+2. Phase 4, fixes: O-37, O-38, O-39 (Haiku, Antigravity), O-35 (Haiku).
+3. Phase 4, card style: P5-02 (Haiku) → O-34 (User + Sonnet) and U-02 (User; reviews M-19…M-24).
+4. Phase 4, the rest: P4-07 (Sonnet) and P3-29 (Sonnet) → P4-06 (Sonnet) → P4-08 (Haiku) → P4-09 (Sonnet) → P4-10 (Sonnet, after its
+   DRAFT is finalized by Opus). **Milestone: 0.4 closed** (workflow closed, card style and game menu in place, Yukon).
+5. Phase 5 (0.5): P3-32 and P3-33 (Haiku) → P3-34 and P3-35 (Sonnet) → P5-03 (Haiku); P5-04 Golf (Sonnet) and P5-05 Spider solver
+   (Sonnet) in parallel. **Milestone: 0.5.**
+6. Phase 6 (0.6): P3-36 (Sonnet) → P6-04 (Haiku) and P6-05 (Sonnet); P6-06 after Opus finalizes its scope. **Milestone: 0.6.**
+7. Phase 7 (0.7): P7-04 (Haiku) → P7-05 (Sonnet, after its DRAFT is final). **Milestone: 0.7.**
+8. Phase 8 (0.8): P7-02 and P7-03 (Haiku) with the micro cards M-30…M-33 alongside; P8-04 (Haiku) → P8-05 (Sonnet, after its DRAFT is
+   final). **Milestone: 0.8.**
+9. Phase 9 (0.9): P9-01 test plan (Sonnet) → P7-01 (Haiku) → P9-02 (Sonnet) with P9-03 (Haiku) and P9-04 (Sonnet) → U-03 (User) →
+   P9-05 (Haiku), P9-06 (Sonnet) and P9-07 (Haiku), each after its DRAFT is final → P8-01 (Sonnet) → P8-02 (Sonnet) → F-03 (Opus) →
+   P8-03 (Haiku + User). **Milestone: 0.9.0 stable, the plan ends.**
 
 Micro tasks run alongside; `micro.md` lists what each one waits for. Fifteen of them need only P0-01.
 
 ## Index
 
+Every card has exactly one row here and one heading in `docs/task_list/phase-N.md`. Cards moved to a new phase keep their ID.
+Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch).
+
+### Phase 0 (0.0.x) — Bootstrap
+
 | ID | Task | Owner | Depends on | Status |
 |---|---|---|---|---|
 | U-01 | Decisions, master prompt, repository | User | — | DONE |
 | P0-01 | Repository skeleton and workspace | Haiku | U-01 | DONE |
-| P0-02 | Master prompt in English with amendments | Haiku | P0-01 | DONE |
+| P0-02 | Master prompt in English with amendments | Haiku | P0-01 (the Polish original must be in git history first) | DONE |
 | P0-03 | CI: pull requests, main, promotion | Haiku | P0-01 | DONE |
 | P0-04 | Release workflow: build, tag, publish, site | Haiku | P0-03 | DONE |
+| O-01 | Record roles, CI, seed and SQLite decisions (R-14…R-19) | not recorded (follow-up) | U-01 | DONE |
+| O-03 | CI actions on Node 24 | not recorded (follow-up) | P0-03 | DONE |
+| O-04 | Release builds only by manual dispatch | not recorded (follow-up) | P0-04 | DONE |
+| O-08 | Release targets: Windows x64, Linux x64/arm64 musl, macOS arm64 | not recorded (follow-up) | O-04 | DONE |
+| O-22 | No-sound CI build, cache tuning, author and third-party licences | not recorded (follow-up) | — | DONE |
+| O-36 | Version scheme: patch counts merges, minor counts phases, the plan ends at 0.9 | Sonnet | — | DONE |
+| O-40 | Player site in nine languages and a refreshed README | Opus | O-30 | DONE |
+| O-41 | Seven more interface languages in code, offered once translated | Opus | P3-37 | DONE |
+| O-42 | Interface translation: German (de-DE) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-43 | Interface translation: French (fr-FR) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-44 | Interface translation: Italian (it-IT) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-45 | Interface translation: Brazilian Portuguese (pt-BR) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-46 | Interface translation: Ukrainian (uk-UA) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-47 | Interface translation: Dutch (nl-NL) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-48 | Interface translation: Spanish (es-ES) | Antigravity (text only), checked by Opus | O-41 | DONE |
+| O-49 | Workflow review: CI, release and agent workflows | Opus | — | DONE |
+
+### Phase 1 (0.1.x) — Engine
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
 | P1-01 | Engine domain model | Sonnet | P0-01 | DONE |
 | P1-02 | Game contract and session | Sonnet | P1-01 | DONE |
-| F-01 | Checkpoint: engine contract | Opus | P1-02 | DONE |
+| F-01 | Checkpoint: engine contract | Opus (Fable only if Opus cannot settle a contract question — R-14) | P1-02 | DONE |
 | P1-03 | Comment lint and phase 1 gate | Haiku | P1-02, P0-03, M-01…M-06 | DONE |
-| P2-01 | Klondike | Sonnet | F-01 | DONE |
-| P2-02 | Spider | Sonnet | P2-01 | DONE |
+
+### Phase 2 (0.2.x) — Games
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
+| P2-01 | Klondike (Draw 1, Draw 3) | Sonnet | F-01 | DONE |
+| P2-02 | Spider (1, 2, 4 suits) | Sonnet | P2-01 | DONE |
 | P2-03 | FreeCell | Haiku | P2-01 | DONE |
 | P2-04 | Pyramid (Relaxed, Classic) | Haiku | P2-01 | DONE |
 | P2-05 | Gate: game rules and flow tests | Sonnet | P2-01…P2-04 | DONE |
+| P2-07 | Forced-win detection and the finishing moves | Sonnet | P2-06 | DONE |
+| P2-08 | Solver for winnable deals | Sonnet (Fable may be consulted for the search design) | P2-07 | DONE |
+| P2-06 | Stock pass and deal counters in the engine | not recorded (follow-up) | P2-05 | DONE |
+| O-02 | Phase 2 gate follow-ups | not recorded (follow-up) | P2-05 | DONE |
+
+### Phase 3 (0.3.x) — Terminal interface
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
 | P3-01 | TUI foundation | Sonnet | P1-02 | DONE |
 | P3-02 | Board geometry and rendering | Sonnet | P3-01, P2-01 | DONE |
 | P3-03 | Board controller | Sonnet | P3-02 | DONE |
 | P3-04 | Menus and game selection | Haiku | P3-01 | DONE |
 | P3-05 | Settings screen | Haiku | P3-01 | DONE |
-| P3-06 | Mouse | Haiku | P3-03 | DONE |
+| P3-06 | Mouse on the board | Haiku | P3-03 | DONE |
 | P3-07 | Overlays: help, pause, win, dialogs | Haiku | P3-03 | DONE |
 | P3-08 | Accessibility: announcer and tests | Haiku | P3-03 | DONE |
 | P3-09 | Gate: TUI | Sonnet | P3-04…P3-08, P4-03 | DONE |
+| P3-11 | Board guidance: focus aura, action line and guide panel | Sonnet | P3-06, P3-08, P3-10 | DONE |
+| P3-12 | Board counters, the no-undo mode and copying the seed | Sonnet | P3-11, P4-04, P2-06 | DONE |
+| U-04 | Interface review: usability and readability | Fable with Opus (owner request, 2026-11-16) | P3-12, P3-13, O-14 | DONE |
+| P3-14 | Readable card faces | Sonnet | U-04 | DONE |
+| P3-15 | Screen layout: game information apart from controls | Sonnet | U-04, P3-14 | DONE |
+| P3-16 | Zoom: card size by keyboard and console font | Sonnet | U-04, P3-15 | DONE |
+| P3-17 | Tab moves the focus | Haiku | U-04 | DONE |
+| O-16 | Full-screen option | Sonnet | U-04, P3-16 | DONE |
+| P3-18 | Guide panel on screens slightly too small | Sonnet | U-04, P3-15 | DONE |
+| P3-19 | Auto-finish a won game | Haiku | P2-07, P3-15 | DONE |
+| P3-20 | Winnable deals only | Sonnet | P2-08 | DONE |
+| P3-21 | Aura options and the stock recycle button | Haiku | U-04, P3-14 | DONE |
+| P3-22 | Localization templates and localized key names | Haiku | P3-15 | DONE |
+| P3-23 | Colors: 16-color swatches, mark contrast, High Contrast board edge | Haiku | U-04 | DONE |
+| P3-24 | Menus, settings and statistics polish | Haiku | P3-17 | DONE |
+| P3-25 | Footer keys as mouse buttons | Haiku | P3-15 | DONE |
+| P3-26 | Possible moves panel | Sonnet | P3-15, P3-18 | DONE |
+| P3-27 | Quick options during the game and defaults in Settings | Sonnet | P3-19, P3-21, P3-26 | DONE |
+| O-23 | Modal fixes: scroll bar, Close shortcut, focus between selector rows | Sonnet | P3-18, P3-25 | DONE |
+| P3-28 | Docking modals to a side of the screen | Sonnet | O-23 | DONE |
+| P3-30 | Themes Monokai and Dracula | Haiku | P3-23 | DONE |
+| P3-31 | Card back selection | Haiku | P3-30 | DONE |
+| O-26 | Contrast fixes found by the UI inventory | Haiku | O-25 | DONE |
+| P3-10 | How-to-play overlay and first-steps hint | not recorded (follow-up) | P3-07 | DONE |
+| P3-13 | Large card faces: big suit and rank on medium and large cards | not recorded (follow-up) | P3-11 | DONE |
+| O-06 | Unicode glyphs within WGL4 for the Windows console | not recorded (follow-up) | P3-02 | DONE |
+| O-10 | Remove unused common locale keys | not recorded (follow-up) | M-17 | DONE |
+| O-13 | Sync task list statuses with `main` | not recorded (follow-up) | — | DONE |
+| O-14 | Game rules as a tab of the help window | not recorded (follow-up) | O-13, P3-10 | DONE |
+| O-17 | Task cards for the owner's interface feedback of 2026-11-16 | not recorded (follow-up) | — | DONE |
+| O-18 | Task cards for the owner's feedback of 2026-11-16 (second round) | not recorded (follow-up) | — | DONE |
+| O-20 | Sync follow-up task statuses | not recorded (follow-up) | — | DONE |
+| O-21 | Task cards for the owner's feedback of 2026-11-19 | not recorded (follow-up) | — | DONE |
+| O-25 | UI inventory of colors, sizes and fonts | not recorded (follow-up) | — | DONE |
+| O-27 | Sync the task list with `main` | Haiku | — | DONE |
+| P3-37 | Language selector with flags in the main menu corner | Sonnet | P3-24 | DONE |
+| P3-38 | Run selection wraps around: Down or `-` on the top card selects the whole run | Haiku | P3-26 | DONE |
+| O-28 | Focused card drawn with a gap of felt inside its face | Haiku | — | DONE |
+| O-29 | Screen-specific labels for Select and Back | Haiku | P3-26 | DONE |
+| O-31 | Widen a console window the game owns to 130 columns | Antigravity (Beo) | — | DONE |
+| O-32 | Easy restart from the beginning, confirmed like Quit | Antigravity (Dad) | P3-27 | DONE |
+| O-33 | Statistics: scroll bars and a winnable mark per game | Antigravity (Oxy) | O-23, P3-24 | DONE |
+
+### Phase 4 (0.4.x) — Workflow, fixes, first card style and game
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
+| O-50 | Require up-to-date branches and auto-merge on main (repository setting) | Owner | O-49 | TODO |
+| O-51 | `check --quick` runs every test target in one cargo call | Haiku | O-49 | TODO |
+| O-52 | Lint: conflict markers in every tracked file | Haiku | O-49 | TODO |
+| O-53 | Lint: decision ID uniqueness and references | Haiku | O-49 | TODO |
+| O-54 | `check` writes a result file; `cargo xtask report`; PR template | Haiku | O-49 | TODO |
+| O-55 | Pin GitHub Actions by SHA and add Dependabot | Haiku | O-49 | TODO |
+| O-56 | cargo-deny on pull requests | Sonnet | O-49 | TODO |
+| O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | Sonnet | O-49, O-41 | TODO |
+| O-58 | Check pull requests on Windows as well | Haiku | O-49 | TODO |
+| O-59 | Tests derive row counts instead of hard-coding them | Haiku | O-49 | TODO |
+| O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | Haiku | O-49 | TODO |
+| O-61 | main: re-run jobs that never got a runner before failing | Haiku | O-49 | TODO |
+| O-62 | Build the site on pull requests; check screenshots are current | Haiku | O-49 | TODO |
+| O-63 | Take the version from the binary instead of a TUI build script | Sonnet | O-49 | TODO |
+| O-64 | `cargo xtask preflight` and a local CI mode | Haiku | O-49 | TODO |
+| O-65 | Release provenance, SBOM, immutable releases; pinned host key | Sonnet | O-49 | TODO |
+| O-66 | Optimize the engine in test builds | Haiku | O-49 | TODO |
+| O-67 | Small cleanups: pycache, site redeploy, xtask split, apt cache | Antigravity / Haiku | O-49 | TODO |
+| O-37 | Mouse path for Pause and Possible moves on every screen width | Haiku | P3-16, P3-28 | TODO |
+| O-38 | Settings save failure: alert and log once per session | Haiku | — | TODO |
+| O-39 | Split files over 300 LOC found by the P3-09 gate | Antigravity | — | TODO |
+| O-35 | Release archives carry the font licence (OFL) | Haiku | P5-01 (the font, `assets/fonts/OFL.txt` and `assets/fonts/NOTICE.md` exist) | TODO |
+| P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the | TODO |
+| O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | TODO |
+| U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
+| P4-07 | Site: language landing page | Sonnet | O-40, O-62 | TODO |
+| P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | TODO |
+| P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | TODO |
+| P4-08 | Card style: Swiss suits (Unicode) | Haiku | P5-02 | TODO |
+| P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | TODO |
+| P4-10 | Game: Yukon | Sonnet | P4-09, P1-02 | DRAFT |
 | P4-01 | SQLite persistence | Sonnet | P3-01 | DONE |
 | P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | DONE |
 | P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | DONE |
-| X-01 | Spike: card font in real terminals | Sonnet + User | P0-01 | DONE |
-| F-02 | Checkpoint: graphics delivery | Opus | X-01 | DONE |
+| P4-05 | Restarts counted separately in games without undo | Sonnet | P4-04, P3-12 | DONE |
+| P4-04 | Statistics, game history and seed copying | not recorded (follow-up) | P4-03 | DONE |
+| O-05 | Keep a double-clicked console open after a startup error | not recorded (follow-up) | P4-02 | DONE |
+| O-07 | Portable mode: data next to the executable | not recorded (follow-up) | P4-01 | DONE |
+| O-09 | Application icon for the Windows executable | not recorded (follow-up) | P0-01 | DONE |
+| O-11 | `--seed` starts the game directly; typed keys stay in text fields | not recorded (follow-up) | P3-10 | DONE |
+| O-15 | `--new-window` flag and the command-line options in Help | not recorded (follow-up) | O-05, O-14 | DONE |
+| O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | not recorded (follow-up) | O-15 | DONE |
+
+### Phase 5 (0.5.x) — Themes, colour vision, Spanish cards, Golf
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
+| P3-32 | Table color and feel | Haiku | O-26, P3-29 | TODO |
+| P3-33 | Card face tint | Haiku | O-26, P3-29 | TODO |
+| P3-34 | Low-vision mode | Sonnet | O-26, P3-16, P3-29 | TODO |
+| P3-35 | Color-blind modes | Sonnet | O-26, P3-29 | TODO |
+| P5-03 | Card style: Spanish suits (Unicode) | Haiku | P4-08 | TODO |
+| P5-04 | Game: Golf | Sonnet | P4-10 | TODO |
+| P5-05 | Solver: Spider with 2 and 4 suits | Sonnet | P2-08 | TODO |
+| X-01 | Spike: card font in real terminals | Sonnet (prototype) + User (testing) | P0-01 | DONE |
+| F-02 | Checkpoint: graphics delivery | Opus (Fable only on escalation — R-14) | X-01 | DONE |
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
-| P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05 | TODO |
-| U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
+
+### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
+| P3-36 | Themes as data and the interface size scale | Sonnet | P3-29, P3-30 | TODO |
+| P6-04 | Card style: four-colour French | Haiku | P5-03, P3-35 | TODO |
+| P6-05 | Game: TriPeaks | Sonnet | P5-04 | TODO |
+| P6-06 | More game options | Opus (finalizes the scope), then Haiku | P4-09, P3-27 | DRAFT |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
-| P7-01 | E2E harness and core scenarios | Haiku | P3-09, P4-02 | TODO |
+| O-12 | Selectable sound styles and clearer sound status in Settings | not recorded (follow-up) | P6-02, P3-11 | DONE |
+
+### Phase 7 (0.7.x) — Hungarian cards, Scorpion
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
+| P7-04 | Card style: Hungarian suits (Unicode) | Haiku | P6-04 | TODO |
+| P7-05 | Game: Scorpion | Sonnet | P6-05 | DRAFT |
+| O-30 | Player site: screenshots, both languages, latest release, build from source | Sonnet | — | DONE |
+
+### Phase 8 (0.8.x) — Player documentation, Russian cards, Canfield
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
 | P7-02 | Player site and stable release procedure | Haiku | P0-04, P5-01, M-30…M-33 | TODO |
 | P7-03 | Technical documentation and README | Haiku | P3-09 | TODO |
+| P8-04 | Card style: Russian suits (Unicode) | Haiku | P7-04 | TODO |
+| P8-05 | Game: Canfield | Sonnet | P7-05 | DRAFT |
+
+### Phase 9 (0.9.x) — Final tests and the stable release
+
+| ID | Task | Owner | Depends on | Status |
+|---|---|---|---|---|
+| P9-01 | UI/UX test plan | Sonnet | P8-04, P8-05, P7-03 | TODO |
+| P7-01 | E2E harness and core scenarios | Haiku | P3-09, P4-02 | TODO |
+| P9-02 | Keyboard and mouse journeys per screen and per game | Sonnet | P9-01, P7-01 | TODO |
+| P9-03 | Locale fit at the minimum size, all nine languages | Haiku | P9-01, O-57 | TODO |
+| P9-04 | Accessibility audit | Sonnet | P9-01, P3-34, P3-35 | TODO |
 | U-03 | Terminal matrix | User | P7-01 | TODO |
+| P9-05 | Card style: Portuguese suits (Unicode) | Haiku | P8-04 | TODO |
+| P9-06 | Game: La Belle Lucie | Sonnet | P8-05 | DRAFT |
+| P9-07 | New themes | Haiku | P3-36 | DRAFT |
 | P8-01 | Fixes and visual polish | Sonnet | U-03 | TODO |
 | P8-02 | Final review | Sonnet | P8-01 | TODO |
-| F-03 | Checkpoint: release sign-off | Opus | P8-02 | TODO |
-| P8-03 | Release 0.1.0 | Haiku + User | F-03, P7-02 | TODO |
+| F-03 | Checkpoint: release sign-off | Opus (Fable only on escalation — R-14) | P8-02 | TODO |
+| P8-03 | Release 0.9.0: the stable release that ends the plan | Haiku + User | F-03, P7-02 | TODO |
 
-Micro tasks M-01…M-35: see `micro.md`.
-
-### Follow-up tasks
-
-Added after the plan was written: owner feedback, review follow-ups and fixes. Their briefs live in
-the PR descriptions; cards that exist are in the phase files.
-
-| ID | Task | Depends on | Status |
-|---|---|---|---|
-| O-01 | Record roles, CI, seed and SQLite decisions (R-14…R-19) | U-01 | DONE |
-| O-02 | Phase 2 gate follow-ups | P2-05 | DONE |
-| O-03 | CI actions on Node 24 | P0-03 | DONE |
-| O-04 | Release builds only by manual dispatch | P0-04 | DONE |
-| O-05 | Keep a double-clicked console open after a startup error | P4-02 | DONE |
-| O-06 | Unicode glyphs within WGL4 for the Windows console | P3-02 | DONE |
-| O-07 | Portable mode: data next to the executable | P4-01 | DONE |
-| O-08 | Release targets: Windows x64, Linux x64/arm64 musl, macOS arm64 | O-04 | DONE |
-| O-09 | Application icon for the Windows executable | P0-01 | DONE |
-| O-10 | Remove unused common locale keys | M-17 | DONE |
-| O-11 | `--seed` starts the game directly; typed keys stay in text fields | P3-10 | DONE |
-| O-12 | Selectable sound styles and clearer sound status in Settings | P6-02, P3-11 | DONE |
-| O-13 | Sync task list statuses with `main` | — | DONE |
-| O-14 | Game rules as a tab of the help window | O-13, P3-10 | DONE |
-| O-17 | Task cards for the owner's interface feedback of 2026-11-16 | — | DONE |
-| O-15 | `--new-window` flag and the command-line options in Help | O-05, O-14 | DONE |
-| O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | O-15 | DONE |
-| O-20 | Sync follow-up task statuses (#74) | — | DONE |
-| O-21 | Task cards for the owner's feedback of 2026-11-19 (Restart, recycle button, footer buttons, moves panel, quick options) | — | DONE |
-| O-22 | No-sound CI build, cache tuning, author and third-party licences (#85) | — | DONE |
-| O-16 | Full-screen (borderless window) option: setting and `--fullscreen` | U-04, P3-16 | DONE |
-| U-04 | Interface review for usability and readability (Fable with Opus) | P3-12, P3-13, O-14 | DONE |
-| P3-14 | Readable card faces (replace the block-art rank) (#75) | U-04 | DONE |
-| P3-15 | Screen layout: game information apart from controls; framed guide panel (#80) | U-04, P3-14 | DONE |
-| P3-16 | Zoom: card size by keyboard, console font on Windows, terminal zoom in Help | U-04, P3-15 | DONE |
-| P3-17 | Tab and Shift+Tab move the focus through menus, buttons and dialogs (#76) | U-04 | DONE |
-| O-18 | Task cards for the owner's feedback of 2026-11-16 (second round) | — | DONE |
-| P3-18 | Guide panel on screens slightly too small (the panel as a window below 130 columns) (#83) | U-04, P3-15 | DONE |
-| P3-19 | Auto-finish a won game (option); unfinished start on branch `feat/P3-19-auto-finish-b` (#81) | P2-07, P3-15 | DONE |
-| P3-20 | Winnable deals only (option) (#82) | P2-08 | DONE |
-| P3-21 | Aura options (focus only) and the stock recycle button | U-04, P3-14 | DONE |
-| P3-22 | Localization templates (no pile name after a verb) and localized key names | P3-15 | DONE |
-| P3-23 | Colors: 16-color swatches, mark contrast test, High Contrast board edge | U-04 | DONE |
-| P3-24 | Menus, settings and statistics polish (aligned values, groups, descriptions) | P3-17 | DONE |
-| P3-25 | Footer keys as mouse buttons; `g` in the footer (#86) | P3-15 | DONE |
-| P3-26 | Possible moves panel with active and inactive action buttons | P3-15, P3-18 | DONE |
-| P3-27 | Quick options during the game and defaults in Settings (hints, auto-finish) | P3-19, P3-21, P3-26 | DONE |
-| P4-05 | Restarts counted separately in games without undo | P4-04, P3-12 | DONE |
-| O-23 | Modal fixes: scroll bar, Close shortcut, focus between the help selector rows (#91) | P3-18, P3-25 | DONE |
-| P3-28 | Docking modals to a side of the screen | O-23 | DONE |
-| P3-29 | Settings: Interface section (colors, aura color/style/size, interface size, font) | P3-16, P3-21, P3-24, P3-27 | TODO |
-| P3-30 | Themes Monokai and Dracula | P3-23 | DONE |
-| P3-31 | Card back selection (Theme, Monokai, Dracula) | P3-30 | DONE |
-| P4-06 | Automatic moves in statistics: failed attempts and streaks, "assisted" games | P4-05 | TODO |
-| O-25 | UI inventory of colors, sizes and fonts (`docs/tech/ui-inventory.md`) | — | DONE |
-| O-26 | Contrast fixes found by the UI inventory (focus frame, card back edge, field edge) (#92) | O-25 | DONE |
-| O-27 | Sync the task list with `main`: statuses, cards, PR numbers and deviations | — | DONE |
-| O-28 | Focused card drawn with a gap of felt inside its face | — | DONE |
-| O-29 | Screen-specific labels for Select and Back (P3-22 part 4) | P3-26 | DONE |
-| O-30 | Player site: screenshots, both languages, latest release, build from source | — | DONE |
-| O-31 | Widen a console window the game owns to 130 columns | — | DONE |
-| O-32 | Easy restart from the beginning, confirmed like Quit | P3-27 | DONE |
-| O-33 | Statistics: scroll bars and a winnable mark per game | O-23, P3-24 | DONE |
-| O-36 | Version scheme: patch counts merges, minor counts phases, the plan ends at 0.9 | — | DONE |
-| O-34 | Windows Terminal: test the card font on a real machine | P5-02 | TODO |
-| O-35 | Release archives carry the font licence (OFL) | P5-01 | TODO |
-| O-37 | Mouse path for Pause and Possible moves on every screen width | P3-16, P3-28 | TODO |
-| O-38 | Settings save failure: alert and log once per session | — | TODO |
-| O-39 | Split files over 300 LOC found by the P3-09 gate | — | TODO |
-| O-40 | Player site in nine languages and a refreshed README | O-30 | DONE |
-| O-41 | Seven more interface languages in code, offered once translated | P3-37 | DONE |
-| O-42 | Interface translation: German (de-DE) | O-41 | DONE |
-| O-43 | Interface translation: French (fr-FR) | O-41 | DONE |
-| O-44 | Interface translation: Italian (it-IT) | O-41 | DONE |
-| O-45 | Interface translation: Brazilian Portuguese (pt-BR) | O-41 | DONE |
-| O-46 | Interface translation: Ukrainian (uk-UA) | O-41 | DONE |
-| O-47 | Interface translation: Dutch (nl-NL) | O-41 | DONE |
-| O-48 | Interface translation: Spanish (es-ES) | O-41 | DONE |
-| O-49 | Workflow review: CI, release and agent workflows | — | DONE |
-| O-50 | Require up-to-date branches and auto-merge on main (repository setting) | O-49 | TODO |
-| O-51 | `check --quick` runs every test target in one cargo call | O-49 | TODO |
-| O-52 | Lint: conflict markers in every tracked file | O-49 | TODO |
-| O-53 | Lint: decision ID uniqueness and references | O-49 | TODO |
-| O-54 | `check` writes a result file; `cargo xtask report`; PR template | O-49 | TODO |
-| O-55 | Pin GitHub Actions by SHA and add Dependabot | O-49 | TODO |
-| O-56 | cargo-deny on pull requests | O-49 | TODO |
-| O-57 | English fallback for incomplete locales and `cargo xtask locale-diff` | O-49, O-41 | TODO |
-| O-58 | Check pull requests on Windows as well | O-49 | TODO |
-| O-59 | Tests derive row counts instead of hard-coding them | O-49 | TODO |
-| O-60 | `cargo xtask worktrees`: list and remove worktrees of merged branches | O-49 | TODO |
-| O-61 | main: re-run jobs that never got a runner before failing | O-49 | TODO |
-| O-62 | Build the site on pull requests; check screenshots are current | O-49 | TODO |
-| O-63 | Take the version from the binary instead of a TUI build script | O-49 | TODO |
-| O-64 | `cargo xtask preflight` and a local CI mode | O-49 | TODO |
-| O-65 | Release provenance, SBOM, immutable releases; pinned host key | O-49 | TODO |
-| O-66 | Optimize the engine in test builds | O-49 | TODO |
-| O-67 | Small cleanups: pycache, site redeploy, xtask split, apt cache | O-49 | TODO |
-| P3-32 | Table color and feel | O-26, P3-29 | TODO |
-| P3-33 | Card face tint | O-26, P3-29 | TODO |
-| P3-34 | Low-vision mode | O-26, P3-16, P3-29 | TODO |
-| P3-35 | Color-blind modes (protanopia, deuteranopia, tritanopia, monochrome; four-color deck) | O-26, P3-29 | TODO |
-| P3-36 | Themes as data and the interface size scale | P3-29, P3-30 | TODO |
-| P3-37 | Language selector with flags in the main menu corner (tooltip, arrows, drop-down list) | P3-24 | DONE |
-| P3-38 | Run selection wraps around: Down or `-` on the top card selects the whole run | P3-26 | DONE |
-| P2-07 | Forced-win detection and the finishing moves | P2-06 | DONE |
-| P2-08 | Solver for winnable deals (#78) | P2-07 | DONE |
-| P2-06 | Stock pass and deal counters in the engine | P2-05 | DONE |
-| P3-10 | How-to-play overlay and first-steps hint | P3-07 | DONE |
-| P3-11 | Board guidance: focus aura, action line and guide panel | P3-06, P3-08, P3-10 | DONE |
-| P3-12 | Move counter, no-undo mode, seed copy and stock counters on the board | P3-11, P4-04, P2-06 | DONE |
-| P3-13 | Large card faces: big suit and rank on medium and large cards | P3-11 | DONE |
-| P4-04 | Statistics, game history and seed copying | P4-03 | DONE |
+Micro cards (`micro.md`, not in this index): open ones are M-19…M-24 (phase 4, READY, artwork), M-30, M-31, M-33 (phase 8,
+READY) and M-32 (phase 8, DRAFT until P5-02 is merged), M-28 and M-29 (phase 9, DRAFT until P7-01 is merged).
 
 ## Start prompts
 
