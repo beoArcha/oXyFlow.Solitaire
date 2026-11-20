@@ -1,0 +1,73 @@
+[app]
+title = "oXySol"
+tagline = "Le solitaire de bureau ultime pour le terminal"
+
+[language]
+# The name of this language in itself: shown in the language selector whatever language is on.
+name = "Français"
+
+[menu]
+title = "Menu principal"
+new_game = "Nouvelle partie"
+settings = "Paramètres"
+quit = "Quitter"
+
+[select]
+title = "Choisir une partie"
+undo = "[ Annuler : {state} ]"
+on = "activé"
+off = "désactivé"
+undo_hint = "{key} ou un clic active/désactive l'annulation pour la prochaine partie"
+winnable = "[ Donnes gagnables uniquement : {state} ]"
+winnable_hint = "Une nouvelle partie cherchera une donne garantie gagnable ; une graine saisie est distribuée telle quelle"
+slow_search = "{variant}  (la recherche peut durer longtemps)"
+
+[variant]
+klondike_one = "Klondike, 1 carte"
+klondike_three = "Klondike, 3 cartes"
+spider_one = "Spider, 1 couleur"
+spider_two = "Spider, 2 couleurs"
+spider_four = "Spider, 4 couleurs"
+free_cell = "FreeCell"
+pyramid_relaxed = "Pyramide, détente"
+pyramid_classic = "Pyramide, classique"
+
+[settings]
+title = "Paramètres"
+
+[size]
+title = "Terminal trop petit"
+current = "Taille actuelle : {width} x {height}"
+required = "Taille requise : {width} x {height}"
+hint = "Agrandis la fenêtre ou dézoome : Ctrl+Moins (Cmd+Moins sur Mac)."
+
+[dialog]
+ok = "OK"
+yes = "Oui"
+no = "Non"
+help_title = "Aide"
+pause_title = "Pause"
+pause_body = "Appuie sur Esc pour continuer."
+win_title = "Gagné !"
+win_body = "La partie est résolue."
+win_moves = "Coups : {moves}"
+alert_title = "Information"
+confirm_title = "Merci de confirmer"
+
+[search]
+title = "Recherche d'une donne gagnable"
+running = "Recherche d'une donne gagnable pour {variant}..."
+progress = "Graines testées : {tried} sur {cap}"
+slow = "Ce jeu est rarement garanti gagnable, la recherche peut donc être longue."
+escape = "Esc annule la recherche."
+capped = "Aucune donne gagnable trouvée parmi {cap} graines."
+capped_offer = "Jouer la meilleure candidate (résolubilité inconnue) ou continuer à chercher ?"
+capped_offer_none = "Aucune des graines n'a pu être jouée comme inconnue. Continuer à chercher ?"
+play_unproven = "Jouer comme inconnue"
+more = "Continuer à chercher"
+cancel = "Annuler"
+
+[error]
+storage = "Échec de l'enregistrement en base. La partie continue sans sauvegarde."
+settings_load = "Impossible de lire les paramètres enregistrés. Valeurs par défaut utilisées."
+resume = "Impossible de restaurer la partie sauvegardée."

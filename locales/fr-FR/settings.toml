@@ -1,0 +1,106 @@
+# Strings of the settings area.
+
+[row]
+language = "Langue"
+theme = "Thème"
+card_back = "Dos de carte"
+front_style = "Style des faces"
+back_style = "Style des dos"
+glyphs = "Symboles"
+colors = "Couleurs"
+card_size = "Taille des cartes"
+full_screen = "Plein écran"
+sound_style = "Style sonore"
+cues = "Effets sonores"
+music = "Musique"
+volume = "Volume"
+guide_panel = "Panneau du guide"
+moves_panel = "Panneau des coups possibles"
+target_marks = "Marques de cible"
+auto_finish = "Fin automatique"
+aura = "Aura"
+line = "{label} {value}"
+
+[group]
+display = "Affichage"
+sound = "Son"
+hints = "Indices et aide"
+
+[style]
+international = "International"
+default = "Par défaut"
+
+[desc]
+language = "La langue de tous les textes. Changement immédiat."
+theme = "Les couleurs de l'interface."
+card_back = "Les couleurs et le motif du dos des cartes face cachée."
+front_style = "L'apparence de la face des cartes."
+back_style = "L'apparence du dos des cartes face cachée."
+glyphs = "Unicode affiche enseignes et symboles ; ASCII n'utilise que des caractères simples."
+colors = "Nombre de couleurs demandées au terminal. Auto le détecte."
+card_size = "Auto s'adapte à la fenêtre ; une taille trop grande est réduite. Touches ] [ 0 ou Ctrl+molette."
+full_screen = "Auto : actif uniquement dans la fenêtre ouverte par le jeu. En console : Alt+Enter ou F11."
+sound_style = "La sonorité des effets et de la musique."
+cues = "Courts sons pour les coups et la victoire."
+music = "Musique d'ambiance pendant une partie."
+volume = "Volume des sons et de la musique, par paliers de 10 %."
+auto_finish = "Joue automatiquement les derniers coups une fois la victoire certaine."
+aura = "Lueur : Complète sur focus, cartes portées et cibles ; Focus seul, sur le focus."
+target_marks = "Marque les destinations possibles d'une suite avec + et une lueur."
+guide_panel = "Panneau latéral avec des indices sur la carte ciblée et les touches."
+moves_panel = "Panneau latéral listant chaque action et sa touche, active ou non."
+
+[value]
+on = "Oui"
+off = "Non"
+unavailable = "indisponible"
+needs_columns = "{value} ({needed} colonnes requises, actuellement {now})"
+
+[full_screen]
+auto = "Auto"
+
+[card_size]
+auto = "Auto"
+small = "Petite"
+medium = "Moyenne"
+large = "Grande"
+huge = "Très grande"
+
+[aura]
+full = "Complète"
+focus_only = "Focus seul"
+
+[card_back]
+theme = "Thème"
+monokai = "Monokai"
+dracula = "Dracula"
+
+[locale]
+en_us = "Anglais"
+pl_pl = "Polonais"
+
+[theme]
+dark = "Sombre"
+light = "Clair"
+high_contrast = "Contraste élevé"
+monokai = "Monokai"
+dracula = "Dracula"
+
+[glyph]
+unicode = "Unicode"
+ascii = "ASCII"
+
+[color]
+auto = "Auto"
+ansi16 = "16 couleurs"
+ansi256 = "256 couleurs"
+true_color = "Couleurs vraies"
+
+[audio]
+no_device = "Son indisponible : aucun périphérique audio fonctionnel trouvé."
+remote = "Son indisponible : session distante."
+not_built = "Le son n'est pas inclus dans cette version."
+style_failed = "Son indisponible : impossible de charger le style sonore sélectionné."
+
+[footer]
+change = "Modifier"

@@ -1,0 +1,110 @@
+[group]
+navigation = "Navigation"
+board = "Coups"
+display = "Affichage"
+game = "Jeu"
+general = "App"
+mouse = "Souris"
+
+[action]
+up = "Haut"
+down = "Bas"
+left = "Gauche"
+right = "Droite"
+focus_next = "Élément suivant"
+focus_previous = "Élément précédent"
+select = "Sélectionner"
+back = "Retour"
+quit = "Quitter"
+force_quit = "Quitter maintenant"
+help = "Aide"
+rules = "Comment jouer"
+stock = "Pioche"
+quick_move = "Coup rapide"
+run_more = "Sélectionner plus de cartes"
+run_less = "Sélectionner moins de cartes"
+zoom_in = "Cartes plus grandes"
+zoom_out = "Cartes plus petites"
+zoom_auto = "Cartes : taille auto"
+undo = "Annuler"
+redo = "Rétablir"
+hint = "Indice"
+finish = "Terminer la partie"
+guide = "Panneau du guide"
+moves = "Panneau des coups possibles"
+options = "Options rapides"
+restart = "Recommencer"
+new_game = "Nouvelle partie"
+pause = "Pause"
+menu = "Menu"
+copy_seed = "Copier la graine"
+dock = "Ancrer la fenêtre d'aide"
+dock_focus = "Cibler la fenêtre ancrée"
+
+[display]
+terminal_keys = "Ctrl +/-/0"
+terminal_text = "Zoom terminal (Mac : Cmd)"
+
+[mouse_keys]
+click_card = "Cliquer sur une carte"
+click_stock = "Cliquer sur la pioche"
+double_click = "Double-clic"
+right_click = "Clic droit"
+drag = "Glisser-déposer"
+
+[mouse]
+click_card = "Prendre, puis poser sur une cible"
+click_stock = "Tirer de la pioche"
+double_click = "Coup rapide vers une cible"
+right_click = "Annuler la prise"
+drag = "Déplacer une carte sur sa cible"
+
+[overlay]
+continue = "Continuer"
+restart = "Recommencer"
+new_game = "Nouvelle partie"
+menu = "Menu"
+win_time = "Temps : {time}"
+same_seed = "Même graine"
+best_time = "Meilleur temps pour {game} !"
+best_moves = "Moins de coups pour {game} !"
+close_or = " ou "
+close_rest = " ferme cette fenêtre."
+
+[rules]
+title = "Comment jouer"
+close = "Fermer [{key}]"
+footer_tabs = "{left}/{right} : onglet   {down} : jeux"
+footer_games = "{left}/{right} : jeu   {up}/{down} : déplacer le focus"
+footer_text = "{up}/{down}/PgUp/PgDn : défiler   {up} en haut : jeux"
+footer_close = "{back} : fermer"
+position = "{from}-{to} / {total}"
+
+[tab]
+keys = "Touches"
+rules = "Règles"
+command_line = "Ligne de commande"
+
+[command_line]
+footer_tab = "{key} : onglet suivant"
+footer_move = "{up}/{down}/PgUp/PgDn : défiler"
+footer_close = "{back} : fermer"
+
+[key]
+up = "Haut"
+down = "Bas"
+left = "Gauche"
+right = "Droite"
+space = "Espace"
+enter = "Enter"
+esc = "Esc"
+tab = "Tab"
+shift = "Shift"
+ctrl = "Ctrl"
+
+[dock]
+button = "Ancrage : {side}"
+side_centre = "centre"
+side_right = "droite"
+side_left = "gauche"
+too_narrow = "L'ancrage nécessite 130 colonnes ; la fenêtre reste centrée."

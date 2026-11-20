@@ -1,0 +1,61 @@
+# Strings of the statistics screen: the summary per game, the history list and copying a seed.
+label = "Statistiques"
+title = "Statistiques"
+footer_list = "Haut Bas Sélection"
+footer_replay = "Enter Rejouer cette graine"
+footer_copy = "c Copier la graine"
+footer_back = "Esc Retour"
+empty = "Aucune partie jouée pour l'instant. Lance-en une depuis le menu principal."
+load_failed = "L'historique des parties n'a pas pu être lu."
+position = "Partie {current} sur {total}"
+copied = "Graine {seed} copiée"
+copy_failed = "Impossible de copier la graine — elle est affichée ici : {seed}"
+
+[mode]
+undo = "avec annulation"
+no_undo = "sans annulation"
+
+[outcome]
+won = "Gagnée"
+abandoned = "Abandonnée"
+open = "En cours"
+
+[summary]
+game = "Jeu"
+played = "Jouées"
+won = "Gagnées"
+clean = "Sans reprise"
+rate = "% victoires"
+best_time = "Meilleur temps"
+fewest_moves = "Moins de coups"
+streak = "Série"
+longest = "Meilleure série"
+
+[history]
+title = "Historique, plus récent en premier, heures en UTC"
+date = "Date"
+variant = "Jeu"
+seed = "Graine"
+outcome = "Résultat"
+time = "Temps"
+moves = "Coups"
+restarts = "Repris"
+winnable = "Gagnable"
+winnable_short = "?"
+
+[legend]
+winnable = "gagnable"
+unwinnable = "non gagnable"
+unknown = "inconnu"
+unchecked = "non vérifié"
+
+[winnable]
+yes = "oui"
+no = "non"
+unknown = "inconnu"
+unchecked = "-"
+
+[button]
+replay = "Rejouer cette graine"
+copy = "Copier la graine"
+back = "Retour"

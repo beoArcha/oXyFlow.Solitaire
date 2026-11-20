@@ -1,0 +1,40 @@
+# Strings of the menu area: the main menu, the seed entry and the game selection.
+# Items shared with the rest of the interface (New game, Settings, Quit, the variant names)
+# live in common.toml.
+resume = "Reprendre"
+resume_full = "Reprendre : {game}, {time}, Coups {moves}"
+resume_time = "Reprendre : {game}, {time}"
+resume_game = "Reprendre : {game}"
+new_game_from_seed = "Nouvelle partie avec graine"
+help = "Aide"
+select_seed = "Choisir un jeu pour la graine {seed}"
+version = "v{version}"
+variant_hint = "{level} : {description}"
+
+[difficulty]
+easy = "Facile"
+medium = "Moyen"
+hard = "Difficile"
+
+[game_hint]
+klondike = "Construis les fondations de l'as au roi par couleur ; la pioche alimente les colonnes."
+spider = "Forme huit suites du roi à l'as, chacune dans la même couleur."
+freecell = "Toutes les cartes sont visibles ; quatre cellules libres aident aux mouvements."
+pyramid = "Retire les paires dont la somme vaut 13 ; le roi se retire seul."
+
+[seed]
+title = "Nouvelle partie avec graine"
+prompt = "Saisis une graine : un nombre entier de 0 à 18446744073709551615."
+continue = "Continuer"
+back = "Retour"
+keys = "Chiffres Saisir graine   Backspace Effacer   Enter Continuer   Esc Retour"
+error_empty = "Saisis d'abord une graine."
+error_not_numeric = "Une graine est un nombre entier : utilise uniquement les chiffres 0 à 9."
+error_out_of_range = "Cette graine est trop grande. La plus grande graine est 18446744073709551615."
+
+[how_to_play]
+label = "Comment jouer"
+
+[footer]
+open = "Ouvrir"
+play = "Jouer"

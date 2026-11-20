@@ -1,0 +1,54 @@
+# Strings of the cli area.
+
+version = "oXySol {version}"
+version_legal = "Copyright (c) {year} {authors}. Licence {license}."
+help = """
+oXySol: Le solitaire de bureau ultime pour le terminal
+
+Utilisation : oxysol [options]
+
+Options :
+  --version                    afficher la version et la licence, puis quitter
+  --help                       afficher cette aide et quitter
+
+Affichage :
+  --ascii                      dessiner les cartes uniquement avec des caractères ASCII
+  --colors <16|256|truecolor>  profondeur de couleur du terminal
+  --fullscreen                 démarrer en plein écran, quelle que soit la configuration
+  --no-fullscreen              démarrer en mode fenêtre, quelle que soit la configuration
+
+Jeu :
+  --seed <u64>                 choisir directement une partie pour cette graine
+
+Fenêtre :
+  -n, --new-window             ouvrir le jeu dans une nouvelle fenêtre de console et
+                               revenir immédiatement à l'invite de commande
+
+Double-clic ou console :
+  Un double-clic ouvre le jeu dans sa propre fenêtre de console, qui se
+  ferme lorsque le jeu se termine. Lancé depuis une console, le jeu tourne
+  dans celle-ci, sauf si --new-window est spécifié. En cas d'erreur au
+  démarrage, la fenêtre attend l'appui sur Enter.
+
+Plein écran :
+  Le paramètre Plein écran (Auto, Oui, Non) se trouve dans les Paramètres.
+  Auto active le plein écran uniquement dans une fenêtre ouverte par le
+  jeu lui-même. Une console Windows classique est basculée par le jeu ;
+  ailleurs, appuie sur Alt+Enter ou F11 (Ctrl+Cmd+F sur macOS). Le jeu
+  ne se relance jamais pour cela.
+
+Fichiers :
+  OXYSOL_HOME      dossier pour la base de données et le journal (prioritaire)
+  oxysol.portable  fichier marqueur à côté du programme : les fichiers résident
+                   alors dans un dossier data à cet emplacement
+  OXYSOL_LOG       niveau de journalisation : error, warn, info, debug ou trace
+"""
+usage_error = "oxysol : {error}\nEssaie `oxysol --help` pour voir la liste des options."
+paths_failed = "oXySol ne trouve aucun dossier pour ses fichiers. Définis OXYSOL_HOME sur un dossier accessible en écriture."
+storage_failed = "oXySol ne peut pas ouvrir sa base de données. Les détails se trouvent dans le fichier journal."
+terminal_failed = "oXySol s'est arrêté suite à une erreur du terminal. Les détails se trouvent dans le fichier journal."
+output_failed = "oXySol ne peut pas écrire dans le terminal."
+new_window_failed = "oXySol ne peut pas ouvrir une nouvelle fenêtre de console (tentatives : {tried}). Lance-le sans --new-window."
+log_unavailable = "oXySol ne peut pas écrire dans son fichier journal {path}. Il continue sans journal."
+panic = "oXySol s'est arrêté de façon inattendue à {location}. Les détails se trouvent dans {path}."
+press_enter = "Appuie sur Enter pour fermer cette fenêtre."
