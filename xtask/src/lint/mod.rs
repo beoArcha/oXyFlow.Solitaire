@@ -2,6 +2,7 @@
 //! `lint-exceptions.toml` and prints the result.
 
 pub mod comments;
+pub mod conflict_markers;
 pub mod err_arms;
 pub mod err_types;
 pub mod loc;
@@ -10,6 +11,7 @@ pub mod nesting;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 use crate::error::XtaskError;
 
@@ -55,6 +57,9 @@ pub fn run(root: &Path) -> Result<(), XtaskError> {
         for rule in RULES {
             findings.extend(rule(&file));
         }
+    }
+    for file in collect_tracked_texts(root)? {
+        findings.extend(conflict_markers::check(&file));
     }
     findings.retain(|finding| !is_excepted(finding, &exceptions));
     for finding in &findings {
@@ -149,6 +154,55 @@ fn collect_sources(root: &Path) -> Result<Vec<SourceFile>, XtaskError> {
     }
     paths.sort();
     paths.iter().map(|path| read_source(root, path)).collect()
+}
+
+fn collect_tracked_texts(root: &Path) -> Result<Vec<SourceFile>, XtaskError> {
+    let output = Command::new("git")
+        .args(["ls-files", "-z"])
+        .current_dir(root)
+        .output()
+        .map_err(|source| XtaskError::Spawn {
+            program: "git".to_owned(),
+            source,
+        })?;
+    if !output.status.success() {
+        return Err(XtaskError::StepFailed {
+            step: "lint",
+            code: output.status.code(),
+        });
+    }
+    let mut files = Vec::new();
+    for name in output
+        .stdout
+        .split(|byte| *byte == 0)
+        .filter(|name| !name.is_empty())
+    {
+        let relative = PathBuf::from(String::from_utf8_lossy(name).into_owned());
+        if let Some(file) = read_text(root, relative)? {
+            files.push(file);
+        }
+    }
+    Ok(files)
+}
+
+/// Reads a tracked file as text. Binary files (a NUL byte or invalid UTF-8, such as the fonts) are
+/// skipped, not reported: they are not text and cannot hold a conflict marker line.
+fn read_text(root: &Path, relative: PathBuf) -> Result<Option<SourceFile>, XtaskError> {
+    let path = root.join(&relative);
+    let bytes = fs::read(&path).map_err(|source| XtaskError::Io {
+        path: path.clone(),
+        source,
+    })?;
+    if bytes.contains(&0) {
+        return Ok(None);
+    }
+    match String::from_utf8(bytes) {
+        Ok(text) => Ok(Some(SourceFile {
+            path: relative,
+            text,
+        })),
+        Err(_) => Ok(None),
+    }
 }
 
 fn source_roots(root: &Path) -> Result<Vec<PathBuf>, XtaskError> {

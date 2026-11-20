@@ -45,12 +45,35 @@ pub(super) fn bare(line: &str) -> &str {
     line.trim_end().trim_end_matches(['►', '>']).trim_end()
 }
 
-/// Position of Settings in the main menu without a saved game.
-const SETTINGS_ITEM: usize = 3;
+/// The most main menu rows that are looked through for the Settings item.
+const MAX_MENU_STEPS: usize = 32;
+
+/// Position of Settings in the main menu without a saved game, found by its focus mark.
+fn settings_menu_index() -> usize {
+    let mut h = Harness::new();
+    let mark = format!("► {}", t("common.menu.settings"));
+    (0..MAX_MENU_STEPS)
+        .find(|_| {
+            let shown = h.lines().iter().any(|line| line.contains(&mark));
+            if !shown {
+                h.press(KeyCode::Down);
+            }
+            shown
+        })
+        .unwrap_or_default()
+}
+
+/// Position of a row in the settings list, in the order of `FIELDS`.
+fn index_of(field: Field) -> usize {
+    FIELDS
+        .iter()
+        .position(|row| *row == field)
+        .unwrap_or_default()
+}
 
 fn open_settings() -> Harness {
     let mut h = Harness::new();
-    move_down(&mut h, SETTINGS_ITEM);
+    move_down(&mut h, settings_menu_index());
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h
@@ -237,8 +260,7 @@ fn left_and_right_step_the_focused_row() {
 #[test]
 fn volume_is_adjusted_with_the_arrows_and_clamped() {
     let mut h = open_settings();
-    let volume = FIELDS.iter().position(|field| *field == Field::Volume);
-    move_down(&mut h, volume.unwrap_or_default());
+    move_down(&mut h, index_of(Field::Volume));
     for _ in 0..10 {
         h.press(KeyCode::Left);
     }
@@ -253,7 +275,7 @@ fn volume_is_adjusted_with_the_arrows_and_clamped() {
 #[test]
 fn a_theme_change_is_shown_at_once() {
     let mut h = open_settings();
-    move_down(&mut h, 1);
+    move_down(&mut h, index_of(Field::Theme));
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
     assert!(bare(&line_of(&mut h, "Theme")).ends_with("Light"));
@@ -281,7 +303,7 @@ fn the_focused_row_is_marked_without_color() {
     let mut h = open_settings();
     assert!(h.text().contains("► Language"));
     let mut ascii = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
-    move_down(&mut ascii, SETTINGS_ITEM);
+    move_down(&mut ascii, settings_menu_index());
     ascii.press(KeyCode::Enter);
     let text = ascii.text();
     assert!(text.contains("> Language"));
@@ -300,7 +322,7 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
         Some(&Modal::alert("common.error.settings_load"))
     );
     h.press(KeyCode::Enter);
-    move_down(&mut h, SETTINGS_ITEM);
+    move_down(&mut h, settings_menu_index());
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Enter);
@@ -309,7 +331,7 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Enter);
     assert!(h.app.modal().is_none());
-    h.press(KeyCode::Down);
+    move_down(&mut h, index_of(Field::Theme));
     h.press(KeyCode::Enter);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
     assert!(h.app.modal().is_none());
@@ -345,7 +367,7 @@ fn the_row_text_uses_the_line_format() {
 fn the_focused_row_is_explained_in_the_description_line() {
     let mut h = open_settings();
     assert!(h.text().contains(&*t("settings.desc.language")));
-    move_down(&mut h, 1);
+    move_down(&mut h, index_of(Field::Theme));
     assert!(h.text().contains(&*t("settings.desc.theme")));
     assert!(!h.text().contains(&*t("settings.desc.language")));
 }

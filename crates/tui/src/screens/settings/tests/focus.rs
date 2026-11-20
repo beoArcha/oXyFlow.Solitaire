@@ -2,17 +2,16 @@
 
 use ratatui::crossterm::event::KeyCode;
 
+use super::{index_of, settings_menu_index};
 use crate::app::Screen;
 use crate::i18n::t;
 use crate::screens::focus::marked_text;
-use crate::screens::settings::options::FIELDS;
+use crate::screens::settings::options::{FIELDS, Field};
 use crate::test_support::Harness;
-
-const SETTINGS_ITEM: usize = 3;
 
 fn open() -> Harness {
     let mut h = Harness::new();
-    for _ in 0..SETTINGS_ITEM {
+    for _ in 0..settings_menu_index() {
         h.press(KeyCode::Tab);
     }
     h.press(KeyCode::Enter);
@@ -61,11 +60,14 @@ fn shift_tab_from_the_first_row_wraps_to_the_last() {
 #[test]
 fn space_changes_the_focused_row_forward_like_enter() {
     let mut h = open();
-    h.press(KeyCode::Tab);
+    let theme = index_of(Field::Theme);
+    for _ in 0..theme {
+        h.press(KeyCode::Tab);
+    }
     let before = h.app.settings().theme;
     h.type_char(' ');
     assert_ne!(h.app.settings().theme, before);
-    assert!(is_row(focused(&mut h), 1));
+    assert!(is_row(focused(&mut h), theme));
 }
 
 #[test]
