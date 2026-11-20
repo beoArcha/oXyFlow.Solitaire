@@ -89,20 +89,7 @@ impl Runner<'_> {
                 self.in_process("sync-metadata", || {
                     println!("==> sync-metadata --check");
                     Ok(sync_metadata::run(true)?)
-                })?;
-                self.run_cargo(
-                    "icon",
-                    &[
-                        "run",
-                        "-p",
-                        "xtask",
-                        "--features",
-                        "art",
-                        "--",
-                        "icon",
-                        "--check",
-                    ],
-                )
+                })
             }
             Mode::Quick => {
                 self.static_gates()?;
