@@ -11,8 +11,15 @@ German texts in oXySol must use this glossary for consistency.
 | free cell | Freie Zelle | Reservierte Ablagezelle in FreeCell |
 | run | Folge | Zusammenhängende Kartenfolge |
 | run size | Folgenlänge | Anzahl der zusammen bewegten Karten |
-| restart (a game) | neu starten | Neustart (Header: `Neustarts: N`, Button: `Neu starten`) |
+| restart (a game) | neu starten | Neustart (Header: `Neustarts: N`, Spaltenkopf: `Neust.`, Button: `Neu starten`) |
 | win without a restart | ohne Neustart | Statistik-Spalte: `Ohne Neustart` |
+| best time | Bestzeit | Statistik-Spalte: `Bestzeit` |
+| fewest moves | Min. Züge | Statistik-Spalte, Kurzform wegen der Breite (100 Spalten) |
+| without undo | ohne Rückg. | Kopfzeile des Spiels: `Ohne Rückg.` (Statistik: `ohne Rückgängig`) |
+| unknown (solvable?) | unklar | Lösbarkeit nicht geprüft oder nicht entscheidbar: `Lösbar: unklar`; Legende `? unklar` |
+| not checked | ungeprüft | Lösbarkeit nicht geprüft: `· ungeprüft` |
+| Page Up / Page Down | Bild | Kurzform in Fußzeilen: `Hoch/Runter/Bild: Scrollen` |
+| rejected move | Ungültiger Zug: … | Präfix aller `board.error.*`; ganze Meldung höchstens 40 Zeichen (Zeile „Jetzt“) |
 | hints and help | Hinweise und Hilfe | Gruppe in Einstellungen |
 | target marks | Zielmarkierungen | Markierungen möglicher Ablageorte |
 | quick options | Schnelloptionen | Optionen-Panel im Spiel |

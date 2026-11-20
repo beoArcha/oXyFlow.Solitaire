@@ -26,8 +26,8 @@ played = "Gespielt"
 won = "Gewonnen"
 clean = "Ohne Neustart"
 rate = "Gewinnquote"
-best_time = "Beste Zeit"
-fewest_moves = "Wenigste Züge"
+best_time = "Bestzeit"
+fewest_moves = "Min. Züge"
 streak = "Serie"
 longest = "Beste Serie"
 
@@ -39,20 +39,20 @@ seed = "Seed"
 outcome = "Ergebnis"
 time = "Zeit"
 moves = "Züge"
-restarts = "Neustarts"
+restarts = "Neust."
 winnable = "Lösbar"
 winnable_short = "?"
 
 [legend]
 winnable = "lösbar"
 unwinnable = "nicht lösbar"
-unknown = "unbekannt"
-unchecked = "nicht geprüft"
+unknown = "unklar"
+unchecked = "ungeprüft"
 
 [winnable]
 yes = "ja"
 no = "nein"
-unknown = "unbekannt"
+unknown = "unklar"
 unchecked = "-"
 
 [button]
