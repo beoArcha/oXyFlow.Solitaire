@@ -114,6 +114,22 @@ Order of work: the Interface options first, then the card style and the games, w
   and slowest time); every "winnable" replays on the engine; no "unwinnable" without an exhausted search; the 1-suit row
   does not get worse.
 
+### P5-06 — New game from seed: game first, then a seed from played games, random replay, five difficulty levels
+
+- **Owner:** Sonnet
+- **Depends on:** P4-09, P2-08
+- **Files:** the new-game-from-seed screen under `crates/tui/src/screens/**`, `crates/core` (curated seed table per
+  game, if stored there), `locales/*` (all nine), tests, `docs/tech/architecture.md` (screen flow)
+- **Scope:** owner request 2026-11-20. Today "New game from seed" asks for a number first.
+  - Flow: choose the game (and variant) first, then the seed.
+  - The seed screen offers: type a seed (as today); pick one from the seeds already played in that game (from the
+    history, newest first, with result and time); "random replay" that picks one of the played seeds at random.
+  - Five difficulty levels with four curated seeds each, per game and variant: very easy, easy, medium, hard,
+    very hard. Difficulty comes from solver metrics (e.g. solution length, branching, number of solver nodes) and is
+    computed offline by an `xtask` step that writes the table; every curated seed is proven winnable.
+- **Acceptance:** keyboard and mouse tests for the flow; the curated table has 4 × 5 seeds for every game variant
+  with a proof of winnability; the levels are ordered by the chosen metric (documented in the card's PR).
+
 ## Done before the 2026-11 replan
 
 ### X-01 — Spike: card font in real terminals

@@ -19,6 +19,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** repository settings only
 - **Scope:** S1 (P1): branch protection on `main` requires branches to be up to date before merging; enable auto-merge so a PR merges itself once green. Land first: every later PR is then tested against the latest `main`.
 - **Acceptance:** The setting is visible in Settings → Branches; an out-of-date PR cannot merge until updated.
+- **Done:** owner, 2026-11-20 (up-to-date branches, auto-merge, `check-windows`, `deny` and `site` required; Immutable releases on; one deploy key)
 
 ### O-51 — `check --quick` runs every test target in one cargo call
 
@@ -171,6 +172,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Files:** as named in the review (B9, C7, F4, F5)
 - **Scope:** P3 items of `docs/tech/workflow-review-2026-11.md`, one PR each.
 - **Acceptance:** Each item as in the review.
+- **Progress:** B9, C7 and F5 done in #165 (manual `site.yml`); F4 (xtask compiles the TUI before the first gate) open
 
 ### O-37 — Mouse path for Pause and Possible moves on every screen width
 
@@ -284,6 +286,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** a results table with screenshots in the form of X-01 section 4, this time with the Windows
   Terminal version, Windows build, display scale, font size and launch method written down; the hint is
   confirmed or corrected; Windows Terminal is marked tested or documented-only in `decisions.md` D-06.
+- **Done:** owner, 2026-11-20 (oXySol Mono in Windows Terminal: menu, language list and statistics render correctly)
 
 ### U-02 — Artwork review
 
@@ -423,6 +426,39 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** engine tests on scripted deals (legal and illegal moves, a face-down card turned over, the
   foundations); the same seed gives the same deal; the variant is stored and read back by the storage; the menu entry
   and the rules tab in both locales; the architecture games list updated in the same PR.
+
+### P4-11 — Language selector: stray glyph, reachable with Up, Tab hint in the footer
+
+- **Owner:** Haiku
+- **Depends on:** P3-37
+- **Files:** the main menu and language selector code under `crates/tui/src/screens/main_menu*`, the main menu footer, `locales/*/menu.toml` (all nine), tests
+- **Scope:** owner finding 2026-11-20 (Windows Terminal, oXySol Mono):
+  - With the drop-down list open, a stray `◄` is drawn left of the flag in the top-left corner, in addition to the
+    selector's own `◄ flag ► ▼`; remove the extra glyph.
+  - The selector cannot be reached with Up from the first menu row; Up on the first row (or on "Wznów") moves the
+    focus to the language selector, and Down from the selector returns to the menu (wrap rules stay as they are
+    otherwise).
+  - The main menu footer does not say that Tab moves between the menu and the language selector; add a `Tab` entry
+    (e.g. "Tab Język" / "Tab Language") following the footer's drop priorities.
+- **Acceptance:** a render test with the list open shows no extra `◄`; key tests for Up to the selector and Down
+  back; the footer shows the Tab entry at 100 × 30 in every offered locale.
+
+### P4-12 — Statistics: a clear winnable column and a check for unchecked deals
+
+- **Owner:** Haiku
+- **Depends on:** P4-04, P2-08
+- **Files:** `crates/tui/src/screens/stats/**`, `locales/*/stats.toml` (all nine), tests; the solver call goes through
+  `Session`/core APIs only
+- **Scope:** owner finding 2026-11-20: the history table's winnable column has only a `?` header, and almost every
+  game shows `·` (not checked), so the player cannot see whether a deal was winnable.
+  - Give the column a readable header (e.g. "Do wygr." / "Winnable") and keep the legend line visible below the table
+    at every supported height.
+  - Add an action on the statistics screen (key and mouse button, e.g. `w: check winnable`) that runs the solver for
+    the selected game, or for all unchecked games in the background with a visible progress and a time limit per deal,
+    and stores the result like the winnable-deals option does (T-29). Results: ✓ winnable, ✗ not winnable,
+    ? unknown (limit reached).
+- **Acceptance:** tests for the header and legend at 100 × 30; a test that the action turns `·` into ✓/✗/? for a known
+  seed; the UI stays responsive while checking (background or step-wise).
 
 ## Done before the 2026-11 replan
 
