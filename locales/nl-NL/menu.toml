@@ -25,6 +25,7 @@ klondike = "Bouw de basis op per kleur vanaf azen; de stapel vult de kolommen aa
 spider = "Bouw acht reeksen van koning tot aas, elk in één kleur."
 freecell = "Alle kaarten liggen open; vier vrije cellen helpen bij het verplaatsen."
 pyramid = "Verwijder paren die samen 13 vormen; een koning telt alleen."
+yukon = "Elke open kaart verhuist met alle kaarten erop; er is geen stapel."
 
 
 [seed]
@@ -50,6 +51,7 @@ klondike = "Klondike-familie"
 spider = "Spider-familie"
 free_cell = "FreeCell-familie"
 pyramid = "Piramide-familie"
+yukon = "Yukon-familie"
 
 [search]
 label = "Zoeken"

@@ -2,6 +2,7 @@
 
 use std::time::Duration;
 
+use oxysol_core::solver::has_model;
 use oxysol_core::{Session, Variant};
 
 use super::deals::Origin;
@@ -140,7 +141,9 @@ impl App {
     fn start_game(&mut self, variant: Variant, seed: Option<u64>, undo_allowed: bool) {
         match seed {
             Some(seed) => self.begin_game(variant, seed, undo_allowed, Origin::Chosen),
-            None if self.settings.winnable_only => self.begin_search(variant, undo_allowed),
+            None if self.settings.winnable_only && has_model(variant) => {
+                self.begin_search(variant, undo_allowed);
+            }
             None => {
                 let seed = (self.seeds)();
                 self.begin_game(variant, seed, undo_allowed, Origin::Fresh);
@@ -173,6 +176,7 @@ impl App {
         self.note_write(recorded.map(drop), "the new game could not be recorded");
         match origin {
             Origin::Fresh => {}
+            Origin::Chosen if !has_model(variant) => {}
             Origin::Searched(proof) => {
                 self.board.set_deal(DealCheck::Known(proof));
                 if proof == Proof::Winnable {

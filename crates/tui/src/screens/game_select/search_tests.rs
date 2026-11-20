@@ -34,7 +34,11 @@ fn shown(h: &mut Harness) -> Vec<Variant> {
 }
 
 fn focused_label(h: &mut Harness) -> Option<String> {
-    marked_text(&h.lines(), "►").and_then(|text| text.splitn(3, ' ').nth(2).map(str::to_owned))
+    marked_text(&h.lines(), "►").and_then(|text| {
+        text.splitn(3, ' ')
+            .nth(2)
+            .map(|label| label.trim_start().to_owned())
+    })
 }
 
 fn first_word(variant: Variant) -> String {
@@ -187,9 +191,9 @@ fn a_click_on_the_field_opens_the_search_and_a_click_on_a_match_starts_it() {
     let target = Variant::ALL[Variant::ALL.len() - 1];
     type_text(&mut h, &label_of(target));
     let (column, row) = h
-        .find(&format!("★ {}", label_of(target)))
+        .find(&format!("·   {}", label_of(target)))
         .unwrap_or_default();
-    h.click(column + 2, row);
+    h.click(column + 4, row);
     assert_eq!(h.app.screen(), Screen::Board);
     assert_eq!(h.app.board().session().map(|s| s.variant()), Some(target));
 }
@@ -201,9 +205,9 @@ fn a_favourite_set_by_click_inside_a_search_keeps_the_filter_and_the_focus() {
     let target = Variant::ALL[Variant::ALL.len() - 1];
     type_text(&mut h, &label_of(target));
     let (column, row) = h
-        .find(&format!("★ {}", label_of(target)))
+        .find(&format!("·   {}", label_of(target)))
         .unwrap_or_default();
-    h.click(column, row);
+    h.click(column + 2, row);
     assert_eq!(h.app.screen(), Screen::GameSelect);
     assert_eq!(h.app.settings().favourites, vec![target]);
     assert_eq!(shown(&mut h), vec![target]);

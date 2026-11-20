@@ -17,6 +17,7 @@ undo_hint = "{key} of een klik schakelt ongedaan maken in of uit voor het volgen
 winnable = "[ Alleen winbare spellen: {state} ]"
 winnable_hint = "Een nieuw spel zoekt naar een bewijsbaar winbaar spel; een getypte seed wordt direct gedeeld"
 slow_search = "{variant}  (het zoeken kan lang duren)"
+no_search = "{variant}  (nog geen zoekfunctie: willekeurig spel)"
 
 [variant]
 klondike_one = "Klondike, 1 kaart"
@@ -27,6 +28,7 @@ spider_four = "Spider, 4 kleuren"
 free_cell = "FreeCell"
 pyramid_relaxed = "Piramide, ontspannen"
 pyramid_classic = "Piramide, klassiek"
+yukon_classic = "Yukon"
 
 [settings]
 title = "Instellingen"

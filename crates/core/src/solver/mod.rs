@@ -8,6 +8,9 @@
 //! the answer is `Unknown`. The solver sees the whole deal, face-down cards and stock order
 //! included, so it decides whether the deal as dealt can be won (the "thoroughly solvable"
 //! notion of the Klondike literature), not whether a player without that knowledge could win it.
+//!
+//! A game without a model ([`has_model`] is false: the Yukon family until P4-10f) answers
+//! `Unknown` for every deal at once, with no nodes spent.
 
 mod face;
 mod freecell;
@@ -52,8 +55,15 @@ impl SolveBudget {
             Variant::FreeCell => DEFAULT_FREECELL_NODES,
             Variant::Spider(_) => DEFAULT_SPIDER_NODES,
             Variant::Pyramid(_) => DEFAULT_PYRAMID_NODES,
+            Variant::Yukon(_) => 0,
         })
     }
+}
+
+/// Whether the solver has a model of `variant`. Without one, [`solve`] answers `Unknown` at once,
+/// so a search for a winnable deal of that variant cannot succeed.
+pub const fn has_model(variant: Variant) -> bool {
+    !matches!(variant, Variant::Yukon(_))
 }
 
 pub const DEFAULT_KLONDIKE_NODES: u64 = 100_000;
@@ -118,6 +128,7 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
                 None => unknown(),
             }
         }
+        Variant::Yukon(_) => unknown(),
     }
 }
 

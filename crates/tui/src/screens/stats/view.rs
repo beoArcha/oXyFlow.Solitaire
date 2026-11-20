@@ -23,8 +23,8 @@ use crate::widgets::scrollbar::{self, Metrics};
 /// heading and column header, the legend, the buttons, the status line and the key line.
 const FIXED_ROWS: u16 = 9;
 /// History rows that always stay visible. With every game in both undo modes the summary needs
-/// 17 rows (header and 16 groups), which leaves exactly this many at the minimum height of 30.
-const MIN_LIST_ROWS: u16 = 4;
+/// 19 rows (header and 18 groups), which leaves exactly this many at the minimum height of 30.
+const MIN_LIST_ROWS: u16 = 2;
 const BUTTON_GAP: u16 = 2;
 const MARKER_COLUMNS: u16 = 4;
 

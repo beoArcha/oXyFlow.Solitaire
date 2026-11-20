@@ -130,9 +130,12 @@ fn left_and_right_switch_between_the_games() {
     h.press(KeyCode::Right);
     assert!(h.text().contains("[Pyramid]"));
     h.press(KeyCode::Right);
+    assert!(h.text().contains("[Yukon]"));
+    assert!(h.text().contains("no redeal"));
+    h.press(KeyCode::Right);
     assert!(h.text().contains("[Klondike]"));
     h.press(KeyCode::Left);
-    assert!(h.text().contains("[Pyramid]"));
+    assert!(h.text().contains("[Yukon]"));
 }
 
 #[test]

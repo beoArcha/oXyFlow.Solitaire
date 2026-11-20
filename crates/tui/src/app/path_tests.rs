@@ -26,14 +26,17 @@ fn click_text(h: &mut Harness, needle: &str) {
     h.click(column, row);
 }
 
-/// Clicks the name of a variant in the game list. The name is found after the star of its row,
-/// because a family heading can contain the same word.
+/// Clicks the name of a variant in the game list. The name is found after the marks of its row
+/// (the favourite mark, then the star or a blank), because a family heading can contain the same
+/// word.
 fn click_variant(h: &mut Harness, variant: Variant) {
     let label = t(variant_label_key(variant));
-    let found = h.find(&format!("★ {label}"));
+    let found = [format!("· ★ {label}"), format!("·   {label}")]
+        .iter()
+        .find_map(|needle| h.find(needle));
     assert!(found.is_some(), "{label} is not drawn: {}", h.text());
     let (column, row) = found.unwrap_or_default();
-    h.click(column + 2, row);
+    h.click(column + 4, row);
 }
 
 fn board_variant(h: &Harness) -> Option<Variant> {

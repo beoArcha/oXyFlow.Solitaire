@@ -217,6 +217,17 @@ fn the_worst_spider_column_keeps_every_rank_at_the_minimum_size() {
 }
 
 #[test]
+fn the_tallest_yukon_column_keeps_every_rank_at_the_minimum_size() {
+    let variant = Variant::Yukon(oxysol_core::YukonRules::Classic);
+    let piles = with_cards(deal(variant, 9).piles(), PileRef::Tableau(6), column(6, 18));
+    let geometry = check(variant, &piles, SMALL, "tallest yukon column");
+    assert_eq!(
+        geometry.pile(PileRef::Tableau(6)).map(|p| p.collapsed),
+        Some(6)
+    );
+}
+
+#[test]
 fn an_absurd_column_still_fits_and_keeps_its_top_cards() {
     let variant = Variant::Spider(SuitCount::One);
     let piles = with_cards(deal(variant, 9).piles(), PileRef::Tableau(3), column(5, 60));

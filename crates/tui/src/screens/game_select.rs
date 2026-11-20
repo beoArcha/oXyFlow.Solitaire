@@ -20,6 +20,7 @@ use crate::settings::Settings;
 use crate::solver::slow_to_prove;
 use crate::widgets::footer::{FooterMap, KeyHint};
 use oxysol_core::Variant;
+use oxysol_core::solver::has_model;
 
 mod catalog;
 mod draw;
@@ -61,9 +62,15 @@ pub struct GameSelect {
     footer: FooterMap,
 }
 
+/// The name of `variant` in the list. With winnable deals on, it also says when the search can
+/// take long, or that the game has no search yet and deals a random game.
 fn label_of(variant: Variant, ctx: &ViewCtx<'_>) -> String {
     let name = t(variant_label_key(variant));
-    if ctx.settings.winnable_only && slow_to_prove(variant) {
+    if !ctx.settings.winnable_only {
+        name.into_owned()
+    } else if !has_model(variant) {
+        tf("common.select.no_search", &[("variant", &name)])
+    } else if slow_to_prove(variant) {
         tf("common.select.slow_search", &[("variant", &name)])
     } else {
         name.into_owned()
