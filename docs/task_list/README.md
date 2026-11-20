@@ -242,6 +242,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-15 | `--new-window` flag and the command-line options in Help | not recorded (follow-up) | O-05, O-14 | DONE |
 | O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | not recorded (follow-up) | O-15 | DONE |
 | P4-11 | Language selector: stray glyph, reachable with Up, Tab hint in the footer | Haiku | P3-37 | DONE |
+| P4-13 | Process priority: `--priority` flag, Settings row, solver threads below the UI thread | Sonnet | P3-29 | TODO |
 | P4-12 | Statistics: a clear winnable column and a check for unchecked deals | Haiku | P4-04, P2-08 | DONE |
 ### Phase 5 (0.5.x) — Themes, colour vision, Spanish cards, Golf
 
