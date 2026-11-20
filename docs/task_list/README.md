@@ -223,7 +223,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-35 | Release archives carry the font licence (OFL) | Haiku | P5-01 (the font, `assets/fonts/OFL.txt` and `assets/fonts/NOTICE.md` exist) | DONE |
 | P5-02 | Style-driven cards and graphics check | Haiku | P5-01, P3-05; the `Console` trait of P3-16 in `oxysol` (`src/`), which reads and sets the | DONE |
 | O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | DONE |
-| U-02 | Artwork review | User | P5-02, M-19…M-24 | TODO |
+| U-02 | Artwork review | User | P5-02, M-19…M-24 | DONE |
 | P4-07 | Site: language landing page | Sonnet | O-40, O-62 | DONE |
 | P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | TODO |
 | P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | DONE |
