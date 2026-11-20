@@ -43,6 +43,7 @@ label = "How to play"
 [footer]
 open = "Open"
 play = "Play"
+language = "Language"
 
 [family]
 klondike = "Klondike family"

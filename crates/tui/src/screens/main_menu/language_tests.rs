@@ -30,7 +30,11 @@ fn english() -> Harness {
 
 fn focus_selector(h: &mut Harness) {
     h.press(KeyCode::BackTab);
-    assert!(h.lines()[1].contains("►◄") || h.lines()[1].contains("><"));
+    assert!(
+        Locale::offered()
+            .iter()
+            .any(|loc| h.text().contains(loc.own_name()))
+    );
 }
 
 fn hover(h: &mut Harness, column: u16, row: u16) {
@@ -79,7 +83,7 @@ fn the_corner_shows_the_flag_between_arrows_with_the_code_below() {
     let lines = h.lines();
     assert!(lines[1].trim_start().starts_with(FLAG_ROW), "{}", lines[1]);
     assert!(lines[2].contains("▀▀▀▀ EN"), "{}", lines[2]);
-    assert!(lines[1].starts_with("  ◄"));
+    assert!(lines[1].starts_with(" ◄"));
 }
 
 #[test]
@@ -132,7 +136,7 @@ fn the_open_list_fits_at_both_reference_sizes_in_both_locales() {
         for locale in Locale::offered() {
             let mut h = harness(locale, TRUE_COLOR, width, height);
             focus_selector(&mut h);
-            h.press(KeyCode::Down);
+            h.press(KeyCode::Enter);
             let text = h.text();
             assert!(text.contains("English (US)"), "{width}x{height} {locale:?}");
             assert!(text.contains("Polski"));
@@ -172,8 +176,8 @@ fn the_selector_shares_the_language_row_of_the_settings() {
 }
 
 #[test]
-fn the_list_opens_with_down_enter_and_space_and_chooses_with_enter() {
-    for key in [KeyCode::Down, KeyCode::Enter, KeyCode::Char(' ')] {
+fn the_list_opens_with_enter_and_space_and_chooses_with_enter() {
+    for key in [KeyCode::Enter, KeyCode::Char(' ')] {
         let mut h = english();
         focus_selector(&mut h);
         h.press(key);
@@ -185,6 +189,14 @@ fn the_list_opens_with_down_enter_and_space_and_chooses_with_enter() {
         assert_eq!(stored(&h), Some(Locale::PlPl));
         assert!(!h.text().contains("English (US)"));
     }
+}
+
+#[test]
+fn down_from_the_selector_returns_to_the_menu() {
+    let mut h = english();
+    focus_selector(&mut h);
+    h.press(KeyCode::Down);
+    assert!(h.text().contains("► New game"));
 }
 
 #[test]
@@ -307,7 +319,8 @@ fn the_selector_is_first_in_the_tab_order_before_the_items() {
     let mut h = english();
     h.press(KeyCode::BackTab);
     let lines = h.lines();
-    assert!(lines[1].contains("►◄"), "{}", lines[1]);
+    assert!(lines[1].contains("◄ ▀▀▀▀ ► ▼"), "{}", lines[1]);
+    assert!(!lines[1].contains("►◄"));
     assert!(lines[4..].iter().all(|line| !line.contains('►')));
     h.press(KeyCode::Tab);
     let text = h.text();
@@ -322,7 +335,7 @@ fn the_tab_ring_wraps_between_the_last_item_the_selector_and_the_first_item() {
     h.press(KeyCode::BackTab);
     assert!(h.text().contains("► Quit"));
     h.press(KeyCode::Tab);
-    assert!(h.lines()[1].contains("►◄"));
+    assert!(h.text().contains("English (US)"));
     h.press(KeyCode::Tab);
     assert!(h.text().contains("► New game"));
 }
@@ -350,7 +363,7 @@ fn a_click_on_the_flag_gives_the_selector_the_focus() {
     let mut h = english();
     let (column, row) = left_arrow(&mut h);
     h.click(column + 3, row);
-    assert!(h.lines()[1].contains("►◄"));
+    assert!(h.text().contains("English (US)"));
     h.press(KeyCode::Right);
     assert_eq!(locale(&h), Locale::PlPl);
 }
@@ -366,7 +379,7 @@ fn the_code_replaces_the_flag_in_ascii_mode() {
     );
     assert!(!h.text().contains('▀'));
     h.press(KeyCode::BackTab);
-    assert!(h.lines()[1].starts_with(" >< EN > v"));
+    assert!(h.lines()[1].starts_with(" < EN > v"));
     h.press(KeyCode::Right);
     assert!(h.lines()[1].contains("< PL > v"));
     assert_eq!(locale(&h), Locale::PlPl);
@@ -412,6 +425,32 @@ fn the_tooltip_and_arrows_work_without_flags_too() {
     hover(&mut h, 5, 1);
     assert!(h.text().contains("English (US)"));
     hover(&mut h, 60, 20);
-    h.click(7, 1);
+    h.click(6, 1);
     assert_eq!(locale(&h), Locale::PlPl);
+}
+
+#[test]
+fn with_the_list_open_no_extra_left_arrow_is_drawn() {
+    for locale in Locale::offered() {
+        let mut h = harness(locale, TRUE_COLOR, 100, 30);
+        focus_selector(&mut h);
+        h.press(KeyCode::Enter);
+        assert_eq!(h.lines()[1].matches('◄').count(), 1, "{locale:?}");
+        assert!(!h.lines()[1].contains("►◄"), "{locale:?}");
+        assert!(!h.lines()[1].contains("◄◄"), "{locale:?}");
+    }
+}
+
+#[test]
+fn the_footer_shows_the_tab_entry_at_100x30_in_every_offered_locale() {
+    for locale in Locale::offered() {
+        let mut h = harness(locale, TRUE_COLOR, 100, 30);
+        let footer_line = h.lines().last().cloned().unwrap_or_default();
+        let expected_key = crate::i18n::t("menu.footer.language");
+        let expected = format!("Tab {expected_key}");
+        assert!(
+            footer_line.contains(&expected),
+            "footer in {locale:?} should contain {expected:?}, got: {footer_line:?}"
+        );
+    }
 }
