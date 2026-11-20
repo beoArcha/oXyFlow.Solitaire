@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 
+use crate::check_result::CheckResultError;
 use crate::fonts::FontsError;
 use crate::icon::IconError;
 use crate::midi::MidiError;
@@ -23,6 +24,12 @@ pub enum XtaskError {
     },
     #[error("cannot start `{program}`")]
     Spawn {
+        program: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("cannot wait for `{program}`")]
+    Wait {
         program: String,
         #[source]
         source: std::io::Error,
@@ -62,4 +69,6 @@ pub enum XtaskError {
     Fonts(#[from] FontsError),
     #[error(transparent)]
     Screenshots(#[from] ScreenshotError),
+    #[error(transparent)]
+    CheckResult(#[from] CheckResultError),
 }
