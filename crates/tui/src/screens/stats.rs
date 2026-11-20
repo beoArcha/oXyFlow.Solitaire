@@ -1,12 +1,18 @@
 //! The statistics screen: a summary per variant and the list of played games, newest first.
-//! Enter replays the seed of the selected game, `c` copies it; both are also buttons. Tab moves the
-//! focus through the list and then the buttons, wrapping. The screen never reads storage itself:
-//! `App` hands it the history when the screen opens and tells it how a copy ended.
+//! Enter replays the seed of the selected game, `c` copies it, `w` checks whether it was winnable
+//! and `W` checks every unchecked game; all of them are buttons too. Tab moves the focus through
+//! the list and then the buttons, wrapping. The screen never reads storage or the solver itself:
+//! `App` hands it the history when the screen opens, submits the checks it asks for and reports the
+//! answers and how a copy ended.
 
+mod check;
 mod format;
 mod list;
+mod status;
 mod summary;
 mod view;
+
+pub use self::check::Target;
 
 #[cfg(test)]
 mod tests;
@@ -14,6 +20,7 @@ mod tests;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use ratatui::layout::Rect;
 
+use self::check::Run;
 use self::list::ListState;
 use self::summary::{Summary, has_several_modes, summarize};
 use super::Effect;
@@ -29,6 +36,8 @@ use crate::widgets::scrollbar::{self, Metrics};
 enum Button {
     Replay,
     Copy,
+    Check,
+    CheckAll,
     Back,
 }
 
@@ -45,6 +54,9 @@ enum Stop {
 enum Notice {
     Copied(u64),
     CopyFailed(u64),
+    AlreadyChecked,
+    NothingToCheck,
+    Finished(usize),
 }
 
 /// State of the statistics screen.
@@ -56,6 +68,7 @@ pub struct StatsScreen {
     list: ListState,
     load_failed: bool,
     notice: Option<Notice>,
+    run: Option<Run>,
     stop: Stop,
     buttons: Vec<(Button, Rect)>,
     rows: Vec<(usize, Rect)>,
@@ -80,6 +93,7 @@ impl StatsScreen {
         self.stop = Stop::List;
         self.load_failed = false;
         self.notice = None;
+        self.run = None;
         self.drag = None;
         self.track = Rect::default();
     }
@@ -118,11 +132,16 @@ impl StatsScreen {
             .map_or(Effect::None, |record| Effect::CopySeed(record.seed))
     }
 
-    /// The buttons in the order Tab visits them: Replay and Copy only when a game can be acted on.
+    /// The buttons in the order Tab visits them: the game buttons only when a game can be acted on.
     fn visible_buttons(&self) -> Vec<Button> {
-        let mut buttons = Vec::with_capacity(3);
+        let mut buttons = Vec::with_capacity(5);
         if !self.records.is_empty() {
-            buttons.extend([Button::Replay, Button::Copy]);
+            buttons.extend([
+                Button::Replay,
+                Button::Copy,
+                Button::Check,
+                Button::CheckAll,
+            ]);
         }
         buttons.push(Button::Back);
         buttons
@@ -145,16 +164,18 @@ impl StatsScreen {
         }
     }
 
-    fn press(&self, button: Button) -> Effect {
+    fn press(&mut self, button: Button) -> Effect {
         match button {
             Button::Replay => self.replay(),
             Button::Copy => self.copy(),
+            Button::Check => self.check(false),
+            Button::CheckAll => self.check(true),
             Button::Back => Effect::Goto(Screen::MainMenu),
         }
     }
 
     /// Enter: replays the selected game when the list has the focus, else presses the button.
-    fn activate(&self) -> Effect {
+    fn activate(&mut self) -> Effect {
         match self.stop {
             Stop::List => self.replay(),
             Stop::Button(button) => self.press(button),
@@ -172,7 +193,7 @@ impl StatsScreen {
 
     /// Handles a key press mapped to `action`: Tab and Shift+Tab move the focus, Up and Down (and
     /// Home, End, PgUp, PgDn) move through the list, Enter activates the focused element, `c`
-    /// copies the seed, Esc goes back.
+    /// copies the seed, `w` and `W` check winnability, Esc goes back.
     pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
         if let Some(forward) = action.and_then(tab_forward) {
             self.step_focus(forward);
@@ -189,6 +210,12 @@ impl StatsScreen {
             (_, KeyCode::End) => self.move_selection(|list, len| list.select(len, len)),
             (_, KeyCode::Char('c' | 'C')) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
                 return self.copy();
+            }
+            (_, KeyCode::Char('w')) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
+                return self.check(false);
+            }
+            (_, KeyCode::Char('W')) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
+                return self.check(true);
             }
             _ => {}
         }

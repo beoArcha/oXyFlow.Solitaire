@@ -41,7 +41,7 @@ time = "Temps"
 moves = "Coups"
 restarts = "Repris"
 winnable = "Gagnable"
-winnable_short = "?"
+winnable_short = "Gagn?"
 
 [legend]
 winnable = "gagnable"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Rejouer cette graine"
 copy = "Copier la graine"
 back = "Retour"
+check = "Vérifier"
+check_all = "Tout vérifier"
+
+[check]
+hint = "w : vérifier cette partie   W : tout vérifier"
+running = "Vérification : {done} sur {total}"
+finished = "Vérification terminée ({total})"
+already = "Cette partie est déjà vérifiée"
+nothing = "Toutes les parties sont déjà vérifiées"

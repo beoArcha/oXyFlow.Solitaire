@@ -41,7 +41,7 @@ time = "Tiempo"
 moves = "Mov."
 restarts = "Reinic."
 winnable = "Ganable"
-winnable_short = "?"
+winnable_short = "Gana?"
 
 [legend]
 winnable = "ganable"
@@ -59,3 +59,12 @@ unchecked = "-"
 replay = "Volver a jugar esta semilla"
 copy = "Copiar semilla"
 back = "Volver"
+check = "Comprobar"
+check_all = "Todas"
+
+[check]
+hint = "w: comprobar esta partida   W: comprobar todas"
+running = "Comprobando: {done} de {total}"
+finished = "Comprobación terminada ({total})"
+already = "Esta partida ya está comprobada"
+nothing = "Todas las partidas están comprobadas"
