@@ -58,8 +58,9 @@ fn items(has_saved_game: bool) -> Vec<Item> {
 
 /// The key line of the item list. Esc is not shown: in the list it does nothing (it leaves the seed
 /// entry and the games of a seed, which have their own key line).
-pub(crate) const FOOTER: [KeyHint; 3] = [
+pub(crate) const FOOTER: [KeyHint; 4] = [
     (Action::Select, "menu.footer.open"),
+    (Action::FocusNext, "menu.footer.language"),
     (Action::Quit, "help.action.quit"),
     (Action::Help, "help.action.help"),
 ];
@@ -210,6 +211,10 @@ impl MainMenu {
         if self.selector_focus {
             return self.handle_selector(action, items.len(), ctx);
         }
+        if action == Action::Up && self.list.focus() == 0 {
+            self.selector_focus = true;
+            return Effect::None;
+        }
         if let Some(forward) = tab_forward(action)
             && self.leaves_list(forward, items.len())
         {
@@ -239,6 +244,17 @@ impl MainMenu {
             if !forward {
                 self.list.on_action(Action::Up, len);
             }
+            return Effect::None;
+        }
+        if action == Action::Down {
+            self.selector_focus = false;
+            self.list = MenuList::new();
+            return Effect::None;
+        }
+        if action == Action::Up {
+            self.selector_focus = false;
+            self.list = MenuList::new();
+            self.list.on_action(Action::Up, len);
             return Effect::None;
         }
         let chosen = self.picker.on_action(action, ctx.settings.locale);
