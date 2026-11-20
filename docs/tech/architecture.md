@@ -549,7 +549,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   three; an incomplete locale may miss keys but has no extra key and no placeholder mismatch
   (`Diff::passes`). So a new English key goes into `locales/en-US/` and every complete locale, or a
   locale that cannot get it yet is set back to `complete = false` and shows English for it.
-  `cargo xtask locale-diff [<lang>] [--ref <git-ref>]` prints the same report for one
+  `cargo xtask-art locale-diff [<lang>] [--ref <git-ref>]` prints the same report for one
   locale (or a one-line summary per locale) and exits non-zero when anything differs. Tests also
   check that every `"<area>.…"` literal in the sources exists.
 - **Locales (O-41, T-36):** `i18n/locale.rs` holds the one list of locales: each line names the
@@ -782,10 +782,18 @@ writes the contact sheet `target/fonts/preview.html`. Two runs give identical by
 | Command | Steps | Where |
 |---|---|---|
 | `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, `xtask lint` (including conflict markers in every tracked file and decision-ID uniqueness), every test target in one `cargo test --workspace --tests` call | locally before a PR |
-| `cargo xtask check --pr <base>` | fmt, Clippy, lint, the `architecture` and `e2e` suites, unit and integration tests of the packages that `affected --base <base>` selects | `pr.yml` (Linux) |
+| `cargo xtask check --pr <base>` | fmt, Clippy, lint, the `architecture` and `e2e` suites, unit and integration tests of the packages that `affected --base <base>` selects; when only documentation changed (see `affected`), it runs `cargo xtask docs` instead | `pr.yml` (Linux, Windows) |
+| `cargo xtask docs` | conflict-marker and decision-ID lints, then a relative-link check (`docs/**/*.md`, `README.md`, `AGENTS.md`; every relative link and image target exists; anchors are not checked) | docs-only PRs, local |
+| `cargo xtask affected --base <ref>` | the affected packages, `*` for all, `docs` when only `*.md`, `docs/**` (not `docs/site/**`), `LICENSE` or `.github/pull_request_template.md` changed | `pr.yml`, `check --pr` |
 | `cargo xtask check` | everything: all test targets and `sync-metadata --check` | `main.yml` and `release.yml` on three systems |
 | `cargo xtask report` | prints `target/check-result.txt` (written by every `check`) as Markdown for the PR body | local |
-| `cargo xtask locale-diff [<lang>] [--ref <git-ref>]` | missing, extra and placeholder-mismatched keys of a locale against `en-US` (plural-aware) | local, translations |
+| `cargo xtask-art locale-diff [<lang>] [--ref <git-ref>]` | missing, extra and placeholder-mismatched keys of a locale against `en-US` (plural-aware) | local, translations |
+
+The commands that need the application crates or the SVG renderer (`icon`, `locale-diff`, `screenshots`) sit behind
+the `art` feature of `xtask` so every other command builds without `oxysol-tui`, `oxysol-core`, `ratatui` and `resvg`
+(O-67 F4). Run them with `cargo xtask-art <command>` (alias of `cargo run -p xtask --features art --`); without the
+feature they fail with that hint. `cargo xtask check` builds and tests `xtask` with the feature, so the icon check
+(a unit test) still runs in every gate. `fonts` needs only Python and stays light.
 
 Definitions used by `xtask lint`:
 

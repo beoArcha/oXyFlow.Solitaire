@@ -12,6 +12,7 @@ pub const TUI: &str = "oxysol-tui";
 pub const ROOT: &str = "oxysol";
 pub const XTASK: &str = "xtask";
 
+const PULL_REQUEST_TEMPLATE: &str = ".github/pull_request_template.md";
 const ALL_FILE_NAMES: [&str; 4] = [
     "Cargo.toml",
     "Cargo.lock",
@@ -29,21 +30,40 @@ const DEPENDENTS: [(&str, &[&str]); 4] = [
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Affected {
     All,
+    DocsOnly,
     Packages(BTreeSet<&'static str>),
 }
 
 pub fn select<'a>(paths: impl IntoIterator<Item = &'a str>) -> Affected {
     let mut direct = BTreeSet::new();
+    let mut docs_only = true;
+    let mut any = false;
     for path in paths {
         if is_all_trigger(path) {
             return Affected::All;
         }
+        any = true;
+        docs_only &= is_docs_only(path);
         direct.extend(owners(path).iter().copied());
+    }
+    if any && docs_only {
+        return Affected::DocsOnly;
     }
     Affected::Packages(close_over_dependents(&direct))
 }
 
+/// Documentation that no build or test depends on; `docs/site/` is built by the `site` job.
+fn is_docs_only(path: &str) -> bool {
+    if path.starts_with("docs/site/") {
+        return false;
+    }
+    path.ends_with(".md") || path.starts_with("docs/") || path == "LICENSE"
+}
+
 fn is_all_trigger(path: &str) -> bool {
+    if path == PULL_REQUEST_TEMPLATE {
+        return false;
+    }
     let file_name = path.rsplit('/').next().unwrap_or(path);
     ALL_FILE_NAMES.contains(&file_name)
         || ALL_PREFIXES.iter().any(|prefix| path.starts_with(prefix))
@@ -105,6 +125,7 @@ pub fn run(root: &Path, base: &str) -> Result<(), XtaskError> {
     let paths = changed_paths(root, base)?;
     match select(paths.iter().map(String::as_str)) {
         Affected::All => println!("*"),
+        Affected::DocsOnly => println!("docs"),
         Affected::Packages(packages) => {
             for package in packages {
                 println!("{package}");
@@ -123,22 +144,36 @@ mod tests {
     }
 
     #[test]
-    fn docs_and_markdown_select_nothing() {
+    fn docs_and_markdown_are_docs_only() {
         let paths = [
             "docs/tech/workflow.md",
             "docs/task_list/phase-0.md",
             "README.md",
             "crates/core/README.md",
+            "LICENSE",
+            ".github/pull_request_template.md",
         ];
-        assert_eq!(select(paths), packages(&[]));
+        assert_eq!(select(paths), Affected::DocsOnly);
+    }
+
+    #[test]
+    fn site_sources_are_not_docs_only() {
+        assert_eq!(select(["docs/site/src/intro.md"]), packages(&[]));
+        assert_eq!(select(["docs/site/book.toml"]), packages(&[]));
+    }
+
+    #[test]
+    fn markdown_mixed_with_code_is_not_docs_only() {
+        assert_eq!(
+            select(["docs/x.md", "crates/core/src/x.rs"]),
+            packages(&[CORE, TUI, ROOT])
+        );
+        assert_eq!(select(["README.md", ".gitignore"]), packages(&[]));
     }
 
     #[test]
     fn unknown_paths_select_nothing() {
-        assert_eq!(
-            select(["LICENSE", "AGENTS.md", ".gitignore"]),
-            packages(&[])
-        );
+        assert_eq!(select(["LICENSE", ".gitignore"]), packages(&[]));
     }
 
     #[test]

@@ -15,12 +15,13 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 | Command | What it runs | CI |
 |---|---|---|
 | `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, lint (including conflict markers in every tracked file), every test target in one cargo call | run before opening a PR |
-| `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages | `pr.yml` |
+| `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages; a documentation-only change runs `cargo xtask docs` instead | `pr.yml` |
+| `cargo xtask docs` | conflict-marker and decision-ID lints and a relative-link check over `docs/**/*.md`, `README.md` and `AGENTS.md` (anchors are not checked) | docs-only PRs, local |
 | `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS (`check-macos`, not gating `promote`) |
 | `cargo xtask affected --base origin/main` | prints the affected packages (`*` means all) | used by `check --pr` |
 | `cargo xtask report` | prints the last check result as Markdown; paste it into the PR's "Check result" section | run after `check` |
-| `cargo xtask locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |
-| `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
+| `cargo xtask-art locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |
+| `cargo xtask-art screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
 | `cargo xtask preflight [--card <ID>] [--base <ref>] [--ci]` | fetches `origin`; reports how far the branch is behind and ahead of `origin/main` (a warning when behind); runs the conflict-marker and decision-ID lints; with `--card`, warns about changed files that the card's `Files` line does not name; `--ci` then runs `check --pr <base>` | run before `check --quick` (see "Before you open a PR") |
 | `cargo xtask worktrees [--remove [--force]]` | lists every worktree with its state (`main`, `merged`, `open`) and the orphan folders git no longer knows; `--remove` deletes the clean merged ones and prunes; a dry run without it | run by hand (see "Worktrees") |
 
@@ -36,7 +37,15 @@ Affected packages (T-22): `crates/core` selects `oxysol-core`, `oxysol-tui` and 
 `crates/tui` selects `oxysol-tui` and `oxysol`; `src/` and `tests/` select `oxysol`; `xtask/`
 selects `xtask`; `metadata.toml` selects `xtask` and `oxysol`. `Cargo.toml`, `Cargo.lock`,
 `rust-toolchain.toml`, `clippy.toml`, `.cargo/`, `.github/`, `locales/` and `assets/` select every
-package. Changes under `docs/` and to `*.md` select none.
+package. A change that touches only `*.md`, `docs/**` (not `docs/site/**`), `LICENSE` or
+`.github/pull_request_template.md` is documentation-only: `affected` prints `docs`, and `check --pr` runs only
+`cargo xtask docs` (no cargo build, Clippy or tests). `pr.yml` keeps the required jobs `check` and `check-windows`
+for it; they finish in seconds and skip the cache restore, the ALSA install and the extra Clippy and test steps.
+A PR that also touches any other file runs the full gate.
+
+The commands that need the application crates or the SVG renderer (`icon`, `locale-diff`, `screenshots`) are behind the
+`art` feature of `xtask`, so the other commands build in seconds: run them as `cargo xtask-art <command>`
+(alias of `cargo run -p xtask --features art --`).
 
 ## Workflows
 
@@ -155,7 +164,7 @@ binary assets untouched.
 
 ### Screenshots
 
-`cargo xtask screenshots` renders scripted scenes of the real application: it builds an `App` with in-memory
+`cargo xtask-art screenshots` renders scripted scenes of the real application: it builds an `App` with in-memory
 services, drives it with key presses on a Ratatui `TestBackend` terminal and writes each frame buffer as SVG
 (background runs as rectangles, glyphs as text with an explicit x per glyph, box and block characters as paths so
 they join in any font). It writes both languages (`en-US` and `pl-PL`) to `docs/site/src/img/en/` and
@@ -242,7 +251,7 @@ A locale is offered to players only when `locales/<lang>/meta.toml` says `comple
 (architecture: "Adding or translating a locale"). Translation tasks are text-only and run one
 language at a time: the translator replaces the ten area files of a locale, keeps keys, order and
 `{placeholders}`, sets `complete = true` and writes `docs/tech/glossaries/<lang>.md`. The
-orchestrator then merges `main`, compares the keys with `en-US` (`cargo xtask locale-diff <lang>`
+orchestrator then merges `main`, compares the keys with `en-US` (`cargo xtask-art locale-diff <lang>`
 lists missing, extra and placeholder-mismatched keys; `--ref <git-ref>` reads another commit), and
 runs the check. An incomplete locale may lack keys and shows the English text for them (decision
 T-38); a complete locale must have every key, so mark a locale `complete = true` only when

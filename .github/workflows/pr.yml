@@ -20,10 +20,23 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+      - name: Detect a documentation-only change
+        id: scope
+        shell: bash
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$(cargo xtask affected --base "origin/$BASE_REF")" = "docs" ]; then
+            echo "docs=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        if: steps.scope.outputs.docs != 'true'
         with:
           save-if: false
       - name: Install the ALSA development package for the audio feature
+        if: steps.scope.outputs.docs != 'true'
         run: |
           sudo apt-get install -y --no-install-recommends libasound2-dev || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev)
       - name: Check the pull request
@@ -31,8 +44,10 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
         run: cargo xtask check --pr "origin/$BASE_REF"
       - name: Clippy without the audio feature, as the Linux release is built
+        if: steps.scope.outputs.docs != 'true'
         run: cargo clippy --no-default-features -p oxysol --all-targets -- -D warnings
       - name: Test without the audio feature
+        if: steps.scope.outputs.docs != 'true'
         run: cargo test --no-default-features -p oxysol
 
   check-windows:
@@ -42,7 +57,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+      - name: Detect a documentation-only change
+        id: scope
+        shell: bash
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$(cargo xtask affected --base "origin/$BASE_REF")" = "docs" ]; then
+            echo "docs=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        if: steps.scope.outputs.docs != 'true'
         with:
           save-if: false
       - name: Check the pull request

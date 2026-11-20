@@ -22,9 +22,9 @@ root `build.rs` embeds the ICO as the icon of `oxysol.exe`.
 ## Regenerate
 
 ```sh
-cargo xtask icon           # render and overwrite the generated files
-cargo xtask icon --check   # fail if the committed files differ from a fresh render
+cargo xtask-art icon           # render and overwrite the generated files
+cargo xtask-art icon --check   # fail if the committed files differ from a fresh render
 ```
 
-Run `cargo xtask icon` after every change to an SVG and commit the generated files together with
+Run `cargo xtask-art icon` after every change to an SVG and commit the generated files together with
 the sources. The full `cargo xtask check` runs the `--check` form.
