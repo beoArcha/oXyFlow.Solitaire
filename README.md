@@ -9,7 +9,7 @@ Klondike, Spider, FreeCell and Pyramid in one small program.</p>
   <a href="https://github.com/beoArcha/oXyFlow.Solitare/releases"><img alt="Latest pre-release" src="https://img.shields.io/github/v/release/beoArcha/oXyFlow.Solitare?include_prereleases&label=latest%20build"></a>
   <a href="https://www.rust-lang.org/"><img alt="Rust 1.99" src="https://img.shields.io/badge/Rust-1.99-orange?logo=rust"></a>
   <a href="https://ratatui.rs/"><img alt="TUI: Ratatui" src="https://img.shields.io/badge/TUI-Ratatui%200.30-blueviolet"></a>
-  <a href="https://beoarcha.github.io/oXyFlow.Solitare/"><img alt="Website" src="https://img.shields.io/badge/website-EN%20%7C%20PL-blue"></a>
+  <a href="https://beoarcha.github.io/oXyFlow.Solitare/"><img alt="Website" src="https://img.shields.io/badge/website-9%20languages-blue"></a>
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@ Klondike, Spider, FreeCell and Pyramid in one small program.</p>
 oXySol is a terminal solitaire with four games, **Klondike, Spider, FreeCell and Pyramid**, shipped as the single
 binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it plays, and it is still in development.
 
-- **Keyboard and mouse.** Every action works with both.
+- **Keyboard and mouse.** Every action works with both: click, double-click, drag, right-click to put a card back.
 - **Help while you play.** A guide panel, a possible moves panel, hints, undo and redo, and auto-finish when the game
   is certainly won.
 - **Seeds and winnable deals.** Every deal has a seed you can copy and replay, a game can start from any seed,
@@ -30,11 +30,16 @@ binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it pla
   mark for each deal that was checked as winnable or not.
 - **Restart from the beginning** in the pause menu (`Esc`) or with `Shift+R`, always confirmed; in a game without undo
   restarts are counted.
+- **Card size you choose.** `]` and `[` make the cards bigger or smaller, `0` returns to the automatic size that fits
+  the window; Ctrl+wheel and the Card size setting do the same.
 - **Fits the Windows console.** Started by a double-click, the game opens full screen (Alt+Enter mode), or widens its
-  window to 130 columns so the side panels fit. Started from an open console, it leaves the console alone.
+  window to 130 columns so the side panels fit. Started from an open console, it leaves the console alone. In the
+  classic Windows console, Ctrl+Plus, Ctrl+Minus and Ctrl+0 change the console font size.
 - **Five themes:** Dark, Light, High contrast (for low vision), Monokai and Dracula. Color is never the only signal.
   Color-vision modes are planned, not built yet.
-- **Polish and English.** Switch the language in Settings.
+- **Languages.** The game interface is available in English and Polish today; German, French, Italian, Brazilian
+  Portuguese, Ukrainian, Dutch and Spanish are in progress. Switch the language with the flag selector in the top-left
+  corner of the main menu, or in Settings.
 
 ## Screenshots
 
@@ -124,20 +129,30 @@ The full key list is in the game: press `?`.
 | Key | What it does |
 |---|---|
 | Arrows (or `k` and `j` for up and down) | Move the cursor |
+| `Tab` and `Shift+Tab` | Move the focus to the next or previous area |
 | `Enter` or `Space` | Pick up a card, then drop it on a target |
 | `Esc` | Put the card back, or go back |
 | `s` | Turn or deal from the stock |
 | `a` | Quick move to a foundation |
 | `+` and `-` | Pick more or fewer cards of a run |
+| `]`, `[` and `0` | Bigger cards, smaller cards, automatic card size |
+| `u` (`Ctrl+Z`) and `r` (`Ctrl+Y`) | Undo and redo |
 | `h` | Hint |
-| `u` and `r` | Undo and redo |
-| `Shift+R` | Restart this deal (asks first) |
+| `f` | Finish the game: play out the remaining moves once the win is certain |
 | `g` | Guide panel |
 | `v` | Possible moves panel |
 | `o` | Quick options for this game (hints, aura, panels, auto-finish) |
+| `Shift+R` | Restart this deal (asks first) |
+| `n` | New game |
+| `p` | Pause |
+| `m` | Main menu |
+| `c` | Copy the seed of this deal |
 | `i` | How to play |
-| `?` | Help: every key |
-| `q` | Quit |
+| `?` or `F1` | Help: every key |
+| `q` | Quit (`Ctrl+C` quits at once) |
+
+In the classic Windows console, `Ctrl+Plus`, `Ctrl+Minus` and `Ctrl+0` change the console font size; other terminals
+zoom with their own keys (Cmd on a Mac).
 
 Command-line options (`oxysol --help` lists them):
 
@@ -196,16 +211,23 @@ cargo run                    # play from source
 cargo xtask check --quick    # fmt, Clippy, lint and the fast tests: run before a pull request
 cargo xtask check            # everything, as CI does on main
 cargo xtask screenshots      # regenerate the SVG screenshots and animations of the website
+cargo xtask fonts            # build the oXySol Mono card font (needs Python 3.11+, see below)
 ```
+
+`cargo xtask fonts` builds `assets/fonts/oXySolMono-Regular.ttf` from the Cascadia Mono base and the card glyph SVGs,
+and writes a preview sheet to `target/fonts/preview.html`. It is the only command that uses Python: install the pinned
+packages with `pip install -r xtask/fonts/requirements.txt` (fontTools and skia-pathops). Players do not need it.
 
 Read [`AGENTS.md`](AGENTS.md) for the rules of the code, then [`docs/tech/`](docs/tech): the
 [architecture](docs/tech/architecture.md), the [workflow](docs/tech/workflow.md) (branches, checks, releases) and the
 [decisions](docs/tech/decisions.md). The rules of the four games are in [`docs/wiki/rules/`](docs/wiki/rules).
-The website is built from [`docs/site`](docs/site) with mdBook.
+The website is built from [`docs/site`](docs/site) with mdBook and published with each release.
 
 ## Links
 
-- Website: <https://beoarcha.github.io/oXyFlow.Solitare/>
+- Website: <https://beoarcha.github.io/oXyFlow.Solitare/>, in nine languages: English, Polski, Deutsch, Español,
+  Français, Italiano, Nederlands, Português (Brasil) and Українська. The game interface itself is in English and
+  Polish today, with the other seven in progress; the screenshots show the English version.
 - Po polsku: pasjans w terminalu z czterema grami. Polska wersja strony:
   <https://beoarcha.github.io/oXyFlow.Solitare/pl/index.html>
 

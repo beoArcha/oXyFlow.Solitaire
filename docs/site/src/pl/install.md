@@ -1,4 +1,4 @@
-[English](../install.md) · **Polski**
+[English](../install.md) · **Polski** · [Deutsch](../de/install.md) · [Español](../es/install.md) · [Français](../fr/install.md) · [Italiano](../it/install.md) · [Nederlands](../nl/install.md) · [Português (Brasil)](../pt-br/install.md) · [Українська](../uk/install.md)
 
 # Instalacja
 

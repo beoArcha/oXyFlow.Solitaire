@@ -1,4 +1,4 @@
-**English** · [Polski](pl/index.md)
+**English** · [Polski](pl/index.md) · [Deutsch](de/index.md) · [Español](es/index.md) · [Français](fr/index.md) · [Italiano](it/index.md) · [Nederlands](nl/index.md) · [Português (Brasil)](pt-br/index.md) · [Українська](uk/index.md)
 
 # oXySol
 
