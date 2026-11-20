@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use crate::check_result::CheckResultError;
 use crate::fonts::FontsError;
 use crate::icon::IconError;
+use crate::locale_diff::LocaleDiffError;
 use crate::midi::MidiError;
 use crate::screenshots::ScreenshotError;
 use crate::sync_metadata::SyncMetadataError;
@@ -65,6 +66,8 @@ pub enum XtaskError {
     Midi(#[from] MidiError),
     #[error(transparent)]
     Icon(#[from] IconError),
+    #[error(transparent)]
+    LocaleDiff(#[from] LocaleDiffError),
     #[error(transparent)]
     Fonts(#[from] FontsError),
     #[error(transparent)]

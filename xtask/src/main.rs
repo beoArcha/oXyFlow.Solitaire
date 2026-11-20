@@ -8,6 +8,7 @@ mod error;
 mod fonts;
 mod icon;
 mod lint;
+mod locale_diff;
 mod midi;
 mod report;
 mod screenshots;
@@ -27,7 +28,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--base | --tag]>";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | locale-diff [<lang>] [--ref <git-ref>] | fonts | midi <style> | icon [--check] | screenshots | sync-metadata [--check] | version [--base | --tag]>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -62,6 +63,10 @@ fn dispatch(args: &[String]) -> Result<(), XtaskError> {
         )?),
         "sync-metadata" => Ok(sync_metadata::run(parse_flag(flags, "--check")?)?),
         "screenshots" if flags.is_empty() => Ok(screenshots::run(&check::workspace_root()?)?),
+        "locale-diff" => Ok(locale_diff::run(
+            &check::workspace_root()?,
+            &parse_locale_diff(flags)?,
+        )?),
         "version" => version::run(parse_version_flags(flags)?),
         _ => Err(usage()),
     }
@@ -83,6 +88,10 @@ fn parse_check(flags: &[String]) -> Result<Mode, XtaskError> {
         [flag, base] if flag == "--pr" => Ok(Mode::Pr(base.clone())),
         _ => Err(usage()),
     }
+}
+
+fn parse_locale_diff(flags: &[String]) -> Result<locale_diff::Options, XtaskError> {
+    locale_diff::parse_options(flags).ok_or_else(usage)
 }
 
 fn parse_midi(flags: &[String]) -> Result<String, XtaskError> {
