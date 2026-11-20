@@ -25,6 +25,15 @@ fn expect_drawn(h: &mut Harness, labels: &[&str]) {
     }
 }
 
+/// Whether `key` is drawn as a key name of its own, not as the start of a word such as "Esci".
+fn names_key(text: &str, key: &str) -> bool {
+    text.match_indices(key).any(|(at, _)| {
+        let before = text[..at].chars().next_back();
+        let after = text[at + key.len()..].chars().next();
+        !before.is_some_and(char::is_alphanumeric) && !after.is_some_and(char::is_alphanumeric)
+    })
+}
+
 #[test]
 fn the_main_menu_names_only_the_keys_that_work_there() {
     each_locale(|locale| {
@@ -34,7 +43,7 @@ fn the_main_menu_names_only_the_keys_that_work_there() {
         let help = hint(Action::Help, "help.action.help");
         expect_drawn(&mut h, &[&open, &quit, &help]);
         assert!(
-            !h.text().contains("Esc"),
+            !names_key(&h.text(), "Esc"),
             "{locale:?}: Esc is drawn in the item list"
         );
     });
