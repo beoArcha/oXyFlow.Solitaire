@@ -14,7 +14,7 @@ use std::process::ExitCode;
 #[path = "xtask/src/version_scheme.rs"]
 #[allow(
     dead_code,
-    reason = "the file is shared with xtask and the TUI build script; each uses a part"
+    reason = "the file is shared with xtask; the build script uses a part"
 )]
 mod version_scheme;
 

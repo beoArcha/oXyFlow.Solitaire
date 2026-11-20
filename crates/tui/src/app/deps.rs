@@ -23,4 +23,6 @@ pub struct Deps {
     pub solver: Box<dyn Solver>,
     /// The console switch for full screen and the facts the decision needs.
     pub display: DisplayDeps,
+    /// The effective version (T-21, R-23) the main menu shows; the binary computes it at build time.
+    pub version: &'static str,
 }

@@ -185,6 +185,7 @@ pub struct Deps {
     pub caps: TerminalCaps,
     pub seeds: Box<dyn FnMut() -> u64>,   // fresh seed for "New game"; a typed seed bypasses it
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
+    pub version: &'static str,            // effective version (T-21), computed by the root `build.rs`
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
     pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
     pub display: DisplayDeps,             // console (O-16, P3-16): `Box<dyn ConsoleDisplay>`, `DisplayFacts { owns_window, kind, flag }`, `Box<dyn ConsoleFont>`
@@ -662,7 +663,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
 - **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed`,
-  `--fullscreen`, `--no-fullscreen` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed by the build scripts with `xtask/src/version_scheme.rs`, also used by the main menu label and the Windows file version) and the
+  `--fullscreen`, `--no-fullscreen` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed only by the root `build.rs` with `xtask/src/version_scheme.rs`; the binary gives it to the TUI as `Deps::version` for the main menu label, so `oxysol-tui` has no build script and does not rebuild after a commit; it is also the Windows file version) and the
   copyright with the license, built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE` through `cli.version_legal`. With `--new-window`, `main` starts only the log and calls
   `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
   with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS

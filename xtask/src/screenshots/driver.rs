@@ -53,6 +53,7 @@ impl Driver {
             sound_styles: sound_styles(),
             solver: Box::new(NullSolver::default()),
             display: DisplayDeps::none(),
+            version: env!("CARGO_PKG_VERSION"),
         });
         Self {
             app,
