@@ -68,6 +68,8 @@ pub(super) struct FullScreenState {
     pub(super) hinted: bool,
     pub(super) font: Box<dyn ConsoleFont>,
     pub(super) card_font: CardFontState,
+    pub(super) face: CardFontState,
+    pub(super) size_asked: u8,
 }
 
 impl FullScreenState {
@@ -80,11 +82,17 @@ impl FullScreenState {
             hint: None,
             hinted: false,
             font: deps.font,
-            card_font: if facts.kind == TerminalKind::ClassicConsole {
-                CardFontState::Off
-            } else {
-                CardFontState::Unavailable
-            },
+            card_font: Self::initial_state(facts.kind),
+            face: Self::initial_state(facts.kind),
+            size_asked: 0,
+        }
+    }
+
+    fn initial_state(kind: TerminalKind) -> CardFontState {
+        if kind == TerminalKind::ClassicConsole {
+            CardFontState::Off
+        } else {
+            CardFontState::Unavailable
         }
     }
 
@@ -147,10 +155,43 @@ impl App {
         };
     }
 
+    /// Brings the console font in line with the settings: the card font first, which owns the face
+    /// while it is in use, then the chosen face and the chosen size. One console object does all
+    /// three, so the font the game found stays the one it puts back at exit.
+    pub(super) fn sync_console_look(&mut self) {
+        self.sync_card_font();
+        self.sync_face();
+        self.sync_size();
+    }
+
+    fn sync_face(&mut self) {
+        let wanted = self.settings.console_face.name();
+        let state = &mut self.full_screen;
+        state.face = match (wanted, state.face, state.card_font) {
+            (_, CardFontState::Unavailable, _) => CardFontState::Unavailable,
+            (_, _, CardFontState::Active) => CardFontState::Off,
+            (None, CardFontState::Off, _) => CardFontState::Off,
+            (None, _, _) => state.font.use_face(None),
+            (Some(name), _, _) => state.font.use_face(Some(name)),
+        };
+    }
+
+    fn sync_size(&mut self) {
+        let wanted = self.settings.console_font_size;
+        let state = &mut self.full_screen;
+        if state.card_font == CardFontState::Unavailable || wanted == state.size_asked {
+            return;
+        }
+        let height = (wanted > 0).then_some(u16::from(wanted));
+        if state.font.use_size(height) {
+            state.size_asked = wanted;
+        }
+    }
+
     /// The option was changed: switches the console font and, when the card font is in use now,
     /// the symbols to it (the font is known to be there, so no graphics check is needed).
     pub(super) fn console_font_setting_changed(&mut self) {
-        self.sync_card_font();
+        self.sync_console_look();
         if self.settings.console_font && self.full_screen.card_font == CardFontState::Active {
             self.settings.glyph_mode = GlyphMode::Font;
         }
@@ -161,6 +202,7 @@ impl App {
         FontFacts {
             terminal: self.full_screen.facts.kind,
             card_font: self.full_screen.card_font,
+            face: self.full_screen.face,
             cell_px: self.full_screen.font.cell_size(),
         }
     }

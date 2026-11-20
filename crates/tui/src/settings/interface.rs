@@ -115,6 +115,8 @@ impl Settings {
             back_style: saved.back_style.clone(),
             glyph_mode: saved.glyph_mode,
             console_font: saved.console_font,
+            console_face: saved.console_face,
+            console_font_size: saved.console_font_size,
             card_size: saved.card_size,
             aura_colour: saved.aura_colour,
             aura_style: saved.aura_style,

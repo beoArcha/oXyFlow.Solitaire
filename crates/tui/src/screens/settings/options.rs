@@ -21,6 +21,8 @@ pub enum Field {
     BackStyle,
     Glyphs,
     ConsoleFont,
+    FontFace,
+    FontSize,
     CardSize,
     AuraColour,
     AuraStyle,
@@ -37,7 +39,7 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 22] = [
+pub const FIELDS: [Field; 24] = [
     Field::Language,
     Field::Colors,
     Field::FullScreen,
@@ -47,6 +49,8 @@ pub const FIELDS: [Field; 22] = [
     Field::BackStyle,
     Field::Glyphs,
     Field::ConsoleFont,
+    Field::FontFace,
+    Field::FontSize,
     Field::CardSize,
     Field::AuraColour,
     Field::AuraStyle,
@@ -129,6 +133,32 @@ pub(super) const COLOR_MODES: [ColorMode; 4] = [
 pub(super) const FULL_SCREEN_MODES: [FullScreen; 3] =
     [FullScreen::Auto, FullScreen::On, FullScreen::Off];
 
+/// The sentence for the console font row: what to do in Windows Terminal, in another terminal and
+/// when the font is missing or refused.
+fn console_font_key(facts: FontFacts) -> &'static str {
+    match (facts.card_font, facts.terminal) {
+        (_, TerminalKind::WindowsTerminal) => "settings.desc.console_font_wt",
+        (CardFontState::Unavailable, _) => "settings.desc.console_font_other",
+        (CardFontState::NotRegistered, _) => "settings.desc.console_font_missing",
+        (CardFontState::Refused, _) => "settings.desc.console_font_refused",
+        _ => "settings.desc.console_font",
+    }
+}
+
+/// The sentence for the font face and font size rows: only the classic console lets the game change
+/// the font; elsewhere the row names the terminal's own shortcut and says why.
+fn font_row_key(field: Field, facts: FontFacts) -> &'static str {
+    match (field, facts.terminal, facts.card_font, facts.face) {
+        (_, TerminalKind::WindowsTerminal, _, _) => "settings.desc.font_terminal_wt",
+        (_, TerminalKind::Linux | TerminalKind::MacOs, _, _) => "settings.desc.font_terminal_other",
+        (Field::FontFace, _, CardFontState::Active, _) => "settings.desc.font_face_card",
+        (Field::FontFace, _, _, CardFontState::NotRegistered) => "settings.desc.font_face_missing",
+        (Field::FontFace, _, _, CardFontState::Refused) => "settings.desc.font_face_refused",
+        (Field::FontFace, ..) => "settings.desc.font_face",
+        _ => "settings.desc.font_size",
+    }
+}
+
 impl Field {
     /// The aid a row switches, for the rows of the "Hints and help" group.
     pub const fn aid(self) -> Option<Aid> {
@@ -169,6 +199,8 @@ impl Field {
             Field::BackStyle => "settings.row.back_style",
             Field::Glyphs => "settings.row.glyphs",
             Field::ConsoleFont => "settings.row.console_font",
+            Field::FontFace => "settings.row.font_face",
+            Field::FontSize => "settings.row.font_size",
             Field::Colors => "settings.row.colors",
             Field::CardSize => "settings.row.card_size",
             Field::AuraColour => "settings.row.aura_colour",
@@ -192,6 +224,8 @@ impl Field {
             | Field::BackStyle
             | Field::Glyphs
             | Field::ConsoleFont
+            | Field::FontFace
+            | Field::FontSize
             | Field::CardSize
             | Field::AuraColour
             | Field::AuraStyle
@@ -208,17 +242,11 @@ impl Field {
     /// The sentence that explains the row when it is focused. The console font row says what to do
     /// in Windows Terminal, in another terminal and when the font is missing or refused.
     pub fn describe(self, facts: FontFacts) -> String {
-        if self != Field::ConsoleFont {
-            return t(self.description_key()).into_owned();
+        match self {
+            Field::ConsoleFont => t(console_font_key(facts)).into_owned(),
+            Field::FontFace | Field::FontSize => t(font_row_key(self, facts)).into_owned(),
+            _ => t(self.description_key()).into_owned(),
         }
-        let key = match (facts.card_font, facts.terminal) {
-            (_, TerminalKind::WindowsTerminal) => "settings.desc.console_font_wt",
-            (CardFontState::Unavailable, _) => "settings.desc.console_font_other",
-            (CardFontState::NotRegistered, _) => "settings.desc.console_font_missing",
-            (CardFontState::Refused, _) => "settings.desc.console_font_refused",
-            _ => "settings.desc.console_font",
-        };
-        t(key).into_owned()
     }
 
     /// Localization key of the sentence that explains the row when it is focused.
@@ -234,6 +262,8 @@ impl Field {
             Field::BackStyle => "settings.desc.back_style",
             Field::Glyphs => "settings.desc.glyphs",
             Field::ConsoleFont => "settings.desc.console_font",
+            Field::FontFace => "settings.desc.font_face",
+            Field::FontSize => "settings.desc.font_size",
             Field::Colors => "settings.desc.colors",
             Field::CardSize => "settings.desc.card_size",
             Field::AuraColour => "settings.desc.aura_colour",

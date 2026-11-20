@@ -122,7 +122,7 @@ fn every_row_changes_by_mouse() {
     let ctx = fixture.ctx(AudioStatus::Ready);
     for field in FIELDS
         .into_iter()
-        .filter(|field| *field != Field::ConsoleFont)
+        .filter(|field| !super::is_console_font_row(*field))
     {
         let mut screen = SettingsScreen::new();
         let lines = render(&mut screen, &ctx);

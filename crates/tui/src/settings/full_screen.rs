@@ -40,6 +40,19 @@ impl TerminalKind {
     }
 }
 
+impl TerminalKind {
+    /// Localization key of the zoom shortcut of this terminal, which the font rows of Settings show
+    /// instead of a value: only the classic console lets the game change the font.
+    pub const fn font_keys_key(self) -> Option<&'static str> {
+        match self {
+            Self::ClassicConsole => None,
+            Self::WindowsTerminal => Some("settings.value.font_keys_windows_terminal"),
+            Self::Linux => Some("settings.value.font_keys_linux"),
+            Self::MacOs => Some("settings.value.font_keys_macos"),
+        }
+    }
+}
+
 /// What the game does about full screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Decision {

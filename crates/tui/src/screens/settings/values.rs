@@ -1,5 +1,6 @@
 //! What a row of the settings screen shows and how one step changes [`Settings`].
 
+use super::font_rows;
 use super::options::{
     AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FIELDS, FULL_SCREEN_MODES,
     Field, GLYPH_MODES, Step, back_styles, front_styles,
@@ -9,7 +10,10 @@ use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
 use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, t, tf};
-use crate::settings::{CardBack, CardSizeSetting, ColorMode, FullScreen, GlyphMode, Settings};
+use crate::settings::{
+    CONSOLE_FONT_SIZES, CardBack, CardSizeSetting, ColorMode, ConsoleFace, FullScreen, GlyphMode,
+    Settings,
+};
 use crate::theme::ThemeId;
 use crate::widgets::card::back;
 
@@ -142,6 +146,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::BackStyle => back_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::ConsoleFont => switch_text(settings.console_font),
+        Field::FontFace | Field::FontSize => font_rows::value_text(field, settings),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
         Field::CardSize => t(settings.card_size.label_key()).into_owned(),
         Field::AuraColour => t(settings.aura_colour.label_key()).into_owned(),
@@ -187,6 +192,9 @@ pub fn line(
     let mut value = value_text(field, settings, sound_styles);
     if field == Field::ConsoleFont {
         value = console_font_value(settings, facts);
+    }
+    if matches!(field, Field::FontFace | Field::FontSize) {
+        value = font_rows::value(field, settings, facts);
     }
     if field.is_audio() && !audio_available {
         value = format!("{value} ({})", t("settings.value.unavailable"));
@@ -254,6 +262,12 @@ pub fn changed(
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
         Field::CardSize => {
             next.card_size = cycle(&CardSizeSetting::ALL, settings.card_size, step);
+        }
+        Field::FontFace => {
+            next.console_face = cycle(&ConsoleFace::ALL, settings.console_face, step)
+        }
+        Field::FontSize => {
+            next.console_font_size = cycle(&CONSOLE_FONT_SIZES, settings.console_font_size, step);
         }
         Field::AuraColour => {
             next.aura_colour = cycle(&AURA_COLOURS, settings.aura_colour, step);

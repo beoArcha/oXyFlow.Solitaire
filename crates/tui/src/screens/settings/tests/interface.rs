@@ -3,7 +3,7 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::super::options::{FIELDS, Field, Group, Step};
-use super::{changed, index_of, move_down, open_settings, row, value};
+use super::{changed, index_of, is_console_font_row, move_down, open_settings, row, value};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::{AuraColour, AuraSize, AuraStyle, CardBack, Settings};
@@ -120,7 +120,7 @@ fn the_aura_rows_name_their_values_in_english_and_polish() {
 #[test]
 fn every_interface_row_previews_at_once_without_saving() {
     for (index, field) in FIELDS.iter().enumerate() {
-        if !field.is_interface() || matches!(field, Field::ConsoleFont | Field::Glyphs) {
+        if !field.is_interface() || is_console_font_row(*field) || *field == Field::Glyphs {
             continue;
         }
         let mut h = open_settings();

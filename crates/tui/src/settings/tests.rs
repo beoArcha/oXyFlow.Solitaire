@@ -240,3 +240,51 @@ fn the_interface_fields_come_from_the_saved_settings_and_the_rest_stays() {
     assert_eq!(kept.card_size, CardSizeSetting::Auto);
     assert_eq!(kept.volume, 20);
 }
+
+#[test]
+fn the_console_font_choices_are_the_console_default_and_old_values_keep_it() {
+    let settings = Settings::default();
+    assert_eq!(settings.console_face, ConsoleFace::Default);
+    assert_eq!(settings.console_font_size, 0);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(
+        matches!(parsed, Ok(ref s) if s.console_face == ConsoleFace::Default
+        && s.console_font_size == 0)
+    );
+}
+
+#[test]
+fn the_console_font_choices_round_trip() {
+    let settings = Settings {
+        console_face: ConsoleFace::CascadiaMono,
+        console_font_size: 24,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("console_face = \"cascadia_mono\""));
+    assert!(text.contains("console_font_size = 24"));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}
+
+#[test]
+fn the_faces_are_named_and_the_sizes_start_with_the_default() {
+    assert_eq!(ConsoleFace::Default.name(), None);
+    for face in &ConsoleFace::ALL[1..] {
+        assert!(face.name().is_some());
+    }
+    assert_eq!(CONSOLE_FONT_SIZES[0], 0);
+    assert!(CONSOLE_FONT_SIZES.windows(2).all(|pair| pair[0] < pair[1]));
+}
+
+#[test]
+fn the_console_font_choices_are_previewed_with_the_rest_of_the_interface() {
+    let previewed = Settings {
+        console_face: ConsoleFace::Consolas,
+        console_font_size: 16,
+        ..Settings::default()
+    };
+    let kept = previewed.with_interface_of(&Settings::default());
+    assert_eq!(kept.console_face, ConsoleFace::Default);
+    assert_eq!(kept.console_font_size, 0);
+}

@@ -13,7 +13,7 @@ fn row_with(settings: &Settings, card_font: CardFontState, terminal: TerminalKin
     let facts = FontFacts {
         terminal,
         card_font,
-        cell_px: None,
+        ..FontFacts::default()
     };
     line(
         Field::ConsoleFont,
@@ -83,7 +83,7 @@ fn the_description_of_the_row_follows_the_terminal_and_the_state() {
         Field::ConsoleFont.describe(FontFacts {
             terminal,
             card_font,
-            cell_px: None,
+            ..FontFacts::default()
         })
     };
     let wt = text(TerminalKind::WindowsTerminal, CardFontState::Unavailable);

@@ -8,6 +8,9 @@ pub mod card_font;
 pub mod display;
 pub mod font;
 
+#[cfg(test)]
+mod face_tests;
+
 /// Minimum width for an owned console window, fitting the guide panel.
 pub const TARGET_COLUMNS: u16 = 130;
 
