@@ -21,6 +21,16 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 | `cargo xtask report` | prints the last check result as Markdown; paste it into the PR's "Check result" section | run after `check` |
 | `cargo xtask locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |
 | `cargo xtask screenshots` | regenerates the SVG screenshots and animations of the player site (see "Player site") | run by hand; commit the result |
+| `cargo xtask preflight [--card <ID>] [--base <ref>] [--ci]` | fetches `origin`; reports how far the branch is behind and ahead of `origin/main` (a warning when behind); runs the conflict-marker and decision-ID lints; with `--card`, warns about changed files that the card's `Files` line does not name; `--ci` then runs `check --pr <base>` | run before `check --quick` (see "Before you open a PR") |
+| `cargo xtask worktrees [--remove [--force]]` | lists every worktree with its state (`main`, `merged`, `open`) and the orphan folders git no longer knows; `--remove` deletes the clean merged ones and prunes; a dry run without it | run by hand (see "Worktrees") |
+
+### Before you open a PR
+
+Run `cargo xtask preflight --card <ID>` first. It fetches `origin`, warns when the branch is behind
+`origin/main` (then run `git merge origin/main`), runs the marker and decision-ID lints, and warns about
+changed files the card does not name; only lint errors or an unknown card make it fail. Then run
+`cargo xtask check --quick`. For a change that touches only docs or a small part of the code, `cargo xtask
+check --pr origin/main` is the same gate CI runs (`preflight --ci` runs it after the preflight).
 
 Affected packages (T-22): `crates/core` selects `oxysol-core`, `oxysol-tui` and `oxysol`;
 `crates/tui` selects `oxysol-tui` and `oxysol`; `src/` and `tests/` select `oxysol`; `xtask/`
@@ -32,7 +42,7 @@ package. Changes under `docs/` and to `*.md` select none.
 
 | File | Trigger | Runs |
 |---|---|---|
-| `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu, then Clippy and tests of `oxysol` with `--no-default-features` (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`); a separate `deny` job runs `cargo deny check licenses advisories sources bans` (`deny.toml`, T-37) |
+| `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu and Windows (`check-windows`), plus Clippy and tests of `oxysol` with `--no-default-features` on Ubuntu (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`); a separate `deny` job runs `cargo deny check licenses advisories sources bans` (`deny.toml`, T-37) |
 | `.github/workflows/main.yml` | push to `main`, manual dispatch | `check` runs `cargo xtask check` on Ubuntu and Windows, plus the no-sound Clippy and tests on Ubuntu; `check-macos` runs `cargo xtask check` on macOS and does not gate `promote` (see "macOS and jobs that never started"); `promote` (main only) needs `check`. It is the only workflow that saves the rust cache |
 | `.github/workflows/release.yml` | manual dispatch only (R-20), input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
 
@@ -223,6 +233,16 @@ is merged or closed, the orchestrator removes it: `git worktree remove <path>`, 
 `git branch -D <branch>` (GitHub deletes the remote branch on merge). A worktree whose agent stopped
 with uncommitted work is committed as `wip(...)` and pushed before removal, so another agent can
 finish it.
+
+`cargo xtask worktrees` does the hygiene in one step. A branch is `merged` when its upstream is `[gone]`
+(a squash merge with the branch deleted), when its pushed tip is an ancestor of `origin/main`, or when
+its pull request is closed or merged (checked with `gh`; without `gh` that check is skipped). A branch
+that was never pushed is never merged by ancestry, so a fresh worktree is not removed. Otherwise it is
+`open`; the main checkout is `main`. Without flags the command is a dry run. `--remove` deletes the
+merged worktrees that have no uncommitted changes (`git worktree remove`, never `--force` unless
+`--force` is also passed) and then prunes. It never touches the main checkout, and it reports the
+worktree folders under `.claude/worktrees/` and beside the main checkout that git no longer knows,
+without deleting them. Branches are not deleted by the command; `git branch -D` stays a manual step.
 
 ## Local setup on Windows
 

@@ -59,11 +59,7 @@ pub fn run(root: &Path) -> Result<(), XtaskError> {
             findings.extend(rule(&file));
         }
     }
-    let texts = collect_tracked_texts(root)?;
-    for file in &texts {
-        findings.extend(conflict_markers::check(file));
-    }
-    findings.extend(decision_ids::check(&texts));
+    findings.extend(text_rule_findings(root)?);
     findings.retain(|finding| !is_excepted(finding, &exceptions));
     for finding in &findings {
         print_finding(finding);
@@ -79,7 +75,22 @@ pub fn run(root: &Path) -> Result<(), XtaskError> {
     }
 }
 
-fn print_finding(finding: &Finding) {
+/// The text rules (conflict markers, decision IDs) with `lint-exceptions.toml` applied, as `preflight` runs them.
+pub fn text_findings(root: &Path) -> Result<Vec<Finding>, XtaskError> {
+    let (exceptions, mut findings) = load_exceptions(root)?;
+    findings.extend(text_rule_findings(root)?);
+    findings.retain(|finding| !is_excepted(finding, &exceptions));
+    Ok(findings)
+}
+
+fn text_rule_findings(root: &Path) -> Result<Vec<Finding>, XtaskError> {
+    let texts = collect_tracked_texts(root)?;
+    let mut findings: Vec<Finding> = texts.iter().flat_map(conflict_markers::check).collect();
+    findings.extend(decision_ids::check(&texts));
+    Ok(findings)
+}
+
+pub fn print_finding(finding: &Finding) {
     let level = match finding.severity {
         Severity::Warning => "WARNING",
         Severity::Error => "ERROR",
