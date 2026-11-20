@@ -174,6 +174,7 @@ Rules for the whole phase:
   for larger ones. Finalize micro cards M-30…M-34. Update the Status columns.
 - **Acceptance:** review report; the full path menu → game → settings → quit exercised for every
   game, by test or by hand (say which); `cargo xtask check` passes.
+- **Done:** #121 (path tests by keyboard and mouse for all 8 variants; M-30, M-31, M-33 READY; M-32 stays DRAFT until P5-02; findings became O-37…O-39)
 
 ### P3-11 — Board guidance: focus aura, action line and guide panel
 
