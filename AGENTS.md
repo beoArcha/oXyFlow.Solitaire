@@ -53,11 +53,16 @@ with Klondike, Spider, FreeCell and Pyramid. Do not rename anything.
   Never push to `main` or `release`.
 - Change only the files listed in your card. If you need anything else — including a new
   dependency in `Cargo.toml` — stop and say so in the report.
-- If you change a contract in `architecture.md`, update that file in the same PR and say so.
+- If you change a contract in `architecture.md`, update the contract text in the same PR and say so.
+  Never edit its `Status:` line: it is not a changelog.
+- Decision IDs (`R-`, `T-`, `D-`) in `docs/tech/decisions.md` are assigned by the orchestrator in your
+  card. Never pick the next free number yourself; if the card names none, ask in the report.
 - Tests are written together with the feature.
-- Before opening the PR run `cargo xtask check --quick`. It must pass.
+- Before opening the PR run `cargo xtask check --quick` in the foreground and wait for it. It must pass.
+  Never end your turn while a check runs in the background.
 - Do not edit the task list; status is updated by the phase gate.
 - Never claim a test you did not run or behavior you did not verify.
+- Quote the real last lines of the check output in your report; do not paraphrase them.
 
 ## Final report
 
