@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 
+use crate::fonts::FontsError;
 use crate::icon::IconError;
 use crate::midi::MidiError;
 use crate::screenshots::ScreenshotError;
@@ -57,6 +58,8 @@ pub enum XtaskError {
     Midi(#[from] MidiError),
     #[error(transparent)]
     Icon(#[from] IconError),
+    #[error(transparent)]
+    Fonts(#[from] FontsError),
     #[error(transparent)]
     Screenshots(#[from] ScreenshotError),
 }
