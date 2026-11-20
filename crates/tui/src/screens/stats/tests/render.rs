@@ -4,7 +4,7 @@ use ratatui::crossterm::event::{KeyCode, MouseEventKind};
 use super::support::{STATISTICS_ITEM, many_games, open_stats, row, three_games, wheel};
 use crate::app::Screen;
 use crate::glyphs::is_wgl4;
-use crate::i18n::{Locale, set_locale, t};
+use crate::i18n::{Locale, set_locale, t, tf};
 use crate::settings::Settings;
 use crate::solver::Proof;
 use crate::storage::Outcome::{Abandoned, Won};
@@ -100,6 +100,13 @@ fn storage_clone(storage: &MemoryStorage) -> MemoryStorage {
     }
 }
 
+fn in_locale<T>(locale: Locale, read: impl FnOnce() -> T) -> T {
+    set_locale(locale);
+    let value = read();
+    set_locale(Locale::EnUs);
+    value
+}
+
 fn mode_label(locale: Locale, mode: &str) -> String {
     set_locale(locale);
     let label = format!("({})", t(&format!("stats.mode.{mode}")));
@@ -157,6 +164,15 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
             }),
             ..MemoryStorage::new()
         };
+        let expected = in_locale(locale, || {
+            (
+                t("stats.summary.longest").into_owned(),
+                tf("stats.position", &[("current", "1"), ("total", "16")]),
+                t("stats.button.back").into_owned(),
+                tf("stats.position", &[("current", "16"), ("total", "16")]),
+            )
+        });
+        let (streak, first, back, last) = expected;
         let mut h = open_stats(storage, 100, 30);
         let lines = h.lines();
         let no_undo = mode_label(locale, "no_undo");
@@ -167,21 +183,23 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
             .map(|line| line.trim_end().chars().count())
             .max();
         assert!(widest.is_some_and(|width| width <= 100));
-        let names = ["Best streak", "Rekord"];
-        assert!(
-            !lines
-                .iter()
-                .any(|line| names.iter().any(|name| line.contains(name)))
+        assert!(!lines.iter().any(|line| line.contains(&streak)));
+        let text = lines.join(
+            "
+",
         );
-        let text = lines.join("\n");
-        assert!(
-            text.contains("Game 1 of 16") || text.contains("Gra 1 z 16"),
-            "{text}"
-        );
-        assert!(text.contains("Back") || text.contains("Wstecz"), "{text}");
+        assert!(text.contains(&first), "{text}");
+        assert!(text.contains(&back), "{text}");
+        set_locale(locale);
         h.press(KeyCode::End);
-        assert!(h.text().contains("16 of 16") || h.text().contains("16 z 16"));
+        assert!(
+            h.text().contains(&last),
+            "{locale:?} {last}
+{}",
+            h.text()
+        );
     }
+    set_locale(Locale::EnUs);
 }
 
 #[test]
