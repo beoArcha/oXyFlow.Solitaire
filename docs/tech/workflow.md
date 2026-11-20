@@ -32,7 +32,7 @@ package. Changes under `docs/` and to `*.md` select none.
 
 | File | Trigger | Runs |
 |---|---|---|
-| `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu, then Clippy and tests of `oxysol` with `--no-default-features` (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`); a separate `deny` job runs `cargo deny check licenses advisories sources bans` (`deny.toml`, T-37) |
+| `.github/workflows/pr.yml` | pull request to `main` opened, updated or reopened | `cargo xtask check --pr origin/<base>` on Ubuntu and Windows (`check-windows`), plus Clippy and tests of `oxysol` with `--no-default-features` on Ubuntu (the configuration of the Linux release); a newer push cancels the older run of the same PR. The rust cache is only read (`save-if: false`); a separate `deny` job runs `cargo deny check licenses advisories sources bans` (`deny.toml`, T-37) |
 | `.github/workflows/main.yml` | push to `main`, manual dispatch | `check` runs `cargo xtask check` on Ubuntu and Windows, plus the no-sound Clippy and tests on Ubuntu; `check-macos` runs `cargo xtask check` on macOS and does not gate `promote` (see "macOS and jobs that never started"); `promote` (main only) needs `check`. It is the only workflow that saves the rust cache |
 | `.github/workflows/release.yml` | manual dispatch only (R-20), input `stable` (default `false`) | `guard`, `check`, `tag`, `build`, `publish`, `site` (see "Release workflow") |
 
