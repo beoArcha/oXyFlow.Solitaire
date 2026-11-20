@@ -157,7 +157,7 @@ deals_left = "Delen over: {count}"
 [guide]
 title = "Gids ({key}: verbergen)"
 window_title = "Gids"
-window_scroll = "{up}/{down}/PgUp/PgDn: scrollen"
+window_scroll = "{up}/{down}/PgUp/PgDn: blader"
 window_close = "{key}/{back}: sluiten"
 game_title = "Spel"
 goal_title = "Doel"
