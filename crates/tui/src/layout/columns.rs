@@ -80,8 +80,8 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(counts: Counts, fanned: bool, area: Rect) -> Self {
-        let size = CardSize::largest_fit(|size| fits(counts, fanned, size, area));
+    fn new(counts: Counts, fanned: bool, area: Rect, limit: Option<CardSize>) -> Self {
+        let size = CardSize::largest_fit_within(limit, |size| fits(counts, fanned, size, area));
         let columns = columns_for(counts, size, MIN_GAP, fanned);
         let (gap, margin) = spacing(area.width, columns, size.width);
         let tableau_y = (area.y + size.height + size.row_gap()).min(area.bottom());
@@ -163,9 +163,15 @@ impl Grid {
     }
 }
 
-pub(super) fn compute(variant: Variant, piles: &[PileSnapshot], area: Rect) -> BoardGeometry {
+pub(super) fn compute(
+    variant: Variant,
+    piles: &[PileSnapshot],
+    area: Rect,
+    limit: Option<CardSize>,
+) -> BoardGeometry {
     let counts = Counts::of(piles);
-    let grid = Grid::new(counts, variant == Variant::Klondike(DrawCount::Three), area);
+    let fanned = variant == Variant::Klondike(DrawCount::Three);
+    let grid = Grid::new(counts, fanned, area, limit);
     let waste_column = u16::from(counts.stock);
     let cells_column = waste_column + if counts.waste { grid.waste_columns } else { 0 };
     let foundations_column = grid.columns.saturating_sub(counts.foundations);

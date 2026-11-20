@@ -49,9 +49,18 @@ const EVENTS: [&str; 6] = [
     "board.status.restarted",
 ];
 
+/// Rows of the main menu's language selector, whose arrows are not a focus marker of a list.
+const MENU_CORNER_ROWS: usize = 3;
+
 fn focused(h: &mut Harness) -> Option<String> {
     let glyphs = Glyphs::new(GlyphMode::Unicode);
-    marked_text(&h.lines(), glyphs.focus_left)
+    let lines = h.lines();
+    let skip = if h.app.screen() == Screen::MainMenu {
+        MENU_CORNER_ROWS
+    } else {
+        0
+    };
+    marked_text(lines.get(skip..).unwrap_or_default(), glyphs.focus_left)
 }
 
 /// The labels of a list in the order `key` visits them; the list wraps, so the walk ends where it
@@ -166,7 +175,7 @@ fn every_settings_row_is_reached_by_keyboard() {
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);
-    assert_eq!(rows.len(), 16, "{rows:?}");
+    assert_eq!(rows.len(), 18, "{rows:?}");
 }
 
 #[test]
@@ -174,7 +183,7 @@ fn every_main_menu_item_and_settings_row_is_also_reached_by_tab() {
     assert_eq!(rows_by_tab(&mut Harness::new()), rows(&mut Harness::new()));
     let mut h = menu_at(3);
     h.press(KeyCode::Enter);
-    assert_eq!(rows_by_tab(&mut h).len(), 16);
+    assert_eq!(rows_by_tab(&mut h).len(), 18);
 }
 
 #[test]

@@ -14,6 +14,25 @@ fn start_first_game(h: &mut Harness) {
     h.lines();
 }
 
+fn pick_up_a_card(h: &mut Harness) -> bool {
+    for _ in 0..4 {
+        for key in [
+            KeyCode::Down,
+            KeyCode::Right,
+            KeyCode::Right,
+            KeyCode::Down,
+            KeyCode::Right,
+        ] {
+            h.press(key);
+            h.press(KeyCode::Enter);
+            if h.app.board().carrying() {
+                return true;
+            }
+        }
+    }
+    false
+}
+
 fn column_of(h: &mut Harness, needle: &str) -> Option<u16> {
     h.find(needle).map(|(column, _)| column)
 }
@@ -144,4 +163,37 @@ fn the_wheel_outside_the_docked_window_does_not_reach_it() {
     }));
     assert!(matches!(h.app.modal(), Some(Modal::Help)));
     assert!(h.app.board().clock_running());
+}
+
+#[test]
+fn esc_closes_a_docked_help_window_before_the_board_when_nothing_is_picked() {
+    let mut h = harness(130, 40);
+    start_first_game(&mut h);
+    h.type_char('?');
+    h.type_char('d');
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    assert_eq!(h.app.screen(), Screen::Board);
+}
+
+#[test]
+fn esc_puts_a_picked_card_back_and_keeps_the_docked_help_window_open() {
+    let mut h = harness(130, 40);
+    start_first_game(&mut h);
+    h.type_char('?');
+    h.type_char('d');
+    assert!(pick_up_a_card(&mut h));
+    h.press(KeyCode::Esc);
+    assert!(!h.app.board().carrying());
+    assert!(matches!(h.app.modal(), Some(Modal::Help)));
+    assert_eq!(h.app.screen(), Screen::Board);
+}
+
+#[test]
+fn esc_without_a_docked_help_window_still_leaves_the_board_for_the_menu() {
+    let mut h = harness(130, 40);
+    start_first_game(&mut h);
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    assert_eq!(h.app.screen(), Screen::MainMenu);
 }

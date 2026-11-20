@@ -52,8 +52,8 @@ impl App {
     }
 
     /// Routes a key while a modal is open: `Some(effect)` when the dock controls or the modal take
-    /// it, `None` when the board does (a docked window without the focus). `?` closes a docked
-    /// window the board has the keys of.
+    /// it, `None` when the board does (a docked window without the focus). From the board, `?`
+    /// closes a docked window, and so does Esc when no card is picked up.
     pub(super) fn dock_route(&mut self, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
         self.modal.as_ref()?;
         if let Some(effect) = self.dock_key(action) {
@@ -62,7 +62,9 @@ impl App {
         if self.modal_takes_keys() {
             return Some(self.on_modal_key(key, action));
         }
-        if action == Some(Action::Help) {
+        let leaves = action == Some(Action::Help)
+            || (action == Some(Action::Back) && !self.board.carrying());
+        if leaves {
             self.close_modal();
             return Some(Effect::None);
         }

@@ -68,6 +68,9 @@ impl BoardScreen {
             return Effect::None;
         }
         self.follow(ctx);
+        if let Some(action) = self.wheel_zoom(event) {
+            return self.dispatch(action);
+        }
         if let Some(cell) = left_press(event) {
             if self.on_guide_title(cell) {
                 return toggle_guide(ctx);

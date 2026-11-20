@@ -24,6 +24,9 @@ pub enum Action {
     QuickMove,
     RunMore,
     RunLess,
+    ZoomIn,
+    ZoomOut,
+    ZoomAuto,
     Undo,
     Redo,
     Hint,
@@ -37,7 +40,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 30] = [
+    pub const ALL: [Action; 33] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -50,6 +53,9 @@ impl Action {
         Action::QuickMove,
         Action::RunMore,
         Action::RunLess,
+        Action::ZoomIn,
+        Action::ZoomOut,
+        Action::ZoomAuto,
         Action::Undo,
         Action::Redo,
         Action::Hint,
@@ -94,6 +100,9 @@ impl Action {
             Action::QuickMove => "help.action.quick_move",
             Action::RunMore => "help.action.run_more",
             Action::RunLess => "help.action.run_less",
+            Action::ZoomIn => "help.action.zoom_in",
+            Action::ZoomOut => "help.action.zoom_out",
+            Action::ZoomAuto => "help.action.zoom_auto",
             Action::Undo => "help.action.undo",
             Action::Redo => "help.action.redo",
             Action::Hint => "help.action.hint",
@@ -112,15 +121,17 @@ impl Action {
 pub enum HelpGroup {
     Navigation,
     Board,
+    Display,
     Game,
     General,
 }
 
 impl HelpGroup {
     /// Groups in display order.
-    pub const ALL: [HelpGroup; 4] = [
+    pub const ALL: [HelpGroup; 5] = [
         HelpGroup::Navigation,
         HelpGroup::Board,
+        HelpGroup::Display,
         HelpGroup::Game,
         HelpGroup::General,
     ];
@@ -130,6 +141,7 @@ impl HelpGroup {
         match self {
             HelpGroup::Navigation => "help.group.navigation",
             HelpGroup::Board => "help.group.board",
+            HelpGroup::Display => "help.group.display",
             HelpGroup::Game => "help.group.game",
             HelpGroup::General => "help.group.general",
         }

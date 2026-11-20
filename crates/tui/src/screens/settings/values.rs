@@ -1,12 +1,14 @@
 //! What a row of the settings screen shows and how one step changes [`Settings`].
 
 use super::options::{
-    BACK_STYLES, COLOR_MODES, FIELDS, FRONT_STYLES, FULL_SCREEN_MODES, Field, GLYPH_MODES, Step,
+    BACK_STYLES, CARD_BACKS, COLOR_MODES, FIELDS, FRONT_STYLES, FULL_SCREEN_MODES, Field,
+    GLYPH_MODES, Step,
 };
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::i18n::{Locale, t, tf};
-use crate::settings::{ColorMode, FullScreen, GlyphMode, Settings};
+use crate::settings::{CardBack, CardSizeSetting, ColorMode, FullScreen, GlyphMode, Settings};
 use crate::theme::ThemeId;
+use crate::widgets::card::back;
 
 const VOLUME_STEP: u8 = 10;
 
@@ -24,6 +26,14 @@ const fn theme_key(theme: ThemeId) -> &'static str {
         ThemeId::HighContrast => "settings.theme.high_contrast",
         ThemeId::Monokai => "settings.theme.monokai",
         ThemeId::Dracula => "settings.theme.dracula",
+    }
+}
+
+const fn card_back_key(card_back: CardBack) -> &'static str {
+    match card_back {
+        CardBack::Theme => "settings.card_back.theme",
+        CardBack::Monokai => "settings.card_back.monokai",
+        CardBack::Dracula => "settings.card_back.dracula",
     }
 }
 
@@ -115,10 +125,16 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     match field {
         Field::Language => t(locale_key(settings.locale)).into_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
+        Field::CardBack => format!(
+            "{} {}",
+            t(card_back_key(settings.card_back)),
+            back::preview(settings.card_back, settings.glyph_mode)
+        ),
         Field::FrontStyle => card_style_name(&settings.front_style),
         Field::BackStyle => card_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
+        Field::CardSize => t(settings.card_size.label_key()).into_owned(),
         Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
@@ -199,6 +215,7 @@ pub fn changed(
     match field {
         Field::Language => next.locale = cycle(&Locale::ALL, settings.locale, step),
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
+        Field::CardBack => next.card_back = cycle(&CARD_BACKS, settings.card_back, step),
         Field::FrontStyle => {
             next.front_style = cycle_str(&FRONT_STYLES, &settings.front_style, step);
         }
@@ -207,6 +224,9 @@ pub fn changed(
         }
         Field::Glyphs => next.glyph_mode = cycle(&GLYPH_MODES, settings.glyph_mode, step),
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
+        Field::CardSize => {
+            next.card_size = cycle(&CardSizeSetting::ALL, settings.card_size, step);
+        }
         Field::FullScreen => {
             next.full_screen = cycle(&FULL_SCREEN_MODES, settings.full_screen, step);
         }

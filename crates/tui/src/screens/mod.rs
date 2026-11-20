@@ -19,7 +19,7 @@ use crate::app::{Modal, Screen, SearchCommand};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
-use crate::settings::{Aids, Settings};
+use crate::settings::{Aids, CardSizeSetting, Settings};
 use crate::theme::Theme;
 
 /// The saved game as the main menu names it in its Resume row.
@@ -68,6 +68,8 @@ pub enum Effect {
     /// Replace the settings; the application applies and saves them.
     Apply(Settings),
     Open(Modal),
+    /// Set the card size and save it with the settings (the zoom keys of the board).
+    CardSize(CardSizeSetting),
     /// Set the aids of the running game; the defaults in the settings stay as they are.
     Quick(Aids),
     /// Make the aids of the running game the defaults for new games, and save them.

@@ -3,10 +3,12 @@
 [row]
 language = "Language"
 theme = "Theme"
+card_back = "Card back"
 front_style = "Front style"
 back_style = "Back style"
 glyphs = "Symbols"
 colors = "Colors"
+card_size = "Card size"
 full_screen = "Full screen"
 sound_style = "Sound style"
 cues = "Sound cues"
@@ -31,10 +33,12 @@ default = "Default"
 [desc]
 language = "The language of all text. Changes at once."
 theme = "The colors of the interface."
+card_back = "The colors and pattern of the backs of face-down cards."
 front_style = "The design of the card faces."
 back_style = "The design of the backs of face-down cards."
 glyphs = "Unicode draws suits and symbols; ASCII uses plain characters only."
 colors = "How many colors the terminal is asked to show. Auto detects it."
+card_size = "Auto fits the window; a size that does not fit falls back. Keys ] [ 0 or Ctrl+wheel."
 full_screen = "Auto: on only in the window the game opened itself. In a console: Alt+Enter or F11."
 sound_style = "The sound of the cues and the music."
 cues = "Short sounds for moves and for a win."
@@ -55,9 +59,21 @@ needs_columns = "{value} (needs {needed} columns, now {now})"
 [full_screen]
 auto = "Auto"
 
+[card_size]
+auto = "Auto"
+small = "Small"
+medium = "Medium"
+large = "Large"
+huge = "Huge"
+
 [aura]
 full = "Full"
 focus_only = "Focus only"
+
+[card_back]
+theme = "Theme"
+monokai = "Monokai"
+dracula = "Dracula"
 
 [locale]
 en_us = "English"

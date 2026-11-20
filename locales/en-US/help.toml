@@ -1,6 +1,7 @@
 [group]
 navigation = "Navigation"
 board = "Moves"
+display = "Display"
 game = "Game"
 general = "App"
 mouse = "Mouse"
@@ -22,6 +23,9 @@ stock = "Stock"
 quick_move = "Quick move"
 run_more = "Select more cards"
 run_less = "Select fewer cards"
+zoom_in = "Bigger cards"
+zoom_out = "Smaller cards"
+zoom_auto = "Cards: auto size"
 undo = "Undo"
 redo = "Redo"
 hint = "Hint"
@@ -36,6 +40,10 @@ menu = "Menu"
 copy_seed = "Copy seed"
 dock = "Dock the help window"
 dock_focus = "Focus the docked window"
+
+[display]
+terminal_keys = "Ctrl +/-/0"
+terminal_text = "Terminal zoom (Mac: Cmd)"
 
 [mouse_keys]
 click_card = "Click a card"

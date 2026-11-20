@@ -92,7 +92,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 30] = [
+pub const KEY_TABLE: [Binding; 33] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -137,6 +137,9 @@ pub const KEY_TABLE: [Binding; 30] = [
     bind(Action::QuickMove, HelpGroup::Board, &[KeySpec::ch('a')]),
     bind(Action::RunMore, HelpGroup::Board, &[KeySpec::ch('+')]),
     bind(Action::RunLess, HelpGroup::Board, &[KeySpec::ch('-')]),
+    bind(Action::ZoomIn, HelpGroup::Display, &[KeySpec::ch(']')]),
+    bind(Action::ZoomOut, HelpGroup::Display, &[KeySpec::ch('[')]),
+    bind(Action::ZoomAuto, HelpGroup::Display, &[KeySpec::ch('0')]),
     bind(
         Action::Undo,
         HelpGroup::Board,
@@ -269,6 +272,44 @@ mod tests {
                 expected,
                 "{code:?}"
             );
+        }
+    }
+
+    #[test]
+    fn the_zoom_keys_are_brackets_and_zero_in_the_display_group() {
+        let cases = [
+            (']', Action::ZoomIn, "]"),
+            ('[', Action::ZoomOut, "["),
+            ('0', Action::ZoomAuto, "0"),
+        ];
+        for (key, action, name) in cases {
+            let event = press(KeyCode::Char(key), KeyModifiers::NONE);
+            assert_eq!(action_for_key(&event), Some(action));
+            assert_eq!(primary_key(action).as_deref(), Some(name));
+            assert_eq!(
+                binding_for(action).map(|binding| binding.group),
+                Some(HelpGroup::Display)
+            );
+        }
+    }
+
+    #[test]
+    fn plus_and_minus_stay_the_run_size_keys() {
+        let plus = press(KeyCode::Char('+'), KeyModifiers::SHIFT);
+        let minus = press(KeyCode::Char('-'), KeyModifiers::NONE);
+        assert_eq!(action_for_key(&plus), Some(Action::RunMore));
+        assert_eq!(action_for_key(&minus), Some(Action::RunLess));
+        for code in [KeyCode::Up, KeyCode::Down] {
+            let shifted = press(code, KeyModifiers::SHIFT);
+            assert_eq!(action_for_key(&shifted), None, "{code:?}");
+        }
+    }
+
+    #[test]
+    fn the_font_keys_are_not_in_the_key_table() {
+        for code in ['+', '=', '-', '0'] {
+            let event = press(KeyCode::Char(code), KeyModifiers::CONTROL);
+            assert_eq!(action_for_key(&event), None, "{code}");
         }
     }
 
