@@ -21,7 +21,9 @@ use crate::input::Input;
 use crate::settings::Settings;
 use crate::solver::{Answer, Proof, Query, Solver};
 use crate::storage::memory::MemoryStorage;
-use crate::storage::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
+use crate::storage::{
+    AssistCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
+};
 
 /// The version string the test harness gives the menu.
 pub const TEST_VERSION: &str = "1.2.3-test";
@@ -84,6 +86,10 @@ impl Storage for SharedStorage {
 
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {
         self.0.borrow_mut().record_restart(id)
+    }
+
+    fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError> {
+        self.0.borrow_mut().record_assist(id, assist)
     }
 
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError> {

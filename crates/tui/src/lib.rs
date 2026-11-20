@@ -34,5 +34,7 @@ pub use input::Input;
 pub use ratatui::crossterm;
 pub use settings::Settings;
 pub use solver::{Answer, DealCheck, NullSolver, Proof, Query, Solver};
-pub use storage::{GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
+pub use storage::{
+    AssistCounters, GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
+};
 pub use terminal::{TuiError, restore_terminal, run};

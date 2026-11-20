@@ -8,7 +8,10 @@ use thiserror::Error;
 use crate::settings::Settings;
 use crate::solver::Proof;
 
+pub mod counters;
 pub mod memory;
+
+pub use counters::AssistCounters;
 
 /// Identifier of one dealt game in the history.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -28,6 +31,8 @@ pub enum Outcome {
 pub struct GameCounters {
     /// Restarts of a game played without undo. A game with undo never counts one, so it stays 0.
     pub restarts: u32,
+    /// Who made the moves: the player or the automatic moves (P4-06).
+    pub assist: AssistCounters,
 }
 
 /// One dealt game as recorded in the history (R-18).
@@ -116,6 +121,8 @@ pub trait Storage {
     /// Adds one to the restart count of a history row, when the player restarts a game that is
     /// played without undo. It is written at once, so a quit or a crash cannot lose it.
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError>;
+    /// Replaces the assist counters of a history row (P4-06) with the running game's totals.
+    fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError>;
     /// Records what the solver found out about the deal of a history row.
     fn record_proof(&mut self, id: GameId, proof: Proof) -> Result<(), StorageError>;
     /// Every recorded game in start order, oldest first.

@@ -4,6 +4,7 @@
 use ratatui::Frame;
 use ratatui::layout::Rect;
 
+use super::assist::assist_line;
 use super::view::centered;
 use super::{Notice, StatsScreen};
 use crate::i18n::{t, tf};
@@ -11,6 +12,14 @@ use crate::screens::ViewCtx;
 use crate::theme::Token;
 
 impl StatsScreen {
+    /// The assist line of the selected game, or the keys of the checks when it has no counted moves.
+    fn default_line(&self) -> String {
+        self.records
+            .get(self.list.selected())
+            .and_then(|record| assist_line(&record.counters.assist))
+            .unwrap_or_else(|| t("stats.check.hint").into_owned())
+    }
+
     /// Draws the status line.
     pub(super) fn draw_status(&self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         if let Some(progress) = self.progress_text() {
@@ -25,7 +34,7 @@ impl StatsScreen {
         let Some(notice) = self.notice else {
             if !self.records.is_empty() {
                 let style = ctx.theme.style(Token::TextMuted, Token::Background);
-                centered(frame, area, t("stats.check.hint").into_owned(), style);
+                centered(frame, area, self.default_line(), style);
             }
             return;
         };

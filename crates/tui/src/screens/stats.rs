@@ -5,6 +5,7 @@
 //! `App` hands it the history when the screen opens, submits the checks it asks for and reports the
 //! answers and how a copy ended.
 
+mod assist;
 mod check;
 mod format;
 mod list;

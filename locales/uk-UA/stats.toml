@@ -30,6 +30,7 @@ best_time = "Кращий час"
 fewest_moves = "Мін. ходів"
 streak = "Серія"
 longest = "Рекорд"
+assisted = "Допом."
 
 [history]
 title = "Історія, спочатку нові, час UTC"
@@ -68,3 +69,10 @@ running = "Перевірка: {done} з {total}"
 finished = "Перевірку завершено ({total})"
 already = "Цю гру вже перевірено"
 nothing = "Усі ігри вже перевірено"
+
+[assist]
+share = "Авто {share}% ({auto} з {total})"
+failed = "невдалі {failed}"
+run = "ряд {run}"
+finish = "фініш {finish}"
+tag = "гра з допомогою"

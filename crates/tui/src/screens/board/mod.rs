@@ -2,6 +2,7 @@
 //! dropping, and the commands. The drawing is in `view.rs`; every rule comes from the engine
 //! through `Session`, the screen only turns keys into moves.
 
+mod assist;
 mod choices;
 mod commands;
 mod controls;
@@ -29,6 +30,7 @@ use ratatui::Frame;
 use ratatui::crossterm::event::KeyEvent;
 use ratatui::layout::Rect;
 
+use self::assist::AssistTally;
 use self::choices::Choice;
 use self::cursor::Cursor;
 use self::finish::Finishing;
@@ -79,6 +81,7 @@ pub struct BoardScreen {
     hint_note: bool,
     undo_allowed: bool,
     restarts: u32,
+    assist: AssistTally,
     deal: DealCheck,
     guide_panel: bool,
     moves_panel: bool,
@@ -124,6 +127,7 @@ impl Default for BoardScreen {
             hint_note: false,
             undo_allowed: true,
             restarts: 0,
+            assist: AssistTally::default(),
             deal: DealCheck::Unchecked,
             guide_panel: true,
             moves_panel: true,
@@ -171,6 +175,7 @@ impl BoardScreen {
         self.copy_note = None;
         self.undo_allowed = undo_allowed;
         self.restarts = 0;
+        self.assist = AssistTally::default();
         self.deal = DealCheck::Unchecked;
         self.settle();
     }
@@ -215,6 +220,7 @@ impl BoardScreen {
         self.cursor = Cursor::initial(&session.game().piles());
         self.pointer = Pointer::default();
         self.finishing = None;
+        self.assist = AssistTally::default();
         self.clock = GameClock::stopped(Duration::ZERO);
         self.clock.resume(now);
         self.settle();

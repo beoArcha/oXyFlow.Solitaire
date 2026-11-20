@@ -4,7 +4,7 @@
 use std::time::Duration;
 
 use super::{App, Modal, Screen};
-use crate::storage::{GameId, Outcome, SavedGame, StorageError};
+use crate::storage::{AssistCounters, GameCounters, GameId, Outcome, SavedGame, StorageError};
 
 const WRITE_FAILED_ALERT: &str = "common.error.storage";
 
@@ -50,6 +50,25 @@ impl App {
         let result = self.storage.save_game(&game);
         self.saved = Some(game);
         self.note_write(result, "the game could not be saved");
+        self.write_assist(id);
+    }
+
+    /// Stores the assist counters of the running game when they differ from what is stored, so
+    /// that a move which counts nothing and a resume do not write.
+    fn write_assist(&mut self, id: GameId) {
+        let now = self.board.assist();
+        let known = match self.assist_written {
+            Some((written, counters)) if written == id => counters,
+            _ => AssistCounters::default(),
+        };
+        if now == known {
+            return;
+        }
+        let result = self.storage.record_assist(id, now);
+        if result.is_ok() {
+            self.assist_written = Some((id, now));
+        }
+        self.note_write(result, "the assist counters could not be recorded");
     }
 
     fn finish_won(&mut self) {
@@ -64,6 +83,7 @@ impl App {
             .board
             .session()
             .map_or(0, |s| move_count(s.moves_made()));
+        self.write_assist(id);
         let finished = self
             .storage
             .finish_game(id, Outcome::Won, elapsed_ms, moves);
@@ -85,16 +105,16 @@ impl App {
         self.note_write(result, "the restart could not be recorded");
     }
 
-    /// The restart count of a resumed game, from its history row; 0 when it cannot be read.
-    pub(super) fn stored_restarts(&self, id: GameId) -> u32 {
+    /// The counters of a resumed game, from its history row; zero when they cannot be read.
+    pub(super) fn stored_counters(&self, id: GameId) -> GameCounters {
         match self.storage.history() {
             Ok(records) => records
                 .iter()
                 .find(|record| record.id == id)
-                .map_or(0, |record| record.counters.restarts),
+                .map_or_else(GameCounters::default, |record| record.counters),
             Err(error) => {
-                tracing::warn!(%error, "the restart count of the saved game could not be read");
-                0
+                tracing::warn!(%error, "the counters of the saved game could not be read");
+                GameCounters::default()
             }
         }
     }

@@ -30,6 +30,7 @@ best_time = "Best time"
 fewest_moves = "Fewest moves"
 streak = "Streak"
 longest = "Best streak"
+assisted = "Assisted"
 
 [history]
 title = "History, newest first, times in UTC"
@@ -68,3 +69,10 @@ running = "Checking winnable: {done} of {total}"
 finished = "Winnable check finished ({total})"
 already = "This game is already checked"
 nothing = "Every game is already checked"
+
+[assist]
+share = "Automatic {share}% ({auto} of {total})"
+failed = "failed {failed}"
+run = "run {run}"
+finish = "finish {finish}"
+tag = "assisted game"

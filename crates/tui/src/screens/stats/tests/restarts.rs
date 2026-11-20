@@ -17,7 +17,10 @@ use crate::storage::{GameCounters, GameRecord};
 fn played_without_undo(id: i64, restarts: u32) -> GameRecord {
     GameRecord {
         undo_allowed: false,
-        counters: GameCounters { restarts },
+        counters: GameCounters {
+            restarts,
+            ..GameCounters::default()
+        },
         ..record(id, KLONDIKE, Some(Won), Some(60_000), Some(50))
     }
 }
@@ -100,13 +103,19 @@ fn the_summary_and_the_history_show_restarts_at_100_by_30_in_both_locales() {
             let id = 10 + i64::try_from(index).unwrap_or(0);
             storage.history.push(HistoryRow {
                 undo_allowed: false,
-                counters: GameCounters { restarts: 3 },
+                counters: GameCounters {
+                    restarts: 3,
+                    ..GameCounters::default()
+                },
                 ..row(id, variant, Won, 61_000)
             });
         }
         storage.history.push(HistoryRow {
             undo_allowed: false,
-            counters: GameCounters { restarts: 12 },
+            counters: GameCounters {
+                restarts: 12,
+                ..GameCounters::default()
+            },
             seed: u64::MAX,
             ..row(
                 30,
@@ -167,7 +176,10 @@ fn a_row_with_restarts_stays_as_wide_as_the_header_in_both_locales() {
             elapsed_ms: Some(35_999_000),
             moves: Some(99_999),
             variant: Variant::Pyramid(PyramidRules::Classic),
-            counters: GameCounters { restarts: 999 },
+            counters: GameCounters {
+                restarts: 999,
+                ..GameCounters::default()
+            },
             ..played_without_undo(1, 0)
         };
         for short in [false, true] {

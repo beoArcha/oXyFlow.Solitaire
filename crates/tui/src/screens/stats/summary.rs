@@ -22,6 +22,8 @@ pub struct Summary {
     /// Wins in a row at the end of the history; an abandoned game ends the streak.
     pub current_streak: u32,
     pub longest_streak: u32,
+    /// Finished games with more automatic moves than the threshold (P4-06).
+    pub assisted: u32,
 }
 
 impl Summary {
@@ -74,6 +76,7 @@ fn summarize_group(variant: Variant, undo_allowed: bool, group: &[&GameRecord]) 
         fewest_moves: wins.filter_map(|record| record.moves).min(),
         current_streak,
         longest_streak,
+        assisted: count(group, |record| record.counters.assist.is_assisted()),
     }
 }
 
