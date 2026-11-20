@@ -173,6 +173,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Scope:** P3 items of `docs/tech/workflow-review-2026-11.md`, one PR each.
 - **Acceptance:** Each item as in the review.
 - **Progress:** B9, C7 and F5 done in #165 (manual `site.yml`); F4 (xtask compiles the TUI before the first gate) open
+- **F4:** moved into P4-14 (light `xtask`)
 
 ### O-37 — Mouse path for Pause and Possible moves on every screen width
 
@@ -465,6 +466,54 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
     ? unknown (limit reached).
 - **Acceptance:** tests for the header and legend at 100 × 30; a test that the action turns `·` into ✓/✗/? for a known
   seed; the UI stays responsive while checking (background or step-wise).
+
+### P4-13 — Process priority: `--priority` flag, Settings row, solver threads below the UI thread
+
+- **Owner:** Sonnet
+- **Depends on:** P3-29 (Settings rows; start after it is merged)
+- **Files:** `src/` (argument parser, a new `src/console/priority.rs` or `src/priority.rs` next to the kernel32 FFI of
+  `src/console/font.rs`), `crates/tui/src/settings*` and the settings screen, the solver worker in
+  `crates/tui/src/app/deals.rs` (thread priority only), `locales/*` (all nine), `docs/tech/architecture.md`, tests
+- **Scope:** owner request 2026-11-20: under heavy CPU load from other programs the game reacts slowly.
+  - Five levels: Highest, High, Normal (default), Low, Lowest. Windows: `SetPriorityClass` with
+    `HIGH_PRIORITY_CLASS`, `ABOVE_NORMAL_PRIORITY_CLASS`, `NORMAL_PRIORITY_CLASS`, `BELOW_NORMAL_PRIORITY_CLASS`,
+    `IDLE_PRIORITY_CLASS`. Never `REALTIME_PRIORITY_CLASS`. Linux and macOS: `setpriority` with nice 0 / 5 / 10 for
+    Normal / Low / Lowest; High and Highest need privileges, so the row says so and the priority stays unchanged
+    (a failed call is reported once, not an error log per frame).
+  - `oxysol --priority <highest|high|normal|low|lowest>` sets it for this run and wins over the setting; Help lists the
+    flag with the other command-line options.
+  - A "Process priority" row in Settings (Interface or a System group), saved and applied at start; a change applies at
+    once (preview and confirm like the other rows of P3-29).
+  - The solver threads (winnable deals, the statistics check of P4-12) run below the UI thread (Windows
+    `SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL)`, Unix a higher nice for the thread where supported), so input and
+    drawing stay responsive while a solver runs.
+  - Behind a small trait (like `Console`) so tests use a fake; the FFI follows the existing `// SAFETY:` style.
+- **Acceptance:** tests through the fake for each level on Windows and Unix mappings, the privilege note, the flag
+  parsing (valid, invalid, flag beats setting), the setting persistence and the solver thread priority call; the real
+  priority checked by hand in Task Manager (Details → Priority) — say what to check; all nine locales.
+
+### P4-14 — Docs-only pull requests run a docs check instead of the full build; light `xtask` (O-67 F4)
+
+- **Owner:** Sonnet
+- **Depends on:** O-62, O-64
+- **Files:** `.github/workflows/pr.yml`, `xtask/Cargo.toml`, `xtask/src/**`, `xtask/src/affected.rs`,
+  `docs/tech/workflow.md`, `docs/tech/architecture.md` (the xtask/CI table only)
+- **Scope:** owner request 2026-11-20: a PR that changes only documentation (`*.md` anywhere, `docs/**` except
+  `docs/site/**`, which the `site` job already builds; `LICENSE`, `.github/pull_request_template.md`) should not
+  build and test the whole workspace.
+  - `cargo xtask affected` reports a third state, docs-only. `check --pr <base>` then runs only `cargo xtask docs`:
+    the conflict-marker and decision-ID lints (O-52, O-53) and a relative-link check over `docs/**/*.md`, `README.md`
+    and `AGENTS.md` (every relative link and image target exists; anchors are not checked).
+  - The required checks keep their names: `check` and `check-windows` still run and report success on a docs-only
+    PR, they just take the short path (no `cargo build`, no Clippy, no tests). A PR that touches any other file runs
+    the full check as today.
+  - O-67 F4: `xtask` no longer compiles `oxysol-tui`, `oxysol-core`, `ratatui` and `resvg` for every command. Move the
+    commands that need them (`screenshots`, `fonts`, `icon`) behind a cargo feature or a second binary, so `lint`,
+    `docs`, `affected`, `preflight`, `report`, `version` and the `check` driver build quickly; `check` still builds the
+    workspace itself through cargo. Measure a cold `cargo xtask lint` before and after.
+- **Acceptance:** tests for the docs-only classification (`*.md`, `docs/**`, mixed with code → full); a test PR that
+  changes one `.md` file shows `check` and `check-windows` passing in well under a minute; the link check fails on a
+  broken relative link (fixture); cold `cargo xtask lint` time before and after in the PR.
 
 ## Done before the 2026-11 replan
 - **Done:** #169 (`w` / `W` check one or all unchecked deals off the UI thread; header `Win?`)
