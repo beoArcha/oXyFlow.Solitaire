@@ -3,6 +3,7 @@
 [row]
 language = "Language"
 theme = "Theme"
+card_back = "Card back"
 front_style = "Front style"
 back_style = "Back style"
 glyphs = "Symbols"
@@ -32,6 +33,7 @@ default = "Default"
 [desc]
 language = "The language of all text. Changes at once."
 theme = "The colors of the interface."
+card_back = "The colors and pattern of the backs of face-down cards."
 front_style = "The design of the card faces."
 back_style = "The design of the backs of face-down cards."
 glyphs = "Unicode draws suits and symbols; ASCII uses plain characters only."
@@ -67,6 +69,11 @@ huge = "Huge"
 [aura]
 full = "Full"
 focus_only = "Focus only"
+
+[card_back]
+theme = "Theme"
+monokai = "Monokai"
+dracula = "Dracula"
 
 [locale]
 en_us = "English"

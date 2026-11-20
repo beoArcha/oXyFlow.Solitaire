@@ -183,3 +183,15 @@ fn the_aura_pairs_are_checked_for_contrast_and_differ() {
         assert_ne!(palette.aura_carry.ansi16, palette.table.ansi16, "{id:?}");
     }
 }
+
+/// The Theme, Monokai and Dracula backs draw from these palettes, so every palette's back mark is checked.
+#[test]
+fn card_back_count_mark_reaches_text_target_on_every_back() {
+    for id in ThemeId::ALL {
+        let ratio = contrast_ratio(rgb(id, Token::CardBackMark), rgb(id, Token::CardBack));
+        assert!(
+            ratio >= id.contrast_target(),
+            "{id:?}: card back count mark is {ratio}"
+        );
+    }
+}

@@ -4,9 +4,11 @@
 use serde::{Deserialize, Serialize};
 
 mod aids;
+mod card_back;
 mod card_size;
 mod full_screen;
 pub use aids::{Aid, Aids};
+pub use card_back::CardBack;
 pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 
@@ -83,6 +85,8 @@ pub struct Settings {
     /// Whether the game fills the whole screen. An older saved value without the field loads as
     /// `Auto`.
     pub full_screen: FullScreen,
+    /// Which pattern and palette face-down cards use.
+    pub card_back: CardBack,
     /// The card size on the board. An older saved value without the field loads as `Auto`.
     pub card_size: CardSizeSetting,
 }
@@ -108,6 +112,7 @@ impl Default for Settings {
             aura: AuraMode::Full,
             target_marks: true,
             full_screen: FullScreen::Auto,
+            card_back: CardBack::Theme,
             card_size: CardSizeSetting::Auto,
         }
     }
@@ -318,5 +323,24 @@ mod tests {
         assert!(text.is_ok());
         let back = text.map(|t| toml::from_str::<Settings>(&t));
         assert!(matches!(back, Ok(Ok(ref s)) if *s == settings && !s.auto_finish));
+    }
+
+    #[test]
+    fn card_back_is_theme_by_default_and_old_values_without_it_keep_theme() {
+        assert_eq!(Settings::default().card_back, CardBack::Theme);
+        let parsed = toml::from_str::<Settings>("volume = 10");
+        assert!(matches!(parsed, Ok(ref s) if s.card_back == CardBack::Theme));
+    }
+
+    #[test]
+    fn card_back_round_trips() {
+        let settings = Settings {
+            card_back: CardBack::Monokai,
+            ..Settings::default()
+        };
+        let text = toml::to_string(&settings).unwrap_or_default();
+        assert!(text.contains("card_back = \"monokai\""));
+        let back = toml::from_str::<Settings>(&text);
+        assert!(matches!(back, Ok(ref s) if *s == settings));
     }
 }

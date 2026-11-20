@@ -150,12 +150,12 @@ fn sound_rows_do_nothing_without_audio() {
         clicked.handle_mouse(&click(column, row), &ctx),
         Effect::None
     );
-    for _ in 0..8 {
+    for _ in 0..9 {
         act(&mut screen, &ctx, Action::Down);
     }
     assert_eq!(act(&mut screen, &ctx, Action::Select), Effect::None);
     assert_eq!(act(&mut screen, &ctx, Action::Right), Effect::None);
-    for _ in 0..8 {
+    for _ in 0..9 {
         act(&mut screen, &ctx, Action::Up);
     }
     assert_eq!(

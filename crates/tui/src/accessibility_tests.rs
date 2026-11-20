@@ -175,7 +175,7 @@ fn every_settings_row_is_reached_by_keyboard() {
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     let rows = rows(&mut h);
-    assert_eq!(rows.len(), 17, "{rows:?}");
+    assert_eq!(rows.len(), 18, "{rows:?}");
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn every_main_menu_item_and_settings_row_is_also_reached_by_tab() {
     assert_eq!(rows_by_tab(&mut Harness::new()), rows(&mut Harness::new()));
     let mut h = menu_at(3);
     h.press(KeyCode::Enter);
-    assert_eq!(rows_by_tab(&mut h).len(), 17);
+    assert_eq!(rows_by_tab(&mut h).len(), 18);
 }
 
 #[test]
