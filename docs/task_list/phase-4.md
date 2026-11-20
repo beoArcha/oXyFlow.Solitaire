@@ -296,6 +296,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Scope:** open `target/fonts/preview.html`, then play one game in Font mode with each front and
   back. Accept each style or list the glyphs to redraw.
 - **Acceptance:** every MVP style accepted, or a redraw list attached to the micro cards.
+- **Done:** owner review 2026-11-20, LGTM (M-19…M-24 art); font rebuilt with 25 card glyphs in this PR
 
 ### P4-07 — Site: language landing page
 

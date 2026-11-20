@@ -253,7 +253,7 @@ Read `AGENTS.md` and your card only. A `DRAFT` card is not workable yet: the tas
 
 ### M-19 … M-24 — Vector glyphs
 
-- **Status:** READY · **Finalized by:** F-02 (D-06, T-16: glyph box, rules, naming, code points) · **Needs:** P5-01
+- **Status:** DONE · M-19 #178, M-20 #179, M-21 #176, M-22 #177, M-23 #180, M-24 #181; owner review U-02 LGTM · **Finalized by:** F-02 (D-06, T-16: glyph box, rules, naming, code points) · **Needs:** P5-01
   (`cargo xtask fonts` checks the files and builds the preview sheet)
 - **Branch:** `feat/M-XX-art-<style>` · **Files:** only the SVG files of your card, listed below
 - **Cards and files** (names are fixed by the code point table below):
