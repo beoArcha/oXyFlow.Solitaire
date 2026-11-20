@@ -106,6 +106,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         sound_styles: audio::bank::style_list(),
         solver: start_solver(),
         display: display_deps(args),
+        version: env!("OXYSOL_VERSION"),
     };
     oxysol_tui::run(deps).map_err(|error| {
         tracing::error!(%error, "the terminal interface stopped");

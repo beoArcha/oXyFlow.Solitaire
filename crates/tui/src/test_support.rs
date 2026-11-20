@@ -23,6 +23,9 @@ use crate::solver::{Answer, Proof, Query, Solver};
 use crate::storage::memory::MemoryStorage;
 use crate::storage::{GameId, GameRecord, Outcome, SavedGame, Storage, StorageError};
 
+/// The version string the test harness gives the menu.
+pub const TEST_VERSION: &str = "1.2.3-test";
+
 pub const TRUE_COLOR: TerminalCaps = TerminalCaps {
     color: ColorDepth::TrueColor,
     unicode: true,
@@ -277,6 +280,7 @@ impl Harness {
             sound_styles: sound_styles(),
             solver: Box::new(StubSolver(Rc::clone(&solver))),
             display: display.unwrap_or_else(DisplayDeps::none),
+            version: TEST_VERSION,
         });
         Self {
             app,

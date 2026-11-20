@@ -63,6 +63,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
         sound_styles: Vec::new(),
         solver: Box::new(NullSolver::default()),
         display: DisplayDeps::none(),
+        version: "0.0.0-test",
     });
     Player {
         app,

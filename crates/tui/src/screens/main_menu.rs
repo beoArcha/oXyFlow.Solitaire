@@ -110,17 +110,26 @@ pub struct MainMenu {
     footer: FooterMap,
     picker: LanguagePicker,
     selector_focus: bool,
+    version: &'static str,
 }
 
 impl MainMenu {
-    /// A menu focused on its first item.
-    pub fn new() -> Self {
-        Self::default()
+    /// A menu focused on its first item, or one that opens on the games dealt from `seed`, as if
+    /// the seed had just been submitted. `version` is the effective version shown in the footer.
+    pub fn start(seed: Option<u64>, version: &'static str) -> Self {
+        let menu = Self {
+            version,
+            ..Self::default()
+        };
+        match seed {
+            Some(seed) => menu.for_seed(seed),
+            None => menu,
+        }
     }
 
-    /// A menu that opens on the games dealt from `seed`, as if the seed had just been submitted.
-    pub fn for_seed(seed: u64) -> Self {
+    fn for_seed(self, seed: u64) -> Self {
         Self {
+            version: self.version,
             list: MenuList::new(),
             stage: Stage::Variants {
                 seed,
@@ -347,7 +356,7 @@ impl MainMenu {
             footer::key_style(ctx),
             ctx,
         );
-        let version = tf("menu.version", &[("version", env!("OXYSOL_VERSION"))]);
+        let version = tf("menu.version", &[("version", self.version)]);
         frame.render_widget(
             Paragraph::new(Line::styled(
                 version,

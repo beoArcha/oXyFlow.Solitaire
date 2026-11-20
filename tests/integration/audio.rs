@@ -45,6 +45,7 @@ fn app_with(audio: Box<dyn Audio>) -> App {
         sound_styles: Vec::new(),
         solver: Box::new(NullSolver::default()),
         display: DisplayDeps::none(),
+        version: "0.0.0-test",
     })
 }
 
