@@ -227,11 +227,22 @@ impl App {
         self.apply_settings(settings);
     }
 
-    pub(super) fn apply_settings(&mut self, settings: Settings) {
+    pub(super) fn apply_settings(&mut self, mut settings: Settings) {
         let full_screen_changed = self.settings.full_screen != settings.full_screen;
+        let console_font_changed = self.settings.console_font != settings.console_font;
+        let check = self.needs_graphics_check(&settings);
+        if check {
+            settings.glyph_mode = self.settings.glyph_mode;
+        }
         self.settings = settings;
         if full_screen_changed {
             self.full_screen_setting_changed();
+        }
+        if console_font_changed {
+            self.console_font_setting_changed();
+        }
+        if check {
+            self.open_graphics_check();
         }
         self.refresh_running();
         self.refresh_view();

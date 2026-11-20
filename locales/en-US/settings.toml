@@ -7,6 +7,7 @@ card_back = "Card back"
 front_style = "Front style"
 back_style = "Back style"
 glyphs = "Symbols"
+console_font = "Console font"
 colors = "Colors"
 card_size = "Card size"
 full_screen = "Full screen"
@@ -28,7 +29,11 @@ hints = "Hints and help"
 
 [style]
 international = "International"
-default = "Default"
+lattice = "Lattice"
+ornament = "Ornament"
+french = "French"
+german = "German"
+italian = "Italian"
 
 [desc]
 language = "The language of all text. Changes at once."
@@ -36,7 +41,12 @@ theme = "The colors of the interface."
 card_back = "The colors and pattern of the backs of face-down cards."
 front_style = "The design of the card faces."
 back_style = "The design of the backs of face-down cards."
-glyphs = "Unicode draws suits and symbols; ASCII uses plain characters only."
+glyphs = "Unicode draws suits and symbols; ASCII uses plain characters only; the oXySol font draws the card glyphs after a graphics check."
+console_font = "Switch this console to the oXySol font, which draws the card glyphs. Classic Windows console only."
+console_font_wt = "Windows Terminal: set the profile font face to \"oXySol Mono\" (see the graphics check)."
+console_font_other = "This terminal keeps its own font. Use Symbols and the graphics check instead."
+console_font_missing = "The oXySol font is not installed in this console (wiki page \"Card font\"). Unicode symbols stay."
+console_font_refused = "The console did not accept the oXySol font. Unicode symbols stay."
 colors = "How many colors the terminal is asked to show. Auto detects it."
 card_size = "Auto fits the window; a size that does not fit falls back. Keys ] [ 0 or Ctrl+wheel."
 full_screen = "Auto: on only in the window the game opened itself. In a console: Alt+Enter or F11."
@@ -54,6 +64,8 @@ moves_panel = "A side panel listing every action with its key, active or not."
 on = "On"
 off = "Off"
 unavailable = "unavailable"
+not_installed = "not installed"
+refused = "refused"
 needs_columns = "{value} (needs {needed} columns, now {now})"
 
 [full_screen]
@@ -85,6 +97,7 @@ dracula = "Dracula"
 [glyph]
 unicode = "Unicode"
 ascii = "ASCII"
+font = "oXySol font"
 
 [color]
 auto = "Auto"
@@ -100,3 +113,13 @@ style_failed = "Sound is unavailable: the selected sound style cannot be loaded.
 
 [footer]
 change = "Change"
+
+[graphics]
+title = "Graphics check"
+body = "These symbols are drawn with the oXySol card font."
+suits = "Suits: {symbols}"
+courts = "Court emblems: {symbols}"
+back = "Back: {tile}, centre {mosaic}"
+hint_windows_terminal = "Windows Terminal: set the profile font face to \"oXySol Mono\", or to a list that ends with it: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (lists work from Windows Terminal 1.20.11381)."
+question = "Do they look like card symbols, not like squares or blanks?"
+declined = "The Unicode symbols stay. To see the card font, install oXySol Mono first (wiki page \"Card font\"), then choose it again under Symbols."

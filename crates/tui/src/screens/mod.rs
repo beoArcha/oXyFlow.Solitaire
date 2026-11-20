@@ -15,7 +15,7 @@ use std::time::{Duration, Instant};
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 
 use crate::action::Action;
-use crate::app::{Modal, Screen, SearchCommand};
+use crate::app::{FontFacts, Modal, Screen, SearchCommand};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::TerminalCaps;
 use crate::glyphs::Glyphs;
@@ -43,6 +43,8 @@ pub struct ViewCtx<'a> {
     /// The last cell the mouse reported; a footer button under it is drawn as hovered.
     pub pointer: Option<(u16, u16)>,
     pub now: Instant,
+    /// The terminal and the state of the oXySol console font (P5-02).
+    pub font: FontFacts,
 }
 
 /// A request from a screen or a dialog to the application.

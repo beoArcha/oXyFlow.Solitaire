@@ -7,6 +7,7 @@ card_back = "Kartenrücken"
 front_style = "Vorderseiten-Stil"
 back_style = "Rückseiten-Stil"
 glyphs = "Symbole"
+console_font = "Konsolenschrift"
 colors = "Farben"
 card_size = "Kartengröße"
 full_screen = "Vollbild"
@@ -28,7 +29,11 @@ hints = "Hinweise und Hilfe"
 
 [style]
 international = "International"
-default = "Standard"
+lattice = "Gitter"
+ornament = "Ornament"
+french = "Französisch"
+german = "Deutsch"
+italian = "Italienisch"
 
 [desc]
 language = "Die Sprache aller Texte. Ändert sich sofort."
@@ -36,7 +41,12 @@ theme = "Die Farben der Benutzeroberfläche."
 card_back = "Farben und Muster der Rückseiten verdeckter Karten."
 front_style = "Das Aussehen der Kartenvorderseiten."
 back_style = "Das Aussehen der verdeckten Karten."
-glyphs = "Unicode zeichnet Farben und Symbole; ASCII nutzt nur einfache Zeichen."
+glyphs = "Unicode zeichnet Farben und Symbole; ASCII nutzt nur einfache Zeichen; die oXySol-Schrift zeichnet Kartensymbole nach einer Grafikprüfung."
+console_font = "Schaltet diese Konsole auf die oXySol-Schrift um, die die Kartensymbole zeichnet. Nur klassische Windows-Konsole."
+console_font_wt = "Windows Terminal: Schriftart des Profils auf \"oXySol Mono\" setzen (siehe Grafikprüfung)."
+console_font_other = "Dieses Terminal behält seine eigene Schrift. Nutze stattdessen Symbole und die Grafikprüfung."
+console_font_missing = "Die oXySol-Schrift ist in dieser Konsole nicht installiert (Wiki-Seite \"Card font\"). Unicode-Symbole bleiben."
+console_font_refused = "Die Konsole hat die oXySol-Schrift nicht angenommen. Unicode-Symbole bleiben."
 colors = "Wie viele Farben das Terminal anzeigen soll. Auto erkennt es automatisch."
 card_size = "Auto passt sich ans Fenster an; passt eine Größe nicht, wird sie reduziert. Tasten ] [ 0 oder Ctrl+Mausrad."
 full_screen = "Auto: Vollbild nur in Fenstern, die das Spiel selbst geöffnet hat. In der Konsole: Alt+Enter oder F11."
@@ -54,6 +64,8 @@ moves_panel = "Eine Seitenleiste mit allen Aktionen und deren Tasten, aktiv oder
 on = "Ein"
 off = "Aus"
 unavailable = "nicht verfügbar"
+not_installed = "nicht installiert"
+refused = "abgelehnt"
 needs_columns = "{value} (benötigt {needed} Spalten, aktuell {now})"
 
 [full_screen]
@@ -85,6 +97,7 @@ dracula = "Dracula"
 [glyph]
 unicode = "Unicode"
 ascii = "ASCII"
+font = "oXySol-Schrift"
 
 [color]
 auto = "Auto"
@@ -100,3 +113,13 @@ style_failed = "Ton nicht verfügbar: Der gewählte Klangstil kann nicht geladen
 
 [footer]
 change = "Ändern"
+
+[graphics]
+title = "Grafikprüfung"
+body = "Diese Symbole sind mit der oXySol-Kartenschrift gezeichnet."
+suits = "Farben: {symbols}"
+courts = "Bildkarten-Embleme: {symbols}"
+back = "Rückseite: {tile}, Mitte {mosaic}"
+hint_windows_terminal = "Windows Terminal: Schriftart des Profils auf \"oXySol Mono\" setzen oder auf eine Liste, die damit endet: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (Listen funktionieren ab Windows Terminal 1.20.11381)."
+question = "Sehen sie wie Kartensymbole aus, nicht wie Quadrate oder Lücken?"
+declined = "Die Unicode-Symbole bleiben. Um die Kartenschrift zu sehen, installiere zuerst oXySol Mono (Wiki-Seite \"Card font\") und wähle sie dann unter Symbole erneut."

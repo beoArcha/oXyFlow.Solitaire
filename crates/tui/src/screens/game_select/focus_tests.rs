@@ -21,7 +21,10 @@ fn select() -> Harness {
 }
 
 fn focused(h: &mut Harness) -> Option<String> {
-    marked_text(&h.lines(), "►")
+    marked_text(&h.lines(), "►").map(|text| match text.strip_prefix('[') {
+        Some(_) => text,
+        None => text.splitn(3, ' ').nth(2).unwrap_or_default().to_owned(),
+    })
 }
 
 fn label_of(variant: Variant) -> String {

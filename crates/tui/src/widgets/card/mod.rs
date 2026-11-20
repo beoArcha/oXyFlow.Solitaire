@@ -1,13 +1,14 @@
-//! The card widget v1: a front with rank and suit in the corners, the same rank and suit as bold
-//! text in the centre above a suit pictogram, a back, and an empty slot, in the International
-//! style. Style-driven rendering arrives in P5-02.
+//! The card widget: a front with rank and suit in the corners, the same rank and suit as bold
+//! text in the centre above a suit pictogram (in `Font` mode a glyph of the oXySol font), a back,
+//! and an empty slot. The suit symbols, court labels and the back tile come from the card styles
+//! of the settings through `Glyphs` (P5-02).
 //!
 //! The rank and suit sit in the top border row, so a card overlapped by the next card of its
 //! column still shows them. Focus, selection and hint change the border shape; focus, selection,
 //! target and hint each add a marker symbol. None of them depends on color. The Unicode borders
 //! are WGL4.
 
-use oxysol_core::{Card, Color as CardColor, Rank};
+use oxysol_core::{Card, Rank};
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
@@ -63,16 +64,17 @@ pub fn rank_text(rank: Rank) -> String {
     t(key).into_owned()
 }
 
-/// The corner label of a card: rank and suit, for example `10♥` or `10H`.
-pub fn label(card: Card, glyphs: &Glyphs) -> String {
-    format!("{}{}", rank_text(card.rank), glyphs.suit(card.suit))
+/// The label of a rank in a glyph set: the label the front style gives to ace and court ranks, else
+/// the localized one.
+pub fn rank_in(rank: Rank, glyphs: &Glyphs) -> String {
+    glyphs
+        .rank_label(rank)
+        .map_or_else(|| rank_text(rank), str::to_owned)
 }
 
-fn color_token(card: Card) -> Token {
-    match card.suit.color() {
-        CardColor::Red => Token::CardRed,
-        CardColor::Black => Token::CardBlack,
-    }
+/// The corner label of a card: rank and suit, for example `10♥` or `10H`.
+pub fn label(card: Card, glyphs: &Glyphs) -> String {
+    format!("{}{}", rank_in(card.rank, glyphs), glyphs.suit(card.suit))
 }
 
 struct Look {
@@ -83,8 +85,8 @@ struct Look {
 fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
     let theme = ctx.theme;
     let fill = match face {
-        Face::Up(card) => theme.style(color_token(card), Token::CardFace),
-        Face::Down => back::style(ctx.settings.card_back, ctx),
+        Face::Up(card) => theme.style(ctx.glyphs.suit_token(card.suit), Token::CardFace),
+        Face::Down => back::style(ctx),
         Face::Slot(_) => theme.style(Token::Slot, Token::Table),
     };
     let border = match mark.token() {
@@ -117,11 +119,15 @@ pub fn draw(
     let interior = Rect::new(area.x + 1, area.y + 1, area.width - 2, area.height - 2);
     match face {
         Face::Up(_) => painter.fill(interior, " ", look.fill),
-        Face::Down => painter.fill(
-            interior,
-            back::pattern(ctx.settings.card_back, ctx.glyphs),
-            look.fill,
-        ),
+        Face::Down => {
+            painter.fill(interior, back::pattern(ctx.glyphs), look.fill);
+            back::paint_mosaic(
+                &mut painter,
+                area,
+                ctx.glyphs,
+                (look.fill, ctx.font.cell_px),
+            );
+        }
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);
@@ -154,7 +160,7 @@ pub fn draw_back_row(buf: &mut Buffer, area: Rect, mark: Mark, ctx: &ViewCtx<'_>
     let look = look(Face::Down, mark, ctx);
     let mut painter = Painter { buf, clip: top };
     let edges = edges_for(ctx.glyphs, mark);
-    let pattern = back::pattern(ctx.settings.card_back, ctx.glyphs);
+    let pattern = back::pattern(ctx.glyphs);
     paint_patterned_top(&mut painter, top, edges, pattern, look.border);
 }
 
@@ -184,9 +190,9 @@ pub fn draw_fanned(
 
 /// Draws the one-row stand-in for `count` collapsed face-down cards.
 pub fn draw_collapsed(buf: &mut Buffer, area: Rect, count: usize, ctx: &ViewCtx<'_>) {
-    let style = back::style(ctx.settings.card_back, ctx);
+    let style = back::style(ctx);
     let mut painter = Painter { buf, clip: area };
-    let pattern = back::pattern(ctx.settings.card_back, ctx.glyphs);
+    let pattern = back::pattern(ctx.glyphs);
     painter.fill(area, pattern, style);
     let text = format!(" {} ", badge_text(count));
     painter.text(centered(area, &text), area.y, &text, style);

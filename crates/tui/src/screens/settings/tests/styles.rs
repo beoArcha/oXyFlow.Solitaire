@@ -1,6 +1,6 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{BACK_STYLES, FIELDS, FRONT_STYLES, Field, Step};
+use super::super::options::{FIELDS, Field, Step, back_styles, front_styles};
 use super::super::values::unavailable_reason_key;
 use super::{changed, move_down, open_settings, value};
 use crate::audio::{AudioSettings, AudioStatus};
@@ -108,12 +108,65 @@ fn every_unavailable_status_has_its_own_reason_in_both_locales() {
 }
 
 #[test]
-fn front_and_back_style_rows_keep_their_only_choice_until_more_styles_exist() {
+fn the_front_and_back_style_rows_list_every_style_found_and_cycle_both_ways() {
+    assert_eq!(
+        front_styles(),
+        ["international", "french", "german", "italian"]
+    );
+    assert_eq!(back_styles(), ["lattice", "ornament"]);
     let base = Settings::default();
-    for field in [Field::FrontStyle, Field::BackStyle] {
-        assert_eq!(changed(field, &base, Step::Next), base, "{field:?}");
-        assert_eq!(changed(field, &base, Step::Previous), base, "{field:?}");
-    }
+    let french = changed(Field::FrontStyle, &base, Step::Next);
+    assert_eq!(french.front_style, "french");
+    assert_eq!(
+        changed(Field::FrontStyle, &base, Step::Previous).front_style,
+        "italian"
+    );
+    let ornament = changed(Field::BackStyle, &base, Step::Next);
+    assert_eq!(ornament.back_style, "ornament");
+    assert_eq!(
+        changed(Field::BackStyle, &ornament, Step::Next).back_style,
+        "lattice"
+    );
+}
+
+#[test]
+fn the_style_rows_show_the_localized_style_names() {
+    let base = Settings::default();
+    assert_eq!(value(Field::FrontStyle, &base), "International");
+    assert_eq!(value(Field::BackStyle, &base), "Lattice");
+    let german = Settings {
+        front_style: "german".to_owned(),
+        back_style: "ornament".to_owned(),
+        ..Settings::default()
+    };
+    assert_eq!(value(Field::FrontStyle, &german), "German");
+    assert_eq!(value(Field::BackStyle, &german), "Ornament");
+}
+
+#[test]
+fn a_saved_style_that_no_longer_exists_falls_back_to_the_default_style() {
+    let mut storage = MemoryStorage::new();
+    storage.settings = Some(Settings {
+        front_style: "removed".to_owned(),
+        back_style: "default".to_owned(),
+        ..Settings::default()
+    });
+    let h = Harness::with(storage, TRUE_COLOR, 120, 40);
+    assert_eq!(h.app.settings().front_style, "international");
+    assert_eq!(h.app.settings().back_style, "lattice");
+}
+
+#[test]
+fn a_saved_style_that_exists_is_kept() {
+    let mut storage = MemoryStorage::new();
+    storage.settings = Some(Settings {
+        front_style: "italian".to_owned(),
+        back_style: "ornament".to_owned(),
+        ..Settings::default()
+    });
+    let h = Harness::with(storage, TRUE_COLOR, 120, 40);
+    assert_eq!(h.app.settings().front_style, "italian");
+    assert_eq!(h.app.settings().back_style, "ornament");
 }
 
 #[test]
@@ -126,11 +179,11 @@ fn unknown_style_ids_move_to_the_first_offer() {
     };
     assert_eq!(
         changed(Field::FrontStyle, &settings, Step::Next).front_style,
-        FRONT_STYLES[0]
+        front_styles()[0]
     );
     assert_eq!(
         changed(Field::BackStyle, &settings, Step::Next).back_style,
-        BACK_STYLES[0]
+        back_styles()[0]
     );
     assert_eq!(
         changed(Field::SoundStyle, &settings, Step::Next).sound_style,
@@ -141,8 +194,8 @@ fn unknown_style_ids_move_to_the_first_offer() {
 #[test]
 fn the_default_styles_are_offered() {
     let base = Settings::default();
-    assert!(FRONT_STYLES.contains(&base.front_style.as_str()));
-    assert!(BACK_STYLES.contains(&base.back_style.as_str()));
+    assert!(front_styles().contains(&base.front_style.as_str()));
+    assert!(back_styles().contains(&base.back_style.as_str()));
     assert!(
         sound_styles()
             .iter()

@@ -9,6 +9,7 @@ mod dialog;
 pub mod dock;
 #[cfg(test)]
 mod focus_tests;
+mod graphics_check;
 mod guide_window;
 mod help;
 mod help_keys;
@@ -38,6 +39,7 @@ use ratatui::widgets::{Block, Clear};
 
 pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
+pub use self::graphics_check::GraphicsCheck;
 pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::help_keys::HelpKeys;
 pub use self::how_to_play::{Focus, HowToPlay, Rules};
@@ -67,6 +69,7 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
             restart_focused, ..
         } => Some(pause::text(*restart_focused)),
         Modal::Search(progress) => Some(search::text(progress)),
+        Modal::GraphicsCheck(check) => Some(check.text()),
         Modal::Win { focus, best } => {
             let (moves, variant) = board.session().map_or((0, None), |session| {
                 (session.moves_made(), Some(session.variant()))
@@ -162,6 +165,10 @@ fn step_focus(modal: &mut Modal, forward: bool) -> bool {
             *yes_focused = !*yes_focused;
             true
         }
+        Modal::GraphicsCheck(check) => {
+            check.yes_focused = !check.yes_focused;
+            true
+        }
         Modal::Win { focus, .. } => {
             *focus = step(*focus, win::BUTTONS, forward);
             true
@@ -176,6 +183,7 @@ fn focused_index(modal: &Modal) -> usize {
             restart_focused, ..
         } => usize::from(*restart_focused),
         Modal::Confirm { yes_focused, .. } => usize::from(!yes_focused),
+        Modal::GraphicsCheck(check) => usize::from(!check.yes_focused),
         Modal::Win { focus, .. } => *focus,
         Modal::Search(progress) => progress.focus,
         _ => 0,
@@ -186,6 +194,7 @@ fn focused_index(modal: &Modal) -> usize {
 fn press(modal: &Modal, index: usize) -> Effect {
     match modal {
         Modal::Confirm { on_yes, .. } if index == 0 => (**on_yes).clone(),
+        Modal::GraphicsCheck(check) => check.press(index),
         Modal::Pause { undo_allowed, .. } if index == pause::RESTART => {
             let prompt = if *undo_allowed {
                 "board.confirm.restart"
@@ -263,6 +272,7 @@ pub fn handle_for(
             Some(Effect::SearchStep(SearchCommand::Cancel))
         }
         Action::Select => Some(press(modal, focused_index(modal))),
+        Action::Back if matches!(modal, Modal::GraphicsCheck(_)) => Some(press(modal, 1)),
         Action::Back => Some(Effect::None),
         Action::Pause if matches!(modal, Modal::Pause { .. }) => Some(Effect::None),
         _ => None,

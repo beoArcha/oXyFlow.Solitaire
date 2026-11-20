@@ -1,0 +1,18 @@
+# Card back style (D-06, P5-02). `tile` fills the back; `mosaic` is the 2 x 2 decoration drawn in the
+# middle of a Large or Huge card (`font`: four registry keys, top left to bottom right; `unicode` and
+# `ascii`: two rows of two symbols). `fg` and `bg` are theme tokens; the Card back setting may
+# replace them with the palette of another theme.
+
+name = "settings.style.lattice"
+fg = "card_back_mark"
+bg = "card_back"
+
+[tile]
+font = "backs/lattice/tile"
+unicode = "▒"
+ascii = "#"
+
+[mosaic]
+font = ["backs/lattice/mosaic-tl", "backs/lattice/mosaic-tr", "backs/lattice/mosaic-bl", "backs/lattice/mosaic-br"]
+unicode = ["▓▒", "▒▓"]
+ascii = ["@#", "#@"]

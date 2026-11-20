@@ -11,6 +11,10 @@ version = "v{version}"
 variant_hint = "Poziom {level}: {description}"
 select_seed = "Wybierz grę dla ziarna {seed}"
 
+favourites = "Ulubione"
+legend = "{star} popularne   {favourite} ulubione ({key})"
+no_match = "Żadna gra nie pasuje: {text}"
+
 [difficulty]
 easy = "łatwy"
 medium = "średni"
@@ -38,3 +42,14 @@ label = "Jak grać"
 [footer]
 open = "Otwórz"
 play = "Zagraj"
+language = "Język"
+
+[family]
+klondike = "Rodzina Klondike"
+spider = "Rodzina Pająka"
+free_cell = "Rodzina FreeCell"
+pyramid = "Rodzina Piramidy"
+
+[search]
+label = "Szukaj"
+clear = "Esc czyści"

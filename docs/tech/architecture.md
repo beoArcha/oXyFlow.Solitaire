@@ -29,7 +29,8 @@ crates/core/src/solver/  mod.rs (API) face.rs hash.rs search/ (depth-first, best
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
-crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs
+crates/tui/build.rs      embeds assets/cards/{fronts,backs}/*/style.toml and codepoints.toml (reruns only on assets/cards)
+crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs card_style.rs (+ card_style/manifest.rs)
                          i18n.rs (+ i18n/locale.rs i18n/plural.rs i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          meta.toml common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml
@@ -460,6 +461,14 @@ pub struct NullClipboard;                                // every copy fails wit
   choice; the game selection (also behind "New game from seed" and `--seed`) shows `[ Undo: on|off ]`,
   switched by `Action::Undo` (`u`) or a click, through `Effect::Apply`. A new game from the board keeps
   the mode of the running game; "Play this seed again" in the statistics replays the row's own mode.
+  *Game menu (P4-09):* the game selection lists the variants under family headings in the fixed order of
+  `screens/game_select/catalog.rs` (`Family::ALL`, `Family::of`), the favourites group first; a favourite appears only
+  there. A star (`Glyphs::star`, `*` in ASCII) marks the popular games (`is_popular`). `Settings::favourites` (a list of
+  variants, an older value without the field loads as empty) is toggled by `Action::Finish` (`f`) or a click on the
+  marks, through `Effect::Apply`. `/` or a click on the field opens a search that filters by variant name while typing
+  (`GameSelect::captures_text`, so letters are text and not shortcuts); Esc closes it first and a second Esc goes back.
+  The list scrolls to keep the focused variant and its heading in view. A new game adds a `Family` arm or a variant
+  to an existing family; nothing else in the menu changes.
   *Restarts (P4-05):* Restart stays allowed without undo but is counted. `BoardScreen::restart` returns whether it
   counted (only when `undo_allowed` is false) and `App::restart_game` then calls `Storage::record_restart` at once, so
   a quit or a crash cannot lose it; a game with undo never counts one. The header shows `Restarts: N` (`Od nowa: N`)
@@ -643,9 +652,40 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   covered waste card shows its left border and corner label only (label width plus one column, 3 or 4), the rows
   under its top row and its bottom border stay blank in that strip (`draw_fanned`); only the playable card shows a
   bottom index.
-- **Card rendering:** front style and back style are selected independently. Each is drawn in one of
-  three glyph modes — `Font` (Private Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` —
-  described by the style's `style.toml`. `Font` is opt-in through the graphics-check screen.
+- **Card rendering (P5-02):** front style and back style are selected independently (`Settings::front_style`,
+  `back_style`; defaults `international`, `lattice`). Each is drawn in one of three glyph modes — `Font` (Private
+  Use Area glyphs from the oXySol card font), `Unicode`, `Ascii` — described by the style's `style.toml`.
+  `crates/tui/build.rs` embeds every style folder and `codepoints.toml`, so a new folder needs no code change;
+  `card_style::CardStyles::embedded()` reads them once, resolves the font keys through the registry (a code point
+  outside U+E6BC–U+E6FF or an unknown key rejects the style), checks the symbols (Unicode: WGL4; ASCII: one
+  lowercase letter per suit) and the color tokens (a front: `card_red` or `card_black`; a back: any token), and
+  leaves a style that fails out with a log line. A front gives per suit a name key, an optional font glyph, the
+  Unicode symbol, the ASCII letter and a color token; `[ranks]` replaces the localized labels of ace and court
+  ranks; `[courts]` names the court emblem glyphs; a front without font keys is valid and draws Unicode in `Font`
+  mode. A back gives the `tile` that fills it, a 2 × 2 `mosaic` and the tokens `fg` and `bg`. `Glyphs::styled(mode,
+  front, back)` puts the styles into the glyph set (`suits`, `face_down`, `front`, `back`, `font`); an unknown id
+  uses the default style and `App` rewrites a saved unknown id to the default. The mosaic is drawn only on a back of
+  at least 11 × 9 (Large, Huge); smaller backs use the tile. *Interaction with `card_back` (P3-31):* the back style
+  chooses the pattern, `card_back` (`Theme`, `Monokai`, `Dracula`) chooses the palette only: `Theme` resolves the
+  tokens of the back style in the current theme, the others in the theme of that name. `Font` is opt-in: it is
+  drawn only when `Settings::font_confirmed` is set (the graphics check), `Settings::drawn_glyph_mode()` gives
+  `Unicode` otherwise, so Private Use Area code points never show as squares. In `Font` mode a face-up card
+  of 9 × 7 or more shows one glyph in the centre: the court emblem of a court card, else the suit.
+  *The oXySol font (P5-02):* the Symbols row offers `Font` as a third value. Choosing it without a confirmation
+  opens `Modal::GraphicsCheck` (`widgets/overlay/graphics_check.rs`): samples in the card font (the suits with
+  their names, the court emblems, the tile and the mosaic of the chosen styles) and a Yes/No question. Yes applies
+  `glyph_mode = Font` and `font_confirmed = true`; No (or Esc) keeps Unicode and opens a notice that points to the
+  wiki. The Console font row (`Settings::console_font`, `Field::ConsoleFont`) asks `ConsoleFont::use_card_font(bool)
+  -> CardFontState { Off, Active, NotRegistered, Refused, Unavailable }`; `src/console/card_font.rs` implements it
+  for the classic console: it keeps the current `FontInfo`, sets the face `oXySol Mono` with the same size, reads the
+  font back and compares the face (an unregistered face is accepted by the console and silently not used, so only
+  the read-back tells), puts the previous font back when it is not in use, and restores it when the option is turned
+  off and when `FontZoom` is dropped at exit. `Active` also switches the symbols to `Font` (the font is known to be
+  there). The drawn mode is `Settings::drawn_glyph_mode(console_shows_font)`: `Font` only with `font_confirmed` or an
+  active console font, else Unicode. `ViewCtx::font: FontFacts { terminal, card_font, cell_px }` carries the state
+  (the terminal kind gives `WT_SESSION` through `TerminalKind::WindowsTerminal`); the Windows Terminal hint on the
+  font face is in the graphics check and in the description of the Console font row, nowhere else. `cell_px` (the
+  console's cell size in pixels, from `ConsoleFont::cell_size`) keeps the Font mosaic off a cell below 10 × 24.
 - **Terminal capabilities:** `TerminalCaps { color, unicode, remote }` from detection, overridden by
   settings and arguments. `remote` (an SSH session) switches audio off.
 - **Accessibility:** every `Action` has a key binding and a mouse path. The `Now:` row

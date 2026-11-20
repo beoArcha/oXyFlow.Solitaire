@@ -112,18 +112,17 @@ impl Theme {
         self.style(Token::FocusFg, Token::FocusBg)
     }
 
-    /// A style for the given card back.
-    pub fn card_back_style(&self, card_back: CardBack) -> Style {
+    /// A style for the given card back palette, with the pattern and background tokens of the back
+    /// style: `Theme` resolves them in this theme, the others in the theme of that name.
+    pub fn card_back_style(
+        &self,
+        card_back: CardBack,
+        (mark, background): (Token, Token),
+    ) -> Style {
         match card_back {
-            CardBack::Theme => self.style(Token::CardBackMark, Token::CardBack),
-            CardBack::Monokai => {
-                let monokai = Theme::new(ThemeId::Monokai, self.depth);
-                monokai.style(Token::CardBackMark, Token::CardBack)
-            }
-            CardBack::Dracula => {
-                let dracula = Theme::new(ThemeId::Dracula, self.depth);
-                dracula.style(Token::CardBackMark, Token::CardBack)
-            }
+            CardBack::Theme => self.style(mark, background),
+            CardBack::Monokai => Theme::new(ThemeId::Monokai, self.depth).style(mark, background),
+            CardBack::Dracula => Theme::new(ThemeId::Dracula, self.depth).style(mark, background),
         }
     }
 }

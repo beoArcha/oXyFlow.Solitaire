@@ -7,6 +7,7 @@ card_back = "Kaartrug"
 front_style = "Voorkantstijl"
 back_style = "Achterkantstijl"
 glyphs = "Symbolen"
+console_font = "Consolelettertype"
 colors = "Kleuren"
 card_size = "Kaartgrootte"
 full_screen = "Volledig scherm"
@@ -28,7 +29,11 @@ hints = "Hints en hulp"
 
 [style]
 international = "Internationaal"
-default = "Standaard"
+lattice = "Rooster"
+ornament = "Ornament"
+french = "Frans"
+german = "Duits"
+italian = "Italiaans"
 
 [desc]
 language = "De taal van alle tekst. Verandert direct."
@@ -36,7 +41,12 @@ theme = "De kleuren van de interface."
 card_back = "Kleuren en patroon van de achterkant van dichte kaarten."
 front_style = "Het ontwerp van de voorkant van de kaarten."
 back_style = "Het ontwerp van de achterkant van dichte kaarten."
-glyphs = "Unicode tekent kleuren en symbolen; ASCII gebruikt alleen gewone tekens."
+glyphs = "Unicode tekent kleuren en symbolen; ASCII gebruikt alleen gewone tekens; het oXySol-lettertype tekent kaartsymbolen na een grafische controle."
+console_font = "Zet deze console op het oXySol-lettertype, dat de kaartsymbolen tekent. Alleen de klassieke Windows-console."
+console_font_wt = "Windows Terminal: stel het lettertype van het profiel in op \"oXySol Mono\" (zie de grafische controle)."
+console_font_other = "Deze terminal houdt zijn eigen lettertype. Gebruik Symbolen en de grafische controle."
+console_font_missing = "Het oXySol-lettertype is niet geïnstalleerd in deze console (wikipagina \"Card font\"). De Unicode-symbolen blijven."
+console_font_refused = "De console accepteerde het oXySol-lettertype niet. De Unicode-symbolen blijven."
 colors = "Hoeveel kleuren de terminal moet tonen. Auto detecteert dit."
 card_size = "Auto past zich aan het venster aan; toetsen ] [ 0 of Ctrl+muiswiel."
 full_screen = "Auto: alleen schermvullend in vensters geopend door het spel. In console: Alt+Enter of F11."
@@ -54,6 +64,8 @@ moves_panel = "Een zijpaneel met alle acties en hun toetsen, actief of niet."
 on = "Aan"
 off = "Uit"
 unavailable = "niet beschikbaar"
+not_installed = "niet geïnstalleerd"
+refused = "geweigerd"
 needs_columns = "{value} (vereist {needed} kolommen, nu {now})"
 
 [full_screen]
@@ -85,6 +97,7 @@ dracula = "Dracula"
 [glyph]
 unicode = "Unicode"
 ascii = "ASCII"
+font = "oXySol-lettertype"
 
 [color]
 auto = "Auto"
@@ -100,3 +113,13 @@ style_failed = "Geluid niet beschikbaar: gekozen geluidstijl kan niet geladen wo
 
 [footer]
 change = "Wijzigen"
+
+[graphics]
+title = "Grafische controle"
+body = "Deze symbolen zijn getekend met het oXySol-kaartlettertype."
+suits = "Kleuren: {symbols}"
+courts = "Hofkaartemblemen: {symbols}"
+back = "Achterkant: {tile}, midden {mosaic}"
+hint_windows_terminal = "Windows Terminal: stel het lettertype van het profiel in op \"oXySol Mono\", of op een lijst die ermee eindigt: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (lijsten werken vanaf Windows Terminal 1.20.11381)."
+question = "Zien ze eruit als kaartsymbolen, niet als vierkantjes of lege plekken?"
+declined = "De Unicode-symbolen blijven. Installeer eerst oXySol Mono (wikipagina \"Card font\") om het kaartlettertype te zien en kies het daarna opnieuw bij Symbolen."

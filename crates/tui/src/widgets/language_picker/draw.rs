@@ -19,8 +19,8 @@ use crate::theme::palette::swatch;
 use crate::widgets::guide::ASCII_BORDER;
 
 const FLAG_CELLS: u16 = 4;
-const BODY_WITH_FLAG: (u16, u16) = (11, 2);
-const BODY_WITH_CODE: (u16, u16) = (9, 1);
+const BODY_WITH_FLAG: (u16, u16) = (10, 2);
+const BODY_WITH_CODE: (u16, u16) = (8, 1);
 
 fn flags_shown(ctx: &ViewCtx<'_>) -> bool {
     ctx.glyphs.unicode && ctx.settings.color_depth(ctx.caps) != ColorDepth::Ansi16
@@ -77,9 +77,9 @@ fn boxed(ctx: &ViewCtx<'_>) -> Block<'static> {
 fn locate(origin: Rect, flags: bool) -> Spots {
     let cell = |column: u16, height: u16| Rect::new(origin.x + column, origin.y, 1, height);
     let columns = if flags {
-        [(1, origin.height), (8, 1), (10, origin.height)]
+        [(0, origin.height), (7, 1), (9, origin.height)]
     } else {
-        [(1, 1), (6, 1), (8, 1)]
+        [(0, 1), (5, 1), (7, 1)]
     };
     let [left, right, down] = columns.map(|(column, rows)| cell(column, rows));
     Spots {
@@ -103,18 +103,14 @@ fn selector_lines(
     } else {
         ctx.theme.style(Token::Accent, Token::Background)
     };
-    let mark = marker(ctx, focused);
     let code = flag(current).code;
     if !flags {
-        return vec![Line::styled(
-            format!("{mark}{left} {code} {right} {down}"),
-            style,
-        )];
+        return vec![Line::styled(format!("{left} {code} {right} {down}"), style)];
     }
-    let mut top = vec![Span::styled(format!("{mark}{left} "), style)];
+    let mut top = vec![Span::styled(format!("{left} "), style)];
     top.extend(flag_spans(current, 0, ctx));
     top.push(Span::styled(format!(" {right} {down}"), style));
-    let mut bottom = vec![Span::styled("   ", style)];
+    let mut bottom = vec![Span::styled("  ", style)];
     bottom.extend(flag_spans(current, 1, ctx));
     bottom.push(Span::styled(format!(" {code} "), style));
     vec![Line::from(top), Line::from(bottom)]

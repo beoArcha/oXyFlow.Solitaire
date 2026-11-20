@@ -5,6 +5,7 @@ pub mod announce;
 pub mod app;
 pub mod audio;
 pub mod caps;
+pub mod card_style;
 pub mod clipboard;
 pub mod clock;
 pub mod glyphs;

@@ -1,6 +1,7 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::{changed, index_of, move_down, open_settings, settings_menu_index, value};
+use crate::app::FontFacts;
 use crate::i18n::{Locale, set_locale};
 use crate::screens::settings::options::{Field, Step};
 use crate::screens::settings::values::line;
@@ -38,13 +39,14 @@ fn only_the_focused_row_shows_its_value_between_arrows() {
 fn the_values_line_up_with_and_without_arrows() {
     let settings = Settings::default();
     let sounds = sound_styles();
-    let plain = line(Field::Theme, &settings, true, &sounds, 200, None);
+    let facts = (200, FontFacts::default());
+    let plain = line(Field::Theme, &settings, true, &sounds, facts, None);
     let framed = line(
         Field::Theme,
         &settings,
         true,
         &sounds,
-        200,
+        facts,
         Some(("◄", "►")),
     );
     let shown = value(Field::Theme, &settings);

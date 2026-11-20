@@ -11,6 +11,10 @@ select_seed = "Обери гру для зерна {seed}"
 version = "v{version}"
 variant_hint = "{level}: {description}"
 
+favourites = "Улюблені"
+legend = "{star} популярні   {favourite} улюблена ({key})"
+no_match = "Жодна гра не підходить: {text}"
+
 [difficulty]
 easy = "легкий"
 medium = "середній"
@@ -38,3 +42,14 @@ label = "Як грати"
 [footer]
 open = "Відкрити"
 play = "Грати"
+language = "Мова"
+
+[family]
+klondike = "Родина Klondike"
+spider = "Родина Spider"
+free_cell = "Родина FreeCell"
+pyramid = "Родина Піраміди"
+
+[search]
+label = "Пошук"
+clear = "Esc очищає"

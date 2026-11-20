@@ -7,6 +7,7 @@ card_back = "Сорочка карт"
 front_style = "Стиль лиця"
 back_style = "Стиль сорочки"
 glyphs = "Символи"
+console_font = "Шрифт консолі"
 colors = "Кольори"
 card_size = "Розмір карт"
 full_screen = "Повний екран"
@@ -28,7 +29,11 @@ hints = "Підказки та допомога"
 
 [style]
 international = "Міжнародний"
-default = "Типовий"
+lattice = "Ґратка"
+ornament = "Орнамент"
+french = "Французький"
+german = "Німецький"
+italian = "Італійський"
 
 [desc]
 language = "Мова всього тексту. Змінюється одразу."
@@ -36,7 +41,12 @@ theme = "Кольори інтерфейсу."
 card_back = "Колір і візерунок сорочок закритих карт."
 front_style = "Вигляд лицьової сторони карт."
 back_style = "Вигляд сорочок закритих карт."
-glyphs = "Unicode малює масті та символи; ASCII використовує лише звичайні знаки."
+glyphs = "Unicode малює масті та символи; ASCII використовує лише звичайні знаки; шрифт oXySol малює символи карт після перевірки графіки."
+console_font = "Перемикає цю консоль на шрифт oXySol, який малює символи карт. Лише класична консоль Windows."
+console_font_wt = "Windows Terminal: встановіть шрифт профілю \"oXySol Mono\" (див. перевірку графіки)."
+console_font_other = "Цей термінал зберігає власний шрифт. Скористайтеся пунктом Символи та перевіркою графіки."
+console_font_missing = "Шрифт oXySol не встановлено в цій консолі (сторінка вікі \"Card font\"). Залишаються символи Unicode."
+console_font_refused = "Консоль не прийняла шрифт oXySol. Залишаються символи Unicode."
 colors = "Кількість кольорів термінала. «Авто» визначає самостійно."
 card_size = "Авто підганяє під вікно; розмір, що не вміщується, зменшується. Клавіші ] [ 0 або Ctrl+коліщатко."
 full_screen = "Авто: лише у вікні, відкритому самою грою. У консолі: Alt+Enter або F11."
@@ -54,6 +64,8 @@ moves_panel = "Бічна панель з усіма діями та їхнім�
 on = "Увімк."
 off = "Вимк."
 unavailable = "недоступно"
+not_installed = "не встановлено"
+refused = "відхилено"
 needs_columns = "{value} (потрібно {needed} стовпців, є {now})"
 
 [full_screen]
@@ -85,6 +97,7 @@ dracula = "Dracula"
 [glyph]
 unicode = "Unicode"
 ascii = "ASCII"
+font = "шрифт oXySol"
 
 [color]
 auto = "Авто"
@@ -100,3 +113,13 @@ style_failed = "Звук недоступний: не вдалося заван�
 
 [footer]
 change = "Змінити"
+
+[graphics]
+title = "Перевірка графіки"
+body = "Ці символи намальовано шрифтом карт oXySol."
+suits = "Масті: {symbols}"
+courts = "Емблеми фігур: {symbols}"
+back = "Сорочка: {tile}, центр {mosaic}"
+hint_windows_terminal = "Windows Terminal: встановіть шрифт профілю \"oXySol Mono\" або список, що закінчується ним: \"font\": { \"face\": \"Cascadia Mono, oXySol Mono\" } (списки працюють від Windows Terminal 1.20.11381)."
+question = "Чи схожі вони на символи карт, а не на квадрати чи порожні місця?"
+declined = "Залишаються символи Unicode. Щоб побачити шрифт карт, спершу встановіть oXySol Mono (сторінка вікі \"Card font\"), а потім виберіть його знову в пункті Символи."

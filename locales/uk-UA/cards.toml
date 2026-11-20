@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "жолуді"
+bell = "дзвінки"
+leaf = "листя"
+baton = "жезли"
+coin = "монети"
+cup = "кубки"
+sword = "мечі"

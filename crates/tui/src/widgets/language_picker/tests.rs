@@ -14,10 +14,10 @@ fn press(column: u16, row: u16) -> MouseEvent {
 fn located() -> LanguagePicker {
     let mut picker = LanguagePicker::new();
     picker.spots = Spots {
-        body: Rect::new(1, 1, 11, 2),
-        left: Rect::new(2, 1, 1, 2),
-        right: Rect::new(9, 1, 1, 1),
-        down: Rect::new(11, 1, 1, 2),
+        body: Rect::new(1, 1, 10, 2),
+        left: Rect::new(1, 1, 1, 2),
+        right: Rect::new(8, 1, 1, 1),
+        down: Rect::new(10, 1, 1, 2),
         list: Rect::new(1, 3, 20, 6),
         entries: vec![Rect::new(2, 4, 18, 2), Rect::new(2, 6, 18, 2)],
     };
@@ -80,14 +80,14 @@ fn back_closes_without_choosing() {
 fn clicks_on_the_arrows_choose_and_on_the_down_arrow_open() {
     let mut picker = located();
     assert_eq!(
-        picker.on_mouse(&press(2, 1), Locale::PlPl),
+        picker.on_mouse(&press(1, 1), Locale::PlPl),
         Pointed::Choose(Locale::EnUs)
     );
     assert_eq!(
-        picker.on_mouse(&press(9, 1), Locale::EnUs),
+        picker.on_mouse(&press(8, 1), Locale::EnUs),
         Pointed::Choose(Locale::PlPl)
     );
-    assert_eq!(picker.on_mouse(&press(11, 2), Locale::EnUs), Pointed::Focus);
+    assert_eq!(picker.on_mouse(&press(10, 2), Locale::EnUs), Pointed::Focus);
     assert!(picker.is_open());
 }
 

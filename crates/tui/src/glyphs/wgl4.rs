@@ -86,6 +86,7 @@ pub const fn is_wgl4(c: char) -> bool {
             | '♫'
             | '✓'
             | '✗'
+            | '★'
             | '\n'
             | '\r'
             | '\t'
@@ -137,6 +138,7 @@ mod tests {
             saved: None,
             pointer: None,
             now: Instant::now(),
+            font: crate::app::FontFacts::default(),
         }
     }
 

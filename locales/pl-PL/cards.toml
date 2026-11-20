@@ -1,1 +1,10 @@
 # Strings of the cards area.
+
+[suit]
+acorn = "żołędzie"
+bell = "dzwonki"
+leaf = "liście"
+baton = "buławy"
+coin = "monety"
+cup = "puchary"
+sword = "miecze"

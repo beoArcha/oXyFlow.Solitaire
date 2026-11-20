@@ -113,7 +113,8 @@ impl App {
     fn captures_text(&self) -> bool {
         match self.screen {
             Screen::MainMenu => self.menu.captures_text(),
-            Screen::GameSelect | Screen::Board | Screen::Settings | Screen::Stats => false,
+            Screen::GameSelect => self.select.captures_text(),
+            Screen::Board | Screen::Settings | Screen::Stats => false,
         }
     }
 
