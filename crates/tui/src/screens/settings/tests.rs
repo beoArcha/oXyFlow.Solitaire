@@ -312,6 +312,24 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
     h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
+    assert!(h.app.modal().is_none());
+}
+
+#[test]
+fn a_settings_write_failure_alerts_once_and_again_after_a_successful_write() {
+    let mut h = open_settings();
+    h.storage.borrow_mut().failing = true;
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.modal(), Some(&Modal::alert("common.error.storage")));
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none());
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none());
+    h.storage.borrow_mut().failing = false;
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none());
+    h.storage.borrow_mut().failing = true;
+    h.press(KeyCode::Enter);
     assert_eq!(h.app.modal(), Some(&Modal::alert("common.error.storage")));
 }
 
