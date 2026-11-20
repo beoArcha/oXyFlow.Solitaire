@@ -9,8 +9,8 @@ use ratatui::widgets::{Block, Clear, Paragraph};
 
 use super::{LanguagePicker, Spots, index_of};
 use crate::caps::ColorDepth;
+use crate::i18n::Locale;
 use crate::i18n::flags::{PIXELS, Rgb, flag};
-use crate::i18n::{Locale, t_in};
 use crate::mouse::contains;
 use crate::screens::ViewCtx;
 use crate::screens::focus::marker;
@@ -18,7 +18,6 @@ use crate::theme::Token;
 use crate::theme::palette::swatch;
 use crate::widgets::guide::ASCII_BORDER;
 
-const NAME_KEY: &str = "common.language.name";
 const FLAG_CELLS: u16 = 4;
 const BODY_WITH_FLAG: (u16, u16) = (11, 2);
 const BODY_WITH_CODE: (u16, u16) = (9, 1);
@@ -141,7 +140,7 @@ fn entry_lines(entry: &Entry, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
         ctx.theme.surface()
     };
     let mark = marker(ctx, entry.highlighted);
-    let name = t_in(entry.locale, NAME_KEY).into_owned();
+    let name = entry.locale.own_name();
     let code = flag(entry.locale).code;
     let sign = if entry.current {
         ctx.glyphs.selected
@@ -205,13 +204,14 @@ impl LanguagePicker {
         ctx: &ViewCtx<'_>,
     ) {
         let rows: u16 = if flags { 2 } else { 1 };
-        let name_width = Locale::ALL
+        let languages = Locale::offered();
+        let name_width = languages
             .iter()
-            .map(|locale| columns_of(&t_in(*locale, NAME_KEY)))
+            .map(|locale| columns_of(locale.own_name()))
             .max()
             .unwrap_or(0);
         let inner_width = name_width + if flags { 9 } else { 7 };
-        let count = u16::try_from(Locale::ALL.len()).unwrap_or(0);
+        let count = u16::try_from(languages.len()).unwrap_or(0);
         let outer = Rect::new(
             self.spots.body.x,
             self.spots.body.bottom(),
@@ -225,7 +225,7 @@ impl LanguagePicker {
         frame.render_widget(block, outer);
         self.spots.list = outer;
         self.spots.entries.clear();
-        for (index, locale) in Locale::ALL.iter().enumerate() {
+        for (index, locale) in languages.iter().enumerate() {
             let offset = u16::try_from(index).unwrap_or(0) * rows;
             let rect = Rect::new(inner.x, inner.y + offset, inner.width, rows).intersection(inner);
             let entry = Entry {
@@ -242,11 +242,14 @@ impl LanguagePicker {
 }
 
 fn draw_tooltip(frame: &mut Frame, area: Rect, body: Rect, current: Locale, ctx: &ViewCtx<'_>) {
-    let name = t_in(current, NAME_KEY);
-    let width = columns_of(&name) + 4;
+    let name = current.own_name();
+    let width = columns_of(name) + 4;
     let rect = Rect::new(body.x, body.bottom(), width, 3).intersection(area);
     frame.render_widget(Clear, rect);
     let text =
         Paragraph::new(Line::styled(format!(" {name} "), ctx.theme.surface())).block(boxed(ctx));
     frame.render_widget(text, rect);
 }
+
+#[cfg(test)]
+mod tests;

@@ -68,10 +68,6 @@ huge = "Huge"
 full = "Full"
 focus_only = "Focus only"
 
-[locale]
-en_us = "English"
-pl_pl = "Polski"
-
 [theme]
 dark = "Dark"
 light = "Light"

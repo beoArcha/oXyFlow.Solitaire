@@ -77,7 +77,7 @@ fn every_aid_row_switches_by_key_and_by_click_and_is_saved() {
 
 #[test]
 fn the_focused_aid_row_is_explained_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for aid in Aid::ALL {
             let mut h = open_settings();
             h.app.apply(Effect::Apply(Settings {

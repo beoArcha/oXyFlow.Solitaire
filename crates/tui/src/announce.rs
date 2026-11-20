@@ -4,7 +4,7 @@
 
 use oxysol_core::{Card, PileRef, Rank, Suit};
 
-use crate::i18n::{t, tf};
+use crate::i18n::{t, tf, tn};
 
 /// What the focused position shows.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -82,13 +82,7 @@ pub fn look_text(look: Look) -> String {
 
 /// The localized count of targets: `1 target`, `3 targets`.
 pub fn targets_text(targets: usize) -> String {
-    if targets == 1 {
-        return t("board.announce.targets_one").into_owned();
-    }
-    tf(
-        "board.announce.targets_many",
-        &[("count", &targets.to_string())],
-    )
+    tn("board.announce.targets", targets, &[])
 }
 
 #[cfg(test)]

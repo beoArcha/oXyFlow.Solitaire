@@ -1,7 +1,7 @@
 //! The flag of each locale as block-art data: a grid of 4 × 4 pixels, drawn two pixels per cell
 //! with half blocks (4 × 2 cells), and the language code shown beside it. The colors are the
 //! colors of the flags themselves, not theme tokens (decision T-34). A new locale adds its flag
-//! here, in the same match.
+//! here and names it in the locale list (`i18n/locale.rs`).
 
 use super::Locale;
 
@@ -24,9 +24,45 @@ const WHITE: Rgb = [255, 255, 255];
 const RED: Rgb = [200, 16, 46];
 const POLISH_RED: Rgb = [220, 20, 60];
 const BLUE: Rgb = [60, 59, 110];
+const BLACK: Rgb = [0, 0, 0];
+const GERMAN_RED: Rgb = [221, 0, 0];
+const GOLD: Rgb = [255, 206, 0];
+const FRENCH_BLUE: Rgb = [0, 85, 164];
+const FRENCH_RED: Rgb = [239, 65, 53];
+const ITALIAN_GREEN: Rgb = [0, 146, 70];
+const ITALIAN_RED: Rgb = [206, 43, 55];
+const BRAZILIAN_GREEN: Rgb = [0, 156, 59];
+const BRAZILIAN_YELLOW: Rgb = [255, 223, 0];
+const BRAZILIAN_BLUE: Rgb = [0, 39, 118];
+const UKRAINIAN_BLUE: Rgb = [0, 87, 183];
+const UKRAINIAN_YELLOW: Rgb = [255, 215, 0];
+const DUTCH_RED: Rgb = [174, 28, 40];
+const DUTCH_BLUE: Rgb = [33, 70, 139];
+const SPANISH_RED: Rgb = [170, 21, 27];
+const SPANISH_YELLOW: Rgb = [241, 191, 0];
+
+const fn horizontal(code: &'static str, rows: [Rgb; PIXELS]) -> Flag {
+    let [first, second, third, fourth] = rows;
+    Flag {
+        code,
+        pixels: [
+            [first; PIXELS],
+            [second; PIXELS],
+            [third; PIXELS],
+            [fourth; PIXELS],
+        ],
+    }
+}
+
+const fn vertical(code: &'static str, columns: [Rgb; PIXELS]) -> Flag {
+    Flag {
+        code,
+        pixels: [columns; PIXELS],
+    }
+}
 
 /// The United States: a blue canton over alternating red and white stripes.
-const EN_US: Flag = Flag {
+pub(crate) const EN_US: Flag = Flag {
     code: "EN",
     pixels: [
         [BLUE, BLUE, RED, RED],
@@ -37,22 +73,72 @@ const EN_US: Flag = Flag {
 };
 
 /// Poland: white over red.
-const PL_PL: Flag = Flag {
-    code: "PL",
+pub(crate) const PL_PL: Flag = horizontal("PL", [WHITE, WHITE, POLISH_RED, POLISH_RED]);
+
+/// Germany: black, red and gold; the middle band takes two rows.
+pub(crate) const DE_DE: Flag = horizontal("DE", [BLACK, GERMAN_RED, GERMAN_RED, GOLD]);
+
+/// France: blue, white and red, upright; the middle band takes two columns.
+pub(crate) const FR_FR: Flag = vertical("FR", [FRENCH_BLUE, WHITE, WHITE, FRENCH_RED]);
+
+/// Italy: green, white and red, upright; the middle band takes two columns.
+pub(crate) const IT_IT: Flag = vertical("IT", [ITALIAN_GREEN, WHITE, WHITE, ITALIAN_RED]);
+
+/// Brazil: a yellow rhombus on green around a blue disc, simplified to its corners and middle.
+pub(crate) const PT_BR: Flag = Flag {
+    code: "BR",
     pixels: [
-        [WHITE; PIXELS],
-        [WHITE; PIXELS],
-        [POLISH_RED; PIXELS],
-        [POLISH_RED; PIXELS],
+        [
+            BRAZILIAN_GREEN,
+            BRAZILIAN_YELLOW,
+            BRAZILIAN_YELLOW,
+            BRAZILIAN_GREEN,
+        ],
+        [
+            BRAZILIAN_YELLOW,
+            BRAZILIAN_BLUE,
+            BRAZILIAN_BLUE,
+            BRAZILIAN_YELLOW,
+        ],
+        [
+            BRAZILIAN_YELLOW,
+            BRAZILIAN_BLUE,
+            BRAZILIAN_BLUE,
+            BRAZILIAN_YELLOW,
+        ],
+        [
+            BRAZILIAN_GREEN,
+            BRAZILIAN_YELLOW,
+            BRAZILIAN_YELLOW,
+            BRAZILIAN_GREEN,
+        ],
     ],
 };
 
+/// Ukraine: blue over yellow. The code is the country's, `UA`, because `UK` reads as the United
+/// Kingdom.
+pub(crate) const UK_UA: Flag = horizontal(
+    "UA",
+    [
+        UKRAINIAN_BLUE,
+        UKRAINIAN_BLUE,
+        UKRAINIAN_YELLOW,
+        UKRAINIAN_YELLOW,
+    ],
+);
+
+/// The Netherlands: red, white and blue; the middle band takes two rows.
+pub(crate) const NL_NL: Flag = horizontal("NL", [DUTCH_RED, WHITE, WHITE, DUTCH_BLUE]);
+
+/// Spain: red, yellow and red, the yellow band twice as tall.
+pub(crate) const ES_ES: Flag = horizontal(
+    "ES",
+    [SPANISH_RED, SPANISH_YELLOW, SPANISH_YELLOW, SPANISH_RED],
+);
+
 /// The flag of `locale`.
 pub const fn flag(locale: Locale) -> &'static Flag {
-    match locale {
-        Locale::EnUs => &EN_US,
-        Locale::PlPl => &PL_PL,
-    }
+    locale.flag()
 }
 
 #[cfg(test)]

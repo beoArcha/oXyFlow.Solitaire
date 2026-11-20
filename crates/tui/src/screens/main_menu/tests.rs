@@ -274,7 +274,7 @@ fn the_menu_shows_its_items_again_after_a_game_from_a_seed() {
 
 #[test]
 fn the_menu_shows_its_tagline_and_version_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let storage = MemoryStorage {
             settings: Some(Settings {
                 locale,

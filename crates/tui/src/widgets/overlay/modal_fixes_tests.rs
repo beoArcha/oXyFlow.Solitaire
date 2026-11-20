@@ -219,7 +219,7 @@ fn assert_renders_cleanly(window: Window, locale: Locale, caps: TerminalCaps) {
 
 #[test]
 fn every_window_renders_at_100_by_30_in_both_locales_with_only_wgl4_or_ascii() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             for window in [Window::Keys, Window::CommandLine, Window::Guide] {
                 assert_renders_cleanly(window, locale, caps);

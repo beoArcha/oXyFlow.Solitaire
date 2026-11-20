@@ -9,37 +9,13 @@ use std::cell::Cell;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 pub mod flags;
+mod locale;
+pub mod plural;
 
-/// A supported interface language. `en-US` is the source locale.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum Locale {
-    #[serde(rename = "en-US")]
-    EnUs,
-    #[serde(rename = "pl-PL")]
-    PlPl,
-}
-
-impl Locale {
-    /// Every locale, source locale first.
-    pub const ALL: [Locale; 2] = [Locale::EnUs, Locale::PlPl];
-
-    /// The folder name under `locales/`.
-    pub const fn id(self) -> &'static str {
-        match self {
-            Locale::EnUs => "en-US",
-            Locale::PlPl => "pl-PL",
-        }
-    }
-
-    /// The locale with the given folder name.
-    pub fn from_id(id: &str) -> Option<Self> {
-        Self::ALL.into_iter().find(|locale| locale.id() == id)
-    }
-}
+pub use locale::{Locale, Meta};
 
 /// A locale file that cannot be turned into a catalog. Embedded files are checked by tests, so
 /// this only occurs through a broken build.
@@ -57,42 +33,6 @@ pub enum I18nError {
 
 type Catalog = HashMap<String, String>;
 
-macro_rules! area {
-    ($locale:literal, $area:literal) => {
-        (
-            $area,
-            include_str!(concat!("../../../locales/", $locale, "/", $area, ".toml")),
-        )
-    };
-}
-
-macro_rules! areas {
-    ($locale:literal) => {
-        [
-            area!($locale, "common"),
-            area!($locale, "menu"),
-            area!($locale, "board"),
-            area!($locale, "settings"),
-            area!($locale, "help"),
-            area!($locale, "cards"),
-            area!($locale, "cli"),
-            area!($locale, "audio"),
-            area!($locale, "rules"),
-            area!($locale, "stats"),
-        ]
-    };
-}
-
-const EN_US: [(&str, &str); 10] = areas!("en-US");
-const PL_PL: [(&str, &str); 10] = areas!("pl-PL");
-
-fn sources(locale: Locale) -> &'static [(&'static str, &'static str); 10] {
-    match locale {
-        Locale::EnUs => &EN_US,
-        Locale::PlPl => &PL_PL,
-    }
-}
-
 fn flatten(prefix: &str, table: &toml::Table, out: &mut Catalog) -> Result<(), I18nError> {
     for (name, value) in table {
         let key = format!("{prefix}.{name}");
@@ -109,7 +49,7 @@ fn flatten(prefix: &str, table: &toml::Table, out: &mut Catalog) -> Result<(), I
 
 pub(crate) fn load_catalog(locale: Locale) -> Result<Catalog, I18nError> {
     let mut catalog = Catalog::new();
-    for (area, text) in sources(locale) {
+    for (area, text) in &locale.sources().areas {
         let table = toml::from_str::<toml::Table>(text)
             .map_err(|source| I18nError::Parse { area, source })?;
         flatten(area, &table, &mut catalog)?;
@@ -118,13 +58,9 @@ pub(crate) fn load_catalog(locale: Locale) -> Result<Catalog, I18nError> {
 }
 
 fn catalog(locale: Locale) -> &'static Catalog {
-    static EN: OnceLock<Catalog> = OnceLock::new();
-    static PL: OnceLock<Catalog> = OnceLock::new();
-    let cell = match locale {
-        Locale::EnUs => &EN,
-        Locale::PlPl => &PL,
-    };
-    cell.get_or_init(|| match load_catalog(locale) {
+    static CATALOGS: [OnceLock<Catalog>; Locale::ALL.len()] =
+        [const { OnceLock::new() }; Locale::ALL.len()];
+    CATALOGS[locale.index()].get_or_init(|| match load_catalog(locale) {
         Ok(catalog) => catalog,
         Err(error) => {
             tracing::error!(locale = locale.id(), %error, "embedded locale is broken");
@@ -158,14 +94,6 @@ pub fn t(key: &str) -> Cow<'_, str> {
     }
 }
 
-/// The text for `key` in `locale`, whatever the current locale is: a language's own name.
-pub fn t_in(locale: Locale, key: &str) -> Cow<'_, str> {
-    match catalog(locale).get(key) {
-        Some(text) => Cow::Borrowed(text.as_str()),
-        None => Cow::Borrowed(key),
-    }
-}
-
 /// Like [`t`], replacing every `{name}` with the matching value of `params`.
 pub fn tf(key: &str, params: &[(&str, &str)]) -> String {
     let mut text = t(key).into_owned();
@@ -173,6 +101,17 @@ pub fn tf(key: &str, params: &[(&str, &str)]) -> String {
         text = text.replace(&format!("{{{name}}}"), value);
     }
     text
+}
+
+/// The text counted by `count`: the plural form `<key>_<form>` the current locale's rule picks
+/// (`board.announce.targets` gives `targets_one` or `targets_other` in English), with `{count}` and
+/// every other `{name}` of `params` replaced.
+pub fn tn(key: &str, count: usize, params: &[(&str, &str)]) -> String {
+    let form = locale().plural_rule().category(count);
+    let number = count.to_string();
+    let mut all = vec![("count", number.as_str())];
+    all.extend_from_slice(params);
+    tf(&format!("{key}_{}", form.suffix()), &all)
 }
 
 #[cfg(test)]

@@ -206,7 +206,7 @@ fn unavailable_rows_are_marked_in_their_text() {
     assert!(
         lines
             .iter()
-            .any(|text| { text.contains("Language") && bare(text).ends_with("English") })
+            .any(|text| { text.contains("Language") && bare(text).ends_with("English (US)") })
     );
     assert!(
         !lines
@@ -231,11 +231,11 @@ fn every_row_is_drawn_in_both_locales() {
     let fixture = Fixture::new(polish, TRUE_COLOR);
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
     let label = t("settings.row.language").into_owned();
-    let value = t("settings.locale.pl_pl").into_owned();
+    let value = Locale::PlPl.own_name();
     assert!(
         lines
             .iter()
-            .any(|text| { text.contains(&label) && bare(text).ends_with(&value) })
+            .any(|text| { text.contains(&label) && bare(text).ends_with(value) })
     );
     set_locale(Locale::EnUs);
 }

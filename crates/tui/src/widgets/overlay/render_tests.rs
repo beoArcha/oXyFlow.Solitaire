@@ -134,7 +134,7 @@ fn assert_renders_cleanly(modal: &Modal, locale: Locale, unicode: bool, size: (u
 #[test]
 fn every_overlay_renders_in_both_locales_and_glyph_modes() {
     for modal in all_modals() {
-        for locale in Locale::ALL {
+        for locale in Locale::offered() {
             for unicode in [true, false] {
                 for size in SIZES {
                     assert_renders_cleanly(&modal, locale, unicode, size);
@@ -158,7 +158,7 @@ fn borders_are_double_in_unicode_and_plain_ascii_otherwise() {
 #[test]
 fn help_lists_every_binding_and_the_gestures_in_a_100_by_30_window() {
     let now = Instant::now();
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let terminal = render(&Modal::Help, caps(true), locale, (100, 30), now);
         let text = text_of(&terminal);
         for section in crate::widgets::overlay::help::sections() {
@@ -216,7 +216,7 @@ fn focused_button_is_marked_and_styled_without_color() {
 #[test]
 fn win_shows_the_time_and_both_buttons_in_both_locales() {
     let now = Instant::now();
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for unicode in [true, false] {
             let terminal = render(&Modal::win(), caps(unicode), locale, (100, 30), now);
             let text = text_of(&terminal);

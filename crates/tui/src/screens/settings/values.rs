@@ -10,13 +10,6 @@ use crate::theme::ThemeId;
 
 const VOLUME_STEP: u8 = 10;
 
-const fn locale_key(locale: Locale) -> &'static str {
-    match locale {
-        Locale::EnUs => "settings.locale.en_us",
-        Locale::PlPl => "settings.locale.pl_pl",
-    }
-}
-
 const fn theme_key(theme: ThemeId) -> &'static str {
     match theme {
         ThemeId::Dark => "settings.theme.dark",
@@ -113,7 +106,7 @@ fn toggled_aid(field: Field, settings: &Settings) -> Settings {
 /// The value of a row as the player reads it.
 pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo]) -> String {
     match field {
-        Field::Language => t(locale_key(settings.locale)).into_owned(),
+        Field::Language => settings.locale.own_name().to_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
         Field::FrontStyle => card_style_name(&settings.front_style),
         Field::BackStyle => card_style_name(&settings.back_style),
@@ -198,7 +191,7 @@ pub fn changed(
 ) -> Settings {
     let mut next = settings.clone();
     match field {
-        Field::Language => next.locale = cycle(&Locale::ALL, settings.locale, step),
+        Field::Language => next.locale = cycle(&Locale::offered(), settings.locale, step),
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
         Field::FrontStyle => {
             next.front_style = cycle_str(&FRONT_STYLES, &settings.front_style, step);

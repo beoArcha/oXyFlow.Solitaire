@@ -94,7 +94,7 @@ fn assert_clicks_match_keys(
 }
 
 pub(super) fn each_locale(mut check: impl FnMut(Locale)) {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
         check(locale);
     }
