@@ -8,7 +8,7 @@ use super::*;
 use crate::action::Action;
 use crate::app::Modal;
 use crate::caps::TerminalCaps;
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, t};
 use crate::screens::Effect;
 use crate::settings::Settings;
 use crate::test_support::PLAIN;
@@ -317,17 +317,15 @@ fn a_tall_screen_shows_the_reasons_and_a_short_one_leaves_them_out() {
 
 #[test]
 fn a_compact_screen_opens_the_window_with_the_key_and_lists_every_entry() {
-    for locale in [Locale::EnUs, Locale::PlPl] {
+    for locale in Locale::offered() {
         let mut h = shown(KLONDIKE, COMPACT, locale, TRUE_COLOR);
         assert!(!h.text().contains("•"), "no side panel at 100 columns");
         h.type_char('v');
         assert!(window_open(&h));
         let text = h.text();
-        let title = match locale {
-            Locale::EnUs => "Possible moves",
-            Locale::PlPl => "Możliwe ruchy",
-        };
-        assert!(text.contains(title), "{text}");
+        set_locale(locale);
+        let title = t("board.moves.window_title").into_owned();
+        assert!(text.contains(&title), "{text}");
         assert!(text.contains("• ") && text.contains("× "), "{text}");
         h.press(KeyCode::Esc);
         assert!(h.app.modal().is_none());

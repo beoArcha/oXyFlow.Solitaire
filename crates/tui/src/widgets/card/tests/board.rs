@@ -139,7 +139,7 @@ fn the_waste_fan_shows_two_covered_cards_by_their_label_and_no_bottom_fragments(
 
 #[test]
 fn an_empty_foundation_shows_the_ace_placeholder_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let mut h = board((KLONDIKE_ONE, 42), TRUE_COLOR, locale, (100, 30));
         assert_eq!(slot_middle(&mut h, (100, 30), PileRef::Foundation(0)), "A");
         assert_eq!(slot_middle(&mut h, (100, 30), PileRef::Foundation(3)), "A");

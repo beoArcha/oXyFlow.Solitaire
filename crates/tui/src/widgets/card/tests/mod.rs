@@ -67,7 +67,7 @@ fn card(rank: Rank, suit: Suit) -> Card {
 }
 
 fn each_locale(mut check: impl FnMut(Locale)) {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
         check(locale);
     }

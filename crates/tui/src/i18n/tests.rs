@@ -1,5 +1,6 @@
+use super::plural::PluralCategory;
 use super::*;
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use oxysol_core::{Card, CardId, PileRef, Rank, Suit};
@@ -58,13 +59,73 @@ fn embedded_locales_parse() {
     }
 }
 
-#[test]
-fn every_locale_has_the_same_keys_as_en_us() {
-    let source = key_set(Locale::EnUs);
-    assert!(!source.is_empty());
-    for locale in Locale::ALL {
-        assert_eq!(key_set(locale), source, "{}", locale.id());
+fn plural_bases(source: &BTreeSet<String>) -> BTreeSet<String> {
+    source
+        .iter()
+        .filter_map(|key| key.strip_suffix("_other"))
+        .filter(|base| source.contains(&format!("{base}_one")))
+        .map(str::to_owned)
+        .collect()
+}
+
+fn plural_form_of<'a>(key: &'a str, bases: &BTreeSet<String>) -> Option<(&'a str, &'a str)> {
+    let (base, suffix) = key.rsplit_once('_')?;
+    let known = PluralCategory::ALL
+        .iter()
+        .any(|form| form.suffix() == suffix);
+    (known && bases.contains(base)).then_some((base, suffix))
+}
+
+type Split = (BTreeSet<String>, BTreeMap<String, BTreeSet<String>>);
+
+fn split_plurals(keys: BTreeSet<String>, bases: &BTreeSet<String>) -> Split {
+    let mut plain = BTreeSet::new();
+    let mut forms: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    for key in keys {
+        match plural_form_of(&key, bases) {
+            Some((base, suffix)) => {
+                forms
+                    .entry(base.to_owned())
+                    .or_default()
+                    .insert(suffix.to_owned());
+            }
+            None => {
+                plain.insert(key);
+            }
+        }
     }
+    (plain, forms)
+}
+
+#[test]
+fn every_locale_has_the_keys_of_en_us_and_the_plural_forms_of_its_rule() {
+    let source = key_set(Locale::EnUs);
+    let bases = plural_bases(&source);
+    assert!(bases.contains("board.announce.targets"));
+    let (plain_source, _) = split_plurals(source.clone(), &bases);
+    for locale in Locale::ALL {
+        let (plain, forms) = split_plurals(key_set(locale), &bases);
+        assert_eq!(plain, plain_source, "{}", locale.id());
+        let needed: BTreeSet<String> = locale
+            .plural_rule()
+            .forms()
+            .iter()
+            .map(|form| form.suffix().to_owned())
+            .collect();
+        for base in &bases {
+            assert_eq!(forms.get(base), Some(&needed), "{} {base}", locale.id());
+        }
+    }
+}
+
+#[test]
+fn a_counted_text_takes_the_form_of_the_locale() {
+    assert_eq!(tn("board.announce.targets", 1, &[]), "1 target");
+    assert_eq!(tn("board.announce.targets", 3, &[]), "3 targets");
+    set_locale(Locale::PlPl);
+    let polish = [1, 3, 5, 22].map(|count| tn("board.announce.targets", count, &[]));
+    set_locale(Locale::EnUs);
+    assert_eq!(polish, ["1 cel", "3 cele", "5 celów", "22 cele"]);
 }
 
 #[test]
@@ -80,7 +141,7 @@ fn every_key_used_in_the_sources_exists() {
         let text = std::fs::read_to_string(&file).unwrap_or_default();
         for key in keys_in(&text) {
             assert!(
-                known.contains(&key),
+                known.contains(&key) || known.contains(&format!("{key}_other")),
                 "{} uses unknown key {key}",
                 file.display()
             );
@@ -124,7 +185,7 @@ fn locale_ids_round_trip() {
     for locale in Locale::ALL {
         assert_eq!(Locale::from_id(locale.id()), Some(locale));
     }
-    assert_eq!(Locale::from_id("de-DE"), None);
+    assert_eq!(Locale::from_id("cs-CZ"), None);
 }
 
 #[test]
@@ -153,13 +214,38 @@ fn placeholders(text: &str) -> BTreeSet<String> {
 #[test]
 fn every_locale_uses_the_placeholders_of_en_us() {
     let source = catalog(Locale::EnUs);
+    let bases = plural_bases(&key_set(Locale::EnUs));
     for locale in Locale::ALL {
         let translated = catalog(locale);
         for (key, text) in source {
+            if plural_form_of(key, &bases).is_some() {
+                continue;
+            }
             let other = translated.get(key).map_or("", String::as_str);
             assert_eq!(
                 placeholders(other),
                 placeholders(text),
+                "{} {key}",
+                locale.id()
+            );
+        }
+    }
+}
+
+#[test]
+fn every_plural_form_uses_only_the_placeholders_of_the_english_other_form() {
+    let source = catalog(Locale::EnUs);
+    let bases = plural_bases(&key_set(Locale::EnUs));
+    for locale in Locale::ALL {
+        for (key, text) in catalog(locale) {
+            let Some((base, _)) = plural_form_of(key, &bases) else {
+                continue;
+            };
+            let other = source
+                .get(&format!("{base}_other"))
+                .map_or("", String::as_str);
+            assert!(
+                placeholders(text).is_subset(&placeholders(other)),
                 "{} {key}",
                 locale.id()
             );

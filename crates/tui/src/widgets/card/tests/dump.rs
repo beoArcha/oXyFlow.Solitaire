@@ -45,7 +45,7 @@ fn print_klondike_and_spider_boards() {
     for size in [(100, 30), (130, 40)] {
         for (name, game) in [("Klondike", (KLONDIKE_THREE, 42)), ("Spider", (SPIDER, 42))] {
             for (caps, mode) in [(TRUE_COLOR, "Unicode"), (PLAIN, "ASCII")] {
-                for locale in Locale::ALL {
+                for locale in Locale::offered() {
                     let mut h = board(game, caps, locale, size);
                     if name == "Klondike" {
                         h.type_char('s');

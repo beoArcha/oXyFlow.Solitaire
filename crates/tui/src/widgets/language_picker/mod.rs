@@ -1,7 +1,7 @@
 //! The language selector of the main menu: `◄ [flag] ► ▼` in the top-left corner (`< EN > v` in
 //! ASCII or 16-color mode, where the code replaces the flag). Left and Right, or a click on an
-//! arrow, switch to the neighbouring language at once; `▼`, Down and Enter open a list of all
-//! languages, chosen by arrows and Enter or by a click, closed by Esc or a click outside. A tooltip
+//! arrow, switch to the neighbouring language at once; `▼`, Down and Enter open a list of the
+//! offered (completely translated) languages, chosen by arrows and Enter or by a click, closed by Esc or a click outside. A tooltip
 //! names the language in itself while the pointer is over the selector or it has the focus.
 //!
 //! The picker only reports the language the player chose; the caller applies and saves it as the
@@ -48,15 +48,16 @@ pub struct LanguagePicker {
 }
 
 fn index_of(locale: Locale) -> usize {
-    Locale::ALL
+    Locale::offered()
         .iter()
         .position(|candidate| *candidate == locale)
         .unwrap_or(0)
 }
 
 fn shifted(current: Locale, forward: bool) -> Locale {
-    let next = step(index_of(current), Locale::ALL.len(), forward);
-    Locale::ALL.get(next).copied().unwrap_or(current)
+    let languages = Locale::offered();
+    let next = step(index_of(current), languages.len(), forward);
+    languages.get(next).copied().unwrap_or(current)
 }
 
 impl LanguagePicker {
@@ -97,13 +98,14 @@ impl LanguagePicker {
     }
 
     fn on_open_action(&mut self, index: usize, action: Action) -> Option<Locale> {
-        let len = Locale::ALL.len();
+        let languages = Locale::offered();
+        let len = languages.len();
         match action {
             Action::Up => self.open = Some(step(index, len, false)),
             Action::Down => self.open = Some(step(index, len, true)),
             Action::Select => {
                 self.open = None;
-                return Locale::ALL.get(index).copied();
+                return languages.get(index).copied();
             }
             Action::Back => self.open = None,
             _ => {}
@@ -154,7 +156,7 @@ impl LanguagePicker {
     }
 
     fn on_open_press(&mut self, over: Option<usize>, cell: (u16, u16)) -> Pointed {
-        match over.and_then(|index| Locale::ALL.get(index).copied()) {
+        match over.and_then(|index| Locale::offered().get(index).copied()) {
             Some(locale) => {
                 self.open = None;
                 Pointed::Choose(locale)

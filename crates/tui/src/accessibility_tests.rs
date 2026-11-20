@@ -236,14 +236,14 @@ fn every_theme_meets_its_contrast_target_for_the_text_pairs() {
 
 #[test]
 fn every_rejection_and_board_event_is_announced_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
-        let prefix = match locale {
-            Locale::EnUs => "Illegal move: ",
-            Locale::PlPl => "Zły ruch: ",
-        };
+        let prefix = t(REJECTIONS[0])
+            .split_once(':')
+            .map(|(head, _)| format!("{head}: "))
+            .unwrap_or_default();
         for key in REJECTIONS {
-            assert!(t(key).starts_with(prefix), "{locale:?} {key}: {}", t(key));
+            assert!(t(key).starts_with(&prefix), "{locale:?} {key}: {}", t(key));
         }
         for key in EVENTS.iter().chain(&REJECTIONS) {
             assert_ne!(t(key), *key, "{locale:?} {key}");

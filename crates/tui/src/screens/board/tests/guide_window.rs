@@ -5,11 +5,12 @@ use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 use ratatui::crossterm::event::{KeyCode, KeyModifiers, MouseEvent, MouseEventKind};
 
 use super::*;
+use crate::action::Action;
 use crate::app::Modal;
 use crate::caps::TerminalCaps;
 use crate::glyphs::is_wgl4;
-use crate::i18n::{Locale, set_locale};
-use crate::input::Input;
+use crate::i18n::{Locale, set_locale, t, tf};
+use crate::input::{Input, primary_key};
 use crate::settings::Settings;
 use crate::test_support::PLAIN;
 
@@ -200,17 +201,22 @@ fn the_do_row_keeps_restart_and_options_at_every_width_of_the_guide_window() {
 
 #[test]
 fn the_do_row_keeps_restart_and_options_at_100_columns_in_every_game_and_locale() {
-    for locale in Locale::ALL {
-        let (restart, options) = match locale {
-            Locale::EnUs => ("Shift+R: restart", "o: options"),
-            Locale::PlPl => ("Shift+R: od nowa", "o: opcje"),
-        };
+    for locale in Locale::offered() {
+        set_locale(locale);
+        let restart = tf(
+            "board.action.restart",
+            &[("key", &primary_key(Action::Restart).unwrap_or_default())],
+        );
+        let options = tf(
+            "board.action.options",
+            &[("key", &primary_key(Action::Options).unwrap_or_default())],
+        );
         for variant in GAMES {
             let mut h = shown(variant, (100, 30), locale, TRUE_COLOR);
             let browsing = last_row(&mut h);
             assert!(browsing.trim_end().chars().count() <= 100, "{browsing}");
-            assert!(browsing.contains(restart), "{variant:?}: {browsing}");
-            assert!(browsing.contains(options), "{variant:?}: {browsing}");
+            assert!(browsing.contains(&restart), "{variant:?}: {browsing}");
+            assert!(browsing.contains(&options), "{variant:?}: {browsing}");
         }
     }
     set_locale(Locale::EnUs);
@@ -232,7 +238,7 @@ fn the_do_row_keeps_restart_while_cards_are_carried() {
 fn every_narrow_screen() -> Vec<(Variant, (u16, u16), Locale, TerminalCaps)> {
     let mut all = Vec::new();
     for size in NARROW {
-        for locale in Locale::ALL {
+        for locale in Locale::offered() {
             for caps in [TRUE_COLOR, PLAIN] {
                 all.extend(GAMES.map(|variant| (variant, size, locale, caps)));
             }
@@ -253,11 +259,9 @@ fn every_narrow_size_locale_and_glyph_mode_draws_the_window_inside_the_screen() 
             assert!(ch.is_ascii() || is_wgl4(ch), "{size:?} {variant:?}: {ch:?}");
             assert!(!plain_english || ch.is_ascii(), "{size:?}: {ch:?}");
         }
-        let title = match locale {
-            Locale::EnUs => "Guide",
-            Locale::PlPl => "Przewodnik",
-        };
-        assert!(lines.concat().contains(title), "{size:?} {variant:?}");
+        set_locale(locale);
+        let title = t("board.guide.window_title").into_owned();
+        assert!(lines.concat().contains(&title), "{size:?} {variant:?}");
     }
     set_locale(Locale::EnUs);
 }

@@ -4,7 +4,7 @@ use ratatui::crossterm::event::{KeyCode, MouseEventKind};
 use super::support::{STATISTICS_ITEM, many_games, open_stats, row, three_games, wheel};
 use crate::app::Screen;
 use crate::glyphs::is_wgl4;
-use crate::i18n::Locale;
+use crate::i18n::{Locale, set_locale, t};
 use crate::settings::Settings;
 use crate::solver::Proof;
 use crate::storage::Outcome::{Abandoned, Won};
@@ -46,7 +46,7 @@ fn the_list_scrolls_by_key_page_and_wheel_and_a_click_selects_a_row() {
 
 #[test]
 fn the_screen_fits_100_by_30_in_both_locales_with_only_wgl4_glyphs() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let settings = Settings {
             locale,
             ..Settings::default()
@@ -100,9 +100,16 @@ fn storage_clone(storage: &MemoryStorage) -> MemoryStorage {
     }
 }
 
+fn mode_label(locale: Locale, mode: &str) -> String {
+    set_locale(locale);
+    let label = format!("({})", t(&format!("stats.mode.{mode}")));
+    set_locale(Locale::EnUs);
+    label
+}
+
 #[test]
 fn the_summary_names_the_undo_mode_once_two_modes_exist_and_still_fits() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let mut storage = three_games();
         storage.history.push(HistoryRow {
             undo_allowed: false,
@@ -120,11 +127,8 @@ fn the_summary_names_the_undo_mode_once_two_modes_exist_and_still_fits() {
         let mut h = open_stats(storage, 100, 30);
         let lines = h.lines();
         let text = lines.join("\n");
-        let (undo, no_undo) = match locale {
-            Locale::EnUs => ("(undo)", "(no undo)"),
-            Locale::PlPl => ("(z cofaniem)", "(bez cofania)"),
-        };
-        assert!(text.contains(undo) && text.contains(no_undo), "{text}");
+        let (undo, no_undo) = (mode_label(locale, "undo"), mode_label(locale, "no_undo"));
+        assert!(text.contains(&undo) && text.contains(&no_undo), "{text}");
         assert!(
             lines
                 .iter()
@@ -135,7 +139,7 @@ fn the_summary_names_the_undo_mode_once_two_modes_exist_and_still_fits() {
 
 #[test]
 fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let mut history = Vec::new();
         for (index, variant) in Variant::ALL.into_iter().enumerate() {
             let id = i64::try_from(index).unwrap_or(0) * 2 + 1;
@@ -155,11 +159,8 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
         };
         let mut h = open_stats(storage, 100, 30);
         let lines = h.lines();
-        let no_undo = match locale {
-            Locale::EnUs => "(no undo)",
-            Locale::PlPl => "(bez cofania)",
-        };
-        let summarized = lines.iter().filter(|line| line.contains(no_undo)).count();
+        let no_undo = mode_label(locale, "no_undo");
+        let summarized = lines.iter().filter(|line| line.contains(&no_undo)).count();
         assert_eq!(summarized, Variant::ALL.len(), "{}", lines.join("\n"));
         let widest = lines
             .iter()

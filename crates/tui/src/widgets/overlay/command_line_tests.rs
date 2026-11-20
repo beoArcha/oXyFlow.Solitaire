@@ -74,7 +74,7 @@ fn the_third_tab_shows_the_help_text_with_the_new_window_option() {
 
 #[test]
 fn the_help_text_is_the_cli_text_fits_the_window_and_names_the_new_option_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         i18n::set_locale(locale);
         let lines = command_line::lines();
         assert!(lines.len() > VIEW_ROWS, "{locale:?} should scroll");
@@ -184,7 +184,7 @@ fn escape_and_the_close_button_close_the_window() {
 
 #[test]
 fn renders_cleanly_at_100x30_in_both_locales_and_glyph_modes_at_both_ends() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         for caps in [TRUE_COLOR, PLAIN] {
             let mut h = harness_in(locale, caps);
             h.type_char('?');

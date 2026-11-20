@@ -61,7 +61,7 @@ spades = "spades"
 
 [announce]
 targets_one = "1 target"
-targets_many = "{count} targets"
+targets_other = "{count} targets"
 
 [status]
 no_targets = "These cards have nowhere to go."

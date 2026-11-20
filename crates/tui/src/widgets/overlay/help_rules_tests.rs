@@ -186,7 +186,7 @@ fn i_and_menu_item_show_rules_and_can_switch_to_keys() {
 
 #[test]
 fn renders_cleanly_at_100x30_in_both_locales_and_glyph_modes() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         i18n::set_locale(locale);
         for caps in [TRUE_COLOR, PLAIN] {
             let mut h = harness(caps);

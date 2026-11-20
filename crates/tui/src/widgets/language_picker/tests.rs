@@ -32,13 +32,15 @@ fn left_and_right_step_through_the_languages_and_wrap() {
         Some(Locale::PlPl)
     );
     assert_eq!(
-        picker.on_action(Action::Right, Locale::PlPl),
+        picker.on_action(Action::Left, Locale::PlPl),
         Some(Locale::EnUs)
     );
     assert_eq!(
         picker.on_action(Action::Left, Locale::EnUs),
-        Some(Locale::PlPl)
+        Locale::offered().last().copied()
     );
+    let last = Locale::offered().last().copied().unwrap_or(Locale::EnUs);
+    assert_eq!(picker.on_action(Action::Right, last), Some(Locale::EnUs));
 }
 
 #[test]
@@ -78,8 +80,8 @@ fn back_closes_without_choosing() {
 fn clicks_on_the_arrows_choose_and_on_the_down_arrow_open() {
     let mut picker = located();
     assert_eq!(
-        picker.on_mouse(&press(2, 1), Locale::EnUs),
-        Pointed::Choose(Locale::PlPl)
+        picker.on_mouse(&press(2, 1), Locale::PlPl),
+        Pointed::Choose(Locale::EnUs)
     );
     assert_eq!(
         picker.on_mouse(&press(9, 1), Locale::EnUs),
@@ -132,4 +134,30 @@ fn an_open_list_chooses_on_a_row_keeps_open_on_its_border_and_closes_outside() {
         Pointed::Choose(Locale::PlPl)
     );
     assert!(!picker.is_open());
+}
+
+#[test]
+fn the_selector_steps_and_lists_only_offered_locales() {
+    let offered = Locale::offered();
+    let mut picker = LanguagePicker::new();
+    let mut current = Locale::EnUs;
+    for _ in 0..Locale::ALL.len() {
+        let Some(next) = picker.on_action(Action::Right, current) else {
+            unreachable!("Right always chooses")
+        };
+        assert!(offered.contains(&next), "{next:?}");
+        current = next;
+    }
+    let listed: Vec<Option<Locale>> = (0..offered.len())
+        .map(|downs| {
+            let mut picker = LanguagePicker::new();
+            picker.on_action(Action::Select, Locale::EnUs);
+            for _ in 0..downs {
+                picker.on_action(Action::Down, Locale::EnUs);
+            }
+            picker.on_action(Action::Select, Locale::EnUs)
+        })
+        .collect();
+    let offered: Vec<Option<Locale>> = offered.into_iter().map(Some).collect();
+    assert_eq!(listed, offered);
 }

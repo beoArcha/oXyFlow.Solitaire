@@ -62,14 +62,11 @@ impl Image {
 
 /// Folder name of a language under the image directory: the site's language code.
 fn language_folder(locale: Locale) -> &'static str {
-    match locale {
-        Locale::EnUs => "en",
-        Locale::PlPl => "pl",
-    }
+    locale.id().split('-').next().unwrap_or_default()
 }
 
 pub fn run(root: &Path) -> Result<(), ScreenshotError> {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         let dir = root.join(IMAGE_DIR).join(language_folder(locale));
         fs::create_dir_all(&dir).map_err(|source| ScreenshotError::Write {
             path: dir.clone(),

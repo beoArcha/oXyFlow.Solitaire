@@ -173,7 +173,12 @@ impl App {
 
     fn load_stored_state(&mut self) {
         match self.storage.load_settings() {
-            Ok(Some(stored)) => self.settings = stored,
+            Ok(Some(stored)) => {
+                self.settings = Settings {
+                    locale: stored.locale.or_source(),
+                    ..stored
+                };
+            }
             Ok(None) => {}
             Err(error) => {
                 tracing::warn!(%error, "stored settings could not be loaded; using defaults");

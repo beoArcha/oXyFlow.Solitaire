@@ -61,7 +61,7 @@ spades = "pique"
 
 [announce]
 targets_one = "1 cible"
-targets_many = "{count} cibles"
+targets_other = "{count} cibles"
 
 [status]
 no_targets = "Ces cartes n'ont nulle part où aller."

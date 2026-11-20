@@ -88,7 +88,7 @@ fn every_unavailable_status_has_its_own_reason_in_both_locales() {
         AudioStatus::NoDevice,
         AudioStatus::StyleFailed,
     ];
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         set_locale(locale);
         let mut texts: Vec<String> = statuses
             .iter()

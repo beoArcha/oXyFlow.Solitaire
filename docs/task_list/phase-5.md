@@ -91,6 +91,7 @@ The delivery method was confirmed by spike X-01 and decided at checkpoint F-02.
   `--quick`. Unit tests that need no Python cover registry parsing, the range and duplicate checks and
   Python discovery. An invalid SVG fails with a message naming the file and the rule; the committed font
   contains every code point of the base font; running the command twice yields identical bytes.
+- **Done:** #124 (Cascadia Mono 2407.24 static Regular; name ID 7 removed; xtask main/error touched)
 
 ### P5-02 — Style-driven cards and graphics check
 

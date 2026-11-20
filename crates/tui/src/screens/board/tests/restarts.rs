@@ -4,7 +4,7 @@
 use oxysol_core::{DrawCount, PyramidRules, Variant};
 
 use super::{board, start, start_no_undo};
-use crate::i18n::Locale;
+use crate::i18n::{Locale, set_locale, t, tf};
 use crate::input::Input;
 use crate::screens::Effect;
 use crate::settings::Settings;
@@ -95,12 +95,13 @@ fn a_resumed_game_without_undo_keeps_its_restart_count() {
 }
 
 #[test]
-fn the_header_keeps_the_restart_count_at_100_columns_in_both_locales() {
+fn the_header_keeps_the_restart_count_at_100_columns_in_every_offered_locale() {
     let pyramid = Variant::Pyramid(PyramidRules::Classic);
-    for (locale, undo, restarts) in [
-        (Locale::EnUs, "No undo", "Restarts: 3"),
-        (Locale::PlPl, "Bez cofania", "Od nowa: 3"),
-    ] {
+    for locale in Locale::offered() {
+        set_locale(locale);
+        let undo = t("board.header.no_undo").into_owned();
+        let restarts = tf("board.header.restarts", &[("count", "3")]);
+        set_locale(Locale::EnUs);
         let storage = MemoryStorage {
             settings: Some(Settings {
                 locale,
@@ -123,8 +124,8 @@ fn the_header_keeps_the_restart_count_at_100_columns_in_both_locales() {
         }
         h.send(Input::Tick);
         let line = header(&mut h);
-        assert!(line.contains(undo), "{line}");
-        assert!(line.contains(restarts), "{line}");
+        assert!(line.contains(&undo), "{line}");
+        assert!(line.contains(&restarts), "{line}");
         assert!(line.contains(&u64::MAX.to_string()), "{line}");
         assert!(line.trim_end().chars().count() <= 100, "{line}");
     }

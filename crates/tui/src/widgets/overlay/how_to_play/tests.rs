@@ -100,7 +100,7 @@ fn keys_scroll_switch_and_close() {
 
 #[test]
 fn every_row_fits_the_text_width_in_both_locales() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         i18n::set_locale(locale);
         for rules in Rules::ALL {
             for row in content::rows(rules) {
@@ -114,7 +114,7 @@ fn every_row_fits_the_text_width_in_both_locales() {
 
 #[test]
 fn every_page_is_written_in_both_locales_without_loose_placeholders() {
-    for locale in Locale::ALL {
+    for locale in Locale::offered() {
         i18n::set_locale(locale);
         for rules in Rules::ALL {
             let rows = content::rows(rules);

@@ -184,11 +184,9 @@ fn locale_from_env() -> Locale {
 }
 
 fn locale_for(value: Option<&str>) -> Locale {
-    if value.is_some_and(|text| text.starts_with("pl")) {
-        Locale::PlPl
-    } else {
-        Locale::EnUs
-    }
+    value
+        .and_then(Locale::from_language_tag)
+        .map_or(Locale::EnUs, Locale::or_source)
 }
 
 fn print_stdout(text: &str) -> Result<(), AppError> {
@@ -226,10 +224,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn polish_environment_selects_polish_and_everything_else_english() {
+    fn the_environment_selects_a_complete_locale_by_language_else_english() {
         assert_eq!(locale_for(Some("pl_PL.UTF-8")), Locale::PlPl);
         assert_eq!(locale_for(Some("en_US.UTF-8")), Locale::EnUs);
+        assert_eq!(locale_for(Some("en_GB")), Locale::EnUs);
+        assert_eq!(locale_for(Some("C")), Locale::EnUs);
         assert_eq!(locale_for(None), Locale::EnUs);
+        for (tag, locale) in [
+            ("de_AT.UTF-8", Locale::DeDe),
+            ("pt_PT", Locale::PtBr),
+            ("uk_UA.UTF-8", Locale::UkUa),
+        ] {
+            assert_eq!(locale_for(Some(tag)), locale.or_source(), "{tag}");
+        }
     }
 
     #[test]
@@ -248,7 +255,7 @@ mod tests {
             "cli.panic",
             "cli.press_enter",
         ];
-        for locale in Locale::ALL {
+        for locale in Locale::offered() {
             i18n::set_locale(locale);
             for key in keys {
                 assert_ne!(i18n::t(key), key, "{} lacks {key}", locale.id());
