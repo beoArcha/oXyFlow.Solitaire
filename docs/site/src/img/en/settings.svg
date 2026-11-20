@@ -3,69 +3,101 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<text x="414 423 432 441 450 459 468 477" y="109" fill="#8cbeff">Settings</text>
-<text x="252 261 270 279 288 297 306" y="147" fill="#8cbeff">Display</text>
-<rect x="234" y="152" width="216" height="19" fill="#ffd666"/>
-<text x="234" y="166" fill="#141820">►</text>
-<text x="252 261 270 279 288 297 306 315" y="166" fill="#141820">Language</text>
-<text x="333 342 351 360 369" y="166" fill="#141820">.....</text>
-<text x="387 396 405 414 423 432 441" y="166" fill="#141820">English</text>
-<text x="252 261 270 279 288" y="185" fill="#e8ecf4">Theme</text>
-<text x="306 315 324 333 342 351 360 369" y="185" fill="#e8ecf4">........</text>
-<text x="387 396 405 414" y="185" fill="#e8ecf4">Dark</text>
-<text x="252 261 270 279 288" y="204" fill="#e8ecf4">Front</text>
-<text x="306 315 324 333 342" y="204" fill="#e8ecf4">style</text>
-<text x="360 369" y="204" fill="#e8ecf4">..</text>
-<text x="387 396 405 414 423 432 441 450 459 468 477 486 495" y="204" fill="#e8ecf4">International</text>
-<text x="252 261 270 279" y="223" fill="#e8ecf4">Back</text>
-<text x="297 306 315 324 333" y="223" fill="#e8ecf4">style</text>
-<text x="351 360 369" y="223" fill="#e8ecf4">...</text>
-<text x="387 396 405 414 423 432 441" y="223" fill="#e8ecf4">Default</text>
-<text x="252 261 270 279 288 297 306" y="242" fill="#e8ecf4">Symbols</text>
-<text x="324 333 342 351 360 369" y="242" fill="#e8ecf4">......</text>
-<text x="387 396 405 414 423 432 441" y="242" fill="#e8ecf4">Unicode</text>
-<text x="252 261 270 279 288 297" y="261" fill="#e8ecf4">Colors</text>
-<text x="315 324 333 342 351 360 369" y="261" fill="#e8ecf4">.......</text>
-<text x="387 396 405 414" y="261" fill="#e8ecf4">Auto</text>
-<text x="252 261 270 279 288" y="299" fill="#8cbeff">Sound</text>
-<text x="252 261 270 279 288" y="318" fill="#e8ecf4">Sound</text>
-<text x="306 315 324 333 342" y="318" fill="#e8ecf4">style</text>
-<text x="360 369" y="318" fill="#e8ecf4">..</text>
-<text x="387 396 405 414 423 432 441" y="318" fill="#e8ecf4">Default</text>
-<text x="252 261 270 279 288" y="337" fill="#e8ecf4">Sound</text>
-<text x="306 315 324 333" y="337" fill="#e8ecf4">cues</text>
-<text x="351 360 369" y="337" fill="#e8ecf4">...</text>
-<text x="387 396" y="337" fill="#e8ecf4">On</text>
-<text x="252 261 270 279 288" y="356" fill="#e8ecf4">Music</text>
-<text x="306 315 324 333 342 351 360 369" y="356" fill="#e8ecf4">........</text>
-<text x="387 396 405" y="356" fill="#e8ecf4">Off</text>
-<text x="252 261 270 279 288 297" y="375" fill="#e8ecf4">Volume</text>
-<text x="315 324 333 342 351 360 369" y="375" fill="#e8ecf4">.......</text>
-<text x="387 396 405" y="375" fill="#e8ecf4">70%</text>
-<text x="252 261 270 279 288" y="413" fill="#8cbeff">Board</text>
-<text x="252 261 270 279 288 297 306 315 324 333 342" y="432" fill="#e8ecf4">Auto-finish</text>
-<text x="360 369" y="432" fill="#e8ecf4">..</text>
-<text x="387 396" y="432" fill="#e8ecf4">On</text>
-<text x="252 261 270 279" y="451" fill="#e8ecf4">Aura</text>
-<text x="297 306 315 324 333 342 351 360 369" y="451" fill="#e8ecf4">.........</text>
-<text x="387 396 405 414" y="451" fill="#e8ecf4">Full</text>
-<text x="252 261 270 279 288" y="470" fill="#e8ecf4">Guide</text>
-<text x="306 315 324 333 342" y="470" fill="#e8ecf4">panel</text>
-<text x="360 369" y="470" fill="#e8ecf4">..</text>
-<text x="387 396" y="470" fill="#e8ecf4">On</text>
-<text x="414 423 432 441 450 459" y="470" fill="#e8ecf4">(needs</text>
-<text x="477 486 495" y="470" fill="#e8ecf4">130</text>
-<text x="513 522 531 540 549 558 567 576" y="470" fill="#e8ecf4">columns,</text>
-<text x="594 603 612" y="470" fill="#e8ecf4">now</text>
-<text x="630 639 648 657" y="470" fill="#e8ecf4">100)</text>
-<text x="261 270 279" y="508" fill="#b8c2d6">The</text>
-<text x="297 306 315 324 333 342 351 360" y="508" fill="#b8c2d6">language</text>
-<text x="378 387" y="508" fill="#b8c2d6">of</text>
-<text x="405 414 423" y="508" fill="#b8c2d6">all</text>
-<text x="441 450 459 468 477" y="508" fill="#b8c2d6">text.</text>
-<text x="495 504 513 522 531 540 549" y="508" fill="#b8c2d6">Changes</text>
-<text x="567 576" y="508" fill="#b8c2d6">at</text>
-<text x="594 603 612 621 630" y="508" fill="#b8c2d6">once.</text>
+<text x="414 423 432 441 450 459 468 477" y="71" fill="#8cbeff">Settings</text>
+<text x="198 207 216 225 234 243 252" y="109" fill="#8cbeff">Display</text>
+<rect x="180" y="114" width="378" height="19" fill="#ffd666"/>
+<text x="180" y="128" fill="#141820">►</text>
+<text x="198 207 216 225 234 243 252 261" y="128" fill="#141820">Language</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="128" fill="#141820">..............</text>
+<text x="414" y="128" fill="#141820">◄</text>
+<text x="432 441 450 459 468 477 486" y="128" fill="#141820">English</text>
+<text x="504 513 522 531" y="128" fill="#141820">(US)</text>
+<text x="549" y="128" fill="#141820">►</text>
+<text x="198 207 216 225 234" y="147" fill="#e8ecf4">Theme</text>
+<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="147" fill="#e8ecf4">.................</text>
+<text x="432 441 450 459" y="147" fill="#e8ecf4">Dark</text>
+<path fill="#80848d" d="M486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9zM513 152h9v19h-9z"/>
+<text x="198 207 216 225" y="166" fill="#e8ecf4">Card</text>
+<text x="243 252 261 270" y="166" fill="#e8ecf4">back</text>
+<text x="288 297 306 315 324 333 342 351 360 369 378 387 396" y="166" fill="#e8ecf4">.............</text>
+<text x="432 441 450 459 468" y="166" fill="#e8ecf4">Theme</text>
+<text x="198 207 216 225 234" y="185" fill="#e8ecf4">Front</text>
+<text x="252 261 270 279 288" y="185" fill="#e8ecf4">style</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396" y="185" fill="#e8ecf4">...........</text>
+<text x="432 441 450 459 468 477 486 495 504 513 522 531 540" y="185" fill="#e8ecf4">International</text>
+<text x="198 207 216 225" y="204" fill="#e8ecf4">Back</text>
+<text x="243 252 261 270 279" y="204" fill="#e8ecf4">style</text>
+<text x="297 306 315 324 333 342 351 360 369 378 387 396" y="204" fill="#e8ecf4">............</text>
+<text x="432 441 450 459 468 477 486" y="204" fill="#e8ecf4">Default</text>
+<text x="198 207 216 225 234 243 252" y="223" fill="#e8ecf4">Symbols</text>
+<text x="270 279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="223" fill="#e8ecf4">...............</text>
+<text x="432 441 450 459 468 477 486" y="223" fill="#e8ecf4">Unicode</text>
+<text x="198 207 216 225 234 243" y="242" fill="#e8ecf4">Colors</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="242" fill="#e8ecf4">................</text>
+<text x="432 441 450 459" y="242" fill="#e8ecf4">Auto</text>
+<text x="198 207 216 225" y="261" fill="#e8ecf4">Card</text>
+<text x="243 252 261 270" y="261" fill="#e8ecf4">size</text>
+<text x="288 297 306 315 324 333 342 351 360 369 378 387 396" y="261" fill="#e8ecf4">.............</text>
+<text x="432 441 450 459" y="261" fill="#e8ecf4">Auto</text>
+<text x="198 207 216 225" y="280" fill="#e8ecf4">Full</text>
+<text x="243 252 261 270 279 288" y="280" fill="#e8ecf4">screen</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396" y="280" fill="#e8ecf4">...........</text>
+<text x="432 441 450 459" y="280" fill="#e8ecf4">Auto</text>
+<text x="198 207 216 225 234" y="318" fill="#8cbeff">Sound</text>
+<text x="198 207 216 225 234" y="337" fill="#e8ecf4">Sound</text>
+<text x="252 261 270 279 288" y="337" fill="#e8ecf4">style</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396" y="337" fill="#e8ecf4">...........</text>
+<text x="432 441 450 459 468 477 486" y="337" fill="#e8ecf4">Default</text>
+<text x="198 207 216 225 234" y="356" fill="#e8ecf4">Sound</text>
+<text x="252 261 270 279" y="356" fill="#e8ecf4">cues</text>
+<text x="297 306 315 324 333 342 351 360 369 378 387 396" y="356" fill="#e8ecf4">............</text>
+<text x="432 441" y="356" fill="#e8ecf4">On</text>
+<text x="198 207 216 225 234" y="375" fill="#e8ecf4">Music</text>
+<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="375" fill="#e8ecf4">.................</text>
+<text x="432 441 450" y="375" fill="#e8ecf4">Off</text>
+<text x="198 207 216 225 234 243" y="394" fill="#e8ecf4">Volume</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="394" fill="#e8ecf4">................</text>
+<text x="432 441 450" y="394" fill="#e8ecf4">70%</text>
+<text x="198 207 216 225 234" y="432" fill="#8cbeff">Hints</text>
+<text x="252 261 270" y="432" fill="#8cbeff">and</text>
+<text x="288 297 306 315" y="432" fill="#8cbeff">help</text>
+<text x="198 207 216 225" y="451" fill="#e8ecf4">Aura</text>
+<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396" y="451" fill="#e8ecf4">..................</text>
+<text x="432 441 450 459" y="451" fill="#e8ecf4">Full</text>
+<text x="198 207 216 225 234 243" y="470" fill="#e8ecf4">Target</text>
+<text x="261 270 279 288 297" y="470" fill="#e8ecf4">marks</text>
+<text x="315 324 333 342 351 360 369 378 387 396" y="470" fill="#e8ecf4">..........</text>
+<text x="432 441" y="470" fill="#e8ecf4">On</text>
+<text x="198 207 216 225 234" y="489" fill="#e8ecf4">Guide</text>
+<text x="252 261 270 279 288" y="489" fill="#e8ecf4">panel</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396" y="489" fill="#e8ecf4">...........</text>
+<text x="432 441" y="489" fill="#e8ecf4">On</text>
+<text x="459 468 477 486 495 504" y="489" fill="#e8ecf4">(needs</text>
+<text x="522 531 540" y="489" fill="#e8ecf4">130</text>
+<text x="558 567 576 585 594 603 612 621" y="489" fill="#e8ecf4">columns,</text>
+<text x="639 648 657" y="489" fill="#e8ecf4">now</text>
+<text x="675 684 693 702" y="489" fill="#e8ecf4">100)</text>
+<text x="198 207 216 225 234 243 252 261" y="508" fill="#e8ecf4">Possible</text>
+<text x="279 288 297 306 315" y="508" fill="#e8ecf4">moves</text>
+<text x="333 342 351 360 369" y="508" fill="#e8ecf4">panel</text>
+<text x="387 396" y="508" fill="#e8ecf4">..</text>
+<text x="432 441" y="508" fill="#e8ecf4">On</text>
+<text x="459 468 477 486 495 504" y="508" fill="#e8ecf4">(needs</text>
+<text x="522 531 540" y="508" fill="#e8ecf4">130</text>
+<text x="558 567 576 585 594 603 612 621" y="508" fill="#e8ecf4">columns,</text>
+<text x="639 648 657" y="508" fill="#e8ecf4">now</text>
+<text x="675 684 693 702" y="508" fill="#e8ecf4">100)</text>
+<text x="198 207 216 225 234 243 252 261 270 279 288" y="527" fill="#e8ecf4">Auto-finish</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396" y="527" fill="#e8ecf4">...........</text>
+<text x="432 441" y="527" fill="#e8ecf4">On</text>
+<text x="261 270 279" y="565" fill="#b8c2d6">The</text>
+<text x="297 306 315 324 333 342 351 360" y="565" fill="#b8c2d6">language</text>
+<text x="378 387" y="565" fill="#b8c2d6">of</text>
+<text x="405 414 423" y="565" fill="#b8c2d6">all</text>
+<text x="441 450 459 468 477" y="565" fill="#b8c2d6">text.</text>
+<text x="495 504 513 522 531 540 549" y="565" fill="#b8c2d6">Changes</text>
+<text x="567 576" y="565" fill="#b8c2d6">at</text>
+<text x="594 603 612 621 630" y="565" fill="#b8c2d6">once.</text>
 <text x="306 315 324 333 342" y="641" fill="#b8c2d6">Enter</text>
 <text x="360 369 378 387 396 405" y="641" fill="#b8c2d6">Change</text>
 <text x="441 450 459" y="641" fill="#b8c2d6">Esc</text>

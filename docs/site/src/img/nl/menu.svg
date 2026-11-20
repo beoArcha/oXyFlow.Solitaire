@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 646" width="900" height="646" role="img" aria-label="The oXySol main menu">
+<title>The oXySol main menu</title>
+<style></style>
+<rect width="900" height="646" fill="#181c26"/>
+<g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
+<rect x="36" y="19" width="36" height="19" fill="#ffffff"/>
+<path fill="#ae1c28" d="M36 19h9v9.5h-9zM45 19h9v9.5h-9zM54 19h9v9.5h-9zM63 19h9v9.5h-9z"/>
+<text x="18" y="33" fill="#8cbeff">◄</text>
+<text x="81" y="33" fill="#8cbeff">►</text>
+<text x="99" y="33" fill="#8cbeff">▼</text>
+<rect x="36" y="38" width="36" height="19" fill="#21468b"/>
+<path fill="#ffffff" d="M36 38h9v9.5h-9zM45 38h9v9.5h-9zM54 38h9v9.5h-9zM63 38h9v9.5h-9z"/>
+<text x="81 90" y="52" fill="#8cbeff">NL</text>
+<path fill="#8cbeff" d="M306 114h9v19h-9zM315 114h9v19h-9zM351 114h9v19h-9zM360 114h9v19h-9zM477 123.5h9v9.5h-9zM486 114h9v19h-9zM495 114h9v19h-9zM504 114h9v19h-9zM513 114h9v19h-9zM612 114h9v19h-9zM621 114h9v19h-9z"/>
+<path fill="#8cbeff" d="M243 142.5h9v9.5h-9zM252 133h9v19h-9zM261 133h9v19h-9zM270 142.5h9v9.5h-9zM315 133h9v9.5h-9zM324 133h9v19h-9zM342 133h9v19h-9zM351 133h9v9.5h-9zM387 133h9v19h-9zM396 133h9v19h-9zM432 133h9v19h-9zM441 133h9v19h-9zM468 133h9v19h-9zM477 133h9v19h-9zM549 142.5h9v9.5h-9zM558 133h9v19h-9zM567 133h9v19h-9zM576 142.5h9v9.5h-9zM612 133h9v19h-9zM621 133h9v19h-9z"/>
+<path fill="#8cbeff" d="M234 152h9v19h-9zM243 152h9v19h-9zM270 152h9v19h-9zM279 152h9v19h-9zM324 152h9v19h-9zM333 152h9v19h-9zM342 152h9v19h-9zM396 152h9v9.5h-9zM405 152h9v19h-9zM423 152h9v19h-9zM432 152h9v9.5h-9zM477 152h9v9.5h-9zM486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9zM513 161.5h9v9.5h-9zM540 152h9v19h-9zM549 152h9v19h-9zM576 152h9v19h-9zM585 152h9v19h-9zM612 152h9v19h-9zM621 152h9v19h-9z"/>
+<path fill="#8cbeff" d="M234 171h9v19h-9zM243 171h9v19h-9zM270 171h9v19h-9zM279 171h9v19h-9zM315 180.5h9v9.5h-9zM324 171h9v19h-9zM342 171h9v19h-9zM351 180.5h9v9.5h-9zM405 171h9v19h-9zM414 171h9v19h-9zM423 171h9v19h-9zM504 171h9v19h-9zM513 171h9v19h-9zM540 171h9v19h-9zM549 171h9v19h-9zM576 171h9v19h-9zM585 171h9v19h-9zM612 171h9v19h-9zM621 171h9v19h-9zM648 180.5h9v9.5h-9zM657 180.5h9v9.5h-9z"/>
+<path fill="#8cbeff" d="M243 190h9v9.5h-9zM252 190h9v19h-9zM261 190h9v19h-9zM270 190h9v9.5h-9zM306 190h9v19h-9zM315 190h9v19h-9zM351 190h9v19h-9zM360 190h9v19h-9zM396 190h9v9.5h-9zM405 190h9v19h-9zM414 190h9v19h-9zM468 190h9v19h-9zM477 190h9v19h-9zM486 190h9v19h-9zM495 190h9v19h-9zM504 190h9v9.5h-9zM549 190h9v9.5h-9zM558 190h9v19h-9zM567 190h9v19h-9zM576 190h9v9.5h-9zM621 190h9v9.5h-9zM630 190h9v19h-9zM639 190h9v19h-9zM648 190h9v9.5h-9z"/>
+<text x="270 279 288 297 306 315" y="223" fill="#b8c2d6">Ultiem</text>
+<text x="333 342 351 360 369 378 387 396 405 414 423 432 441 450 459 468 477" y="223" fill="#b8c2d6">kantoor-solitaire</text>
+<text x="495 504 513 522" y="223" fill="#b8c2d6">voor</text>
+<text x="540 549" y="223" fill="#b8c2d6">de</text>
+<text x="567 576 585 594 603 612 621 630" y="223" fill="#b8c2d6">terminal</text>
+<rect x="351" y="247" width="108" height="19" fill="#ffd666"/>
+<text x="351" y="261" fill="#141820">►</text>
+<text x="369 378 387 396 405" y="261" fill="#141820">Nieuw</text>
+<text x="423 432 441 450" y="261" fill="#141820">spel</text>
+<text x="369 378 387 396 405" y="280" fill="#e8ecf4">Nieuw</text>
+<text x="423 432 441 450" y="280" fill="#e8ecf4">spel</text>
+<text x="468 477 486" y="280" fill="#e8ecf4">met</text>
+<text x="504 513 522 531" y="280" fill="#e8ecf4">seed</text>
+<text x="369 378 387 396 405 414 423 432 441 450 459 468" y="299" fill="#e8ecf4">Statistieken</text>
+<text x="369 378 387 396 405 414 423 432 441 450 459 468" y="318" fill="#e8ecf4">Instellingen</text>
+<text x="369 378 387 396 405 414 423 432 441 450" y="337" fill="#e8ecf4">Spelregels</text>
+<text x="369 378 387 396" y="356" fill="#e8ecf4">Help</text>
+<text x="369 378 387 396 405 414 423 432 441" y="375" fill="#e8ecf4">Afsluiten</text>
+<text x="288 297 306 315 324" y="641" fill="#b8c2d6">Enter</text>
+<text x="342 351 360 369 378 387" y="641" fill="#b8c2d6">Openen</text>
+<text x="423" y="641" fill="#b8c2d6">q</text>
+<text x="441 450 459 468 477 486 495 504 513" y="641" fill="#b8c2d6">Afsluiten</text>
+<text x="549" y="641" fill="#b8c2d6">?</text>
+<text x="567 576 585 594" y="641" fill="#b8c2d6">Help</text>
+<text x="846 855 864 873 882 891" y="641" fill="#b8c2d6">v0.4.0</text>
+</g>
+</svg>

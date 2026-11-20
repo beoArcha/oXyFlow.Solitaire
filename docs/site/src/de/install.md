@@ -2,10 +2,6 @@
 
 # Installation
 
-> **Hinweis:** Die Oberfläche des Spiels gibt es heute auf Englisch und Polnisch; Deutsch, Französisch, Italienisch,
-> brasilianisches Portugiesisch, Ukrainisch, Niederländisch und Spanisch sind in Arbeit. Die Screenshots zeigen die
-> englische Version.
-
 ## Eine fertige Version herunterladen
 
 Die neueste Version ist [{{VERSION}}]({{RELEASE_URL}}) (Vorabversionen eingeschlossen). Alle Versionen stehen auf der

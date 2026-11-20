@@ -2,10 +2,6 @@
 
 # Installazione
 
-> **Nota:** l’interfaccia del gioco oggi è disponibile in inglese e in polacco; tedesco, francese, italiano,
-> portoghese brasiliano, ucraino, olandese e spagnolo sono in lavorazione. Gli screenshot mostrano la versione
-> inglese.
-
 ## Scarica una versione pronta
 
 La versione più recente è [{{VERSION}}]({{RELEASE_URL}}) (versioni preliminari comprese). Tutte le versioni sono nella

@@ -1,6 +1,12 @@
 # Summary
 
-[Introduction](index.md)
+[oXySol](index.md)
+
+---
+
+# English
+
+- [Introduction](en/index.md)
 - [Features](features.md)
 - [Screenshots and animations](gallery.md)
 - [Install](install.md)

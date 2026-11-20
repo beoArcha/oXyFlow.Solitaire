@@ -1,15 +1,11 @@
-[English](../index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · **Français** · [Italiano](../it/index.md) · [Nederlands](../nl/index.md) · [Português (Brasil)](../pt-br/index.md) · [Українська](../uk/index.md)
+[English](../en/index.md) · [Polski](../pl/index.md) · [Deutsch](../de/index.md) · [Español](../es/index.md) · **Français** · [Italiano](../it/index.md) · [Nederlands](../nl/index.md) · [Português (Brasil)](../pt-br/index.md) · [Українська](../uk/index.md)
 
 # oXySol
 
-> **À noter :** l’interface du jeu est disponible aujourd’hui en anglais et en polonais ; l’allemand, le français,
-> l’italien, le portugais du Brésil, l’ukrainien, le néerlandais et l’espagnol sont en cours. Les captures d’écran
-> montrent la version anglaise.
+Le solitaire dans votre terminal : **Klondike, Spider, FreeCell et Pyramide** réunis dans un seul programme, un
+fichier unique : `oxysol`. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.
 
-Le solitaire dans votre terminal : **Klondike, Spider, FreeCell et Pyramide** réunis dans un seul programme, le
-fichier unique `oxysol`. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.
-
-![Klondike dans oXySol : le plateau, le panneau du guide et le panneau des coups possibles](../img/en/klondike.svg)
+![Klondike dans oXySol : le plateau, le panneau du guide et le panneau des coups possibles](../img/fr/klondike.svg)
 
 **État :** préversion, en cours de développement.
 

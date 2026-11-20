@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 646" width="900" height="646" role="img" aria-label="The settings screen">
+<title>The settings screen</title>
+<style></style>
+<rect width="900" height="646" fill="#181c26"/>
+<g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
+<text x="396 405 414 423 432 441 450 459 468 477 486 495" y="71" fill="#8cbeff">Instellingen</text>
+<text x="180 189 198 207 216" y="109" fill="#8cbeff">Beeld</text>
+<rect x="162" y="114" width="369" height="19" fill="#ffd666"/>
+<text x="162" y="128" fill="#141820">►</text>
+<text x="180 189 198 207" y="128" fill="#141820">Taal</text>
+<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="128" fill="#141820">...................</text>
+<text x="405" y="128" fill="#141820">◄</text>
+<text x="423 432 441 450 459 468 477 486 495 504" y="128" fill="#141820">Nederlands</text>
+<text x="522" y="128" fill="#141820">►</text>
+<text x="180 189 198 207 216" y="147" fill="#e8ecf4">Thema</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="147" fill="#e8ecf4">..................</text>
+<text x="423 432 441 450 459 468" y="147" fill="#e8ecf4">Donker</text>
+<path fill="#80848d" d="M477 152h9v19h-9zM486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9z"/>
+<text x="180 189 198 207 216 225 234 243" y="166" fill="#e8ecf4">Kaartrug</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="166" fill="#e8ecf4">...............</text>
+<text x="423 432 441 450 459" y="166" fill="#e8ecf4">Thema</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279 288" y="185" fill="#e8ecf4">Voorkantstijl</text>
+<text x="306 315 324 333 342 351 360 369 378 387" y="185" fill="#e8ecf4">..........</text>
+<text x="423 432 441 450 459 468 477 486 495 504 513 522 531 540" y="185" fill="#e8ecf4">Internationaal</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279 288 297 306" y="204" fill="#e8ecf4">Achterkantstijl</text>
+<text x="324 333 342 351 360 369 378 387" y="204" fill="#e8ecf4">........</text>
+<text x="423 432 441 450 459 468 477 486 495" y="204" fill="#e8ecf4">Standaard</text>
+<text x="180 189 198 207 216 225 234 243" y="223" fill="#e8ecf4">Symbolen</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="223" fill="#e8ecf4">...............</text>
+<text x="423 432 441 450 459 468 477" y="223" fill="#e8ecf4">Unicode</text>
+<text x="180 189 198 207 216 225 234" y="242" fill="#e8ecf4">Kleuren</text>
+<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="242" fill="#e8ecf4">................</text>
+<text x="423 432 441 450" y="242" fill="#e8ecf4">Auto</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279" y="261" fill="#e8ecf4">Kaartgrootte</text>
+<text x="297 306 315 324 333 342 351 360 369 378 387" y="261" fill="#e8ecf4">...........</text>
+<text x="423 432 441 450" y="261" fill="#e8ecf4">Auto</text>
+<text x="180 189 198 207 216 225 234 243" y="280" fill="#e8ecf4">Volledig</text>
+<text x="261 270 279 288 297 306" y="280" fill="#e8ecf4">scherm</text>
+<text x="324 333 342 351 360 369 378 387" y="280" fill="#e8ecf4">........</text>
+<text x="423 432 441 450" y="280" fill="#e8ecf4">Auto</text>
+<text x="180 189 198 207 216 225" y="318" fill="#8cbeff">Geluid</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270" y="337" fill="#e8ecf4">Geluidstijl</text>
+<text x="288 297 306 315 324 333 342 351 360 369 378 387" y="337" fill="#e8ecf4">............</text>
+<text x="423 432 441 450 459 468 477" y="337" fill="#e8ecf4">Default</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279 288 297 306" y="356" fill="#e8ecf4">Geluidseffecten</text>
+<text x="324 333 342 351 360 369 378 387" y="356" fill="#e8ecf4">........</text>
+<text x="423 432 441" y="356" fill="#e8ecf4">Aan</text>
+<text x="180 189 198 207 216 225" y="375" fill="#e8ecf4">Muziek</text>
+<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="375" fill="#e8ecf4">.................</text>
+<text x="423 432 441" y="375" fill="#e8ecf4">Uit</text>
+<text x="180 189 198 207 216 225" y="394" fill="#e8ecf4">Volume</text>
+<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="394" fill="#e8ecf4">.................</text>
+<text x="423 432 441" y="394" fill="#e8ecf4">70%</text>
+<text x="180 189 198 207 216" y="432" fill="#8cbeff">Hints</text>
+<text x="234 243" y="432" fill="#8cbeff">en</text>
+<text x="261 270 279 288" y="432" fill="#8cbeff">hulp</text>
+<text x="180 189 198 207 216" y="451" fill="#e8ecf4">Gloed</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387" y="451" fill="#e8ecf4">..................</text>
+<text x="423 432 441 450 459 468 477 486" y="451" fill="#e8ecf4">Volledig</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279 288 297 306" y="470" fill="#e8ecf4">Doelmarkeringen</text>
+<text x="324 333 342 351 360 369 378 387" y="470" fill="#e8ecf4">........</text>
+<text x="423 432 441" y="470" fill="#e8ecf4">Aan</text>
+<text x="180 189 198 207 216 225 234 243 252 261" y="489" fill="#e8ecf4">Gidspaneel</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369 378 387" y="489" fill="#e8ecf4">.............</text>
+<text x="423 432 441" y="489" fill="#e8ecf4">Aan</text>
+<text x="459 468 477 486 495 504 513 522" y="489" fill="#e8ecf4">(vereist</text>
+<text x="540 549 558" y="489" fill="#e8ecf4">130</text>
+<text x="576 585 594 603 612 621 630 639 648" y="489" fill="#e8ecf4">kolommen,</text>
+<text x="666 675" y="489" fill="#e8ecf4">nu</text>
+<text x="693 702 711 720" y="489" fill="#e8ecf4">100)</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279" y="508" fill="#e8ecf4">Zettenpaneel</text>
+<text x="297 306 315 324 333 342 351 360 369 378 387" y="508" fill="#e8ecf4">...........</text>
+<text x="423 432 441" y="508" fill="#e8ecf4">Aan</text>
+<text x="459 468 477 486 495 504 513 522" y="508" fill="#e8ecf4">(vereist</text>
+<text x="540 549 558" y="508" fill="#e8ecf4">130</text>
+<text x="576 585 594 603 612 621 630 639 648" y="508" fill="#e8ecf4">kolommen,</text>
+<text x="666 675" y="508" fill="#e8ecf4">nu</text>
+<text x="693 702 711 720" y="508" fill="#e8ecf4">100)</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270" y="527" fill="#e8ecf4">Automatisch</text>
+<text x="288 297 306 315 324 333 342 351 360" y="527" fill="#e8ecf4">voltooien</text>
+<text x="378 387" y="527" fill="#e8ecf4">..</text>
+<text x="423 432 441" y="527" fill="#e8ecf4">Aan</text>
+<text x="270 279" y="565" fill="#b8c2d6">De</text>
+<text x="297 306 315 324" y="565" fill="#b8c2d6">taal</text>
+<text x="342 351 360" y="565" fill="#b8c2d6">van</text>
+<text x="378 387 396 405" y="565" fill="#b8c2d6">alle</text>
+<text x="423 432 441 450 459 468" y="565" fill="#b8c2d6">tekst.</text>
+<text x="486 495 504 513 522 531 540 549 558" y="565" fill="#b8c2d6">Verandert</text>
+<text x="576 585 594 603 612 621 630" y="565" fill="#b8c2d6">direct.</text>
+<text x="288 297 306 315 324" y="641" fill="#b8c2d6">Enter</text>
+<text x="342 351 360 369 378 387 396 405" y="641" fill="#b8c2d6">Wijzigen</text>
+<text x="441 450 459" y="641" fill="#b8c2d6">Esc</text>
+<text x="477 486 495 504 513" y="641" fill="#b8c2d6">Terug</text>
+<text x="549" y="641" fill="#b8c2d6">?</text>
+<text x="567 576 585 594" y="641" fill="#b8c2d6">Help</text>
+</g>
+</svg>

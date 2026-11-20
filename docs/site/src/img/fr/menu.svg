@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 646" width="900" height="646" role="img" aria-label="The oXySol main menu">
+<title>The oXySol main menu</title>
+<style></style>
+<rect width="900" height="646" fill="#181c26"/>
+<g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
+<rect x="36" y="19" width="9" height="19" fill="#0055a4"/>
+<rect x="45" y="19" width="18" height="19" fill="#ffffff"/>
+<rect x="63" y="19" width="9" height="19" fill="#ef4135"/>
+<path fill="#0055a4" d="M36 19h9v9.5h-9z"/>
+<path fill="#ef4135" d="M63 19h9v9.5h-9z"/>
+<path fill="#ffffff" d="M45 19h9v9.5h-9zM54 19h9v9.5h-9z"/>
+<text x="18" y="33" fill="#8cbeff">◄</text>
+<text x="81" y="33" fill="#8cbeff">►</text>
+<text x="99" y="33" fill="#8cbeff">▼</text>
+<rect x="36" y="38" width="9" height="19" fill="#0055a4"/>
+<rect x="45" y="38" width="18" height="19" fill="#ffffff"/>
+<rect x="63" y="38" width="9" height="19" fill="#ef4135"/>
+<path fill="#0055a4" d="M36 38h9v9.5h-9z"/>
+<path fill="#ef4135" d="M63 38h9v9.5h-9z"/>
+<path fill="#ffffff" d="M45 38h9v9.5h-9zM54 38h9v9.5h-9z"/>
+<text x="81 90" y="52" fill="#8cbeff">FR</text>
+<path fill="#8cbeff" d="M306 114h9v19h-9zM315 114h9v19h-9zM351 114h9v19h-9zM360 114h9v19h-9zM477 123.5h9v9.5h-9zM486 114h9v19h-9zM495 114h9v19h-9zM504 114h9v19h-9zM513 114h9v19h-9zM612 114h9v19h-9zM621 114h9v19h-9z"/>
+<path fill="#8cbeff" d="M243 142.5h9v9.5h-9zM252 133h9v19h-9zM261 133h9v19h-9zM270 142.5h9v9.5h-9zM315 133h9v9.5h-9zM324 133h9v19h-9zM342 133h9v19h-9zM351 133h9v9.5h-9zM387 133h9v19h-9zM396 133h9v19h-9zM432 133h9v19h-9zM441 133h9v19h-9zM468 133h9v19h-9zM477 133h9v19h-9zM549 142.5h9v9.5h-9zM558 133h9v19h-9zM567 133h9v19h-9zM576 142.5h9v9.5h-9zM612 133h9v19h-9zM621 133h9v19h-9z"/>
+<path fill="#8cbeff" d="M234 152h9v19h-9zM243 152h9v19h-9zM270 152h9v19h-9zM279 152h9v19h-9zM324 152h9v19h-9zM333 152h9v19h-9zM342 152h9v19h-9zM396 152h9v9.5h-9zM405 152h9v19h-9zM423 152h9v19h-9zM432 152h9v9.5h-9zM477 152h9v9.5h-9zM486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9zM513 161.5h9v9.5h-9zM540 152h9v19h-9zM549 152h9v19h-9zM576 152h9v19h-9zM585 152h9v19h-9zM612 152h9v19h-9zM621 152h9v19h-9z"/>
+<path fill="#8cbeff" d="M234 171h9v19h-9zM243 171h9v19h-9zM270 171h9v19h-9zM279 171h9v19h-9zM315 180.5h9v9.5h-9zM324 171h9v19h-9zM342 171h9v19h-9zM351 180.5h9v9.5h-9zM405 171h9v19h-9zM414 171h9v19h-9zM423 171h9v19h-9zM504 171h9v19h-9zM513 171h9v19h-9zM540 171h9v19h-9zM549 171h9v19h-9zM576 171h9v19h-9zM585 171h9v19h-9zM612 171h9v19h-9zM621 171h9v19h-9zM648 180.5h9v9.5h-9zM657 180.5h9v9.5h-9z"/>
+<path fill="#8cbeff" d="M243 190h9v9.5h-9zM252 190h9v19h-9zM261 190h9v19h-9zM270 190h9v9.5h-9zM306 190h9v19h-9zM315 190h9v19h-9zM351 190h9v19h-9zM360 190h9v19h-9zM396 190h9v9.5h-9zM405 190h9v19h-9zM414 190h9v19h-9zM468 190h9v19h-9zM477 190h9v19h-9zM486 190h9v19h-9zM495 190h9v19h-9zM504 190h9v9.5h-9zM549 190h9v9.5h-9zM558 190h9v19h-9zM567 190h9v19h-9zM576 190h9v9.5h-9zM621 190h9v9.5h-9zM630 190h9v19h-9zM639 190h9v19h-9zM648 190h9v9.5h-9z"/>
+<text x="243 252" y="223" fill="#b8c2d6">Le</text>
+<text x="270 279 288 297 306 315 324 333 342" y="223" fill="#b8c2d6">solitaire</text>
+<text x="360 369" y="223" fill="#b8c2d6">de</text>
+<text x="387 396 405 414 423 432" y="223" fill="#b8c2d6">bureau</text>
+<text x="450 459 468 477 486 495" y="223" fill="#b8c2d6">ultime</text>
+<text x="513 522 531 540" y="223" fill="#b8c2d6">pour</text>
+<text x="558 567" y="223" fill="#b8c2d6">le</text>
+<text x="585 594 603 612 621 630 639 648" y="223" fill="#b8c2d6">terminal</text>
+<rect x="315" y="247" width="153" height="19" fill="#ffd666"/>
+<text x="315" y="261" fill="#141820">►</text>
+<text x="333 342 351 360 369 378 387 396" y="261" fill="#141820">Nouvelle</text>
+<text x="414 423 432 441 450 459" y="261" fill="#141820">partie</text>
+<text x="333 342 351 360 369 378 387 396" y="280" fill="#e8ecf4">Nouvelle</text>
+<text x="414 423 432 441 450 459" y="280" fill="#e8ecf4">partie</text>
+<text x="477 486 495 504" y="280" fill="#e8ecf4">avec</text>
+<text x="522 531 540 549 558 567" y="280" fill="#e8ecf4">graine</text>
+<text x="333 342 351 360 369 378 387 396 405 414 423 432" y="299" fill="#e8ecf4">Statistiques</text>
+<text x="333 342 351 360 369 378 387 396 405 414" y="318" fill="#e8ecf4">Paramètres</text>
+<text x="333 342 351 360 369 378 387" y="337" fill="#e8ecf4">Comment</text>
+<text x="405 414 423 432 441" y="337" fill="#e8ecf4">jouer</text>
+<text x="333 342 351 360" y="356" fill="#e8ecf4">Aide</text>
+<text x="333 342 351 360 369 378 387" y="375" fill="#e8ecf4">Quitter</text>
+<text x="297 306 315 324 333" y="641" fill="#b8c2d6">Enter</text>
+<text x="351 360 369 378 387 396" y="641" fill="#b8c2d6">Ouvrir</text>
+<text x="432" y="641" fill="#b8c2d6">q</text>
+<text x="450 459 468 477 486 495 504" y="641" fill="#b8c2d6">Quitter</text>
+<text x="540" y="641" fill="#b8c2d6">?</text>
+<text x="558 567 576 585" y="641" fill="#b8c2d6">Aide</text>
+<text x="846 855 864 873 882 891" y="641" fill="#b8c2d6">v0.4.0</text>
+</g>
+</svg>

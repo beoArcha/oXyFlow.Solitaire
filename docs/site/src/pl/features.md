@@ -69,8 +69,7 @@ widzenia barw są w planach; w grze jeszcze ich nie ma.
 
 ## Języki
 
-Interfejs gry jest dziś dostępny po **angielsku** i **polsku**; niemiecki, francuski, włoski, portugalski
-(brazylijski), ukraiński, niderlandzki i hiszpański są w przygotowaniu. Język wybierzesz przełącznikiem z flagą w
+Interfejs gry jest dostępny w dziewięciu językach: po angielsku, polsku, niemiecku, hiszpańsku, francusku, włosku, niderlandzku, portugalsku (brazylijskim) i ukraińsku. Język wybierzesz przełącznikiem z flagą w
 lewym górnym rogu menu głównego albo w Ustawieniach; zmiana działa od razu.
 
 Ta strona jest dostępna w dziewięciu językach: przełączają je odnośniki na górze każdej strony.
