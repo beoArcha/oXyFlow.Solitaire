@@ -3,6 +3,7 @@
 
 pub mod comments;
 pub mod conflict_markers;
+pub mod decision_ids;
 pub mod err_arms;
 pub mod err_types;
 pub mod loc;
@@ -58,9 +59,11 @@ pub fn run(root: &Path) -> Result<(), XtaskError> {
             findings.extend(rule(&file));
         }
     }
-    for file in collect_tracked_texts(root)? {
-        findings.extend(conflict_markers::check(&file));
+    let texts = collect_tracked_texts(root)?;
+    for file in &texts {
+        findings.extend(conflict_markers::check(file));
     }
+    findings.extend(decision_ids::check(&texts));
     findings.retain(|finding| !is_excepted(finding, &exceptions));
     for finding in &findings {
         print_finding(finding);
