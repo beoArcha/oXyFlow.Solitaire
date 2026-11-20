@@ -180,6 +180,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   failed settings write, unlike game writes. Make it alert and log once per session, like game writes; later
   failures stay silent until a write succeeds again. Update the test that pins the old behaviour.
 - **Acceptance:** tests for the first failure (alert and log), a second failure (silent) and recovery.
+- **Done:** #148 (own `settings_write_failed` flag in `App`; a successful write re-arms the alert)
 
 ### O-39 — Split files over 300 LOC found by the P3-09 gate
 
