@@ -231,7 +231,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | DONE |
 | P4-10a | Game: Yukon (classic) | Opus | P4-09, P1-02 | DONE |
 | P4-10b | Yukon variant: Russian Solitaire | Haiku | P4-10a | DONE |
-| P4-10c | Yukon variant: Alaska | Haiku | P4-10b | TODO |
+| P4-10c | Yukon variant: Alaska | Haiku | P4-10b | DONE |
 | P4-10d | Yukon variant: Moosehide | Haiku | P4-10c | TODO |
 | P4-10e | Yukon variant: Australian Patience (stock, one pass) | Sonnet | P4-10d | TODO |
 | P4-10f | Solver for the Yukon family: winnable deals and the statistics check | Opus | P4-10e, P2-08 | TODO |
