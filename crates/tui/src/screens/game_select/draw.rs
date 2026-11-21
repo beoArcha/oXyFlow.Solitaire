@@ -9,13 +9,29 @@ use ratatui::widgets::Paragraph;
 use super::list::Content;
 use super::rows::{self, Row, items};
 use super::{
-    CHROME_ROWS, FOOTER, GameSelect, LIST, TOGGLE, WINNABLE, hints, label_of, search, toggles,
+    CHROME_ROWS, FOOTER, GameSelect, LIST, TOGGLE, WINNABLE, WINNABLE_KEY, hints, label_of, search,
+    toggles,
 };
 use crate::i18n::{t, tf};
+use crate::input::KeySpec;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
-use crate::widgets::footer;
+use crate::widgets::footer::{self, Segment};
 use oxysol_core::Variant;
+
+fn footer_segments() -> Vec<Segment> {
+    let winnable = format!(
+        "{} {}",
+        KeySpec::ch(WINNABLE_KEY).display(),
+        t("menu.footer.winnable")
+    );
+    let mut segments = footer::key_segments(&FOOTER);
+    segments.push(Segment::plain("   "));
+    segments.push(Segment::plain(format!("/ {}", t("menu.search.label"))));
+    segments.push(Segment::plain("   "));
+    segments.push(Segment::plain(winnable));
+    segments
+}
 
 impl GameSelect {
     fn title(&self) -> String {
@@ -59,6 +75,7 @@ impl GameSelect {
             search_area,
             legend_area,
             list_area,
+            _,
             hint_area,
             _,
             undo_area,
@@ -74,6 +91,7 @@ impl GameSelect {
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(list_height),
+            Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
@@ -106,7 +124,7 @@ impl GameSelect {
         self.footer = footer::draw(
             frame,
             footer_area,
-            &footer::key_segments(&FOOTER),
+            &footer_segments(),
             Alignment::Center,
             footer::key_style(ctx),
             ctx,

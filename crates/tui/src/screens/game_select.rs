@@ -4,8 +4,8 @@
 //! marks, puts it in the favourites (kept in the settings). `/` or a click on the search field
 //! opens a search that filters the list while the player types; Esc clears it first and a second
 //! Esc goes back. A toggle under the list switches the undo mode of the next game (`u` or a click)
-//! and a second one switches the search for winnable deals; both choices are remembered in the
-//! settings. Tab moves the focus between the list and the two toggles.
+//! and a second one switches the search for winnable deals (`w` or a click); both choices are
+//! remembered in the settings. Tab moves the focus between the list and the two toggles.
 
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use ratatui::layout::Rect;
@@ -32,11 +32,16 @@ mod toggles;
 use list::ListView;
 use rows::items;
 
-pub(crate) const FOOTER: [KeyHint; 3] = [
+pub(crate) const FOOTER: [KeyHint; 5] = [
     (Action::Select, "menu.footer.play"),
     (Action::Back, "help.action.back"),
     (Action::Help, "help.action.help"),
+    (Action::Finish, "menu.footer.favorite"),
+    (Action::Undo, "help.action.undo"),
 ];
+
+/// The key of the winnable-deals toggle. It is not in the key table, so the screen reads it itself.
+pub(crate) const WINNABLE_KEY: char = 'w';
 
 /// The focus ring of the screen: the variants list, the undo toggle, the winnable-deals toggle.
 const LIST: usize = 0;
@@ -44,9 +49,9 @@ const TOGGLE: usize = 1;
 const WINNABLE: usize = 2;
 const RING_LEN: usize = 3;
 
-/// Rows of the screen that are not the list: title, gap, search, legend, hint, gap, two toggles,
-/// two toggle hints and the footer.
-const CHROME_ROWS: u16 = 11;
+/// Rows of the screen that are not the list: title, gap, search, legend, gap, hint, gap, two
+/// toggles, two toggle hints and the footer.
+const CHROME_ROWS: u16 = 12;
 
 /// State of the game selection screen.
 #[derive(Debug, Default)]
@@ -218,6 +223,9 @@ impl GameSelect {
             self.open_search();
             return Effect::None;
         }
+        if key.code == KeyCode::Char(WINNABLE_KEY) && !self.captures_text() {
+            return Self::toggle_winnable(ctx);
+        }
         match action {
             Some(Action::Undo) => Self::toggle_undo(ctx),
             Some(Action::Finish) => self.toggle_focused_favourite(ctx),
@@ -282,6 +290,8 @@ impl GameSelect {
 mod focus_tests;
 #[cfg(test)]
 mod menu_tests;
+#[cfg(test)]
+mod polish_tests;
 #[cfg(test)]
 mod search_tests;
 #[cfg(test)]
