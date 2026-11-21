@@ -5,7 +5,8 @@ Goal: the player documentation (the wiki pages and the player site) and the stab
 Exit criteria:
 
 - P7-02 and P7-03 are DONE, and the micro cards M-30, M-31, M-32 and M-33 are DONE (M-32 covers the card styles);
-- P8-04 and P8-05 are DONE.
+- P8-04 and P8-05 are DONE;
+- the layout linter and the MCP wrapper P8-06, P8-07 and P8-08 are DONE (decision T-44).
 
 Order of work: the documentation cards first, because they describe what the game does; the micro cards M-30…M-33 (`micro.md`) run alongside them. The card style and the game last.
 
@@ -65,3 +66,111 @@ Micro cards in this phase (micro.md): M-30, M-31 and M-33 (READY), M-32 (DRAFT u
   winnable option stays off for Canfield and the PR says so. Entry, rules tab and rules page as in P4-10.
 - **Acceptance:** engine tests for the reserve, the stock and the foundations; the same seed gives the same deal; the
   variant is stored and read back; both locales.
+
+## Developer testing infrastructure: layout linter and a thin MCP wrapper
+
+Owner request 2026-11-21, built on the dev bridge (phase 6, P6-07 to P6-09) and the screenshots (phase 7, P7-06 to
+P7-09); decision T-44. Every dev frame is checked by structural lint rules that target the regression classes this
+project has actually shipped. O-69 (the window height jumped between tabs), O-70 (a tooltip stayed under a window),
+O-73 (two panes both looked focused) and O-84 (footer text ran onto the `Now:` row) each become a rule. A small,
+separate MCP server lets AI agents drive play sessions through `--dev-bridge`.
+
+The linter belongs to the dev-gated interface layer, `oxysol-tui` behind the `dev` feature, not to `oxysol-core`.
+The engine knows nothing about the screen (AGENTS.md, architecture boundaries). The MCP server is its own package, and
+the game binary never depends on it.
+
+### P8-06 — Layout linter: frame trace and the six rules
+
+- **Owner:** Sonnet
+- **Depends on:** P6-09
+- **Files:**
+  - `crates/tui/src/headless/lint/**` (new, feature `dev`);
+  - `crates/tui/src/headless/trace.rs` (new, feature `dev`);
+  - the draw calls that record into the trace: footer, status line (`Now:` row), card columns, overlays, docked panes
+    and the language tooltip, each with `#[cfg(feature = "dev")]` and nothing else changed;
+  - `src/dev_bridge/**` (the `warnings` field);
+  - `docs/tech/architecture.md`;
+  - tests.
+- **Scope:**
+  - A dev-only `LayoutTrace` is filled during each draw. Each widget records its assigned `Rect`, the width of the text
+    it wanted to draw, whether it shows a primary focus highlight, and its role (footer, status, column, modal,
+    tooltip, pane). With the feature off the calls compile to nothing.
+  - After each step the linter reads four inputs: the trace, the `UiSnapshot`, the buffer and the previous frame's
+    snapshot. From these it returns warnings, each shaped as `{code, severity, message, rect, frame_id}`.
+  - The rules:
+    - `OVERLAY_TOOLTIP_LEAK`: a tooltip or hover element of the background is visible while an overlay is active.
+    - `DUAL_ACTIVE_FOCUS`: two independent panes, such as the main view and docked Help, both draw a primary focus
+      highlight.
+    - `RECT_CLIP_OR_OVERFLOW`: a widget's text or cells do not fit its assigned `Rect` or the viewport. Typical
+      offenders are the footer, the status line, a card column and a modal.
+    - `MODAL_GEOMETRY_JUMP`: switching tabs inside the same modal changes its outer `Rect`.
+    - `STICKY_HOVER_AFTER_KEY`: a mouse hover highlight is still drawn after a later keyboard navigation step.
+    - `STATUS_FOOTER_COLLISION`: status or error text and footer shortcuts overlap, or bleed onto the wrong row.
+  - Severity is `error` or `warning`, fixed per rule and documented. Warnings appear in every bridge response, in the
+    `--dev-log` and, for batch runs, in `manifest.json`.
+- **Acceptance:**
+  - For each rule, a test feeds a crafted trace and snapshot and finds exactly that code. Where it is reproducible
+    through the bridge, a scenario gives the same result. The pre-fix behaviour of O-69, O-70, O-73 and O-84 serves as
+    the reference cases.
+  - The baseline scenario pack (P7-09) runs with no `error`-level warnings, or each remaining one is listed in the PR
+    as a new visual-fix card.
+  - A default build contains no trace code.
+
+### P8-07 — Layout linter: `--dev-strict` gate
+
+- **Owner:** Haiku
+- **Depends on:** P8-06, P7-08
+- **Files:**
+  - `src/cli.rs`;
+  - `src/dev_bridge/**`;
+  - `xtask/src/scenarios.rs` (a `--strict` switch that passes the flag through);
+  - `docs/tech/workflow.md`;
+  - `tests/integration/dev_bridge.rs`;
+  - tests.
+- **Scope:**
+  - `--dev-strict` (dev builds only, with `--dev-script`) makes the run exit with a non-zero code when any `error`- or
+    `warning`-level lint issue occurs.
+  - The run still writes all frames, the log and the manifest. The manifest lists the issues and the exit reason.
+- **Acceptance:**
+  - With `--dev-strict`, a scenario that triggers a rule exits non-zero and its manifest names the code.
+  - With `--dev-strict`, a clean scenario exits zero.
+  - Without the flag, a run exits zero and still reports the warnings.
+
+### P8-08 — Thin MCP wrapper over `--dev-bridge`
+
+- **Owner:** Sonnet
+- **Depends on:** P8-06, P7-07
+- **Files:**
+  - `dev/mcp-server/**` (new workspace package `oxysol-mcp`, `publish = false`);
+  - the root `Cargo.toml` (workspace member only);
+  - `dev/mcp-server/README.md`;
+  - `docs/tech/architecture.md` (package list and dependency direction);
+  - `docs/tech/workflow.md`;
+  - tests.
+- **Scope:**
+  - A minimal MCP server over stdio: JSON-RPC 2.0 with `initialize`, `tools/list` and `tools/call`. It spawns and
+    manages `oxysol --dev-bridge` child processes, one per session, built with the dev feature. The game packages
+    never depend on this package.
+  - Tools:
+    - `start_session(cols, rows, game, seed, theme, lang, ascii)` returns a `session_id`, the initial state and the
+      text frame.
+    - `step(session_id, actions[])` runs one action or a short batch of `key`, `mouse`, `resize` and `tick` actions.
+      It returns the latest state, the `warnings` and, optionally, the text frame.
+    - `capture_screenshot(session_id, format = "png")` takes a bridge snapshot to a temporary file. It returns the
+      path, the image as MCP image content (base64) and the current state with its warnings.
+    - `get_logs(session_id, tail = 50, warnings_only = false)` returns recent entries of the session's `--dev-log`.
+    - `close_session(session_id)` sends `quit`, waits for the child with a timeout and kills it after the timeout. It
+      also removes the session's temporary files.
+  - Every child is killed when the server exits, including on end of input and on error, so no `oxysol` process is
+    left behind.
+  - Dependencies: `serde` and `serde_json` from the workspace. A new crate, such as an MCP SDK or a base64 encoder,
+    needs the owner's OK, recorded in the PR. Without that OK, the protocol and base64 are written in the package.
+  - The README shows how to register the server in local agent and IDE configurations: VS Code, Antigravity, Claude
+    Code and Gemini CLI.
+- **Acceptance:**
+  - An integration test starts the server and runs a multi-step session through it: start, keys, a mouse click, a
+    resize and a tick. It then captures a PNG and checks the image content's header. It reads the warnings and the
+    logs, closes the session, and finds no `oxysol` child still running.
+  - `cargo build -p oxysol` and the release build do not build `oxysol-mcp` or pull in its dependencies (shown in the
+    PR with `cargo tree -p oxysol`).
+
