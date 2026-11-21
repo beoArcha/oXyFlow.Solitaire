@@ -389,6 +389,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** snapshot tests front × back × glyph mode × size; the four suits differ by shape in Unicode and in
   ASCII; the rank is readable at the smallest size; Font mode falls back to Unicode for this style; no colour outside
   the tokens; both locales carry the style name; the symbol table with its coverage is in the PR description.
+- **Done:** #203
 
 ### P4-09 — Game menu: stars, favourites, families and search
 
@@ -503,6 +504,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   winnable / unwinnable / unknown deals per variant on a sample of seeds and record it.
 - **Acceptance:** tests on known winnable and unwinnable seeds per variant; a benchmark (ignored test) with the shares
   and the time per deal; winnable deals on for the family; the decision row with the budget.
+- **Done:** #202 (T-41)
 
 ### P4-11 — Language selector: stray glyph, reachable with Up, Tab hint in the footer
 
