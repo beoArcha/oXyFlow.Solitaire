@@ -164,12 +164,13 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
             }),
             ..MemoryStorage::new()
         };
+        let total = (2 * Variant::ALL.len()).to_string();
         let expected = in_locale(locale, || {
             (
                 t("stats.summary.longest").into_owned(),
-                tf("stats.position", &[("current", "1"), ("total", "16")]),
+                tf("stats.position", &[("current", "1"), ("total", &total)]),
                 t("stats.button.back").into_owned(),
-                tf("stats.position", &[("current", "16"), ("total", "16")]),
+                tf("stats.position", &[("current", &total), ("total", &total)]),
             )
         });
         let (streak, first, back, last) = expected;

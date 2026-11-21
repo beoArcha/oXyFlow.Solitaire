@@ -25,6 +25,7 @@ klondike = "Monte as fundações do ás ao rei por naipe; o monte abastece as co
 spider = "Monte oito sequências de rei a ás, cada uma em um único naipe."
 freecell = "Todas as cartas ficam abertas; quatro células livres ajudam a movê-las."
 pyramid = "Remova pares que somam 13; o rei é removido sozinho."
+yukon = "Qualquer carta aberta se move com as cartas sobre ela; não há monte."
 
 [seed]
 title = "Novo jogo com semente"
@@ -49,6 +50,7 @@ klondike = "Família Klondike"
 spider = "Família Spider"
 free_cell = "Família FreeCell"
 pyramid = "Família Pirâmide"
+yukon = "Família Yukon"
 
 [search]
 label = "Buscar"

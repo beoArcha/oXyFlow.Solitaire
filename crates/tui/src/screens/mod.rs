@@ -12,7 +12,7 @@ pub mod stats;
 
 use std::time::{Duration, Instant};
 
-use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
+use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant, YukonRules};
 
 use crate::action::Action;
 use crate::app::{FontFacts, Modal, Screen, SearchCommand};
@@ -107,6 +107,7 @@ pub const fn variant_label_key(variant: Variant) -> &'static str {
         Variant::FreeCell => "common.variant.free_cell",
         Variant::Pyramid(PyramidRules::Relaxed) => "common.variant.pyramid_relaxed",
         Variant::Pyramid(PyramidRules::Classic) => "common.variant.pyramid_classic",
+        Variant::Yukon(YukonRules::Classic) => "common.variant.yukon_classic",
     }
 }
 

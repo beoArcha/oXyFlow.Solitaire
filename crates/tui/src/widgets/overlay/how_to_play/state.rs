@@ -5,22 +5,24 @@ use oxysol_core::Variant;
 use super::content;
 use crate::widgets::scrollbar::Metrics;
 
-/// The four games the window explains. Variants of one game share a page.
+/// The games the window explains. Variants of one game share a page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Rules {
     Klondike,
     Spider,
     FreeCell,
     Pyramid,
+    Yukon,
 }
 
 impl Rules {
     /// Every game, in tab order.
-    pub const ALL: [Rules; 4] = [
+    pub const ALL: [Rules; 5] = [
         Rules::Klondike,
         Rules::Spider,
         Rules::FreeCell,
         Rules::Pyramid,
+        Rules::Yukon,
     ];
 
     /// The game a variant belongs to.
@@ -30,6 +32,7 @@ impl Rules {
             Variant::Spider(_) => Rules::Spider,
             Variant::FreeCell => Rules::FreeCell,
             Variant::Pyramid(_) => Rules::Pyramid,
+            Variant::Yukon(_) => Rules::Yukon,
         }
     }
 
@@ -40,6 +43,7 @@ impl Rules {
             Rules::Spider => "rules.game.spider",
             Rules::FreeCell => "rules.game.freecell",
             Rules::Pyramid => "rules.game.pyramid",
+            Rules::Yukon => "rules.game.yukon",
         }
     }
 

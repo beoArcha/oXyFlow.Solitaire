@@ -32,7 +32,11 @@ fn select_with(favourites: Vec<Variant>, caps: TerminalCaps) -> Harness {
 }
 
 fn focused_label(h: &mut Harness) -> Option<String> {
-    marked_text(&h.lines(), "►").and_then(|text| text.splitn(3, ' ').nth(2).map(str::to_owned))
+    marked_text(&h.lines(), "►").and_then(|text| {
+        text.splitn(3, ' ')
+            .nth(2)
+            .map(|label| label.trim_start().to_owned())
+    })
 }
 
 fn line_index(lines: &[String], needle: &str) -> Option<usize> {
@@ -195,7 +199,7 @@ fn the_menu_fits_at_100_by_30_in_every_offered_locale() {
             let storage = MemoryStorage {
                 settings: Some(Settings {
                     locale,
-                    favourites: vec![Variant::ALL[Variant::ALL.len() - 1]],
+                    favourites: vec![Variant::ALL[0]],
                     ..Settings::for_caps(&caps)
                 }),
                 ..MemoryStorage::new()

@@ -60,7 +60,7 @@ fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
         "board.guide.zoom",
     ));
     match variant {
-        Variant::FreeCell => {}
+        _ if !variant.has_stock() => {}
         Variant::Spider(_) => rows.push(entry(&[Action::Stock], "board.guide.deal_row")),
         _ => rows.push(entry(&[Action::Stock], "board.guide.stock")),
     }
@@ -81,7 +81,7 @@ fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
 
 fn mouse_gestures(variant: Variant) -> Vec<&'static str> {
     let mut gestures = vec![MOUSE_CLICK, MOUSE_DOUBLE];
-    gestures.extend((variant != Variant::FreeCell).then_some(MOUSE_STOCK));
+    gestures.extend(variant.has_stock().then_some(MOUSE_STOCK));
     gestures.push(MOUSE_RIGHT);
     gestures
 }
@@ -90,7 +90,7 @@ const fn goal_key(variant: Variant) -> &'static str {
     match variant {
         Variant::Klondike(_) => "board.guide.goal.klondike",
         Variant::Spider(_) => "board.guide.goal.spider",
-        Variant::FreeCell => "board.guide.goal.freecell",
+        Variant::FreeCell | Variant::Yukon(_) => "board.guide.goal.freecell",
         Variant::Pyramid(_) => "board.guide.goal.pyramid",
     }
 }

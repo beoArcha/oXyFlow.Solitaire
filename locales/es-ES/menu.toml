@@ -25,6 +25,7 @@ klondike = "Construye las bases del as al rey por palo; el mazo alimenta las col
 spider = "Forma ocho secuencias del rey al as, cada una del mismo palo."
 freecell = "Todas las cartas están boca arriba; cuatro celdas libres ayudan a moverlas."
 pyramid = "Elimina parejas que sumen 13; el rey se elimina solo."
+yukon = "Cualquier carta boca arriba se mueve con las que tiene encima; no hay mazo."
 
 [seed]
 title = "Nueva partida con semilla"
@@ -49,6 +50,7 @@ klondike = "Familia Klondike"
 spider = "Familia Spider"
 free_cell = "Familia FreeCell"
 pyramid = "Familia Pirámide"
+yukon = "Familia Yukon"
 
 [search]
 label = "Buscar"

@@ -154,6 +154,26 @@ const PYRAMID: Page = Page {
     ],
 };
 
+const YUKON: Page = Page {
+    goal: &["rules.yukon.goal"],
+    layout: &["rules.yukon.layout_1", "rules.yukon.layout_2"],
+    moves: &[
+        "rules.yukon.moves_1",
+        "rules.yukon.moves_2",
+        "rules.yukon.moves_3",
+        "rules.yukon.moves_4",
+        "rules.yukon.moves_5",
+    ],
+    controls: &[NAVIGATE, SELECT, BACK, RUN, QUICK_MOVE, UNDO, HINT],
+    controls_note: "rules.control.mouse",
+    tips: &[
+        "rules.yukon.tips_1",
+        "rules.yukon.tips_2",
+        "rules.yukon.tips_3",
+        "rules.yukon.tips_4",
+    ],
+};
+
 /// The page of `rules`.
 pub const fn page(rules: Rules) -> Page {
     match rules {
@@ -161,5 +181,6 @@ pub const fn page(rules: Rules) -> Page {
         Rules::Spider => SPIDER,
         Rules::FreeCell => FREECELL,
         Rules::Pyramid => PYRAMID,
+        Rules::Yukon => YUKON,
     }
 }

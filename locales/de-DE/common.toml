@@ -17,6 +17,7 @@ undo_hint = "{key} oder Klick schaltet Rückgängig für das nächste Spiel ein 
 winnable = "[ Nur lösbare Spiele: {state} ]"
 winnable_hint = "Ein neues Spiel sucht nachweislich lösbare Spiele; ein eingegebener Seed wird direkt ausgeteilt"
 slow_search = "{variant}  (Suche kann lange dauern)"
+no_search = "{variant}  (noch keine Suche: zufälliges Spiel)"
 
 [variant]
 klondike_one = "Klondike, 1 Karte"
@@ -27,6 +28,7 @@ spider_four = "Spider, 4 Farben"
 free_cell = "FreeCell"
 pyramid_relaxed = "Pyramide, entspannt"
 pyramid_classic = "Pyramide, klassisch"
+yukon_classic = "Yukon"
 
 [settings]
 title = "Einstellungen"

@@ -3,7 +3,7 @@
 //! Cards are `7H`, a `*` marks a face-down card, piles run bottom to top.
 
 use crate::common::{SEED, layout};
-use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant, deal};
+use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant, YukonRules, deal};
 
 fn assert_golden(variant: Variant, expected: &str) {
     assert_eq!(
@@ -228,4 +228,22 @@ fn pyramid_relaxed_deal_is_pinned() {
 #[test]
 fn pyramid_classic_deal_is_pinned() {
     assert_golden(Variant::Pyramid(PyramidRules::Classic), PYRAMID_CLASSIC);
+}
+
+const YUKON_CLASSIC: &str = "\
+Foundation 0:
+Foundation 1:
+Foundation 2:
+Foundation 3:
+Tableau 0: 7C
+Tableau 1: 3H* KC AS 2S AC AH
+Tableau 2: KD* 10D* 5C 8S JH 2H 4S
+Tableau 3: 6H* 5D* 2D* 5S 6D AD 7D 2C
+Tableau 4: 8H* 8C* 4D* 7H* KS 10S 4H 3D 10H
+Tableau 5: JS* 4C* 6S* 7S* 3S* 8D QD 9S KH 5H
+Tableau 6: 6C* QS* 9D* JD* QC* 3C* 9H QH 9C JC 10C";
+
+#[test]
+fn yukon_classic_deal_is_pinned() {
+    assert_golden(Variant::Yukon(YukonRules::Classic), YUKON_CLASSIC);
 }

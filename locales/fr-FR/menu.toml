@@ -25,6 +25,7 @@ klondike = "Construis les fondations de l'as au roi par couleur ; la pioche alim
 spider = "Forme huit suites du roi à l'as, chacune dans la même couleur."
 freecell = "Toutes les cartes sont visibles ; quatre cellules libres aident aux mouvements."
 pyramid = "Retire les paires dont la somme vaut 13 ; le roi se retire seul."
+yukon = "Toute carte visible se déplace avec les cartes posées dessus ; il n'y a pas de pioche."
 
 [seed]
 title = "Nouvelle partie avec graine"
@@ -49,6 +50,7 @@ klondike = "Famille Klondike"
 spider = "Famille Spider"
 free_cell = "Famille FreeCell"
 pyramid = "Famille Pyramide"
+yukon = "Famille Yukon"
 
 [search]
 label = "Chercher"

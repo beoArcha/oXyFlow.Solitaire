@@ -1,7 +1,7 @@
 //! Board geometry: where every pile and every card sits on the terminal grid. One
 //! [`BoardGeometry`] feeds both drawing and mouse hit-testing, so what is drawn is what is clicked.
 //!
-//! Two layouts exist: columns (Klondike, Spider, FreeCell) and the pyramid. The card size is the
+//! Two layouts exist: columns (Klondike, Spider, FreeCell, Yukon) and the pyramid. The card size is the
 //! largest of [`SIZES`] that fits the window; gaps and margins grow with it.
 
 mod chrome;

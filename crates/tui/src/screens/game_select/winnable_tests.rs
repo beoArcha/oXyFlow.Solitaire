@@ -1,3 +1,4 @@
+use oxysol_core::{Variant, YukonRules};
 use ratatui::crossterm::event::KeyCode;
 
 use crate::app::Screen;
@@ -9,6 +10,7 @@ use crate::test_support::{Harness, TRUE_COLOR};
 const OFF: &str = "[ Winnable deals only: off ]";
 const ON: &str = "[ Winnable deals only: on ]";
 const SLOW: &str = "(the search can take long)";
+const NO_SEARCH: &str = "(no winnable-deal search yet: a random deal)";
 
 fn select() -> Harness {
     let mut h = Harness::new();
@@ -86,6 +88,36 @@ fn the_variants_that_are_rarely_proven_say_the_search_can_take_long() {
     for name in names {
         assert!(noted.iter().any(|line| line.contains(name)), "{name}");
     }
+}
+
+#[test]
+fn a_game_without_a_solver_says_so_and_is_dealt_at_once_without_a_search() {
+    let storage = MemoryStorage {
+        settings: Some(Settings {
+            winnable_only: true,
+            ..Settings::default()
+        }),
+        ..MemoryStorage::default()
+    };
+    let mut h = Harness::with(storage, TRUE_COLOR, 120, 40);
+    h.press(KeyCode::Enter);
+    let lines = h.lines();
+    let noted: Vec<&String> = lines
+        .iter()
+        .filter(|line| line.contains(NO_SEARCH))
+        .collect();
+    assert_eq!(noted.len(), 1, "{lines:#?}");
+    assert!(noted[0].contains("Yukon"));
+    let yukon = Variant::Yukon(YukonRules::Classic);
+    let index = Variant::ALL.iter().position(|v| *v == yukon).unwrap_or(0);
+    for _ in 0..index {
+        h.press(KeyCode::Down);
+    }
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Board);
+    assert!(h.app.modal().is_none());
+    assert_eq!(h.app.board().session().map(|s| s.variant()), Some(yukon));
+    assert!(!h.text().contains("Winnable:"));
 }
 
 #[test]

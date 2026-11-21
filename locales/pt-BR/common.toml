@@ -17,6 +17,7 @@ undo_hint = "{key} ou clique ativa ou desativa o desfazer no próximo jogo"
 winnable = "[ Apenas jogos vencíveis: {state} ]"
 winnable_hint = "Um novo jogo busca uma partida com vitória comprovada; sementes digitadas são usadas diretamente"
 slow_search = "{variant}  (a busca pode demorar)"
+no_search = "{variant}  (ainda sem busca: partida aleatória)"
 
 [variant]
 klondike_one = "Klondike, 1 carta"
@@ -27,6 +28,7 @@ spider_four = "Spider, 4 naipes"
 free_cell = "FreeCell"
 pyramid_relaxed = "Pirâmide, relaxada"
 pyramid_classic = "Pirâmide, clássica"
+yukon_classic = "Yukon"
 
 [settings]
 title = "Configurações"

@@ -11,14 +11,16 @@ pub(super) enum Family {
     Spider,
     FreeCell,
     Pyramid,
+    Yukon,
 }
 
 impl Family {
-    pub(super) const ALL: [Family; 4] = [
+    pub(super) const ALL: [Family; 5] = [
         Family::Klondike,
         Family::Spider,
         Family::FreeCell,
         Family::Pyramid,
+        Family::Yukon,
     ];
 
     pub(super) const fn of(variant: Variant) -> Family {
@@ -27,6 +29,7 @@ impl Family {
             Variant::Spider(_) => Family::Spider,
             Variant::FreeCell => Family::FreeCell,
             Variant::Pyramid(_) => Family::Pyramid,
+            Variant::Yukon(_) => Family::Yukon,
         }
     }
 
@@ -36,6 +39,7 @@ impl Family {
             Family::Spider => "menu.family.spider",
             Family::FreeCell => "menu.family.free_cell",
             Family::Pyramid => "menu.family.pyramid",
+            Family::Yukon => "menu.family.yukon",
         }
     }
 }

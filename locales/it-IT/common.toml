@@ -17,6 +17,7 @@ undo_hint = "{key} o un clic attiva o disattiva l'annullo per la prossima partit
 winnable = "[ Solo distribuzioni risolvibili: {state} ]"
 winnable_hint = "Una nuova partita cercherà una mano dimostrata risolvibile; un seed digitato viene distribuito così com'è"
 slow_search = "{variant}  (la ricerca può richiedere tempo)"
+no_search = "{variant}  (ricerca non ancora disponibile: mano casuale)"
 
 [variant]
 klondike_one = "Klondike, 1 carta"
@@ -27,6 +28,7 @@ spider_four = "Spider, 4 semi"
 free_cell = "FreeCell"
 pyramid_relaxed = "Piramide, rilassata"
 pyramid_classic = "Piramide, classica"
+yukon_classic = "Yukon"
 
 [settings]
 title = "Impostazioni"

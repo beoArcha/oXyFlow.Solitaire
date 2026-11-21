@@ -1,8 +1,8 @@
 //! The public contract: pinned winnable and unwinnable deals, verified move lists, the budget and
 //! determinism. Seeds were found with the solver itself; the node counts are the cost of the pin.
 
-use crate::game::{DrawCount, PyramidRules, SuitCount, Variant, deal};
-use crate::solver::{SolveBudget, Verdict, replays_to_win, solve, solve_report};
+use crate::game::{DrawCount, PyramidRules, SuitCount, Variant, YukonRules, deal};
+use crate::solver::{SolveBudget, Verdict, has_model, replays_to_win, solve, solve_report};
 
 const KLONDIKE_1: Variant = Variant::Klondike(DrawCount::One);
 const KLONDIKE_3: Variant = Variant::Klondike(DrawCount::Three);
@@ -138,11 +138,22 @@ fn replay_rejects_lists_that_do_not_win() {
 }
 
 #[test]
-fn default_budgets_are_set_for_every_variant() {
-    for variant in Variant::ALL {
+fn default_budgets_are_set_for_every_variant_with_a_model() {
+    for variant in Variant::ALL.into_iter().filter(|v| has_model(*v)) {
         assert!(
             SolveBudget::default_for(variant).nodes >= 50_000,
             "{variant:?}"
         );
     }
+}
+
+#[test]
+fn a_variant_without_a_model_is_unknown_at_no_cost() {
+    let yukon = Variant::Yukon(YukonRules::Classic);
+    assert!(!has_model(yukon));
+    let report = solve_report(yukon, 1, SolveBudget::nodes(1_000));
+    assert_eq!(report.verdict, Verdict::Unknown);
+    assert_eq!(report.nodes, 0);
+    let modelled = Variant::ALL.into_iter().filter(|v| has_model(*v)).count();
+    assert_eq!(modelled, 8);
 }

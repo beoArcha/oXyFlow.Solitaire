@@ -17,6 +17,7 @@ undo_hint = "{key} lub kliknięcie przełącza cofanie w następnej grze"
 winnable = "[ Tylko do wygrania: {state} ]"
 winnable_hint = "Nowa gra szuka rozdania możliwego do wygrania; wpisane ziarno zostaje bez zmian"
 slow_search = "{variant}  (szukanie może długo trwać)"
+no_search = "{variant}  (bez szukania: losowe rozdanie)"
 
 [variant]
 klondike_one = "Klondike, 1 karta"
@@ -27,6 +28,7 @@ spider_four = "Pająk, 4 kolory"
 free_cell = "FreeCell"
 pyramid_relaxed = "Piramida, swobodna"
 pyramid_classic = "Piramida, klasyczna"
+yukon_classic = "Yukon"
 
 [settings]
 title = "Ustawienia"

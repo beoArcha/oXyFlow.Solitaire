@@ -5,6 +5,7 @@ use crate::games::freecell::FreeCell;
 use crate::games::klondike::Klondike;
 use crate::games::pyramid::Pyramid;
 use crate::games::spider::Spider;
+use crate::games::yukon::Yukon;
 use crate::moves::{Move, MoveError};
 use crate::pile::PileSnapshot;
 use serde::{Deserialize, Serialize};
@@ -35,6 +36,15 @@ pub enum PyramidRules {
     Classic,
 }
 
+/// Rule set of the Yukon family (P4-10a). Every rule set shares the Yukon group moves; it chooses
+/// only how columns are built and how the cards are dealt (`games::yukon::setup`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum YukonRules {
+    /// Classic Yukon: columns build down in alternating colours; 21 face-down, 31 face-up cards.
+    Classic,
+}
+
 /// The state of a game's stock, read-only. A recycle turns the waste back into the stock and
 /// completes one pass. The first traversal is pass 1 and is in progress until its recycle, so the
 /// pass in progress is `recycles + 1`. Pyramid's "3 passes" (Relaxed) are the first traversal plus
@@ -59,11 +69,12 @@ pub enum Variant {
     Spider(SuitCount),
     FreeCell,
     Pyramid(PyramidRules),
+    Yukon(YukonRules),
 }
 
 impl Variant {
     /// Every concrete variant the menu can offer.
-    pub const ALL: [Variant; 8] = [
+    pub const ALL: [Variant; 9] = [
         Variant::Klondike(DrawCount::One),
         Variant::Klondike(DrawCount::Three),
         Variant::Spider(SuitCount::One),
@@ -72,7 +83,13 @@ impl Variant {
         Variant::FreeCell,
         Variant::Pyramid(PyramidRules::Relaxed),
         Variant::Pyramid(PyramidRules::Classic),
+        Variant::Yukon(YukonRules::Classic),
     ];
+
+    /// Whether the variant deals part of the deck to a stock: every game except FreeCell and Yukon.
+    pub const fn has_stock(self) -> bool {
+        !matches!(self, Variant::FreeCell | Variant::Yukon(_))
+    }
 }
 
 /// One running game. The trait has no supertraits: the single-threaded TUI needs neither `Send`
@@ -111,6 +128,7 @@ pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game> {
         Variant::Spider(suits) => Box::new(Spider::deal(suits, seed)),
         Variant::FreeCell => Box::new(FreeCell::deal(seed)),
         Variant::Pyramid(rules) => Box::new(Pyramid::deal(rules, seed)),
+        Variant::Yukon(rules) => Box::new(Yukon::deal(rules, seed)),
     }
 }
 
@@ -130,9 +148,9 @@ mod tests {
     }
 
     #[test]
-    fn all_lists_eight_distinct_variants() {
+    fn all_lists_nine_distinct_variants() {
         let unique: HashSet<_> = Variant::ALL.iter().collect();
-        assert_eq!(unique.len(), 8);
+        assert_eq!(unique.len(), 9);
     }
 
     #[test]
@@ -155,6 +173,10 @@ mod tests {
                 Variant::Pyramid(PyramidRules::Classic),
                 r#"{"pyramid":"classic"}"#,
             ),
+            (
+                Variant::Yukon(YukonRules::Classic),
+                r#"{"yukon":"classic"}"#,
+            ),
         ];
         assert_eq!(cases.len(), Variant::ALL.len());
         for (variant, json) in cases {
@@ -172,6 +194,14 @@ mod tests {
             };
             let ids = card_ids(deal(variant, 7).as_ref());
             assert_eq!(ids, (0..expected).collect::<Vec<u16>>(), "{variant:?}");
+        }
+    }
+
+    #[test]
+    fn only_freecell_and_yukon_have_no_stock() {
+        for variant in Variant::ALL {
+            let stock = deal(variant, 3).stock_status().is_some();
+            assert_eq!(variant.has_stock(), stock, "{variant:?}");
         }
     }
 

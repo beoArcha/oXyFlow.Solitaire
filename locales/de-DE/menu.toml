@@ -25,6 +25,7 @@ klondike = "Fundamente nach Farbe ab Assen aufbauen; der Talon speist die Spalte
 spider = "Acht Folgen von König bis Ass bilden, jede in einer Farbe."
 freecell = "Alle Karten liegen offen; vier freie Zellen schaffen Bewegungsspielraum."
 pyramid = "Kartenpaare mit Summe 13 abräumen; Könige zählen einzeln."
+yukon = "Jede offene Karte bewegt sich mit allen Karten darauf; es gibt keinen Talon."
 
 [seed]
 title = "Neues Spiel mit Seed"
@@ -49,6 +50,7 @@ klondike = "Klondike-Familie"
 spider = "Spider-Familie"
 free_cell = "FreeCell-Familie"
 pyramid = "Pyramide-Familie"
+yukon = "Yukon-Familie"
 
 [search]
 label = "Suchen"
