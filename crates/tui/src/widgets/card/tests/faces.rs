@@ -125,6 +125,18 @@ fn the_four_suits_draw_four_different_shapes_at_every_size() {
     }
 }
 
+#[test]
+fn the_large_spade_has_a_pointed_top_and_a_stem_row_the_diamond_lacks() {
+    for unicode in [true, false] {
+        let spade = suit_art(Scale::Large, Suit::Spades, unicode);
+        let diamond = suit_art(Scale::Large, Suit::Diamonds, unicode);
+        assert_eq!(spade[0].trim().chars().count(), 1, "pointed top: {spade:?}");
+        assert_eq!(spade[3].trim().chars().count(), 1, "stem: {spade:?}");
+        assert!(!diamond.contains(&spade[3]), "stem {:?} unique", spade[3]);
+        assert_ne!(spade[2], diamond[2], "lobes differ from the diamond");
+    }
+}
+
 fn centre_text(size: (u16, u16), rank: &str, suit: &str) -> String {
     let spaces = if size.0 >= 13 { "  " } else { " " };
     format!("{rank}{spaces}{suit}")
