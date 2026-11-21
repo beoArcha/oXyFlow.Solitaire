@@ -9,6 +9,8 @@ use std::time::{Duration, Instant};
 use oxysol_core::Variant;
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
+use ratatui::buffer::Buffer;
+use ratatui::layout::{Position, Rect};
 use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
@@ -21,6 +23,7 @@ use crate::input::Input;
 use crate::settings::Settings;
 use crate::solver::{Answer, Proof, Query, Solver};
 use crate::storage::memory::MemoryStorage;
+use crate::theme::{Theme, Token};
 use crate::storage::{
     AssistCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
 };
@@ -347,6 +350,27 @@ impl Harness {
         self.lines().join("\n")
     }
 
+    /// The lines of the screen with the preview pane of the settings screen blanked, so a test that
+    /// looks for a focus marker or an arrow meets the list only.
+    pub fn lines_without_pane(&mut self) -> Vec<String> {
+        let Harness { app, terminal, .. } = self;
+        terminal
+            .draw(|frame| app.draw(frame))
+            .unwrap_or_else(|never| match never {});
+        let theme = Theme::new(app.settings().theme, ColorDepth::TrueColor);
+        lines_without_pane(terminal.backend().buffer(), &theme)
+    }
+
+    /// The look of the preview pane of the settings screen, cell by cell.
+    pub fn pane_cells(&mut self) -> Vec<String> {
+        let Harness { app, terminal, .. } = self;
+        terminal
+            .draw(|frame| app.draw(frame))
+            .unwrap_or_else(|never| match never {});
+        let theme = Theme::new(app.settings().theme, ColorDepth::TrueColor);
+        pane_cells(terminal.backend().buffer(), &theme)
+    }
+
     pub fn find(&mut self, needle: &str) -> Option<(u16, u16)> {
         let lines = self.lines();
         lines.iter().enumerate().find_map(|(row, line)| {
@@ -355,4 +379,50 @@ impl Harness {
             Some((u16::try_from(column).ok()?, u16::try_from(row).ok()?))
         })
     }
+}
+
+/// The bounding box of the cells on the table colour of `theme`: the preview pane of the settings
+/// screen, the only part of that screen on the table colour. `None` when no cell is.
+pub fn pane_bounds(buffer: &Buffer, theme: &Theme) -> Option<Rect> {
+    let table = theme.style(Token::TableText, Token::Table).bg;
+    let area = buffer.area;
+    let cells = (0..area.height)
+        .flat_map(|y| (0..area.width).map(move |x| (x, y)))
+        .filter(|(x, y)| table == Some(buffer[(*x, *y)].bg));
+    cells.fold(None, |bounds: Option<Rect>, (x, y)| {
+        let cell = Rect::new(x, y, 1, 1);
+        Some(bounds.map_or(cell, |bounds| bounds.union(cell)))
+    })
+}
+
+/// The lines of `buffer` with the preview pane of the settings screen blanked.
+pub fn lines_without_pane(buffer: &Buffer, theme: &Theme) -> Vec<String> {
+    let pane = pane_bounds(buffer, theme).unwrap_or_default();
+    let area = buffer.area;
+    (0..area.height)
+        .map(|y| {
+            (0..area.width)
+                .map(|x| {
+                    if pane.contains(Position::new(x, y)) {
+                        " "
+                    } else {
+                        buffer[(x, y)].symbol()
+                    }
+                })
+                .collect()
+        })
+        .collect()
+}
+
+/// Every cell of the preview pane with its colours, row by row: two panes are equal when they look
+/// the same.
+pub fn pane_cells(buffer: &Buffer, theme: &Theme) -> Vec<String> {
+    let pane = pane_bounds(buffer, theme).unwrap_or_default();
+    (pane.top()..pane.bottom())
+        .flat_map(|y| (pane.left()..pane.right()).map(move |x| (x, y)))
+        .map(|(x, y)| {
+            let cell = &buffer[(x, y)];
+            format!("{}|{:?}|{:?}", cell.symbol(), cell.fg, cell.bg)
+        })
+        .collect()
 }

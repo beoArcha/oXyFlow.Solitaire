@@ -175,8 +175,13 @@ marks_only = "Marks only"
 thin = "Thin"
 thick = "Thick"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Preview"
+back = "back"
+focus = "focus"
+carried = "carried"
+target = "target"
+hidden = "Preview needs a larger window."
 
 [preview]
 note = "Preview. Leaving this screen asks whether to keep the interface changes."

@@ -175,8 +175,13 @@ marks_only = "Repères seuls"
 thin = "Fin"
 thick = "Épais"
 
-[sample]
-aura = "Aura :"
+[pane]
+title = "Aperçu"
+back = "dos"
+focus = "focus"
+carried = "prise"
+target = "cible"
+hidden = "L'aperçu demande une fenêtre plus grande."
 
 [preview]
 note = "Aperçu. En quittant cet écran, on demande si les changements sont conservés."

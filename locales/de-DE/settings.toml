@@ -175,8 +175,13 @@ marks_only = "Nur Marken"
 thin = "Dünn"
 thick = "Dick"
 
-[sample]
-aura = "Leuchten:"
+[pane]
+title = "Vorschau"
+back = "rückseite"
+focus = "fokus"
+carried = "gehalten"
+target = "ziel"
+hidden = "Die Vorschau braucht ein größeres Fenster."
 
 [preview]
 note = "Vorschau. Beim Verlassen dieses Bildschirms wird gefragt, ob die Änderungen bleiben."

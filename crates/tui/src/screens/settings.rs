@@ -6,8 +6,9 @@ mod arrows;
 mod font_rows;
 mod list;
 pub(crate) mod options;
+mod plan;
+mod preview;
 mod priority_row;
-mod sample;
 #[cfg(test)]
 mod tests;
 mod values;
@@ -21,6 +22,7 @@ use ratatui::widgets::{Paragraph, Wrap};
 use self::arrows::{Arrows, glyphs, locate};
 use self::list::{Entry, entries, first_shown};
 use self::options::{FIELDS, Step};
+use self::plan::{GAP, Pane, plan};
 use self::values::{changed, is_unavailable, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
 use super::{Effect, ViewCtx};
@@ -39,7 +41,8 @@ pub(crate) const FOOTER: [KeyHint; 3] = [
 
 const HEADING_INDENT: &str = "  ";
 
-/// The rows of the screen that are not the list: title, two gaps, sample, two lines of description, note, footer.
+/// The rows of the screen that are not the list: title, two gaps, the note about a hidden preview, two
+/// lines of description, the reason line, footer.
 const CHROME_ROWS: u16 = 8;
 
 /// State of the settings screen: the focused row and where each row was drawn last.
@@ -84,6 +87,49 @@ fn draw_reason(frame: &mut Frame, area: Rect, previewing: bool, ctx: &ViewCtx<'_
     };
     let style = ctx.theme.style(Token::TextMuted, Token::Background);
     let text = Line::styled(t(key).into_owned(), style);
+    frame.render_widget(Paragraph::new(text).alignment(Alignment::Center), area);
+}
+
+/// Where the list and the preview pane are drawn, the block of both centred in the screen.
+struct Places {
+    list: Rect,
+    pane: Option<Rect>,
+}
+
+impl Places {
+    fn new(pane: Pane, list_width: u16, (list_area, below_area): (Rect, Rect)) -> Self {
+        let centred = |area: Rect, width: u16| area.x + area.width.saturating_sub(width) / 2;
+        let beside = match pane {
+            Pane::Side { width } => GAP + width,
+            Pane::Below { .. } | Pane::Hidden => 0,
+        };
+        let x = centred(list_area, list_width + beside);
+        let list = Rect::new(x, list_area.y, list_width, list_area.height);
+        let pane = match pane {
+            Pane::Side { width } => Some(Rect::new(
+                x + list_width + GAP,
+                list_area.y,
+                width,
+                list_area.height,
+            )),
+            Pane::Below { width, .. } => Some(Rect::new(
+                centred(below_area, width),
+                below_area.y,
+                width,
+                below_area.height,
+            )),
+            Pane::Hidden => None,
+        };
+        Self { list, pane }
+    }
+}
+
+fn draw_hidden_note(frame: &mut Frame, area: Rect, pane: Pane, ctx: &ViewCtx<'_>) {
+    if pane != Pane::Hidden {
+        return;
+    }
+    let style = ctx.theme.style(Token::TextMuted, Token::Background);
+    let text = Line::styled(t("settings.pane.hidden").into_owned(), style);
     frame.render_widget(Paragraph::new(text).alignment(Alignment::Center), area);
 }
 
@@ -167,19 +213,27 @@ impl SettingsScreen {
     }
 
     /// Draws the title, the groups and their rows (scrolled when the screen is too low for all of
-    /// them), the aura sample, the explanation of the focused row, the note about a preview or the
-    /// reason why sound is unavailable, and the key hints.
+    /// them), the preview pane beside or under the list (or the note that the window is too small
+    /// for it), the explanation of the focused row, the note about a preview or the reason why sound
+    /// is unavailable, and the key hints.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let entries = entries();
-        let room = usize::from(area.height.saturating_sub(CHROME_ROWS));
-        let shown = entries.len().min(room);
+        let list_width = self.list_width(&entries, area.width, ctx);
+        let body_rows = area.height.saturating_sub(CHROME_ROWS);
+        let plan = plan(area.width, body_rows, list_width, entries.len());
+        let below_rows = match plan.pane {
+            Pane::Below { rows, .. } => rows,
+            Pane::Side { .. } | Pane::Hidden => 0,
+        };
+        let shown = usize::from(plan.list_rows);
         let [
             _,
             title_area,
             _,
             list_area,
             _,
-            sample_area,
+            below_area,
+            note_area,
             description_area,
             reason_area,
             _,
@@ -188,8 +242,9 @@ impl SettingsScreen {
             Constraint::Fill(1),
             Constraint::Length(1),
             Constraint::Length(1),
-            Constraint::Length(u16::try_from(shown).unwrap_or(0)),
+            Constraint::Length(plan.list_rows),
             Constraint::Length(1),
+            Constraint::Length(below_rows),
             Constraint::Length(1),
             Constraint::Length(2),
             Constraint::Length(1),
@@ -215,9 +270,12 @@ impl SettingsScreen {
             title_area,
         );
         let visible = entries.get(self.first_shown..).unwrap_or_default();
-        self.draw_list(frame, list_area, visible, area.width, ctx);
-        let sample = Paragraph::new(sample::line(ctx)).alignment(Alignment::Center);
-        frame.render_widget(sample, sample_area);
+        let places = Places::new(plan.pane, list_width, (list_area, below_area));
+        self.draw_list(frame, places.list, visible, area.width, ctx);
+        match places.pane {
+            Some(pane) => preview::draw(frame, pane, ctx),
+            None => draw_hidden_note(frame, note_area, plan.pane, ctx),
+        }
         self.draw_description(frame, description_area, ctx);
         draw_reason(frame, reason_area, self.previewing, ctx);
         self.footer = footer::draw(
@@ -230,6 +288,16 @@ impl SettingsScreen {
         );
     }
 
+    /// The columns of the widest line of the list, never more than `columns`.
+    fn list_width(&self, entries: &[Entry], columns: u16, ctx: &ViewCtx<'_>) -> u16 {
+        entries
+            .iter()
+            .map(|entry| text_width(&self.entry_text(*entry, columns, ctx)))
+            .max()
+            .unwrap_or_default()
+            .min(columns)
+    }
+
     fn draw_list(
         &mut self,
         frame: &mut Frame,
@@ -238,13 +306,6 @@ impl SettingsScreen {
         columns: u16,
         ctx: &ViewCtx<'_>,
     ) {
-        let width = entries
-            .iter()
-            .map(|entry| text_width(&self.entry_text(*entry, columns, ctx)))
-            .max()
-            .unwrap_or_default()
-            .min(area.width);
-        let x = area.x + (area.width - width) / 2;
         self.rows.clear();
         self.arrows = None;
         for (offset, entry) in entries.iter().copied().enumerate() {
@@ -255,7 +316,7 @@ impl SettingsScreen {
                 break;
             }
             let text = self.entry_text(entry, columns, ctx);
-            let cell = Rect::new(x, area.y + dy, width, 1);
+            let cell = Rect::new(area.x, area.y + dy, area.width, 1);
             let style = match entry {
                 Entry::Heading(_) => ctx.theme.style(Token::Accent, Token::Background),
                 Entry::Row(index) if index == self.focus => ctx.theme.focus(),

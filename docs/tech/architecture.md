@@ -469,7 +469,10 @@ pub struct NullClipboard;                                // every copy fails wit
   `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
   colour is one theme token for all three halos (still told apart by symbol); `Frame` draws a line frame (`┌─┐` for the focus, `╔═╗`
   for the carried run, plain ASCII `+-|` and `#=H` in ASCII mode; a target keeps its dot), `Thick` is two rings of free cells instead of
-  one. `settings/sample.rs` draws a sample of the three halos under the list.
+  one. *Preview pane (O-102):* `settings/preview.rs` draws a face-down card and three face-up cards (the focused, the carried and a drop
+  target) with the card widget and `aura::draw` on the table of the theme, so every look setting shows at once. `settings/plan.rs`
+  places it from the window and the list only: beside the list when the window is wide enough, under it when the list keeps 12 rows,
+  else not drawn (a note says so). The cards are the largest size the card-size setting allows that the pane holds.
   *Console font face and size:* two more Interface rows follow Console font: `Settings::console_face` (`ConsoleFace { Default,
   Consolas, LucidaConsole, CascadiaMono }`, `settings/console_face.rs`; `Default` leaves the face the console had) and
   `console_font_size` (pixels from `CONSOLE_FONT_SIZES`, `0` leaves the size; older values load as the default). Only the classic Windows

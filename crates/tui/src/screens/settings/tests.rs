@@ -11,6 +11,7 @@ mod guide;
 mod hints;
 mod interface;
 mod language;
+mod preview;
 mod screen;
 mod styles;
 mod unavailable;

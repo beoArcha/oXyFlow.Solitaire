@@ -175,8 +175,13 @@ marks_only = "Alleen markeringen"
 thin = "Dun"
 thick = "Dik"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Voorbeeld"
+back = "achterkant"
+focus = "focus"
+carried = "opgepakt"
+target = "doel"
+hidden = "Het voorbeeld heeft een groter venster nodig."
 
 [preview]
 note = "Voorbeeld. Bij het verlaten van dit scherm wordt gevraagd of de wijzigingen blijven."

@@ -9,14 +9,12 @@ use super::priority_row;
 use crate::app::{CardFontState, FontFacts};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
-use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{
     CONSOLE_FONT_SIZES, CardBack, CardFaceTint, CardSizeSetting, ColorMode, ConsoleFace,
     FullScreen, GlyphMode, ProcessPriority, Settings,
 };
 use crate::theme::ThemeId;
-use crate::widgets::card::back;
 
 const VOLUME_STEP: u8 = 10;
 
@@ -134,15 +132,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     match field {
         Field::Language => settings.locale.own_name().to_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
-        Field::CardBack => format!(
-            "{} {}",
-            t(card_back_key(settings.card_back)),
-            back::preview(&Glyphs::styled(
-                settings.glyph_mode,
-                &settings.front_style,
-                &settings.back_style
-            ))
-        ),
+        Field::CardBack => t(card_back_key(settings.card_back)).into_owned(),
         Field::CardFace => t(settings.card_face.label_key()).into_owned(),
         Field::FrontStyle => front_style_name(&settings.front_style),
         Field::BackStyle => back_style_name(&settings.back_style),
