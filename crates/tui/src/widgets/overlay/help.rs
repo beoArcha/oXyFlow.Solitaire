@@ -23,10 +23,31 @@ use crate::widgets::scrollbar;
 const GAP: u16 = 4;
 const KEY_PADDING: usize = 2;
 const LEFT_TOPICS: usize = 2;
-const BODY_ROWS: u16 = 24;
 const DIALOG_MIN_WIDTH: u16 = 80;
-/// Text rows of the Keys tab: the box body less the tab row and the footer row.
+/// The share of the terminal height the window takes, in percent. A share of 60 covers the logo,
+/// whose top row sits at about a quarter of the height, from above at every terminal height.
+const SHARE_PERCENT: u16 = 60;
+const MIN_FRAME_ROWS: u16 = 28;
+const MAX_FRAME_ROWS: u16 = 40;
+/// Rows of the box that are not text on the Keys tab: the borders, the tab row, the footer row and
+/// the button row.
+const KEYS_CHROME_ROWS: u16 = 6;
+/// Rows of the box that are not in its body: the borders and the button row.
+const BOX_CHROME_ROWS: u16 = 4;
+/// Text rows of the Keys tab at 100 by 30, the smallest window: the first value before any event.
 pub(super) const VIEW_ROWS: usize = 22;
+
+/// Rows of the box, borders and buttons included, in `area`. Every Help tab uses this height, so
+/// switching tabs does not move the window.
+pub(super) fn frame_rows(area: Rect) -> u16 {
+    let share = area.height.saturating_mul(SHARE_PERCENT) / 100;
+    share.clamp(MIN_FRAME_ROWS, MAX_FRAME_ROWS).min(area.height)
+}
+
+/// Text rows of the Keys tab and the Command line tab in `area`.
+pub(super) fn view_rows(area: Rect) -> u16 {
+    frame_rows(area).saturating_sub(KEYS_CHROME_ROWS)
+}
 /// The top tab row, the text and the footer row of the box body.
 pub(super) fn parts(body: Rect) -> (Rect, Rect, Rect) {
     let [top, text, footer] = Layout::vertical([
@@ -176,7 +197,12 @@ pub(super) fn geometry(area: Rect) -> Geometry {
     let columns = Columns::new();
     let width = (columns.width_of(&columns.left) + GAP + columns.width_of(&columns.right) + 4)
         .max(DIALOG_MIN_WIDTH);
-    dialog::boxed(area, width, BODY_ROWS, &buttons())
+    dialog::boxed(
+        area,
+        width,
+        frame_rows(area).saturating_sub(BOX_CHROME_ROWS),
+        &buttons(),
+    )
 }
 
 /// The footer of the keys tab: the two keys that close it, each a button.
@@ -208,12 +234,13 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) 
     ])
     .areas(body);
     let first = usize::from(state.scroll);
+    let rows = usize::from(text.height);
     let column = |sections: &[Section]| -> Vec<Line<'static>> {
         columns
             .lines(sections, ctx)
             .into_iter()
             .skip(first)
-            .take(VIEW_ROWS)
+            .take(rows)
             .collect()
     };
     frame.render_widget(
