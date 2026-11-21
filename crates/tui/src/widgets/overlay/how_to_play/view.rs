@@ -9,7 +9,7 @@ use ratatui::style::Modifier;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
-use super::content::{self, Kind, Row, VIEW_ROWS};
+use super::content::{self, Kind, Row};
 use super::state::{Focus, HowToPlay, Rules};
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -22,7 +22,9 @@ use crate::widgets::overlay::help;
 use crate::widgets::overlay::tabs::{HelpTab, arrows, draw_footer_buttons, draw_top_tabs};
 use crate::widgets::scrollbar;
 
-const CHROME_ROWS: u16 = 3;
+/// Rows of the window that are not text: the borders, the button row, the top tab row, the game
+/// tab row and the footer row.
+const CHROME_ROWS: u16 = 7;
 const ARROW_COLUMNS: u16 = 3;
 const TAB_PADDING: u16 = 2;
 const TAB_GAP: u16 = 1;
@@ -42,12 +44,15 @@ pub struct Tabs {
     pub games: Vec<(Rules, Rect)>,
 }
 
-/// The box of the window, centered in `area`. Its size does not depend on the text: the text
-/// scrolls inside a fixed number of rows, and the box fits the smallest supported terminal.
+/// The box of the window, centered in `area`: the same box as every other Help tab, so switching
+/// tabs does not move the window.
 pub fn geometry(area: Rect) -> Geometry {
-    let width = crate::widgets::overlay::help::geometry(area).frame.width;
-    let rows = u16::try_from(VIEW_ROWS).unwrap_or(u16::MAX) + CHROME_ROWS;
-    dialog::boxed(area, width, rows, &help::buttons())
+    help::geometry(area)
+}
+
+/// Text rows the box shows at `area`: the box less the rows of the tabs and the footer.
+pub fn text_rows(area: Rect) -> u16 {
+    help::frame_rows(area).saturating_sub(CHROME_ROWS)
 }
 
 /// Splits the box body into top tabs, game tabs, text rows and the footer row.

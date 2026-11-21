@@ -12,6 +12,8 @@ mod focus_tests;
 mod graphics_check;
 mod guide_window;
 mod help;
+#[cfg(test)]
+mod help_height_tests;
 mod help_keys;
 #[cfg(test)]
 mod help_rules_tests;
@@ -228,19 +230,29 @@ pub fn rules_of(board: &BoardScreen) -> Rules {
         .map_or(Rules::Klondike, |session| Rules::of(session.variant()))
 }
 
-/// Handles a key while `modal` is open, with Klondike as the game of the Rules tab.
+/// Handles a key while `modal` is open at the 100 by 30 size, with Klondike as the game of the
+/// Rules tab.
 #[cfg(test)]
 pub fn handle(modal: &mut Modal, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
-    handle_for(modal, key, action, Rules::Klondike)
+    handle_for(
+        modal,
+        key,
+        action,
+        Rules::Klondike,
+        Rect::new(0, 0, 100, 30),
+    )
 }
 
 /// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
-/// then applies `effect` (`Effect::None` just closes). `rules` is the game the Rules tab opens on.
+/// then applies `effect` (`Effect::None` just closes). `rules` is the game the Rules tab opens on
+/// and `area` is the whole screen, the same area [`draw`] received: the Help tabs scroll by the
+/// text rows that the box shows at this size.
 pub fn handle_for(
     modal: &mut Modal,
     key: &KeyEvent,
     action: Option<Action>,
     rules: Rules,
+    area: Rect,
 ) -> Option<Effect> {
     if let Modal::Guide(state) = modal {
         return guide_window::handle(state, key, action);
@@ -257,9 +269,9 @@ pub fn handle_for(
             return None;
         }
         return match modal {
-            Modal::HowToPlay(state) => how_to_play::handle(state, key, action),
-            Modal::CommandLine(state) => command_line::handle(state, key, action),
-            Modal::Help(state) => help_keys::handle_key(state, key, action),
+            Modal::HowToPlay(state) => how_to_play::handle(state, key, action, area),
+            Modal::CommandLine(state) => command_line::handle(state, key, action, area),
+            Modal::Help(state) => help_keys::handle_key(state, key, action, area),
             _ => nav::close_help(key, action),
         };
     }

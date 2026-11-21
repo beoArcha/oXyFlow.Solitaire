@@ -27,12 +27,12 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 
 | Role | Who | Used for |
 |---|---|---|
-| Orchestrator / reviewer | Claude Opus 5.5 | splits work, dispatches, reviews every PR, checkpoints F-01…F-03, phase gates, plan upkeep, GitHub settings (R-14) |
+| Orchestrator / reviewer | Claude Opus 5.5 | splits work, dispatches, reviews every PR and turns on its auto-merge, checkpoints F-01…F-03, phase gates, plan upkeep, GitHub settings (R-14) |
 | Architect on escalation | Claude Fable | only a contract question Opus cannot settle |
 | Implementer | Claude Sonnet 5.5 | contracts, keystone code, cross-cutting integration |
 | Implementer | Claude Haiku 5.5 | fully specified work: scaffolding, screens, storage, workflows, documentation |
 | Micro tasks | Antigravity (Gemini 3.8 Flash): **Beo, Oxy, Son, Dad** | one small file, no project context, verified by a test or by eye |
-| User | — | decisions, checks on real terminals, merging PRs, deployment |
+| User | — | decisions, checks on real terminals, deployment |
 
 Opus dispatches Sonnet and Haiku as subagents, each in its own worktree; two Claude tasks run in
 parallel only when their file lists do not overlap. Beo, Oxy and Son run micro tasks in parallel. Dad exists on one computer only: it is an
@@ -46,7 +46,8 @@ goes to Haiku; a Haiku task that fails its gate goes to Sonnet.
 1. Branch from current `main`: `<type>/<ID>-<slug>`.
 2. Do the card; change only its files; run `cargo xtask check --quick`.
 3. Open a PR to `main` with the title `<type>(<scope>): <summary> [<ID>]`.
-4. `pr.yml` must be green and Opus reviews the PR. The PR is squash-merged.
+4. Opus reviews the PR and turns on auto-merge (`gh pr merge <n> --squash --auto`). GitHub squash-merges it once
+   the branch is up to date with `main` and the required checks (`check`, `check-windows`, `deny`, `site`) pass.
 5. `main.yml` runs the full check on three systems and promotes the commit to `release`.
 6. `release.yml` runs the full check again, builds Windows, Linux and macOS binaries, tags a
    pre-release and updates the site (R-17, T-21).
