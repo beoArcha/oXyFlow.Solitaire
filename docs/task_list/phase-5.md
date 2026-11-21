@@ -9,7 +9,7 @@ Exit criteria:
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
 
-Order of work: the Interface options first, then the card style and the games, which do not touch those files.
+Order of work: the Interface options first, then the card style and the games, which do not touch those files. The visual fixes (O-69 to O-107) go by priority, P1 before P2 before P3, respecting each card's dependencies; Settings cards run one at a time in the order O-86, O-94, O-102, O-103, O-96, because they share the Settings screen.
 
 ### P3-32 — Table color and feel
 
