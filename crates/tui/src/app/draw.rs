@@ -23,6 +23,8 @@ impl App {
         }
         let split = self.dock_split();
         let screen = split.map_or(area, |(_, rest)| rest);
+        self.menu
+            .set_other_pane_focused(split.is_some() && self.dock.focused);
         match self.screen {
             Screen::MainMenu => self.menu.draw(frame, screen, &ctx),
             Screen::GameSelect => self.select.draw(frame, screen, &ctx),
