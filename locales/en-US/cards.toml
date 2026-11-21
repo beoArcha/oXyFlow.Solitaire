@@ -10,3 +10,6 @@ baton = "batons"
 coin = "coins"
 cup = "cups"
 sword = "swords"
+
+[style]
+spanish = "Spanish"

@@ -126,3 +126,144 @@ fn every_list_entry_names_the_language_in_itself_beside_its_code() {
         assert!(text.contains(flag(locale).code), "{text}");
     }
 }
+
+fn ascii() -> Fixture {
+    Fixture::new(
+        PLAIN,
+        Settings {
+            glyph_mode: GlyphMode::Ascii,
+            ..Settings::for_caps(&PLAIN)
+        },
+    )
+}
+
+#[test]
+fn at_rest_the_unicode_selector_shows_only_the_flag_code_and_the_down_arrow() {
+    let fixture = Fixture::new(TRUE_COLOR, Settings::default());
+    let ctx = fixture.ctx();
+    let flag_row = "▀".repeat(PIXELS);
+    let text = text_of(&selector_lines(Locale::PlPl, false, true, &ctx));
+    assert_eq!(text, [flag_row.clone(), format!("{flag_row} PL ▼")]);
+}
+
+#[test]
+fn focused_unicode_selector_adds_the_side_arrows() {
+    let fixture = Fixture::new(TRUE_COLOR, Settings::default());
+    let ctx = fixture.ctx();
+    let flag_row = "▀".repeat(PIXELS);
+    let text = text_of(&selector_lines(Locale::PlPl, true, true, &ctx));
+    assert_eq!(
+        text,
+        [format!("◄ {flag_row} ► ▼"), format!("  {flag_row} PL ")]
+    );
+}
+
+#[test]
+fn at_rest_the_ascii_selector_shows_the_code_and_a_v() {
+    let fixture = ascii();
+    let ctx = fixture.ctx();
+    assert_eq!(
+        text_of(&selector_lines(Locale::PlPl, false, false, &ctx)),
+        ["PL v"]
+    );
+}
+
+#[test]
+fn focused_ascii_selector_adds_the_angle_arrows() {
+    let fixture = ascii();
+    let ctx = fixture.ctx();
+    assert_eq!(
+        text_of(&selector_lines(Locale::PlPl, true, false, &ctx)),
+        ["< PL > v"]
+    );
+}
+
+fn position_of(text: &[String], glyph: &str) -> Option<(u16, u16)> {
+    text.iter().enumerate().find_map(|(row, line)| {
+        let byte = line.find(glyph)?;
+        let column = line[..byte].chars().count();
+        Some((u16::try_from(column).ok()?, u16::try_from(row).ok()?))
+    })
+}
+
+#[test]
+fn every_arrow_drawn_is_a_mouse_target_and_the_hidden_ones_are_not() {
+    for (fixture, flags) in [
+        (Fixture::new(TRUE_COLOR, Settings::default()), true),
+        (ascii(), false),
+    ] {
+        let ctx = fixture.ctx();
+        let [left, right, down] = arrows(ctx.glyphs.unicode);
+        for focused in [false, true] {
+            let (width, height) = body_size(flags, focused);
+            let origin = Rect::new(0, 0, width, height);
+            let lines = selector_lines(Locale::PlPl, focused, flags, &ctx);
+            let text = text_of(&lines);
+            assert!(text.len() <= usize::from(height), "{text:?}");
+            assert!(
+                text.iter().all(|line| columns_of(line) <= width),
+                "{text:?}"
+            );
+            let spots = locate(origin, flags, focused);
+            let cases = [
+                (left, spots.left, focused),
+                (right, spots.right, focused),
+                (down, spots.down, true),
+            ];
+            for (glyph, spot, shown) in cases {
+                let drawn = position_of(&text, glyph);
+                assert_eq!(drawn.is_some(), shown, "{glyph} in {text:?}");
+                match drawn {
+                    Some(cell) => assert!(contains(spot, cell), "{glyph} at {cell:?} in {text:?}"),
+                    None => assert_eq!(spot.width, 0, "{glyph} is no target at rest"),
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn the_list_dims_the_two_letter_codes_and_keeps_the_names_plain() {
+    let fixture = Fixture::new(TRUE_COLOR, Settings::default());
+    let ctx = fixture.ctx();
+    let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
+    assert_ne!(muted.fg, ctx.theme.surface().fg);
+    for flags in [true, false] {
+        let entry = Entry {
+            locale: Locale::PlPl,
+            highlighted: false,
+            current: false,
+            width: 30,
+            flags,
+        };
+        let lines = entry_lines(&entry, &ctx);
+        let spans: Vec<&Span<'_>> = lines.iter().flat_map(|line| line.spans.iter()).collect();
+        let code = spans.iter().find(|span| span.content == "PL");
+        assert_eq!(code.map(|span| span.style), Some(muted), "flags {flags}");
+        let name = spans.iter().find(|span| span.content.contains("Polski"));
+        assert_eq!(
+            name.map(|span| span.style),
+            Some(ctx.theme.surface()),
+            "flags {flags}"
+        );
+    }
+}
+
+#[test]
+fn the_highlighted_list_entry_keeps_its_code_on_the_focus_colors() {
+    let fixture = Fixture::new(TRUE_COLOR, Settings::default());
+    let ctx = fixture.ctx();
+    let entry = Entry {
+        locale: Locale::PlPl,
+        highlighted: true,
+        current: false,
+        width: 30,
+        flags: false,
+    };
+    let lines = entry_lines(&entry, &ctx);
+    let code = lines
+        .iter()
+        .flat_map(|line| line.spans.iter())
+        .find(|span| span.content == "PL");
+    assert_eq!(code.map(|span| span.style), Some(ctx.theme.focus()));
+}

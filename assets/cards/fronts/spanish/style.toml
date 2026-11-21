@@ -1,0 +1,39 @@
+# Spanish deck: coins, cups, swords and batons on the diamonds, hearts, spades and clubs of the game.
+# The suits have no font glyphs: Font mode draws the Unicode symbols below. The symbols are WGL4 shapes
+# that differ by shape (ring, heart, up arrow, bar); no WGL4 shape draws a coin, a cup, a sword or a baton,
+# so each one is a simple picture of the suit's shape in the classic console font.
+# Court labels: Sota, Caballo, Rey; the card shows the single letters S, C and R, as the Swiss and German
+# styles do (a label is at most two ASCII capitals).
+# Colours: coins and cups are red, swords and batons black, as in the French and Swiss pairs.
+
+name = "cards.style.spanish"
+
+[ranks]
+ace = "A"
+jack = "S"
+queen = "C"
+king = "R"
+
+[suits.clubs]
+name = "cards.suit.baton"
+unicode = "▬"
+ascii = "b"
+color = "card_black"
+
+[suits.diamonds]
+name = "cards.suit.coin"
+unicode = "○"
+ascii = "o"
+color = "card_red"
+
+[suits.hearts]
+name = "cards.suit.cup"
+unicode = "♥"
+ascii = "c"
+color = "card_red"
+
+[suits.spades]
+name = "cards.suit.sword"
+unicode = "↑"
+ascii = "e"
+color = "card_black"
