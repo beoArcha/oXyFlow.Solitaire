@@ -3,6 +3,7 @@
 
 mod common;
 mod golden;
+mod golf;
 mod record;
 mod scenario;
 mod stock;

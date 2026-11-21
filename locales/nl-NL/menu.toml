@@ -26,6 +26,7 @@ spider = "Bouw acht reeksen van koning tot aas, elk in één kleur."
 freecell = "Alle kaarten liggen open; vier vrije cellen helpen bij het verplaatsen."
 pyramid = "Verwijder paren die samen 13 vormen; een koning telt alleen."
 yukon = "Elke open kaart verhuist met alle kaarten erop; er is geen stapel."
+golf = "Speel kaarten van de kolommen op de aflegstapel als ze één rang hoger of lager zijn."
 
 
 [seed]
@@ -54,6 +55,7 @@ spider = "Spider-familie"
 free_cell = "FreeCell-familie"
 pyramid = "Piramide-familie"
 yukon = "Yukon-familie"
+golf = "Golf-familie"
 
 [search]
 label = "Zoeken"

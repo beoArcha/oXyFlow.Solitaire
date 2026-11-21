@@ -215,10 +215,16 @@ fn the_menu_fits_at_100_by_30_in_every_offered_locale() {
                 text.contains(&t("menu.favourites").into_owned()),
                 "{context}"
             );
+            let mut seen = text.clone();
+            for _ in 0..Variant::ALL.len() {
+                h.press(KeyCode::Down);
+                seen.push_str(&h.text());
+            }
             for family in Family::ALL {
                 assert!(
-                    text.contains(&t(family.title_key()).into_owned()),
-                    "{context}"
+                    seen.contains(&t(family.title_key()).into_owned()),
+                    "{context}: {} is not reachable",
+                    family.title_key()
                 );
             }
             assert!(

@@ -14,6 +14,7 @@
 
 mod face;
 mod freecell;
+mod golf;
 mod hash;
 mod klondike;
 mod pyramid;
@@ -58,6 +59,7 @@ impl SolveBudget {
             Variant::Pyramid(_) => DEFAULT_PYRAMID_NODES,
             Variant::Yukon(YukonRules::Australian) => DEFAULT_AUSTRALIAN_NODES,
             Variant::Yukon(_) => DEFAULT_YUKON_NODES,
+            Variant::Golf => DEFAULT_GOLF_NODES,
         })
     }
 }
@@ -70,7 +72,8 @@ pub const fn has_model(variant: Variant) -> bool {
         | Variant::FreeCell
         | Variant::Spider(_)
         | Variant::Pyramid(_)
-        | Variant::Yukon(_) => true,
+        | Variant::Yukon(_)
+        | Variant::Golf => true,
     }
 }
 
@@ -80,6 +83,7 @@ pub const DEFAULT_SPIDER_NODES: u64 = 60_000;
 pub const DEFAULT_PYRAMID_NODES: u64 = 500_000;
 pub const DEFAULT_YUKON_NODES: u64 = 100_000;
 pub const DEFAULT_AUSTRALIAN_NODES: u64 = 300_000;
+pub const DEFAULT_GOLF_NODES: u64 = 2_000_000;
 
 /// A verdict together with the positions it cost.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -139,6 +143,10 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
             }
         }
         Variant::Yukon(rules) => match yukon::Position::from_piles(rules, &piles) {
+            Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
+            None => unknown(),
+        },
+        Variant::Golf => match golf::Position::from_piles(&piles) {
             Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
             None => unknown(),
         },

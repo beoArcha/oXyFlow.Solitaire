@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Pyramid"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Goal"
@@ -103,3 +104,15 @@ tips_1 = "Uncover the face-down cards first, starting with the longest columns."
 tips_2 = "A group does not need to be in order, so you can dig deep into a column to reach the card you need."
 tips_3 = "Kings are hard to move. Keep an empty column for a king that is blocking face-down cards."
 tips_4 = "Stuck? Press {hint} for a hint, or {undo} to take a move back."
+
+[golf]
+goal = "Clear all 35 cards from the seven columns by playing them onto the waste."
+layout_1 = "Seven columns of five face-up cards. The first stock card is turned onto the waste to start it; the other 16 stay in the stock."
+layout_2 = "There is no foundation and no redeal: the stock is turned one card at a time, once."
+moves_1 = "Play the top card of a column onto the waste when its rank is one higher or one lower than the top waste card, in any suit: a 7 goes onto a 6 or an 8."
+moves_2 = "A king and an ace are not neighbors, so there is no wrap-around: only a queen goes onto a king, and only a 2 onto an ace."
+moves_3 = "Every card you play becomes the new top of the waste, so a run can go up, down, or change direction."
+moves_4 = "When no column card fits, turn the next stock card onto the waste. With the stock empty and no card that fits, you are stuck."
+tips_1 = "Look for the longest run you can play before you turn a stock card."
+tips_2 = "A run that switches between columns keeps the chain going, so plan which column to empty first."
+tips_3 = "Stuck? Press {hint} for a hint, or {undo} to take a move back."

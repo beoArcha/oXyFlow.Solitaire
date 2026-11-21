@@ -13,16 +13,18 @@ pub enum Rules {
     FreeCell,
     Pyramid,
     Yukon,
+    Golf,
 }
 
 impl Rules {
     /// Every game, in tab order.
-    pub const ALL: [Rules; 5] = [
+    pub const ALL: [Rules; 6] = [
         Rules::Klondike,
         Rules::Spider,
         Rules::FreeCell,
         Rules::Pyramid,
         Rules::Yukon,
+        Rules::Golf,
     ];
 
     /// The game a variant belongs to.
@@ -33,6 +35,7 @@ impl Rules {
             Variant::FreeCell => Rules::FreeCell,
             Variant::Pyramid(_) => Rules::Pyramid,
             Variant::Yukon(_) => Rules::Yukon,
+            Variant::Golf => Rules::Golf,
         }
     }
 
@@ -44,6 +47,7 @@ impl Rules {
             Rules::FreeCell => "rules.game.freecell",
             Rules::Pyramid => "rules.game.pyramid",
             Rules::Yukon => "rules.game.yukon",
+            Rules::Golf => "rules.game.golf",
         }
     }
 

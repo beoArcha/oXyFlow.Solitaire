@@ -32,6 +32,7 @@ yukon_russian = "Russian Solitaire"
 yukon_alaska = "Alaska"
 yukon_moosehide = "Moosehide"
 yukon_australian = "Australian"
+golf = "Golf"
 
 [settings]
 title = "Settings"

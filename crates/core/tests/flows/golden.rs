@@ -247,3 +247,18 @@ Tableau 6: 6C* QS* 9D* JD* QC* 3C* 9H QH 9C JC 10C";
 fn yukon_classic_deal_is_pinned() {
     assert_golden(Variant::Yukon(YukonRules::Classic), YUKON_CLASSIC);
 }
+
+const GOLF: &str = "Stock: 8D* QD* 9S* KH* 5H* 6C* QS* 9D* JD* QC* 3C* 9H* QH* 9C* JC* 10C*
+Waste: 3S
+Tableau 0: 7C 3H KC AS 2S
+Tableau 1: AC AH KD 10D 5C
+Tableau 2: 8S JH 2H 4S 6H
+Tableau 3: 5D 2D 5S 6D AD
+Tableau 4: 7D 2C 8H 8C 4D
+Tableau 5: 7H KS 10S 4H 3D
+Tableau 6: 10H JS 4C 6S 7S";
+
+#[test]
+fn golf_deal_is_pinned() {
+    assert_golden(Variant::Golf, GOLF);
+}

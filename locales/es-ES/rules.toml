@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Pirámide"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Objetivo"
@@ -103,3 +104,15 @@ tips_1 = "Descubre primero las cartas boca abajo, empezando por las columnas má
 tips_2 = "Un grupo no tiene que estar en orden, así que puedes buscar a fondo en una columna la carta que necesitas."
 tips_3 = "A los reyes cuesta moverlos. Guarda una columna vacía para un rey que bloquee cartas boca abajo."
 tips_4 = "¿Atascado? Pulsa {hint} para una pista o {undo} para deshacer un movimiento."
+
+[golf]
+goal = "Despeja las 35 cartas de las siete columnas jugándolas al descarte."
+layout_1 = "Siete columnas de cinco cartas boca arriba. La primera carta del mazo se pone en el descarte para empezarlo; las otras 16 quedan en el mazo."
+layout_2 = "No hay fundaciones ni nueva repartición: el mazo se da vuelta carta a carta, una sola vez."
+moves_1 = "Juega la carta superior de una columna al descarte cuando su rango sea uno mayor o uno menor que la carta superior del descarte, de cualquier palo: un 7 va sobre un 6 o un 8."
+moves_2 = "El rey y el as no son vecinos, así que no hay vuelta: sobre un rey solo va una reina, y sobre un as solo un 2."
+moves_3 = "Cada carta jugada pasa a ser la nueva superior del descarte, así que una racha puede subir, bajar o cambiar de sentido."
+moves_4 = "Cuando ninguna carta de columna encaje, pon la siguiente carta del mazo en el descarte. Con el mazo vacío y sin ninguna carta que encaje, no hay salida."
+tips_1 = "Busca la racha más larga que puedas jugar antes de dar vuelta una carta del mazo."
+tips_2 = "Una racha que cambia de columna mantiene la cadena, así que planea qué columna vaciar primero."
+tips_3 = "¿Atascado? Pulsa {hint} para una pista o {undo} para deshacer un movimiento."
