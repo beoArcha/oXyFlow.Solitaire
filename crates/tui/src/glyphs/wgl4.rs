@@ -289,6 +289,8 @@ mod tests {
             for placeholder in [
                 Placeholder::None,
                 Placeholder::Ace,
+                Placeholder::King,
+                Placeholder::Thirteen,
                 Placeholder::Recycle,
                 Placeholder::Spent,
             ] {
@@ -329,6 +331,7 @@ mod tests {
                     pile: target_pile,
                     index: 0,
                 }],
+                ..Marks::default()
             };
             let mut buf = Buffer::empty(bounds);
             for (snapshot, placed) in piles.iter().zip(&geometry.piles) {
