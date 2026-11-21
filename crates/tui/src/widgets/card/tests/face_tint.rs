@@ -30,6 +30,33 @@ fn draw_card(fixture: &Fixture, size: (u16, u16), card: Card) -> (Buffer, Rect) 
     (buf, area)
 }
 
+fn assert_card_in_colors(fixture: &Fixture, tint: CardFaceTint, size: (u16, u16), suit: Suit) {
+    let (buf, area) = draw_card(fixture, size, card(Rank::Ace, suit));
+    let expected = fixture
+        .theme
+        .card_face_style(tint, fixture.glyphs.suit_token(suit));
+    let mut inked = 0;
+    for y in area.top()..area.bottom() {
+        for x in area.left()..area.right() {
+            let cell = &buf[(x, y)];
+            assert_eq!(
+                cell.bg,
+                expected.bg.unwrap_or_default(),
+                "{tint:?} {size:?} {suit:?} at {x},{y}"
+            );
+            if cell.symbol() != " " {
+                inked += 1;
+                assert_eq!(
+                    cell.fg,
+                    expected.fg.unwrap_or_default(),
+                    "{tint:?} {size:?} {suit:?} at {x},{y}"
+                );
+            }
+        }
+    }
+    assert!(inked > 0, "{tint:?} {size:?} {suit:?}");
+}
+
 #[test]
 fn every_tint_draws_every_card_size_in_every_theme_in_its_own_colors() {
     for id in ThemeId::ALL {
@@ -37,22 +64,7 @@ fn every_tint_draws_every_card_size_in_every_theme_in_its_own_colors() {
             let fixture = tinted(id, tint);
             for size in SIZES {
                 for suit in [Suit::Hearts, Suit::Spades] {
-                    let (buf, area) = draw_card(&fixture, size, card(Rank::Ace, suit));
-                    let token = fixture.glyphs.suit_token(suit);
-                    let expected = fixture.theme.card_face_style(tint, token);
-                    let mut inked = 0;
-                    for y in area.top()..area.bottom() {
-                        for x in area.left()..area.right() {
-                            let cell = &buf[(x, y)];
-                            let place = format!("{id:?} {tint:?} {size:?} {suit:?} at {x},{y}");
-                            assert_eq!(cell.bg, expected.bg.unwrap_or_default(), "{place}");
-                            if cell.symbol() != " " {
-                                inked += 1;
-                                assert_eq!(cell.fg, expected.fg.unwrap_or_default(), "{place}");
-                            }
-                        }
-                    }
-                    assert!(inked > 0, "{id:?} {tint:?} {size:?}");
+                    assert_card_in_colors(&fixture, tint, size, suit);
                 }
             }
         }
