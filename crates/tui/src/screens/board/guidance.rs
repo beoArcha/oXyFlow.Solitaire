@@ -341,7 +341,7 @@ fn carrying(piles: &[PileSnapshot], pick: &Pick) -> Guidance {
     ];
     let mut usable = vec![Action::Select, Action::Back];
     if let Some(best) = quick(&pick.choices) {
-        possible.push(quick_part(best, priority::QUICK_CARRIED));
+        possible.push(quick_part(best, priority::QUICK));
         usable.push(Action::QuickMove);
     }
     usable.extend(ALWAYS);

@@ -7,6 +7,7 @@ use ratatui::crossterm::event::KeyCode;
 use super::*;
 use crate::action::Action;
 use crate::announce::pile_name;
+use crate::app::Modal;
 use crate::i18n::{Locale, set_locale, t, tf};
 use crate::input::primary_key;
 use crate::screens::Effect;
@@ -227,15 +228,60 @@ fn the_do_row_drops_its_hints_in_a_fixed_order() {
         t("board.action.move").into_owned(),
         hint_text(Action::Help, "board.action.help"),
         hint_text(Action::Guide, "board.action.guide"),
-        hint_text(Action::Moves, "board.action.moves"),
-        hint_text(Action::Pause, "board.action.pause"),
-        hint_text(Action::Undo, "board.action.undo"),
         hint_text(Action::Hint, "board.action.hint"),
+        hint_text(Action::Undo, "board.action.undo"),
         tf("board.action.run", &[("keys", &run_keys)]),
         hint_text(Action::Options, "board.action.options"),
         hint_text(Action::Restart, "board.action.restart"),
         hint_text(Action::Stock, "board.action.turn_stock"),
+        hint_text(Action::Moves, "board.action.moves"),
+        hint_text(Action::Pause, "board.action.pause"),
         hint_text(Action::Back, "board.action.menu"),
     ];
     assert_eq!(drop_sequence(&h), expected);
+}
+
+/// A 100-column board in `locale` after one move, or carrying a card with a refusal shown.
+fn narrow_state(locale: Locale, carrying: bool) -> Harness {
+    let mut h = game_in(locale, 5, (100, 30));
+    if carrying {
+        let Some(_) = carry_with_refusal(&mut h, 0) else {
+            panic!("seed 5 has a tableau card that can move and a refusing column");
+        };
+        return h;
+    }
+    let Some((from, to, _)) = first_transfer(&h) else {
+        panic!("seed 5 has a transfer");
+    };
+    drag(&mut h, from, to);
+    h
+}
+
+#[test]
+fn pause_and_moves_stay_clickable_at_100_columns_after_a_move_and_while_carrying() {
+    for locale in Locale::offered() {
+        for carrying in [false, true] {
+            for (action, key) in [
+                (Action::Pause, "board.action.pause"),
+                (Action::Moves, "board.action.moves"),
+            ] {
+                let mut h = narrow_state(locale, carrying);
+                let (now, possible) = controls(&mut h);
+                let text = hint_text(action, key);
+                let case = format!("{locale:?} carrying={carrying} {text:?}");
+                assert!(possible.contains(&text), "{case}: not in {possible:?}");
+                assert!(!now.contains(&text), "{case}: on the Now row {now:?}");
+                let Some((column, row)) = h.find(&text) else {
+                    panic!("{case}: not drawn");
+                };
+                h.click(column + 1, row);
+                let opened = match action {
+                    Action::Pause => matches!(h.app.modal(), Some(Modal::Pause { .. })),
+                    _ => matches!(h.app.modal(), Some(Modal::Moves(_))),
+                };
+                assert!(opened, "{case}: the click did not run {action:?}");
+            }
+        }
+    }
+    set_locale(Locale::EnUs);
 }
