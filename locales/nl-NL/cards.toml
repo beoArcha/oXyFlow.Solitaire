@@ -10,3 +10,6 @@ baton = "staven"
 coin = "munten"
 cup = "bekers"
 sword = "zwaarden"
+
+[style]
+spanish = "Spaans"
