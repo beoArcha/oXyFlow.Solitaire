@@ -2,6 +2,8 @@
 //! high enough, otherwise nowhere (the screen then says so). The plan depends only on the window and
 //! the list, never on the settings, so the list does not move while a setting is changed.
 
+use ratatui::layout::Rect;
+
 use crate::layout::{CardSize, SIZES};
 
 /// Columns between the list and a pane beside it.
@@ -88,6 +90,40 @@ pub(super) fn plan(screen_width: u16, body_rows: u16, list_width: u16, entries: 
     Plan {
         list_rows: shown,
         pane: Pane::Hidden,
+    }
+}
+
+/// Where the list and the preview pane are drawn, the block of both centred in the screen.
+pub(super) struct Places {
+    pub list: Rect,
+    pub pane: Option<Rect>,
+}
+
+impl Places {
+    pub(super) fn new(pane: Pane, list_width: u16, (list_area, below_area): (Rect, Rect)) -> Self {
+        let centred = |area: Rect, width: u16| area.x + area.width.saturating_sub(width) / 2;
+        let beside = match pane {
+            Pane::Side { width } => GAP + width,
+            Pane::Below { .. } | Pane::Hidden => 0,
+        };
+        let x = centred(list_area, list_width + beside);
+        let list = Rect::new(x, list_area.y, list_width, list_area.height);
+        let pane = match pane {
+            Pane::Side { width } => Some(Rect::new(
+                x + list_width + GAP,
+                list_area.y,
+                width,
+                list_area.height,
+            )),
+            Pane::Below { width, .. } => Some(Rect::new(
+                centred(below_area, width),
+                below_area.y,
+                width,
+                below_area.height,
+            )),
+            Pane::Hidden => None,
+        };
+        Self { list, pane }
     }
 }
 

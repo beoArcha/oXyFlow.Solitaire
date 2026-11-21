@@ -22,7 +22,7 @@ use ratatui::widgets::{Paragraph, Wrap};
 use self::arrows::{Arrows, glyphs, locate};
 use self::list::{Entry, entries, first_shown};
 use self::options::{FIELDS, Step};
-use self::plan::{GAP, Pane, plan};
+use self::plan::{Pane, Places, plan};
 use self::values::{changed, is_unavailable, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
 use super::{Effect, ViewCtx};
@@ -87,49 +87,6 @@ fn draw_reason(frame: &mut Frame, area: Rect, previewing: bool, ctx: &ViewCtx<'_
     };
     let style = ctx.theme.style(Token::TextMuted, Token::Background);
     let text = Line::styled(t(key).into_owned(), style);
-    frame.render_widget(Paragraph::new(text).alignment(Alignment::Center), area);
-}
-
-/// Where the list and the preview pane are drawn, the block of both centred in the screen.
-struct Places {
-    list: Rect,
-    pane: Option<Rect>,
-}
-
-impl Places {
-    fn new(pane: Pane, list_width: u16, (list_area, below_area): (Rect, Rect)) -> Self {
-        let centred = |area: Rect, width: u16| area.x + area.width.saturating_sub(width) / 2;
-        let beside = match pane {
-            Pane::Side { width } => GAP + width,
-            Pane::Below { .. } | Pane::Hidden => 0,
-        };
-        let x = centred(list_area, list_width + beside);
-        let list = Rect::new(x, list_area.y, list_width, list_area.height);
-        let pane = match pane {
-            Pane::Side { width } => Some(Rect::new(
-                x + list_width + GAP,
-                list_area.y,
-                width,
-                list_area.height,
-            )),
-            Pane::Below { width, .. } => Some(Rect::new(
-                centred(below_area, width),
-                below_area.y,
-                width,
-                below_area.height,
-            )),
-            Pane::Hidden => None,
-        };
-        Self { list, pane }
-    }
-}
-
-fn draw_hidden_note(frame: &mut Frame, area: Rect, pane: Pane, ctx: &ViewCtx<'_>) {
-    if pane != Pane::Hidden {
-        return;
-    }
-    let style = ctx.theme.style(Token::TextMuted, Token::Background);
-    let text = Line::styled(t("settings.pane.hidden").into_owned(), style);
     frame.render_widget(Paragraph::new(text).alignment(Alignment::Center), area);
 }
 
@@ -274,7 +231,7 @@ impl SettingsScreen {
         self.draw_list(frame, places.list, visible, area.width, ctx);
         match places.pane {
             Some(pane) => preview::draw(frame, pane, ctx),
-            None => draw_hidden_note(frame, note_area, plan.pane, ctx),
+            None => preview::draw_hidden_note(frame, note_area, plan.pane, ctx),
         }
         self.draw_description(frame, description_area, ctx);
         draw_reason(frame, reason_area, self.previewing, ctx);

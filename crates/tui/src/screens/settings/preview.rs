@@ -8,7 +8,7 @@ use ratatui::layout::{Alignment, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::{Block, Paragraph};
 
-use super::plan::{CARDS, card_gap, content_rows, content_width};
+use super::plan::{CARDS, Pane, card_gap, content_rows, content_width};
 use crate::i18n::t;
 use crate::layout::{BoardGeometry, CardSize, PileGeometry};
 use crate::screens::ViewCtx;
@@ -174,4 +174,14 @@ pub(super) fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         ctx,
     );
     draw_labels(frame, (area, &rects), rings, ctx);
+}
+
+/// Draws the note that the window is too small for the pane, when `pane` says it is not drawn.
+pub(super) fn draw_hidden_note(frame: &mut Frame, area: Rect, pane: Pane, ctx: &ViewCtx<'_>) {
+    if pane != Pane::Hidden {
+        return;
+    }
+    let style = ctx.theme.style(Token::TextMuted, Token::Background);
+    let text = Line::styled(t("settings.pane.hidden").into_owned(), style);
+    frame.render_widget(Paragraph::new(text).alignment(Alignment::Center), area);
 }
