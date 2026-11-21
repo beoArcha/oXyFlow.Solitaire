@@ -10,6 +10,8 @@ pub mod high_contrast;
 pub mod light;
 pub mod monokai;
 pub mod palette;
+pub mod table;
+pub mod table_feel;
 
 use ratatui::style::{Color, Style};
 use serde::{Deserialize, Serialize};
@@ -17,7 +19,7 @@ use serde::{Deserialize, Serialize};
 pub use palette::{GRAPHIC_PAIRS, MARK_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
 
 use crate::caps::ColorDepth;
-use crate::settings::{CardBack, CardFaceTint};
+use crate::settings::{CardBack, CardFaceTint, TableColour};
 
 /// A built-in theme.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -111,6 +113,19 @@ impl Theme {
     /// The focused list item.
     pub fn focus(&self) -> Style {
         self.style(Token::FocusFg, Token::FocusBg)
+    }
+
+    /// This theme with its felt replaced by the felt of `colour` (or the shade of it that passes the
+    /// contrast tests here). Every token of the table, the texture and the cards on it follow.
+    pub fn with_table(&self, colour: TableColour) -> Self {
+        let felt = table::felt(self.id, &self.palette, colour);
+        Self {
+            palette: Palette {
+                table: felt.swatch,
+                ..self.palette
+            },
+            ..*self
+        }
     }
 
     /// The fill and suit style of a face-up card for `tint`. `suit` is the token of its suit color,
