@@ -1,6 +1,6 @@
 # Swiss deck: roses, bells, shields and acorns on the hearts, diamonds, spades and clubs of the game.
 # The suits have no font glyphs: Font mode draws the Unicode symbols below. The symbols are WGL4 shapes
-# that differ by shape (sun, note, triangle, disc); the roses and the acorns have no WGL4 picture.
+# that differ by shape (sun, note, triangle, ring); the roses and the acorns have no WGL4 picture.
 # Court labels: Under, Ober, König; the card shows the single letters U, O and K, as the German style
 # does (a label is at most two ASCII capitals). The court cards use the pictogram of the game.
 # Colours: roses and bells are red, shields and acorns black, as in the German deck's red and black pairs.
@@ -15,7 +15,7 @@ king = "K"
 
 [suits.clubs]
 name = "cards.suit.acorn"
-unicode = "●"
+unicode = "○"
 ascii = "e"
 color = "card_black"
 
