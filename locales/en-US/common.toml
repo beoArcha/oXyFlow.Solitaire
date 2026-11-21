@@ -17,7 +17,6 @@ undo_hint = "{key} or a click switches undo on or off for the next game"
 winnable = "[ Winnable deals only: {state} ]"
 winnable_hint = "A new game then searches for a deal proven winnable; a typed seed is dealt as typed"
 slow_search = "{variant}  (the search can take long)"
-no_search = "{variant}  (no winnable-deal search yet: a random deal)"
 
 [variant]
 klondike_one = "Klondike, Draw 1"

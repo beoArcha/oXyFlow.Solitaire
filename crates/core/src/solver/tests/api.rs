@@ -11,9 +11,14 @@ const SPIDER_2: Variant = Variant::Spider(SuitCount::Two);
 const SPIDER_4: Variant = Variant::Spider(SuitCount::Four);
 const RELAXED: Variant = Variant::Pyramid(PyramidRules::Relaxed);
 const CLASSIC: Variant = Variant::Pyramid(PyramidRules::Classic);
+const YUKON: Variant = Variant::Yukon(YukonRules::Classic);
+const RUSSIAN: Variant = Variant::Yukon(YukonRules::Russian);
+const ALASKA: Variant = Variant::Yukon(YukonRules::Alaska);
+const MOOSEHIDE: Variant = Variant::Yukon(YukonRules::Moosehide);
+const AUSTRALIAN: Variant = Variant::Yukon(YukonRules::Australian);
 
 /// Deals the solver wins, with the positions that win them.
-const WINNABLE: [(Variant, u64, u64); 10] = [
+const WINNABLE: [(Variant, u64, u64); 17] = [
     (KLONDIKE_1, 71, 42),
     (KLONDIKE_3, 156, 45),
     (SPIDER_1, 160, 160),
@@ -24,15 +29,27 @@ const WINNABLE: [(Variant, u64, u64); 10] = [
     (RELAXED, 113, 30),
     (CLASSIC, 113, 180),
     (CLASSIC, 160, 413),
+    (YUKON, 1, 44),
+    (YUKON, 7, 4251),
+    (RUSSIAN, 18, 23),
+    (ALASKA, 13, 94),
+    (MOOSEHIDE, 4, 49),
+    (AUSTRALIAN, 22, 31),
+    (AUSTRALIAN, 15, 3956),
 ];
 
-/// Deals whose search space the solver exhausts without a win.
-const UNWINNABLE: [(Variant, u64); 5] = [
+/// Deals whose search space the solver exhausts without a win. No Moosehide deal among seeds 0 to
+/// 999 is proven unwinnable; its dead position is pinned in the Yukon model tests.
+const UNWINNABLE: [(Variant, u64); 9] = [
     (KLONDIKE_1, 20),
     (KLONDIKE_3, 163),
     (KLONDIKE_3, 274),
     (CLASSIC, 49),
     (CLASSIC, 291),
+    (YUKON, 24),
+    (RUSSIAN, 12),
+    (ALASKA, 10),
+    (AUSTRALIAN, 42),
 ];
 
 fn budget(variant: Variant) -> SolveBudget {
@@ -64,10 +81,15 @@ fn known_winnable_deals_are_won_with_verified_moves() {
 #[test]
 fn known_unwinnable_deals_are_exhausted() {
     for (variant, seed) in UNWINNABLE {
+        let report = solve_report(variant, seed, budget(variant));
         assert_eq!(
-            solve(variant, seed, budget(variant)),
+            report.verdict,
             Verdict::Unwinnable,
             "{variant:?} seed {seed}"
+        );
+        assert!(
+            report.nodes < budget(variant).nodes,
+            "{variant:?} seed {seed}: the space must be exhausted within the budget"
         );
     }
 }
@@ -148,12 +170,16 @@ fn default_budgets_are_set_for_every_variant_with_a_model() {
 }
 
 #[test]
-fn a_variant_without_a_model_is_unknown_at_no_cost() {
-    let yukon = Variant::Yukon(YukonRules::Classic);
-    assert!(!has_model(yukon));
-    let report = solve_report(yukon, 1, SolveBudget::nodes(1_000));
-    assert_eq!(report.verdict, Verdict::Unknown);
-    assert_eq!(report.nodes, 0);
-    let modelled = Variant::ALL.into_iter().filter(|v| has_model(*v)).count();
-    assert_eq!(modelled, 8);
+fn every_variant_has_a_model_and_the_yukon_family_spends_nodes() {
+    assert!(Variant::ALL.into_iter().all(has_model));
+    for rules in [
+        YukonRules::Classic,
+        YukonRules::Russian,
+        YukonRules::Alaska,
+        YukonRules::Moosehide,
+        YukonRules::Australian,
+    ] {
+        let report = solve_report(Variant::Yukon(rules), 1, SolveBudget::nodes(1_000));
+        assert!(report.nodes > 0, "{rules:?}");
+    }
 }

@@ -2,7 +2,7 @@
 //! anything itself: a [`Solver`] runs queries off the UI thread (the binary wires a worker thread,
 //! tests a stub) and the application collects the [`Answer`]s on every input and tick.
 
-use oxysol_core::{PyramidRules, SuitCount, Variant};
+use oxysol_core::{PyramidRules, SuitCount, Variant, YukonRules};
 use serde::{Deserialize, Serialize};
 
 /// What is known about one deal.
@@ -88,12 +88,15 @@ impl Solver for NullSolver {
     }
 }
 
-/// Variants of which the solver proves only a small share of the deals (decision T-29: Spider with
-/// 2 and 4 suits, Pyramid Classic), so a search for a winnable deal can take long.
+/// Variants of which the solver proves only a small share of the deals winnable (decision T-29:
+/// Spider with 2 and 4 suits, Pyramid Classic; T-41: Russian Solitaire), so a search for a
+/// winnable deal can take long.
 pub const fn slow_to_prove(variant: Variant) -> bool {
     matches!(
         variant,
-        Variant::Spider(SuitCount::Two | SuitCount::Four) | Variant::Pyramid(PyramidRules::Classic)
+        Variant::Spider(SuitCount::Two | SuitCount::Four)
+            | Variant::Pyramid(PyramidRules::Classic)
+            | Variant::Yukon(YukonRules::Russian)
     )
 }
 
@@ -115,6 +118,7 @@ mod tests {
                 Variant::Spider(SuitCount::Two),
                 Variant::Spider(SuitCount::Four),
                 Variant::Pyramid(PyramidRules::Classic),
+                Variant::Yukon(YukonRules::Russian),
             ]
         );
         assert!(!slow_to_prove(Variant::Klondike(DrawCount::Three)));

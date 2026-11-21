@@ -153,11 +153,14 @@ Rules of the `Game` contract:
   impl SolveBudget { pub const fn nodes(n: u64) -> Self; pub const fn default_for(v: Variant) -> Self }
   pub fn solve(variant: Variant, seed: u64, budget: SolveBudget) -> Verdict;
   pub fn solve_report(variant: Variant, seed: u64, budget: SolveBudget) -> Report;   // + nodes used
-  pub const fn has_model(variant: Variant) -> bool;          // false: Unknown at once, 0 nodes
+  pub const fn has_model(variant: Variant) -> bool;          // true for every variant; false: Unknown at once, 0 nodes
   ```
 
-  The Yukon family has no model yet (P4-10f): `has_model` is false, `solve` answers `Unknown` with no
-  nodes spent and `SolveBudget::default_for` is 0.
+  Every variant has a model. The Yukon family (P4-10f, decision T-41) is one model for all five rule
+  sets, which reads the building rule from `games/yukon` (`BuildRule`, re-exported by the module): a
+  card goes home at once when every card the rule lets onto it is home, Australian Patience plays a
+  waste card together with the stock draws before it (one pass), and moves back from a foundation stay
+  in the search for completeness.
 
   Pure and deterministic: the same input gives the same verdict, moves and node count. `Winnable`
   moves are replayed on a fresh `deal` and must end in `is_won()`, otherwise the answer is `Unknown`.
@@ -166,7 +169,7 @@ Rules of the `Game` contract:
   order), so "winnable" means thoroughly solvable. Each game has a compact model of its rules built
   from `piles()`; the search never calls the engine except for the replay and for `forced_finish`,
   which ends the search early when a model predicts a certain win. Klondike, Spider and Pyramid use a
-  depth-first search, FreeCell a greedy best-first search; every search keeps a visited set of
+  depth-first search (and the Yukon family), FreeCell a greedy best-first search; every search keeps a visited set of
   128-bit canonical keys (column and cell order ignored). Spider with 2 and 4 suits mostly answers
   `Unknown`. `SolveBudget::default_for` is tuned to about half a second per deal in a release build.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`,
@@ -556,11 +559,10 @@ pub struct NullClipboard;                                // every copy fails wit
   were, and the dialog shows "Seeds tried: N of 40". When all 40 answers are in and none is winnable the dialog offers
   "Play as unknown" (the first seed the solver could not decide; absent when every seed was proven unwinnable),
   "Keep searching" (another 40) and Cancel. In the game selection the variants that the solver rarely proves
-  (`solver::slow_to_prove`: Spider with 2 and 4 suits, Pyramid Classic, decision T-29) carry "(the search can take
-  long)" while the option is on, and the dialog repeats it. A variant the solver has no model of
-  (`oxysol_core::solver::has_model` false: the Yukon family until P4-10f) carries "(no winnable-deal search yet: a
-  random deal)" instead; with the option on it is dealt from a fresh seed at once, without the dialog, and a typed seed
-  of it is not queued for a check (the header says nothing). *Seeds the player chose are never replaced:* a typed seed
+  (`solver::slow_to_prove`: Spider with 2 and 4 suits, Pyramid Classic, decision T-29; Russian Solitaire, T-41) carry
+  "(the search can take long)" while the option is on, and the dialog repeats it. A variant the solver has no model of
+  (`oxysol_core::solver::has_model` false; none since P4-10f) would be dealt from a fresh seed at once, without the
+  dialog, and a typed seed of it would not be queued for a check (the header says nothing). *Seeds the player chose are never replaced:* a typed seed
   (`Effect::Start` with `Some(seed)`: "New game from seed", `--seed`) and a replay from the statistics are dealt as
   they are and queued as one background query; a resumed game is checked again. The answer sets
   `BoardScreen::set_deal(DealCheck)`; `DealCheck { Unchecked, Checking, Known(Proof) }` adds one fact to the game

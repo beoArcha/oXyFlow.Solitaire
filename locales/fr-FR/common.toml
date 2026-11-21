@@ -17,7 +17,6 @@ undo_hint = "{key} ou un clic active/désactive l'annulation pour la prochaine p
 winnable = "[ Donnes gagnables uniquement : {state} ]"
 winnable_hint = "Une nouvelle partie cherchera une donne garantie gagnable ; une graine saisie est distribuée telle quelle"
 slow_search = "{variant}  (la recherche peut durer longtemps)"
-no_search = "{variant}  (pas encore de recherche : donne au hasard)"
 
 [variant]
 klondike_one = "Klondike, 1 carte"
