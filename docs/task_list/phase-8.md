@@ -142,15 +142,16 @@ the game binary never depends on it.
 - **Depends on:** P8-06, P7-07
 - **Files:**
   - `dev/mcp-server/**` (new workspace package `oxysol-mcp`, `publish = false`);
-  - the root `Cargo.toml` (workspace member only);
+  - the root `Cargo.toml` (the workspace member and the new workspace dependencies `rmcp`, `tokio`, `base64`);
+  - `deny.toml` (only if a new licence must be allowed; say which);
   - `dev/mcp-server/README.md`;
   - `docs/tech/architecture.md` (package list and dependency direction);
   - `docs/tech/workflow.md`;
   - tests.
 - **Scope:**
-  - A minimal MCP server over stdio: JSON-RPC 2.0 with `initialize`, `tools/list` and `tools/call`. It spawns and
-    manages `oxysol --dev-bridge` child processes, one per session, built with the dev feature. The game packages
-    never depend on this package.
+  - A minimal MCP server over stdio, built on the official Rust MCP SDK (`rmcp`, with `tokio`). It spawns and manages
+    `oxysol --dev-bridge` child processes, one per session, built with the dev feature. The game packages never
+    depend on this package.
   - Tools:
     - `start_session(cols, rows, game, seed, theme, lang, ascii)` returns a `session_id`, the initial state and the
       text frame.
@@ -163,8 +164,9 @@ the game binary never depends on it.
       also removes the session's temporary files.
   - Every child is killed when the server exits, including on end of input and on error, so no `oxysol` process is
     left behind.
-  - Dependencies: `serde` and `serde_json` from the workspace. A new crate, such as an MCP SDK or a base64 encoder,
-    needs the owner's OK, recorded in the PR. Without that OK, the protocol and base64 are written in the package.
+  - Dependencies follow the industry standard (owner 2026-11-21): `rmcp` for the protocol, `tokio` for the process
+    and stdio handling, `base64` for image content, `serde` and `serde_json` from the workspace. None of them is
+    rewritten by hand. They are added to `[workspace.dependencies]` with exact versions and must pass `cargo deny`.
   - The README shows how to register the server in local agent and IDE configurations: VS Code, Antigravity, Claude
     Code and Gemini CLI.
 - **Acceptance:**
