@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 3 | 9 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 3 | 23 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
@@ -267,6 +267,19 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
 | P5-07 | Better hints: a hint that leads toward a win | Sonnet | P4-10a | TODO |
 | O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | TODO |
+| O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | TODO |
+| O-70 | Language tooltip disappears when a window opens | Haiku | — | TODO |
+| O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | TODO |
+| O-72 | Docked Help: a margin between the version label and the panel | Haiku | — | TODO |
+| O-73 | Docked Help: dim the selection in the pane without focus | Haiku | — | TODO |
+| O-74 | Help window: one footer layout and scroll indicator on every tab | Sonnet | O-71 | TODO |
+| O-75 | Windows: the active tab and the focused button look different | Sonnet | — | TODO |
+| O-76 | Docking and pane focus keys shown where they apply | Haiku | — | TODO |
+| O-77 | Docked Help: key and description on one line | Sonnet | O-74 | TODO |
+| O-78 | Main menu: Resume set apart and balanced under the logo | Haiku | — | TODO |
+| O-79 | Bottom key bar: keys in an accent colour | Haiku | — | TODO |
+| O-80 | Language selector: quieter at rest, clearer when open | Haiku | O-70 | TODO |
+| O-81 | Window title by context, en-US spelling and wording | Haiku | — | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 

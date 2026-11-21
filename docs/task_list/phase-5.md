@@ -5,6 +5,7 @@ Goal: the table, the card face and the aura are set apart from the theme; the lo
 Exit criteria:
 
 - P3-32, P3-33, P3-34, P3-35, P5-03, P5-04 and P5-05 are DONE;
+- the visual fixes O-69 to O-81 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
 
@@ -130,6 +131,161 @@ Order of work: the Interface options first, then the card style and the games, w
 - **Acceptance:** keyboard and mouse tests for the flow; the curated table has 4 × 5 seeds for every game variant
   with a proof of winnability; the levels are ordered by the chosen metric (documented in the card's PR).
 
+### P5-07 — Better hints: a hint that leads toward a win
+
+- **Owner:** Sonnet
+- **Depends on:** P4-10a
+- **Files:** the hint code of each game (`crates/core/src/games/*/mod.rs` and a new `hints.rs` per game where it
+  grows), its tests, `docs/tech/decisions.md` (only for a decision the orchestrator names)
+- **Scope:** owner request 2026-11-21: the hints never repeat a position, but in Yukon playing only hints won none of
+  200 deals. Rank hints so they make progress toward a win in every game: uncover face-down cards, empty a column
+  when it helps, avoid moves that block a card the foundations need next. Where a solver answers within the hint time
+  budget, a hint may take the first move of its solution. Measure before and after.
+- **Acceptance:** for each variant, a table on seeds 0 to 199: deals won by playing hints only, before and after; no
+  variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
+  budget.
+
+### O-68 — Help window: a mouse click on the Keys and Command line tabs switches to them
+
+- **Owner:** Haiku
+- **Depends on:** none
+- **Files:** `crates/tui/src/widgets/overlay/{mod.rs,nav.rs,tabs.rs,help_keys.rs,command_line.rs}`,
+  `crates/tui/src/widgets/overlay/how_to_play/**`, the screen that opens Help from the main menu if it routes the mouse
+  itself, tests
+- **Scope:** owner report 2026-11-21 (screenshot, main menu, Help open on Rules, v0.5.0): clicking the top tabs `Keys` or
+  `Command line` with the mouse does nothing; the keyboard switches tabs fine. Every top tab must switch on a left click
+  from every other tab, from the main menu and from the board, at every dock position (the screenshot shows
+  `Dock: centre`).
+- **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
+  menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
+
+## Visual fixes and improvements
+
+Owner visual review of 0.5.0 (2026-11-21). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
+
+**P1 — Visual bugs and layout collisions**
+
+### O-69 — Help window: one height for every tab; optional backdrop dimming
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/widgets/overlay/dock/**`, tests
+- **Problem:** switching between `Keys`, `Rules` and `Command line` makes the window height jump; on `Rules` (How to play) the window is a little shorter, so the top of the `oXySol` logo shows above the yellow border.
+- **Fix:** one height for every Help tab (a share of the terminal height with a minimum and a maximum); the logo never shows above the border. Optionally dim the background behind a centred window (theme tokens only).
+- **Acceptance:** a test renders each tab at 100 × 30 and 200 × 60 and finds the same window rectangle; no logo cell above the border; colours only through theme tokens.
+
+### O-70 — Language tooltip disappears when a window opens
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/language_picker/**`, `crates/tui/src/screens/main_menu.rs`, tests
+- **Problem:** the `English (US)` tooltip under the flag in the top-left corner stays on screen while Help or How to play is open.
+- **Fix:** clear the language widget's hover and focus tooltip whenever any window or overlay opens.
+- **Acceptance:** a test hovers or focuses the flag, opens Help, and finds no tooltip text in the buffer; closing the window does not bring it back until the next hover or focus.
+
+### O-71 — Help window: a separator between the scrolling text and the footer
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, tests
+- **Problem:** on `Command line` (and the other scrolling tabs) the last text line (for example `Window:`) touches the window footer (`Tab: next tab…`) with nothing between them.
+- **Fix:** a horizontal rule (`─`, ASCII `-`) or at least one empty row between the scrolling area and the footer, the same on every tab.
+- **Acceptance:** a test on every Help tab finds the separator row between the last text row and the footer, in Unicode and ASCII mode.
+
+### O-72 — Docked Help: a margin between the version label and the panel
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/widgets/overlay/dock/**`, `crates/tui/src/screens/main_menu.rs`, tests
+- **Problem:** with Help docked right (`Dock: right`) the version (`v0.5.0`) in the bottom-right corner of the main view touches the double yellow border of the panel.
+- **Fix:** keep one or two columns between the main view's footer and the docked panel border.
+- **Acceptance:** a test docks Help left and right and finds at least one empty column between the version label (and any footer text) and the panel border.
+
+**P2 — Focus, navigation and consistency**
+
+### O-73 — Docked Help: dim the selection in the pane without focus
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/menu_list.rs`, `crates/tui/src/widgets/overlay/dock/**`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** with Help docked left or right and focused, the main menu keeps its bright yellow selection (`▶ Help`), which outshines the quiet blue header of the active Help panel.
+- **Fix:** when focus is in the docked panel, the other pane's selection uses a muted style (for example a dark grey background); the selection stays visible without colour (the marker stays).
+- **Acceptance:** a test moves focus between the panes and checks the selection style of each; the marker is present in both states; contrast tests pass.
+
+### O-74 — Help window: one footer layout and scroll indicator on every tab
+
+- **Owner:** Sonnet
+- **Depends on:** O-71
+- **Files:** `crates/tui/src/widgets/overlay/**`, `locales/*/help.toml`, tests
+- **Problem:** the footer differs by tab: `Keys` has a scrollbar but no line counter (`1-X / Y`) and no scroll hints; `Rules` has no `Tab` hint and says `Up/Down: move focus`, which is unclear; `Command line` shows `Tab: next tab`, the scroll keys and the counter.
+- **Fix:** one footer format for `Keys`, `Rules` and `Command line`: the line counter whenever the text overflows, the main tab switch (`Tab`), the game switch on `Rules` (`Left/Right`), scrolling and closing (`Esc`).
+- **Acceptance:** a test renders each tab with overflowing text and finds the same footer entries in the same order; all nine locales.
+
+### O-75 — Windows: the active tab and the focused button look different
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/theme/**`, tests
+- **Problem:** the same solid white background with black text marks the active tabs (`[Keys]`, `[Klondike]`, `[Command line]`) and the focused `▶ Close [Esc] ◄` button, so it is unclear what `Enter` will do.
+- **Fix:** a separate style for the active tab and for the focused button, so the player sees at once what `Enter` triggers; neither relies on colour alone.
+- **Acceptance:** a test checks that the active-tab and focused-button styles differ in every theme and that both keep a non-colour marker; contrast tests pass.
+
+### O-76 — Docking and pane focus keys shown where they apply
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `locales/*/help.toml`, tests
+- **Problem:** the top border shows only `Dock: centre` without the key that changes it; docked mode does not say how to move focus between the panes (`F6`).
+- **Fix:** the border label names the key (`Dock: center [d]`, key taken from the key table) and the docked panel footer shows compact `d Dock  F6 Focus` hints.
+- **Acceptance:** a test finds the key in the border label and the two hints in the docked footer; keys come from the key table, not literals; all nine locales.
+
+### O-77 — Docked Help: key and description on one line
+
+- **Owner:** Sonnet
+- **Depends on:** O-74
+- **Files:** `crates/tui/src/widgets/overlay/help_keys.rs`, `crates/tui/src/widgets/overlay/dock/**`, tests
+- **Problem:** in the narrow docked panel every shortcut takes two lines (key, then description), which means long scrolling although most pairs fit on one row.
+- **Fix:** a two-column row (a key column of about 11 to 12 characters and the description on the same line); only long key combinations (for example `Ctrl +/-/0`) wrap to a second line.
+- **Acceptance:** a test at the docking width finds key and description on one row for short keys and a wrap only for long ones; fewer rows than before; all nine locales fit.
+
+**P3 — Main view polish, widgets and wording**
+
+### O-78 — Main menu: Resume set apart and balanced under the logo
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/main_menu.rs`, `crates/tui/src/screens/main_menu/resume.rs`, tests
+- **Problem:** the menu block is aligned to the long `Resume: Klondike, Draw 1, 0:47, Moves 26` entry, so the shorter items look shifted left under the centred `oXySol` logo.
+- **Fix:** one empty row between `Resume` and the other entries, and the game details of `Resume` in a muted secondary colour when it is not selected.
+- **Acceptance:** a test finds the empty row and the muted style; the menu still fits at 100 × 30 in all nine locales.
+
+### O-79 — Bottom key bar: keys in an accent colour
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** in `Enter Open  Tab Language  q Quit  ? Help` keys and labels share one colour, so the bar is hard to scan.
+- **Fix:** keys in an accent colour (for example the light blue of the `Keys` tab), labels muted; the key/label split stays readable without colour (spacing as today).
+- **Acceptance:** a test checks that key and label styles differ in every theme; contrast tests pass.
+
+### O-80 — Language selector: quieter at rest, clearer when open
+
+- **Owner:** Haiku
+- **Depends on:** O-70
+- **Files:** `crates/tui/src/widgets/language_picker/**`, tests
+- **Problem:** at rest the widget shows three arrows (`◄`, `►`, `▼`), which is noise; in the open list the two-letter codes (`EN`, `PL`, `DE` …) compete with the full language names.
+- **Fix:** at rest show only `[flag] PL ▾`; show `◄ ►` only while the widget has focus; dim the two-letter codes in the open list. Keep a WGL4 and an ASCII form of each arrow.
+- **Acceptance:** tests of the rest, focused and open states in Unicode and ASCII mode; mouse targets still work.
+
+### O-81 — Window title by context, en-US spelling and wording
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `locales/en-US/help.toml`, `locales/pl-PL/menu.toml`, tests
+- **Problem:** opening How to play shows the generic title `Help`; en-US uses the British `centre` (`Dock: centre`, `stays centred`); the Polish `Nowa gra z ziarna` may be unclear to players who do not know the term; Vim users pressing `j`/`k` may hit `h` (Hint) by accident.
+- **Fix:** the title follows how the window was opened (`How to play`, or `Help · Rules`); en-US `centre` → `center` and `centred` → `centered`; Polish `Nowa gra z ziarna (seed)` or `Nowa gra z kodu (seed)` (the owner picks); decide whether `h` needs a guard or a note when hints affect the statistics (record the answer on the card; change code only if the owner asks).
+- **Acceptance:** tests for both titles; locale parity passes; the Polish line fits at 100 × 30.
+
 ## Done before the 2026-11 replan
 
 ### X-01 — Spike: card font in real terminals
@@ -173,34 +329,6 @@ Order of work: the Interface options first, then the card style and the games, w
   the card of M-19…M-24; M-19…M-24 are `READY`; P5-01 and P5-02 are adjusted below; follow-ups O-34 (here)
   and O-35 (`phase-0.md`).
 - **Done:** X-01 report (#113) and this PR (#115).
-
-### P5-07 — Better hints: a hint that leads toward a win
-
-- **Owner:** Sonnet
-- **Depends on:** P4-10a
-- **Files:** the hint code of each game (`crates/core/src/games/*/mod.rs` and a new `hints.rs` per game where it
-  grows), its tests, `docs/tech/decisions.md` (only for a decision the orchestrator names)
-- **Scope:** owner request 2026-11-21: the hints never repeat a position, but in Yukon playing only hints won none of
-  200 deals. Rank hints so they make progress toward a win in every game: uncover face-down cards, empty a column
-  when it helps, avoid moves that block a card the foundations need next. Where a solver answers within the hint time
-  budget, a hint may take the first move of its solution. Measure before and after.
-- **Acceptance:** for each variant, a table on seeds 0 to 199: deals won by playing hints only, before and after; no
-  variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
-  budget.
-
-### O-68 — Help window: a mouse click on the Keys and Command line tabs switches to them
-
-- **Owner:** Haiku
-- **Depends on:** none
-- **Files:** `crates/tui/src/widgets/overlay/{mod.rs,nav.rs,tabs.rs,help_keys.rs,command_line.rs}`,
-  `crates/tui/src/widgets/overlay/how_to_play/**`, the screen that opens Help from the main menu if it routes the mouse
-  itself, tests
-- **Scope:** owner report 2026-11-21 (screenshot, main menu, Help open on Rules, v0.5.0): clicking the top tabs `Keys` or
-  `Command line` with the mouse does nothing; the keyboard switches tabs fine. Every top tab must switch on a left click
-  from every other tab, from the main menu and from the board, at every dock position (the screenshot shows
-  `Dock: centre`).
-- **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
-  menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
 
 ### P5-01 — Font builder and preview sheet
 
