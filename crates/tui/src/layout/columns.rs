@@ -9,6 +9,9 @@ use super::size::{CardSize, FAN_BUDGET, spacing};
 use super::{BoardGeometry, PileGeometry};
 
 const MIN_GAP: u16 = 1;
+/// Extra width between the group of cells and the group of foundations on the top row, so the two
+/// zones read apart. It is added to the fit check and to every column from the first foundation on.
+const GROUP_GAP: u16 = 2;
 const FAN_CARDS: u16 = 3;
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -61,9 +64,18 @@ fn columns_for(counts: Counts, size: CardSize, gap: u16, fanned: bool) -> u16 {
     counts.tableau.max(left + counts.foundations)
 }
 
+/// The extra width of the board: [`GROUP_GAP`] when the top row has both cells and foundations.
+fn group_gap(counts: Counts) -> u16 {
+    if counts.cells > 0 && counts.foundations > 0 {
+        GROUP_GAP
+    } else {
+        0
+    }
+}
+
 fn fits(counts: Counts, fanned: bool, size: CardSize, area: Rect) -> bool {
     let columns = columns_for(counts, size, MIN_GAP, fanned);
-    let width = columns * size.width + columns.saturating_sub(1) * MIN_GAP;
+    let width = columns * size.width + columns.saturating_sub(1) * MIN_GAP + group_gap(counts);
     let height = 2 * size.height + size.row_gap() + FAN_BUDGET;
     width <= area.width && height <= area.height
 }
@@ -77,28 +89,39 @@ struct Grid {
     fanned: bool,
     top_y: u16,
     tableau: Rect,
+    group_gap: u16,
+    foundations_column: u16,
 }
 
 impl Grid {
     fn new(counts: Counts, fanned: bool, area: Rect, limit: Option<CardSize>) -> Self {
         let size = CardSize::largest_fit_within(limit, |size| fits(counts, fanned, size, area));
+        let group_gap = group_gap(counts);
         let columns = columns_for(counts, size, MIN_GAP, fanned);
-        let (gap, margin) = spacing(area.width, columns, size.width);
+        let (gap, margin) = spacing(area.width.saturating_sub(group_gap), columns, size.width);
         let tableau_y = (area.y + size.height + size.row_gap()).min(area.bottom());
+        let columns = columns_for(counts, size, gap, fanned);
         Self {
             size,
             x0: area.x + margin,
             pitch: size.width + gap,
-            columns: columns_for(counts, size, gap, fanned),
+            columns,
             waste_columns: waste_columns(size, gap, fanned),
             fanned,
             top_y: area.y,
             tableau: Rect::new(area.x, tableau_y, area.width, area.bottom() - tableau_y),
+            group_gap,
+            foundations_column: columns.saturating_sub(counts.foundations),
         }
     }
 
     fn column_x(&self, column: u16) -> u16 {
-        self.x0 + column * self.pitch
+        let shift = if column >= self.foundations_column {
+            self.group_gap
+        } else {
+            0
+        };
+        self.x0 + column * self.pitch + shift
     }
 
     fn stacked(&self, pile: &PileSnapshot, column: u16) -> PileGeometry {
@@ -174,13 +197,14 @@ pub(super) fn compute(
     let grid = Grid::new(counts, fanned, area, limit);
     let waste_column = u16::from(counts.stock);
     let cells_column = waste_column + if counts.waste { grid.waste_columns } else { 0 };
-    let foundations_column = grid.columns.saturating_sub(counts.foundations);
     let placed = piles
         .iter()
         .map(|pile| match pile.pile {
             PileRef::Waste => grid.waste(pile, waste_column),
             PileRef::Cell(index) => grid.stacked(pile, cells_column + u16::from(index)),
-            PileRef::Foundation(index) => grid.stacked(pile, foundations_column + u16::from(index)),
+            PileRef::Foundation(index) => {
+                grid.stacked(pile, grid.foundations_column + u16::from(index))
+            }
             PileRef::Tableau(index) => grid.column(pile, u16::from(index)),
             PileRef::Stock | PileRef::Pyramid { .. } => grid.stacked(pile, 0),
         })

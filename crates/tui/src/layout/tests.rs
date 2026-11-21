@@ -320,3 +320,90 @@ fn klondike_draw_one_waste_is_a_single_card() {
     let waste = geometry.pile(PileRef::Waste);
     assert!(waste.is_some_and(|p| p.cards.iter().all(|rect| *rect == p.slot)));
 }
+
+fn slot_of(geometry: &BoardGeometry, pile: PileRef) -> Rect {
+    geometry.pile(pile).map(|p| p.slot).unwrap_or_default()
+}
+
+fn free_cell_gaps(geometry: &BoardGeometry) -> (Vec<u16>, u16) {
+    let cells: Vec<Rect> = (0..4)
+        .map(|index| slot_of(geometry, PileRef::Cell(index)))
+        .collect();
+    let foundations: Vec<Rect> = (0..4)
+        .map(|index| slot_of(geometry, PileRef::Foundation(index)))
+        .collect();
+    let within = cells
+        .windows(2)
+        .chain(foundations.windows(2))
+        .map(|pair| pair[1].x - pair[0].right())
+        .collect();
+    let between = foundations[0].x - cells[3].right();
+    (within, between)
+}
+
+#[test]
+fn the_free_cells_and_the_foundations_are_set_apart_at_every_size() {
+    let variant = Variant::FreeCell;
+    let piles = deal(variant, 5).piles();
+    for size in SIZES {
+        let geometry = compute_within(variant, &piles, LARGE, Some(size));
+        assert_eq!(geometry.card, size);
+        let (within, between) = free_cell_gaps(&geometry);
+        let widest_within = within.iter().copied().max().unwrap_or_default();
+        assert!(
+            between > widest_within,
+            "{size:?}: gap {between} between the groups, {within:?} within them"
+        );
+        assert!(within.iter().all(|gap| *gap == within[0]), "{size:?}");
+    }
+}
+
+#[test]
+fn the_tableau_stays_under_the_foundations_after_the_group_gap() {
+    let variant = Variant::FreeCell;
+    let piles = deal(variant, 5).piles();
+    let geometry = check(variant, &piles, LARGE, "free cell group gap");
+    for index in 0..4 {
+        let foundation = slot_of(&geometry, PileRef::Foundation(index));
+        let column = slot_of(&geometry, PileRef::Tableau(index + 4));
+        assert_eq!(foundation.x, column.x, "foundation {index}");
+    }
+}
+
+#[test]
+fn free_cell_fits_at_a_hundred_by_thirty() {
+    let variant = Variant::FreeCell;
+    let piles = deal(variant, 5).piles();
+    let area = Rect::new(0, 0, 100, 30);
+    let geometry = check(variant, &piles, area, "free cell 100x30");
+    assert_eq!(geometry.card, CardSize::new(9, 7));
+    let (within, between) = free_cell_gaps(&geometry);
+    assert!(
+        within.iter().all(|gap| between > *gap),
+        "{between} {within:?}"
+    );
+}
+
+#[test]
+fn games_without_cells_keep_their_uniform_gaps() {
+    for variant in Variant::ALL {
+        if matches!(variant, Variant::FreeCell | Variant::Pyramid(_)) {
+            continue;
+        }
+        let piles = deal(variant, 5).piles();
+        let geometry = compute(variant, &piles, LARGE);
+        let xs: Vec<u16> = geometry
+            .piles
+            .iter()
+            .filter_map(|p| match p.pile {
+                PileRef::Tableau(_) => Some(p.slot.x),
+                _ => None,
+            })
+            .collect();
+        let gaps: Vec<u16> = xs.windows(2).map(|pair| pair[1] - pair[0]).collect();
+        assert!(
+            gaps.windows(2).all(|pair| pair[0] == pair[1]),
+            "{variant:?}"
+        );
+    }
+}
