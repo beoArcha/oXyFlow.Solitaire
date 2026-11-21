@@ -3,6 +3,7 @@
 
 use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use ratatui::layout::Rect;
 
 use super::content::{self, Kind, TEXT_WIDTH, VIEW_ROWS};
 use super::pages::page;
@@ -12,7 +13,7 @@ use crate::input::{action_for_key, primary_key};
 
 fn press(state: &mut HowToPlay, code: KeyCode) -> Option<Effect> {
     let key = KeyEvent::new(code, KeyModifiers::NONE);
-    handle(state, &key, action_for_key(&key))
+    handle(state, &key, action_for_key(&key), Rect::new(0, 0, 100, 30))
 }
 
 #[test]

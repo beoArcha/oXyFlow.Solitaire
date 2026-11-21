@@ -27,25 +27,38 @@ const PAGE_LINES: i32 = 20;
 const WHEEL_LINES: i32 = 3;
 const HEADING_SUFFIX: char = ':';
 
-/// The open tab: the first visible line of the text.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// The open tab: the first visible line of the text and the text rows the box shows.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CommandLine {
     pub scroll: u16,
     drag: Option<u16>,
+    view: u16,
+}
+
+impl Default for CommandLine {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CommandLine {
-    /// The tab opened at the top.
+    /// The tab opened at the top, with the text rows of the smallest window.
     pub const fn new() -> Self {
         Self {
             scroll: 0,
             drag: None,
+            view: VIEW_ROWS as u16,
         }
+    }
+
+    /// Takes the number of text rows the box shows at the current size.
+    fn set_view(&mut self, rows: u16) {
+        self.view = rows;
     }
 
     /// The largest value of `scroll`: the last line sits on the last row.
     pub fn max_scroll(&self) -> u16 {
-        u16::try_from(lines().len().saturating_sub(VIEW_ROWS)).unwrap_or(u16::MAX)
+        u16::try_from(lines().len().saturating_sub(usize::from(self.view))).unwrap_or(u16::MAX)
     }
 
     /// Scrolls by `lines` (negative goes up), staying inside the text.
@@ -84,7 +97,13 @@ pub(super) fn is_heading(line: &str) -> bool {
 }
 
 /// Handles a key while the tab is open. `None` keeps it open; `Some(effect)` closes it.
-pub fn handle(state: &mut CommandLine, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+pub fn handle(
+    state: &mut CommandLine,
+    key: &KeyEvent,
+    action: Option<Action>,
+    area: Rect,
+) -> Option<Effect> {
+    state.set_view(help::view_rows(area));
     match key.code {
         KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
@@ -103,13 +122,15 @@ pub fn handle(state: &mut CommandLine, key: &KeyEvent, action: Option<Action>) -
 /// Handles a mouse event: the wheel scrolls, a click on Close closes the tab (`Some`). `area` is
 /// the whole screen.
 pub fn handle_mouse(state: &mut CommandLine, area: Rect, event: &MouseEvent) -> Option<Effect> {
+    let geometry = geometry(area);
+    let text = parts(geometry.body).text;
+    state.set_view(text.height);
     match mouse::wheel_action(event) {
         Some(Action::Up) => state.scroll_by(-WHEEL_LINES),
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
-    let geometry = geometry(area);
-    let track = scrollbar::track_of(parts(geometry.body).text);
+    let track = scrollbar::track_of(text);
     let metrics = state.metrics(track.height);
     if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
         state.scroll_to_line(line);
