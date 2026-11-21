@@ -3,14 +3,14 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<rect x="36" y="19" width="36" height="19" fill="#dd0000"/>
-<path fill="#000000" d="M36 19h9v9.5h-9zM45 19h9v9.5h-9zM54 19h9v9.5h-9zM63 19h9v9.5h-9z"/>
-<text x="18" y="33" fill="#8cbeff">◄</text>
-<text x="81" y="33" fill="#8cbeff">►</text>
-<text x="99" y="33" fill="#8cbeff">▼</text>
-<rect x="36" y="38" width="36" height="19" fill="#ffce00"/>
-<path fill="#dd0000" d="M36 38h9v9.5h-9zM45 38h9v9.5h-9zM54 38h9v9.5h-9zM63 38h9v9.5h-9z"/>
-<text x="81 90" y="52" fill="#8cbeff">DE</text>
+<rect x="27" y="19" width="36" height="19" fill="#dd0000"/>
+<path fill="#000000" d="M27 19h9v9.5h-9zM36 19h9v9.5h-9zM45 19h9v9.5h-9zM54 19h9v9.5h-9z"/>
+<text x="9" y="33" fill="#8cbeff">◄</text>
+<text x="72" y="33" fill="#8cbeff">►</text>
+<text x="90" y="33" fill="#8cbeff">▼</text>
+<rect x="27" y="38" width="36" height="19" fill="#ffce00"/>
+<path fill="#dd0000" d="M27 38h9v9.5h-9zM36 38h9v9.5h-9zM45 38h9v9.5h-9zM54 38h9v9.5h-9z"/>
+<text x="72 81" y="52" fill="#8cbeff">DE</text>
 <path fill="#8cbeff" d="M306 114h9v19h-9zM315 114h9v19h-9zM351 114h9v19h-9zM360 114h9v19h-9zM477 123.5h9v9.5h-9zM486 114h9v19h-9zM495 114h9v19h-9zM504 114h9v19h-9zM513 114h9v19h-9zM612 114h9v19h-9zM621 114h9v19h-9z"/>
 <path fill="#8cbeff" d="M243 142.5h9v9.5h-9zM252 133h9v19h-9zM261 133h9v19h-9zM270 142.5h9v9.5h-9zM315 133h9v9.5h-9zM324 133h9v19h-9zM342 133h9v19h-9zM351 133h9v9.5h-9zM387 133h9v19h-9zM396 133h9v19h-9zM432 133h9v19h-9zM441 133h9v19h-9zM468 133h9v19h-9zM477 133h9v19h-9zM549 142.5h9v9.5h-9zM558 133h9v19h-9zM567 133h9v19h-9zM576 142.5h9v9.5h-9zM612 133h9v19h-9zM621 133h9v19h-9z"/>
 <path fill="#8cbeff" d="M234 152h9v19h-9zM243 152h9v19h-9zM270 152h9v19h-9zM279 152h9v19h-9zM324 152h9v19h-9zM333 152h9v19h-9zM342 152h9v19h-9zM396 152h9v9.5h-9zM405 152h9v19h-9zM423 152h9v19h-9zM432 152h9v9.5h-9zM477 152h9v9.5h-9zM486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9zM513 161.5h9v9.5h-9zM540 152h9v19h-9zM549 152h9v19h-9zM576 152h9v19h-9zM585 152h9v19h-9zM612 152h9v19h-9zM621 152h9v19h-9z"/>
@@ -35,12 +35,14 @@
 <text x="369 378 387 396 405 414 423 432 441 450 459 468 477 486" y="337" fill="#e8ecf4">Spielanleitung</text>
 <text x="369 378 387 396 405" y="356" fill="#e8ecf4">Hilfe</text>
 <text x="369 378 387 396 405 414 423" y="375" fill="#e8ecf4">Beenden</text>
-<text x="297 306 315 324 333" y="641" fill="#b8c2d6">Enter</text>
-<text x="351 360 369 378 387 396" y="641" fill="#b8c2d6">Öffnen</text>
-<text x="432" y="641" fill="#b8c2d6">q</text>
-<text x="450 459 468 477 486 495 504" y="641" fill="#b8c2d6">Beenden</text>
-<text x="540" y="641" fill="#b8c2d6">?</text>
-<text x="558 567 576 585 594" y="641" fill="#b8c2d6">Hilfe</text>
-<text x="846 855 864 873 882 891" y="641" fill="#b8c2d6">v0.4.0</text>
+<text x="234 243 252 261 270" y="641" fill="#b8c2d6">Enter</text>
+<text x="288 297 306 315 324 333" y="641" fill="#b8c2d6">Öffnen</text>
+<text x="369 378 387" y="641" fill="#b8c2d6">Tab</text>
+<text x="405 414 423 432 441 450 459" y="641" fill="#b8c2d6">Sprache</text>
+<text x="495" y="641" fill="#b8c2d6">q</text>
+<text x="513 522 531 540 549 558 567" y="641" fill="#b8c2d6">Beenden</text>
+<text x="603" y="641" fill="#b8c2d6">?</text>
+<text x="621 630 639 648 657" y="641" fill="#b8c2d6">Hilfe</text>
+<text x="846 855 864 873 882 891" y="641" fill="#b8c2d6">v0.5.0</text>
 </g>
 </svg>

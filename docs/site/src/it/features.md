@@ -2,14 +2,21 @@
 
 # Funzionalità
 
-## Quattro giochi
+## Giochi
 
 - **Klondike**: pescando 1 o 3 carte.
 - **Spider**: con 1, 2 o 4 semi.
 - **FreeCell**.
 - **Piramide**: rilassata o classica.
+- **Famiglia Yukon**: Yukon, Solitario russo, Alaska, Moosehide e Australiano (con mazzo, un solo passaggio).
 
 Un solo programma, un solo menu, gli stessi tasti per tutti.
+
+Il menu dei giochi li raggruppa per famiglia, segna i più popolari con una stella, tiene i preferiti in un elenco a parte e ha una casella di ricerca.
+
+## Stili delle carte
+
+Nelle Impostazioni scegli lo stile delle facce (Internazionale, Francese, Tedesco, Italiano o Svizzero) e quello dei dorsi (Reticolo o Ornamento). Le carte sono disegnate con glifi vettoriali, e il seme è sempre indicato anche da un segno accanto al valore.
 
 ## Tastiera e mouse
 

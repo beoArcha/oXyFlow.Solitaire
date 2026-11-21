@@ -1,7 +1,7 @@
 <h1 align="center">oXySol</h1>
 
 <p align="center"><strong>Solitaire for your terminal.</strong><br>
-Klondike, Spider, FreeCell and Pyramid in one small program.</p>
+Klondike, Spider, FreeCell, Pyramid and the Yukon family in one small program.</p>
 
 <p align="center">
   <a href="https://github.com/beoArcha/oXyFlow.Solitare/actions/workflows/main.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/beoArcha/oXyFlow.Solitare/main.yml?branch=main&label=CI"></a>
@@ -19,14 +19,17 @@ Klondike, Spider, FreeCell and Pyramid in one small program.</p>
 
 ## What it is
 
-oXySol is a terminal solitaire with four games, **Klondike, Spider, FreeCell and Pyramid**, shipped as the single
-binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it plays, and it is still in development.
+oXySol is a terminal solitaire with **Klondike, Spider, FreeCell, Pyramid and the Yukon family** (Yukon, Russian
+Solitaire, Alaska, Moosehide and Australian Patience), shipped as the single binary `oxysol`. It is a pre-release
+(version 0.5; the plan ends at 0.9): it plays, and it is still in development.
 
+- **Game menu.** The games are listed under family headings; popular ones carry a star, favourites have their own
+  list, and a search box finds a game by name.
 - **Keyboard and mouse.** Every action works with both: click, double-click, drag, right-click to put a card back.
 - **Help while you play.** A guide panel, a possible moves panel, hints, undo and redo, and auto-finish when the game
   is certainly won.
 - **Seeds and winnable deals.** Every deal has a seed you can copy and replay, a game can start from any seed,
-  and a new game can search for a deal that is proven winnable.
+  and a new game can search for a deal that is proven winnable (a solver covers every game, the Yukon family included).
 - **Statistics and history** of every game you play: wins without a restart, personal bests, a scroll bar, and a
   mark for each deal that was checked as winnable or not.
 - **Restart from the beginning** in the pause menu (`Esc`) or with `Shift+R`, always confirmed; in a game without undo
@@ -36,6 +39,8 @@ binary `oxysol`. It is a pre-release (version 0.4; the plan ends at 0.9): it pla
 - **Fits the Windows console.** Started by a double-click, the game opens full screen (Alt+Enter mode), or widens its
   window to 130 columns so the side panels fit. Started from an open console, it leaves the console alone. In the
   classic Windows console, Ctrl+Plus, Ctrl+Minus and Ctrl+0 change the console font size.
+- **Card styles.** Settings has five front styles (International, French, German, Italian and Swiss) and two back styles
+  (Lattice and Ornament).
 - **Five themes:** Dark, Light, High contrast (for low vision), Monokai and Dracula. Color is never the only signal.
   Color-vision modes are planned, not built yet.
 - **Nine languages.** English, Polish, German, French, Italian, Brazilian Portuguese, Ukrainian, Dutch and Spanish.
@@ -164,6 +169,7 @@ Command-line options (`oxysol --help` lists them):
 | `--colors <16\|256\|truecolor>` | Set the color depth of the terminal |
 | `-n`, `--new-window` | Open the game in a new console window and return to the prompt |
 | `--fullscreen`, `--no-fullscreen` | Force full screen on or off for this run (the setting is `Auto` by default) |
+| `--priority <level>` | Set the process priority for this run: `highest`, `high`, `normal`, `low` or `lowest` (beats the setting) |
 | `--version`, `--help` | Print the version, or the help, and exit |
 
 **Where the files are.** Settings, the saved game and the history are in one SQLite file, `oxysol.db`, next to the log
@@ -200,7 +206,7 @@ The project is a Rust workspace:
 
 | Part | What it is |
 |---|---|
-| `crates/core` | `oxysol-core`: the engine and the four games. No terminal, no files, no clock |
+| `crates/core` | `oxysol-core`: the engine and the games. No terminal, no files, no clock |
 | `crates/tui` | `oxysol-tui`: rendering, input, themes and localization. Changes the game only through the engine's session |
 | `src/` | `oxysol`: the binary that wires it together: storage, audio, logging, arguments |
 | `xtask/` | `cargo xtask`: quality gates, lint, release tooling and the screenshot generator |
@@ -221,7 +227,7 @@ packages with `pip install -r xtask/fonts/requirements.txt` (fontTools and skia-
 
 Read [`AGENTS.md`](AGENTS.md) for the rules of the code, then [`docs/tech/`](docs/tech): the
 [architecture](docs/tech/architecture.md), the [workflow](docs/tech/workflow.md) (branches, checks, releases) and the
-[decisions](docs/tech/decisions.md). The rules of the four games are in [`docs/wiki/rules/`](docs/wiki/rules).
+[decisions](docs/tech/decisions.md). The rules of the games are in [`docs/wiki/rules/`](docs/wiki/rules).
 The website is built from [`docs/site`](docs/site) with mdBook and published with each release.
 
 ## Links
@@ -229,7 +235,7 @@ The website is built from [`docs/site`](docs/site) with mdBook and published wit
 - Website: <https://beoarcha.github.io/oXyFlow.Solitare/>, in nine languages: English, Polski, Deutsch, Español,
   Français, Italiano, Nederlands, Português (Brasil) and Українська. The game interface is available in the same nine
   languages; the screenshots show the English version.
-- Po polsku: pasjans w terminalu z czterema grami. Polska wersja strony:
+- Po polsku: pasjans w terminalu z Klondike, Pająkiem, FreeCellem, Piramidą i rodziną Yukon. Polska wersja strony:
   <https://beoarcha.github.io/oXyFlow.Solitare/pl/index.html>
 
 ## License

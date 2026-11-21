@@ -1,6 +1,6 @@
 # Phase 4 (0.4) — Workflow, fixes, first card style and first game
 
-Goal: the workflow is hardened first (the P1 and P2 findings of the November review), then the open fixes are closed, the card-style setting and the first new card style are in place, the game menu gets its structure, and the first new game (Yukon) is added. This is the phase worked on now, during version 0.4.x.
+Goal: the workflow is hardened first (the P1 and P2 findings of the November review), then the open fixes are closed, the card-style setting and the first new card style are in place, the game menu gets its structure, and the first new game (Yukon) is added. Done: worked on during version 0.4.x and closed with the 0.5.0 bump.
 
 Exit criteria:
 

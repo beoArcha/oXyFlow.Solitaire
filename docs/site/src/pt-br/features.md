@@ -2,14 +2,21 @@
 
 # Recursos
 
-## Quatro jogos
+## Jogos
 
 - **Klondike**: virando 1 ou 3 cartas.
 - **Spider**: com 1, 2 ou 4 naipes.
 - **FreeCell**.
 - **Pirâmide**: relaxada ou clássica.
+- **Família Yukon**: Yukon, Paciência russa, Alasca, Moosehide e Australiana (com monte, uma única passada).
 
 Um programa, um menu, as mesmas teclas para tudo.
+
+O menu de jogos agrupa os jogos por família, marca os populares com uma estrela, guarda seus favoritos em uma lista própria e tem uma caixa de busca.
+
+## Estilos de cartas
+
+Em Configurações você escolhe o estilo das faces (Internacional, Francês, Alemão, Italiano ou Suíço) e o dos versos (Treliça ou Ornamento). As cartas são desenhadas com glifos vetoriais, e o naipe sempre aparece também como um sinal ao lado do valor.
 
 ## Teclado e mouse
 
