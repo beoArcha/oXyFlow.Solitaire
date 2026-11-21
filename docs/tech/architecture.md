@@ -98,6 +98,7 @@ pub trait Game {
     fn piles(&self) -> Vec<PileSnapshot>;
     fn stock_status(&self) -> Option<StockStatus>;       // None for FreeCell and Yukon (no stock)
     fn forced_finish(&self) -> Option<Vec<Move>>;        // moves that finish a certain win, else None
+    fn is_covered(&self, pile: PileRef) -> bool;         // default false; Pyramid: a card under a card still on the table
 }
 pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game>;    // the only place that knows all games
 ```
@@ -115,6 +116,7 @@ Rules of the `Game` contract:
 - `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.
 - `stock_status` is read-only and derived from the game state, so undo, redo, restart and restore
   report the counters of the rebuilt game. Its shape is not serialized: no save format changes.
+- `is_covered` (O-105) is read-only and answers whether the card at a pyramid position is covered by a card still on the table, the same rule `legal_moves` uses. Every other game and every non-pyramid or empty pile answers `false`. The TUI uses it only to draw covered cards differently; it never decides a move from it.
 - `forced_finish` (P2-07) is pure, deterministic and cheap: it returns the moves that finish the game
   when the rest is a certain win and `None` otherwise (also for a won game). Applied in order through
   `apply` they are all legal and end in `is_won()`; each sequence is replayed on a clone before it is

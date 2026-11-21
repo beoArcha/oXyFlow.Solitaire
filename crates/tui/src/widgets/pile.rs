@@ -26,6 +26,9 @@ pub struct Marks {
     /// Hinted cards, the moved ones first and the destination last; a hinted target pile is its
     /// top card, or `index: 0` when empty. A hint that names one pile has only a source.
     pub hints: Vec<CardPos>,
+    /// Piles whose card a card still on the table covers (`Game::is_covered`), drawn in the blocked
+    /// style.
+    pub blocked: Vec<PileRef>,
 }
 
 impl Marks {
@@ -39,6 +42,7 @@ impl Marks {
                 .is_some_and(|picked| picked.pile == pile && index >= picked.index),
             target: top && self.targets.contains(&pile),
             hint: self.hint_role(here),
+            blocked: self.blocked.contains(&pile),
         }
     }
 
@@ -126,3 +130,6 @@ pub fn draw(
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -168,3 +168,16 @@ fn arrows_walk_a_row_of_the_pyramid_and_between_rows() {
     h.press(KeyCode::Down);
     assert!(matches!(cursor(&h).0, PileRef::Pyramid { row: 6, .. }));
 }
+
+#[test]
+fn a_fresh_deal_marks_only_the_covered_cards_as_blocked() {
+    let h = start(RELAXED, PAIR_SEED);
+    let blocked = board(&h).marks().blocked;
+    assert_eq!(blocked.len(), 21);
+    assert!((0..7).all(|index| !blocked.contains(&position(6, index))));
+    assert!(
+        blocked
+            .iter()
+            .all(|pile| matches!(pile, PileRef::Pyramid { row, .. } if *row < 6))
+    );
+}

@@ -1,6 +1,6 @@
 //! Turning the controller state into the highlights the board draws.
 
-use oxysol_core::{Move, PileRef, PileSnapshot};
+use oxysol_core::{Game, Move, PileRef, PileSnapshot};
 
 use super::Pick;
 use super::cursor::Cursor;
@@ -47,6 +47,15 @@ fn hints(piles: &[PileSnapshot], hint: Move) -> Vec<CardPos> {
     }
 }
 
+/// The piles whose card the game reports as covered: they are drawn in the blocked style.
+pub(super) fn blocked(game: &dyn Game, piles: &[PileSnapshot]) -> Vec<PileRef> {
+    piles
+        .iter()
+        .map(|snapshot| snapshot.pile)
+        .filter(|&pile| game.is_covered(pile))
+        .collect()
+}
+
 /// The highlights for the cursor, the picked run with its targets, and the hint.
 pub(super) fn build(
     piles: &[PileSnapshot],
@@ -67,5 +76,6 @@ pub(super) fn build(
             .map(|pick| pick.choices.iter().filter_map(|c| c.target).collect())
             .unwrap_or_default(),
         hints: hint.map(|mv| hints(piles, mv)).unwrap_or_default(),
+        blocked: Vec::new(),
     }
 }

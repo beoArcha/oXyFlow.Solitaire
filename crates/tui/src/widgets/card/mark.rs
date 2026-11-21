@@ -12,13 +12,16 @@ pub enum Hint {
     Target,
 }
 
-/// Highlights of a card, strongest first: selected, focus, target, hint.
+/// Highlights of a card, strongest first: selected, focus, target, hint. `blocked` is not a
+/// highlight: a card that a card still on the table covers is drawn in the blocked style, with a
+/// dimmer border, unless one of the highlights is on it.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Mark {
     pub focus: bool,
     pub selected: bool,
     pub target: bool,
     pub hint: Option<Hint>,
+    pub blocked: bool,
 }
 
 impl Mark {

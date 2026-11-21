@@ -64,3 +64,35 @@ fn a_fresh_game_is_not_won() {
         assert!(!Pyramid::deal(rules, 42).is_won(), "{rules:?}");
     }
 }
+
+#[test]
+fn a_fresh_deal_covers_every_card_but_the_bottom_row() {
+    for rules in RULES {
+        let game = Pyramid::deal(rules, 7);
+        let pyramid: Vec<PileRef> = game
+            .piles()
+            .iter()
+            .map(|pile| pile.pile)
+            .filter(|pile| matches!(pile, PileRef::Pyramid { .. }))
+            .collect();
+        assert_eq!(pyramid.len(), 28);
+        let uncovered: Vec<PileRef> = pyramid
+            .iter()
+            .copied()
+            .filter(|&pile| !game.is_covered(pile))
+            .collect();
+        let bottom: Vec<PileRef> = (0..7).map(|index| pyr(6, index)).collect();
+        assert_eq!(uncovered, bottom, "{rules:?}");
+        assert_eq!(pyramid.len() - uncovered.len(), 21);
+    }
+}
+
+#[test]
+fn a_removed_or_non_pyramid_pile_is_never_covered() {
+    let game = Pyramid::deal(PyramidRules::Relaxed, 7);
+    assert!(!game.is_covered(PileRef::Stock));
+    assert!(!game.is_covered(PileRef::Waste));
+    assert!(!game.is_covered(PileRef::Foundation(0)));
+    assert!(!game.is_covered(pyr(7, 0)));
+    assert!(!game.is_covered(pyr(0, 9)));
+}

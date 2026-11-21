@@ -280,6 +280,7 @@ mod tests {
                 selected: true,
                 target: true,
                 hint: Some(Hint::Target),
+                blocked: false,
             },
         ];
         for mark in mark_cases {
@@ -316,6 +317,7 @@ mod tests {
             let geometry = compute(variant, &piles, body);
             let target_pile = piles.first().map(|p| p.pile).unwrap_or(PileRef::Stock);
             let marks = Marks {
+                blocked: Vec::new(),
                 focus: Some(CardPos {
                     pile: target_pile,
                     index: 0,
