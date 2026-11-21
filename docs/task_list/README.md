@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 3 | 41 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 4 | 48 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
@@ -298,6 +298,14 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Haiku | O-95 | TODO |
 | O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | TODO |
 | O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Haiku | O-87 | TODO |
+| O-100 | Spider and Pyramid: no `A` in slots that are not ace foundations | Haiku | — | TODO |
+| O-101 | Yukon footer: `Enter: pick up` and `a: quick move` when a card can move | Haiku | — | TODO |
+| O-102 | Settings: a live preview pane instead of the 4 × 1 swatch | Sonnet | — | TODO |
+| O-103 | Settings in three tabs: Audio & Visual, Popular (default), Gameplay | Sonnet | O-102 | TODO |
+| O-104 | FreeCell: a gap between the free cells and the foundations | Haiku | — | TODO |
+| O-105 | Pyramid: blocked cards look different from playable ones | Haiku | — | TODO |
+| O-106 | Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid) | Sonnet | O-87 | TODO |
+| O-107 | Yukon: column 7 never runs off the bottom | Sonnet | — | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 

@@ -5,7 +5,7 @@ Goal: the table, the card face and the aura are set apart from the theme; the lo
 Exit criteria:
 
 - P3-32, P3-33, P3-34, P3-35, P5-03, P5-04 and P5-05 are DONE;
-- the visual fixes O-69 to O-99 are DONE, or `BLOCKED` with the owner's decision on the card;
+- the visual fixes O-69 to O-107 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
 
@@ -161,7 +161,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ## Visual fixes and improvements
 
-Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
+Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike; batch 3: O-100 to O-107 — Spider, FreeCell, Pyramid, Yukon and the Settings redesign). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
 
 **P1 — Visual bugs and layout collisions**
 - **Done:** #207
@@ -246,6 +246,33 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** both `Font face` and `Font size` show `Ctrl+= / Ctrl+-`.
 - **Fix:** `Font face` shows the current face (or that the terminal controls it); only `Font size` names the zoom keys.
 - **Acceptance:** a test renders the Interface section with a face set and with the terminal in control and finds the right value on each row; all nine locales.
+
+### O-100 — Spider and Pyramid: no `A` in slots that are not ace foundations
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, tests
+- **Problem:** Spider (1 suit) draws `A` in all 8 top completion slots, although Spider removes full king-to-ace runs and does not build up from aces; Pyramid (Relaxed) draws `A` in the bottom-right pile of removed cards, where pairs that add up to 13 go.
+- **Fix:** a marker that fits the game: in Spider `K`, `✓` or an empty frame; in Pyramid `13`, `×` or an empty frame. Each has a WGL4 and an ASCII form, and the How to play text agrees.
+- **Acceptance:** a test renders a fresh Spider and Pyramid deal and finds no `A` in those slots; Klondike, FreeCell and Yukon foundations still show `A`.
+
+### O-101 — Yukon footer: `Enter: pick up` and `a: quick move` when a card can move
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** in Yukon, with the focus on a playable face-up card (`J ♥` in column 1), the `Do:` bar shows only `Arrows: move | h: hint | i: how to play…`, without `Enter: pick up` and `a: quick move`.
+- **Fix:** the contextual hints offer `Enter: pick up` and `a: quick move` whenever the focused card or group can move, in every Yukon variant (likely the footer still assumes a game without group moves from any face-up card).
+- **Acceptance:** a test focuses a movable face-up card in each Yukon variant and finds both hints; a face-down or blocked card does not show them.
+
+### O-102 — Settings: a live preview pane instead of the 4 × 1 swatch
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `crates/tui/src/settings.rs`, `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs` (reuse only), tests
+- **Problem:** the inline 4 × 1 grey hatch next to `Card back` (theme Dracula) shows neither the theme colours nor the back style (Lattice); `Front style`, `Back style`, `Symbols`, `Card size` and the Aura options have only text or small unlabelled swatches.
+- **Fix:** a two-column Settings layout with a live preview pane on the right, drawn on the active theme's table: one face-down card (theme, card back, back style, symbols, card size) and one or two face-up cards showing the focus, carried and target states (front style, symbols, card size, Aura, aura colour, style and size, target marks). It replaces the 4 × 1 swatch and the unlabelled Aura tiles. The cards are drawn by the existing card widget, not a copy. Below the width the two columns need, the preview moves under the list or hides with a note.
+- **Acceptance:** a test changes each listed option and finds the preview changed; the 4 × 1 swatch is gone; fits at 100 × 30 (preview below or hidden) and 130 × 40 (side by side) in all nine locales.
 
 **P2 — Focus, navigation and consistency**
 
@@ -374,6 +401,51 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the line `Automatic 27% (7 of 26) · failed 3 · run 1 · finish 0` reads like internal data and does not say what `7 of 26` means next to 123 games; the action bar (`[ Play this seed again ]`, `[ Copy seed ]`, `[ Check ]`, `[ Check all ]`, `[ Back ]`) has no footer hints for `Check`, `Check all` or moving between buttons.
 - **Fix:** a line a player understands (what is counted and out of what), and footer hints for every action-bar button and for moving between them.
 - **Acceptance:** a test renders the summary and finds the new wording and every action in the footer; fits at 100 × 60 (T-40) in all nine locales.
+
+### O-103 — Settings in three tabs: Audio & Visual, Popular (default), Gameplay
+
+- **Owner:** Sonnet
+- **Depends on:** O-102
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `crates/tui/src/settings.rs`, `locales/*/settings.toml`, `docs/tech/architecture.md` (settings screen contract), tests
+- **Problem:** the flat list of 23 options is long and mixes display, sound, system and gameplay settings in one column, leaving no room for previews and making the common ones slow to reach.
+- **Fix:** three tabs with `Popular` in the middle and active by default (`◄ Audio & Visual │ [Popular] │ Gameplay ►`). **Popular:** the 7 or 8 most changed settings (for example Language, Theme, Card size, Card back, Volume, Aura, Auto-finish) as aliases of their canonical rows; a change in either place shows in both. **Audio & Visual:** Colors, Full screen, Theme, Card back, Front style, Back style, Symbols, Console font, Font face, Font size, Card size, Aura colour, Aura style, Aura size, Sound style, Sound cues, Music, Volume, Process priority. **Gameplay:** Language, Aura, Target marks, Guide panel, Possible moves panel, Auto-finish and later gameplay options. `Tab` / `Shift+Tab` (optionally `[` / `]`) switch tabs from anywhere, so `Left` / `Right` only change values; the footer says `Shift+Tab / Tab: tab`. This replaces the `Performance` section part of O-96 (Process priority goes to Audio & Visual).
+- **Acceptance:** tests: Popular is active on open; every setting is reachable in its canonical tab; changing an alias changes the canonical value and the other way round; Tab and Shift+Tab switch tabs and Left/Right never do; keyboard and mouse reach every tab and row; all nine locales fit at 100 × 30.
+
+### O-104 — FreeCell: a gap between the free cells and the foundations
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (FreeCell layout), tests
+- **Problem:** FreeCell's top row has 8 evenly spaced slots (4 empty free cells, then 4 `A` foundations) with no gap or divider between the two groups.
+- **Fix:** a wider gap between slot 4 and slot 5, and optionally a quiet distinct style for the free cells, so the two zones read apart without colour.
+- **Acceptance:** a test finds a wider gap between the fourth and fifth slot than between the others at every card size; FreeCell still fits at 100 × 30.
+
+### O-105 — Pyramid: blocked cards look different from playable ones
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (Pyramid), `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** all 28 pyramid cards have the same bright white face whether or not cards in the row below cover them, so the player has to trace overlaps to see what is playable.
+- **Fix:** a subtle dim or shade (face or border) on covered cards so uncovered, playable cards stand out; it must not rely on colour alone (for example a dimmer frame glyph as well) and must pass the contrast tests.
+- **Acceptance:** a test on a fresh deal finds the 7 bottom cards in the playable style and the 21 others in the blocked style; contrast tests pass in every theme.
+
+### O-106 — Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid)
+
+- **Owner:** Sonnet
+- **Depends on:** O-87
+- **Files:** `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, tests
+- **Problem:** in dense face-up columns (FreeCell, Yukon) and overlapped Pyramid rows, a covered card shows a clipped half or a 1 to 2 px tip of its large centre pip just under the rank and suit header, which looks ragged.
+- **Fix:** when a card is covered from below, do not draw the clipped part of its centre pip (or tidy the visible header strip), so a covered card shows only a clean rank and suit index.
+- **Acceptance:** snapshots of covered cards in each of the three games at every card size show no partial pip rows; an uncovered card is unchanged.
+
+### O-107 — Yukon: column 7 never runs off the bottom
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (column layout), `crates/tui/src/layout/**`, tests
+- **Problem:** at Moves 0 with Large cards the last card of column 7 (`A ♣`) already almost touches the bottom status bar; one or two more cards would push it off screen.
+- **Fix:** compress the vertical card spacing of a column as it grows (face-down cards first, then face-up overlap) so the whole column, its last card fully visible, always fits above the status bar; fall back to a smaller card size only when compression is not enough. (The review text for this item was cut off after "Ensure dynamic vertical compression of"; the owner may refine the fix.)
+- **Acceptance:** a test builds the longest possible Yukon column (6 face-down + 18 face-up, and longer after moves) at 100 × 30 and 100 × 60 with every card size and finds the last card fully drawn above the status bar; the same test covers Klondike and Spider.
 
 **P3 — Main view polish, widgets and wording**
 
