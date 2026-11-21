@@ -155,7 +155,7 @@ menu = "{key}: menu"
 finish = "{key}: concluir"
 
 [counter]
-turned_over = "Viradas: {count}"
+recycled = "Reciclagens do monte: {count}"
 pass = "Giro {pass} de {total}"
 last_pass = "Último giro ({pass} de {total})"
 no_passes = "Sem giros restantes"

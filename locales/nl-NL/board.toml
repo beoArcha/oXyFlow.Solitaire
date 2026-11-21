@@ -155,7 +155,7 @@ menu = "{key}: menu"
 finish = "{key}: afronden"
 
 [counter]
-turned_over = "Omgedraaid: {count}"
+recycled = "Stapel hergebruikt: {count}"
 pass = "Beurt {pass} van {total}"
 last_pass = "Laatste beurt ({pass} van {total})"
 no_passes = "Geen beurten meer over"
