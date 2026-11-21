@@ -5,6 +5,7 @@ pub mod ansi;
 pub mod contrast;
 pub mod dark;
 pub mod dracula;
+pub mod face;
 pub mod high_contrast;
 pub mod light;
 pub mod monokai;
@@ -16,7 +17,7 @@ use serde::{Deserialize, Serialize};
 pub use palette::{GRAPHIC_PAIRS, MARK_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
 
 use crate::caps::ColorDepth;
-use crate::settings::CardBack;
+use crate::settings::{CardBack, CardFaceTint};
 
 /// A built-in theme.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -110,6 +111,20 @@ impl Theme {
     /// The focused list item.
     pub fn focus(&self) -> Style {
         self.style(Token::FocusFg, Token::FocusBg)
+    }
+
+    /// The fill and suit style of a face-up card for `tint`. `suit` is the token of its suit color,
+    /// `CardRed` or `CardBlack`; `Theme` gives the same style as the theme's own face tokens.
+    pub fn card_face_style(&self, tint: CardFaceTint, suit: Token) -> Style {
+        let colors = face::face_colors(tint, &self.palette);
+        let ink = if suit == Token::CardBlack {
+            colors.black
+        } else {
+            colors.red
+        };
+        Style::new()
+            .fg(ink.resolve(self.depth))
+            .bg(colors.face.resolve(self.depth))
     }
 
     /// A style for the given card back palette, with the pattern and background tokens of the back

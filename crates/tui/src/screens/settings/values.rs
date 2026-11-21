@@ -12,8 +12,8 @@ use crate::card_style::CardStyles;
 use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{
-    CONSOLE_FONT_SIZES, CardBack, CardSizeSetting, ColorMode, ConsoleFace, FullScreen, GlyphMode,
-    ProcessPriority, Settings,
+    CONSOLE_FONT_SIZES, CardBack, CardFaceTint, CardSizeSetting, ColorMode, ConsoleFace,
+    FullScreen, GlyphMode, ProcessPriority, Settings,
 };
 use crate::theme::ThemeId;
 use crate::widgets::card::back;
@@ -143,6 +143,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
                 &settings.back_style
             ))
         ),
+        Field::CardFace => t(settings.card_face.label_key()).into_owned(),
         Field::FrontStyle => front_style_name(&settings.front_style),
         Field::BackStyle => back_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
@@ -267,6 +268,7 @@ pub fn changed(
         Field::Language => next.locale = cycle(&Locale::offered(), settings.locale, step),
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
         Field::CardBack => next.card_back = cycle(&CARD_BACKS, settings.card_back, step),
+        Field::CardFace => next.card_face = cycle(&CardFaceTint::ALL, settings.card_face, step),
         Field::FrontStyle => {
             next.front_style = cycle_str(&front_styles(), &settings.front_style, step);
         }

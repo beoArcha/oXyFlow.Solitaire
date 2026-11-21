@@ -3,6 +3,7 @@
 mod back;
 mod board;
 mod dump;
+mod face_tint;
 mod faces;
 mod focus;
 mod marks;

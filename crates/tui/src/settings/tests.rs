@@ -288,3 +288,22 @@ fn the_console_font_choices_are_previewed_with_the_rest_of_the_interface() {
     assert_eq!(kept.console_face, ConsoleFace::Default);
     assert_eq!(kept.console_font_size, 0);
 }
+
+#[test]
+fn card_face_is_theme_by_default_and_old_values_without_it_keep_theme() {
+    assert_eq!(Settings::default().card_face, CardFaceTint::Theme);
+    let parsed = toml::from_str::<Settings>("card_back = \"monokai\"\nvolume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.card_face == CardFaceTint::Theme));
+}
+
+#[test]
+fn card_face_round_trips() {
+    let settings = Settings {
+        card_face: CardFaceTint::LightGrey,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("card_face = \"light_grey\""));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}

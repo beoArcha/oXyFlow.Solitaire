@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 mod aids;
 mod card_back;
+mod card_face;
 mod card_size;
 mod console_face;
 mod dock;
@@ -13,6 +14,7 @@ mod interface;
 mod priority;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
+pub use card_face::CardFaceTint;
 pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
 pub use console_face::{CONSOLE_FONT_SIZES, ConsoleFace};
 pub use dock::DockSide;
@@ -112,6 +114,9 @@ pub struct Settings {
     pub full_screen: FullScreen,
     /// Which pattern and palette face-down cards use.
     pub card_back: CardBack,
+    /// The color of face-up cards; the suit colors adapt to it. An older saved value without the
+    /// field loads as `Theme`.
+    pub card_face: CardFaceTint,
     /// The card size on the board. An older saved value without the field loads as `Auto`.
     pub card_size: CardSizeSetting,
     /// The colour of the aura. An older saved value without the field loads as `Theme`.
@@ -153,6 +158,7 @@ impl Default for Settings {
             target_marks: true,
             full_screen: FullScreen::Auto,
             card_back: CardBack::Theme,
+            card_face: CardFaceTint::Theme,
             card_size: CardSizeSetting::Auto,
             aura_colour: AuraColour::Theme,
             aura_style: AuraStyle::Halo,
