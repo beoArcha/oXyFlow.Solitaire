@@ -3,7 +3,7 @@
 //! rules and the command line wrapped. It scrolls line by line, the scroll bar counts wrapped lines.
 
 use ratatui::Frame;
-use ratatui::layout::{Alignment, Margin, Rect};
+use ratatui::layout::{Margin, Rect};
 use ratatui::style::Modifier;
 use ratatui::text::Line;
 use ratatui::widgets::{Block, Clear, Paragraph};
@@ -14,9 +14,13 @@ use super::super::help;
 use super::super::how_to_play::content::{self, Kind, Row};
 use super::super::how_to_play::{self, Rules};
 use super::super::nav;
-use super::{DockState, button_label, button_rect, close_label, parts, span, text_width};
+use super::{
+    DockState, button_label, button_rect, close_label, close_rect, parts, span, text_width,
+};
+use crate::action::Action;
 use crate::app::Modal;
-use crate::i18n::t;
+use crate::i18n::{t, tf};
+use crate::input::primary_key;
 use crate::screens::ViewCtx;
 use crate::settings::DockSide;
 use crate::theme::Token;
@@ -198,15 +202,39 @@ pub fn draw(
         },
         ctx,
     );
+    frame.render_widget(
+        Paragraph::new(Line::styled(footer_hints(), ctx.theme.surface())),
+        hints_rect(rect),
+    );
     let close_style = ctx
         .theme
         .surface()
         .add_modifier(Modifier::BOLD | Modifier::REVERSED);
     frame.render_widget(
-        Paragraph::new(Line::styled(close_label(), close_style)).alignment(Alignment::Center),
-        places.footer,
+        Paragraph::new(Line::styled(close_label(), close_style)),
+        close_rect(rect),
     );
     draw_button(frame, rect, side, ctx);
+}
+
+/// The compact hints of the docked footer, for example `d Dock  F6 Focus`: the keys of the dock
+/// and the pane focus actions from the key table, with their localized words.
+pub fn footer_hints() -> String {
+    tf(
+        "help.dock.footer",
+        &[
+            ("dock", &primary_key(Action::Dock).unwrap_or_default()),
+            ("focus", &primary_key(Action::DockFocus).unwrap_or_default()),
+        ],
+    )
+}
+
+/// The footer cells left of the Close button of a docked window at `rect`, where the hints go.
+pub fn hints_rect(rect: Rect) -> Rect {
+    let footer = parts(rect).footer;
+    let close = close_rect(rect);
+    let width = footer.width.saturating_sub(close.width.saturating_add(1));
+    Rect::new(footer.x, footer.y, width, footer.height)
 }
 
 /// Draws the note that docking is not possible at this size, on the last row of `area`.

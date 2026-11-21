@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Vastzetten: {side}"
+button = "Vastzetten: {side} [{key}]"
 side_centre = "midden"
 side_right = "rechts"
 side_left = "links"
 too_narrow = "Vastzetten vereist 130 kolommen; het venster blijft gecentreerd."
+footer = "{dock} Vastzetten  {focus} Focus"
