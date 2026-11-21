@@ -151,13 +151,13 @@ mod tests {
 
     const METADATA_SAMPLE: &str = r#"[project]
 organization = "oXyFlow"
-repository = "oXyFlow.Solitare"
+repository = "oXyFlow.Solitaire"
 product = "oXySol"
 binary = "oxysol"
 version = "0.2.0"
 description = "Modern Solitaire"
 license = "MIT OR Apache-2.0"
-repository_url = "https://github.com/beoArcha/oXyFlow.Solitare"
+repository_url = "https://github.com/beoArcha/oXyFlow.Solitaire"
 "#;
 
     const CARGO_SAMPLE: &str = r#"# Top comment
@@ -182,7 +182,7 @@ repository = "https://github.com/old/repo"
         assert!(synced.contains("version = \"0.2.0\" # version inline"));
         assert!(synced.contains("description = \"Modern Solitaire\""));
         assert!(synced.contains("license = \"MIT OR Apache-2.0\""));
-        assert!(synced.contains("repository = \"https://github.com/beoArcha/oXyFlow.Solitare\""));
+        assert!(synced.contains("repository = \"https://github.com/beoArcha/oXyFlow.Solitaire\""));
     }
 
     #[test]
@@ -199,7 +199,8 @@ repository = "https://github.com/old/repo"
         let version_pos = synced.find("version = \"0.2.0\"");
         let edition_pos = synced.find("edition = \"2024\"");
         let license_pos = synced.find("license = \"MIT OR Apache-2.0\"");
-        let repo_pos = synced.find("repository = \"https://github.com/beoArcha/oXyFlow.Solitare\"");
+        let repo_pos =
+            synced.find("repository = \"https://github.com/beoArcha/oXyFlow.Solitaire\"");
 
         assert!(version_pos < edition_pos);
         assert!(edition_pos < license_pos);

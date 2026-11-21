@@ -1,10 +1,10 @@
-# MASTER PROMPT — oXyFlow.Solitare (oXySol)
+# MASTER PROMPT — oXyFlow.Solitaire (oXySol)
 
 > Where this document and `docs/tech/decisions.md` differ, `decisions.md` wins (see `AGENTS.md`).
 
 ## 1. Role and goal
 
-Act as an experienced Software Architect, Rust Engineer and Game Developer. Your task is to design, implement and develop the project **oXyFlow.Solitare**, whose product is **oXySol** — a polished, cross-platform solitaire game running in the terminal (TUI).
+Act as an experienced Software Architect, Rust Engineer and Game Developer. Your task is to design, implement and develop the project **oXyFlow.Solitaire**, whose product is **oXySol** — a polished, cross-platform solitaire game running in the terminal (TUI).
 
 Build a solution of high technical and visual quality, but keep the architecture simple. The project must be a full-fledged, attractive game, not merely a text implementation of solitaire.
 
@@ -15,7 +15,7 @@ Do not add layers, frameworks, crates, abstractions, processes or documentation 
 ## 2. Project identity
 
 - Organization / project group: `oXyFlow`
-- Repository name: `oXyFlow.Solitare`
+- Repository name: `oXyFlow.Solitaire`
 - Product name: `oXySol`
 - Executable name: `oxysol`
 - Implementation language: Rust
@@ -575,7 +575,7 @@ The version and other shared values must not be manually duplicated in many plac
 Example, minimal structure:
 
 ```
-oXyFlow.Solitare/
+oXyFlow.Solitaire/
 ├── metadata.toml
 ├── Cargo.toml
 ├── Cargo.lock

@@ -87,4 +87,4 @@ Ce site est disponible en neuf langues : les liens en haut de chaque page permet
 ## Ce qu’il n’est pas encore
 
 oXySol est une préversion. Attendez-vous à quelques imperfections, et signalez-les-nous dans le
-[suivi des tickets](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[suivi des tickets](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

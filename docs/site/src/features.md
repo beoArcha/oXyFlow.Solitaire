@@ -83,4 +83,4 @@ This website is available in nine languages: the links at the top of every page 
 ## What it is not yet
 
 oXySol is a pre-release. Expect rough edges, and tell us about them in the
-[issue tracker](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[issue tracker](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

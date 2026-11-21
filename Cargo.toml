@@ -49,7 +49,7 @@ version = "0.5.0"
 edition = "2024"
 authors = ["Marcin \"beoArcha\" Stefan"]
 license = "MIT"
-repository = "https://github.com/beoArcha/oXyFlow.Solitare"
+repository = "https://github.com/beoArcha/oXyFlow.Solitaire"
 description = "Ultimate Office Solitaire for the terminal"
 
 [workspace.dependencies]

@@ -4,7 +4,7 @@ language = "en"
 src = "src"
 
 [output.html]
-site-url = "/oXyFlow.Solitare/"
+site-url = "/oXyFlow.Solitaire/"
 additional-css = ["landing.css"]
 additional-js = ["landing.js"]
-git-repository-url = "https://github.com/beoArcha/oXyFlow.Solitare"
+git-repository-url = "https://github.com/beoArcha/oXyFlow.Solitaire"

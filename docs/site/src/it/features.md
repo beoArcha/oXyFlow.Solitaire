@@ -85,4 +85,4 @@ Questo sito è disponibile in nove lingue: i link in cima a ogni pagina permetto
 ## Cosa non è ancora
 
 oXySol è una versione preliminare. Aspettati qualche imperfezione e segnalacela nel
-[sistema di segnalazione](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[sistema di segnalazione](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

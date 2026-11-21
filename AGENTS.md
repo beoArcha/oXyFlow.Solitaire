@@ -1,7 +1,7 @@
 # AGENTS.md — rules for all agents
 
-Repository `oXyFlow.Solitare`, product **oXySol**, binary `oxysol`: a terminal (TUI) solitaire in Rust
-with Klondike, Spider, FreeCell and Pyramid. Do not rename anything.
+Repository `oXyFlow.Solitaire`, product **oXySol**, binary `oxysol`: a terminal (TUI) solitaire in Rust
+with Klondike, Spider, FreeCell and Pyramid. Do not rename the product or binary.
 
 **Language:** code, comments, documentation, commit messages, PR titles and reports are in English.
 `en-US` is the source locale. Every other language is a translation of it.

@@ -5,7 +5,7 @@
 ## Télécharger une version prête à l’emploi
 
 La version la plus récente est [{{VERSION}}]({{RELEASE_URL}}) (préversions comprises). Toutes les versions sont sur la
-[page des publications](https://github.com/beoArcha/oXyFlow.Solitare/releases).
+[page des publications](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 | Système | Archive |
 |---|---|
@@ -42,9 +42,9 @@ La première compilation prend quelques minutes.
 Vérifié sous Windows 10 le 19/11/2026.
 
 ```powershell
-curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.zip
+curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.zip
 Expand-Archive oxysol-source.zip -DestinationPath oxysol-source
-cd oxysol-source\oXyFlow.Solitare-release
+cd oxysol-source\oXyFlow.Solitaire-release
 cargo build --release
 .\target\release\oxysol.exe
 ```
@@ -54,9 +54,9 @@ cargo build --release
 Pas encore vérifié : les commandes sont écrites, mais n’ont pas été exécutées.
 
 ```sh
-curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.tar.gz
+curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.tar.gz
 tar -xzf oxysol-source.tar.gz
-cd oXyFlow.Solitare-release
+cd oXyFlow.Solitaire-release
 cargo build --release
 ./target/release/oxysol
 ```
@@ -66,9 +66,9 @@ cargo build --release
 Pas encore vérifié : les commandes sont écrites, mais n’ont pas été exécutées.
 
 ```sh
-curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.tar.gz
+curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.tar.gz
 tar -xzf oxysol-source.tar.gz
-cd oXyFlow.Solitare-release
+cd oXyFlow.Solitaire-release
 cargo build --release
 ./target/release/oxysol
 ```
@@ -84,7 +84,7 @@ Si vous préférez, cargo peut récupérer, compiler et installer le programme e
 mêmes que ci-dessus.
 
 ```sh
-cargo install --git https://github.com/beoArcha/oXyFlow.Solitare --branch release --locked oxysol
+cargo install --git https://github.com/beoArcha/oXyFlow.Solitaire --branch release --locked oxysol
 ```
 
 `oxysol` est alors placé dans le dossier `bin` de cargo (`~/.cargo/bin`, ou `%USERPROFILE%\.cargo\bin` sous Windows),

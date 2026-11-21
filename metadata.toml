@@ -1,9 +1,9 @@
 [project]
 organization = "oXyFlow"
-repository = "oXyFlow.Solitare"
+repository = "oXyFlow.Solitaire"
 product = "oXySol"
 binary = "oxysol"
 version = "0.5.0"
 description = "Ultimate Office Solitaire for the terminal"
 license = "MIT"
-repository_url = "https://github.com/beoArcha/oXyFlow.Solitare"
+repository_url = "https://github.com/beoArcha/oXyFlow.Solitaire"

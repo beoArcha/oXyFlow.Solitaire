@@ -85,4 +85,4 @@ Diese Website gibt es in neun Sprachen: Die Links oben auf jeder Seite wechseln 
 ## Was es noch nicht ist
 
 oXySol ist eine Vorabversion. Rechne mit Ecken und Kanten und melde sie uns im
-[Issue-Tracker](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[Issue-Tracker](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

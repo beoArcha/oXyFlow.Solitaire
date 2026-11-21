@@ -12,12 +12,12 @@ fichier unique : `oxysol`. Il fonctionne dans tout terminal moderne et se joue a
 ## Télécharger
 
 **Dernière version :** [{{VERSION}}]({{RELEASE_URL}}). C’est la version la plus récente, préversions comprises.
-Toutes les versions sont sur la [page des publications](https://github.com/beoArcha/oXyFlow.Solitare/releases).
+Toutes les versions sont sur la [page des publications](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 - [Télécharger une version prête à l’emploi ou compiler depuis les sources](install.md), sous Windows, Linux ou macOS.
 - [Fonctionnalités](features.md) : guide, indices, fin automatique, statistiques, thèmes, langues.
 - [Captures d’écran et animations](gallery.md) de tous les jeux et de tous les écrans.
 
-Code source et signalements : [beoArcha/oXyFlow.Solitare](https://github.com/beoArcha/oXyFlow.Solitare).
+Code source et signalements : [beoArcha/oXyFlow.Solitaire](https://github.com/beoArcha/oXyFlow.Solitaire).
 Les règles des jeux se trouvent dans le
-[wiki](https://github.com/beoArcha/oXyFlow.Solitare/tree/main/docs/wiki/rules) (en anglais).
+[wiki](https://github.com/beoArcha/oXyFlow.Solitaire/tree/main/docs/wiki/rules) (en anglais).
