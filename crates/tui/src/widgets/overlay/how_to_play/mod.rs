@@ -31,7 +31,13 @@ const PAGE_LINES: i32 = 19;
 const WHEEL_LINES: i32 = 3;
 
 /// Handles a key while the window is open. `None` keeps it open; `Some(effect)` closes it.
-pub fn handle(state: &mut HowToPlay, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+pub fn handle(
+    state: &mut HowToPlay,
+    key: &KeyEvent,
+    action: Option<Action>,
+    area: Rect,
+) -> Option<Effect> {
+    state.set_view(view::text_rows(area));
     match key.code {
         KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
@@ -58,13 +64,14 @@ pub fn handle(state: &mut HowToPlay, key: &KeyEvent, action: Option<Action>) -> 
 /// Handles a mouse event: the wheel scrolls, a click on an arrow or a tab switches the game, a
 /// click on Close closes the window (`Some`). `area` is the whole screen.
 pub fn handle_mouse(state: &mut HowToPlay, area: Rect, event: &MouseEvent) -> Option<Effect> {
+    let geometry = geometry(area);
+    let parts = view::parts(geometry.body);
+    state.set_view(parts.text.height);
     match mouse::wheel_action(event) {
         Some(Action::Up) => state.scroll_by(-WHEEL_LINES),
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
-    let geometry = geometry(area);
-    let parts = view::parts(geometry.body);
     let track = scrollbar::track_of(parts.text);
     let metrics = state.metrics(track.height);
     if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {

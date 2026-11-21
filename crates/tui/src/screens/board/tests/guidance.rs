@@ -354,13 +354,13 @@ fn the_guide_marks_the_keys_that_work_right_now() {
     let mut h = sized(KLONDIKE, 140, 40);
     assert!(panel_row(&mut h, "u/r").starts_with("  "));
     first_move_played(&mut h);
-    assert!(panel_row(&mut h, "u/r").starts_with("► "));
-    assert!(panel_row(&mut h, "Arrows").starts_with("► "));
+    assert!(panel_row(&mut h, "u/r").starts_with("• "));
+    assert!(panel_row(&mut h, "Arrows").starts_with("• "));
     assert!(panel_row(&mut h, "Esc").starts_with("  "));
     put_cursor(&mut h, PileRef::Tableau(0));
     h.press(KeyCode::Enter);
     if board(&h).marks().selected.is_some() {
-        assert!(panel_row(&mut h, "Esc").starts_with("► "));
+        assert!(panel_row(&mut h, "Esc").starts_with("• "));
     }
 }
 

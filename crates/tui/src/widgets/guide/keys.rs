@@ -7,7 +7,7 @@ use ratatui::crossterm::event::KeyCode;
 use ratatui::style::Modifier;
 use ratatui::text::Line;
 
-use super::Guide;
+use super::{Guide, available_mark};
 use crate::action::Action;
 use crate::i18n::t;
 use crate::input::{binding_for, primary_key};
@@ -132,7 +132,7 @@ fn row(
         .any(|action| guide.usable.contains(action));
     let (marker, style) = if usable {
         (
-            ctx.glyphs.focus_left,
+            available_mark(ctx),
             ctx.theme
                 .style(Token::Text, Token::Surface)
                 .add_modifier(Modifier::BOLD),
