@@ -187,10 +187,7 @@ mod tests {
                 Variant::Yukon(YukonRules::Russian),
                 r#"{"yukon":"russian"}"#,
             ),
-            (
-                Variant::Yukon(YukonRules::Alaska),
-                r#"{"yukon":"alaska"}"#,
-            ),
+            (Variant::Yukon(YukonRules::Alaska), r#"{"yukon":"alaska"}"#),
         ];
         assert_eq!(cases.len(), Variant::ALL.len());
         for (variant, json) in cases {
