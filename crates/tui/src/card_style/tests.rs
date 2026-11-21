@@ -116,7 +116,14 @@ fn the_fronts_and_backs_of_the_card_are_found_the_default_first() {
         .collect();
     assert_eq!(
         fronts,
-        ["international", "french", "german", "italian", "spanish", "swiss"]
+        [
+            "international",
+            "french",
+            "german",
+            "italian",
+            "spanish",
+            "swiss"
+        ]
     );
     assert_eq!(backs, ["lattice", "ornament"]);
 }
