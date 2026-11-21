@@ -188,6 +188,20 @@ Order of work: the Interface options first, then the card style and the games, w
   variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
   budget.
 
+### O-68 — Help window: a mouse click on the Keys and Command line tabs switches to them
+
+- **Owner:** Haiku
+- **Depends on:** none
+- **Files:** `crates/tui/src/widgets/overlay/{mod.rs,nav.rs,tabs.rs,help_keys.rs,command_line.rs}`,
+  `crates/tui/src/widgets/overlay/how_to_play/**`, the screen that opens Help from the main menu if it routes the mouse
+  itself, tests
+- **Scope:** owner report 2026-11-21 (screenshot, main menu, Help open on Rules, v0.5.0): clicking the top tabs `Keys` or
+  `Command line` with the mouse does nothing; the keyboard switches tabs fine. Every top tab must switch on a left click
+  from every other tab, from the main menu and from the board, at every dock position (the screenshot shows
+  `Dock: centre`).
+- **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
+  menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
+
 ### P5-01 — Font builder and preview sheet
 
 - **Owner:** Haiku
