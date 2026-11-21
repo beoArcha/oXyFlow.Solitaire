@@ -166,9 +166,9 @@ mod tests {
     }
 
     #[test]
-    fn all_lists_twelve_distinct_variants() {
+    fn all_lists_thirteen_distinct_variants() {
         let unique: HashSet<_> = Variant::ALL.iter().collect();
-        assert_eq!(unique.len(), 12);
+        assert_eq!(unique.len(), 13);
     }
 
     #[test]
