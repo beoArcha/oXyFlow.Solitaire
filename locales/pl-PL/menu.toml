@@ -44,6 +44,8 @@ label = "Jak grać"
 open = "Otwórz"
 play = "Zagraj"
 language = "Język"
+favorite = "Ulubione"
+winnable = "Gry do wygrania"
 
 [family]
 klondike = "Rodzina Klondike"
@@ -55,3 +57,8 @@ yukon = "Rodzina Yukon"
 [search]
 label = "Szukaj"
 clear = "Esc czyści"
+
+[winnable]
+button = "[ {key} Tylko do wygrania: {state} ]"
+on_hint = "Włączone: nowa gra szuka rozdania możliwego do wygrania; wpisane ziarno zostaje bez zmian"
+off_hint = "Wyłączone: nowa gra rozdaje dowolne rozdanie, do wygrania lub nie"

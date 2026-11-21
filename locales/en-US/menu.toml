@@ -11,8 +11,8 @@ select_seed = "Choose a game for seed {seed}"
 version = "v{version}"
 variant_hint = "{level}: {description}"
 
-favourites = "Favourites"
-legend = "{star} popular   {favourite} favourite ({key})"
+favourites = "Favorites"
+legend = "{star} popular   {favourite} favorite ({key})"
 no_match = "No game matches: {text}"
 
 [difficulty]
@@ -45,6 +45,8 @@ label = "How to play"
 open = "Open"
 play = "Play"
 language = "Language"
+favorite = "Favorite"
+winnable = "Winnable deals"
 
 [family]
 klondike = "Klondike family"
@@ -56,3 +58,8 @@ yukon = "Yukon family"
 [search]
 label = "Search"
 clear = "Esc clears"
+
+[winnable]
+button = "[ {key} Winnable deals only: {state} ]"
+on_hint = "On: a new game searches for a deal proven winnable; a typed seed is dealt as typed"
+off_hint = "Off: a new game deals any deal, winnable or not"

@@ -44,6 +44,8 @@ label = "Come giocare"
 open = "Apri"
 play = "Gioca"
 language = "Lingua"
+favorite = "Preferito"
+winnable = "Risolvibili"
 
 [family]
 klondike = "Famiglia Klondike"
@@ -55,3 +57,8 @@ yukon = "Famiglia Yukon"
 [search]
 label = "Cerca"
 clear = "Esc cancella"
+
+[winnable]
+button = "[ {key} Solo distribuzioni risolvibili: {state} ]"
+on_hint = "Attivo: una nuova partita cerca una mano dimostrata risolvibile; un seed digitato viene distribuito così com'è"
+off_hint = "Disattivo: una nuova partita distribuisce qualsiasi mano, risolvibile o no"

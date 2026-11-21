@@ -68,6 +68,7 @@ fn block_width(content: &Content<'_>) -> u16 {
         .map(|row| match row {
             Row::Heading(heading) => 2 + t(heading.title_key()).chars().count(),
             Row::Item(variant) => MARKS_WIDTH + (content.label_of)(*variant).chars().count(),
+            Row::Gap => 0,
         })
         .max()
         .unwrap_or(0);
@@ -204,6 +205,7 @@ impl ListView {
             let line = Rect::new(x, area.y + offset, width, 1);
             match row {
                 Row::Heading(heading) => draw_heading(frame, line, *heading, ctx),
+                Row::Gap => {}
                 Row::Item(variant) => {
                     let focused = active && index == self.focus;
                     draw_item(frame, line, *variant, focused, content, ctx);

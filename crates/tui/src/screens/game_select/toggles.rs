@@ -5,9 +5,10 @@ use ratatui::layout::{Alignment, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
+use super::WINNABLE_KEY;
 use crate::action::Action;
 use crate::i18n::{t, tf};
-use crate::input::primary_key;
+use crate::input::{KeySpec, primary_key};
 use crate::screens::ViewCtx;
 use crate::screens::focus::{button_style, marker};
 use crate::theme::Token;
@@ -51,15 +52,24 @@ pub(super) fn draw_winnable(
     ctx: &ViewCtx<'_>,
 ) -> Rect {
     let state = state_text(ctx.settings.winnable_only);
-    let label = tf("common.select.winnable", &[("state", &state)]);
+    let key = KeySpec::ch(WINNABLE_KEY).display();
+    let label = tf("menu.winnable.button", &[("key", &key), ("state", &state)]);
     draw_toggle(frame, area, label, focused, ctx)
+}
+
+fn winnable_hint(on: bool) -> String {
+    if on {
+        t("menu.winnable.on_hint").into_owned()
+    } else {
+        t("menu.winnable.off_hint").into_owned()
+    }
 }
 
 pub(super) fn draw_hints(frame: &mut Frame, areas: [Rect; 2], ctx: &ViewCtx<'_>) {
     let key = primary_key(Action::Undo).unwrap_or_default();
     let hints = [
         tf("common.select.undo_hint", &[("key", &key)]),
-        t("common.select.winnable_hint").into_owned(),
+        winnable_hint(ctx.settings.winnable_only),
     ];
     let muted = ctx.theme.style(Token::TextMuted, Token::Background);
     for (hint, area) in hints.into_iter().zip(areas) {

@@ -45,6 +45,8 @@ label = "Spelregels"
 open = "Openen"
 play = "Spelen"
 language = "Taal"
+favorite = "Favoriet"
+winnable = "Winbare spellen"
 
 [family]
 klondike = "Klondike-familie"
@@ -56,3 +58,8 @@ yukon = "Yukon-familie"
 [search]
 label = "Zoeken"
 clear = "Esc wist"
+
+[winnable]
+button = "[ {key} Alleen winbare spellen: {state} ]"
+on_hint = "Aan: een nieuw spel zoekt naar een bewijsbaar winbaar spel; een getypte seed wordt direct gedeeld"
+off_hint = "Uit: een nieuw spel deelt elke deal uit, winbaar of niet"

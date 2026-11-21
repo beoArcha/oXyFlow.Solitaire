@@ -4,14 +4,19 @@ use oxysol_core::Variant;
 use ratatui::crossterm::event::KeyCode;
 
 use crate::app::Screen;
-use crate::i18n::t;
+use crate::i18n::{t, tf};
 use crate::screens::focus::marked_text;
 use crate::screens::variant_label_key;
 use crate::test_support::Harness;
 
 const TOGGLE_ON: &str = "[ Undo: on ]";
 const TOGGLE_OFF: &str = "[ Undo: off ]";
-const WINNABLE_OFF: &str = "[ Winnable deals only: off ]";
+fn winnable_off() -> String {
+    tf(
+        "menu.winnable.button",
+        &[("key", "w"), ("state", &t("common.select.off"))],
+    )
+}
 
 fn select() -> Harness {
     let mut h = Harness::new();
@@ -58,7 +63,7 @@ fn tab_from_the_undo_toggle_reaches_the_winnable_toggle_and_then_the_list() {
     let mut h = select();
     h.press(KeyCode::Tab);
     h.press(KeyCode::Tab);
-    assert_eq!(focused(&mut h).as_deref(), Some(WINNABLE_OFF));
+    assert_eq!(focused(&mut h).as_deref(), Some(winnable_off().as_str()));
     h.press(KeyCode::Tab);
     assert_eq!(focused(&mut h), Some(label_of(Variant::ALL[0])));
 }
@@ -67,7 +72,7 @@ fn tab_from_the_undo_toggle_reaches_the_winnable_toggle_and_then_the_list() {
 fn shift_tab_from_the_list_wraps_to_the_winnable_toggle() {
     let mut h = select();
     h.press(KeyCode::BackTab);
-    assert_eq!(focused(&mut h).as_deref(), Some(WINNABLE_OFF));
+    assert_eq!(focused(&mut h).as_deref(), Some(winnable_off().as_str()));
     h.press(KeyCode::BackTab);
     assert_eq!(focused(&mut h).as_deref(), Some(TOGGLE_ON));
 }
