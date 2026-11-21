@@ -174,6 +174,20 @@ Order of work: the Interface options first, then the card style and the games, w
   and O-35 (`phase-0.md`).
 - **Done:** X-01 report (#113) and this PR (#115).
 
+### P5-07 — Better hints: a hint that leads toward a win
+
+- **Owner:** Sonnet
+- **Depends on:** P4-10a
+- **Files:** the hint code of each game (`crates/core/src/games/*/mod.rs` and a new `hints.rs` per game where it
+  grows), its tests, `docs/tech/decisions.md` (only for a decision the orchestrator names)
+- **Scope:** owner request 2026-11-21: the hints never repeat a position, but in Yukon playing only hints won none of
+  200 deals. Rank hints so they make progress toward a win in every game: uncover face-down cards, empty a column
+  when it helps, avoid moves that block a card the foundations need next. Where a solver answers within the hint time
+  budget, a hint may take the first move of its solution. Measure before and after.
+- **Acceptance:** for each variant, a table on seeds 0 to 199: deals won by playing hints only, before and after; no
+  variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
+  budget.
+
 ### P5-01 — Font builder and preview sheet
 
 - **Owner:** Haiku

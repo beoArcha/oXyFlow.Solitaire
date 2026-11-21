@@ -265,6 +265,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | F-02 | Checkpoint: graphics delivery | Opus (Fable only on escalation — R-14) | X-01 | DONE |
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
 | P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
+| P5-07 | Better hints: a hint that leads toward a win | Sonnet | P4-10a | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 
