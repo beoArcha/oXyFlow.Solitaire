@@ -148,7 +148,7 @@ fn console_font_key(facts: FontFacts) -> &'static str {
 }
 
 /// The sentence for the font face and font size rows: only the classic console lets the game change
-/// the font; elsewhere the row names the terminal's own shortcut and says why.
+/// the font; elsewhere the rows say that the terminal draws its font and why the game cannot.
 fn font_row_key(field: Field, facts: FontFacts) -> &'static str {
     match (field, facts.terminal, facts.card_font, facts.face) {
         (_, TerminalKind::WindowsTerminal, _, _) => "settings.desc.font_terminal_wt",
