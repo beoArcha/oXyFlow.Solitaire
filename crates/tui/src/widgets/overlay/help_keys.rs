@@ -5,7 +5,7 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 use super::dialog;
-use super::help::{Columns, Section, VIEW_ROWS, geometry, parts};
+use super::help::{self, Columns, Section, VIEW_ROWS, geometry, parts};
 use super::nav;
 use crate::action::Action;
 use crate::mouse;
@@ -16,12 +16,23 @@ const WHEEL_LINES: i32 = 3;
 
 const PAGE_LINES: i32 = 20;
 
-/// The Keys tab of the help window: its first visible line. Both columns scroll together, and the
-/// tab scrolls only when the taller column does not fit the box.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// The Keys tab of the help window: its first visible line and the text rows the box shows. Both
+/// columns scroll together, and the tab scrolls only when the taller column does not fit the box.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HelpKeys {
     pub scroll: u16,
     drag: Option<u16>,
+    view: u16,
+}
+
+impl Default for HelpKeys {
+    fn default() -> Self {
+        Self {
+            scroll: 0,
+            drag: None,
+            view: VIEW_ROWS as u16,
+        }
+    }
 }
 
 /// Lines of a column: each topic's heading and its rows.
@@ -38,7 +49,12 @@ impl HelpKeys {
 
     /// The largest scroll: the taller column ends on the last text row.
     pub fn max_scroll(&self) -> u16 {
-        u16::try_from(Self::total().saturating_sub(VIEW_ROWS)).unwrap_or(u16::MAX)
+        u16::try_from(Self::total().saturating_sub(usize::from(self.view))).unwrap_or(u16::MAX)
+    }
+
+    /// Takes the number of text rows the box shows at the current size.
+    fn set_view(&mut self, rows: u16) {
+        self.view = rows;
     }
 
     fn scroll_by(&mut self, lines: i32) {
@@ -59,7 +75,7 @@ impl HelpKeys {
     pub(super) fn metrics(&self) -> Metrics {
         Metrics {
             total: Self::total(),
-            view: VIEW_ROWS,
+            view: usize::from(self.view),
             offset: usize::from(self.scroll),
         }
     }
@@ -67,7 +83,13 @@ impl HelpKeys {
 
 /// Handles a key while the Keys tab is open: Up, Down, PageUp, PageDown, Home and End scroll; Esc,
 /// Enter and the close key close the window (`Some`). Tab and the other keys are the tab keys.
-pub fn handle_key(state: &mut HelpKeys, key: &KeyEvent, action: Option<Action>) -> Option<Effect> {
+pub fn handle_key(
+    state: &mut HelpKeys,
+    key: &KeyEvent,
+    action: Option<Action>,
+    area: Rect,
+) -> Option<Effect> {
+    state.set_view(help::view_rows(area));
     match key.code {
         KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
@@ -84,13 +106,14 @@ pub fn handle_key(state: &mut HelpKeys, key: &KeyEvent, action: Option<Action>) 
 
 /// Handles a mouse event: the wheel and the scroll bar scroll, a click on Close closes the window.
 pub fn handle_mouse(state: &mut HelpKeys, area: Rect, event: &MouseEvent) -> Option<Effect> {
+    let geometry = geometry(area);
+    let (_, text, _) = parts(geometry.body);
+    state.set_view(text.height);
     match mouse::wheel_action(event) {
         Some(Action::Up) => state.scroll_by(-WHEEL_LINES),
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
-    let geometry = geometry(area);
-    let (_, text, _) = parts(geometry.body);
     let track = scrollbar::track_of(text);
     let metrics = state.metrics();
     if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
