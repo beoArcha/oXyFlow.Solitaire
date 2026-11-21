@@ -724,10 +724,11 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   leaves a style that fails out with a log line. A front gives per suit a name key, an optional font glyph, the
   Unicode symbol, the ASCII letter and a color token; `[ranks]` replaces the localized labels of ace and court
   ranks; `[courts]` names the court emblem glyphs; a front without font keys is valid and draws Unicode in `Font`
-  mode. A back gives the `tile` that fills it, a 2 × 2 `mosaic` and the tokens `fg` and `bg`. `Glyphs::styled(mode,
+  mode. A back gives the `tile` that fills it, a 2 × 2 `mosaic` (kept in the style data for the graphics check only) and the tokens `fg` and `bg`. `Glyphs::styled(mode,
   front, back)` puts the styles into the glyph set (`suits`, `face_down`, `front`, `back`, `font`); an unknown id
-  uses the default style and `App` rewrites a saved unknown id to the default. The mosaic is drawn only on a back of
-  at least 11 × 9 (Large, Huge); smaller backs use the tile. *Interaction with `card_back` (P3-31):* the back style
+  uses the default style and `App` rewrites a saved unknown id to the default. A face-down card draws the tile
+  only, at every size (O-88): the 2 × 2 mosaic is not drawn on a card, because a 2-cell block cannot be centred on the
+  odd card sizes. *Interaction with `card_back` (P3-31):* the back style
   chooses the pattern, `card_back` (`Theme`, `Monokai`, `Dracula`) chooses the palette only: `Theme` resolves the
   tokens of the back style in the current theme, the others in the theme of that name. `Font` is opt-in: it is
   drawn only when `Settings::font_confirmed` is set (the graphics check), `Settings::drawn_glyph_mode()` gives
@@ -747,7 +748,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   active console font, else Unicode. `ViewCtx::font: FontFacts { terminal, card_font, cell_px }` carries the state
   (the terminal kind gives `WT_SESSION` through `TerminalKind::WindowsTerminal`); the Windows Terminal hint on the
   font face is in the graphics check and in the description of the Console font row, nowhere else. `cell_px` (the
-  console's cell size in pixels, from `ConsoleFont::cell_size`) keeps the Font mosaic off a cell below 10 × 24.
+  console's cell size in pixels, from `ConsoleFont::cell_size`) is stored and read by no card drawing rule since O-88 removed the back mosaic.
 - **Terminal capabilities:** `TerminalCaps { color, unicode, remote }` from detection, overridden by
   settings and arguments. `remote` (an SSH session) switches audio off.
 - **Accessibility:** every `Action` has a key binding and a mouse path. The `Now:` row
