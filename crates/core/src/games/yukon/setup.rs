@@ -10,12 +10,14 @@ use crate::rules;
 /// Which card may go onto the top card of a non-empty column. Only the bottom card of a moved
 /// group is checked; the cards above it may be in any order.
 ///
-/// A new building rule (same suit, up or down in suit, any suit but its own) is a new variant
-/// with its arm in [`BuildRule::fits`]; nothing else in the module changes.
+/// A new building rule (up or down in suit, any suit but its own) is a new variant with its arm
+/// in [`BuildRule::fits`]; nothing else in the module changes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum BuildRule {
     /// One rank lower and of the opposite colour (classic Yukon).
     DownAlternating,
+    /// One rank lower and of the same suit (Russian Solitaire).
+    DownSameSuit,
 }
 
 impl BuildRule {
@@ -23,6 +25,7 @@ impl BuildRule {
     pub(crate) fn fits(self, top: Card, card: Card) -> bool {
         match self {
             BuildRule::DownAlternating => rules::fits_alternating(top, card),
+            BuildRule::DownSameSuit => rules::fits_same_suit(top, card),
         }
     }
 }
@@ -47,13 +50,14 @@ impl YukonRules {
     pub(crate) const fn build(self) -> BuildRule {
         match self {
             YukonRules::Classic => BuildRule::DownAlternating,
+            YukonRules::Russian => BuildRule::DownSameSuit,
         }
     }
 
     /// The deal of this rule set.
     pub(crate) const fn deal_plan(self) -> Deal {
         match self {
-            YukonRules::Classic => CLASSIC_DEAL,
+            YukonRules::Classic | YukonRules::Russian => CLASSIC_DEAL,
         }
     }
 }

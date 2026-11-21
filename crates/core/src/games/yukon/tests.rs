@@ -4,6 +4,7 @@ mod deal;
 mod finish;
 mod hints;
 mod rules;
+mod russian;
 
 use super::{Column, Yukon};
 use crate::card::{Card, CardId, Rank, Suit};

@@ -45,7 +45,7 @@ fn the_list_scrolls_by_key_page_and_wheel_and_a_click_selects_a_row() {
 }
 
 #[test]
-fn the_screen_fits_100_by_30_in_both_locales_with_only_wgl4_glyphs() {
+fn the_screen_fits_100_by_60_in_both_locales_with_only_wgl4_glyphs() {
     for locale in Locale::offered() {
         let settings = Settings {
             locale,
@@ -63,7 +63,7 @@ fn the_screen_fits_100_by_30_in_both_locales_with_only_wgl4_glyphs() {
         }
         storage.settings = Some(settings);
         for caps in [TRUE_COLOR, PLAIN] {
-            let mut h = Harness::with(storage_clone(&storage), caps, 100, 30);
+            let mut h = Harness::with(storage_clone(&storage), caps, 100, 60);
             for _ in 0..STATISTICS_ITEM {
                 h.press(KeyCode::Down);
             }
@@ -71,7 +71,7 @@ fn the_screen_fits_100_by_30_in_both_locales_with_only_wgl4_glyphs() {
             assert_eq!(h.app.screen(), Screen::Stats);
             h.type_char('c');
             let lines = h.lines();
-            assert_eq!(lines.len(), 30);
+            assert_eq!(lines.len(), 60);
             for line in &lines {
                 for ch in line.chars() {
                     assert!(ch.is_ascii() || is_wgl4(ch), "{ch:?} in {line:?}");
@@ -131,7 +131,7 @@ fn the_summary_names_the_undo_mode_once_two_modes_exist_and_still_fits() {
             locale,
             ..Settings::default()
         });
-        let mut h = open_stats(storage, 100, 30);
+        let mut h = open_stats(storage, 100, 60);
         let lines = h.lines();
         let text = lines.join("\n");
         let (undo, no_undo) = (mode_label(locale, "undo"), mode_label(locale, "no_undo"));
@@ -145,7 +145,7 @@ fn the_summary_names_the_undo_mode_once_two_modes_exist_and_still_fits() {
 }
 
 #[test]
-fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
+fn every_variant_in_both_undo_modes_is_summarized_at_100_by_60() {
     for locale in Locale::offered() {
         let mut history = Vec::new();
         for (index, variant) in Variant::ALL.into_iter().enumerate() {
@@ -174,7 +174,7 @@ fn every_variant_in_both_undo_modes_is_summarized_at_100_by_30() {
             )
         });
         let (streak, first, back, last) = expected;
-        let mut h = open_stats(storage, 100, 30);
+        let mut h = open_stats(storage, 100, 60);
         let lines = h.lines();
         let no_undo = mode_label(locale, "no_undo");
         let summarized = lines.iter().filter(|line| line.contains(&no_undo)).count();

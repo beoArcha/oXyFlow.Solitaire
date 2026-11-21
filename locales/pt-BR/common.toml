@@ -29,6 +29,7 @@ free_cell = "FreeCell"
 pyramid_relaxed = "Pirâmide, relaxada"
 pyramid_classic = "Pirâmide, clássica"
 yukon_classic = "Yukon"
+yukon_russian = "Paciência russa"
 
 [settings]
 title = "Configurações"

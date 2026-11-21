@@ -108,6 +108,7 @@ pub const fn variant_label_key(variant: Variant) -> &'static str {
         Variant::Pyramid(PyramidRules::Relaxed) => "common.variant.pyramid_relaxed",
         Variant::Pyramid(PyramidRules::Classic) => "common.variant.pyramid_classic",
         Variant::Yukon(YukonRules::Classic) => "common.variant.yukon_classic",
+        Variant::Yukon(YukonRules::Russian) => "common.variant.yukon_russian",
     }
 }
 

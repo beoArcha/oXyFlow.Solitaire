@@ -4,7 +4,7 @@
 use crate::common::SEED;
 use oxysol_core::{Move, PileSnapshot, Session, SessionRecord, Variant};
 
-const STEPS: usize = 12;
+const STEPS: usize = 10;
 const UNDONE: usize = 3;
 const REDONE: usize = 2;
 

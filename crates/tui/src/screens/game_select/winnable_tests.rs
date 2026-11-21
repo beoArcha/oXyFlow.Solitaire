@@ -106,8 +106,9 @@ fn a_game_without_a_solver_says_so_and_is_dealt_at_once_without_a_search() {
         .iter()
         .filter(|line| line.contains(NO_SEARCH))
         .collect();
-    assert_eq!(noted.len(), 1, "{lines:#?}");
+    assert_eq!(noted.len(), 2, "{lines:#?}");
     assert!(noted[0].contains("Yukon"));
+    assert!(noted[1].contains("Russian Solitaire"));
     let yukon = Variant::Yukon(YukonRules::Classic);
     let index = Variant::ALL.iter().position(|v| *v == yukon).unwrap_or(0);
     for _ in 0..index {
