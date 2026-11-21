@@ -14,7 +14,7 @@ use super::super::help;
 use super::super::how_to_play::content::{self, Kind, Row};
 use super::super::how_to_play::{self, Rules};
 use super::super::nav;
-use super::{DockState, button_label, button_rect, close_label, parts, text_width};
+use super::{DockState, button_label, button_rect, close_label, parts, span, text_width};
 use crate::app::Modal;
 use crate::i18n::t;
 use crate::screens::ViewCtx;
@@ -130,10 +130,9 @@ fn draw_row(frame: &mut Frame, row: Rect, name: &str, ctx: &ViewCtx<'_>) {
         ctx.glyphs.focus_right, name, ctx.glyphs.focus_left
     );
     let style = ctx.theme.surface().add_modifier(Modifier::BOLD);
-    frame.render_widget(
-        Paragraph::new(Line::styled(text, style)).alignment(Alignment::Center),
-        row,
-    );
+    let (start, end) = span(row, name);
+    let placed = Rect::new(start, row.y, end.saturating_sub(start), row.height).intersection(row);
+    frame.render_widget(Paragraph::new(Line::styled(text, style)), placed);
 }
 
 /// Draws the placement button on the top border of the box at `frame`, showing `side`.

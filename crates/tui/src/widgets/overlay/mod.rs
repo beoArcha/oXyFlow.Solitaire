@@ -25,6 +25,8 @@ mod quick_options;
 #[cfg(test)]
 mod render_tests;
 mod search;
+#[cfg(test)]
+mod tab_click_tests;
 mod tabs;
 #[cfg(test)]
 mod tests;
@@ -303,7 +305,8 @@ pub fn handle_mouse(
         return quick_options::handle_mouse(state, area, event);
     }
     if nav::tab_of(modal).is_some() {
-        if let Some(target) = nav::clicked_tab(modal, area, event) {
+        let body = geometry(area, modal, board, now).body;
+        if let Some(target) = nav::clicked_tab(modal, body, event) {
             *modal = nav::modal_for(target, rules_of(board), None);
             return None;
         }
