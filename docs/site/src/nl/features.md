@@ -86,4 +86,4 @@ Deze website is beschikbaar in negen talen: met de links boven aan elke pagina w
 ## Wat het nog niet is
 
 oXySol is een voorlopige versie. Reken op wat ruwe randjes en meld ze in de
-[issuetracker](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[issuetracker](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

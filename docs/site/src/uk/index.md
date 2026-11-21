@@ -12,12 +12,12 @@
 ## Завантажити
 
 **Найновіша збірка:** [{{VERSION}}]({{RELEASE_URL}}). Це найсвіжіша збірка, включно з попередніми версіями.
-Усі збірки є на [сторінці випусків](https://github.com/beoArcha/oXyFlow.Solitare/releases).
+Усі збірки є на [сторінці випусків](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 - [Завантажте готову збірку або зберіть програму з вихідного коду](install.md) у Windows, Linux чи macOS.
 - [Можливості](features.md): посібник, підказки, автозавершення, статистика, теми, мови.
 - [Знімки екрана та анімації](gallery.md) усіх ігор і екранів.
 
-Вихідний код і повідомлення про помилки: [beoArcha/oXyFlow.Solitare](https://github.com/beoArcha/oXyFlow.Solitare).
+Вихідний код і повідомлення про помилки: [beoArcha/oXyFlow.Solitaire](https://github.com/beoArcha/oXyFlow.Solitaire).
 Правила всіх ігор є у
-[вікі](https://github.com/beoArcha/oXyFlow.Solitare/tree/main/docs/wiki/rules) (англійською).
+[вікі](https://github.com/beoArcha/oXyFlow.Solitaire/tree/main/docs/wiki/rules) (англійською).

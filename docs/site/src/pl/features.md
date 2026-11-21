@@ -84,4 +84,4 @@ Ta strona jest dostępna w dziewięciu językach: przełączają je odnośniki n
 ## Czego jeszcze brakuje
 
 oXySol jest w wersji przedpremierowej. Spodziewaj się niedociągnięć i zgłaszaj je w
-[systemie zgłoszeń](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[systemie zgłoszeń](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

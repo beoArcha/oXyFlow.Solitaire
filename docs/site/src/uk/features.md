@@ -83,4 +83,4 @@ Ctrl+коліщатко миші та налаштування «Розмір к
 ## Чого ще немає
 
 oXySol — попередня версія. Можливі шорсткості; повідомляйте про них у
-[трекері проблем](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[трекері проблем](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

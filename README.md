@@ -4,13 +4,13 @@
 Klondike, Spider, FreeCell, Pyramid and the Yukon family in one small program.</p>
 
 <p align="center">
-  <a href="https://github.com/beoArcha/oXyFlow.Solitare/actions/workflows/main.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/beoArcha/oXyFlow.Solitare/main.yml?branch=main&label=CI"></a>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/beoArcha/oXyFlow.Solitare"></a>
-  <a href="https://github.com/beoArcha/oXyFlow.Solitare/releases"><img alt="Latest pre-release" src="https://img.shields.io/github/v/release/beoArcha/oXyFlow.Solitare?include_prereleases&label=latest%20build"></a>
+  <a href="https://github.com/beoArcha/oXyFlow.Solitaire/actions/workflows/main.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/beoArcha/oXyFlow.Solitaire/main.yml?branch=main&label=CI"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/beoArcha/oXyFlow.Solitaire"></a>
+  <a href="https://github.com/beoArcha/oXyFlow.Solitaire/releases"><img alt="Latest pre-release" src="https://img.shields.io/github/v/release/beoArcha/oXyFlow.Solitaire?include_prereleases&label=latest%20build"></a>
   <a href="https://www.rust-lang.org/"><img alt="Rust 1.99" src="https://img.shields.io/badge/Rust-1.99-orange?logo=rust"></a>
   <a href="https://ratatui.rs/"><img alt="TUI: Ratatui" src="https://img.shields.io/badge/TUI-Ratatui%200.30-blueviolet"></a>
   <img alt="Languages" src="https://img.shields.io/badge/languages-9-green">
-  <a href="https://beoarcha.github.io/oXyFlow.Solitare/"><img alt="Website" src="https://img.shields.io/badge/website-9%20languages-blue"></a>
+  <a href="https://beoarcha.github.io/oXyFlow.Solitaire/"><img alt="Website" src="https://img.shields.io/badge/website-9%20languages-blue"></a>
 </p>
 
 <p align="center">
@@ -66,7 +66,7 @@ Every image is generated from the real game by `cargo xtask-art screenshots`.
   </tr>
 </table>
 
-More screens, the animations and all five themes are on the [website](https://beoarcha.github.io/oXyFlow.Solitare/gallery.html).
+More screens, the animations and all five themes are on the [website](https://beoarcha.github.io/oXyFlow.Solitaire/gallery.html).
 
 ## Install
 
@@ -74,7 +74,7 @@ You need a terminal. Pick one way.
 
 ### Download a build
 
-Get the newest build from the [releases page](https://github.com/beoArcha/oXyFlow.Solitare/releases). Every build so
+Get the newest build from the [releases page](https://github.com/beoArcha/oXyFlow.Solitaire/releases). Every build so
 far is a pre-release, so look at the top of the list and not at "latest". Archives exist for Windows (x86-64), Linux
 (x86-64 and ARM64) and macOS (Apple silicon). Unpack one and run `oxysol` (`oxysol.exe` on Windows). The Linux builds
 have no sound. `SHA256SUMS` on the release lets you check a download.
@@ -93,9 +93,9 @@ for sound, the ALSA headers (`sudo apt install build-essential libasound2-dev`; 
 **Windows (PowerShell).** Verified on Windows 10 on 2026-11-19.
 
 ```powershell
-curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.zip
+curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.zip
 Expand-Archive oxysol-source.zip -DestinationPath oxysol-source
-cd oxysol-source\oXyFlow.Solitare-release
+cd oxysol-source\oXyFlow.Solitaire-release
 cargo build --release
 .\target\release\oxysol.exe
 ```
@@ -103,9 +103,9 @@ cargo build --release
 **Linux and macOS.** Not verified yet: written, not run.
 
 ```sh
-curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.tar.gz
+curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.tar.gz
 tar -xzf oxysol-source.tar.gz
-cd oXyFlow.Solitare-release
+cd oXyFlow.Solitaire-release
 cargo build --release
 ./target/release/oxysol
 ```
@@ -116,7 +116,7 @@ The program ends up in `target/release/` (`oxysol.exe` on Windows). Run it from 
 **With `cargo install`.** One step instead of the download. Verified on Windows 10; not verified on Linux and macOS.
 
 ```sh
-cargo install --git https://github.com/beoArcha/oXyFlow.Solitare --branch release --locked oxysol
+cargo install --git https://github.com/beoArcha/oXyFlow.Solitaire --branch release --locked oxysol
 ```
 
 This puts `oxysol` in `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` on Windows), which rustup adds to your `PATH`.
@@ -232,11 +232,11 @@ The website is built from [`docs/site`](docs/site) with mdBook and published wit
 
 ## Links
 
-- Website: <https://beoarcha.github.io/oXyFlow.Solitare/>, in nine languages: English, Polski, Deutsch, Español,
+- Website: <https://beoarcha.github.io/oXyFlow.Solitaire/>, in nine languages: English, Polski, Deutsch, Español,
   Français, Italiano, Nederlands, Português (Brasil) and Українська. The game interface is available in the same nine
   languages; the screenshots show the English version.
 - Po polsku: pasjans w terminalu z Klondike, Pająkiem, FreeCellem, Piramidą i rodziną Yukon. Polska wersja strony:
-  <https://beoarcha.github.io/oXyFlow.Solitare/pl/index.html>
+  <https://beoarcha.github.io/oXyFlow.Solitaire/pl/index.html>
 
 ## License
 

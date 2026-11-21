@@ -5,7 +5,7 @@
 ## Завантажити готову збірку
 
 Найновіша збірка — [{{VERSION}}]({{RELEASE_URL}}) (включно з попередніми версіями). Усі збірки є на
-[сторінці випусків](https://github.com/beoArcha/oXyFlow.Solitare/releases).
+[сторінці випусків](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 | Система | Архів |
 |---|---|
@@ -40,9 +40,9 @@
 Перевірено у Windows 10 19.11.2026.
 
 ```powershell
-curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.zip
+curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.zip
 Expand-Archive oxysol-source.zip -DestinationPath oxysol-source
-cd oxysol-source\oXyFlow.Solitare-release
+cd oxysol-source\oXyFlow.Solitaire-release
 cargo build --release
 .\target\release\oxysol.exe
 ```
@@ -52,9 +52,9 @@ cargo build --release
 Ще не перевірено: команди записано, але не виконано.
 
 ```sh
-curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.tar.gz
+curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.tar.gz
 tar -xzf oxysol-source.tar.gz
-cd oXyFlow.Solitare-release
+cd oXyFlow.Solitaire-release
 cargo build --release
 ./target/release/oxysol
 ```
@@ -64,9 +64,9 @@ cargo build --release
 Ще не перевірено: команди записано, але не виконано.
 
 ```sh
-curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitare/archive/refs/heads/release.tar.gz
+curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.tar.gz
 tar -xzf oxysol-source.tar.gz
-cd oXyFlow.Solitare-release
+cd oXyFlow.Solitaire-release
 cargo build --release
 ./target/release/oxysol
 ```
@@ -81,7 +81,7 @@ cargo build --release
 Якщо хочете, cargo може завантажити, зібрати й встановити програму за один крок. Вимоги ті самі, що й вище.
 
 ```sh
-cargo install --git https://github.com/beoArcha/oXyFlow.Solitare --branch release --locked oxysol
+cargo install --git https://github.com/beoArcha/oXyFlow.Solitaire --branch release --locked oxysol
 ```
 
 Так `oxysol` потрапить у теку `bin` cargo (`~/.cargo/bin`, у Windows — `%USERPROFILE%\.cargo\bin`), яку rustup додає до

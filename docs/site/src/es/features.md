@@ -86,4 +86,4 @@ otro.
 ## Lo que todavía no es
 
 oXySol es una versión preliminar. Cuenta con algunas asperezas y avísanos en el
-[gestor de incidencias](https://github.com/beoArcha/oXyFlow.Solitare/issues).
+[gestor de incidencias](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

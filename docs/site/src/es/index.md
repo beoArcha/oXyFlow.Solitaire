@@ -12,12 +12,12 @@ Funciona en cualquier terminal moderna y se juega con el teclado o el ratón.
 ## Descárgalo
 
 **Última versión:** [{{VERSION}}]({{RELEASE_URL}}). Es la versión más reciente, incluidas las preliminares.
-Todas las versiones están en la [página de versiones](https://github.com/beoArcha/oXyFlow.Solitare/releases).
+Todas las versiones están en la [página de versiones](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 - [Descarga una versión lista para usar o compílala desde el código fuente](install.md) en Windows, Linux o macOS.
 - [Funciones](features.md): guía, pistas, final automático, estadísticas, temas, idiomas.
 - [Capturas de pantalla y animaciones](gallery.md) de todos los juegos y pantallas.
 
-Código fuente e incidencias: [beoArcha/oXyFlow.Solitare](https://github.com/beoArcha/oXyFlow.Solitare).
+Código fuente e incidencias: [beoArcha/oXyFlow.Solitaire](https://github.com/beoArcha/oXyFlow.Solitaire).
 Las reglas de los juegos están en la
-[wiki](https://github.com/beoArcha/oXyFlow.Solitare/tree/main/docs/wiki/rules) (en inglés).
+[wiki](https://github.com/beoArcha/oXyFlow.Solitaire/tree/main/docs/wiki/rules) (en inglés).

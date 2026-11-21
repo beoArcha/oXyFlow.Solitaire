@@ -77,7 +77,7 @@ Hosted macOS runners sometimes never start a job. Such a job is cancelled after 
 empty runner name and no steps. That is infrastructure, not code. Tell the two cases apart with:
 
 ```sh
-gh api repos/beoArcha/oXyFlow.Solitare/actions/runs/<run-id>/jobs \
+gh api repos/beoArcha/oXyFlow.Solitaire/actions/runs/<run-id>/jobs \
   --jq '.jobs[] | {name, conclusion, runner_name, steps: (.steps | length)}'
 ```
 
@@ -127,7 +127,7 @@ gh workflow run release.yml --ref release
    `Cargo.lock` with a pinned `cargo-cyclonedx`, using the features of that target's build, and
    attests the build provenance of every archive and SBOM (`actions/attest-build-provenance`; the job
    alone has `id-token: write` and `attestations: write`). Verify a download with
-   `gh attestation verify <file> --repo beoArcha/oXyFlow.Solitare`.
+   `gh attestation verify <file> --repo beoArcha/oXyFlow.Solitaire`.
 5. `publish` writes `SHA256SUMS`, creates the tag on the tested commit and a GitHub Release with
    every archive, SBOM and `SHA256SUMS`. It is a pre-release unless `stable` is set. It fails when
    the release already exists: published assets are never edited, replaced or re-uploaded (no
@@ -210,8 +210,8 @@ The version is `major.minor.patch`.
 
    ```sh
    ssh-keygen -t ed25519 -C "oxysol release promotion" -f release_deploy -N ""
-   gh repo deploy-key add release_deploy.pub --repo beoArcha/oXyFlow.Solitare --allow-write --title "release promotion"
-   gh secret set RELEASE_DEPLOY_KEY --repo beoArcha/oXyFlow.Solitare < release_deploy
+   gh repo deploy-key add release_deploy.pub --repo beoArcha/oXyFlow.Solitaire --allow-write --title "release promotion"
+   gh secret set RELEASE_DEPLOY_KEY --repo beoArcha/oXyFlow.Solitaire < release_deploy
    ```
 
 2. Rulesets (Settings, Rules, Rulesets):
@@ -230,7 +230,7 @@ The version is `major.minor.patch`.
    compatible with it.
 
 5. Check that the repository has exactly one write deploy key, because the `release` ruleset bypass
-   covers every deploy key: `gh repo deploy-key list --repo beoArcha/oXyFlow.Solitare` must show
+   covers every deploy key: `gh repo deploy-key list --repo beoArcha/oXyFlow.Solitaire` must show
    one key titled `release promotion`.
 
 ## Parallel work and shared files
@@ -268,7 +268,7 @@ a test bug: it reads the expected text from the locale instead.
 
 ## Worktrees
 
-Every agent task gets its own git worktree under `~/.t3/worktrees/oXyFlow.Solitare/`. After its PR
+Every agent task gets its own git worktree under `~/.t3/worktrees/oXyFlow.Solitaire/`. After its PR
 is merged or closed, the orchestrator removes it: `git worktree remove <path>`, `git worktree prune`,
 `git branch -D <branch>` (GitHub deletes the remote branch on merge). A worktree whose agent stopped
 with uncommitted work is committed as `wip(...)` and pushed before removal, so another agent can
