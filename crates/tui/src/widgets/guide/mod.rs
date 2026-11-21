@@ -5,6 +5,8 @@
 
 mod keys;
 mod legend;
+#[cfg(test)]
+mod tests;
 
 use oxysol_core::Variant;
 use ratatui::buffer::Buffer;
@@ -72,6 +74,12 @@ fn border_set(ctx: &ViewCtx<'_>) -> border::Set<'static> {
     } else {
         ASCII_BORDER
     }
+}
+
+/// The mark of a key usable now: a WGL4 diamond, or `*` in the ASCII glyph set. It is never the
+/// focus symbol, which the `Legend` gives as `focus`.
+pub(super) fn available_mark(ctx: &ViewCtx<'_>) -> &'static str {
+    if ctx.glyphs.unicode { "♦" } else { "*" }
 }
 
 fn heading(key: &str, ctx: &ViewCtx<'_>) -> Line<'static> {
