@@ -10,3 +10,6 @@ baton = "Stäbe"
 coin = "Münzen"
 cup = "Kelche"
 sword = "Schwerter"
+
+[style]
+spanish = "Spanisch"

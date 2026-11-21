@@ -10,3 +10,6 @@ baton = "buławy"
 coin = "monety"
 cup = "puchary"
 sword = "miecze"
+
+[style]
+spanish = "Hiszpański"
