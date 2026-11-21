@@ -5,7 +5,8 @@ Goal: themes and the interface size scale move to data files; the four-colour Fr
 Exit criteria:
 
 - P3-36, P6-04 and P6-05 are DONE;
-- P6-06 is DONE for the options the owner chose (its DRAFT is finalized by Opus first).
+- P6-06 is DONE for the options the owner chose (its DRAFT is finalized by Opus first);
+- the developer bridge P6-07, P6-08 and P6-09 is DONE (decision T-42).
 
 Order of work: the theme data first (P3-36), then the card style and the game, then the options.
 
@@ -77,6 +78,132 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
 - **Acceptance:** the options chosen by the owner, each with engine tests for both values, the setting remembered, the
   history records the option, both locales; the winnable-deals option (P3-20) is either correct for the option or turned
   off for it, and the PR says which.
+
+## Developer testing infrastructure: headless backend and JSON-lines dev bridge
+
+Owner request 2026-11-21. An agent or a script drives the real application without a terminal: it sends one JSON command
+per line on `stdin` and reads one JSON response per line on `stdout`, and every step is deterministic (decision T-42).
+These cards run one after another and go to `main` as one PR when P6-09 is done. The screenshot cards P7-06 to P7-09 (phase 7) and the layout linter and MCP wrapper (phase 8) build on them.
+
+Most of the base already exists:
+- `App::handle(input, now)` never reads the system time (T-14).
+- `App::draw` renders into any Ratatui backend.
+- The tests already run the full pipeline on `TestBackend` (T-12, `test_support::Harness`).
+
+The cards reuse that pipeline; they do not copy input handling, state updates or rendering.
+
+### P6-07 — Dev bridge: headless driver, virtual clock and UI state snapshot
+
+- **Owner:** Sonnet
+- **Depends on:** T-12, T-14
+- **Files:** `crates/tui/Cargo.toml` (feature `dev`), `crates/tui/src/clock.rs`, `crates/tui/src/terminal.rs`,
+  `crates/tui/src/headless/**` (new, `#[cfg(feature = "dev")]`), `crates/tui/src/app/snapshot.rs` (new,
+  `#[cfg(feature = "dev")]`), `crates/tui/src/lib.rs`, `crates/tui/src/solver.rs` (a synchronous solver for the
+  headless run, if it is not already there), `docs/tech/architecture.md` (TUI contract), tests
+- **Shared files:** `crates/tui/src/app.rs` (only the `mod` line of the snapshot module)
+- **Scope:**
+  - **Clock:** a `Clock` trait with `now() -> Instant`, and two implementations:
+    - `SystemClock`, in every build, used by `terminal::run`;
+    - `VirtualClock`, a fixed base `Instant` plus an offset that moves only when stepped.
+
+    `terminal::drive` takes the clock instead of calling `Instant::now()` itself. Nothing else in the interactive loop
+    changes.
+  - **One step function** is shared by the terminal loop and the headless driver: handle one `Input`, then draw. The
+    headless driver must not reimplement anything the interactive loop does.
+  - **`Headless`** (feature `dev`) owns `App`, a `Terminal<TestBackend>` of `cols × rows` and a `VirtualClock`:
+    - `step(input)` runs handle, then draw, and increments `frame_id`;
+    - `resize(cols, rows)` resizes the backend and sends `Input::Resize`;
+    - `tick(ms)` advances the clock and sends `Input::Tick`;
+    - the cell buffer is Ratatui's `Buffer` of the backend: symbol, foreground, background, and the bold, underline,
+      reversed and dim modifiers;
+    - `text_frame()` returns the `cols × rows` plain text grid.
+  - **Dependencies of a headless run.** Nothing runs on another thread, so the same commands always give the same
+    frames:
+    - `MemoryStorage`, seeded with the start settings;
+    - no audio;
+    - a clipboard that records;
+    - seeds from a counter that starts at the given seed;
+    - a synchronous solver.
+  - **`App::snapshot() -> UiSnapshot`** (feature `dev`, `Serialize`). It is read-only and never changes state. It holds:
+    - `screen`, `mode`, `active_overlay`, `overlay_rect`, `dock_mode`;
+    - `focus`, `hover`, `tooltip_visible`;
+    - `status_line`, `last_error`;
+    - `game_stats`: variant, seed, moves, elapsed time;
+    - on the board, a summary of the legal actions from the existing move list.
+- **Acceptance:**
+  - A default build (`cargo build`, `cargo build --no-default-features`) contains no headless code, and the interactive
+    loop behaves as before.
+  - Tests show:
+    - `VirtualClock` moves only when stepped;
+    - the same inputs on two `Headless` runs give identical buffers and snapshots;
+    - a headless frame equals the `Harness` frame for the same inputs;
+    - the snapshot names the screen, the overlay with its rectangle, the focus and the game stats.
+
+### P6-08 — Dev bridge: `--dev-bridge` JSON-lines protocol
+
+- **Owner:** Sonnet
+- **Depends on:** P6-07
+- **Files:** `Cargo.toml` (feature `dev-bridge = ["oxysol-tui/dev"]`, off by default), `src/cli.rs`, `src/main.rs`,
+  `src/dev_bridge/**` (new, `#[cfg(feature = "dev-bridge")]`), `src/lib.rs`, `docs/tech/architecture.md` (application
+  contract), `tests/integration/dev_bridge.rs` (new), tests
+- **Scope:**
+  - `--dev-bridge` exists only in a build with the feature. A default build rejects it as an unknown argument, and
+    `--help` does not list it.
+  - The loop reads one JSON command per line from `stdin` and writes one JSON response per line to `stdout`, flushing
+    after every response. Every command is one synchronous step: handle, update, render, respond. There is no sleep and
+    no thread.
+  - Commands (missing optional fields take the defaults shown in the PR):
+    - `{"cmd":"start","cols":120,"rows":40,"game":"klondike","seed":12345,"ascii":false,"colors":"truecolor","lang":"en-US","theme":"dark"}`;
+      `"game":"menu"`, or no game, starts on the main menu.
+    - `{"cmd":"key","key":"Enter","modifiers":["shift","ctrl"]}`
+    - `{"cmd":"mouse","action":"move|down|up|click|double_click|right_click","x":10,"y":5}`
+    - `{"cmd":"resize","cols":80,"rows":24}`
+    - `{"cmd":"tick","ms":1000}`
+    - `{"cmd":"snapshot","include_text":true,"include_state":true}`
+    - `{"cmd":"quit"}`
+  - Input mapping:
+    - key names map to the keys of `crates/tui/src/input.rs`;
+    - a click is a down and an up;
+    - a double click uses the application's double-click rule on the virtual clock.
+  - A response holds:
+    - `frame_id` and `ok`;
+    - `error`: a protocol or command error, such as malformed JSON, an unknown command, or a command before `start`;
+    - `state`: the `UiSnapshot`;
+    - `text_frame`, on request;
+    - `events`: what happened in this step, such as screen, overlay, focus and hover changes, and move results. An
+      illegal move is an event, not an ERROR log.
+  - A protocol error never ends the loop. End of input ends it like `quit`.
+- **Acceptance:**
+  - Integration tests drive the protocol through these steps:
+    - start on the main menu;
+    - open Help, Settings and New game;
+    - start a seeded Klondike game;
+    - make moves by keyboard and by mouse;
+    - resize;
+    - quit cleanly.
+  - A malformed line and an unknown command each give `ok: false`, and the loop continues.
+  - `cargo build` without the feature still rejects `--dev-bridge`.
+
+### P6-09 — Dev bridge: `--dev-log` structured log and determinism tests
+
+- **Owner:** Sonnet
+- **Depends on:** P6-08
+- **Files:** `src/dev_bridge/**`, `src/cli.rs`, `tests/integration/dev_bridge.rs`, `xtask/src/**` (one step in
+  `cargo xtask check` that builds and tests with `--features dev-bridge`), `docs/tech/workflow.md` (the new check step),
+  `docs/wiki/` or `docs/tech/` (a short page on driving the bridge), tests
+- **Scope:**
+  - `--dev-log <path>` works only in dev builds, together with `--dev-bridge`. It appends one JSON line, with the
+    `frame_id`, for every command, state transition, focus change, move result and engine error, for post-mortem
+    inspection. A log file that cannot be opened is a readable start-up error.
+  - Determinism: two runs with the same `--seed` and the same command script give byte-identical `text_frame` and
+    `state` for every `frame_id`.
+  - `cargo xtask check` also builds and tests the dev feature, so the bridge cannot rot. A default build stays free of
+    it.
+- **Acceptance:**
+  - A test runs one script twice and compares every response byte for byte.
+  - A test reads the log back and finds the command, transition, focus, move and error entries.
+  - `cargo build` and `cargo build --no-default-features` pass without the feature.
+  - `cargo xtask check --quick` passes.
 
 ## Done before the 2026-11 replan
 

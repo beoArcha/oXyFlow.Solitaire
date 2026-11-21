@@ -17,10 +17,10 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 4 | 48 |
-| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
-| 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
-| 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 8 | 44 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 7 |
+| 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
+| 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
 | 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
 
 ## Roles
@@ -76,10 +76,12 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
    DRAFT is finalized by Opus). **Milestone: 0.4 closed** (workflow closed, card style and game menu in place, Yukon).
 5. Phase 5 (0.5): P3-32 and P3-33 (Haiku) → P3-34 and P3-35 (Sonnet) → P5-03 (Haiku); P5-04 Golf (Sonnet) and P5-05 Spider solver
    (Sonnet) in parallel. **Milestone: 0.5.**
-6. Phase 6 (0.6): P3-36 (Sonnet) → P6-04 (Haiku) and P6-05 (Sonnet); P6-06 after Opus finalizes its scope. **Milestone: 0.6.**
-7. Phase 7 (0.7): P7-04 (Haiku) → P7-05 (Sonnet, after its DRAFT is final). **Milestone: 0.7.**
+6. Phase 6 (0.6): P3-36 (Sonnet) → P6-04 (Haiku) and P6-05 (Sonnet); P6-06 after Opus finalizes its scope; the dev bridge
+   P6-07 → P6-08 → P6-09 (Sonnet) in parallel, one PR at the end. **Milestone: 0.6.**
+7. Phase 7 (0.7): P7-04 (Haiku) → P7-05 (Sonnet, after its DRAFT is final); the dev screenshots P7-06 → P7-07 →
+   P7-08 → P7-09 (Sonnet). **Milestone: 0.7.**
 8. Phase 8 (0.8): P7-02 and P7-03 (Haiku) with the micro cards M-30…M-33 alongside; P8-04 (Haiku) → P8-05 (Sonnet, after its DRAFT is
-   final). **Milestone: 0.8.**
+   final); the layout linter P8-06 (Sonnet) → P8-07 (Haiku), and the MCP wrapper P8-08 (Sonnet). **Milestone: 0.8.**
 9. Phase 9 (0.9): P9-01 test plan (Sonnet) → P7-01 (Haiku) → P9-02 (Sonnet) with P9-03 (Haiku) and P9-04 (Sonnet) → U-03 (User) →
    P9-05 (Haiku), P9-06 (Sonnet) and P9-07 (Haiku), each after its DRAFT is final → P8-01 (Sonnet) → P8-02 (Sonnet) → F-03 (Opus) →
    P8-03 (Haiku + User). **Milestone: the stable 0.9 release; the plan ends.**
@@ -268,11 +270,11 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
 | P5-07 | Better hints: a hint that leads toward a win | Sonnet | P4-10a | TODO |
 | O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | DONE |
-| O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | TODO |
-| O-70 | Language tooltip disappears when a window opens | Haiku | — | TODO |
-| O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | TODO |
+| O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | DONE |
+| O-70 | Language tooltip disappears when a window opens | Haiku | — | IN PROGRESS |
+| O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | IN PROGRESS |
 | O-72 | Docked Help: a margin between the version label and the panel | Haiku | — | TODO |
-| O-73 | Docked Help: dim the selection in the pane without focus | Haiku | — | TODO |
+| O-73 | Docked Help: dim the selection in the pane without focus | Haiku | — | IN PROGRESS |
 | O-74 | Help window: one footer layout and scroll indicator on every tab | Sonnet | O-71 | TODO |
 | O-75 | Windows: the active tab and the focused button look different | Sonnet | — | TODO |
 | O-76 | Docking and pane focus keys shown where they apply | Haiku | — | TODO |
@@ -281,23 +283,23 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-79 | Bottom key bar: keys in an accent colour | Haiku | — | TODO |
 | O-80 | Language selector: quieter at rest, clearer when open | Haiku | O-70 | TODO |
 | O-81 | Window title by context, en-US spelling and wording | Haiku | — | TODO |
-| O-82 | Statistics footer: a space between `Copy seed` and `Esc Back` | Haiku | — | TODO |
-| O-83 | Board footer: the `Do:` prefix is clipped when a side panel is open | Haiku | — | TODO |
-| O-84 | Board footer and `Now:` row: no overflow into the status line; the source column kept | Sonnet | O-83 | TODO |
+| O-82 | Statistics footer: a space between `Copy seed` and `Esc Back` | Haiku | — | DONE |
+| O-83 | Board footer: the `Do:` prefix is clipped when a side panel is open | Haiku | — | DONE |
+| O-84 | Board footer and `Now:` row: no overflow into the status line; the source column kept | Sonnet | O-83 | IN PROGRESS |
 | O-85 | `Turned over` counter: counts what its label says | Haiku | — | TODO |
-| O-86 | Settings: `Font face` shows its own value | Haiku | — | TODO |
-| O-87 | Large cards: a spade with a clear stem | Haiku | — | TODO |
-| O-88 | Stock card back: no stray marks in the centre | Haiku | — | TODO |
+| O-86 | Settings: `Font face` shows its own value | Haiku | — | DONE |
+| O-87 | Large cards: a spade with a clear stem | Haiku | — | IN PROGRESS |
+| O-88 | Stock card back: no stray marks in the centre | Haiku | — | IN PROGRESS |
 | O-89 | Keyboard focus skips face-down cards | Haiku | — | TODO |
 | O-90 | Quick options: the app's selection colour, one name for Aura, real buttons | Haiku | O-75 | TODO |
-| O-91 | Possible moves: readable unavailable entries, active ones first | Haiku | — | TODO |
-| O-92 | Guide panel: `▶` means focus only | Haiku | — | TODO |
+| O-91 | Possible moves: readable unavailable entries, active ones first | Haiku | — | IN PROGRESS |
+| O-92 | Guide panel: `▶` means focus only | Haiku | — | IN PROGRESS |
 | O-93 | Footer: the `v: moves` highlight clears | Haiku | — | TODO |
-| O-94 | Settings: unavailable rows dimmed; no reference to a missing screen | Haiku | — | TODO |
+| O-94 | Settings: unavailable rows dimmed; no reference to a missing screen | Haiku | — | IN PROGRESS |
 | O-95 | Statistics: a plain summary line and footer hints for the action bar | Sonnet | O-82 | TODO |
 | O-96 | Settings: labelled Aura swatches, a Performance section, Left/Right in the footer | Haiku | — | TODO |
 | O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Haiku | O-95 | TODO |
-| O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | TODO |
+| O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | IN PROGRESS |
 | O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Haiku | O-87 | TODO |
 | O-100 | Spider and Pyramid: no `A` in slots that are not ace foundations | Haiku | — | TODO |
 | O-101 | Yukon footer: `Enter: pick up` and `a: quick move` when a card can move | Haiku | — | TODO |
@@ -316,6 +318,9 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P6-04 | Card style: four-colour French | Haiku | P5-03, P3-35 | TODO |
 | P6-05 | Game: TriPeaks | Sonnet | P5-04 | TODO |
 | P6-06 | More game options | Opus (finalizes the scope), then Haiku | P4-09, P3-27 | DRAFT |
+| P6-07 | Dev bridge: headless driver, virtual clock and UI state snapshot | Sonnet | T-12, T-14 | TODO |
+| P6-08 | Dev bridge: `--dev-bridge` JSON-lines protocol | Sonnet | P6-07 | TODO |
+| P6-09 | Dev bridge: `--dev-log` structured log and determinism tests | Sonnet | P6-08 | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
@@ -327,6 +332,10 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 |---|---|---|---|---|
 | P7-04 | Card style: Hungarian suits (Unicode) | Haiku | P6-04 | TODO |
 | P7-05 | Game: Scorpion | Sonnet | P6-05 | DRAFT |
+| P7-06 | Screenshots: one SVG renderer for the dev bridge and the player site | Sonnet | P6-07 | TODO |
+| P7-07 | Screenshots: deterministic PNG and image paths in the bridge `snapshot` | Sonnet | P7-06, P6-08 | TODO |
+| P7-08 | Batch runner: `--dev-script` and `--dev-out` | Sonnet | P7-07, P6-09 | TODO |
+| P7-09 | Baseline scenario pack and the viewport runner | Sonnet | P7-08 | TODO |
 | O-30 | Player site: screenshots, both languages, latest release, build from source | Sonnet | — | DONE |
 
 ### Phase 8 (0.8.x) — Player documentation, Russian cards, Canfield
@@ -337,6 +346,9 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P7-03 | Technical documentation and README | Haiku | P3-09 | TODO |
 | P8-04 | Card style: Russian suits (Unicode) | Haiku | P7-04 | TODO |
 | P8-05 | Game: Canfield | Sonnet | P7-05 | DRAFT |
+| P8-06 | Layout linter: frame trace and the six rules | Sonnet | P6-09 | TODO |
+| P8-07 | Layout linter: `--dev-strict` gate | Haiku | P8-06, P7-08 | TODO |
+| P8-08 | Thin MCP wrapper over `--dev-bridge` | Sonnet | P8-06, P7-07 | TODO |
 
 ### Phase 9 (0.9.x) — Final tests and the stable release
 

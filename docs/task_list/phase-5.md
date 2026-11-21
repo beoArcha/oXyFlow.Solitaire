@@ -158,13 +158,13 @@ Order of work: the Interface options first, then the card style and the games, w
   `Dock: centre`).
 - **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
   menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
+- **Done:** #207
 
 ## Visual fixes and improvements
 
 Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike; batch 3: O-100 to O-107 — Spider, FreeCell, Pyramid, Yukon and the Settings redesign). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
 
 **P1 — Visual bugs and layout collisions**
-- **Done:** #207
 
 ### O-69 — Help window: one height for every tab; optional backdrop dimming
 
@@ -174,6 +174,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** switching between `Keys`, `Rules` and `Command line` makes the window height jump; on `Rules` (How to play) the window is a little shorter, so the top of the `oXySol` logo shows above the yellow border.
 - **Fix:** one height for every Help tab (a share of the terminal height with a minimum and a maximum); the logo never shows above the border. Optionally dim the background behind a centred window (theme tokens only).
 - **Acceptance:** a test renders each tab at 100 × 30 and 200 × 60 and finds the same window rectangle; no logo cell above the border; colours only through theme tokens.
+- **Done:** #211
 
 ### O-70 — Language tooltip disappears when a window opens
 
@@ -183,8 +184,10 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the `English (US)` tooltip under the flag in the top-left corner stays on screen while Help or How to play is open.
 - **Fix:** clear the language widget's hover and focus tooltip whenever any window or overlay opens.
 - **Acceptance:** a test hovers or focuses the flag, opens Help, and finds no tooltip text in the buffer; closing the window does not bring it back until the next hover or focus.
+- **In review:** #213
 
 ### O-71 — Help window: a separator between the scrolling text and the footer
+- **In review:** #223
 
 - **Owner:** Haiku
 - **Depends on:** —
@@ -210,6 +213,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the bottom key bar of Statistics reads `c Copy seedEsc Back`, with no space between the two entries.
 - **Fix:** the same separator between every footer entry; find why this pair loses it (width budget or a missing join).
 - **Acceptance:** a test renders Statistics at 100 × 30 and 200 × 60 in all nine locales and finds at least one space between every pair of footer entries.
+- **Done:** #212
 
 ### O-83 — Board footer: the `Do:` prefix is clipped when a side panel is open
 
@@ -219,6 +223,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** in Klondike with the right side panel open (`Guide` or `Possible moves`) the second footer line starts `ow: s: turn stock…` instead of `Do: s: turn stock…`.
 - **Fix:** compute the footer width from the table area that is left when a side panel takes its columns, and clip from the end, never the start.
 - **Acceptance:** a test opens each side panel in every variant at 100 × 30 and 130 × 40 and finds both footer rows starting with their full prefix.
+- **Done:** #210 (the clipped prefix did not reproduce; the PR adds the regression test only, owner 2026-11-21: likely a cropped screenshot)
 
 ### O-84 — Board footer and `Now:` row: no overflow into the status line; the source column kept
 
@@ -228,6 +233,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** with `Possible moves` open and an error shown, the last footer items (`p: pause   v: moves`) run onto the `Now:` row right after `Illegal move: the cards cannot go there.`; `Now: Carrying: eight of diamonds (from: Tab…` cuts off the source column number.
 - **Fix:** footer entries never spill into the `Now:` row; when the `Now:` text is too long, shorten the card name first or use a compact column name (for example `T5`) so the source column stays; drop low-priority footer hints first on narrow widths.
 - **Acceptance:** tests at the narrowest board width with each side panel open: the `Now:` row holds no footer text, the source column is visible while carrying, and the drop order of footer hints is fixed.
+- **In review:** #217
 
 ### O-85 — `Turned over` counter: counts what its label says
 
@@ -246,6 +252,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** both `Font face` and `Font size` show `Ctrl+= / Ctrl+-`.
 - **Fix:** `Font face` shows the current face (or that the terminal controls it); only `Font size` names the zoom keys.
 - **Acceptance:** a test renders the Interface section with a face set and with the terminal in control and finds the right value on each row; all nine locales.
+- **Done:** #209
 
 ### O-100 — Spider and Pyramid: no `A` in slots that are not ace foundations
 
@@ -284,6 +291,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** with Help docked left or right and focused, the main menu keeps its bright yellow selection (`▶ Help`), which outshines the quiet blue header of the active Help panel.
 - **Fix:** when focus is in the docked panel, the other pane's selection uses a muted style (for example a dark grey background); the selection stays visible without colour (the marker stays).
 - **Acceptance:** a test moves focus between the panes and checks the selection style of each; the marker is present in both states; contrast tests pass.
+- **In review:** #220
 
 ### O-74 — Help window: one footer layout and scroll indicator on every tab
 
@@ -329,6 +337,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** on `Large` cards the spade pip (`9 ♠`, `2 ♠`, `Q ♠`) is a thick symmetric cross with no stem, so its outline is closer to the diamond than to the club.
 - **Fix:** redraw the large spade with a pointed top and a stem or foot at the bottom, in Unicode and ASCII mode.
 - **Acceptance:** a snapshot of the large pips shows four outlines that differ by shape; the spade has a stem row the diamond does not.
+- **In review:** #215
 
 ### O-88 — Stock card back: no stray marks in the centre
 
@@ -338,6 +347,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the centre of the face-down stock (`x24`) shows two small offset dark vertical bars that look like a broken glyph.
 - **Fix:** a clean symmetric centre detail, or no centre glyph, at every card size and back style.
 - **Acceptance:** snapshots of the stock in each back style and size show a symmetric centre without the bars.
+- **In review:** #221
 
 ### O-89 — Keyboard focus skips face-down cards
 
@@ -365,6 +375,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** unavailable entries and their reasons (`Nothing to pick up here`, `Carrying cards`, `Nothing to undo`) have very low contrast on the dark navy background and take about 70 % of the panel.
 - **Fix:** raise the contrast of the unavailable text to pass the contrast tests, and list the available actions first with the unavailable ones grouped or condensed below.
 - **Acceptance:** contrast tests cover the unavailable style in every theme; a test finds the available actions above the unavailable ones.
+- **In review:** #219 (the moves window only; the side panel order in `screens/board/moves_panel.rs` is a follow-up)
 
 ### O-92 — Guide panel: `▶` means focus only
 
@@ -374,6 +385,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the Guide prefixes the available keys (`▶ Arrows`, `▶ s`, `▶ h`) with `▶`, while the Legend just below says `▶` is the focus.
 - **Fix:** a different marker (WGL4 and ASCII form) for available or recommended keys, so `▶` only means focus; the Legend explains both.
 - **Acceptance:** a test finds no `▶` in the Guide's key list and finds the new marker in the Legend.
+- **In review:** #216
 
 ### O-93 — Footer: the `v: moves` highlight clears
 
@@ -392,6 +404,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** `Console font` shows working arrows `◄ unavailable ►` although it cannot change; the note at the bottom says `(see the graphics check)`, which Settings does not show.
 - **Fix:** dim unavailable rows and hide their `◄ ►`; either link the graphics check from Settings or rewrite the note so it does not point at something missing.
 - **Acceptance:** a test renders an unavailable row without arrows in the dimmed style; the note text in all nine locales matches what the screen offers.
+- **In review:** #218
 
 ### O-95 — Statistics: a plain summary line and footer hints for the action bar
 
@@ -504,6 +517,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** tests for the three result styles in every theme (contrast passes), the unchecked mark equal to the legend, and a time rendered in the local offset.
 
 ### O-98 — Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer
+- **In review:** #222
 
 - **Owner:** Haiku
 - **Depends on:** —
