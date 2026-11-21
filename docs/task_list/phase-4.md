@@ -176,6 +176,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** Each item as in the review.
 - **Progress:** B9, C7 and F5 done in #165 (manual `site.yml`); F4 (xtask compiles the TUI before the first gate) open
 - **F4:** moved into P4-14 (light `xtask`)
+- **Done:** #165 (B9, C7, F5); F4 in P4-14 (#186, #190)
 
 ### O-37 — Mouse path for Pause and Possible moves on every screen width
 

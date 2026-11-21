@@ -216,7 +216,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-64 | `cargo xtask preflight` and a local CI mode | Haiku | O-49 | DONE |
 | O-65 | Release provenance, SBOM, immutable releases; pinned host key | Sonnet | O-49 | DONE |
 | O-66 | Optimize the engine in test builds | Haiku | O-49 | DONE |
-| O-67 | Small cleanups: pycache, site redeploy, xtask split, apt cache | Antigravity / Haiku | O-49 | TODO |
+| O-67 | Small cleanups: pycache, site redeploy, xtask split, apt cache | Antigravity / Haiku | O-49 | DONE |
 | O-37 | Mouse path for Pause and Possible moves on every screen width | Haiku | P3-16, P3-28 | DONE |
 | O-38 | Settings save failure: alert and log once per session | Haiku | — | DONE |
 | O-39 | Split files over 300 LOC found by the P3-09 gate | Antigravity | — | DONE |
