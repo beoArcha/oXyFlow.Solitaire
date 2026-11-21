@@ -8,6 +8,7 @@ Exit criteria:
 - the visual fixes O-69 to O-107 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
+- the developer bridge P5-08, P5-09 and P5-10 is DONE (decision T-42).
 
 Order of work: the Interface options first, then the card style and the games, which do not touch those files. The visual fixes (O-69 to O-107) go by priority, P1 before P2 before P3, respecting each card's dependencies; Settings cards run one at a time in the order O-86, O-94, O-102, O-103, O-96, because they share the Settings screen.
 
@@ -158,13 +159,13 @@ Order of work: the Interface options first, then the card style and the games, w
   `Dock: centre`).
 - **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
   menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
+- **Done:** #207
 
 ## Visual fixes and improvements
 
 Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike; batch 3: O-100 to O-107 — Spider, FreeCell, Pyramid, Yukon and the Settings redesign). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
 
 **P1 — Visual bugs and layout collisions**
-- **Done:** #207
 
 ### O-69 — Help window: one height for every tab; optional backdrop dimming
 
@@ -174,6 +175,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** switching between `Keys`, `Rules` and `Command line` makes the window height jump; on `Rules` (How to play) the window is a little shorter, so the top of the `oXySol` logo shows above the yellow border.
 - **Fix:** one height for every Help tab (a share of the terminal height with a minimum and a maximum); the logo never shows above the border. Optionally dim the background behind a centred window (theme tokens only).
 - **Acceptance:** a test renders each tab at 100 × 30 and 200 × 60 and finds the same window rectangle; no logo cell above the border; colours only through theme tokens.
+- **Done:** #211
 
 ### O-70 — Language tooltip disappears when a window opens
 
@@ -183,6 +185,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the `English (US)` tooltip under the flag in the top-left corner stays on screen while Help or How to play is open.
 - **Fix:** clear the language widget's hover and focus tooltip whenever any window or overlay opens.
 - **Acceptance:** a test hovers or focuses the flag, opens Help, and finds no tooltip text in the buffer; closing the window does not bring it back until the next hover or focus.
+- **In review:** #213
 
 ### O-71 — Help window: a separator between the scrolling text and the footer
 
@@ -210,6 +213,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the bottom key bar of Statistics reads `c Copy seedEsc Back`, with no space between the two entries.
 - **Fix:** the same separator between every footer entry; find why this pair loses it (width budget or a missing join).
 - **Acceptance:** a test renders Statistics at 100 × 30 and 200 × 60 in all nine locales and finds at least one space between every pair of footer entries.
+- **Done:** #212
 
 ### O-83 — Board footer: the `Do:` prefix is clipped when a side panel is open
 
@@ -219,6 +223,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** in Klondike with the right side panel open (`Guide` or `Possible moves`) the second footer line starts `ow: s: turn stock…` instead of `Do: s: turn stock…`.
 - **Fix:** compute the footer width from the table area that is left when a side panel takes its columns, and clip from the end, never the start.
 - **Acceptance:** a test opens each side panel in every variant at 100 × 30 and 130 × 40 and finds both footer rows starting with their full prefix.
+- **Done:** #210 (the clipped prefix did not reproduce; the PR adds the regression test only, owner 2026-11-21: likely a cropped screenshot)
 
 ### O-84 — Board footer and `Now:` row: no overflow into the status line; the source column kept
 
@@ -228,6 +233,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** with `Possible moves` open and an error shown, the last footer items (`p: pause   v: moves`) run onto the `Now:` row right after `Illegal move: the cards cannot go there.`; `Now: Carrying: eight of diamonds (from: Tab…` cuts off the source column number.
 - **Fix:** footer entries never spill into the `Now:` row; when the `Now:` text is too long, shorten the card name first or use a compact column name (for example `T5`) so the source column stays; drop low-priority footer hints first on narrow widths.
 - **Acceptance:** tests at the narrowest board width with each side panel open: the `Now:` row holds no footer text, the source column is visible while carrying, and the drop order of footer hints is fixed.
+- **In review:** #217
 
 ### O-85 — `Turned over` counter: counts what its label says
 
@@ -246,6 +252,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** both `Font face` and `Font size` show `Ctrl+= / Ctrl+-`.
 - **Fix:** `Font face` shows the current face (or that the terminal controls it); only `Font size` names the zoom keys.
 - **Acceptance:** a test renders the Interface section with a face set and with the terminal in control and finds the right value on each row; all nine locales.
+- **Done:** #209
 
 ### O-100 — Spider and Pyramid: no `A` in slots that are not ace foundations
 
@@ -284,6 +291,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** with Help docked left or right and focused, the main menu keeps its bright yellow selection (`▶ Help`), which outshines the quiet blue header of the active Help panel.
 - **Fix:** when focus is in the docked panel, the other pane's selection uses a muted style (for example a dark grey background); the selection stays visible without colour (the marker stays).
 - **Acceptance:** a test moves focus between the panes and checks the selection style of each; the marker is present in both states; contrast tests pass.
+- **In review:** #220
 
 ### O-74 — Help window: one footer layout and scroll indicator on every tab
 
@@ -329,6 +337,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** on `Large` cards the spade pip (`9 ♠`, `2 ♠`, `Q ♠`) is a thick symmetric cross with no stem, so its outline is closer to the diamond than to the club.
 - **Fix:** redraw the large spade with a pointed top and a stem or foot at the bottom, in Unicode and ASCII mode.
 - **Acceptance:** a snapshot of the large pips shows four outlines that differ by shape; the spade has a stem row the diamond does not.
+- **In review:** #215
 
 ### O-88 — Stock card back: no stray marks in the centre
 
@@ -338,6 +347,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the centre of the face-down stock (`x24`) shows two small offset dark vertical bars that look like a broken glyph.
 - **Fix:** a clean symmetric centre detail, or no centre glyph, at every card size and back style.
 - **Acceptance:** snapshots of the stock in each back style and size show a symmetric centre without the bars.
+- **In review:** #221
 
 ### O-89 — Keyboard focus skips face-down cards
 
@@ -365,6 +375,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** unavailable entries and their reasons (`Nothing to pick up here`, `Carrying cards`, `Nothing to undo`) have very low contrast on the dark navy background and take about 70 % of the panel.
 - **Fix:** raise the contrast of the unavailable text to pass the contrast tests, and list the available actions first with the unavailable ones grouped or condensed below.
 - **Acceptance:** contrast tests cover the unavailable style in every theme; a test finds the available actions above the unavailable ones.
+- **In review:** #219 (the moves window only; the side panel order in `screens/board/moves_panel.rs` is a follow-up)
 
 ### O-92 — Guide panel: `▶` means focus only
 
@@ -374,6 +385,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the Guide prefixes the available keys (`▶ Arrows`, `▶ s`, `▶ h`) with `▶`, while the Legend just below says `▶` is the focus.
 - **Fix:** a different marker (WGL4 and ASCII form) for available or recommended keys, so `▶` only means focus; the Legend explains both.
 - **Acceptance:** a test finds no `▶` in the Guide's key list and finds the new marker in the Legend.
+- **In review:** #216
 
 ### O-93 — Footer: the `v: moves` highlight clears
 
@@ -392,6 +404,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** `Console font` shows working arrows `◄ unavailable ►` although it cannot change; the note at the bottom says `(see the graphics check)`, which Settings does not show.
 - **Fix:** dim unavailable rows and hide their `◄ ►`; either link the graphics check from Settings or rewrite the note so it does not point at something missing.
 - **Acceptance:** a test renders an unavailable row without arrows in the dimmed style; the note text in all nine locales matches what the screen offers.
+- **In review:** #218
 
 ### O-95 — Statistics: a plain summary line and footer hints for the action bar
 
@@ -520,6 +533,133 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** `Large` cards show rank and suit three times: top-left (`9♠`), a centred line under the top border (`9 ♠`) and bottom-right (`9♠`).
 - **Fix:** try the large face without the centred line so the main pip has more room; keep it if a card becomes harder to read in any style. The owner decides from a before and after snapshot.
 - **Acceptance:** before and after snapshots for every card style in the PR; the rank stays readable at the large size.
+
+## Developer testing infrastructure: headless backend and JSON-lines dev bridge
+
+Owner request 2026-11-21. An agent or a script drives the real application without a terminal: it sends one JSON command
+per line on `stdin` and reads one JSON response per line on `stdout`, and every step is deterministic (decision T-42).
+These cards run on one branch, `feat/P5-08-dev-bridge`, and go to `main` as one PR when P5-10 is done.
+
+Most of the base already exists:
+- `App::handle(input, now)` never reads the system time (T-14).
+- `App::draw` renders into any Ratatui backend.
+- The tests already run the full pipeline on `TestBackend` (T-12, `test_support::Harness`).
+
+The cards reuse that pipeline; they do not copy input handling, state updates or rendering.
+
+### P5-08 — Dev bridge: headless driver, virtual clock and UI state snapshot
+
+- **Owner:** Sonnet
+- **Depends on:** T-12, T-14
+- **Status:** IN PROGRESS (on `feat/P5-08-dev-bridge`)
+- **Files:** `crates/tui/Cargo.toml` (feature `dev`), `crates/tui/src/clock.rs`, `crates/tui/src/terminal.rs`,
+  `crates/tui/src/headless/**` (new, `#[cfg(feature = "dev")]`), `crates/tui/src/app/snapshot.rs` (new,
+  `#[cfg(feature = "dev")]`), `crates/tui/src/lib.rs`, `crates/tui/src/solver.rs` (a synchronous solver for the
+  headless run, if it is not already there), `docs/tech/architecture.md` (TUI contract), tests
+- **Shared files:** `crates/tui/src/app.rs` (only the `mod` line of the snapshot module)
+- **Scope:**
+  - **Clock:** a `Clock` trait with `now() -> Instant`, and two implementations:
+    - `SystemClock`, in every build, used by `terminal::run`;
+    - `VirtualClock`, a fixed base `Instant` plus an offset that moves only when stepped.
+
+    `terminal::drive` takes the clock instead of calling `Instant::now()` itself. Nothing else in the interactive loop
+    changes.
+  - **One step function** is shared by the terminal loop and the headless driver: handle one `Input`, then draw. The
+    headless driver must not reimplement anything the interactive loop does.
+  - **`Headless`** (feature `dev`) owns `App`, a `Terminal<TestBackend>` of `cols × rows` and a `VirtualClock`:
+    - `step(input)` runs handle, then draw, and increments `frame_id`;
+    - `resize(cols, rows)` resizes the backend and sends `Input::Resize`;
+    - `tick(ms)` advances the clock and sends `Input::Tick`;
+    - the cell buffer is Ratatui's `Buffer` of the backend: symbol, foreground, background, and the bold, underline,
+      reversed and dim modifiers;
+    - `text_frame()` returns the `cols × rows` plain text grid.
+  - **Dependencies of a headless run.** Nothing runs on another thread, so the same commands always give the same
+    frames:
+    - `MemoryStorage`, seeded with the start settings;
+    - no audio;
+    - a clipboard that records;
+    - seeds from a counter that starts at the given seed;
+    - a synchronous solver.
+  - **`App::snapshot() -> UiSnapshot`** (feature `dev`, `Serialize`). It is read-only and never changes state. It holds:
+    - `screen`, `mode`, `active_overlay`, `overlay_rect`, `dock_mode`;
+    - `focus`, `hover`, `tooltip_visible`;
+    - `status_line`, `last_error`;
+    - `game_stats`: variant, seed, moves, elapsed time;
+    - on the board, a summary of the legal actions from the existing move list.
+- **Acceptance:**
+  - A default build (`cargo build`, `cargo build --no-default-features`) contains no headless code, and the interactive
+    loop behaves as before.
+  - Tests show:
+    - `VirtualClock` moves only when stepped;
+    - the same inputs on two `Headless` runs give identical buffers and snapshots;
+    - a headless frame equals the `Harness` frame for the same inputs;
+    - the snapshot names the screen, the overlay with its rectangle, the focus and the game stats.
+
+### P5-09 — Dev bridge: `--dev-bridge` JSON-lines protocol
+
+- **Owner:** Sonnet
+- **Depends on:** P5-08
+- **Files:** `Cargo.toml` (feature `dev-bridge = ["oxysol-tui/dev"]`, off by default), `src/cli.rs`, `src/main.rs`,
+  `src/dev_bridge/**` (new, `#[cfg(feature = "dev-bridge")]`), `src/lib.rs`, `docs/tech/architecture.md` (application
+  contract), `tests/integration/dev_bridge.rs` (new), tests
+- **Scope:**
+  - `--dev-bridge` exists only in a build with the feature. A default build rejects it as an unknown argument, and
+    `--help` does not list it.
+  - The loop reads one JSON command per line from `stdin` and writes one JSON response per line to `stdout`, flushing
+    after every response. Every command is one synchronous step: handle, update, render, respond. There is no sleep and
+    no thread.
+  - Commands (missing optional fields take the defaults shown in the PR):
+    - `{"cmd":"start","cols":120,"rows":40,"game":"klondike","seed":12345,"ascii":false,"colors":"truecolor","lang":"en-US","theme":"dark"}`;
+      `"game":"menu"`, or no game, starts on the main menu.
+    - `{"cmd":"key","key":"Enter","modifiers":["shift","ctrl"]}`
+    - `{"cmd":"mouse","action":"move|down|up|click|double_click|right_click","x":10,"y":5}`
+    - `{"cmd":"resize","cols":80,"rows":24}`
+    - `{"cmd":"tick","ms":1000}`
+    - `{"cmd":"snapshot","include_text":true,"include_state":true}`
+    - `{"cmd":"quit"}`
+  - Input mapping:
+    - key names map to the keys of `crates/tui/src/input.rs`;
+    - a click is a down and an up;
+    - a double click uses the application's double-click rule on the virtual clock.
+  - A response holds:
+    - `frame_id` and `ok`;
+    - `error`: a protocol or command error, such as malformed JSON, an unknown command, or a command before `start`;
+    - `state`: the `UiSnapshot`;
+    - `text_frame`, on request;
+    - `events`: what happened in this step, such as screen, overlay, focus and hover changes, and move results. An
+      illegal move is an event, not an ERROR log.
+  - A protocol error never ends the loop. End of input ends it like `quit`.
+- **Acceptance:**
+  - Integration tests drive the protocol through these steps:
+    - start on the main menu;
+    - open Help, Settings and New game;
+    - start a seeded Klondike game;
+    - make moves by keyboard and by mouse;
+    - resize;
+    - quit cleanly.
+  - A malformed line and an unknown command each give `ok: false`, and the loop continues.
+  - `cargo build` without the feature still rejects `--dev-bridge`.
+
+### P5-10 — Dev bridge: `--dev-log` structured log and determinism tests
+
+- **Owner:** Sonnet
+- **Depends on:** P5-09
+- **Files:** `src/dev_bridge/**`, `src/cli.rs`, `tests/integration/dev_bridge.rs`, `xtask/src/**` (one step in
+  `cargo xtask check` that builds and tests with `--features dev-bridge`), `docs/tech/workflow.md` (the new check step),
+  `docs/wiki/` or `docs/tech/` (a short page on driving the bridge), tests
+- **Scope:**
+  - `--dev-log <path>` works only in dev builds, together with `--dev-bridge`. It appends one JSON line, with the
+    `frame_id`, for every command, state transition, focus change, move result and engine error, for post-mortem
+    inspection. A log file that cannot be opened is a readable start-up error.
+  - Determinism: two runs with the same `--seed` and the same command script give byte-identical `text_frame` and
+    `state` for every `frame_id`.
+  - `cargo xtask check` also builds and tests the dev feature, so the bridge cannot rot. A default build stays free of
+    it.
+- **Acceptance:**
+  - A test runs one script twice and compares every response byte for byte.
+  - A test reads the log back and finds the command, transition, focus, move and error entries.
+  - `cargo build` and `cargo build --no-default-features` pass without the feature.
+  - `cargo xtask check --quick` passes.
 
 ## Done before the 2026-11 replan
 
