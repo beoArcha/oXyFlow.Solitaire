@@ -29,13 +29,15 @@ const DIALOG_MIN_WIDTH: u16 = 80;
 const SHARE_PERCENT: u16 = 60;
 const MIN_FRAME_ROWS: u16 = 28;
 const MAX_FRAME_ROWS: u16 = 40;
-/// Rows of the box that are not text on the Keys tab: the borders, the tab row, the footer row and
-/// the button row.
-const KEYS_CHROME_ROWS: u16 = 6;
+/// Rows of the box that are not text on the Keys tab: the borders, the tab row, the separator row,
+/// the footer row and the button row.
+const KEYS_CHROME_ROWS: u16 = 7;
 /// Rows of the box that are not in its body: the borders and the button row.
 const BOX_CHROME_ROWS: u16 = 4;
 /// Text rows of the Keys tab at 100 by 30, the smallest window: the first value before any event.
-pub(super) const VIEW_ROWS: usize = 22;
+pub(super) const VIEW_ROWS: usize = 21;
+const RULE_UNICODE: &str = "─";
+const RULE_ASCII: &str = "-";
 
 /// Rows of the box, borders and buttons included, in `area`. Every Help tab uses this height, so
 /// switching tabs does not move the window.
@@ -48,15 +50,33 @@ pub(super) fn frame_rows(area: Rect) -> u16 {
 pub(super) fn view_rows(area: Rect) -> u16 {
     frame_rows(area).saturating_sub(KEYS_CHROME_ROWS)
 }
-/// The top tab row, the text and the footer row of the box body.
-pub(super) fn parts(body: Rect) -> (Rect, Rect, Rect) {
-    let [top, text, footer] = Layout::vertical([
+/// The top tab row, the text, the separator row and the footer row of the box body.
+pub(super) fn parts(body: Rect) -> (Rect, Rect, Rect, Rect) {
+    let [top, text, rule, footer] = Layout::vertical([
         Constraint::Length(1),
         Constraint::Fill(1),
         Constraint::Length(1),
+        Constraint::Length(1),
     ])
     .areas(body);
-    (top, text, footer)
+    (top, text, rule, footer)
+}
+
+/// Draws the separator row between the scrolling text and the footer: a rule of `─`, or `-` in
+/// ASCII mode, in the border colour. Every Help tab draws it, so the footer never touches the text.
+pub(super) fn draw_rule(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+    let glyph = if ctx.glyphs.unicode {
+        RULE_UNICODE
+    } else {
+        RULE_ASCII
+    };
+    frame.render_widget(
+        Paragraph::new(Line::styled(
+            glyph.repeat(usize::from(area.width)),
+            ctx.theme.style(Token::Border, Token::Surface),
+        )),
+        area,
+    );
 }
 
 const GESTURES: [(&str, &str); 5] = [
@@ -221,7 +241,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) 
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let columns = Columns::new();
-    let (top_tab_row, text, footer) = parts(geometry.body);
+    let (top_tab_row, text, rule, footer) = parts(geometry.body);
     draw_top_tabs(frame, top_tab_row, HelpTab::Keys, true, ctx);
     let body = Rect {
         width: text.width.saturating_sub(1),
@@ -252,6 +272,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) 
         right,
     );
     scrollbar::draw(frame, scrollbar::track_of(text), state.metrics(), ctx);
+    draw_rule(frame, rule, ctx);
     let buttons_drawn = footer::draw(
         frame,
         footer,

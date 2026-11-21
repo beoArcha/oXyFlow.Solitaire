@@ -148,5 +148,5 @@ fn the_logo_stays_under_the_border_at_every_height_from_30_to_60() {
 #[test]
 fn the_rules_text_shows_the_rows_of_the_taller_window_at_200_by_60() {
     let mut h = open(Tab::Rules, (200, 60));
-    assert!(h.text().contains("1-29 / "), "{}", h.text());
+    assert!(h.text().contains("1-28 / "), "{}", h.text());
 }
