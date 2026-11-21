@@ -5,6 +5,8 @@ language = "Język"
 theme = "Motyw"
 card_back = "Rewers kart"
 card_face = "Tło kart"
+table_colour = "Kolor stołu"
+table_feel = "Wygląd stołu"
 front_style = "Styl awersów"
 back_style = "Styl rewersów"
 glyphs = "Symbole"
@@ -49,6 +51,8 @@ language = "Język wszystkich tekstów. Zmienia się od razu."
 theme = "Kolory interfejsu."
 card_back = "Kolory i wzór rewersów kart zakrytych."
 card_face = "Kolor kart odkrytych. Kolory znaków dopasowują się, by zachować kontrast. Motyw używa kolorów motywu."
+table_colour = "Kolor stołu, na którym leżą karty. Motyw używa własnego koloru motywu. Kolor, który nie przechodzi testu kontrastu, pokazuje się w najbliższym odcieniu, który go przechodzi."
+table_feel = "Faktura stołu: Gładki nie ma żadnej, Filc rzadki wzór kropek, Liniowany cienkie linie. Faktura nigdy nie leży pod kartami ani tekstem."
 front_style = "Wygląd awersów kart."
 back_style = "Wygląd rewersów kart zakrytych."
 glyphs = "Unicode rysuje kolory i symbole; ASCII używa tylko zwykłych znaków; czcionka oXySol rysuje symbole kart po sprawdzeniu grafiki."
@@ -175,8 +179,13 @@ marks_only = "Tylko znaczniki"
 thin = "Cienka"
 thick = "Gruba"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Podgląd"
+back = "rewers"
+focus = "fokus"
+carried = "wzięte"
+target = "cel"
+hidden = "Podgląd wymaga większego okna."
 
 [preview]
 note = "Podgląd. Przy wyjściu z tego ekranu pojawi się pytanie, czy zachować zmiany."
@@ -196,3 +205,21 @@ high = "Wysoki"
 normal = "Normalny"
 low = "Niski"
 lowest = "Najniższy"
+
+[table_colour]
+theme = "Motyw"
+green = "Zielony filc"
+blue = "Niebieski"
+red = "Czerwony"
+grey = "Szary"
+brown = "Brązowy"
+black = "Czarny"
+
+[table_feel]
+plain = "Gładki"
+felt = "Filc"
+lined = "Liniowany"
+
+[table]
+low_contrast = "{name} (słaby kontrast)"
+reason = "Karty na tym stole nie przechodzą testu kontrastu; stół jest rysowany w najbliższym odcieniu, który go przechodzi, {shade}."

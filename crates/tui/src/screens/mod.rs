@@ -112,6 +112,7 @@ pub const fn variant_label_key(variant: Variant) -> &'static str {
         Variant::Yukon(YukonRules::Alaska) => "common.variant.yukon_alaska",
         Variant::Yukon(YukonRules::Moosehide) => "common.variant.yukon_moosehide",
         Variant::Yukon(YukonRules::Australian) => "common.variant.yukon_australian",
+        Variant::Golf => "common.variant.golf",
     }
 }
 

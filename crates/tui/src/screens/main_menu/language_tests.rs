@@ -11,7 +11,7 @@ use crate::settings::{ColorMode, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
 
-const FLAG_ROW: &str = "◄ ▀▀▀▀ ► ▼";
+const FLAG: &str = "▀▀▀▀";
 
 fn harness(locale: Locale, caps: TerminalCaps, width: u16, height: u16) -> Harness {
     let storage = MemoryStorage {
@@ -58,6 +58,12 @@ fn stored(h: &Harness) -> Option<Locale> {
         .map(|settings| settings.locale)
 }
 
+/// The flag of the selector: drawn at rest and while focused.
+fn flag_cell(h: &mut Harness) -> (u16, u16) {
+    h.find(FLAG).unwrap_or_default()
+}
+
+/// The left arrow exists only while the selector has the focus.
 fn left_arrow(h: &mut Harness) -> (u16, u16) {
     h.find("◄").unwrap_or_default()
 }
@@ -67,9 +73,9 @@ fn right_arrow(h: &mut Harness) -> (u16, u16) {
     (column + 7, row)
 }
 
+/// The down arrow is drawn at rest and while focused.
 fn down_arrow(h: &mut Harness) -> (u16, u16) {
-    let (column, row) = left_arrow(h);
-    (column + 9, row)
+    h.find("▼").unwrap_or_default()
 }
 
 fn open_by_mouse(h: &mut Harness) {
@@ -78,19 +84,20 @@ fn open_by_mouse(h: &mut Harness) {
 }
 
 #[test]
-fn the_corner_shows_the_flag_between_arrows_with_the_code_below() {
+fn the_corner_shows_the_flag_with_the_code_and_the_down_arrow() {
     let mut h = english();
     let lines = h.lines();
-    assert!(lines[1].trim_start().starts_with(FLAG_ROW), "{}", lines[1]);
-    assert!(lines[2].contains("▀▀▀▀ EN"), "{}", lines[2]);
-    assert!(lines[1].starts_with(" ◄"));
+    assert!(lines[1].trim_start().starts_with(FLAG), "{}", lines[1]);
+    assert!(lines[2].contains("▀▀▀▀ EN ▼"), "{}", lines[2]);
+    assert!(!lines[1].contains('◄') && !lines[2].contains('◄'));
+    assert!(!lines[1].contains('►') && !lines[2].contains('►'));
 }
 
 #[test]
 fn the_corner_shows_the_polish_flag_and_code_in_polish() {
     let mut h = harness(Locale::PlPl, TRUE_COLOR, 120, 40);
     let lines = h.lines();
-    assert!(lines[1].trim_start().starts_with(FLAG_ROW), "{}", lines[1]);
+    assert!(lines[1].trim_start().starts_with(FLAG), "{}", lines[1]);
     assert!(lines[2].contains("▀▀▀▀ PL"), "{}", lines[2]);
     assert!(h.text().contains("Nowa gra"));
 }
@@ -101,11 +108,11 @@ fn the_flag_pixels_are_the_flag_colors() {
     let mut h = english();
     h.lines();
     let buffer = h.terminal.backend().buffer();
-    let canton = &buffer[(4, 1)];
+    let canton = &buffer[(2, 1)];
     assert_eq!(canton.symbol(), "▀");
     assert_eq!(canton.fg, Color::Rgb(60, 59, 110));
     assert_eq!(canton.bg, Color::Rgb(60, 59, 110));
-    let stripe = &buffer[(6, 1)];
+    let stripe = &buffer[(4, 1)];
     assert_eq!(stripe.fg, Color::Rgb(200, 16, 46));
     assert_eq!(stripe.bg, Color::Rgb(255, 255, 255));
 }
@@ -116,7 +123,7 @@ fn the_menu_fits_with_the_selector_at_both_reference_sizes_in_both_locales() {
         for locale in Locale::offered() {
             let mut h = harness(locale, TRUE_COLOR, width, height);
             let lines = h.lines();
-            assert!(lines[1].trim_start().starts_with(FLAG_ROW));
+            assert!(lines[1].trim_start().starts_with(FLAG));
             let text = lines.join("\n");
             let quit = crate::i18n::t("common.menu.quit").into_owned();
             assert!(text.contains(&quit), "{width}x{height} {locale:?}");
@@ -230,6 +237,8 @@ fn the_open_list_takes_every_key() {
 #[test]
 fn the_arrows_switch_by_mouse() {
     let mut h = english();
+    let (column, row) = flag_cell(&mut h);
+    h.click(column + 1, row);
     let (column, row) = right_arrow(&mut h);
     h.click(column, row);
     assert_eq!(locale(&h), Locale::PlPl);
@@ -292,13 +301,13 @@ fn the_wheel_moves_the_highlight_of_the_open_list() {
 fn the_tooltip_names_the_language_in_itself_on_hover() {
     let mut h = english();
     assert!(!h.text().contains("English (US)"));
-    let (column, row) = left_arrow(&mut h);
+    let (column, row) = flag_cell(&mut h);
     hover(&mut h, column + 2, row);
     assert!(h.text().contains("English (US)"));
     hover(&mut h, 60, 20);
     assert!(!h.text().contains("English (US)"));
     let mut polish = harness(Locale::PlPl, TRUE_COLOR, 120, 40);
-    let (column, row) = left_arrow(&mut polish);
+    let (column, row) = flag_cell(&mut polish);
     hover(&mut polish, column + 2, row + 1);
     assert!(polish.text().contains("Polski"));
     assert!(!polish.text().contains("English (US)"));
@@ -325,7 +334,8 @@ fn the_selector_is_first_in_the_tab_order_before_the_items() {
     h.press(KeyCode::Tab);
     let text = h.text();
     assert!(text.contains("► New game"));
-    assert_eq!(h.lines()[1].matches('►').count(), 1);
+    assert_eq!(h.lines()[1].matches('►').count(), 0);
+    assert!(!h.lines()[1].contains('◄'));
 }
 
 #[test]
@@ -361,8 +371,8 @@ fn a_click_on_an_item_returns_the_focus_to_the_list() {
 #[test]
 fn a_click_on_the_flag_gives_the_selector_the_focus() {
     let mut h = english();
-    let (column, row) = left_arrow(&mut h);
-    h.click(column + 3, row);
+    let (column, row) = flag_cell(&mut h);
+    h.click(column + 1, row);
     assert!(h.text().contains("English (US)"));
     h.press(KeyCode::Right);
     assert_eq!(locale(&h), Locale::PlPl);
@@ -372,11 +382,7 @@ fn a_click_on_the_flag_gives_the_selector_the_focus() {
 fn the_code_replaces_the_flag_in_ascii_mode() {
     let mut h = harness(Locale::EnUs, PLAIN, 100, 30);
     let lines = h.lines();
-    assert!(
-        lines[1].trim_start().starts_with("< EN > v"),
-        "{}",
-        lines[1]
-    );
+    assert!(lines[1].trim_start().starts_with("EN v"), "{}", lines[1]);
     assert!(!h.text().contains('▀'));
     h.press(KeyCode::BackTab);
     assert!(h.lines()[1].starts_with(" < EN > v"));
@@ -411,20 +417,18 @@ fn sixteen_colors_show_the_code_instead_of_the_flag_even_with_unicode() {
     };
     let mut h = Harness::with(storage, TRUE_COLOR, 100, 30);
     let lines = h.lines();
-    assert!(
-        lines[1].trim_start().starts_with("◄ EN ► ▼"),
-        "{}",
-        lines[1]
-    );
+    assert!(lines[1].trim_start().starts_with("EN ▼"), "{}", lines[1]);
     assert!(lines[..3].iter().all(|line| !line.contains('▀')));
 }
 
 #[test]
 fn the_tooltip_and_arrows_work_without_flags_too() {
     let mut h = harness(Locale::EnUs, PLAIN, 100, 30);
-    hover(&mut h, 5, 1);
+    hover(&mut h, 2, 1);
     assert!(h.text().contains("English (US)"));
     hover(&mut h, 60, 20);
+    h.click(2, 1);
+    assert!(h.lines()[1].contains("< EN > v"));
     h.click(6, 1);
     assert_eq!(locale(&h), Locale::PlPl);
 }

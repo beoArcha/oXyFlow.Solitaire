@@ -37,6 +37,8 @@ fn the_interface_group_holds_the_look_rows_and_follows_the_display_group() {
         Field::Theme,
         Field::CardBack,
         Field::CardFace,
+        Field::TableColour,
+        Field::TableFeel,
         Field::FrontStyle,
         Field::BackStyle,
         Field::Glyphs,
@@ -218,25 +220,16 @@ fn the_screen_says_a_preview_is_open_and_the_note_goes_with_it() {
 fn a_click_on_the_arrow_of_an_interface_row_previews_too() {
     let mut h = open_settings();
     focus(&mut h, Field::AuraSize);
-    let found = h.find("►");
+    let lines = h.lines_without_pane();
+    let found = lines.iter().enumerate().find_map(|(row, line)| {
+        let column = line.chars().position(|c| c == '►')?;
+        Some((u16::try_from(column).ok()?, u16::try_from(row).ok()?))
+    });
     assert!(found.is_some());
     let (column, row) = found.unwrap_or_default();
     h.click(column, row);
     assert_eq!(h.app.settings().aura_size, AuraSize::Thick);
     assert_eq!(saved(&h), None);
-}
-
-#[test]
-fn the_sample_line_follows_the_chosen_look() {
-    let mut h = open_settings();
-    assert!(h.text().contains(&*t("settings.sample.aura")));
-    assert!(h.text().contains("░▒▒░"));
-    focus(&mut h, Field::AuraStyle);
-    h.press(KeyCode::Right);
-    assert!(h.text().contains("│▒▒│"));
-    h.press(KeyCode::Right);
-    assert!(!h.text().contains("│▒▒│"));
-    assert!(!h.text().contains("░▒▒░"));
 }
 
 #[test]

@@ -2,6 +2,7 @@
 //! [`deal`], the only place that knows every game.
 
 use crate::games::freecell::FreeCell;
+use crate::games::golf::Golf;
 use crate::games::klondike::Klondike;
 use crate::games::pyramid::Pyramid;
 use crate::games::spider::Spider;
@@ -79,11 +80,12 @@ pub enum Variant {
     FreeCell,
     Pyramid(PyramidRules),
     Yukon(YukonRules),
+    Golf,
 }
 
 impl Variant {
     /// Every concrete variant the menu can offer.
-    pub const ALL: [Variant; 13] = [
+    pub const ALL: [Variant; 14] = [
         Variant::Klondike(DrawCount::One),
         Variant::Klondike(DrawCount::Three),
         Variant::Spider(SuitCount::One),
@@ -97,6 +99,7 @@ impl Variant {
         Variant::Yukon(YukonRules::Alaska),
         Variant::Yukon(YukonRules::Moosehide),
         Variant::Yukon(YukonRules::Australian),
+        Variant::Golf,
     ];
 
     /// Whether the variant deals part of the deck to a stock: every game except FreeCell and the
@@ -154,6 +157,7 @@ pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game> {
         Variant::FreeCell => Box::new(FreeCell::deal(seed)),
         Variant::Pyramid(rules) => Box::new(Pyramid::deal(rules, seed)),
         Variant::Yukon(rules) => Box::new(Yukon::deal(rules, seed)),
+        Variant::Golf => Box::new(Golf::deal(seed)),
     }
 }
 
@@ -186,9 +190,9 @@ mod tests {
     }
 
     #[test]
-    fn all_lists_thirteen_distinct_variants() {
+    fn all_lists_fourteen_distinct_variants() {
         let unique: HashSet<_> = Variant::ALL.iter().collect();
-        assert_eq!(unique.len(), 13);
+        assert_eq!(unique.len(), 14);
     }
 
     #[test]
@@ -228,6 +232,7 @@ mod tests {
                 Variant::Yukon(YukonRules::Australian),
                 r#"{"yukon":"australian"}"#,
             ),
+            (Variant::Golf, r#""golf""#),
         ];
         assert_eq!(cases.len(), Variant::ALL.len());
         for (variant, json) in cases {

@@ -1,8 +1,8 @@
-use oxysol_core::{DrawCount, PileRef, SuitCount, Variant};
+use oxysol_core::{DrawCount, PileRef, PyramidRules, SuitCount, Variant, YukonRules};
 use ratatui::layout::Rect;
 
 use crate::caps::TerminalCaps;
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, t};
 use crate::layout::{BoardGeometry, chrome_with, compute};
 use crate::screens::Effect;
 use crate::settings::Settings;
@@ -59,6 +59,35 @@ fn slot_middle(h: &mut Harness, size: (u16, u16), pile: PileRef) -> String {
     text_at(&lines, slot, slot.height / 2, slot.width)
         .trim_matches([' ', '│', '|'])
         .to_owned()
+}
+
+#[test]
+fn a_fresh_deal_marks_every_empty_foundation_by_what_the_game_collects() {
+    let size = (130, 40);
+    let ace = t("board.placeholder.foundation").into_owned();
+    let cases = [
+        (Variant::Spider(SuitCount::One), "K".to_owned()),
+        (Variant::Pyramid(PyramidRules::Relaxed), "13".to_owned()),
+        (KLONDIKE_ONE, ace.clone()),
+        (Variant::FreeCell, ace.clone()),
+        (Variant::Yukon(YukonRules::Classic), ace),
+    ];
+    for (variant, expected) in cases {
+        for caps in [TRUE_COLOR, PLAIN] {
+            let mut h = board((variant, 42), caps, Locale::EnUs, size);
+            let foundations: Vec<PileRef> = geometry(&h, size)
+                .piles
+                .iter()
+                .map(|pile| pile.pile)
+                .filter(|pile| matches!(pile, PileRef::Foundation(_)))
+                .collect();
+            assert!(!foundations.is_empty(), "{variant:?} has foundations");
+            for pile in foundations {
+                let mark = slot_middle(&mut h, size, pile);
+                assert_eq!(mark, expected, "{variant:?} {pile:?} {caps:?}");
+            }
+        }
+    }
 }
 
 #[test]

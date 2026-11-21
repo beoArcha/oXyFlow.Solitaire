@@ -21,9 +21,9 @@ fn card_backs_cycle_both_ways() {
         changed(Field::CardBack, &base, Step::Previous).card_back,
         CardBack::Dracula
     );
-    assert!(value(Field::CardBack, &base).starts_with("Theme "));
-    assert!(value(Field::CardBack, &monokai).starts_with("Monokai "));
-    assert!(value(Field::CardBack, &dracula).starts_with("Dracula "));
+    assert!(value(Field::CardBack, &base) == "Theme");
+    assert!(value(Field::CardBack, &monokai) == "Monokai");
+    assert!(value(Field::CardBack, &dracula) == "Dracula");
     assert!(row(Field::CardBack, &base, true).starts_with("Card back"));
     assert_eq!(
         Field::CardBack.group(),
@@ -35,17 +35,17 @@ fn card_backs_cycle_both_ways() {
 fn card_back_names_in_polish() {
     set_locale(Locale::PlPl);
     let base = Settings::default();
-    assert!(value(Field::CardBack, &base).starts_with("Motyw "));
+    assert!(value(Field::CardBack, &base) == "Motyw");
     let monokai = Settings {
         card_back: CardBack::Monokai,
         ..base.clone()
     };
-    assert!(value(Field::CardBack, &monokai).starts_with("Monokai "));
+    assert!(value(Field::CardBack, &monokai) == "Monokai");
     let dracula = Settings {
         card_back: CardBack::Dracula,
         ..base.clone()
     };
-    assert!(value(Field::CardBack, &dracula).starts_with("Dracula "));
+    assert!(value(Field::CardBack, &dracula) == "Dracula");
     assert_eq!(t("settings.row.card_back"), "Rewers kart");
     set_locale(Locale::EnUs);
 }
@@ -56,5 +56,5 @@ fn a_card_back_change_is_shown_at_once() {
     move_down(&mut h, index_of(Field::CardBack));
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().card_back, CardBack::Monokai);
-    assert!(bare(&line_of(&mut h, "Card back")).contains("Monokai "));
+    assert!(bare(&line_of(&mut h, "Card back")).contains("Monokai"));
 }

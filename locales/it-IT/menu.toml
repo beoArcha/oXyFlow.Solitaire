@@ -26,6 +26,7 @@ spider = "Crea otto sequenze dal re all'asso, ciascuna dello stesso seme."
 freecell = "Tutte le carte sono scoperte; quattro celle libere aiutano a spostarle."
 pyramid = "Elimina le coppie la cui somma fa 13; il re si elimina da solo."
 yukon = "Ogni carta scoperta si sposta con tutte le carte sopra; non c'è mazzo."
+golf = "Gioca le carte delle colonne sugli scarti quando sono di un grado più alte o più basse."
 
 [seed]
 title = "Nuova partita da seed"
@@ -53,6 +54,7 @@ spider = "Famiglia Spider"
 free_cell = "Famiglia FreeCell"
 pyramid = "Famiglia Piramide"
 yukon = "Famiglia Yukon"
+golf = "Famiglia Golf"
 
 [search]
 label = "Cerca"

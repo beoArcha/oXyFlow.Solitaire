@@ -16,7 +16,7 @@ use crate::screens::settings::SettingsScreen;
 use crate::screens::settings::options::{FIELDS, Field, Group, Step};
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
-use crate::test_support::{TRUE_COLOR, sound_styles};
+use crate::test_support::{TRUE_COLOR, lines_without_pane, sound_styles};
 use crate::theme::Theme;
 
 struct Fixture {
@@ -71,21 +71,17 @@ fn act(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, action: Action) -> Effect
     screen.handle(&key(KeyCode::Null), Some(action), ctx)
 }
 
-/// The rows the screen is drawn in: the list of the settings needs one row more than the 40 of before
-/// the card face row (P3-33), so the list stays whole at 100 × 41.
-const SCREEN_ROWS: u16 = 41;
+/// The window is wide enough for the preview pane beside the list and high enough for the whole
+/// list, including the table settings.
+const SCREEN_SIZE: (u16, u16) = (130, 43);
 
 fn render(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>) -> Vec<String> {
-    let mut terminal =
-        Terminal::new(TestBackend::new(100, SCREEN_ROWS)).unwrap_or_else(|never| match never {});
+    let mut terminal = Terminal::new(TestBackend::new(SCREEN_SIZE.0, SCREEN_SIZE.1))
+        .unwrap_or_else(|never| match never {});
     terminal
         .draw(|frame| screen.draw(frame, frame.area(), ctx))
         .unwrap_or_else(|never| match never {});
-    let buffer = terminal.backend().buffer();
-    let area = buffer.area;
-    (0..area.height)
-        .map(|y| (0..area.width).map(|x| buffer[(x, y)].symbol()).collect())
-        .collect()
+    lines_without_pane(terminal.backend().buffer(), ctx.theme)
 }
 
 fn position_of(lines: &[String], needle: &str) -> Option<(u16, u16)> {

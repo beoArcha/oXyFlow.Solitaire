@@ -12,9 +12,6 @@ use crate::glyphs::Glyphs;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 
-/// How many pattern symbols the settings row shows as its preview.
-const PREVIEW_WIDTH: usize = 4;
-
 /// The fill pattern symbol of the glyph set: the tile of its back style.
 pub(crate) fn pattern(glyphs: &Glyphs) -> &'static str {
     glyphs.face_down
@@ -33,9 +30,4 @@ pub(crate) fn tokens(glyphs: &Glyphs) -> (Token, Token) {
 pub(super) fn style(ctx: &ViewCtx<'_>) -> Style {
     ctx.theme
         .card_back_style(ctx.settings.card_back, tokens(ctx.glyphs))
-}
-
-/// A short run of the back's pattern, shown after the name of the card back in the settings row.
-pub(crate) fn preview(glyphs: &Glyphs) -> String {
-    pattern(glyphs).repeat(PREVIEW_WIDTH)
 }

@@ -26,6 +26,7 @@ spider = "Forma ocho secuencias del rey al as, cada una del mismo palo."
 freecell = "Todas las cartas están boca arriba; cuatro celdas libres ayudan a moverlas."
 pyramid = "Elimina parejas que sumen 13; el rey se elimina solo."
 yukon = "Cualquier carta boca arriba se mueve con las que tiene encima; no hay mazo."
+golf = "Juega cartas de las columnas al descarte cuando sean un rango mayores o menores."
 
 [seed]
 title = "Nueva partida con semilla"
@@ -53,6 +54,7 @@ spider = "Familia Spider"
 free_cell = "Familia FreeCell"
 pyramid = "Familia Pirámide"
 yukon = "Familia Yukon"
+golf = "Familia Golf"
 
 [search]
 label = "Buscar"

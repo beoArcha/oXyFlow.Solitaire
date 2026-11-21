@@ -16,9 +16,10 @@ const RUSSIAN: Variant = Variant::Yukon(YukonRules::Russian);
 const ALASKA: Variant = Variant::Yukon(YukonRules::Alaska);
 const MOOSEHIDE: Variant = Variant::Yukon(YukonRules::Moosehide);
 const AUSTRALIAN: Variant = Variant::Yukon(YukonRules::Australian);
+const GOLF: Variant = Variant::Golf;
 
 /// Deals the solver wins, with the positions that win them.
-const WINNABLE: [(Variant, u64, u64); 17] = [
+const WINNABLE: [(Variant, u64, u64); 19] = [
     (KLONDIKE_1, 71, 42),
     (KLONDIKE_3, 156, 45),
     (SPIDER_1, 160, 160),
@@ -36,11 +37,13 @@ const WINNABLE: [(Variant, u64, u64); 17] = [
     (MOOSEHIDE, 4, 49),
     (AUSTRALIAN, 22, 31),
     (AUSTRALIAN, 15, 3956),
+    (GOLF, 7, 2157),
+    (GOLF, 9, 5316),
 ];
 
 /// Deals whose search space the solver exhausts without a win. No Moosehide deal among seeds 0 to
 /// 999 is proven unwinnable; its dead position is pinned in the Yukon model tests.
-const UNWINNABLE: [(Variant, u64); 9] = [
+const UNWINNABLE: [(Variant, u64); 11] = [
     (KLONDIKE_1, 20),
     (KLONDIKE_3, 163),
     (KLONDIKE_3, 274),
@@ -50,6 +53,8 @@ const UNWINNABLE: [(Variant, u64); 9] = [
     (RUSSIAN, 12),
     (ALASKA, 10),
     (AUSTRALIAN, 42),
+    (GOLF, 29),
+    (GOLF, 8),
 ];
 
 fn budget(variant: Variant) -> SolveBudget {
@@ -182,4 +187,17 @@ fn every_variant_has_a_model_and_the_yukon_family_spends_nodes() {
         let report = solve_report(Variant::Yukon(rules), 1, SolveBudget::nodes(1_000));
         assert!(report.nodes > 0, "{rules:?}");
     }
+}
+
+#[test]
+fn every_golf_winnable_verdict_of_seeds_0_to_49_replays_on_the_engine() {
+    let budget = SolveBudget::nodes(100_000);
+    let mut winnable = 0;
+    for seed in 0..50 {
+        if let Verdict::Winnable { moves } = solve(GOLF, seed, budget) {
+            assert!(replays_to_win(GOLF, seed, &moves), "seed {seed}");
+            winnable += 1;
+        }
+    }
+    assert!(winnable >= 10, "only {winnable} of 50 proven winnable");
 }

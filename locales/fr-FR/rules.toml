@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Pyramide"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Objectif"
@@ -103,3 +104,15 @@ tips_1 = "Découvre les cartes face cachée en priorité, en commençant par les
 tips_2 = "Un groupe n'a pas besoin d'être en ordre : tu peux aller chercher loin dans une colonne la carte dont tu as besoin."
 tips_3 = "Les rois sont difficiles à déplacer. Garde une colonne vide pour un roi qui bloque des cartes face cachée."
 tips_4 = "Bloqué ? Appuie sur {hint} pour un indice, ou sur {undo} pour annuler un coup."
+
+[golf]
+goal = "Retire les 35 cartes des sept colonnes en les jouant sur la défausse."
+layout_1 = "Sept colonnes de cinq cartes visibles. La première carte de la pioche est posée sur la défausse pour la commencer ; les 16 autres restent dans la pioche."
+layout_2 = "Il n'y a ni fondation ni nouvelle donne : la pioche se retourne carte par carte, une seule fois."
+moves_1 = "Joue la carte du dessus d'une colonne sur la défausse quand son rang est d'un cran plus haut ou plus bas que la carte du dessus de la défausse, dans n'importe quelle couleur : un 7 va sur un 6 ou un 8."
+moves_2 = "Le roi et l'as ne sont pas voisins, donc pas de bouclage : seule une dame va sur un roi, et seul un 2 sur un as."
+moves_3 = "Chaque carte jouée devient la nouvelle carte du dessus de la défausse : une suite peut monter, descendre ou changer de sens."
+moves_4 = "Quand aucune carte de colonne ne convient, retourne la carte suivante de la pioche sur la défausse. Pioche vide et aucune carte jouable : tu es bloqué."
+tips_1 = "Cherche la plus longue suite que tu peux jouer avant de retourner une carte de la pioche."
+tips_2 = "Une suite qui passe d'une colonne à l'autre prolonge la chaîne ; prévois donc quelle colonne vider en premier."
+tips_3 = "Bloqué ? Appuie sur {hint} pour un conseil, ou sur {undo} pour annuler un coup."

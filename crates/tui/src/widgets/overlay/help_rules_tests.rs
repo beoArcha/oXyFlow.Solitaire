@@ -54,6 +54,42 @@ fn click_text(h: &mut Harness, needle: &str) {
     h.click(col, row);
 }
 
+fn titled(h: &mut Harness, title: &str) -> bool {
+    h.text().contains(&format!(" {title} "))
+}
+
+#[test]
+fn the_rules_opened_as_how_to_play_are_titled_how_to_play() {
+    let mut h = harness(TRUE_COLOR);
+    h.app.apply(Effect::Open(Modal::HowToPlay(HowToPlay::new(
+        Rules::Klondike,
+    ))));
+    let title = i18n::t("help.rules.title").into_owned();
+    assert!(titled(&mut h, &title), "{title}");
+}
+
+#[test]
+fn the_rules_reached_from_help_are_titled_help_rules() {
+    let mut h = harness(TRUE_COLOR);
+    h.type_char('?');
+    h.press(KeyCode::Tab);
+    assert!(matches!(shown(&h), Some((Rules::Klondike, _))));
+    let title = i18n::t("help.rules.title_from_help").into_owned();
+    assert!(titled(&mut h, &title), "{title}");
+}
+
+#[test]
+fn the_title_from_help_stays_when_the_game_changes() {
+    let mut h = harness(TRUE_COLOR);
+    h.type_char('?');
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Right);
+    assert!(matches!(shown(&h), Some((Rules::Spider, _))));
+    let title = i18n::t("help.rules.title_from_help").into_owned();
+    assert!(titled(&mut h, &title), "{title}");
+}
+
 #[test]
 fn help_opens_on_keys_tab_with_uncolored_selection() {
     let mut h = harness(TRUE_COLOR);

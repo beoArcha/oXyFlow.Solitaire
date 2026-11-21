@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Piramide"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Doel"
@@ -103,3 +104,15 @@ tips_1 = "Draai eerst de dichte kaarten om, te beginnen bij de langste kolommen.
 tips_2 = "Een groep hoeft niet op volgorde te liggen, dus je kunt diep in een kolom grijpen naar de kaart die je nodig hebt."
 tips_3 = "Koningen zijn moeilijk te verplaatsen. Houd een lege kolom vrij voor een koning die dichte kaarten blokkeert."
 tips_4 = "Zit je vast? Druk op {hint} voor een hint of op {undo} om een zet terug te nemen."
+
+[golf]
+goal = "Ruim alle 35 kaarten van de zeven kolommen op door ze op de aflegstapel te spelen."
+layout_1 = "Zeven kolommen van vijf open kaarten. De eerste kaart van de stapel gaat op de aflegstapel om die te beginnen; de andere 16 blijven in de stapel."
+layout_2 = "Er is geen fundering en geen nieuwe deling: de stapel wordt kaart voor kaart omgedraaid, maar één keer."
+moves_1 = "Speel de bovenste kaart van een kolom op de aflegstapel als zijn rang één hoger of lager is dan de bovenste aflegkaart, in elke kleur: een 7 gaat op een 6 of een 8."
+moves_2 = "Een koning en een aas zijn geen buren, dus er is geen rondgang: op een koning gaat alleen een vrouw, op een aas alleen een 2."
+moves_3 = "Elke gespeelde kaart wordt de nieuwe bovenste kaart van de aflegstapel, dus een reeks kan omhoog, omlaag of van richting wisselen."
+moves_4 = "Past er geen kolomkaart, draai dan de volgende kaart van de stapel om. Met een lege stapel en geen passende kaart zit je vast."
+tips_1 = "Zoek de langste reeks die je kunt spelen voordat je een kaart van de stapel omdraait."
+tips_2 = "Een reeks die tussen kolommen wisselt houdt de keten gaande, dus plan welke kolom je eerst leegmaakt."
+tips_3 = "Zit je vast? Druk op {hint} voor een hint of op {undo} om een zet terug te nemen."
