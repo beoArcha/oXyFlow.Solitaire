@@ -86,6 +86,7 @@ pub struct HowToPlay {
     pub rules: Rules,
     pub scroll: u16,
     pub focus: Focus,
+    pub from_help: bool,
     pub(super) drag: Option<u16>,
     view: u16,
 }
@@ -97,8 +98,25 @@ impl HowToPlay {
             rules,
             scroll: 0,
             focus: Focus::Games,
+            from_help: false,
             drag: None,
             view: content::VIEW_ROWS as u16,
+        }
+    }
+
+    /// The same window, reached from the Help window through its tabs.
+    pub const fn reached_from_help(mut self) -> Self {
+        self.from_help = true;
+        self
+    }
+
+    /// The window's title: "How to play" when it was opened as the rules, "Help · Rules" when the
+    /// Rules tab was reached from the Help window.
+    pub const fn title_key(self) -> &'static str {
+        if self.from_help {
+            "help.rules.title_from_help"
+        } else {
+            "help.rules.title"
         }
     }
 
@@ -132,7 +150,9 @@ impl HowToPlay {
 
     /// Shows `rules` from the top; the focus stays where it is.
     pub fn show(&mut self, rules: Rules) {
+        let from_help = self.from_help;
         *self = Self::new(rules).focused(self.focus);
+        self.from_help = from_help;
     }
 
     /// Up: the text scrolls a line, and at its top the focus goes up to the games; on the games

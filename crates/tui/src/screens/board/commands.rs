@@ -108,6 +108,7 @@ impl BoardScreen {
         let Some(current) = piles.iter().find(|s| s.pile == self.cursor.pile) else {
             return;
         };
+        self.cursor.clamp_to_face_up(current);
         let inside = self.pick.is_none()
             && match dir {
                 Dir::Up => self.cursor.deeper(current),
@@ -131,6 +132,7 @@ impl BoardScreen {
         }
         let piles = self.piles();
         if let Some(current) = piles.iter().find(|s| s.pile == self.cursor.pile) {
+            self.cursor.clamp_to_face_up(current);
             if deeper {
                 self.cursor.run_more(current);
             } else {

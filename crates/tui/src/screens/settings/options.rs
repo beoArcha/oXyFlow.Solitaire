@@ -18,6 +18,8 @@ pub enum Field {
     Theme,
     CardBack,
     CardFace,
+    TableColour,
+    TableFeel,
     FrontStyle,
     BackStyle,
     Glyphs,
@@ -41,13 +43,15 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 26] = [
+pub const FIELDS: [Field; 28] = [
     Field::Language,
     Field::Colors,
     Field::FullScreen,
     Field::Theme,
     Field::CardBack,
     Field::CardFace,
+    Field::TableColour,
+    Field::TableFeel,
     Field::FrontStyle,
     Field::BackStyle,
     Field::Glyphs,
@@ -200,6 +204,8 @@ impl Field {
             Field::Theme => "settings.row.theme",
             Field::CardBack => "settings.row.card_back",
             Field::CardFace => "settings.row.card_face",
+            Field::TableColour => "settings.row.table_colour",
+            Field::TableFeel => "settings.row.table_feel",
             Field::FrontStyle => "settings.row.front_style",
             Field::BackStyle => "settings.row.back_style",
             Field::Glyphs => "settings.row.glyphs",
@@ -227,6 +233,8 @@ impl Field {
             Field::Theme
             | Field::CardBack
             | Field::CardFace
+            | Field::TableColour
+            | Field::TableFeel
             | Field::FrontStyle
             | Field::BackStyle
             | Field::Glyphs
@@ -267,6 +275,8 @@ impl Field {
             Field::Theme => "settings.desc.theme",
             Field::CardBack => "settings.desc.card_back",
             Field::CardFace => "settings.desc.card_face",
+            Field::TableColour => "settings.desc.table_colour",
+            Field::TableFeel => "settings.desc.table_feel",
             Field::FrontStyle => "settings.desc.front_style",
             Field::BackStyle => "settings.desc.back_style",
             Field::Glyphs => "settings.desc.glyphs",

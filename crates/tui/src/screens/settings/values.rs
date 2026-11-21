@@ -13,9 +13,10 @@ use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{
     CONSOLE_FONT_SIZES, CardBack, CardFaceTint, CardSizeSetting, ColorMode, ConsoleFace,
-    FullScreen, GlyphMode, ProcessPriority, Settings,
+    FullScreen, GlyphMode, ProcessPriority, Settings, TableColour, TableFeel,
 };
 use crate::theme::ThemeId;
+use crate::theme::table::felt_for;
 use crate::widgets::card::back;
 
 const VOLUME_STEP: u8 = 10;
@@ -60,6 +61,15 @@ const fn full_screen_key(mode: FullScreen) -> &'static str {
         FullScreen::Auto => "settings.full_screen.auto",
         FullScreen::On => "settings.value.on",
         FullScreen::Off => "settings.value.off",
+    }
+}
+
+fn table_colour_text(settings: &Settings) -> String {
+    let name = t(settings.table_colour.label_key()).into_owned();
+    if felt_for(settings.theme, settings.table_colour).shifted {
+        tf("settings.table.low_contrast", &[("name", &name)])
+    } else {
+        name
     }
 }
 
@@ -144,6 +154,8 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
             ))
         ),
         Field::CardFace => t(settings.card_face.label_key()).into_owned(),
+        Field::TableColour => table_colour_text(settings),
+        Field::TableFeel => t(settings.table_feel.label_key()).into_owned(),
         Field::FrontStyle => front_style_name(&settings.front_style),
         Field::BackStyle => back_style_name(&settings.back_style),
         Field::Glyphs => t(glyph_key(settings.glyph_mode)).into_owned(),
@@ -269,6 +281,10 @@ pub fn changed(
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
         Field::CardBack => next.card_back = cycle(&CARD_BACKS, settings.card_back, step),
         Field::CardFace => next.card_face = cycle(&CardFaceTint::ALL, settings.card_face, step),
+        Field::TableColour => {
+            next.table_colour = cycle(&TableColour::ALL, settings.table_colour, step)
+        }
+        Field::TableFeel => next.table_feel = cycle(&TableFeel::ALL, settings.table_feel, step),
         Field::FrontStyle => {
             next.front_style = cycle_str(&front_styles(), &settings.front_style, step);
         }

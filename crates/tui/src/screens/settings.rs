@@ -20,7 +20,7 @@ use ratatui::widgets::{Paragraph, Wrap};
 
 use self::arrows::{Arrows, glyphs, locate};
 use self::list::{Entry, entries, first_shown};
-use self::options::{FIELDS, Step};
+use self::options::{FIELDS, Field, Step};
 use self::values::{changed, is_unavailable, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
 use super::{Effect, ViewCtx};
@@ -29,6 +29,7 @@ use crate::app::Screen;
 use crate::i18n::{t, tf};
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::theme::Token;
+use crate::theme::table::{felt_for, hex};
 use crate::widgets::footer::{self, FooterMap, KeyHint};
 
 pub(crate) const FOOTER: [KeyHint; 3] = [
@@ -74,17 +75,36 @@ fn change_row(index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
     }
 }
 
-fn draw_reason(frame: &mut Frame, area: Rect, previewing: bool, ctx: &ViewCtx<'_>) {
-    let key = if previewing {
-        "settings.preview.note"
+fn draw_reason(
+    frame: &mut Frame,
+    area: Rect,
+    previewing: bool,
+    focus: Option<Field>,
+    ctx: &ViewCtx<'_>,
+) {
+    let text = if previewing {
+        t("settings.preview.note").into_owned()
+    } else if let Some(note) = table_note(focus, ctx) {
+        note
     } else if let Some(key) = unavailable_reason_key(ctx.audio_status) {
-        key
+        t(key).into_owned()
     } else {
         return;
     };
     let style = ctx.theme.style(Token::TextMuted, Token::Background);
-    let text = Line::styled(t(key).into_owned(), style);
-    frame.render_widget(Paragraph::new(text).alignment(Alignment::Center), area);
+    let line = Line::styled(text, style);
+    frame.render_widget(Paragraph::new(line).alignment(Alignment::Center), area);
+}
+
+/// The warning under the table colour row when its colour fails the contrast tests on the table:
+/// it names the nearest passing shade the table is drawn in.
+fn table_note(focus: Option<Field>, ctx: &ViewCtx<'_>) -> Option<String> {
+    if focus != Some(Field::TableColour) {
+        return None;
+    }
+    let felt = felt_for(ctx.settings.theme, ctx.settings.table_colour);
+    felt.shifted
+        .then(|| tf("settings.table.reason", &[("shade", &hex(felt.swatch.rgb))]))
 }
 
 fn text_width(text: &str) -> u16 {
@@ -219,7 +239,13 @@ impl SettingsScreen {
         let sample = Paragraph::new(sample::line(ctx)).alignment(Alignment::Center);
         frame.render_widget(sample, sample_area);
         self.draw_description(frame, description_area, ctx);
-        draw_reason(frame, reason_area, self.previewing, ctx);
+        draw_reason(
+            frame,
+            reason_area,
+            self.previewing,
+            FIELDS.get(self.focus).copied(),
+            ctx,
+        );
         self.footer = footer::draw(
             frame,
             footer_area,

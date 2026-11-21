@@ -98,3 +98,38 @@ fn an_empty_pyramid_position_does_not_steal_clicks_from_the_row_above() {
         Some((PileRef::Pyramid { row: 5, index: 0 }, Some(0)))
     );
 }
+
+#[test]
+fn a_click_on_each_free_cell_and_foundation_hits_that_slot() {
+    let variant = Variant::FreeCell;
+    let piles = deal(variant, 5).piles();
+    for area in [SMALL, Rect::new(0, 0, 100, 30)] {
+        let geometry = compute(variant, &piles, area);
+        for pile in (0..4)
+            .map(PileRef::Cell)
+            .chain((0..4).map(PileRef::Foundation))
+        {
+            let slot = geometry.pile(pile).map(|p| p.slot).unwrap_or_default();
+            let at = (slot.x + slot.width / 2, slot.y + slot.height / 2);
+            let hit = geometry.hit(at.0, at.1);
+            assert_eq!(hit, Some(Hit { pile, card: None }), "{pile:?} in {area:?}");
+        }
+    }
+}
+
+#[test]
+fn the_group_gap_between_the_cells_and_the_foundations_is_no_slot() {
+    let variant = Variant::FreeCell;
+    let piles = deal(variant, 5).piles();
+    let geometry = compute(variant, &piles, SMALL);
+    let cell = geometry
+        .pile(PileRef::Cell(3))
+        .map(|p| p.slot)
+        .unwrap_or_default();
+    let foundation = geometry
+        .pile(PileRef::Foundation(0))
+        .map(|p| p.slot)
+        .unwrap_or_default();
+    let middle = cell.right() + (foundation.x - cell.right()) / 2;
+    assert_eq!(geometry.hit(middle, cell.y), None);
+}

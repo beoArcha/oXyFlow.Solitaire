@@ -15,7 +15,7 @@ use super::status::Tone;
 use super::{BoardScreen, counters};
 use crate::layout;
 use crate::screens::ViewCtx;
-use crate::theme::Token;
+use crate::theme::{Token, table_feel};
 use crate::widgets::guide::{self, Guide};
 use crate::widgets::moves::{self, MoveEntry, PanelMap};
 use crate::widgets::pile::{self, Marks};
@@ -72,15 +72,27 @@ pub(super) fn render(
         let row = facts.row(rect, ctx.theme.style(Token::Accent, Token::Background));
         frame.render_widget(Paragraph::new(row.line), row.area);
     }
+    let felt = ctx.theme.with_table(ctx.settings.table_colour);
+    let table = ViewCtx {
+        theme: &felt,
+        ..*ctx
+    };
     frame.render_widget(
-        Block::new().style(ctx.theme.style(Token::TableText, Token::Table)),
+        Block::new().style(table.theme.style(Token::TableText, Token::Table)),
         parts.body,
     );
-    if ctx.theme.field_edge() {
-        edge::draw(frame.buffer_mut(), parts.field, ctx);
+    table_feel::draw(
+        frame.buffer_mut(),
+        parts.body,
+        table.theme,
+        ctx.settings.table_feel,
+        ctx.glyphs.unicode,
+    );
+    if table.theme.field_edge() {
+        edge::draw(frame.buffer_mut(), parts.field, &table);
     }
     if let Some(session) = scene.session.filter(|_| !scene.covered) {
-        draw_board(frame, parts.body, session, scene.marks, ctx);
+        draw_board(frame, parts.body, session, scene.marks, &table);
     }
     let buttons = controls::draw(
         frame,

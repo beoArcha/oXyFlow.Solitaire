@@ -37,6 +37,8 @@ fn the_interface_group_holds_the_look_rows_and_follows_the_display_group() {
         Field::Theme,
         Field::CardBack,
         Field::CardFace,
+        Field::TableColour,
+        Field::TableFeel,
         Field::FrontStyle,
         Field::BackStyle,
         Field::Glyphs,
