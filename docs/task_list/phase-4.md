@@ -449,6 +449,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Statistics screen (owner, 2026-11-21, T-40):** the statistics screen is fitted at 100 × 60, not 100 × 30.
   This card moves the statistics fit test to 100 × 60 and gives the history list back its 4 rows (`MIN_LIST_ROWS` in
   `crates/tui/src/screens/stats/view.rs`); the board and the other screens stay at 100 × 30.
+- **Done:** #195
 
 ### P4-10c — Yukon variant: Alaska
 
@@ -458,6 +459,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Scope:** Yukon layout and moves; columns build **up or down in the same suit**. Menu entry, rules tab and wiki
   section as P4-10b.
 - **Acceptance:** tests for building up and down by suit, storage round trip, menu and rules in all nine locales.
+- **Done:** #197
 
 ### P4-10d — Yukon variant: Moosehide
 
