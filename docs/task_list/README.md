@@ -266,7 +266,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
 | P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
 | P5-07 | Better hints: a hint that leads toward a win | Sonnet | P4-10a | TODO |
-| O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | TODO |
+| O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | DONE |
 | O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | TODO |
 | O-70 | Language tooltip disappears when a window opens | Haiku | — | TODO |
 | O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | TODO |

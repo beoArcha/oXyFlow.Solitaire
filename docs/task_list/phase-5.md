@@ -164,6 +164,7 @@ Order of work: the Interface options first, then the card style and the games, w
 Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
 
 **P1 — Visual bugs and layout collisions**
+- **Done:** #207
 
 ### O-69 — Help window: one height for every tab; optional backdrop dimming
 
