@@ -5,6 +5,7 @@
 use ratatui::Frame;
 use ratatui::crossterm::event::MouseEvent;
 use ratatui::layout::Rect;
+use ratatui::style::Style;
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
@@ -12,6 +13,18 @@ use crate::action::Action;
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::screens::ViewCtx;
 use crate::screens::focus::{marker, step, tab_forward};
+use crate::theme::Token;
+
+/// How the focused item of a list is shown, which depends on where the focus of the screen is.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Highlight {
+    /// The list holds the focus: the focused item is marked and drawn in the focus style.
+    Focused,
+    /// The focus is in another pane: the focused item keeps its marker, drawn in muted text.
+    Muted,
+    /// The list does not hold the focus: no item is marked.
+    Off,
+}
 
 /// Focus state and the screen rectangles of the items drawn last.
 #[derive(Debug, Default)]
@@ -64,15 +77,15 @@ impl MenuList {
     }
 
     /// Draws the items centered in `area`, one row each, and remembers where they are. The
-    /// focused item is marked and highlighted only while `active`, that is while the list holds
-    /// the focus of its screen.
+    /// focused item is marked unless `highlight` is `Off`, and drawn in the focus style only when
+    /// `highlight` is `Focused`.
     pub fn draw(
         &mut self,
         frame: &mut Frame,
         area: Rect,
         labels: &[String],
         ctx: &ViewCtx<'_>,
-        active: bool,
+        highlight: Highlight,
     ) {
         let widest = labels
             .iter()
@@ -93,16 +106,20 @@ impl MenuList {
                 break;
             }
             let row = Rect::new(x, area.y + offset, width, 1);
-            let focused = active && index == focus;
-            let style = if focused {
-                ctx.theme.focus()
-            } else {
-                ctx.theme.base()
-            };
+            let focused = highlight != Highlight::Off && index == focus;
+            let style = item_style(ctx, highlight, index == focus);
             let text = format!("{} {label}", marker(ctx, focused));
             frame.render_widget(Paragraph::new(Line::styled(text, style)), row);
             self.hits.push(row);
         }
+    }
+}
+
+fn item_style(ctx: &ViewCtx<'_>, highlight: Highlight, is_focus: bool) -> Style {
+    match (highlight, is_focus) {
+        (Highlight::Focused, true) => ctx.theme.focus(),
+        (Highlight::Muted, true) => ctx.theme.style(Token::TextMuted, Token::Background),
+        _ => ctx.theme.base(),
     }
 }
 
