@@ -3,89 +3,100 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<text x="396 405 414 423 432 441 450 459 468 477 486 495 504" y="71" fill="#8cbeff">Einstellungen</text>
-<text x="162 171 180 189 198 207 216" y="109" fill="#8cbeff">Anzeige</text>
-<rect x="144" y="114" width="342" height="19" fill="#ffd666"/>
-<text x="144" y="128" fill="#141820">►</text>
-<text x="162 171 180 189 198 207 216" y="128" fill="#141820">Sprache</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="128" fill="#141820">................</text>
-<text x="387" y="128" fill="#141820">◄</text>
-<text x="405 414 423 432 441 450 459" y="128" fill="#141820">Deutsch</text>
-<text x="477" y="128" fill="#141820">►</text>
-<text x="162 171 180 189 198 207" y="147" fill="#e8ecf4">Design</text>
-<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="147" fill="#e8ecf4">.................</text>
-<text x="405 414 423 432 441 450" y="147" fill="#e8ecf4">Dunkel</text>
-<path fill="#80848d" d="M468 152h9v19h-9zM477 152h9v19h-9zM486 152h9v19h-9zM495 152h9v19h-9z"/>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261" y="166" fill="#e8ecf4">Kartenrücken</text>
-<text x="279 288 297 306 315 324 333 342 351 360 369" y="166" fill="#e8ecf4">...........</text>
-<text x="405 414 423 432 441 450" y="166" fill="#e8ecf4">Design</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306" y="185" fill="#e8ecf4">Vorderseiten-Stil</text>
-<text x="324 333 342 351 360 369" y="185" fill="#e8ecf4">......</text>
-<text x="405 414 423 432 441 450 459 468 477 486 495 504 513" y="185" fill="#e8ecf4">International</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288" y="204" fill="#e8ecf4">Rückseiten-Stil</text>
-<text x="306 315 324 333 342 351 360 369" y="204" fill="#e8ecf4">........</text>
-<text x="405 414 423 432 441 450 459 468" y="204" fill="#e8ecf4">Standard</text>
-<text x="162 171 180 189 198 207 216" y="223" fill="#e8ecf4">Symbole</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="223" fill="#e8ecf4">................</text>
-<text x="405 414 423 432 441 450 459" y="223" fill="#e8ecf4">Unicode</text>
-<text x="162 171 180 189 198 207" y="242" fill="#e8ecf4">Farben</text>
-<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="242" fill="#e8ecf4">.................</text>
-<text x="405 414 423 432" y="242" fill="#e8ecf4">Auto</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252" y="261" fill="#e8ecf4">Kartengröße</text>
-<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="261" fill="#e8ecf4">............</text>
-<text x="405 414 423 432" y="261" fill="#e8ecf4">Auto</text>
-<text x="162 171 180 189 198 207 216 225" y="280" fill="#e8ecf4">Vollbild</text>
-<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="280" fill="#e8ecf4">...............</text>
-<text x="405 414 423 432" y="280" fill="#e8ecf4">Auto</text>
-<text x="162 171 180" y="318" fill="#8cbeff">Ton</text>
-<text x="162 171 180 189 198 207 216 225 234" y="337" fill="#e8ecf4">Klangstil</text>
-<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="337" fill="#e8ecf4">..............</text>
-<text x="405 414 423 432 441 450 459" y="337" fill="#e8ecf4">Default</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261" y="356" fill="#e8ecf4">Soundeffekte</text>
-<text x="279 288 297 306 315 324 333 342 351 360 369" y="356" fill="#e8ecf4">...........</text>
-<text x="405 414 423" y="356" fill="#e8ecf4">Ein</text>
-<text x="162 171 180 189 198" y="375" fill="#e8ecf4">Musik</text>
-<text x="216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="375" fill="#e8ecf4">..................</text>
-<text x="405 414 423" y="375" fill="#e8ecf4">Aus</text>
-<text x="162 171 180 189 198 207 216 225 234 243" y="394" fill="#e8ecf4">Lautstärke</text>
-<text x="261 270 279 288 297 306 315 324 333 342 351 360 369" y="394" fill="#e8ecf4">.............</text>
-<text x="405 414 423" y="394" fill="#e8ecf4">70%</text>
-<text x="162 171 180 189 198 207 216 225" y="432" fill="#8cbeff">Hinweise</text>
-<text x="243 252 261" y="432" fill="#8cbeff">und</text>
-<text x="279 288 297 306 315" y="432" fill="#8cbeff">Hilfe</text>
-<text x="162 171 180 189 198 207 216 225" y="451" fill="#e8ecf4">Leuchten</text>
-<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="451" fill="#e8ecf4">...............</text>
-<text x="405 414 423 432" y="451" fill="#e8ecf4">Voll</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288 297" y="470" fill="#e8ecf4">Zielmarkierungen</text>
-<text x="315 324 333 342 351 360 369" y="470" fill="#e8ecf4">.......</text>
+<text x="315 324 333 342 351 360 369 378 387 396 405 414 423" y="14" fill="#8cbeff">Einstellungen</text>
+<text x="450 459 468 477 486 495" y="14" fill="#8cbeff">(Zeile</text>
+<text x="513" y="14" fill="#8cbeff">1</text>
+<text x="531 540 549" y="14" fill="#8cbeff">von</text>
+<text x="567 576 585" y="14" fill="#8cbeff">25)</text>
+<text x="162 171 180 189 198 207 216" y="52" fill="#8cbeff">Anzeige</text>
+<rect x="144" y="57" width="342" height="19" fill="#ffd666"/>
+<text x="144" y="71" fill="#141820">►</text>
+<text x="162 171 180 189 198 207 216" y="71" fill="#141820">Sprache</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="71" fill="#141820">................</text>
+<text x="387" y="71" fill="#141820">◄</text>
+<text x="405 414 423 432 441 450 459" y="71" fill="#141820">Deutsch</text>
+<text x="477" y="71" fill="#141820">►</text>
+<text x="162 171 180 189 198 207" y="90" fill="#e8ecf4">Farben</text>
+<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="90" fill="#e8ecf4">.................</text>
+<text x="405 414 423 432" y="90" fill="#e8ecf4">Auto</text>
+<text x="162 171 180 189 198 207 216 225" y="109" fill="#e8ecf4">Vollbild</text>
+<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="109" fill="#e8ecf4">...............</text>
+<text x="405 414 423 432" y="109" fill="#e8ecf4">Auto</text>
+<text x="162 171 180 189 198 207 216 225 234 243" y="147" fill="#8cbeff">Oberfläche</text>
+<text x="162 171 180 189 198 207" y="166" fill="#e8ecf4">Design</text>
+<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="166" fill="#e8ecf4">.................</text>
+<text x="405 414 423 432 441 450" y="166" fill="#e8ecf4">Dunkel</text>
+<path fill="#80848d" d="M468 171h9v19h-9zM477 171h9v19h-9zM486 171h9v19h-9zM495 171h9v19h-9z"/>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261" y="185" fill="#e8ecf4">Kartenrücken</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369" y="185" fill="#e8ecf4">...........</text>
+<text x="405 414 423 432 441 450" y="185" fill="#e8ecf4">Design</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306" y="204" fill="#e8ecf4">Vorderseiten-Stil</text>
+<text x="324 333 342 351 360 369" y="204" fill="#e8ecf4">......</text>
+<text x="405 414 423 432 441 450 459 468 477 486 495 504 513" y="204" fill="#e8ecf4">International</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288" y="223" fill="#e8ecf4">Rückseiten-Stil</text>
+<text x="306 315 324 333 342 351 360 369" y="223" fill="#e8ecf4">........</text>
+<text x="405 414 423 432 441 450" y="223" fill="#e8ecf4">Gitter</text>
+<text x="162 171 180 189 198 207 216" y="242" fill="#e8ecf4">Symbole</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="242" fill="#e8ecf4">................</text>
+<text x="405 414 423 432 441 450 459" y="242" fill="#e8ecf4">Unicode</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288" y="261" fill="#e8ecf4">Konsolenschrift</text>
+<text x="306 315 324 333 342 351 360 369" y="261" fill="#e8ecf4">........</text>
+<text x="405 414 423 432 441" y="261" fill="#e8ecf4">nicht</text>
+<text x="459 468 477 486 495 504 513 522 531" y="261" fill="#e8ecf4">verfügbar</text>
+<text x="162 171 180 189 198 207 216 225 234 243" y="280" fill="#e8ecf4">Schriftart</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369" y="280" fill="#e8ecf4">.............</text>
+<text x="405 414 423 432 441 450 459 468 477 486 495 504" y="280" fill="#e8ecf4">Ctrl+Shift+=</text>
+<text x="522" y="280" fill="#e8ecf4">/</text>
+<text x="540 549 558 567 576 585" y="280" fill="#e8ecf4">Ctrl+-</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261" y="299" fill="#e8ecf4">Schriftgröße</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369" y="299" fill="#e8ecf4">...........</text>
+<text x="405 414 423 432 441 450 459 468 477 486 495 504" y="299" fill="#e8ecf4">Ctrl+Shift+=</text>
+<text x="522" y="299" fill="#e8ecf4">/</text>
+<text x="540 549 558 567 576 585" y="299" fill="#e8ecf4">Ctrl+-</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252" y="318" fill="#e8ecf4">Kartengröße</text>
+<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="318" fill="#e8ecf4">............</text>
+<text x="405 414 423 432" y="318" fill="#e8ecf4">Auto</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252" y="337" fill="#e8ecf4">Leuchtfarbe</text>
+<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="337" fill="#e8ecf4">............</text>
+<text x="405 414 423 432 441 450" y="337" fill="#e8ecf4">Design</text>
+<text x="162 171 180 189 198 207 216 225 234 243" y="356" fill="#e8ecf4">Leuchtstil</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369" y="356" fill="#e8ecf4">.............</text>
+<text x="405 414 423" y="356" fill="#e8ecf4">Hof</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261" y="375" fill="#e8ecf4">Leuchtbreite</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369" y="375" fill="#e8ecf4">...........</text>
+<text x="405 414 423 432" y="375" fill="#e8ecf4">Dünn</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288 297" y="394" fill="#e8ecf4">Prozesspriorität</text>
+<text x="315 324 333 342 351 360 369" y="394" fill="#e8ecf4">.......</text>
+<text x="405 414 423 432 441 450" y="394" fill="#e8ecf4">Normal</text>
+<text x="162 171 180" y="432" fill="#8cbeff">Ton</text>
+<text x="162 171 180 189 198 207 216 225 234" y="451" fill="#e8ecf4">Klangstil</text>
+<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="451" fill="#e8ecf4">..............</text>
+<text x="405 414 423 432 441 450 459" y="451" fill="#e8ecf4">Default</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261" y="470" fill="#e8ecf4">Soundeffekte</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369" y="470" fill="#e8ecf4">...........</text>
 <text x="405 414 423" y="470" fill="#e8ecf4">Ein</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288 297" y="489" fill="#e8ecf4">Leitfaden-Leiste</text>
-<text x="315 324 333 342 351 360 369" y="489" fill="#e8ecf4">.......</text>
-<text x="405 414 423" y="489" fill="#e8ecf4">Ein</text>
-<text x="441 450 459 468 477 486 495 504 513" y="489" fill="#e8ecf4">(benötigt</text>
-<text x="531 540 549" y="489" fill="#e8ecf4">130</text>
-<text x="567 576 585 594 603 612 621 630" y="489" fill="#e8ecf4">Spalten,</text>
-<text x="648 657 666 675 684 693 702" y="489" fill="#e8ecf4">aktuell</text>
-<text x="720 729 738 747" y="489" fill="#e8ecf4">100)</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252" y="508" fill="#e8ecf4">Züge-Leiste</text>
-<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="508" fill="#e8ecf4">............</text>
-<text x="405 414 423" y="508" fill="#e8ecf4">Ein</text>
-<text x="441 450 459 468 477 486 495 504 513" y="508" fill="#e8ecf4">(benötigt</text>
-<text x="531 540 549" y="508" fill="#e8ecf4">130</text>
-<text x="567 576 585 594 603 612 621 630" y="508" fill="#e8ecf4">Spalten,</text>
-<text x="648 657 666 675 684 693 702" y="508" fill="#e8ecf4">aktuell</text>
-<text x="720 729 738 747" y="508" fill="#e8ecf4">100)</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261 270" y="527" fill="#e8ecf4">Automatisches</text>
-<text x="288 297 306 315 324 333 342" y="527" fill="#e8ecf4">Beenden</text>
-<text x="360 369" y="527" fill="#e8ecf4">..</text>
-<text x="405 414 423" y="527" fill="#e8ecf4">Ein</text>
-<text x="252 261 270" y="565" fill="#b8c2d6">Die</text>
-<text x="288 297 306 315 324 333 342" y="565" fill="#b8c2d6">Sprache</text>
-<text x="360 369 378 387 396" y="565" fill="#b8c2d6">aller</text>
-<text x="414 423 432 441 450 459" y="565" fill="#b8c2d6">Texte.</text>
-<text x="477 486 495 504 513 522" y="565" fill="#b8c2d6">Ändert</text>
-<text x="540 549 558 567" y="565" fill="#b8c2d6">sich</text>
-<text x="585 594 603 612 621 630 639" y="565" fill="#b8c2d6">sofort.</text>
+<text x="162 171 180 189 198" y="489" fill="#e8ecf4">Musik</text>
+<text x="216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="489" fill="#e8ecf4">..................</text>
+<text x="405 414 423" y="489" fill="#e8ecf4">Aus</text>
+<text x="162 171 180 189 198 207 216 225 234 243" y="508" fill="#e8ecf4">Lautstärke</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369" y="508" fill="#e8ecf4">.............</text>
+<text x="405 414 423" y="508" fill="#e8ecf4">70%</text>
+<rect x="414" y="551" width="36" height="19" fill="#287850"/>
+<rect x="468" y="551" width="36" height="19" fill="#287850"/>
+<rect x="522" y="551" width="36" height="19" fill="#287850"/>
+<path fill="#5d976a" d="M414 551h9v19h-9zM441 551h9v19h-9z"/>
+<path fill="#70a4a4" d="M423 551h9v19h-9zM432 551h9v19h-9zM477 551h9v19h-9zM486 551h9v19h-9zM531 551h9v19h-9zM540 551h9v19h-9z"/>
+<path fill="#a7d5d3" d="M468 551h9v19h-9zM495 551h9v19h-9z"/>
+<text x="324 333 342 351 360 369 378 387 396" y="565" fill="#b8c2d6">Leuchten:</text>
+<text x="522" y="565" fill="#ffd666">·</text>
+<text x="549" y="565" fill="#ffd666">·</text>
+<text x="252 261 270" y="584" fill="#b8c2d6">Die</text>
+<text x="288 297 306 315 324 333 342" y="584" fill="#b8c2d6">Sprache</text>
+<text x="360 369 378 387 396" y="584" fill="#b8c2d6">aller</text>
+<text x="414 423 432 441 450 459" y="584" fill="#b8c2d6">Texte.</text>
+<text x="477 486 495 504 513 522" y="584" fill="#b8c2d6">Ändert</text>
+<text x="540 549 558 567" y="584" fill="#b8c2d6">sich</text>
+<text x="585 594 603 612 621 630 639" y="584" fill="#b8c2d6">sofort.</text>
 <text x="288 297 306 315 324" y="641" fill="#b8c2d6">Enter</text>
 <text x="342 351 360 369 378 387" y="641" fill="#b8c2d6">Ändern</text>
 <text x="423 432 441" y="641" fill="#b8c2d6">Esc</text>

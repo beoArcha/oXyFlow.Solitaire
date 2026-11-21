@@ -1,6 +1,6 @@
 # Phase 5 (0.5) — Themes and colour vision, Spanish cards, Golf and the Spider solver
 
-Goal: the table, the card face and the aura are set apart from the theme; the low-vision mode and the colour-vision modes are built on the Interface section of phase 4; the second new card style (Spanish) and the second new game (Golf, with its solver) are added; the Spider solver gets its 2-suit and 4-suit results improved. Version 0.5.x.
+Goal: the table, the card face and the aura are set apart from the theme; the low-vision mode and the colour-vision modes are built on the Interface section of phase 4; the second new card style (Spanish) and the second new game (Golf, with its solver) are added; the Spider solver gets its 2-suit and 4-suit results improved. This is the phase worked on now, during version 0.5.x.
 
 Exit criteria:
 

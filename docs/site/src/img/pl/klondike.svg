@@ -43,7 +43,8 @@
 <rect x="117" y="76" width="873" height="19" fill="#287850"/>
 <rect x="990" y="76" width="270" height="19" fill="#242a3a"/>
 <path fill="#101428" d="M4 76h1v10h-1zM4 85h1v10h-1zM112 76h1v10h-1zM112 85h1v10h-1z"/>
-<path fill="#647290" d="M9 76h9v19h-9zM18 76h9v19h-9zM27 76h9v19h-9zM36 76h9v19h-9zM45 76h9v19h-9zM54 76h9v19h-9zM63 76h9v19h-9zM72 76h9v19h-9zM81 76h9v19h-9zM90 76h9v19h-9zM99 76h9v19h-9z"/>
+<path fill="#3a435c" d="M45 76h9v19h-9z"/>
+<path fill="#647290" d="M9 76h9v19h-9zM18 76h9v19h-9zM27 76h9v19h-9zM36 76h9v19h-9zM54 76h9v19h-9zM63 76h9v19h-9zM72 76h9v19h-9zM81 76h9v19h-9zM90 76h9v19h-9zM99 76h9v19h-9z"/>
 <path fill="#6e7a96" d="M994 76h1v10h-1zM994 85h1v10h-1zM1255 76h1v10h-1zM1255 85h1v10h-1z"/>
 <path fill="#aadcbe" d="M148 76h1v10h-1zM148 85h1v10h-1zM256 76h1v10h-1zM256 85h1v10h-1zM436 76h1v10h-1zM436 85h1v10h-1zM544 76h1v10h-1zM544 85h1v10h-1zM580 76h1v10h-1zM580 85h1v10h-1zM688 76h1v10h-1zM688 85h1v10h-1zM724 76h1v10h-1zM724 85h1v10h-1zM832 76h1v10h-1zM832 85h1v10h-1zM868 76h1v10h-1zM868 85h1v10h-1zM976 76h1v10h-1zM976 85h1v10h-1z"/>
 <text x="1008 1017 1026 1035" y="90" fill="#e8ecf4">Czas</text>
@@ -52,7 +53,8 @@
 <rect x="117" y="95" width="873" height="19" fill="#287850"/>
 <rect x="990" y="95" width="270" height="19" fill="#242a3a"/>
 <path fill="#101428" d="M4 95h1v10h-1zM4 104h1v10h-1zM112 95h1v10h-1zM112 104h1v10h-1z"/>
-<path fill="#647290" d="M9 95h9v19h-9zM18 95h9v19h-9zM27 95h9v19h-9zM36 95h9v19h-9zM45 95h9v19h-9zM54 95h9v19h-9zM63 95h9v19h-9zM72 95h9v19h-9zM81 95h9v19h-9zM90 95h9v19h-9zM99 95h9v19h-9z"/>
+<path fill="#3a435c" d="M54 95h9v19h-9z"/>
+<path fill="#647290" d="M9 95h9v19h-9zM18 95h9v19h-9zM27 95h9v19h-9zM36 95h9v19h-9zM45 95h9v19h-9zM63 95h9v19h-9zM72 95h9v19h-9zM81 95h9v19h-9zM90 95h9v19h-9zM99 95h9v19h-9z"/>
 <path fill="#6e7a96" d="M994 95h1v10h-1zM994 104h1v10h-1zM1255 95h1v10h-1zM1255 104h1v10h-1z"/>
 <path fill="#aadcbe" d="M148 95h1v10h-1zM148 104h1v10h-1zM256 95h1v10h-1zM256 104h1v10h-1zM436 95h1v10h-1zM436 104h1v10h-1zM544 95h1v10h-1zM544 104h1v10h-1zM580 95h1v10h-1zM580 104h1v10h-1zM688 95h1v10h-1zM688 104h1v10h-1zM724 95h1v10h-1zM724 104h1v10h-1zM832 95h1v10h-1zM832 104h1v10h-1zM868 95h1v10h-1zM868 104h1v10h-1zM976 95h1v10h-1zM976 104h1v10h-1z"/>
 <text x="486" y="109" fill="#aadcbe">A</text>

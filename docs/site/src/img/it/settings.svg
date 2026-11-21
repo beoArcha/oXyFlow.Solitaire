@@ -3,101 +3,116 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<text x="396 405 414 423 432 441 450 459 468 477 486 495" y="71" fill="#8cbeff">Impostazioni</text>
-<text x="171 180 189 198 207 216 225 234 243 252 261 270 279 288 297" y="109" fill="#8cbeff">Visualizzazione</text>
-<rect x="153" y="114" width="378" height="19" fill="#ffd666"/>
-<text x="153" y="128" fill="#141820">►</text>
-<text x="171 180 189 198 207 216" y="128" fill="#141820">Lingua</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="128" fill="#141820">....................</text>
-<text x="423" y="128" fill="#141820">◄</text>
-<text x="441 450 459 468 477 486 495 504" y="128" fill="#141820">Italiano</text>
-<text x="522" y="128" fill="#141820">►</text>
-<text x="171 180 189 198" y="147" fill="#e8ecf4">Tema</text>
-<text x="216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="147" fill="#e8ecf4">......................</text>
-<text x="441 450 459 468 477" y="147" fill="#e8ecf4">Scuro</text>
-<path fill="#80848d" d="M486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9zM513 152h9v19h-9z"/>
-<text x="171 180 189 198 207" y="166" fill="#e8ecf4">Dorso</text>
-<text x="225 234 243 252 261" y="166" fill="#e8ecf4">carte</text>
-<text x="279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="166" fill="#e8ecf4">...............</text>
-<text x="441 450 459 468" y="166" fill="#e8ecf4">Tema</text>
-<text x="171 180 189 198 207" y="185" fill="#e8ecf4">Stile</text>
-<text x="225 234 243 252 261" y="185" fill="#e8ecf4">facce</text>
+<text x="324 333 342 351 360 369 378 387 396 405 414 423" y="14" fill="#8cbeff">Impostazioni</text>
+<text x="450 459 468 477 486" y="14" fill="#8cbeff">(riga</text>
+<text x="504" y="14" fill="#8cbeff">1</text>
+<text x="522 531" y="14" fill="#8cbeff">di</text>
+<text x="549 558 567" y="14" fill="#8cbeff">25)</text>
+<text x="171 180 189 198 207 216 225 234 243 252 261 270 279 288 297" y="52" fill="#8cbeff">Visualizzazione</text>
+<rect x="153" y="57" width="378" height="19" fill="#ffd666"/>
+<text x="153" y="71" fill="#141820">►</text>
+<text x="171 180 189 198 207 216" y="71" fill="#141820">Lingua</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="71" fill="#141820">....................</text>
+<text x="423" y="71" fill="#141820">◄</text>
+<text x="441 450 459 468 477 486 495 504" y="71" fill="#141820">Italiano</text>
+<text x="522" y="71" fill="#141820">►</text>
+<text x="171 180 189 198 207 216" y="90" fill="#e8ecf4">Colori</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="90" fill="#e8ecf4">....................</text>
+<text x="441 450 459 468" y="90" fill="#e8ecf4">Auto</text>
+<text x="171 180 189 198 207 216 225" y="109" fill="#e8ecf4">Schermo</text>
+<text x="243 252 261 270 279 288" y="109" fill="#e8ecf4">intero</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396 405" y="109" fill="#e8ecf4">............</text>
+<text x="441 450 459 468" y="109" fill="#e8ecf4">Auto</text>
+<text x="171 180 189 198 207 216 225 234 243 252 261" y="147" fill="#8cbeff">Interfaccia</text>
+<text x="171 180 189 198" y="166" fill="#e8ecf4">Tema</text>
+<text x="216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="166" fill="#e8ecf4">......................</text>
+<text x="441 450 459 468 477" y="166" fill="#e8ecf4">Scuro</text>
+<path fill="#80848d" d="M486 171h9v19h-9zM495 171h9v19h-9zM504 171h9v19h-9zM513 171h9v19h-9z"/>
+<text x="171 180 189 198 207" y="185" fill="#e8ecf4">Dorso</text>
+<text x="225 234 243 252 261" y="185" fill="#e8ecf4">carte</text>
 <text x="279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="185" fill="#e8ecf4">...............</text>
-<text x="441 450 459 468 477 486 495 504 513 522 531 540 549 558" y="185" fill="#e8ecf4">Internazionale</text>
+<text x="441 450 459 468" y="185" fill="#e8ecf4">Tema</text>
 <text x="171 180 189 198 207" y="204" fill="#e8ecf4">Stile</text>
-<text x="225 234 243 252 261" y="204" fill="#e8ecf4">dorsi</text>
+<text x="225 234 243 252 261" y="204" fill="#e8ecf4">facce</text>
 <text x="279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="204" fill="#e8ecf4">...............</text>
-<text x="441 450 459 468 477 486 495 504 513 522 531" y="204" fill="#e8ecf4">Predefinito</text>
-<text x="171 180 189 198 207 216 225" y="223" fill="#e8ecf4">Simboli</text>
-<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="223" fill="#e8ecf4">...................</text>
-<text x="441 450 459 468 477 486 495" y="223" fill="#e8ecf4">Unicode</text>
-<text x="171 180 189 198 207 216" y="242" fill="#e8ecf4">Colori</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="242" fill="#e8ecf4">....................</text>
-<text x="441 450 459 468" y="242" fill="#e8ecf4">Auto</text>
-<text x="171 180 189 198 207 216 225 234 243 252" y="261" fill="#e8ecf4">Dimensione</text>
-<text x="270 279 288 297 306" y="261" fill="#e8ecf4">carte</text>
-<text x="324 333 342 351 360 369 378 387 396 405" y="261" fill="#e8ecf4">..........</text>
-<text x="441 450 459 468" y="261" fill="#e8ecf4">Auto</text>
-<text x="171 180 189 198 207 216 225" y="280" fill="#e8ecf4">Schermo</text>
-<text x="243 252 261 270 279 288" y="280" fill="#e8ecf4">intero</text>
-<text x="306 315 324 333 342 351 360 369 378 387 396 405" y="280" fill="#e8ecf4">............</text>
-<text x="441 450 459 468" y="280" fill="#e8ecf4">Auto</text>
-<text x="171 180 189 198 207" y="318" fill="#8cbeff">Suono</text>
-<text x="171 180 189 198 207" y="337" fill="#e8ecf4">Stile</text>
-<text x="225 234 243 252 261 270" y="337" fill="#e8ecf4">sonoro</text>
-<text x="288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="337" fill="#e8ecf4">..............</text>
-<text x="441 450 459 468 477 486 495" y="337" fill="#e8ecf4">Default</text>
-<text x="171 180 189 198 207 216 225" y="356" fill="#e8ecf4">Effetti</text>
-<text x="243 252 261 270 279 288" y="356" fill="#e8ecf4">sonori</text>
-<text x="306 315 324 333 342 351 360 369 378 387 396 405" y="356" fill="#e8ecf4">............</text>
-<text x="441 450" y="356" fill="#e8ecf4">Sì</text>
-<text x="171 180 189 198 207 216" y="375" fill="#e8ecf4">Musica</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="375" fill="#e8ecf4">....................</text>
-<text x="441 450" y="375" fill="#e8ecf4">No</text>
-<text x="171 180 189 198 207 216" y="394" fill="#e8ecf4">Volume</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="394" fill="#e8ecf4">....................</text>
-<text x="441 450 459" y="394" fill="#e8ecf4">70%</text>
-<text x="171 180 189 198 207 216 225 234 243 252 261 270" y="432" fill="#8cbeff">Suggerimenti</text>
-<text x="288" y="432" fill="#8cbeff">e</text>
-<text x="306 315 324 333 342" y="432" fill="#8cbeff">aiuto</text>
-<text x="171 180 189 198" y="451" fill="#e8ecf4">Aura</text>
-<text x="216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="451" fill="#e8ecf4">......................</text>
-<text x="441 450 459 468 477 486 495 504" y="451" fill="#e8ecf4">Completa</text>
-<text x="171 180 189 198 207 216 225 234 243 252" y="470" fill="#e8ecf4">Indicatori</text>
-<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="470" fill="#e8ecf4">destinazione</text>
-<text x="387 396 405" y="470" fill="#e8ecf4">...</text>
+<text x="441 450 459 468 477 486 495 504 513 522 531 540 549 558" y="204" fill="#e8ecf4">Internazionale</text>
+<text x="171 180 189 198 207" y="223" fill="#e8ecf4">Stile</text>
+<text x="225 234 243 252 261" y="223" fill="#e8ecf4">dorsi</text>
+<text x="279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="223" fill="#e8ecf4">...............</text>
+<text x="441 450 459 468 477 486 495 504" y="223" fill="#e8ecf4">Reticolo</text>
+<text x="171 180 189 198 207 216 225" y="242" fill="#e8ecf4">Simboli</text>
+<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="242" fill="#e8ecf4">...................</text>
+<text x="441 450 459 468 477 486 495" y="242" fill="#e8ecf4">Unicode</text>
+<text x="171 180 189 198 207 216 225 234 243" y="261" fill="#e8ecf4">Carattere</text>
+<text x="261 270 279 288 297" y="261" fill="#e8ecf4">della</text>
+<text x="315 324 333 342 351 360 369" y="261" fill="#e8ecf4">console</text>
+<text x="387 396 405" y="261" fill="#e8ecf4">...</text>
+<text x="441 450 459" y="261" fill="#e8ecf4">non</text>
+<text x="477 486 495 504 513 522 531 540 549 558 567" y="261" fill="#e8ecf4">disponibile</text>
+<text x="171 180 189 198 207 216 225 234 243" y="280" fill="#e8ecf4">Carattere</text>
+<text x="261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="280" fill="#e8ecf4">.................</text>
+<text x="441 450 459 468 477 486 495 504 513 522 531 540" y="280" fill="#e8ecf4">Ctrl+Shift+=</text>
+<text x="558" y="280" fill="#e8ecf4">/</text>
+<text x="576 585 594 603 612 621" y="280" fill="#e8ecf4">Ctrl+-</text>
+<text x="171 180 189 198 207 216 225 234 243 252" y="299" fill="#e8ecf4">Dimensione</text>
+<text x="270 279 288 297 306 315 324 333 342" y="299" fill="#e8ecf4">carattere</text>
+<text x="360 369 378 387 396 405" y="299" fill="#e8ecf4">......</text>
+<text x="441 450 459 468 477 486 495 504 513 522 531 540" y="299" fill="#e8ecf4">Ctrl+Shift+=</text>
+<text x="558" y="299" fill="#e8ecf4">/</text>
+<text x="576 585 594 603 612 621" y="299" fill="#e8ecf4">Ctrl+-</text>
+<text x="171 180 189 198 207 216 225 234 243 252" y="318" fill="#e8ecf4">Dimensione</text>
+<text x="270 279 288 297 306" y="318" fill="#e8ecf4">carte</text>
+<text x="324 333 342 351 360 369 378 387 396 405" y="318" fill="#e8ecf4">..........</text>
+<text x="441 450 459 468" y="318" fill="#e8ecf4">Auto</text>
+<text x="171 180 189 198 207 216" y="337" fill="#e8ecf4">Colore</text>
+<text x="234 243 252 261 270 279 288 297 306" y="337" fill="#e8ecf4">dell'aura</text>
+<text x="324 333 342 351 360 369 378 387 396 405" y="337" fill="#e8ecf4">..........</text>
+<text x="441 450 459 468" y="337" fill="#e8ecf4">Tema</text>
+<text x="171 180 189 198 207" y="356" fill="#e8ecf4">Stile</text>
+<text x="225 234 243 252 261 270 279 288 297" y="356" fill="#e8ecf4">dell'aura</text>
+<text x="315 324 333 342 351 360 369 378 387 396 405" y="356" fill="#e8ecf4">...........</text>
+<text x="441 450 459 468 477" y="356" fill="#e8ecf4">Alone</text>
+<text x="171 180 189 198 207 216 225 234 243 252" y="375" fill="#e8ecf4">Dimensione</text>
+<text x="270 279 288 297 306 315 324 333 342" y="375" fill="#e8ecf4">dell'aura</text>
+<text x="360 369 378 387 396 405" y="375" fill="#e8ecf4">......</text>
+<text x="441 450 459 468 477 486 495" y="375" fill="#e8ecf4">Sottile</text>
+<text x="171 180 189 198 207 216 225 234" y="394" fill="#e8ecf4">Priorità</text>
+<text x="252 261 270" y="394" fill="#e8ecf4">del</text>
+<text x="288 297 306 315 324 333 342 351" y="394" fill="#e8ecf4">processo</text>
+<text x="369 378 387 396 405" y="394" fill="#e8ecf4">.....</text>
+<text x="441 450 459 468 477 486 495" y="394" fill="#e8ecf4">Normale</text>
+<text x="171 180 189 198 207" y="432" fill="#8cbeff">Suono</text>
+<text x="171 180 189 198 207" y="451" fill="#e8ecf4">Stile</text>
+<text x="225 234 243 252 261 270" y="451" fill="#e8ecf4">sonoro</text>
+<text x="288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="451" fill="#e8ecf4">..............</text>
+<text x="441 450 459 468 477 486 495" y="451" fill="#e8ecf4">Default</text>
+<text x="171 180 189 198 207 216 225" y="470" fill="#e8ecf4">Effetti</text>
+<text x="243 252 261 270 279 288" y="470" fill="#e8ecf4">sonori</text>
+<text x="306 315 324 333 342 351 360 369 378 387 396 405" y="470" fill="#e8ecf4">............</text>
 <text x="441 450" y="470" fill="#e8ecf4">Sì</text>
-<text x="171 180 189 198 207 216 225 234" y="489" fill="#e8ecf4">Pannello</text>
-<text x="252 261 270 279 288" y="489" fill="#e8ecf4">guida</text>
-<text x="306 315 324 333 342 351 360 369 378 387 396 405" y="489" fill="#e8ecf4">............</text>
-<text x="441 450" y="489" fill="#e8ecf4">Sì</text>
-<text x="468 477 486 495 504 513 522 531 540" y="489" fill="#e8ecf4">(richiede</text>
-<text x="558 567 576" y="489" fill="#e8ecf4">130</text>
-<text x="594 603 612 621 630 639 648 657" y="489" fill="#e8ecf4">colonne,</text>
-<text x="675 684 693" y="489" fill="#e8ecf4">ora</text>
-<text x="711 720 729 738" y="489" fill="#e8ecf4">100)</text>
-<text x="171 180 189 198 207 216 225 234" y="508" fill="#e8ecf4">Pannello</text>
-<text x="252 261 270 279 288" y="508" fill="#e8ecf4">mosse</text>
-<text x="306 315 324 333 342 351 360 369 378" y="508" fill="#e8ecf4">possibili</text>
-<text x="396 405" y="508" fill="#e8ecf4">..</text>
-<text x="441 450" y="508" fill="#e8ecf4">Sì</text>
-<text x="468 477 486 495 504 513 522 531 540" y="508" fill="#e8ecf4">(richiede</text>
-<text x="558 567 576" y="508" fill="#e8ecf4">130</text>
-<text x="594 603 612 621 630 639 648 657" y="508" fill="#e8ecf4">colonne,</text>
-<text x="675 684 693" y="508" fill="#e8ecf4">ora</text>
-<text x="711 720 729 738" y="508" fill="#e8ecf4">100)</text>
-<text x="171 180 189 198 207 216 225 234 243 252 261 270 279" y="527" fill="#e8ecf4">Completamento</text>
-<text x="297 306 315 324" y="527" fill="#e8ecf4">auto</text>
-<text x="342 351 360 369 378 387 396 405" y="527" fill="#e8ecf4">........</text>
-<text x="441 450" y="527" fill="#e8ecf4">Sì</text>
-<text x="261 270" y="565" fill="#b8c2d6">La</text>
-<text x="288 297 306 315 324 333" y="565" fill="#b8c2d6">lingua</text>
-<text x="351 360" y="565" fill="#b8c2d6">di</text>
-<text x="378 387 396 405 414" y="565" fill="#b8c2d6">tutti</text>
-<text x="432" y="565" fill="#b8c2d6">i</text>
-<text x="450 459 468 477 486 495" y="565" fill="#b8c2d6">testi.</text>
-<text x="513 522 531 540 549 558" y="565" fill="#b8c2d6">Cambia</text>
-<text x="576 585 594 603 612 621 630" y="565" fill="#b8c2d6">subito.</text>
+<text x="171 180 189 198 207 216" y="489" fill="#e8ecf4">Musica</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="489" fill="#e8ecf4">....................</text>
+<text x="441 450" y="489" fill="#e8ecf4">No</text>
+<text x="171 180 189 198 207 216" y="508" fill="#e8ecf4">Volume</text>
+<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369 378 387 396 405" y="508" fill="#e8ecf4">....................</text>
+<text x="441 450 459" y="508" fill="#e8ecf4">70%</text>
+<rect x="396" y="551" width="36" height="19" fill="#287850"/>
+<rect x="450" y="551" width="36" height="19" fill="#287850"/>
+<rect x="504" y="551" width="36" height="19" fill="#287850"/>
+<path fill="#5d976a" d="M396 551h9v19h-9zM423 551h9v19h-9z"/>
+<path fill="#70a4a4" d="M405 551h9v19h-9zM414 551h9v19h-9zM459 551h9v19h-9zM468 551h9v19h-9zM513 551h9v19h-9zM522 551h9v19h-9z"/>
+<path fill="#a7d5d3" d="M450 551h9v19h-9zM477 551h9v19h-9z"/>
+<text x="342 351 360 369 378" y="565" fill="#b8c2d6">Aura:</text>
+<text x="504" y="565" fill="#ffd666">·</text>
+<text x="531" y="565" fill="#ffd666">·</text>
+<text x="261 270" y="584" fill="#b8c2d6">La</text>
+<text x="288 297 306 315 324 333" y="584" fill="#b8c2d6">lingua</text>
+<text x="351 360" y="584" fill="#b8c2d6">di</text>
+<text x="378 387 396 405 414" y="584" fill="#b8c2d6">tutti</text>
+<text x="432" y="584" fill="#b8c2d6">i</text>
+<text x="450 459 468 477 486 495" y="584" fill="#b8c2d6">testi.</text>
+<text x="513 522 531 540 549 558" y="584" fill="#b8c2d6">Cambia</text>
+<text x="576 585 594 603 612 621 630" y="584" fill="#b8c2d6">subito.</text>
 <text x="279 288 297 306 315" y="641" fill="#b8c2d6">Enter</text>
 <text x="333 342 351 360 369 378" y="641" fill="#b8c2d6">Cambia</text>
 <text x="414 423 432" y="641" fill="#b8c2d6">Esc</text>
