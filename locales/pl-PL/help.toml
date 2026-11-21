@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Dokowanie: {side}"
+button = "Dokowanie: {side} [{key}]"
 side_centre = "na środku"
 side_right = "z prawej"
 side_left = "z lewej"
 too_narrow = "Dokowanie wymaga 130 kolumn; okno zostaje na środku."
+footer = "{dock} Dokowanie  {focus} Fokus"

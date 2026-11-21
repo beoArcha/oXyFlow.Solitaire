@@ -111,7 +111,14 @@ fn every_unavailable_status_has_its_own_reason_in_both_locales() {
 fn the_front_and_back_style_rows_list_every_style_found_and_cycle_both_ways() {
     assert_eq!(
         front_styles(),
-        ["international", "french", "german", "italian", "swiss"]
+        [
+            "international",
+            "french",
+            "german",
+            "italian",
+            "spanish",
+            "swiss"
+        ]
     );
     assert_eq!(back_styles(), ["lattice", "ornament"]);
     let base = Settings::default();
