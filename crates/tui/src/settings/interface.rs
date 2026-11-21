@@ -111,6 +111,7 @@ impl Settings {
         Settings {
             theme: saved.theme,
             card_back: saved.card_back,
+            card_face: saved.card_face,
             front_style: saved.front_style.clone(),
             back_style: saved.back_style.clone(),
             glyph_mode: saved.glyph_mode,
