@@ -119,15 +119,7 @@ pub fn draw(
     let interior = Rect::new(area.x + 1, area.y + 1, area.width - 2, area.height - 2);
     match face {
         Face::Up(_) => painter.fill(interior, " ", look.fill),
-        Face::Down => {
-            painter.fill(interior, back::pattern(ctx.glyphs), look.fill);
-            back::paint_mosaic(
-                &mut painter,
-                area,
-                ctx.glyphs,
-                (look.fill, ctx.font.cell_px),
-            );
-        }
+        Face::Down => painter.fill(interior, back::pattern(ctx.glyphs), look.fill),
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);

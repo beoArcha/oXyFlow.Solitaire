@@ -11,6 +11,7 @@ use crate::widgets::card::back::pattern;
 
 const COUNT: usize = 21;
 const BADGE: &str = "x21";
+const STOCK: usize = 24;
 const ALL_MODES: [GlyphMode; 3] = [GlyphMode::Font, GlyphMode::Unicode, GlyphMode::Ascii];
 
 fn shows(buf: &Buffer, area: Rect, needle: &str) -> bool {
@@ -35,6 +36,21 @@ fn mosaic_of(id: &str, mode: GlyphMode) -> [String; 2] {
         .back_or_default(id)
         .map(|style| style.mosaic_rows(mode));
     rows.unwrap_or_default()
+}
+
+fn stock_grid(id: &str, mode: GlyphMode, size: (u16, u16)) -> Vec<String> {
+    let fixture = Fixture::styled(mode, "international", id);
+    let area = Rect::new(0, 0, size.0, size.1);
+    let mut buf = Buffer::empty(area);
+    draw(
+        &mut buf,
+        area,
+        Face::Down,
+        Mark::default(),
+        Some(STOCK),
+        &fixture.ctx(),
+    );
+    rows(&buf, area)
 }
 
 #[test]
@@ -73,12 +89,12 @@ fn every_back_style_at_every_card_size_in_every_glyph_mode_shows_its_tile_and_co
 }
 
 #[test]
-fn the_mosaic_is_drawn_only_at_the_large_and_huge_sizes() {
+fn no_back_style_draws_a_centre_mark_at_any_size_or_glyph_mode() {
     for id in back_ids() {
-        for mode in ALL_MODES {
-            let fixture = Fixture::styled(mode, "international", &id);
-            let [top, bottom] = mosaic_of(&id, mode);
-            for size in SIZES {
+        for size in SIZES {
+            for mode in ALL_MODES {
+                let fixture = Fixture::styled(mode, "international", &id);
+                let tile = pattern(&fixture.glyphs);
                 let area = Rect::new(0, 0, size.width, size.height);
                 let mut buf = Buffer::empty(area);
                 draw(
@@ -89,31 +105,63 @@ fn the_mosaic_is_drawn_only_at_the_large_and_huge_sizes() {
                     None,
                     &fixture.ctx(),
                 );
-                let large = size.width >= 11 && size.height >= 9;
                 let case = format!("{id} {size:?} {mode:?}");
-                assert_eq!(shows(&buf, area, &top), large, "{case}: top row");
-                assert_eq!(shows(&buf, area, &bottom), large, "{case}: bottom row");
+                for y in area.top() + 1..area.bottom() - 1 {
+                    for x in area.left() + 1..area.right() - 1 {
+                        assert_eq!(buf[(x, y)].symbol(), tile, "{case}: cell {x},{y}");
+                    }
+                }
             }
         }
     }
 }
 
 #[test]
-fn the_mosaic_sits_in_the_middle_of_a_large_back_as_two_rows_of_two_symbols() {
-    let fixture = Fixture::styled(GlyphMode::Unicode, "international", "lattice");
-    let area = Rect::new(0, 0, 11, 9);
-    let mut buf = Buffer::empty(area);
-    draw(
-        &mut buf,
-        area,
-        Face::Down,
-        Mark::default(),
-        None,
-        &fixture.ctx(),
+fn the_stock_back_is_the_tile_and_the_count_with_no_centre_mark_in_the_text_grid() {
+    assert_eq!(
+        stock_grid("lattice", GlyphMode::Unicode, (11, 9)),
+        [
+            "┌─────────┐",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒│",
+            "└──────x24┘",
+        ]
     );
-    let lines = rows(&buf, area);
-    assert_eq!(lines[3], "│▒▒▒▓▒▒▒▒▒│");
-    assert_eq!(lines[4], "│▒▒▒▒▓▒▒▒▒│");
+    assert_eq!(
+        stock_grid("lattice", GlyphMode::Unicode, (13, 11)),
+        [
+            "┌───────────┐",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "│▒▒▒▒▒▒▒▒▒▒▒│",
+            "└────────x24┘",
+        ]
+    );
+    assert_eq!(
+        stock_grid("ornament", GlyphMode::Ascii, (11, 9)),
+        [
+            "+---------+",
+            "|%%%%%%%%%|",
+            "|%%%%%%%%%|",
+            "|%%%%%%%%%|",
+            "|%%%%%%%%%|",
+            "|%%%%%%%%%|",
+            "|%%%%%%%%%|",
+            "|%%%%%%%%%|",
+            "+------x24+",
+        ]
+    );
 }
 
 #[test]
@@ -164,32 +212,4 @@ fn an_unknown_back_style_draws_the_default_back() {
     let unknown = Fixture::styled(GlyphMode::Unicode, "international", "removed");
     let default = Fixture::styled(GlyphMode::Unicode, "international", "lattice");
     assert_eq!(unknown.glyphs, default.glyphs);
-}
-
-#[test]
-fn the_font_mosaic_needs_a_cell_of_ten_by_twenty_four_pixels_where_the_cell_size_is_known() {
-    let area = Rect::new(0, 0, 11, 9);
-    let [top, _] = mosaic_of("lattice", GlyphMode::Font);
-    let drawn = |cell_px: Option<(u16, u16)>, mode: GlyphMode| {
-        let fixture = Fixture::styled(mode, "international", "lattice");
-        let mut ctx = fixture.ctx();
-        ctx.font.cell_px = cell_px;
-        let mut buf = Buffer::empty(area);
-        draw(&mut buf, area, Face::Down, Mark::default(), None, &ctx);
-        buf
-    };
-    for (cell, expected) in [
-        (None, true),
-        (Some((10, 24)), true),
-        (Some((12, 30)), true),
-        (Some((9, 24)), false),
-        (Some((10, 23)), false),
-        (Some((8, 16)), false),
-    ] {
-        let buf = drawn(cell, GlyphMode::Font);
-        assert_eq!(shows(&buf, area, &top), expected, "{cell:?}");
-    }
-    let [unicode_top, _] = mosaic_of("lattice", GlyphMode::Unicode);
-    let small = drawn(Some((8, 16)), GlyphMode::Unicode);
-    assert!(shows(&small, area, &unicode_top));
 }
