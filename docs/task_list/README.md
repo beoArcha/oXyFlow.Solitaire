@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 3 | 9 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 4 | 48 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
@@ -266,7 +266,46 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
 | P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
 | P5-07 | Better hints: a hint that leads toward a win | Sonnet | P4-10a | TODO |
-| O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | TODO |
+| O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | DONE |
+| O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | TODO |
+| O-70 | Language tooltip disappears when a window opens | Haiku | — | TODO |
+| O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | TODO |
+| O-72 | Docked Help: a margin between the version label and the panel | Haiku | — | TODO |
+| O-73 | Docked Help: dim the selection in the pane without focus | Haiku | — | TODO |
+| O-74 | Help window: one footer layout and scroll indicator on every tab | Sonnet | O-71 | TODO |
+| O-75 | Windows: the active tab and the focused button look different | Sonnet | — | TODO |
+| O-76 | Docking and pane focus keys shown where they apply | Haiku | — | TODO |
+| O-77 | Docked Help: key and description on one line | Sonnet | O-74 | TODO |
+| O-78 | Main menu: Resume set apart and balanced under the logo | Haiku | — | TODO |
+| O-79 | Bottom key bar: keys in an accent colour | Haiku | — | TODO |
+| O-80 | Language selector: quieter at rest, clearer when open | Haiku | O-70 | TODO |
+| O-81 | Window title by context, en-US spelling and wording | Haiku | — | TODO |
+| O-82 | Statistics footer: a space between `Copy seed` and `Esc Back` | Haiku | — | TODO |
+| O-83 | Board footer: the `Do:` prefix is clipped when a side panel is open | Haiku | — | TODO |
+| O-84 | Board footer and `Now:` row: no overflow into the status line; the source column kept | Sonnet | O-83 | TODO |
+| O-85 | `Turned over` counter: counts what its label says | Haiku | — | TODO |
+| O-86 | Settings: `Font face` shows its own value | Haiku | — | TODO |
+| O-87 | Large cards: a spade with a clear stem | Haiku | — | TODO |
+| O-88 | Stock card back: no stray marks in the centre | Haiku | — | TODO |
+| O-89 | Keyboard focus skips face-down cards | Haiku | — | TODO |
+| O-90 | Quick options: the app's selection colour, one name for Aura, real buttons | Haiku | O-75 | TODO |
+| O-91 | Possible moves: readable unavailable entries, active ones first | Haiku | — | TODO |
+| O-92 | Guide panel: `▶` means focus only | Haiku | — | TODO |
+| O-93 | Footer: the `v: moves` highlight clears | Haiku | — | TODO |
+| O-94 | Settings: unavailable rows dimmed; no reference to a missing screen | Haiku | — | TODO |
+| O-95 | Statistics: a plain summary line and footer hints for the action bar | Sonnet | O-82 | TODO |
+| O-96 | Settings: labelled Aura swatches, a Performance section, Left/Right in the footer | Haiku | — | TODO |
+| O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Haiku | O-95 | TODO |
+| O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | TODO |
+| O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Haiku | O-87 | TODO |
+| O-100 | Spider and Pyramid: no `A` in slots that are not ace foundations | Haiku | — | TODO |
+| O-101 | Yukon footer: `Enter: pick up` and `a: quick move` when a card can move | Haiku | — | TODO |
+| O-102 | Settings: a live preview pane instead of the 4 × 1 swatch | Sonnet | — | TODO |
+| O-103 | Settings in three tabs: Audio & Visual, Popular (default), Gameplay | Sonnet | O-102 | TODO |
+| O-104 | FreeCell: a gap between the free cells and the foundations | Haiku | — | TODO |
+| O-105 | Pyramid: blocked cards look different from playable ones | Haiku | — | TODO |
+| O-106 | Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid) | Sonnet | O-87 | TODO |
+| O-107 | Yukon: column 7 never runs off the bottom | Sonnet | — | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 

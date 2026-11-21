@@ -5,10 +5,11 @@ Goal: the table, the card face and the aura are set apart from the theme; the lo
 Exit criteria:
 
 - P3-32, P3-33, P3-34, P3-35, P5-03, P5-04 and P5-05 are DONE;
+- the visual fixes O-69 to O-107 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
 
-Order of work: the Interface options first, then the card style and the games, which do not touch those files.
+Order of work: the Interface options first, then the card style and the games, which do not touch those files. The visual fixes (O-69 to O-107) go by priority, P1 before P2 before P3, respecting each card's dependencies; Settings cards run one at a time in the order O-86, O-94, O-102, O-103, O-96, because they share the Settings screen.
 
 ### P3-32 — Table color and feel
 
@@ -130,6 +131,396 @@ Order of work: the Interface options first, then the card style and the games, w
 - **Acceptance:** keyboard and mouse tests for the flow; the curated table has 4 × 5 seeds for every game variant
   with a proof of winnability; the levels are ordered by the chosen metric (documented in the card's PR).
 
+### P5-07 — Better hints: a hint that leads toward a win
+
+- **Owner:** Sonnet
+- **Depends on:** P4-10a
+- **Files:** the hint code of each game (`crates/core/src/games/*/mod.rs` and a new `hints.rs` per game where it
+  grows), its tests, `docs/tech/decisions.md` (only for a decision the orchestrator names)
+- **Scope:** owner request 2026-11-21: the hints never repeat a position, but in Yukon playing only hints won none of
+  200 deals. Rank hints so they make progress toward a win in every game: uncover face-down cards, empty a column
+  when it helps, avoid moves that block a card the foundations need next. Where a solver answers within the hint time
+  budget, a hint may take the first move of its solution. Measure before and after.
+- **Acceptance:** for each variant, a table on seeds 0 to 199: deals won by playing hints only, before and after; no
+  variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
+  budget.
+
+### O-68 — Help window: a mouse click on the Keys and Command line tabs switches to them
+
+- **Owner:** Haiku
+- **Depends on:** none
+- **Files:** `crates/tui/src/widgets/overlay/{mod.rs,nav.rs,tabs.rs,help_keys.rs,command_line.rs}`,
+  `crates/tui/src/widgets/overlay/how_to_play/**`, the screen that opens Help from the main menu if it routes the mouse
+  itself, tests
+- **Scope:** owner report 2026-11-21 (screenshot, main menu, Help open on Rules, v0.5.0): clicking the top tabs `Keys` or
+  `Command line` with the mouse does nothing; the keyboard switches tabs fine. Every top tab must switch on a left click
+  from every other tab, from the main menu and from the board, at every dock position (the screenshot shows
+  `Dock: centre`).
+- **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
+  menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
+
+## Visual fixes and improvements
+
+Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike; batch 3: O-100 to O-107 — Spider, FreeCell, Pyramid, Yukon and the Settings redesign). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
+
+**P1 — Visual bugs and layout collisions**
+- **Done:** #207
+
+### O-69 — Help window: one height for every tab; optional backdrop dimming
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/widgets/overlay/dock/**`, tests
+- **Problem:** switching between `Keys`, `Rules` and `Command line` makes the window height jump; on `Rules` (How to play) the window is a little shorter, so the top of the `oXySol` logo shows above the yellow border.
+- **Fix:** one height for every Help tab (a share of the terminal height with a minimum and a maximum); the logo never shows above the border. Optionally dim the background behind a centred window (theme tokens only).
+- **Acceptance:** a test renders each tab at 100 × 30 and 200 × 60 and finds the same window rectangle; no logo cell above the border; colours only through theme tokens.
+
+### O-70 — Language tooltip disappears when a window opens
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/language_picker/**`, `crates/tui/src/screens/main_menu.rs`, tests
+- **Problem:** the `English (US)` tooltip under the flag in the top-left corner stays on screen while Help or How to play is open.
+- **Fix:** clear the language widget's hover and focus tooltip whenever any window or overlay opens.
+- **Acceptance:** a test hovers or focuses the flag, opens Help, and finds no tooltip text in the buffer; closing the window does not bring it back until the next hover or focus.
+
+### O-71 — Help window: a separator between the scrolling text and the footer
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, tests
+- **Problem:** on `Command line` (and the other scrolling tabs) the last text line (for example `Window:`) touches the window footer (`Tab: next tab…`) with nothing between them.
+- **Fix:** a horizontal rule (`─`, ASCII `-`) or at least one empty row between the scrolling area and the footer, the same on every tab.
+- **Acceptance:** a test on every Help tab finds the separator row between the last text row and the footer, in Unicode and ASCII mode.
+
+### O-72 — Docked Help: a margin between the version label and the panel
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/widgets/overlay/dock/**`, `crates/tui/src/screens/main_menu.rs`, tests
+- **Problem:** with Help docked right (`Dock: right`) the version (`v0.5.0`) in the bottom-right corner of the main view touches the double yellow border of the panel.
+- **Fix:** keep one or two columns between the main view's footer and the docked panel border.
+- **Acceptance:** a test docks Help left and right and finds at least one empty column between the version label (and any footer text) and the panel border.
+
+### O-82 — Statistics footer: a space between `Copy seed` and `Esc Back`
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** the bottom key bar of Statistics reads `c Copy seedEsc Back`, with no space between the two entries.
+- **Fix:** the same separator between every footer entry; find why this pair loses it (width budget or a missing join).
+- **Acceptance:** a test renders Statistics at 100 × 30 and 200 × 60 in all nine locales and finds at least one space between every pair of footer entries.
+
+### O-83 — Board footer: the `Do:` prefix is clipped when a side panel is open
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** in Klondike with the right side panel open (`Guide` or `Possible moves`) the second footer line starts `ow: s: turn stock…` instead of `Do: s: turn stock…`.
+- **Fix:** compute the footer width from the table area that is left when a side panel takes its columns, and clip from the end, never the start.
+- **Acceptance:** a test opens each side panel in every variant at 100 × 30 and 130 × 40 and finds both footer rows starting with their full prefix.
+
+### O-84 — Board footer and `Now:` row: no overflow into the status line; the source column kept
+
+- **Owner:** Sonnet
+- **Depends on:** O-83
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** with `Possible moves` open and an error shown, the last footer items (`p: pause   v: moves`) run onto the `Now:` row right after `Illegal move: the cards cannot go there.`; `Now: Carrying: eight of diamonds (from: Tab…` cuts off the source column number.
+- **Fix:** footer entries never spill into the `Now:` row; when the `Now:` text is too long, shorten the card name first or use a compact column name (for example `T5`) so the source column stays; drop low-priority footer hints first on narrow widths.
+- **Acceptance:** tests at the narrowest board width with each side panel open: the `Now:` row holds no footer text, the source column is visible while carrying, and the drop order of footer hints is fixed.
+
+### O-85 — `Turned over` counter: counts what its label says
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (header), `crates/core/src/session/**` only if the count lives there, `locales/*/board.toml`, tests
+- **Problem:** moving `A ♥` to a foundation uncovers the face-down `2 ♦` in column 4, but the top bar still shows `Turned over: 0`.
+- **Fix:** decide from the code what the counter counts: if it counts stock turns, rename it (for example `Stock draws`); if it is meant to count revealed cards, count each face-down tableau card that turns over. Record the choice on the card.
+- **Acceptance:** a test reveals a tableau card and checks the counter (or the new label); all nine locales.
+
+### O-86 — Settings: `Font face` shows its own value
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** both `Font face` and `Font size` show `Ctrl+= / Ctrl+-`.
+- **Fix:** `Font face` shows the current face (or that the terminal controls it); only `Font size` names the zoom keys.
+- **Acceptance:** a test renders the Interface section with a face set and with the terminal in control and finds the right value on each row; all nine locales.
+
+### O-100 — Spider and Pyramid: no `A` in slots that are not ace foundations
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, tests
+- **Problem:** Spider (1 suit) draws `A` in all 8 top completion slots, although Spider removes full king-to-ace runs and does not build up from aces; Pyramid (Relaxed) draws `A` in the bottom-right pile of removed cards, where pairs that add up to 13 go.
+- **Fix:** a marker that fits the game: in Spider `K`, `✓` or an empty frame; in Pyramid `13`, `×` or an empty frame. Each has a WGL4 and an ASCII form, and the How to play text agrees.
+- **Acceptance:** a test renders a fresh Spider and Pyramid deal and finds no `A` in those slots; Klondike, FreeCell and Yukon foundations still show `A`.
+
+### O-101 — Yukon footer: `Enter: pick up` and `a: quick move` when a card can move
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** in Yukon, with the focus on a playable face-up card (`J ♥` in column 1), the `Do:` bar shows only `Arrows: move | h: hint | i: how to play…`, without `Enter: pick up` and `a: quick move`.
+- **Fix:** the contextual hints offer `Enter: pick up` and `a: quick move` whenever the focused card or group can move, in every Yukon variant (likely the footer still assumes a game without group moves from any face-up card).
+- **Acceptance:** a test focuses a movable face-up card in each Yukon variant and finds both hints; a face-down or blocked card does not show them.
+
+### O-102 — Settings: a live preview pane instead of the 4 × 1 swatch
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `crates/tui/src/settings.rs`, `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs` (reuse only), tests
+- **Problem:** the inline 4 × 1 grey hatch next to `Card back` (theme Dracula) shows neither the theme colours nor the back style (Lattice); `Front style`, `Back style`, `Symbols`, `Card size` and the Aura options have only text or small unlabelled swatches.
+- **Fix:** a two-column Settings layout with a live preview pane on the right, drawn on the active theme's table: one face-down card (theme, card back, back style, symbols, card size) and one or two face-up cards showing the focus, carried and target states (front style, symbols, card size, Aura, aura colour, style and size, target marks). It replaces the 4 × 1 swatch and the unlabelled Aura tiles. The cards are drawn by the existing card widget, not a copy. Below the width the two columns need, the preview moves under the list or hides with a note.
+- **Acceptance:** a test changes each listed option and finds the preview changed; the 4 × 1 swatch is gone; fits at 100 × 30 (preview below or hidden) and 130 × 40 (side by side) in all nine locales.
+
+**P2 — Focus, navigation and consistency**
+
+### O-73 — Docked Help: dim the selection in the pane without focus
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/menu_list.rs`, `crates/tui/src/widgets/overlay/dock/**`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** with Help docked left or right and focused, the main menu keeps its bright yellow selection (`▶ Help`), which outshines the quiet blue header of the active Help panel.
+- **Fix:** when focus is in the docked panel, the other pane's selection uses a muted style (for example a dark grey background); the selection stays visible without colour (the marker stays).
+- **Acceptance:** a test moves focus between the panes and checks the selection style of each; the marker is present in both states; contrast tests pass.
+
+### O-74 — Help window: one footer layout and scroll indicator on every tab
+
+- **Owner:** Sonnet
+- **Depends on:** O-71
+- **Files:** `crates/tui/src/widgets/overlay/**`, `locales/*/help.toml`, tests
+- **Problem:** the footer differs by tab: `Keys` has a scrollbar but no line counter (`1-X / Y`) and no scroll hints; `Rules` has no `Tab` hint and says `Up/Down: move focus`, which is unclear; `Command line` shows `Tab: next tab`, the scroll keys and the counter.
+- **Fix:** one footer format for `Keys`, `Rules` and `Command line`: the line counter whenever the text overflows, the main tab switch (`Tab`), the game switch on `Rules` (`Left/Right`), scrolling and closing (`Esc`).
+- **Acceptance:** a test renders each tab with overflowing text and finds the same footer entries in the same order; all nine locales.
+
+### O-75 — Windows: the active tab and the focused button look different
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/theme/**`, tests
+- **Problem:** the same solid white background with black text marks the active tabs (`[Keys]`, `[Klondike]`, `[Command line]`) and the focused `▶ Close [Esc] ◄` button, so it is unclear what `Enter` will do.
+- **Fix:** a separate style for the active tab and for the focused button, so the player sees at once what `Enter` triggers; neither relies on colour alone.
+- **Acceptance:** a test checks that the active-tab and focused-button styles differ in every theme and that both keep a non-colour marker; contrast tests pass.
+
+### O-76 — Docking and pane focus keys shown where they apply
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `locales/*/help.toml`, tests
+- **Problem:** the top border shows only `Dock: centre` without the key that changes it; docked mode does not say how to move focus between the panes (`F6`).
+- **Fix:** the border label names the key (`Dock: center [d]`, key taken from the key table) and the docked panel footer shows compact `d Dock  F6 Focus` hints.
+- **Acceptance:** a test finds the key in the border label and the two hints in the docked footer; keys come from the key table, not literals; all nine locales.
+
+### O-77 — Docked Help: key and description on one line
+
+- **Owner:** Sonnet
+- **Depends on:** O-74
+- **Files:** `crates/tui/src/widgets/overlay/help_keys.rs`, `crates/tui/src/widgets/overlay/dock/**`, tests
+- **Problem:** in the narrow docked panel every shortcut takes two lines (key, then description), which means long scrolling although most pairs fit on one row.
+- **Fix:** a two-column row (a key column of about 11 to 12 characters and the description on the same line); only long key combinations (for example `Ctrl +/-/0`) wrap to a second line.
+- **Acceptance:** a test at the docking width finds key and description on one row for short keys and a wrap only for long ones; fewer rows than before; all nine locales fit.
+
+### O-87 — Large cards: a spade with a clear stem
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/card/**` (the large pip drawing), tests
+- **Problem:** on `Large` cards the spade pip (`9 ♠`, `2 ♠`, `Q ♠`) is a thick symmetric cross with no stem, so its outline is closer to the diamond than to the club.
+- **Fix:** redraw the large spade with a pointed top and a stem or foot at the bottom, in Unicode and ASCII mode.
+- **Acceptance:** a snapshot of the large pips shows four outlines that differ by shape; the spade has a stem row the diamond does not.
+
+### O-88 — Stock card back: no stray marks in the centre
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/card/**`, `assets/cards/backs/**` only if the style data causes it, tests
+- **Problem:** the centre of the face-down stock (`x24`) shows two small offset dark vertical bars that look like a broken glyph.
+- **Fix:** a clean symmetric centre detail, or no centre glyph, at every card size and back style.
+- **Acceptance:** snapshots of the stock in each back style and size show a symmetric centre without the bars.
+
+### O-89 — Keyboard focus skips face-down cards
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (focus movement), tests
+- **Problem:** arrow keys can put the focus on face-down tableau cards, and picking one up gives `Illegal move: the card is face down.`
+- **Fix:** Up and Down within a column skip face-down cards; entering a column lands on the first face-up card, or on the empty slot.
+- **Acceptance:** tests in Klondike and Yukon move through columns with face-down cards and never focus one; the mouse is unchanged.
+
+### O-90 — Quick options: the app's selection colour, one name for Aura, real buttons
+
+- **Owner:** Haiku
+- **Depends on:** O-75
+- **Files:** `crates/tui/src/widgets/overlay/quick_options.rs`, `locales/*/settings.toml`, tests
+- **Problem:** the active row uses a white highlight instead of the yellow selection used everywhere else; the setting is called `Aura` but its description says `Glow:`; the bottom actions (`Save as default`, `Close [Esc]`) have no button style and no focus hints.
+- **Fix:** the yellow selection style for the active row, `Aura` in every label and description, and the bottom actions drawn and focused like the other windows' buttons (`[…]`).
+- **Acceptance:** a test checks the row style token, the word `Glow` is gone from all nine locales, and the buttons can be focused and pressed by keyboard and mouse.
+
+### O-91 — Possible moves: readable unavailable entries, active ones first
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/moves_window.rs`, `crates/tui/src/widgets/moves.rs`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** unavailable entries and their reasons (`Nothing to pick up here`, `Carrying cards`, `Nothing to undo`) have very low contrast on the dark navy background and take about 70 % of the panel.
+- **Fix:** raise the contrast of the unavailable text to pass the contrast tests, and list the available actions first with the unavailable ones grouped or condensed below.
+- **Acceptance:** contrast tests cover the unavailable style in every theme; a test finds the available actions above the unavailable ones.
+
+### O-92 — Guide panel: `▶` means focus only
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/guide/**`, tests
+- **Problem:** the Guide prefixes the available keys (`▶ Arrows`, `▶ s`, `▶ h`) with `▶`, while the Legend just below says `▶` is the focus.
+- **Fix:** a different marker (WGL4 and ASCII form) for available or recommended keys, so `▶` only means focus; the Legend explains both.
+- **Acceptance:** a test finds no `▶` in the Guide's key list and finds the new marker in the Legend.
+
+### O-93 — Footer: the `v: moves` highlight clears
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/screens/board/**`, tests
+- **Problem:** `v: moves` stays highlighted in solid white after the `Possible moves` panel is closed.
+- **Fix:** hover and click highlights on footer entries clear when the panel is toggled off and when the player goes back to the keyboard.
+- **Acceptance:** a test opens and closes the panel by mouse and by key and finds no highlight left on the entry.
+
+### O-94 — Settings: unavailable rows dimmed; no reference to a missing screen
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** `Console font` shows working arrows `◄ unavailable ►` although it cannot change; the note at the bottom says `(see the graphics check)`, which Settings does not show.
+- **Fix:** dim unavailable rows and hide their `◄ ►`; either link the graphics check from Settings or rewrite the note so it does not point at something missing.
+- **Acceptance:** a test renders an unavailable row without arrows in the dimmed style; the note text in all nine locales matches what the screen offers.
+
+### O-95 — Statistics: a plain summary line and footer hints for the action bar
+
+- **Owner:** Sonnet
+- **Depends on:** O-82
+- **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `locales/*/stats.toml`, tests
+- **Problem:** the line `Automatic 27% (7 of 26) · failed 3 · run 1 · finish 0` reads like internal data and does not say what `7 of 26` means next to 123 games; the action bar (`[ Play this seed again ]`, `[ Copy seed ]`, `[ Check ]`, `[ Check all ]`, `[ Back ]`) has no footer hints for `Check`, `Check all` or moving between buttons.
+- **Fix:** a line a player understands (what is counted and out of what), and footer hints for every action-bar button and for moving between them.
+- **Acceptance:** a test renders the summary and finds the new wording and every action in the footer; fits at 100 × 60 (T-40) in all nine locales.
+
+### O-103 — Settings in three tabs: Audio & Visual, Popular (default), Gameplay
+
+- **Owner:** Sonnet
+- **Depends on:** O-102
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `crates/tui/src/settings.rs`, `locales/*/settings.toml`, `docs/tech/architecture.md` (settings screen contract), tests
+- **Problem:** the flat list of 23 options is long and mixes display, sound, system and gameplay settings in one column, leaving no room for previews and making the common ones slow to reach.
+- **Fix:** three tabs with `Popular` in the middle and active by default (`◄ Audio & Visual │ [Popular] │ Gameplay ►`). **Popular:** the 7 or 8 most changed settings (for example Language, Theme, Card size, Card back, Volume, Aura, Auto-finish) as aliases of their canonical rows; a change in either place shows in both. **Audio & Visual:** Colors, Full screen, Theme, Card back, Front style, Back style, Symbols, Console font, Font face, Font size, Card size, Aura colour, Aura style, Aura size, Sound style, Sound cues, Music, Volume, Process priority. **Gameplay:** Language, Aura, Target marks, Guide panel, Possible moves panel, Auto-finish and later gameplay options. `Tab` / `Shift+Tab` (optionally `[` / `]`) switch tabs from anywhere, so `Left` / `Right` only change values; the footer says `Shift+Tab / Tab: tab`. This replaces the `Performance` section part of O-96 (Process priority goes to Audio & Visual).
+- **Acceptance:** tests: Popular is active on open; every setting is reachable in its canonical tab; changing an alias changes the canonical value and the other way round; Tab and Shift+Tab switch tabs and Left/Right never do; keyboard and mouse reach every tab and row; all nine locales fit at 100 × 30.
+
+### O-104 — FreeCell: a gap between the free cells and the foundations
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (FreeCell layout), tests
+- **Problem:** FreeCell's top row has 8 evenly spaced slots (4 empty free cells, then 4 `A` foundations) with no gap or divider between the two groups.
+- **Fix:** a wider gap between slot 4 and slot 5, and optionally a quiet distinct style for the free cells, so the two zones read apart without colour.
+- **Acceptance:** a test finds a wider gap between the fourth and fifth slot than between the others at every card size; FreeCell still fits at 100 × 30.
+
+### O-105 — Pyramid: blocked cards look different from playable ones
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (Pyramid), `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** all 28 pyramid cards have the same bright white face whether or not cards in the row below cover them, so the player has to trace overlaps to see what is playable.
+- **Fix:** a subtle dim or shade (face or border) on covered cards so uncovered, playable cards stand out; it must not rely on colour alone (for example a dimmer frame glyph as well) and must pass the contrast tests.
+- **Acceptance:** a test on a fresh deal finds the 7 bottom cards in the playable style and the 21 others in the blocked style; contrast tests pass in every theme.
+
+### O-106 — Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid)
+
+- **Owner:** Sonnet
+- **Depends on:** O-87
+- **Files:** `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, tests
+- **Problem:** in dense face-up columns (FreeCell, Yukon) and overlapped Pyramid rows, a covered card shows a clipped half or a 1 to 2 px tip of its large centre pip just under the rank and suit header, which looks ragged.
+- **Fix:** when a card is covered from below, do not draw the clipped part of its centre pip (or tidy the visible header strip), so a covered card shows only a clean rank and suit index.
+- **Acceptance:** snapshots of covered cards in each of the three games at every card size show no partial pip rows; an uncovered card is unchanged.
+
+### O-107 — Yukon: column 7 never runs off the bottom
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (column layout), `crates/tui/src/layout/**`, tests
+- **Problem:** at Moves 0 with Large cards the last card of column 7 (`A ♣`) already almost touches the bottom status bar; one or two more cards would push it off screen.
+- **Fix:** compress the vertical card spacing of a column as it grows (face-down cards first, then face-up overlap) so the whole column, its last card fully visible, always fits above the status bar; fall back to a smaller card size only when compression is not enough. (The review text for this item was cut off after "Ensure dynamic vertical compression of"; the owner may refine the fix.)
+- **Acceptance:** a test builds the longest possible Yukon column (6 face-down + 18 face-up, and longer after moves) at 100 × 30 and 100 × 60 with every card size and finds the last card fully drawn above the status bar; the same test covers Klondike and Spider.
+
+**P3 — Main view polish, widgets and wording**
+
+### O-78 — Main menu: Resume set apart and balanced under the logo
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/main_menu.rs`, `crates/tui/src/screens/main_menu/resume.rs`, tests
+- **Problem:** the menu block is aligned to the long `Resume: Klondike, Draw 1, 0:47, Moves 26` entry, so the shorter items look shifted left under the centred `oXySol` logo.
+- **Fix:** one empty row between `Resume` and the other entries, and the game details of `Resume` in a muted secondary colour when it is not selected.
+- **Acceptance:** a test finds the empty row and the muted style; the menu still fits at 100 × 30 in all nine locales.
+
+### O-79 — Bottom key bar: keys in an accent colour
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** in `Enter Open  Tab Language  q Quit  ? Help` keys and labels share one colour, so the bar is hard to scan.
+- **Fix:** keys in an accent colour (for example the light blue of the `Keys` tab), labels muted; the key/label split stays readable without colour (spacing as today).
+- **Acceptance:** a test checks that key and label styles differ in every theme; contrast tests pass.
+
+### O-80 — Language selector: quieter at rest, clearer when open
+
+- **Owner:** Haiku
+- **Depends on:** O-70
+- **Files:** `crates/tui/src/widgets/language_picker/**`, tests
+- **Problem:** at rest the widget shows three arrows (`◄`, `►`, `▼`), which is noise; in the open list the two-letter codes (`EN`, `PL`, `DE` …) compete with the full language names.
+- **Fix:** at rest show only `[flag] PL ▾`; show `◄ ►` only while the widget has focus; dim the two-letter codes in the open list. Keep a WGL4 and an ASCII form of each arrow.
+- **Acceptance:** tests of the rest, focused and open states in Unicode and ASCII mode; mouse targets still work.
+
+### O-81 — Window title by context, en-US spelling and wording
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/**`, `locales/en-US/help.toml`, `locales/pl-PL/menu.toml`, tests
+- **Problem:** opening How to play shows the generic title `Help`; en-US uses the British `centre` (`Dock: centre`, `stays centred`); the Polish `Nowa gra z ziarna` may be unclear to players who do not know the term; Vim users pressing `j`/`k` may hit `h` (Hint) by accident.
+- **Fix:** the title follows how the window was opened (`How to play`, or `Help · Rules`); en-US `centre` → `center` and `centred` → `centered`; Polish `Nowa gra z ziarna (seed)` or `Nowa gra z kodu (seed)` (the owner picks); decide whether `h` needs a guard or a note when hints affect the statistics (record the answer on the card; change code only if the owner asks).
+- **Acceptance:** tests for both titles; locale parity passes; the Polish line fits at 100 × 30.
+
+### O-96 — Settings: labelled Aura swatches, a Performance section, Left/Right in the footer
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** the three `Aura:` preview swatches have no labels; `Process priority` sits under `Interface` rather than a performance or system group; the footer says only `Enter Change` although the rows also take `◄ ►`.
+- **Fix:** label the swatches (focus, carried, target); move `Process priority` into a `Performance` section; add `Left/Right` to the footer hint.
+- **Acceptance:** a test finds the three labels, the new section with the priority row, and the footer hint; all nine locales fit at 100 × 30.
+
+### O-97 — Statistics table: results by style, the legend's unchecked mark, local time
+
+- **Owner:** Haiku
+- **Depends on:** O-95
+- **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `locales/*/stats.toml`, tests
+- **Problem:** every `Result` (`Won`, `Abandoned`, `In progress`) has the same white text; unchecked rows in `Winnable` show `· -` while the legend says `· not checked`; times are shown in UTC.
+- **Fix:** a style per result (for example green won, muted abandoned, accent in progress) with the word still carrying the meaning; unchecked cells show exactly the legend mark; local time instead of UTC (or a setting), stated in the header.
+- **Acceptance:** tests for the three result styles in every theme (contrast passes), the unchecked mark equal to the legend, and a time rendered in the local offset.
+
+### O-98 — Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/game_select.rs`, `crates/tui/src/screens/game_select/**`, `locales/en-US/menu.toml` and the other locales for new keys, tests
+- **Problem:** `English (US)` uses the British `Favourites` / `favourite (f)`; there is no empty row between `Australian` and the game description (`Easy: Build the foundations…`); `[ Winnable deals only: off ]` has no key and its `off` text (`A new game then searches…`) reads oddly; the footer does not list `/ Search`, `f Favorite` and `u Undo`.
+- **Fix:** en-US `Favorites` / `favorite (f)`; an empty row above the description (and below `Favorites`); a key for `Winnable deals only` shown on the button and a clear text for each state; the footer lists every key of the screen.
+- **Acceptance:** tests for the en-US words, the empty rows, the key toggling the option, and the footer entries; fits at 100 × 30 in all nine locales.
+
+### O-99 — Large cards: consider dropping the centred rank and suit line (optional)
+
+- **Owner:** Haiku
+- **Depends on:** O-87
+- **Files:** `crates/tui/src/widgets/card/**`, tests
+- **Problem:** `Large` cards show rank and suit three times: top-left (`9♠`), a centred line under the top border (`9 ♠`) and bottom-right (`9♠`).
+- **Fix:** try the large face without the centred line so the main pip has more room; keep it if a card becomes harder to read in any style. The owner decides from a before and after snapshot.
+- **Acceptance:** before and after snapshots for every card style in the PR; the rank stays readable at the large size.
+
 ## Done before the 2026-11 replan
 
 ### X-01 — Spike: card font in real terminals
@@ -173,34 +564,6 @@ Order of work: the Interface options first, then the card style and the games, w
   the card of M-19…M-24; M-19…M-24 are `READY`; P5-01 and P5-02 are adjusted below; follow-ups O-34 (here)
   and O-35 (`phase-0.md`).
 - **Done:** X-01 report (#113) and this PR (#115).
-
-### P5-07 — Better hints: a hint that leads toward a win
-
-- **Owner:** Sonnet
-- **Depends on:** P4-10a
-- **Files:** the hint code of each game (`crates/core/src/games/*/mod.rs` and a new `hints.rs` per game where it
-  grows), its tests, `docs/tech/decisions.md` (only for a decision the orchestrator names)
-- **Scope:** owner request 2026-11-21: the hints never repeat a position, but in Yukon playing only hints won none of
-  200 deals. Rank hints so they make progress toward a win in every game: uncover face-down cards, empty a column
-  when it helps, avoid moves that block a card the foundations need next. Where a solver answers within the hint time
-  budget, a hint may take the first move of its solution. Measure before and after.
-- **Acceptance:** for each variant, a table on seeds 0 to 199: deals won by playing hints only, before and after; no
-  variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
-  budget.
-
-### O-68 — Help window: a mouse click on the Keys and Command line tabs switches to them
-
-- **Owner:** Haiku
-- **Depends on:** none
-- **Files:** `crates/tui/src/widgets/overlay/{mod.rs,nav.rs,tabs.rs,help_keys.rs,command_line.rs}`,
-  `crates/tui/src/widgets/overlay/how_to_play/**`, the screen that opens Help from the main menu if it routes the mouse
-  itself, tests
-- **Scope:** owner report 2026-11-21 (screenshot, main menu, Help open on Rules, v0.5.0): clicking the top tabs `Keys` or
-  `Command line` with the mouse does nothing; the keyboard switches tabs fine. Every top tab must switch on a left click
-  from every other tab, from the main menu and from the board, at every dock position (the screenshot shows
-  `Dock: centre`).
-- **Acceptance:** tests that click each top tab (Keys, Rules, Command line) from each of the others, opened from the main
-  menu and from the board, with the dock at least at its default and centre positions; keyboard behaviour unchanged.
 
 ### P5-01 — Font builder and preview sheet
 
