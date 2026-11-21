@@ -12,10 +12,13 @@ use super::{help, nav};
 use crate::action::Action;
 use crate::app::Modal;
 use crate::i18n::{t, tf};
+use crate::input::primary_key;
 
 #[cfg(test)]
 mod dock_tests;
 pub mod dock_view;
+#[cfg(test)]
+mod hint_tests;
 use crate::layout::BOARD_MIN_WIDTH;
 use crate::mouse;
 use crate::screens::Effect;
@@ -99,9 +102,14 @@ pub fn text_width(rect: Rect) -> u16 {
     parts(rect).text.width.saturating_sub(2)
 }
 
-/// The label of the placement button in the title bar, for example `Dock: right`.
+/// The label of the placement button in the title bar, for example `Dock: right [d]`, with the key
+/// of [`Action::Dock`] from the key table.
 pub fn button_label(side: DockSide) -> String {
-    tf("help.dock.button", &[("side", &t(side.label_key()))])
+    let key = primary_key(Action::Dock).unwrap_or_default();
+    tf(
+        "help.dock.button",
+        &[("side", &t(side.label_key())), ("key", &key)],
+    )
 }
 
 /// The rectangle of the placement button on the top border of a box at `frame`, just inside the
@@ -126,12 +134,13 @@ pub fn close_label() -> String {
         .unwrap_or_default()
 }
 
-/// The rectangle of the Close button on the footer row of a docked window at `rect`.
+/// The rectangle of the Close button on the footer row of a docked window at `rect`, at its right.
 pub fn close_rect(rect: Rect) -> Rect {
     let footer = parts(rect).footer;
-    let width = u16::try_from(close_label().chars().count()).unwrap_or(u16::MAX);
-    let x = footer.x + footer.width.saturating_sub(width) / 2;
-    Rect::new(x, footer.y, width.min(footer.width), 1)
+    let width = u16::try_from(close_label().chars().count())
+        .unwrap_or(u16::MAX)
+        .min(footer.width);
+    Rect::new(footer.right().saturating_sub(width), footer.y, width, 1)
 }
 
 fn rules_of(modal: &Modal) -> Option<Rules> {
