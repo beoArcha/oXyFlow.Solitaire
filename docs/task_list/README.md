@@ -229,7 +229,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | DONE |
 | P4-08 | Card style: Swiss suits (Unicode) | Haiku | P5-02 | TODO |
 | P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | DONE |
-| P4-10a | Game: Yukon (classic) | Opus | P4-09, P1-02 | TODO |
+| P4-10a | Game: Yukon (classic) | Opus | P4-09, P1-02 | DONE |
 | P4-10b | Yukon variant: Russian Solitaire | Haiku | P4-10a | TODO |
 | P4-10c | Yukon variant: Alaska | Haiku | P4-10b | TODO |
 | P4-10d | Yukon variant: Moosehide | Haiku | P4-10c | TODO |
