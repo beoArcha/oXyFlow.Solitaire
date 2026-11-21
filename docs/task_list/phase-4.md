@@ -8,6 +8,8 @@ Exit criteria:
 - O-34 (Windows Terminal, tested by the user on a real machine) and U-02 (artwork review) are confirmed by the user;
 - `cargo xtask check` passes on `main` after each merge of this phase;
 - the workflow cards O-50 to O-67 are all merged, so the P1 findings of the review are closed.
+- the closing PR refreshes the documentation — `README.md`, `docs/` (architecture, workflow, wiki) and the site
+  (`docs/site/src/*`, including links to the Yukon rules pages) — and raises the version to 0.5.0 (owner, 2026-11-21).
 
 Order of work: the workflow cards first (P1 before P2 before P3, as the review ranks them), then the open fixes, then P5-02, the card-style setting that the first card of this phase introduces and O-34 tests, then the cards of the phase's own work. P5-02 moved here from phase 5 (R-25) because it is the card-style setting.
 Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwork, READY; reviewed by U-02).
@@ -444,6 +446,9 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   menu, with its rules tab section and wiki section. No new move code beyond the building rule parameter.
 - **Acceptance:** tests for the same-suit rule (legal and illegal), storage round trip, menu and rules in all nine
   locales.
+- **Statistics screen (owner, 2026-11-21, T-40):** the statistics screen is fitted at 100 × 60, not 100 × 30.
+  This card moves the statistics fit test to 100 × 60 and gives the history list back its 4 rows (`MIN_LIST_ROWS` in
+  `crates/tui/src/screens/stats/view.rs`); the board and the other screens stay at 100 × 30.
 
 ### P4-10c — Yukon variant: Alaska
 
