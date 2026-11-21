@@ -1,12 +1,13 @@
 use super::*;
 use crate::audio::AudioSettings;
 use crate::i18n::Locale;
+use crate::input::Input;
 use crate::settings::{ColorMode, GlyphMode};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, TRUE_COLOR};
 use crate::theme::ThemeId;
 use oxysol_core::{DrawCount, Session, Variant};
-use ratatui::crossterm::event::KeyCode;
+use ratatui::crossterm::event::{KeyCode, KeyModifiers, MouseEvent, MouseEventKind};
 
 const FIRST_VARIANT: Variant = Variant::Klondike(DrawCount::One);
 
@@ -238,4 +239,46 @@ fn a_typed_seed_bypasses_the_seed_source() {
         undo_allowed: true,
     });
     assert!(h.app.board().session().is_some_and(|s| s.seed() == 42));
+}
+
+fn hover_at(h: &mut Harness, column: u16, row: u16) {
+    h.send(Input::Mouse(MouseEvent {
+        kind: MouseEventKind::Moved,
+        column,
+        row,
+        modifiers: KeyModifiers::NONE,
+    }));
+}
+
+#[test]
+fn a_window_hides_the_language_tooltip_until_the_next_hover_or_focus() {
+    let mut h = Harness::new();
+    let name = h.app.settings().locale.own_name();
+    let Some((column, row)) = h.find("◄") else {
+        panic!("the language selector is not drawn");
+    };
+    hover_at(&mut h, column + 2, row);
+    assert!(h.text().contains(name));
+    h.type_char('?');
+    assert!(h.app.modal().is_some());
+    assert!(!h.text().contains(name));
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    assert!(!h.text().contains(name));
+    hover_at(&mut h, column + 2, row);
+    assert!(h.text().contains(name));
+}
+
+#[test]
+fn a_window_hides_the_language_tooltip_shown_by_keyboard_focus_too() {
+    let mut h = Harness::new();
+    let name = h.app.settings().locale.own_name();
+    h.press(KeyCode::BackTab);
+    assert!(h.text().contains(name));
+    h.type_char('?');
+    assert!(!h.text().contains(name));
+    h.press(KeyCode::Esc);
+    assert!(!h.text().contains(name));
+    h.press(KeyCode::BackTab);
+    assert!(h.text().contains(name));
 }
