@@ -14,9 +14,23 @@ pub struct CardPos {
     pub index: usize,
 }
 
+/// What the foundations of the game collect; it decides the mark of an empty foundation.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Completion {
+    /// Built up from an ace (Klondike, FreeCell, Yukon).
+    #[default]
+    Ace,
+    /// Built down from a king (Spider).
+    King,
+    /// The pairs that add up to 13 (Pyramid).
+    Thirteen,
+}
+
 /// The highlights of the board. The controller (P3-03) fills it; an empty value highlights nothing.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Marks {
+    /// What the foundations of the game collect, from the session.
+    pub completion: Completion,
     /// The card under the cursor.
     pub focus: Option<CardPos>,
     /// The first card of the picked run; it and every card above it count as selected.
@@ -53,9 +67,13 @@ impl Marks {
     }
 }
 
-fn placeholder(pile: PileRef, recycle: bool) -> Placeholder {
+fn placeholder(pile: PileRef, recycle: bool, completion: Completion) -> Placeholder {
     match pile {
-        PileRef::Foundation(_) => Placeholder::Ace,
+        PileRef::Foundation(_) => match completion {
+            Completion::Ace => Placeholder::Ace,
+            Completion::King => Placeholder::King,
+            Completion::Thirteen => Placeholder::Thirteen,
+        },
         PileRef::Stock if recycle => Placeholder::Recycle,
         PileRef::Stock => Placeholder::Spent,
         _ => Placeholder::None,
@@ -96,7 +114,7 @@ pub fn draw(
     let len = snapshot.cards.len();
     if len == 0 {
         if !matches!(pile, PileRef::Pyramid { .. }) {
-            let face = Face::Slot(placeholder(pile, recycle));
+            let face = Face::Slot(placeholder(pile, recycle, marks.completion));
             card::draw(buf, geometry.slot, face, marks.mark(pile, 0, 0), None, ctx);
         }
         return;
