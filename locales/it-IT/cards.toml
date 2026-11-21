@@ -1,6 +1,8 @@
 # Strings of the cards area.
 
 [suit]
+rose = "rose"
+shield = "scudi"
 acorn = "ghiande"
 bell = "sonagli"
 leaf = "foglie"

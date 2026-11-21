@@ -126,6 +126,9 @@ fn font_mode_draws_the_suit_in_the_corners_the_centre_and_the_court_emblem() {
         let Some(front) = fixture.glyphs.front else {
             panic!("{id} has no style");
         };
+        if !front.has_font() {
+            continue;
+        }
         for suit in Suit::ALL {
             let symbol = front.suit_glyph(suit).unwrap_or_default();
             assert!(is_private_use(symbol), "{id} {suit:?}");
@@ -154,6 +157,47 @@ fn font_mode_draws_the_suit_in_the_corners_the_centre_and_the_court_emblem() {
             "{id} emblems differ"
         );
     }
+}
+
+#[test]
+fn swiss_in_font_mode_draws_its_unicode_symbols_and_renders_like_unicode_mode() {
+    let font = Fixture::styled(GlyphMode::Font, "swiss", "lattice");
+    let unicode = Fixture::styled(GlyphMode::Unicode, "swiss", "lattice");
+    let Some(front) = font.glyphs.front else {
+        panic!("swiss has no style");
+    };
+    for size in SIZES {
+        let size = (size.width, size.height);
+        for face in every_card() {
+            let drawn = card_lines(&font, size, face);
+            assert!(!is_private_use(&drawn.join("")), "{face:?} {size:?}");
+            assert_eq!(drawn, card_lines(&unicode, size, face), "{face:?} {size:?}");
+        }
+    }
+    for (suit, symbol) in Suit::ALL
+        .into_iter()
+        .zip(front.suit_symbols(GlyphMode::Font))
+    {
+        let ace = card_lines(&font, (11, 9), card(Rank::Ace, suit));
+        assert!(
+            ace[0].contains(symbol) && ace[8].contains(symbol),
+            "{suit:?}"
+        );
+    }
+}
+
+#[test]
+fn swiss_cards_at_the_smallest_size_match_the_snapshot() {
+    let fixture = Fixture::styled(GlyphMode::Unicode, "swiss", "lattice");
+    assert_eq!(
+        card_lines(&fixture, (7, 5), card(Rank::Ace, Suit::Hearts)),
+        ["┌A☼───┐", "│     │", "│  ☼  │", "│     │", "└───A☼┘"]
+    );
+    let ascii = Fixture::styled(GlyphMode::Ascii, "swiss", "lattice");
+    assert_eq!(
+        card_lines(&ascii, (7, 5), card(Rank::King, Suit::Clubs)),
+        ["+Ke---+", "|     |", "|  e  |", "|     |", "+---Ke+"]
+    );
 }
 
 #[test]

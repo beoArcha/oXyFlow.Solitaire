@@ -9,6 +9,8 @@ use oxysol_core::{Rank, Suit};
 use super::*;
 use crate::glyphs::is_wgl4;
 
+const FONTLESS_FRONTS: &[&str] = &["swiss"];
+
 const REGISTRY: &str = r#"
 [glyphs]
 "fronts/test/a" = "E6BC"
@@ -112,7 +114,10 @@ fn the_fronts_and_backs_of_the_card_are_found_the_default_first() {
         .iter()
         .map(|s| s.id.as_str())
         .collect();
-    assert_eq!(fronts, ["international", "french", "german", "italian"]);
+    assert_eq!(
+        fronts,
+        ["international", "french", "german", "italian", "swiss"]
+    );
     assert_eq!(backs, ["lattice", "ornament"]);
 }
 
@@ -282,7 +287,10 @@ fn every_font_key_of_an_embedded_manifest_is_in_the_registry_inside_the_font_ran
                 }
             }
         }
-        assert!(found > 0, "{id} names no font glyph");
+        assert!(
+            found > 0 || FONTLESS_FRONTS.contains(id),
+            "{id} names no font glyph"
+        );
     }
     let glyphs = embedded::CODEPOINTS;
     for key in keys {
@@ -348,6 +356,9 @@ fn the_font_glyphs_of_the_embedded_styles_lie_in_the_private_use_area_range() {
             .all(|c| (FONT_FIRST..=FONT_LAST).contains(&u32::from(c)))
     };
     for front in styles.fronts() {
+        if FONTLESS_FRONTS.contains(&front.id.as_str()) {
+            continue;
+        }
         assert!(front.has_font(), "{}", front.id);
         assert!(
             front
@@ -363,6 +374,26 @@ fn the_font_glyphs_of_the_embedded_styles_lie_in_the_private_use_area_range() {
             assert_eq!(row.chars().count(), 2);
             assert!(in_range(&row), "{}", back.id);
         }
+    }
+}
+
+#[test]
+fn swiss_has_no_font_glyphs_and_font_mode_draws_its_unicode_symbols() {
+    let styles = embedded().styles;
+    let Some(swiss) = styles.fronts().iter().find(|front| front.id == "swiss") else {
+        panic!("the swiss style is not embedded");
+    };
+    assert!(!swiss.has_font());
+    assert_eq!(swiss.court_emblem(Rank::King), None);
+    let font = swiss.suit_symbols(GlyphMode::Font);
+    assert_eq!(font, swiss.suit_symbols(GlyphMode::Unicode));
+    for symbol in font {
+        assert!(
+            !symbol
+                .chars()
+                .any(|c| (FONT_FIRST..=FONT_LAST).contains(&u32::from(c)))
+        );
+        assert!(symbol.chars().all(is_wgl4), "{symbol}");
     }
 }
 

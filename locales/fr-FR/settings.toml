@@ -40,6 +40,7 @@ lattice = "Treillis"
 ornament = "Ornement"
 french = "Français"
 german = "Allemand"
+swiss = "Suisse"
 italian = "Italien"
 
 [desc]

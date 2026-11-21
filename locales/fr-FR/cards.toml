@@ -1,6 +1,8 @@
 # Strings of the cards area.
 
 [suit]
+rose = "roses"
+shield = "écus"
 acorn = "glands"
 bell = "grelots"
 leaf = "feuilles"

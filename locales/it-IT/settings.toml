@@ -40,6 +40,7 @@ lattice = "Reticolo"
 ornament = "Ornamento"
 french = "Francese"
 german = "Tedesco"
+swiss = "Svizzero"
 italian = "Italiano"
 
 [desc]

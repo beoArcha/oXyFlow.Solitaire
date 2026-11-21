@@ -1,6 +1,8 @@
 # Strings of the cards area.
 
 [suit]
+rose = "троянди"
+shield = "щити"
 acorn = "жолуді"
 bell = "дзвінки"
 leaf = "листя"

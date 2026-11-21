@@ -1,6 +1,8 @@
 # Strings of the cards area.
 
 [suit]
+rose = "róże"
+shield = "tarcze"
 acorn = "żołędzie"
 bell = "dzwonki"
 leaf = "liście"

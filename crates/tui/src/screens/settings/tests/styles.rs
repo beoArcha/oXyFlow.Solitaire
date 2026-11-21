@@ -111,7 +111,7 @@ fn every_unavailable_status_has_its_own_reason_in_both_locales() {
 fn the_front_and_back_style_rows_list_every_style_found_and_cycle_both_ways() {
     assert_eq!(
         front_styles(),
-        ["international", "french", "german", "italian"]
+        ["international", "french", "german", "italian", "swiss"]
     );
     assert_eq!(back_styles(), ["lattice", "ornament"]);
     let base = Settings::default();
@@ -119,8 +119,14 @@ fn the_front_and_back_style_rows_list_every_style_found_and_cycle_both_ways() {
     assert_eq!(french.front_style, "french");
     assert_eq!(
         changed(Field::FrontStyle, &base, Step::Previous).front_style,
-        "italian"
+        "swiss"
     );
+    assert_eq!(value(Field::FrontStyle, &french), "French");
+    let swiss = Settings {
+        front_style: "swiss".to_owned(),
+        ..Settings::default()
+    };
+    assert_eq!(value(Field::FrontStyle, &swiss), "Swiss");
     let ornament = changed(Field::BackStyle, &base, Step::Next);
     assert_eq!(ornament.back_style, "ornament");
     assert_eq!(
