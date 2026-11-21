@@ -23,17 +23,18 @@ use crate::widgets::overlay::tabs::{HelpTab, arrows, draw_footer_buttons, draw_t
 use crate::widgets::scrollbar;
 
 /// Rows of the window that are not text: the borders, the button row, the top tab row, the game
-/// tab row and the footer row.
-const CHROME_ROWS: u16 = 7;
+/// tab row, the separator row and the footer row.
+const CHROME_ROWS: u16 = 8;
 const ARROW_COLUMNS: u16 = 3;
 const TAB_PADDING: u16 = 2;
 const TAB_GAP: u16 = 1;
 
-/// The four bands inside the box: top tabs, game tabs, text and footer.
+/// The five bands inside the box: top tabs, game tabs, text, separator and footer.
 pub struct Parts {
     pub top_tabs: Rect,
     pub game_tabs: Rect,
     pub text: Rect,
+    pub rule: Rect,
     pub footer: Rect,
 }
 
@@ -55,12 +56,13 @@ pub fn text_rows(area: Rect) -> u16 {
     help::frame_rows(area).saturating_sub(CHROME_ROWS)
 }
 
-/// Splits the box body into top tabs, game tabs, text rows and the footer row.
+/// Splits the box body into top tabs, game tabs, text rows, the separator row and the footer row.
 pub fn parts(body: Rect) -> Parts {
-    let [top_tabs, game_tabs, text, footer] = Layout::vertical([
+    let [top_tabs, game_tabs, text, rule, footer] = Layout::vertical([
         Constraint::Length(1),
         Constraint::Length(1),
         Constraint::Fill(1),
+        Constraint::Length(1),
         Constraint::Length(1),
     ])
     .areas(body);
@@ -68,6 +70,7 @@ pub fn parts(body: Rect) -> Parts {
         top_tabs,
         game_tabs,
         text,
+        rule,
         footer,
     }
 }
@@ -226,6 +229,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
         state.metrics(parts.text.height),
         ctx,
     );
+    help::draw_rule(frame, parts.rule, ctx);
     let buttons_drawn = draw_footer_buttons(
         frame,
         parts.footer,

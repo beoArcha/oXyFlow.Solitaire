@@ -20,8 +20,9 @@ use crate::screens::{Effect, ViewCtx};
 use crate::widgets::footer::{FooterMap, Segment};
 use crate::widgets::scrollbar::{self, Metrics};
 
-/// Rows of text visible at once: the box body minus the tab row and the footer row.
-pub const VIEW_ROWS: usize = 22;
+/// Rows of text visible at once at 100 by 30: the box body minus the tab row, the separator row and
+/// the footer row.
+pub const VIEW_ROWS: usize = 21;
 
 const PAGE_LINES: i32 = 20;
 const WHEEL_LINES: i32 = 3;
@@ -140,18 +141,25 @@ pub fn handle_mouse(state: &mut CommandLine, area: Rect, event: &MouseEvent) -> 
 }
 
 fn parts(body: Rect) -> Parts {
-    let [tabs, text, footer] = Layout::vertical([
+    let [tabs, text, rule, footer] = Layout::vertical([
         Constraint::Length(1),
         Constraint::Fill(1),
         Constraint::Length(1),
+        Constraint::Length(1),
     ])
     .areas(body);
-    Parts { tabs, text, footer }
+    Parts {
+        tabs,
+        text,
+        rule,
+        footer,
+    }
 }
 
 struct Parts {
     tabs: Rect,
     text: Rect,
+    rule: Rect,
     footer: Rect,
 }
 
@@ -197,7 +205,12 @@ fn footer_segments() -> Vec<Segment> {
 pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
-    let Parts { tabs, text, footer } = parts(geometry.body);
+    let Parts {
+        tabs,
+        text,
+        rule,
+        footer,
+    } = parts(geometry.body);
     draw_top_tabs(frame, tabs, HelpTab::CommandLine, true, ctx);
     let all = lines();
     let first = usize::from(state.scroll);
@@ -225,6 +238,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_
         state.metrics(text.height),
         ctx,
     );
+    help::draw_rule(frame, rule, ctx);
     let buttons_drawn = draw_footer_buttons(
         frame,
         footer,
