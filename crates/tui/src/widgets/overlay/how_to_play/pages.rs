@@ -156,7 +156,11 @@ const PYRAMID: Page = Page {
 
 const YUKON: Page = Page {
     goal: &["rules.yukon.goal"],
-    layout: &["rules.yukon.layout_1", "rules.yukon.layout_2"],
+    layout: &[
+        "rules.yukon.layout_1",
+        "rules.yukon.layout_2",
+        "rules.yukon.layout_3",
+    ],
     moves: &[
         "rules.yukon.moves_1",
         "rules.yukon.moves_2",

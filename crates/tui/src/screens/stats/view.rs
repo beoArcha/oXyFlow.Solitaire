@@ -22,9 +22,9 @@ use crate::widgets::scrollbar::{self, Metrics};
 /// Rows of the screen that are not the summary or the history list: title, two gaps, the history
 /// heading and column header, the legend, the buttons, the status line and the key line.
 const FIXED_ROWS: u16 = 9;
-/// History rows that always stay visible. With every game in both undo modes the summary needs
-/// 19 rows (header and 18 groups), which leaves exactly this many at the minimum height of 30.
-const MIN_LIST_ROWS: u16 = 2;
+/// History rows that always stay visible. The statistics screen is fitted at 100 × 60 (T-40): the
+/// summary of every game in both undo modes is longer than a 30-row screen leaves room for.
+const MIN_LIST_ROWS: u16 = 4;
 const BUTTON_GAP: u16 = 2;
 const MARKER_COLUMNS: u16 = 4;
 
