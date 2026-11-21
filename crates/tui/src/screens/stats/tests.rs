@@ -1,5 +1,6 @@
 mod assist;
 mod focus;
+mod footer;
 mod math;
 mod render;
 mod restarts;
