@@ -1,4 +1,4 @@
-//! The counters of the stock: how often the waste was turned over, which pass of a limited number
+//! The counters of the stock: how often the waste was recycled into the stock, which pass of a limited number
 //! the game is in, how many row deals are left. Read from [`StockStatus`]; FreeCell has none.
 
 use oxysol_core::{Move, PileRef, Session, StockStatus};
@@ -13,7 +13,7 @@ pub(super) fn stock_text_of(status: &StockStatus, stock_len: usize) -> String {
     }
     let Some(left) = status.recycles_left else {
         return tf(
-            "board.counter.turned_over",
+            "board.counter.recycled",
             &[("count", &status.recycles.to_string())],
         );
     };

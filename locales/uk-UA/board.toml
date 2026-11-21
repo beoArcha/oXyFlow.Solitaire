@@ -156,7 +156,7 @@ menu = "{key}: меню"
 finish = "{key}: завершити"
 
 [counter]
-turned_over = "Перекладено: {count}"
+recycled = "Повернень колоди: {count}"
 pass = "Прохід {pass} з {total}"
 last_pass = "Останній прохід ({pass} з {total})"
 no_passes = "Проходів не залишилося"

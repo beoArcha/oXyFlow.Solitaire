@@ -155,7 +155,7 @@ menu = "{key}: menu"
 finish = "{key}: finish game"
 
 [counter]
-turned_over = "Turned over: {count}"
+recycled = "Stock recycles: {count}"
 pass = "Pass {pass} of {total}"
 last_pass = "Last pass ({pass} of {total})"
 no_passes = "No passes left"
