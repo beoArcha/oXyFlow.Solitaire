@@ -44,6 +44,7 @@ struct Spots {
 #[derive(Debug, Default)]
 pub struct LanguagePicker {
     open: Option<usize>,
+    pointer: Option<(u16, u16)>,
     spots: Spots,
 }
 
@@ -74,6 +75,11 @@ impl LanguagePicker {
     /// Closes the list without choosing.
     pub fn close(&mut self) {
         self.open = None;
+    }
+
+    /// Forgets the pointer over the selector, so that its tooltip waits for the next hover.
+    pub fn forget_hover(&mut self) {
+        self.pointer = None;
     }
 
     fn open_at(&mut self, current: Locale) {
@@ -115,6 +121,7 @@ impl LanguagePicker {
 
     /// Handles a mouse event. While the list is open it takes every event.
     pub fn on_mouse(&mut self, event: &MouseEvent, current: Locale) -> Pointed {
+        self.pointer = Some((event.column, event.row));
         if let Some(index) = self.open {
             return self.on_open_mouse(index, event);
         }
