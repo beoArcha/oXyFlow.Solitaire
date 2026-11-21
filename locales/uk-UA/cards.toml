@@ -10,3 +10,6 @@ baton = "жезли"
 coin = "монети"
 cup = "кубки"
 sword = "мечі"
+
+[style]
+spanish = "Іспанський"

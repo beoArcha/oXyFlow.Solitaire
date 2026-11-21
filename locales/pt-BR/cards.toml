@@ -10,3 +10,6 @@ baton = "paus"
 coin = "ouros"
 cup = "copas"
 sword = "espadas"
+
+[style]
+spanish = "Espanhol"
