@@ -377,7 +377,7 @@ checked by `glyphs/wgl4.rs:142-176` and `glyphs.rs:105-126`).
 | `focus_left` ► | U+25BA | `>` | `widgets/card/mark.rs:48`; `screens/focus.rs:36-38` (menu marker) |
 | `focus_right` ◄ | U+25C4 | `<` | **defined only** (no rendering use found; `glyphs.rs:19,47,66`) |
 | `selected` ● | U+25CF | `*` | `widgets/card/mark.rs:47` |
-| Guide available mark • (not a `Glyphs` field) | U+2022 | `*` | `widgets/guide/mod.rs` `available_mark`; Keys section `widgets/guide/keys.rs`, Legend `widgets/guide/legend.rs` |
+| Guide available mark • (not a `Glyphs` field) | U+2022 | `o` | `widgets/guide/mod.rs` `available_mark`; Keys section `widgets/guide/keys.rs`, Legend `widgets/guide/legend.rs` |
 | `target` + | `+` | `+` | corners `widgets/card/frame.rs:91-99`; empty slot `widgets/card/slot.rs:42` |
 | `hint_source` / `hint_target` | `?→` / `→?` (U+2192) | `?>` / `>?` | `widgets/card/mark.rs:42-45` |
 | `recycle` (empty stock, can turn) | ↑ (U+2191) | `^` | `widgets/card/slot.rs:28` |

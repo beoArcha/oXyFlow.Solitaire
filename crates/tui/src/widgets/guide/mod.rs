@@ -76,10 +76,10 @@ fn border_set(ctx: &ViewCtx<'_>) -> border::Set<'static> {
     }
 }
 
-/// The mark of a key usable now: a WGL4 bullet, or `*` in the ASCII glyph set. It is never the
+/// The mark of a key usable now: a WGL4 bullet, or `o` in the ASCII glyph set. It is never the
 /// focus symbol, which the `Legend` gives as `focus`.
 pub(super) fn available_mark(ctx: &ViewCtx<'_>) -> &'static str {
-    if ctx.glyphs.unicode { "•" } else { "*" }
+    if ctx.glyphs.unicode { "•" } else { "o" }
 }
 
 fn heading(key: &str, ctx: &ViewCtx<'_>) -> Line<'static> {
