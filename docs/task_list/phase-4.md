@@ -470,6 +470,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   and wiki section as P4-10b.
 - **Acceptance:** tests for the rule (same suit refused, other suits accepted), storage round trip, menu and rules in
   all nine locales.
+- **Done:** #198
 
 ### P4-10e — Yukon variant: Australian Patience (stock, one pass)
 
@@ -482,6 +483,10 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   wiki section.
 - **Acceptance:** tests for the deal, the single pass, waste to column and foundation, group moves, storage round
   trip; board fit at 100 × 30; menu and rules in all nine locales.
+- **Done:** #199
+- **Follow-ups (from the report):** the variant name is the adjective only ("Australian") because the full name widened the
+  statistics history table past 100 columns; at 120 columns the footer `Do:` row drops `Esc: menu` in this variant (the
+  mouse path test now runs at 160 × 40). Both go to the footer and statistics layout work.
 
 ### P4-10f — Solver for the Yukon family: winnable deals and the statistics check
 
