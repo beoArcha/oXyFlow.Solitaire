@@ -67,6 +67,12 @@ impl Cursor {
         Self { pile, depth: 1 }
     }
 
+    /// Moves the focus back onto the deepest face-up card when a pointer left it deeper, on a
+    /// face-down card.
+    pub(super) fn clamp_to_face_up(&mut self, snapshot: &PileSnapshot) {
+        self.depth = self.depth.min(max_depth(snapshot));
+    }
+
     /// Deepens the focus by one card; `false` at the limit.
     pub(super) fn deeper(&mut self, snapshot: &PileSnapshot) -> bool {
         let deeper = self.depth < max_depth(snapshot);
