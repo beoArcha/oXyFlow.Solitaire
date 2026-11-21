@@ -57,18 +57,18 @@ impl Position {
     }
 
     /// The rank `depth` cards below the top of `column`, 0 being the top card.
-    fn from_top(&self, column: usize, depth: usize) -> Option<u8> {
+    fn card_at_depth(&self, column: usize, depth: usize) -> Option<u8> {
         let index = self.heights.get(column)?.checked_sub(depth + 1)?;
         self.columns.get(column)?.get(index).copied()
     }
 
     pub(super) fn top(&self, column: usize) -> Option<u8> {
-        self.from_top(column, 0)
+        self.card_at_depth(column, 0)
     }
 
     /// The card under the top card of `column`.
     pub(super) fn below(&self, column: usize) -> Option<u8> {
-        self.from_top(column, 1)
+        self.card_at_depth(column, 1)
     }
 
     pub(super) fn can_play(&self, column: usize) -> bool {
