@@ -1,8 +1,10 @@
-//! The language selector of the main menu: `◄ [flag] ► ▼` in the top-left corner (`< EN > v` in
-//! ASCII or 16-color mode, where the code replaces the flag). Left and Right, or a click on an
-//! arrow, switch to the neighbouring language at once; `▼`, Down and Enter open a list of the
-//! offered (completely translated) languages, chosen by arrows and Enter or by a click, closed by Esc or a click outside. A tooltip
-//! names the language in itself while the pointer is over the selector or it has the focus.
+//! The language selector of the main menu in the top-left corner. At rest it shows `[flag] PL ▼`
+//! (`PL v` in ASCII or 16-color mode, where the code replaces the flag); while it has the focus it
+//! adds the side arrows `◄ [flag] PL ► ▼` (`< PL > v`). Left and Right, or a click on an arrow,
+//! switch to the neighbouring language at once; `▼`, Down and Enter open a list of the offered
+//! (completely translated) languages, in which the codes are dimmed, chosen by arrows and Enter or
+//! by a click, closed by Esc or a click outside. A tooltip names the language in itself while the
+//! pointer is over the selector or it has the focus.
 //!
 //! The picker only reports the language the player chose; the caller applies and saves it as the
 //! same setting as the Language row of the settings screen.
