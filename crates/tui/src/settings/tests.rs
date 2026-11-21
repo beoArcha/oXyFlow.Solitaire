@@ -307,3 +307,40 @@ fn card_face_round_trips() {
     let back = toml::from_str::<Settings>(&text);
     assert!(matches!(back, Ok(ref s) if *s == settings));
 }
+
+#[test]
+fn table_colour_and_feel_default_to_the_theme_and_plain_and_old_values_keep_them() {
+    assert_eq!(Settings::default().table_colour, TableColour::Theme);
+    assert_eq!(Settings::default().table_feel, TableFeel::Plain);
+    let parsed = toml::from_str::<Settings>("card_back = \"monokai\"\nvolume = 10");
+    assert!(
+        matches!(parsed, Ok(ref s) if s.table_colour == TableColour::Theme && s.table_feel == TableFeel::Plain)
+    );
+}
+
+#[test]
+fn table_colour_and_feel_round_trip() {
+    let settings = Settings {
+        table_colour: TableColour::Brown,
+        table_feel: TableFeel::Felt,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("table_colour = \"brown\""));
+    assert!(text.contains("table_feel = \"felt\""));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}
+
+#[test]
+fn the_table_is_previewed_with_the_rest_of_the_interface() {
+    let saved = Settings::default();
+    let previewed = Settings {
+        table_colour: TableColour::Blue,
+        table_feel: TableFeel::Lined,
+        ..saved.clone()
+    };
+    let kept = previewed.with_interface_of(&saved);
+    assert_eq!(kept.table_colour, TableColour::Theme);
+    assert_eq!(kept.table_feel, TableFeel::Plain);
+}

@@ -71,9 +71,9 @@ fn act(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, action: Action) -> Effect
     screen.handle(&key(KeyCode::Null), Some(action), ctx)
 }
 
-/// The rows the screen is drawn in: the list of the settings needs one row more than the 40 of before
-/// the card face row (P3-33), so the list stays whole at 100 × 41.
-const SCREEN_ROWS: u16 = 41;
+/// The rows the screen is drawn in: the list of the settings needs two rows more than the 41 of before
+/// the table rows (P3-32), so the list stays whole at 100 × 43.
+const SCREEN_ROWS: u16 = 43;
 
 fn render(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>) -> Vec<String> {
     let mut terminal =

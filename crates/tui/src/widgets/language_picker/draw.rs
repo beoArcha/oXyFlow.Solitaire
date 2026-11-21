@@ -18,10 +18,6 @@ use crate::theme::Token;
 use crate::theme::palette::swatch;
 use crate::widgets::guide::ASCII_BORDER;
 
-const FLAG_CELLS: u16 = 4;
-const BODY_WITH_FLAG: (u16, u16) = (10, 2);
-const BODY_WITH_CODE: (u16, u16) = (8, 1);
-
 fn flags_shown(ctx: &ViewCtx<'_>) -> bool {
     ctx.glyphs.unicode && ctx.settings.color_depth(ctx.caps) != ColorDepth::Ansi16
 }
@@ -74,19 +70,57 @@ fn boxed(ctx: &ViewCtx<'_>) -> Block<'static> {
         .style(ctx.theme.surface())
 }
 
-fn locate(origin: Rect, flags: bool) -> Spots {
-    let cell = |column: u16, height: u16| Rect::new(origin.x + column, origin.y, 1, height);
-    let columns = if flags {
-        [(0, origin.height), (7, 1), (9, origin.height)]
-    } else {
-        [(0, 1), (5, 1), (7, 1)]
-    };
-    let [left, right, down] = columns.map(|(column, rows)| cell(column, rows));
+/// The size of the selector: the flag form is two rows tall, the text form one row. At rest it
+/// shows no side arrows, so it is narrower than while it has the focus.
+fn body_size(flags: bool, focused: bool) -> (u16, u16) {
+    match (flags, focused) {
+        (true, true) => (10, 2),
+        (true, false) => (9, 2),
+        (false, true) => (8, 1),
+        (false, false) => (4, 1),
+    }
+}
+
+/// Columns of the arrows inside the selector. The side arrows exist only while it has the focus.
+struct Columns {
+    left: Option<u16>,
+    right: Option<u16>,
+    down: u16,
+}
+
+fn columns(flags: bool, focused: bool) -> Columns {
+    match (flags, focused) {
+        (true, true) => Columns {
+            left: Some(0),
+            right: Some(7),
+            down: 9,
+        },
+        (true, false) => Columns {
+            left: None,
+            right: None,
+            down: 8,
+        },
+        (false, true) => Columns {
+            left: Some(0),
+            right: Some(5),
+            down: 7,
+        },
+        (false, false) => Columns {
+            left: None,
+            right: None,
+            down: 3,
+        },
+    }
+}
+
+fn locate(origin: Rect, flags: bool, focused: bool) -> Spots {
+    let at = |column: u16| Rect::new(origin.x + column, origin.y, 1, origin.height);
+    let shown = columns(flags, focused);
     Spots {
         body: origin,
-        left,
-        right,
-        down,
+        left: shown.left.map_or(Rect::default(), at),
+        right: shown.right.map_or(Rect::default(), at),
+        down: at(shown.down),
         ..Spots::default()
     }
 }
@@ -105,14 +139,27 @@ fn selector_lines(
     };
     let code = flag(current).code;
     if !flags {
-        return vec![Line::styled(format!("{left} {code} {right} {down}"), style)];
+        let text = if focused {
+            format!("{left} {code} {right} {down}")
+        } else {
+            format!("{code} {down}")
+        };
+        return vec![Line::styled(text, style)];
     }
-    let mut top = vec![Span::styled(format!("{left} "), style)];
+    let mut top = Vec::new();
+    let mut bottom = Vec::new();
+    if focused {
+        top.push(Span::styled(format!("{left} "), style));
+        bottom.push(Span::styled("  ", style));
+    }
     top.extend(flag_spans(current, 0, ctx));
-    top.push(Span::styled(format!(" {right} {down}"), style));
-    let mut bottom = vec![Span::styled("  ", style)];
     bottom.extend(flag_spans(current, 1, ctx));
-    bottom.push(Span::styled(format!(" {code} "), style));
+    if focused {
+        top.push(Span::styled(format!(" {right} {down}"), style));
+        bottom.push(Span::styled(format!(" {code} "), style));
+    } else {
+        bottom.push(Span::styled(format!(" {code} {down}"), style));
+    }
     vec![Line::from(top), Line::from(bottom)]
 }
 
@@ -124,9 +171,14 @@ struct Entry {
     flags: bool,
 }
 
-fn padded(text: String, width: u16, used: u16) -> String {
+/// A line of spans padded with `style` to `width` columns.
+fn fill(mut spans: Vec<Span<'static>>, width: u16, style: Style) -> Line<'static> {
+    let used = spans
+        .iter()
+        .fold(0, |sum, span| sum + columns_of(&span.content));
     let filler = " ".repeat(usize::from(width.saturating_sub(used)));
-    format!("{text}{filler}")
+    spans.push(Span::styled(filler, style));
+    Line::from(spans)
 }
 
 fn entry_lines(entry: &Entry, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
@@ -134,6 +186,11 @@ fn entry_lines(entry: &Entry, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
         ctx.theme.focus()
     } else {
         ctx.theme.surface()
+    };
+    let code_style = if entry.highlighted {
+        style
+    } else {
+        ctx.theme.style(Token::TextMuted, Token::Surface)
     };
     let mark = marker(ctx, entry.highlighted);
     let name = entry.locale.own_name();
@@ -144,22 +201,24 @@ fn entry_lines(entry: &Entry, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
         " "
     };
     if !entry.flags {
-        let text = format!("{mark} {code} {name} {sign}");
-        let used = columns_of(&text);
-        return vec![Line::styled(padded(text, entry.width, used), style)];
+        let spans = vec![
+            Span::styled(format!("{mark} "), style),
+            Span::styled(code, code_style),
+            Span::styled(format!(" {name} {sign}"), style),
+        ];
+        return vec![fill(spans, entry.width, style)];
     }
-    let lead = 2 + FLAG_CELLS;
-    let first = format!(" {name} {sign}");
-    let second = format!(" {code}");
     let mut top = vec![Span::styled(format!("{mark} "), style)];
     top.extend(flag_spans(entry.locale, 0, ctx));
-    let used = lead + columns_of(&first);
-    top.push(Span::styled(padded(first, entry.width, used), style));
+    top.push(Span::styled(format!(" {name} {sign}"), style));
     let mut bottom = vec![Span::styled("  ", style)];
     bottom.extend(flag_spans(entry.locale, 1, ctx));
-    let used = lead + columns_of(&second);
-    bottom.push(Span::styled(padded(second, entry.width, used), style));
-    vec![Line::from(top), Line::from(bottom)]
+    bottom.push(Span::styled(" ", style));
+    bottom.push(Span::styled(code, code_style));
+    vec![
+        fill(top, entry.width, style),
+        fill(bottom, entry.width, style),
+    ]
 }
 
 impl LanguagePicker {
@@ -174,13 +233,9 @@ impl LanguagePicker {
         ctx: &ViewCtx<'_>,
     ) {
         let flags = flags_shown(ctx);
-        let (width, height) = if flags {
-            BODY_WITH_FLAG
-        } else {
-            BODY_WITH_CODE
-        };
+        let (width, height) = body_size(flags, focused);
         let origin = Rect::new(area.x + 1, area.y + 1, width, height).intersection(area);
-        self.spots = locate(origin, flags);
+        self.spots = locate(origin, flags, focused);
         let lines = selector_lines(current, focused, flags, ctx);
         frame.render_widget(Paragraph::new(lines), origin);
         if let Some(highlighted) = self.open {
