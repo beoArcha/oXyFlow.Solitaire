@@ -22,10 +22,10 @@ metadata.toml            canonical metadata (name, version, license, URL)
 about.toml about.hbs     cargo-about configuration and template for THIRD-PARTY-LICENSES.md (release time only, T-31)
 src/                     main.rs lib.rs about.rs cli.rs new_window.rs console.rs console/display.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
-crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/ yukon/
+crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/ yukon/ golf/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/; yukon/ adds setup.rs)
 crates/core/src/solver/  mod.rs (API) face.rs hash.rs search/ (depth-first, best-first) klondike/ spider/
-                         freecell/ pyramid/ yukon/ (each: mod.rs position.rs steps.rs tests.rs) tests/
+                         freecell/ pyramid/ yukon/ golf/ (each: mod.rs position.rs steps.rs tests.rs) tests/
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
@@ -74,9 +74,9 @@ impl Move { pub fn source(&self) -> Option<PileRef>; pub fn target(&self) -> Opt
 pub enum MoveError { /* rejection reasons: Unsupported, NoSuchPile, EmptySource, FaceDown,
                         InvalidSequence, TargetRejects, StockEmpty, EmptyColumnBlocksDeal, … */ }
 
-pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules), Yukon(YukonRules) }
+pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules), Yukon(YukonRules), Golf }
 impl Variant {
-    pub const ALL: [Variant; 9];                            // every concrete variant, menu order
+    pub const ALL: [Variant; 14];                            // every concrete variant, menu order
     pub const fn has_stock(self) -> bool;                   // false for FreeCell and Yukon except Australian Patience
 }
 pub enum DrawCount { One, Three }
@@ -124,7 +124,8 @@ Rules of the `Game` contract:
   empties the table; Spider — stock empty and every column one same-suit run, then whole runs are joined
   onto the run they continue; Pyramid — a depth-first search over removals only (no draw, no recycle)
   with a budget of 5000 positions; Yukon — no face-down card, then the closure of foundation moves from
-  the column tops empties the table. `Session::forced_finish` delegates; nothing is applied until the
+  the column tops empties the table; Golf — the same kind of search over column plays only (no stock
+  turn), budget 5000 positions. `Session::forced_finish` delegates; nothing is applied until the
   caller plays the moves through `Session::apply`.
 - **The Yukon family (P4-10a):** `games/yukon/` plays every rule set with one move code. A rule set is a
   `YukonRules` value; `games/yukon/setup.rs` maps it to its building rule (`YukonRules::build` →
@@ -145,6 +146,17 @@ Rules of the `Game` contract:
   group that uncovers a face-down card, then a group that leaves a card it does not fit on (or empties
   a column), then the waste onto a column, and last the stock turn; it never moves a group that already
   rests on a card it fits, so following the hints cannot cycle.
+- **Golf (P5-04):** `games/golf/`. Seven columns of five face-up cards (`PileRef::Tableau(0..7)`), a stock
+  and one waste (`PileRef::Stock`, `PileRef::Waste`), no foundation. The deal turns the first stock card
+  onto the waste, so 16 cards stay in the stock. The only card move is `Move::Transfer { from:
+  Tableau(i), to: Waste, count: 1 }`, legal when the column top is one rank higher or lower than the
+  waste top, in any suit. A king and an ace are **not** adjacent (no wrap-around): the single constant
+  `games::golf::KING_ACE_ADJACENT` (false) is the rule, shared with the solver through
+  `ranks_adjacent`. `Move::Stock` turns one card onto the waste; an empty stock is
+  `MoveError::StockEmpty` and the waste never goes back (one pass), so `stock_status` reports
+  `recycles_left: Some(0)`. Cards never leave the waste. The game is won when every column is empty,
+  whatever is left in the stock. The hint is the play from the tallest column (the lowest on a tie),
+  else the stock turn.
 - The solver (P2-08, `crate::solver`, decision T-29) answers for one deal whether it can be won:
 
   ```rust
@@ -160,7 +172,10 @@ Rules of the `Game` contract:
   sets, which reads the building rule from `games/yukon` (`BuildRule`, re-exported by the module): a
   card goes home at once when every card the rule lets onto it is home, Australian Patience plays a
   waste card together with the stock draws before it (one pass), and moves back from a foundation stay
-  in the search for completeness.
+  in the search for completeness. Golf (P5-04, decision T-45) is a depth-first model whose position is
+  the column heights, the stock size and the rank of the waste top; no move is safe to make at once, so
+  every play and the stock turn are steps, plays first, and the space is small enough that most deals
+  are exhausted.
 
   Pure and deterministic: the same input gives the same verdict, moves and node count. `Winnable`
   moves are replayed on a fresh `deal` and must end in `is_won()`, otherwise the answer is `Unknown`.
@@ -173,7 +188,7 @@ Rules of the `Game` contract:
   128-bit canonical keys (column and cell order ignored). Spider with 2 and 4 suits mostly answers
   `Unknown`. `SolveBudget::default_for` is tuned to about half a second per deal in a release build.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`,
-  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`, `{"yukon":"australian"}`.
+  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`, `{"yukon":"australian"}`, `"golf"`.
 
 The session implements history by replaying the move log from the seed (decision T-03):
 
@@ -347,7 +362,7 @@ pub struct NullClipboard;                                // every copy fails wit
   Tab / Shift+Tab (all tabs, wrapping), Left-Right (Keys and Command line), `?` and `i` and mouse clicks.
   The Command line tab (`overlay/command_line.rs`) shows the `cli.help` text, the same key `--help` prints, so
   the two cannot differ; it scrolls by Up/Down/PgUp/PgDn/Home/End and the wheel inside the box of the Keys tab. The rules tab (`widgets/overlay/how_to_play/`)
-  provides tabs for Klondike, Spider, FreeCell, Pyramid and Yukon, sections Goal, Layout, Moves, Controls and Tips from
+  provides tabs for Klondike, Spider, FreeCell, Pyramid, Yukon and Golf, sections Goal, Layout, Moves, Controls and Tips from
   `locales/*/rules.toml`, scrolling its text inside the dialog box. The Controls keys are read from `KEY_TABLE`;
   texts name keys through placeholders such as `{hint}`. It opens through `Effect::HowToPlay` (main-menu item
   "How to play", and `Action::Rules`, key `i`, handled by `App` on every screen like `Action::Help`); `App`
@@ -679,7 +694,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `BoardScreen` takes the flag with the settings at every draw, key and mouse event (`follow`), so drawing,
   mouse hit-testing and `commands.rs` share one `chrome()` (`chrome_panels` with the guide, moves and frame flags).
   `Chrome { class, header: Option<Rect>, field, body, guide: Option<Rect>, moves: Option<Rect>, now, possible }`. The same result drives rendering and hit-testing. Two layouts:
-  columns (Klondike, Spider, FreeCell, Yukon) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
+  columns (Klondike, Spider, FreeCell, Yukon, Golf) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
   that fits the window and is not above `Settings::card_size` (`layout::compute_within`; `compute` has no limit; a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.
   Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).

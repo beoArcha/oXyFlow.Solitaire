@@ -26,6 +26,7 @@ spider = "Build eight runs from king down to ace, each in one suit."
 freecell = "Every card is face up; four free cells help you move them."
 pyramid = "Remove pairs that add up to 13; a king is removed alone."
 yukon = "Move any face-up card with all the cards on it; there is no stock."
+golf = "Play column cards onto the waste when they are one rank higher or lower."
 
 
 [seed]
@@ -54,6 +55,7 @@ spider = "Spider family"
 free_cell = "FreeCell family"
 pyramid = "Pyramid family"
 yukon = "Yukon family"
+golf = "Golf family"
 
 [search]
 label = "Search"

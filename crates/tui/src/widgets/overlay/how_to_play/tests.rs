@@ -40,7 +40,7 @@ fn switching_wraps_around_and_returns_to_the_top() {
     assert_eq!(state, HowToPlay::new(Rules::Spider));
     state.switch(false);
     state.switch(false);
-    assert_eq!(state, HowToPlay::new(Rules::Yukon));
+    assert_eq!(state, HowToPlay::new(Rules::Golf));
     state.switch(true);
     assert_eq!(state.rules, Rules::Klondike);
 }
@@ -87,7 +87,7 @@ fn keys_scroll_switch_and_close() {
     assert_eq!(state.rules, Rules::Spider);
     assert_eq!(press(&mut state, KeyCode::Left), None);
     assert_eq!(press(&mut state, KeyCode::Left), None);
-    assert_eq!(state.rules, Rules::Yukon);
+    assert_eq!(state.rules, Rules::Golf);
     assert_eq!(press(&mut state, KeyCode::Right), None);
     assert_eq!(state.rules, Rules::Klondike);
 

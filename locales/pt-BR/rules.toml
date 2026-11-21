@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Pirâmide"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Objetivo"
@@ -103,3 +104,15 @@ tips_1 = "Revele as cartas ocultas primeiro, começando pelas colunas mais longa
 tips_2 = "Um grupo não precisa estar em ordem, então você pode buscar no fundo de uma coluna a carta de que precisa."
 tips_3 = "Reis são difíceis de mover. Guarde uma coluna vazia para um rei que bloqueia cartas ocultas."
 tips_4 = "Travou? Pressione {hint} para uma dica ou {undo} para desfazer uma jogada."
+
+[golf]
+goal = "Limpe as 35 cartas das sete colunas jogando-as no descarte."
+layout_1 = "Sete colunas de cinco cartas abertas. A primeira carta do monte vai para o descarte para iniciá-lo; as outras 16 ficam no monte."
+layout_2 = "Não há fundações nem nova distribuição: o monte é virado carta a carta, uma única vez."
+moves_1 = "Jogue a carta do topo de uma coluna no descarte quando seu valor for um acima ou um abaixo da carta do topo do descarte, de qualquer naipe: um 7 vai sobre um 6 ou um 8."
+moves_2 = "O rei e o ás não são vizinhos, então não há volta: sobre um rei só vai uma dama, e sobre um ás só um 2."
+moves_3 = "Cada carta jogada passa a ser a nova carta do topo do descarte, então uma sequência pode subir, descer ou mudar de sentido."
+moves_4 = "Quando nenhuma carta de coluna servir, vire a próxima carta do monte no descarte. Com o monte vazio e nenhuma carta que sirva, você está sem saída."
+tips_1 = "Procure a sequência mais longa que você pode jogar antes de virar uma carta do monte."
+tips_2 = "Uma sequência que alterna entre colunas mantém a cadeia, então planeje qual coluna esvaziar primeiro."
+tips_3 = "Preso? Pressione {hint} para uma dica ou {undo} para desfazer uma jogada."
