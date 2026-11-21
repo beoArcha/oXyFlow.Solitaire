@@ -9,7 +9,7 @@ use oxysol_core::{Rank, Suit};
 use super::*;
 use crate::glyphs::is_wgl4;
 
-const FONTLESS_FRONTS: &[&str] = &["swiss"];
+const FONTLESS_FRONTS: &[&str] = &["spanish", "swiss"];
 
 const REGISTRY: &str = r#"
 [glyphs]
@@ -116,7 +116,7 @@ fn the_fronts_and_backs_of_the_card_are_found_the_default_first() {
         .collect();
     assert_eq!(
         fronts,
-        ["international", "french", "german", "italian", "swiss"]
+        ["international", "french", "german", "italian", "spanish", "swiss"]
     );
     assert_eq!(backs, ["lattice", "ornament"]);
 }
