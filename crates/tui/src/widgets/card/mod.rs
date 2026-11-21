@@ -85,7 +85,9 @@ struct Look {
 fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
     let theme = ctx.theme;
     let fill = match face {
-        Face::Up(card) => theme.style(ctx.glyphs.suit_token(card.suit), Token::CardFace),
+        Face::Up(card) => {
+            theme.card_face_style(ctx.settings.card_face, ctx.glyphs.suit_token(card.suit))
+        }
         Face::Down => back::style(ctx),
         Face::Slot(_) => theme.style(Token::Slot, Token::Table),
     };
