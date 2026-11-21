@@ -5,7 +5,7 @@ Goal: the table, the card face and the aura are set apart from the theme; the lo
 Exit criteria:
 
 - P3-32, P3-33, P3-34, P3-35, P5-03, P5-04 and P5-05 are DONE;
-- the visual fixes O-69 to O-81 are DONE, or `BLOCKED` with the owner's decision on the card;
+- the visual fixes O-69 to O-99 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
 
@@ -161,7 +161,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ## Visual fixes and improvements
 
-Owner visual review of 0.5.0 (2026-11-21). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
+Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 to O-99 — Settings, Statistics, New game and Klondike). Backlog only: no card here starts until the owner says so. The cards are grouped by priority.
 
 **P1 — Visual bugs and layout collisions**
 
@@ -200,6 +200,51 @@ Owner visual review of 0.5.0 (2026-11-21). Backlog only: no card here starts unt
 - **Problem:** with Help docked right (`Dock: right`) the version (`v0.5.0`) in the bottom-right corner of the main view touches the double yellow border of the panel.
 - **Fix:** keep one or two columns between the main view's footer and the docked panel border.
 - **Acceptance:** a test docks Help left and right and finds at least one empty column between the version label (and any footer text) and the panel border.
+
+### O-82 — Statistics footer: a space between `Copy seed` and `Esc Back`
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** the bottom key bar of Statistics reads `c Copy seedEsc Back`, with no space between the two entries.
+- **Fix:** the same separator between every footer entry; find why this pair loses it (width budget or a missing join).
+- **Acceptance:** a test renders Statistics at 100 × 30 and 200 × 60 in all nine locales and finds at least one space between every pair of footer entries.
+
+### O-83 — Board footer: the `Do:` prefix is clipped when a side panel is open
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** in Klondike with the right side panel open (`Guide` or `Possible moves`) the second footer line starts `ow: s: turn stock…` instead of `Do: s: turn stock…`.
+- **Fix:** compute the footer width from the table area that is left when a side panel takes its columns, and clip from the end, never the start.
+- **Acceptance:** a test opens each side panel in every variant at 100 × 30 and 130 × 40 and finds both footer rows starting with their full prefix.
+
+### O-84 — Board footer and `Now:` row: no overflow into the status line; the source column kept
+
+- **Owner:** Sonnet
+- **Depends on:** O-83
+- **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
+- **Problem:** with `Possible moves` open and an error shown, the last footer items (`p: pause   v: moves`) run onto the `Now:` row right after `Illegal move: the cards cannot go there.`; `Now: Carrying: eight of diamonds (from: Tab…` cuts off the source column number.
+- **Fix:** footer entries never spill into the `Now:` row; when the `Now:` text is too long, shorten the card name first or use a compact column name (for example `T5`) so the source column stays; drop low-priority footer hints first on narrow widths.
+- **Acceptance:** tests at the narrowest board width with each side panel open: the `Now:` row holds no footer text, the source column is visible while carrying, and the drop order of footer hints is fixed.
+
+### O-85 — `Turned over` counter: counts what its label says
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (header), `crates/core/src/session/**` only if the count lives there, `locales/*/board.toml`, tests
+- **Problem:** moving `A ♥` to a foundation uncovers the face-down `2 ♦` in column 4, but the top bar still shows `Turned over: 0`.
+- **Fix:** decide from the code what the counter counts: if it counts stock turns, rename it (for example `Stock draws`); if it is meant to count revealed cards, count each face-down tableau card that turns over. Record the choice on the card.
+- **Acceptance:** a test reveals a tableau card and checks the counter (or the new label); all nine locales.
+
+### O-86 — Settings: `Font face` shows its own value
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** both `Font face` and `Font size` show `Ctrl+= / Ctrl+-`.
+- **Fix:** `Font face` shows the current face (or that the terminal controls it); only `Font size` names the zoom keys.
+- **Acceptance:** a test renders the Interface section with a face set and with the terminal in control and finds the right value on each row; all nine locales.
 
 **P2 — Focus, navigation and consistency**
 
@@ -248,6 +293,87 @@ Owner visual review of 0.5.0 (2026-11-21). Backlog only: no card here starts unt
 - **Fix:** a two-column row (a key column of about 11 to 12 characters and the description on the same line); only long key combinations (for example `Ctrl +/-/0`) wrap to a second line.
 - **Acceptance:** a test at the docking width finds key and description on one row for short keys and a wrap only for long ones; fewer rows than before; all nine locales fit.
 
+### O-87 — Large cards: a spade with a clear stem
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/card/**` (the large pip drawing), tests
+- **Problem:** on `Large` cards the spade pip (`9 ♠`, `2 ♠`, `Q ♠`) is a thick symmetric cross with no stem, so its outline is closer to the diamond than to the club.
+- **Fix:** redraw the large spade with a pointed top and a stem or foot at the bottom, in Unicode and ASCII mode.
+- **Acceptance:** a snapshot of the large pips shows four outlines that differ by shape; the spade has a stem row the diamond does not.
+
+### O-88 — Stock card back: no stray marks in the centre
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/card/**`, `assets/cards/backs/**` only if the style data causes it, tests
+- **Problem:** the centre of the face-down stock (`x24`) shows two small offset dark vertical bars that look like a broken glyph.
+- **Fix:** a clean symmetric centre detail, or no centre glyph, at every card size and back style.
+- **Acceptance:** snapshots of the stock in each back style and size show a symmetric centre without the bars.
+
+### O-89 — Keyboard focus skips face-down cards
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/board/**` (focus movement), tests
+- **Problem:** arrow keys can put the focus on face-down tableau cards, and picking one up gives `Illegal move: the card is face down.`
+- **Fix:** Up and Down within a column skip face-down cards; entering a column lands on the first face-up card, or on the empty slot.
+- **Acceptance:** tests in Klondike and Yukon move through columns with face-down cards and never focus one; the mouse is unchanged.
+
+### O-90 — Quick options: the app's selection colour, one name for Aura, real buttons
+
+- **Owner:** Haiku
+- **Depends on:** O-75
+- **Files:** `crates/tui/src/widgets/overlay/quick_options.rs`, `locales/*/settings.toml`, tests
+- **Problem:** the active row uses a white highlight instead of the yellow selection used everywhere else; the setting is called `Aura` but its description says `Glow:`; the bottom actions (`Save as default`, `Close [Esc]`) have no button style and no focus hints.
+- **Fix:** the yellow selection style for the active row, `Aura` in every label and description, and the bottom actions drawn and focused like the other windows' buttons (`[…]`).
+- **Acceptance:** a test checks the row style token, the word `Glow` is gone from all nine locales, and the buttons can be focused and pressed by keyboard and mouse.
+
+### O-91 — Possible moves: readable unavailable entries, active ones first
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/overlay/moves_window.rs`, `crates/tui/src/widgets/moves.rs`, `crates/tui/src/theme/**` (a token if needed), tests
+- **Problem:** unavailable entries and their reasons (`Nothing to pick up here`, `Carrying cards`, `Nothing to undo`) have very low contrast on the dark navy background and take about 70 % of the panel.
+- **Fix:** raise the contrast of the unavailable text to pass the contrast tests, and list the available actions first with the unavailable ones grouped or condensed below.
+- **Acceptance:** contrast tests cover the unavailable style in every theme; a test finds the available actions above the unavailable ones.
+
+### O-92 — Guide panel: `▶` means focus only
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/guide/**`, tests
+- **Problem:** the Guide prefixes the available keys (`▶ Arrows`, `▶ s`, `▶ h`) with `▶`, while the Legend just below says `▶` is the focus.
+- **Fix:** a different marker (WGL4 and ASCII form) for available or recommended keys, so `▶` only means focus; the Legend explains both.
+- **Acceptance:** a test finds no `▶` in the Guide's key list and finds the new marker in the Legend.
+
+### O-93 — Footer: the `v: moves` highlight clears
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/screens/board/**`, tests
+- **Problem:** `v: moves` stays highlighted in solid white after the `Possible moves` panel is closed.
+- **Fix:** hover and click highlights on footer entries clear when the panel is toggled off and when the player goes back to the keyboard.
+- **Acceptance:** a test opens and closes the panel by mouse and by key and finds no highlight left on the entry.
+
+### O-94 — Settings: unavailable rows dimmed; no reference to a missing screen
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** `Console font` shows working arrows `◄ unavailable ►` although it cannot change; the note at the bottom says `(see the graphics check)`, which Settings does not show.
+- **Fix:** dim unavailable rows and hide their `◄ ►`; either link the graphics check from Settings or rewrite the note so it does not point at something missing.
+- **Acceptance:** a test renders an unavailable row without arrows in the dimmed style; the note text in all nine locales matches what the screen offers.
+
+### O-95 — Statistics: a plain summary line and footer hints for the action bar
+
+- **Owner:** Sonnet
+- **Depends on:** O-82
+- **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `locales/*/stats.toml`, tests
+- **Problem:** the line `Automatic 27% (7 of 26) · failed 3 · run 1 · finish 0` reads like internal data and does not say what `7 of 26` means next to 123 games; the action bar (`[ Play this seed again ]`, `[ Copy seed ]`, `[ Check ]`, `[ Check all ]`, `[ Back ]`) has no footer hints for `Check`, `Check all` or moving between buttons.
+- **Fix:** a line a player understands (what is counted and out of what), and footer hints for every action-bar button and for moving between them.
+- **Acceptance:** a test renders the summary and finds the new wording and every action in the footer; fits at 100 × 60 (T-40) in all nine locales.
+
 **P3 — Main view polish, widgets and wording**
 
 ### O-78 — Main menu: Resume set apart and balanced under the logo
@@ -285,6 +411,42 @@ Owner visual review of 0.5.0 (2026-11-21). Backlog only: no card here starts unt
 - **Problem:** opening How to play shows the generic title `Help`; en-US uses the British `centre` (`Dock: centre`, `stays centred`); the Polish `Nowa gra z ziarna` may be unclear to players who do not know the term; Vim users pressing `j`/`k` may hit `h` (Hint) by accident.
 - **Fix:** the title follows how the window was opened (`How to play`, or `Help · Rules`); en-US `centre` → `center` and `centred` → `centered`; Polish `Nowa gra z ziarna (seed)` or `Nowa gra z kodu (seed)` (the owner picks); decide whether `h` needs a guard or a note when hints affect the statistics (record the answer on the card; change code only if the owner asks).
 - **Acceptance:** tests for both titles; locale parity passes; the Polish line fits at 100 × 30.
+
+### O-96 — Settings: labelled Aura swatches, a Performance section, Left/Right in the footer
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** the three `Aura:` preview swatches have no labels; `Process priority` sits under `Interface` rather than a performance or system group; the footer says only `Enter Change` although the rows also take `◄ ►`.
+- **Fix:** label the swatches (focus, carried, target); move `Process priority` into a `Performance` section; add `Left/Right` to the footer hint.
+- **Acceptance:** a test finds the three labels, the new section with the priority row, and the footer hint; all nine locales fit at 100 × 30.
+
+### O-97 — Statistics table: results by style, the legend's unchecked mark, local time
+
+- **Owner:** Haiku
+- **Depends on:** O-95
+- **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `locales/*/stats.toml`, tests
+- **Problem:** every `Result` (`Won`, `Abandoned`, `In progress`) has the same white text; unchecked rows in `Winnable` show `· -` while the legend says `· not checked`; times are shown in UTC.
+- **Fix:** a style per result (for example green won, muted abandoned, accent in progress) with the word still carrying the meaning; unchecked cells show exactly the legend mark; local time instead of UTC (or a setting), stated in the header.
+- **Acceptance:** tests for the three result styles in every theme (contrast passes), the unchecked mark equal to the legend, and a time rendered in the local offset.
+
+### O-98 — Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer
+
+- **Owner:** Haiku
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/game_select.rs`, `crates/tui/src/screens/game_select/**`, `locales/en-US/menu.toml` and the other locales for new keys, tests
+- **Problem:** `English (US)` uses the British `Favourites` / `favourite (f)`; there is no empty row between `Australian` and the game description (`Easy: Build the foundations…`); `[ Winnable deals only: off ]` has no key and its `off` text (`A new game then searches…`) reads oddly; the footer does not list `/ Search`, `f Favorite` and `u Undo`.
+- **Fix:** en-US `Favorites` / `favorite (f)`; an empty row above the description (and below `Favorites`); a key for `Winnable deals only` shown on the button and a clear text for each state; the footer lists every key of the screen.
+- **Acceptance:** tests for the en-US words, the empty rows, the key toggling the option, and the footer entries; fits at 100 × 30 in all nine locales.
+
+### O-99 — Large cards: consider dropping the centred rank and suit line (optional)
+
+- **Owner:** Haiku
+- **Depends on:** O-87
+- **Files:** `crates/tui/src/widgets/card/**`, tests
+- **Problem:** `Large` cards show rank and suit three times: top-left (`9♠`), a centred line under the top border (`9 ♠`) and bottom-right (`9♠`).
+- **Fix:** try the large face without the centred line so the main pip has more room; keep it if a card becomes harder to read in any style. The owner decides from a before and after snapshot.
+- **Acceptance:** before and after snapshots for every card style in the PR; the rank stays readable at the large size.
 
 ## Done before the 2026-11 replan
 

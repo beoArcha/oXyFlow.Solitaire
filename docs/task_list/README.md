@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 3 | 23 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 3 | 41 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
@@ -280,6 +280,24 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-79 | Bottom key bar: keys in an accent colour | Haiku | — | TODO |
 | O-80 | Language selector: quieter at rest, clearer when open | Haiku | O-70 | TODO |
 | O-81 | Window title by context, en-US spelling and wording | Haiku | — | TODO |
+| O-82 | Statistics footer: a space between `Copy seed` and `Esc Back` | Haiku | — | TODO |
+| O-83 | Board footer: the `Do:` prefix is clipped when a side panel is open | Haiku | — | TODO |
+| O-84 | Board footer and `Now:` row: no overflow into the status line; the source column kept | Sonnet | O-83 | TODO |
+| O-85 | `Turned over` counter: counts what its label says | Haiku | — | TODO |
+| O-86 | Settings: `Font face` shows its own value | Haiku | — | TODO |
+| O-87 | Large cards: a spade with a clear stem | Haiku | — | TODO |
+| O-88 | Stock card back: no stray marks in the centre | Haiku | — | TODO |
+| O-89 | Keyboard focus skips face-down cards | Haiku | — | TODO |
+| O-90 | Quick options: the app's selection colour, one name for Aura, real buttons | Haiku | O-75 | TODO |
+| O-91 | Possible moves: readable unavailable entries, active ones first | Haiku | — | TODO |
+| O-92 | Guide panel: `▶` means focus only | Haiku | — | TODO |
+| O-93 | Footer: the `v: moves` highlight clears | Haiku | — | TODO |
+| O-94 | Settings: unavailable rows dimmed; no reference to a missing screen | Haiku | — | TODO |
+| O-95 | Statistics: a plain summary line and footer hints for the action bar | Sonnet | O-82 | TODO |
+| O-96 | Settings: labelled Aura swatches, a Performance section, Left/Right in the footer | Haiku | — | TODO |
+| O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Haiku | O-95 | TODO |
+| O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | TODO |
+| O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Haiku | O-87 | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 
