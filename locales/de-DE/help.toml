@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Andocken: {side}"
+button = "Andocken: {side} [{key}]"
 side_centre = "mittig"
 side_right = "rechts"
 side_left = "links"
 too_narrow = "Andocken benötigt 130 Spalten; das Fenster bleibt zentriert."
+footer = "{dock} Andocken  {focus} Fokus"

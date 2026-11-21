@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Ancora: {side}"
+button = "Ancora: {side} [{key}]"
 side_centre = "centro"
 side_right = "destra"
 side_left = "sinistra"
 too_narrow = "L'ancoraggio richiede 130 colonne; la finestra resta al centro."
+footer = "{dock} Ancora  {focus} Focus"

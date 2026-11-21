@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Anclar: {side}"
+button = "Anclar: {side} [{key}]"
 side_centre = "centro"
 side_right = "derecha"
 side_left = "izquierda"
 too_narrow = "Anclar requiere 130 columnas; la ventana queda centrada."
+footer = "{dock} Anclar  {focus} Foco"

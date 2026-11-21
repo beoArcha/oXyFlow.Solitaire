@@ -2,6 +2,7 @@ use ratatui::crossterm::event::KeyCode;
 
 mod arrows;
 mod card_back;
+mod card_face;
 mod card_size;
 mod console_font;
 mod focus;

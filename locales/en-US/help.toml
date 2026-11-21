@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Dock: {side}"
-side_centre = "centre"
+button = "Dock: {side} [{key}]"
+side_centre = "center"
 side_right = "right"
 side_left = "left"
 too_narrow = "Docking needs 130 columns; the window stays centred."
+footer = "{dock} Dock  {focus} Focus"
