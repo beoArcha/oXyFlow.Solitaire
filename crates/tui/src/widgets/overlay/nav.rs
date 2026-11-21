@@ -4,9 +4,9 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
+use super::CommandLine;
 use super::how_to_play::{Focus, HowToPlay, Rules};
 use super::tabs::{self, HelpTab};
-use super::{CommandLine, help};
 use crate::action::Action;
 use crate::app::Modal;
 use crate::mouse;
@@ -74,10 +74,11 @@ pub fn close_help(key: &KeyEvent, action: Option<Action>) -> Option<crate::scree
 }
 
 /// The tab a click on the top row leads to: a tab, or an arrow while the row shows its arrows.
-pub fn clicked_tab(modal: &Modal, area: Rect, event: &MouseEvent) -> Option<HelpTab> {
+/// `body` is the box body of the window `modal` draws, the same rectangle its drawing uses.
+pub fn clicked_tab(modal: &Modal, body: Rect, event: &MouseEvent) -> Option<HelpTab> {
     let current = tab_of(modal)?;
     let cell = mouse::left_press(event)?;
-    let row = tabs::top_row(help::geometry(area).body);
+    let row = tabs::top_row(body);
     let placed = tabs::top_tabs(row);
     let arrows_shown = rules_focus(modal).is_none_or(|focus| focus == Focus::Tabs);
     placed

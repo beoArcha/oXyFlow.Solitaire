@@ -223,7 +223,8 @@ pub fn handle_key(
 }
 
 /// The first column and the end column (exclusive) of a row's `◄ name ►` text, centred in `row`.
-fn span(row: Rect, name: &str) -> (u16, u16) {
+/// Drawing places the text here and the arrows hit-test against it, so both agree on every width.
+pub fn span(row: Rect, name: &str) -> (u16, u16) {
     let total = u16::try_from(name.chars().count())
         .unwrap_or(u16::MAX)
         .saturating_add(4);
