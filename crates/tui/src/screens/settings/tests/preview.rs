@@ -144,6 +144,7 @@ fn a_narrow_high_window_puts_the_preview_under_the_list() {
         set_locale(locale);
         let mut h = open_settings();
         h.resize(100, 52);
+        focus(&mut h, Field::AutoFinish);
         let lines = h.lines();
         let title = lines
             .iter()
