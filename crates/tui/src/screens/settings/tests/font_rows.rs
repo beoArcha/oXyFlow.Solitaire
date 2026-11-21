@@ -12,7 +12,7 @@ use crate::app::{
     CardFontState, ConsoleFont, DisplayDeps, DisplayFacts, FontStep, Modal, NullConsoleDisplay,
     Screen,
 };
-use crate::i18n::{Locale, set_locale, t};
+use crate::i18n::{Locale, set_locale, t, tf};
 use crate::settings::{ConsoleFace, Settings, TerminalKind};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::Harness;
@@ -254,13 +254,16 @@ fn a_saved_face_and_size_reach_the_console_at_start() {
 }
 
 #[test]
-fn other_terminals_show_their_own_shortcut_say_why_and_change_nothing() {
-    let cases = [
-        (TerminalKind::WindowsTerminal, "Ctrl+= / Ctrl+-"),
-        (TerminalKind::Linux, "Ctrl+Shift+= / Ctrl+-"),
-        (TerminalKind::MacOs, "Cmd+= / Cmd+-"),
+fn other_terminals_say_their_font_is_theirs_and_show_the_zoom_keys_on_the_size_row() {
+    let kinds = [
+        TerminalKind::WindowsTerminal,
+        TerminalKind::Linux,
+        TerminalKind::MacOs,
     ];
-    for (kind, keys) in cases {
+    for kind in kinds {
+        let keys = kind
+            .font_keys_key()
+            .expect("a terminal that draws its font has zoom keys");
         for field in [Field::FontFace, Field::FontSize] {
             let (h, calls) = harness(
                 kind,
@@ -270,7 +273,16 @@ fn other_terminals_show_their_own_shortcut_say_why_and_change_nothing() {
             let mut h = open(h);
             focus(&mut h, field);
             let text = row_text(&mut h, field);
-            assert!(text.contains(keys), "{kind:?} {field:?}: {text}");
+            let expected = match field {
+                Field::FontFace => t("settings.value.terminal_font"),
+                _ => t(keys),
+            };
+            assert!(text.contains(&*expected), "{kind:?} {field:?}: {text}");
+            assert_eq!(
+                text.contains(&*t(keys)),
+                field == Field::FontSize,
+                "{kind:?} {field:?}: {text}"
+            );
             let screen = h.text();
             assert!(
                 screen.contains("cannot change it"),
@@ -283,6 +295,45 @@ fn other_terminals_show_their_own_shortcut_say_why_and_change_nothing() {
             assert!(calls.borrow().faces.is_empty() && calls.borrow().sizes.is_empty());
         }
     }
+}
+
+#[test]
+fn each_font_row_shows_its_own_value_with_a_face_set_and_with_the_terminal_in_control() {
+    let stored = Settings {
+        console_face: ConsoleFace::Consolas,
+        console_font_size: 12,
+        ..Settings::default()
+    };
+    let (h, _) = harness(
+        TerminalKind::ClassicConsole,
+        (CardFontState::Active, CardFontState::Active),
+        Some(stored.clone()),
+    );
+    let mut h = open(h);
+    let face = row_text(&mut h, Field::FontFace);
+    assert!(face.contains(&*t("settings.face.consolas")), "{face}");
+    let size = row_text(&mut h, Field::FontSize);
+    let pixels = tf("settings.value.pixels", &[("size", "12")]);
+    assert!(size.contains(pixels.as_str()), "{size}");
+
+    let (h, _) = harness(
+        TerminalKind::WindowsTerminal,
+        (CardFontState::Unavailable, CardFontState::Unavailable),
+        Some(stored),
+    );
+    let mut h = open(h);
+    let face = row_text(&mut h, Field::FontFace);
+    assert!(face.contains(&*t("settings.value.terminal_font")), "{face}");
+    assert!(
+        !face.contains(&*t("settings.value.font_keys_windows_terminal")),
+        "{face}"
+    );
+    let size = row_text(&mut h, Field::FontSize);
+    assert!(
+        size.contains(&*t("settings.value.font_keys_windows_terminal")),
+        "{size}"
+    );
+    assert!(!size.contains(pixels.as_str()), "{size}");
 }
 
 #[test]
@@ -318,6 +369,7 @@ fn the_rows_and_their_texts_exist_in_every_offered_language() {
             "settings.value.console_default",
             "settings.value.pixels",
             "settings.value.oxysol_font_in_use",
+            "settings.value.terminal_font",
             "settings.desc.font_face_card",
             "settings.desc.font_face_missing",
             "settings.desc.font_face_refused",

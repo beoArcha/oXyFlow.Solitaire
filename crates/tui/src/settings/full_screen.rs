@@ -41,8 +41,8 @@ impl TerminalKind {
 }
 
 impl TerminalKind {
-    /// Localization key of the zoom shortcut of this terminal, which the font rows of Settings show
-    /// instead of a value: only the classic console lets the game change the font.
+    /// Localization key of the zoom shortcut of this terminal, which the font size row of
+    /// Settings shows instead of a value: only the classic console lets the game change the font.
     pub const fn font_keys_key(self) -> Option<&'static str> {
         match self {
             Self::ClassicConsole => None,
