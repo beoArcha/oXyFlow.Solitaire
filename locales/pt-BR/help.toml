@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Ancorar: {side}"
+button = "Ancorar: {side} [{key}]"
 side_centre = "centro"
 side_right = "direita"
 side_left = "esquerda"
 too_narrow = "Ancoragem requer 130 colunas; a janela permanece no centro."
+footer = "{dock} Ancorar  {focus} Foco"
