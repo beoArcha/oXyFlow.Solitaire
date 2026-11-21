@@ -91,6 +91,7 @@ goal = "Sposta tutte le 52 carte sulle quattro fondazioni. Ogni fondazione cresc
 layout_1 = "Sette colonne. La prima contiene una carta scoperta; le altre da 1 a 6 carte coperte sotto cinque carte scoperte."
 layout_2 = "Vengono distribuite tutte le 52 carte. Non c'è mazzo né nuova distribuzione."
 layout_3 = "Il solitario russo distribuisce allo stesso modo, ma costruisce le colonne in ordine decrescente nello stesso seme invece che a colori alternati: un 6 di cuori va solo su un 7 di cuori."
+layout_4 = "Alaska distribuisce allo stesso modo, ma le colonne si costruiscono salendo o scendendo di un valore nello stesso seme: un 6 di cuori va solo su un 5 o un 7 di cuori."
 moves_1 = "Costruisci le colonne in ordine decrescente a colori alternati, per esempio un 6 rosso su un 7 nero."
 moves_2 = "Ogni carta scoperta si sposta insieme a tutte le carte che ha sopra, anche se non sono in ordine. Deve combaciare solo la carta in fondo al gruppo spostato."
 moves_3 = "Solo un re, o un gruppo con un re in fondo, può andare su una colonna vuota."

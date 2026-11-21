@@ -45,6 +45,8 @@ pub enum YukonRules {
     Classic,
     /// Russian Solitaire: the classic deal; columns build downward in the same suit.
     Russian,
+    /// Alaska: the classic deal; columns build up or down by one rank in the same suit.
+    Alaska,
 }
 
 /// The state of a game's stock, read-only. A recycle turns the waste back into the stock and
@@ -76,7 +78,7 @@ pub enum Variant {
 
 impl Variant {
     /// Every concrete variant the menu can offer.
-    pub const ALL: [Variant; 10] = [
+    pub const ALL: [Variant; 11] = [
         Variant::Klondike(DrawCount::One),
         Variant::Klondike(DrawCount::Three),
         Variant::Spider(SuitCount::One),
@@ -87,6 +89,7 @@ impl Variant {
         Variant::Pyramid(PyramidRules::Classic),
         Variant::Yukon(YukonRules::Classic),
         Variant::Yukon(YukonRules::Russian),
+        Variant::Yukon(YukonRules::Alaska),
     ];
 
     /// Whether the variant deals part of the deck to a stock: every game except FreeCell and Yukon.
@@ -151,9 +154,9 @@ mod tests {
     }
 
     #[test]
-    fn all_lists_ten_distinct_variants() {
+    fn all_lists_eleven_distinct_variants() {
         let unique: HashSet<_> = Variant::ALL.iter().collect();
-        assert_eq!(unique.len(), 10);
+        assert_eq!(unique.len(), 11);
     }
 
     #[test]
@@ -184,6 +187,7 @@ mod tests {
                 Variant::Yukon(YukonRules::Russian),
                 r#"{"yukon":"russian"}"#,
             ),
+            (Variant::Yukon(YukonRules::Alaska), r#"{"yukon":"alaska"}"#),
         ];
         assert_eq!(cases.len(), Variant::ALL.len());
         for (variant, json) in cases {

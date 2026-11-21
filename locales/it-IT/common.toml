@@ -30,6 +30,7 @@ pyramid_relaxed = "Piramide, rilassata"
 pyramid_classic = "Piramide, classica"
 yukon_classic = "Yukon"
 yukon_russian = "Solitario russo"
+yukon_alaska = "Alaska"
 
 [settings]
 title = "Impostazioni"
