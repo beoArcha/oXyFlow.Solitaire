@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 8 | 47 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 8 | 51 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options | planned | 4 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game | planned | 1 | 2 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield | planned | 0 | 4 |
@@ -267,9 +267,13 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
 | P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Sonnet | P4-09, P2-08 | TODO |
 | P5-07 | Better hints: a hint that leads toward a win | Sonnet | P4-10a | TODO |
-| P5-08 | Dev bridge: headless driver, virtual clock and UI state snapshot | Sonnet | T-12, T-14 | IN PROGRESS |
+| P5-08 | Dev bridge: headless driver, virtual clock and UI state snapshot | Sonnet | T-12, T-14 | TODO |
 | P5-09 | Dev bridge: `--dev-bridge` JSON-lines protocol | Sonnet | P5-08 | TODO |
 | P5-10 | Dev bridge: `--dev-log` structured log and determinism tests | Sonnet | P5-09 | TODO |
+| P5-11 | Screenshots: one SVG renderer for the dev bridge and the player site | Sonnet | P5-08 | TODO |
+| P5-12 | Screenshots: deterministic PNG and image paths in the bridge `snapshot` | Sonnet | P5-11, P5-09 | TODO |
+| P5-13 | Batch runner: `--dev-script` and `--dev-out` | Sonnet | P5-12, P5-10 | TODO |
+| P5-14 | Baseline scenario pack and the viewport runner | Sonnet | P5-13 | TODO |
 | O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | DONE |
 | O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | DONE |
 | O-70 | Language tooltip disappears when a window opens | Haiku | — | IN PROGRESS |

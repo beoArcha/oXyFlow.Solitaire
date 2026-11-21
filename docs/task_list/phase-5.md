@@ -8,7 +8,7 @@ Exit criteria:
 - the visual fixes O-69 to O-107 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
-- the developer bridge P5-08, P5-09 and P5-10 is DONE (decision T-42).
+- the developer bridge and screenshots P5-08 to P5-14 are DONE (decisions T-42, T-43).
 
 Order of work: the Interface options first, then the card style and the games, which do not touch those files. The visual fixes (O-69 to O-107) go by priority, P1 before P2 before P3, respecting each card's dependencies; Settings cards run one at a time in the order O-86, O-94, O-102, O-103, O-96, because they share the Settings screen.
 
@@ -540,7 +540,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 Owner request 2026-11-21. An agent or a script drives the real application without a terminal: it sends one JSON command
 per line on `stdin` and reads one JSON response per line on `stdout`, and every step is deterministic (decision T-42).
-These cards run on one branch, `feat/P5-08-dev-bridge`, and go to `main` as one PR when P5-10 is done.
+These cards run on one branch, `feat/P5-08-dev-bridge`, which goes to `main` as one PR once the cards are done (with P5-11 to P5-14 below). Not started: the owner starts them.
 
 Most of the base already exists:
 - `App::handle(input, now)` never reads the system time (T-14).
@@ -553,7 +553,6 @@ The cards reuse that pipeline; they do not copy input handling, state updates or
 
 - **Owner:** Sonnet
 - **Depends on:** T-12, T-14
-- **Status:** IN PROGRESS (on `feat/P5-08-dev-bridge`)
 - **Files:** `crates/tui/Cargo.toml` (feature `dev`), `crates/tui/src/clock.rs`, `crates/tui/src/terminal.rs`,
   `crates/tui/src/headless/**` (new, `#[cfg(feature = "dev")]`), `crates/tui/src/app/snapshot.rs` (new,
   `#[cfg(feature = "dev")]`), `crates/tui/src/lib.rs`, `crates/tui/src/solver.rs` (a synchronous solver for the
@@ -662,6 +661,138 @@ The cards reuse that pipeline; they do not copy input handling, state updates or
   - A test reads the log back and finds the command, transition, focus, move and error entries.
   - `cargo build` and `cargo build --no-default-features` pass without the feature.
   - `cargo xtask check --quick` passes.
+
+## Developer testing infrastructure: screenshots and the batch regression runner
+
+Owner request 2026-11-21, built on the dev bridge above (P5-08 to P5-10). The bridge writes real SVG and PNG
+screenshots of the interface. It does this in-process and headless, with no terminal, GUI or system fonts, so a
+multimodal agent can look at the screen in WSL2, CI, Linux, Windows or macOS (decision T-43). A JSON-lines scenario
+file runs as a batch with numbered frames, a log and a manifest. A pack of baseline scenarios covers every screen.
+These cards go on the same branch, `feat/P5-08-dev-bridge`.
+
+Two parts of this already exist in `xtask/src/screenshots/`, behind `cargo xtask-art screenshots`, which renders the
+player-site images:
+- a converter from a Ratatui `Buffer` to a colour grid that resolves truecolour, 256-colour and 16-colour values
+  (`grid.rs`);
+- a monospace SVG writer that draws box-drawing and block glyphs as shapes, so the grid holds in any font (`svg.rs`,
+  `shapes.rs`).
+
+It also has its own scripted driver (`driver.rs`), which does the same job as `Headless` from P5-08. These cards move
+the renderer into the dev feature and make `xtask` use it and `Headless`. Nothing is written twice.
+
+### P5-11 — Screenshots: one SVG renderer for the dev bridge and the player site
+
+- **Owner:** Sonnet
+- **Depends on:** P5-08
+- **Files:**
+  - `crates/tui/src/headless/svg/**` (new, feature `dev`; moved from `xtask/src/screenshots/{grid,shapes,svg}.rs`)
+  - `xtask/Cargo.toml` (feature `art` enables `oxysol-tui/dev`)
+  - `xtask/src/screenshots/**` (uses the moved renderer, and `Headless` instead of `driver.rs`)
+  - `docs/site/src/img/**` (only if the regenerated images change)
+  - `docs/tech/architecture.md`
+  - tests
+- **Scope:**
+  - `svg::render(buffer, options) -> String` is a pure function, with no files and no clock:
+    - the exact `cols × rows` geometry and a fixed cell size;
+    - theme background and colours resolved from truecolour, 256 and 16 colours;
+    - `bold`, `dim`, `underline` and `reversed`;
+    - box-drawing and block elements drawn as shapes, and card suit glyphs and ASCII mode as text.
+  - `options` holds the font family, defaulting to `"oXySol Mono"` with a monospace fallback stack, the cell size, and
+    an optional title.
+  - The output is byte-identical for the same buffer and options: elements and attributes come in a fixed order, and
+    numbers are formatted the same way every time.
+  - The player-site animations stay in `xtask` and call the shared still renderer frame by frame.
+- **Acceptance:**
+  - `cargo xtask-art screenshots` regenerates the site images. They are byte-identical, or every difference is shown
+    in the PR and explained.
+  - Tests:
+    - the SVG of a known buffer has `cols × rows` cells of the stated size;
+    - bold, dim, underline and reversed produce the expected attributes;
+    - an indexed and a 16-colour cell resolve to the expected RGB;
+    - two renders of the same buffer are byte-identical.
+  - `xtask/src/screenshots/driver.rs` is gone.
+
+### P5-12 — Screenshots: deterministic PNG and image paths in the bridge `snapshot`
+
+- **Owner:** Sonnet
+- **Depends on:** P5-11, P5-09
+- **Files:**
+  - `Cargo.toml` (feature `dev-bridge` adds `resvg`, which is already a workspace dependency, with its `text` feature)
+  - `src/dev_bridge/**`
+  - `deny.toml` (only if a new transitive licence must be allowed; say which)
+  - `docs/tech/architecture.md`
+  - `tests/integration/dev_bridge.rs`
+  - tests
+- **Scope:**
+  - The SVG of P5-11 is rasterized to PNG with `resvg`. The font database holds only the embedded `oXySol Mono`
+    (`assets/fonts/oXySolMono-Regular.ttf`, `include_bytes!`) and never system fonts, so the same frame gives the same
+    pixels on every OS.
+  - The image size is the fixed cell size times the grid size, at an optional integer scale.
+  - `snapshot` accepts `"svg_path"` and/or `"png_path"`, plus an optional `"scale"`. Each file is written atomically:
+    to a temporary file in the same folder, then renamed.
+  - The response adds an `images` list: the resolved path, the format, and the width and height in pixels.
+  - A path that cannot be written is a command error (`ok: false`), not a crash.
+  - Optional per-step capture: a `"capture": {"svg_path": ..., "png_path": ...}` field on any command writes the frame
+    after that step.
+- **Acceptance:**
+  - Tests:
+    - the PNG starts with the PNG signature and has the stated pixel size;
+    - the SVG parses and has the stated `viewBox`;
+    - the same frame written twice gives identical SVG bytes and identical PNG dimensions;
+    - a failed write gives `ok: false`.
+  - The PNG of a Klondike deal is attached to the PR. The owner checks by eye that the layout and colours match the
+    terminal.
+  - `cargo deny` passes.
+
+### P5-13 — Batch runner: `--dev-script` and `--dev-out`
+
+- **Owner:** Sonnet
+- **Depends on:** P5-12, P5-10
+- **Files:** `src/cli.rs`, `src/dev_bridge/**`, `docs/tech/architecture.md`, `tests/integration/dev_bridge.rs`, tests
+- **Scope:**
+  - `oxysol --dev-script <scenario.jsonl> --dev-out <dir>` (dev builds only) runs the file through the same bridge
+    engine as `--dev-bridge`, with no `stdin` and no terminal.
+  - Every `snapshot` saves numbered frames, `<dir>/frames/0001-<name>.svg` and `.png`. The name comes from an optional
+    `"name"` field, else the `frame_id`.
+  - The full structured log (P5-10) goes to `<dir>/logs.jsonl`.
+  - `<dir>/manifest.json` holds:
+    - the scenario path, seed, viewport sizes, frame list (file, `frame_id`, size) and errors;
+    - the elapsed virtual time;
+    - the build version.
+  - A scenario with a failing command still writes the manifest, records the error, and exits with a non-zero code.
+  - Output is byte-identical across runs, except the PNG bytes, which are only required to keep the same dimensions.
+- **Acceptance:**
+  - Integration tests run a short scenario and find:
+    - the frames, with valid SVG and PNG headers and non-zero sizes;
+    - `logs.jsonl` and `manifest.json`, with the expected fields.
+  - A second run gives identical SVG files and an identical manifest.
+  - A failing scenario gives a manifest with the error and a non-zero exit.
+
+### P5-14 — Baseline scenario pack and the viewport runner
+
+- **Owner:** Sonnet
+- **Depends on:** P5-13
+- **Files:** `dev/scenarios/*.jsonl` (new), `dev/scenarios/README.md` (new), `xtask/src/scenarios.rs` (new, `cargo xtask
+  scenarios`), `xtask/src/main.rs`, `docs/tech/workflow.md` (the command), `.gitignore` (the output folder), tests
+- **Scope:**
+  - Scenarios, all with fixed seeds:
+    - main menu, plain and with the language list open;
+    - Help centred, docked right and docked left, on `Keys`, `Rules` and `Command line`;
+    - Settings, Statistics, Choose a game;
+    - a game of Klondike, Spider, FreeCell, Pyramid and Yukon, each with the side panels open and with `Quick options`
+      open.
+  - `cargo xtask scenarios [--viewport <cols>x<rows>]... [--out <dir>]` runs the pack through `--dev-script`, using
+    the dev build. It is an `xtask` command, not a shell script (T-08). The default viewports are:
+    - `80×24`, `120×40` and `160×50` from the request;
+    - `100×30`, the real minimum (T-11).
+
+    At `80×24` every scenario shows the too-small notice. That is the expected baseline there.
+  - The output goes to `target/scenarios/<viewport>/<scenario>/`, which is not committed.
+- **Acceptance:**
+  - `cargo xtask scenarios` runs the whole pack at the four viewports without errors.
+  - A test runs one scenario at one viewport and checks its manifest.
+  - Running the pack twice gives identical SVG files.
+  - The README lists every scenario and what it shows.
 
 ## Done before the 2026-11 replan
 
