@@ -105,6 +105,7 @@ impl App {
         let modal = self.with_personal_best(modal);
         self.dock = DockState::default();
         self.board.set_covered(matches!(modal, Modal::Pause { .. }));
+        self.menu.window_opened();
         self.modal = Some(modal);
         self.sync_clock();
     }
