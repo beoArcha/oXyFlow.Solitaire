@@ -6,7 +6,6 @@
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
 use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
-use ratatui::style::{Modifier, Style};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
@@ -20,11 +19,12 @@ use crate::screens::focus::{step, tab_forward};
 use crate::screens::{Effect, ViewCtx};
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, Segment};
-use crate::widgets::moves::{MoveEntry, row_text};
+use crate::widgets::moves::{MoveEntry, available_first, entry_style, row_text};
 
 const BOX_WIDTH: u16 = 54;
 
-/// The open window: the entries as they were when it opened, and the one that has the focus.
+/// The open window: the entries as they were when it opened, available ones first, and the one
+/// that has the focus.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MovesWindow {
     pub entries: Vec<MoveEntry>,
@@ -32,10 +32,12 @@ pub struct MovesWindow {
 }
 
 impl MovesWindow {
-    /// The window over `entries`, focused on the first active one (else the first).
+    /// The window over `entries`, the available ones listed first and the focus on the first row.
     pub fn new(entries: Vec<MoveEntry>) -> Self {
-        let focus = entries.iter().position(|entry| entry.active).unwrap_or(0);
-        Self { entries, focus }
+        Self {
+            entries: available_first(&entries),
+            focus: 0,
+        }
     }
 
     fn rows(&self) -> u16 {
@@ -89,23 +91,6 @@ fn key_name(action: Action) -> String {
     primary_key(action).unwrap_or_default()
 }
 
-fn entry_style(entry: &MoveEntry, focused: bool, ctx: &ViewCtx<'_>) -> Style {
-    let style = if entry.active {
-        ctx.theme
-            .style(Token::Text, Token::Surface)
-            .add_modifier(Modifier::BOLD)
-    } else {
-        ctx.theme
-            .style(Token::TextMuted, Token::Surface)
-            .add_modifier(Modifier::DIM)
-    };
-    if focused {
-        style.add_modifier(Modifier::REVERSED)
-    } else {
-        style
-    }
-}
-
 /// Draws the window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &MovesWindow, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area, state);
@@ -120,7 +105,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &MovesWindow, ctx: &ViewCtx<'_
         let focused = index == state.focus;
         let text = row_text(&with_reason(entry), focused, usize::from(row.width), ctx);
         frame.render_widget(
-            Paragraph::new(Line::styled(text, entry_style(entry, focused, ctx))),
+            Paragraph::new(Line::styled(text, entry_style(entry, focused, false, ctx))),
             row,
         );
     }
@@ -188,4 +173,90 @@ pub fn handle_mouse(state: &mut MovesWindow, area: Rect, event: &MouseEvent) -> 
         return state.run_focused();
     }
     dialog::button_at(&geometry(area, state), cell).map(|_| Effect::None)
+}
+
+#[cfg(test)]
+mod tests {
+    use ratatui::Terminal;
+    use ratatui::backend::TestBackend;
+
+    use super::*;
+    use crate::audio::AudioStatus;
+    use crate::caps::ColorDepth;
+    use crate::glyphs::Glyphs;
+    use crate::i18n::{Locale, set_locale};
+    use crate::settings::Settings;
+    use crate::test_support::PLAIN;
+    use crate::theme::{Theme, ThemeId};
+
+    fn entry(action: Action, active: bool, reason: Option<&str>) -> MoveEntry {
+        MoveEntry {
+            action,
+            label: t("board.moves.label.draw").into_owned(),
+            key: String::new(),
+            active,
+            reason: reason.map(str::to_owned),
+        }
+    }
+
+    fn rendered(state: &MovesWindow) -> String {
+        set_locale(Locale::EnUs);
+        let settings = Settings::for_caps(&PLAIN);
+        let theme = Theme::new(ThemeId::Dark, ColorDepth::TrueColor);
+        let glyphs = Glyphs::new(settings.glyph_mode);
+        let ctx = ViewCtx {
+            theme: &theme,
+            glyphs: &glyphs,
+            settings: &settings,
+            caps: &PLAIN,
+            audio_status: AudioStatus::NoDevice,
+            sound_styles: &[],
+            saved: None,
+            pointer: None,
+            now: std::time::Instant::now(),
+            font: crate::app::FontFacts::default(),
+        };
+        let mut terminal =
+            Terminal::new(TestBackend::new(100, 30)).unwrap_or_else(|never| match never {});
+        terminal
+            .draw(|frame| {
+                let area = frame.area();
+                draw(frame, area, state, &ctx);
+            })
+            .unwrap_or_else(|never| match never {});
+        terminal
+            .backend()
+            .buffer()
+            .content()
+            .iter()
+            .map(|cell| cell.symbol())
+            .collect()
+    }
+
+    #[test]
+    fn the_window_lists_the_available_entries_above_the_unavailable_ones() {
+        let state = MovesWindow::new(vec![
+            entry(Action::Stock, false, Some("reason")),
+            entry(Action::Select, true, None),
+            entry(Action::Hint, false, Some("reason")),
+            entry(Action::Undo, true, None),
+        ]);
+        let actions: Vec<Action> = state.entries.iter().map(|entry| entry.action).collect();
+        assert_eq!(
+            actions,
+            [Action::Select, Action::Undo, Action::Stock, Action::Hint]
+        );
+        assert_eq!(state.focus, 0);
+        assert!(state.entries[0].active);
+    }
+
+    #[test]
+    fn the_window_shows_each_reason_in_the_locale_text() {
+        let reason = t("board.moves.reason.carrying").into_owned();
+        let state = MovesWindow::new(vec![
+            entry(Action::Stock, true, None),
+            entry(Action::Hint, false, Some(reason.as_str())),
+        ]);
+        assert!(rendered(&state).contains(&reason));
+    }
 }

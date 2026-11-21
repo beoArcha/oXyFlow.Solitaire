@@ -179,10 +179,19 @@ fn console_font_value(settings: &Settings, facts: FontFacts) -> String {
     format!("{option} ({})", t(reason))
 }
 
+/// Whether a row cannot change now: a step on it does nothing. Such a row is drawn dimmed and without
+/// arrows; its value says why (sound not available, a font the game cannot change).
+pub(super) fn is_unavailable(field: Field, audio_available: bool, facts: FontFacts) -> bool {
+    (field.is_audio() && !audio_available)
+        || (field == Field::ConsoleFont && facts.card_font == CardFontState::Unavailable)
+        || font_rows::is_inert(field, facts)
+}
+
 /// The text of a row: the label, leaders of dots up to the value column, then the value. Sound rows
 /// say when sound is unavailable, and a side panel row says which columns it needs when the screen
 /// of `columns` is too narrow. `arrows` are the glyphs (left, right) that frame the value of the
-/// focused row; every other row keeps the two columns free, so the values line up.
+/// focused row; every other row keeps the two columns free, so the values line up, and an
+/// unavailable row takes no arrows at all.
 pub fn line(
     field: Field,
     settings: &Settings,
@@ -208,8 +217,10 @@ pub fn line(
         value = aid.value_for(&settings.aids(), columns);
     }
     let framed = match arrows {
-        Some((left, right)) => format!("{left} {value} {right}"),
-        None => format!("  {value}"),
+        Some((left, right)) if !is_unavailable(field, audio_available, facts) => {
+            format!("{left} {value} {right}")
+        }
+        _ => format!("  {value}"),
     };
     let name = t(field.label_key()).into_owned();
     let leaders = ".".repeat(label_width().saturating_sub(name.chars().count()) + 2);

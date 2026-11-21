@@ -35,7 +35,7 @@ impl Scale {
 const LARGE_CLUBS: Rows = &[" ▄███▄ ", "▄▄█▀█▄▄", "███▀███", "  ▄█▄  "];
 const LARGE_DIAMONDS: Rows = &["  ▄█▄  ", "▄█████▄", "▀█████▀", "  ▀█▀  "];
 const LARGE_HEARTS: Rows = &["▄██▄██▄", "███████", " ▀███▀ ", "   ▀   "];
-const LARGE_SPADES: Rows = &["  ▄█▄  ", "▄█████▄", "▀██▀██▀", "  ▄█▄  "];
+const LARGE_SPADES: Rows = &["   ▄   ", " ▄███▄ ", "▄██▀██▄", "   █   "];
 
 const MEDIUM_CLUBS: Rows = &[" ▄█▄ ", "▄█▀█▄", "  █  "];
 const MEDIUM_DIAMONDS: Rows = &[" ▄█▄ ", "█████", " ▀█▀ "];
@@ -50,7 +50,7 @@ const SMALL_SPADES: Rows = &[" ▄█▄ ", "▀▀█▀▀"];
 const ASCII_LARGE_CLUBS: Rows = &["  ###  ", " ##### ", "### ###", "  /#\\  "];
 const ASCII_LARGE_DIAMONDS: Rows = &["   ^   ", " /###\\ ", " \\###/ ", "   v   "];
 const ASCII_LARGE_HEARTS: Rows = &[" ## ## ", "#######", " \\###/ ", "   v   "];
-const ASCII_LARGE_SPADES: Rows = &["   ^   ", " /###\\ ", "#######", "  /#\\  "];
+const ASCII_LARGE_SPADES: Rows = &["   ^   ", " /###\\ ", "### ###", "   #   "];
 
 const ASCII_MEDIUM_CLUBS: Rows = &[" ### ", "## ##", " /#\\ "];
 const ASCII_MEDIUM_DIAMONDS: Rows = &["  ^  ", "<###>", "  v  "];

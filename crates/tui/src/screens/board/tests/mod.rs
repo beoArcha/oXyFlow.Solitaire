@@ -17,6 +17,7 @@ mod mouse;
 mod moves;
 mod moves_panel;
 mod navigation;
+mod now_row;
 mod persist;
 mod pyramid;
 mod quick;
