@@ -8,7 +8,7 @@ use crate::games::pyramid::Pyramid;
 use crate::games::spider::Spider;
 use crate::games::yukon::Yukon;
 use crate::moves::{Move, MoveError};
-use crate::pile::PileSnapshot;
+use crate::pile::{PileRef, PileSnapshot};
 use serde::{Deserialize, Serialize};
 
 /// Cards turned over from the stock at once in Klondike.
@@ -140,6 +140,13 @@ pub trait Game {
     /// beyond a small documented bound, and every sequence is verified on a clone before it is
     /// returned. `None` also for a game that is already won.
     fn forced_finish(&self) -> Option<Vec<Move>>;
+
+    /// Whether the card at `pile` is covered by a card still on the table, so that it may not leave
+    /// yet. Read-only. Only Pyramid has covered cards; every other game, and every pile that is not
+    /// a pyramid position or is empty, answers `false`.
+    fn is_covered(&self, _pile: PileRef) -> bool {
+        false
+    }
 }
 
 /// Deals `variant` from `seed`. The same pair always gives the same deal.
@@ -167,6 +174,19 @@ mod tests {
             .collect();
         ids.sort_unstable();
         ids
+    }
+
+    #[test]
+    fn only_pyramid_reports_covered_cards_on_a_fresh_deal() {
+        for variant in Variant::ALL {
+            let game = deal(variant, 7);
+            let any_covered = game.piles().iter().any(|pile| game.is_covered(pile.pile));
+            assert_eq!(
+                any_covered,
+                matches!(variant, Variant::Pyramid(_)),
+                "{variant:?}"
+            );
+        }
     }
 
     #[test]

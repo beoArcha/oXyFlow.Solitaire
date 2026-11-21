@@ -31,6 +31,7 @@ struct EdgeSets {
     focus: Edges,
     target: Edges,
     hint: Edges,
+    blocked: Edges,
 }
 
 const UNICODE_EDGES: EdgeSets = EdgeSets {
@@ -39,6 +40,7 @@ const UNICODE_EDGES: EdgeSets = EdgeSets {
     focus: edges(["╔", "╗", "╚", "╝"], "═", "║"),
     target: edges(["┌", "┐", "└", "┘"], "─", "│"),
     hint: edges(["╓", "╖", "╙", "╜"], "─", "║"),
+    blocked: edges(["┌", "┐", "└", "┘"], "·", "·"),
 };
 
 const ASCII_EDGES: EdgeSets = EdgeSets {
@@ -47,6 +49,7 @@ const ASCII_EDGES: EdgeSets = EdgeSets {
     focus: edges(["@", "@", "@", "@"], "=", "@"),
     target: edges(["+", "+", "+", "+"], "~", "!"),
     hint: edges(["+", "+", "+", "+"], ".", ":"),
+    blocked: edges(["+", "+", "+", "+"], ".", ":"),
 };
 
 pub(super) fn edges_for(glyphs: &Glyphs, mark: Mark) -> &'static Edges {
@@ -63,6 +66,8 @@ pub(super) fn edges_for(glyphs: &Glyphs, mark: Mark) -> &'static Edges {
         &sets.target
     } else if mark.hint.is_some() {
         &sets.hint
+    } else if mark.blocked {
+        &sets.blocked
     } else {
         &sets.normal
     }

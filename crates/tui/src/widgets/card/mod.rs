@@ -5,13 +5,14 @@
 //!
 //! The rank and suit sit in the top border row, so a card overlapped by the next card of its
 //! column still shows them. Focus, selection and hint change the border shape; focus, selection,
-//! target and hint each add a marker symbol. None of them depends on color. The Unicode borders
-//! are WGL4.
+//! target and hint each add a marker symbol. A blocked card (covered by a card still on the table)
+//! has a dotted border and a dimmed face. None of them depends on color. The Unicode borders are
+//! WGL4.
 
 use oxysol_core::{Card, Rank};
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
-use ratatui::style::Style;
+use ratatui::style::{Modifier, Style};
 
 mod art;
 pub(crate) mod back;
@@ -84,6 +85,7 @@ struct Look {
 
 fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
     let theme = ctx.theme;
+    let blocked = mark.blocked && matches!(face, Face::Up(_));
     let fill = match face {
         Face::Up(card) => {
             theme.card_face_style(ctx.settings.card_face, ctx.glyphs.suit_token(card.suit))
@@ -99,7 +101,20 @@ fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
             _ => fill,
         },
     };
-    Look { fill, border }
+    Look {
+        fill: shaded(fill, blocked),
+        border: shaded(border, blocked && mark.token().is_none()),
+    }
+}
+
+/// Sets or clears the dim attribute of a style. A cell keeps the modifiers of what was drawn on it
+/// before, so every card states its own shade and a card drawn over a covered one is not dimmed.
+fn shaded(style: Style, dim: bool) -> Style {
+    if dim {
+        style.add_modifier(Modifier::DIM)
+    } else {
+        style.remove_modifier(Modifier::DIM)
+    }
 }
 
 /// Draws one card position into `area`. `badge` is a count shown in the bottom corner (the size
@@ -125,7 +140,7 @@ pub fn draw(
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);
-    let target = ctx.theme.style(Token::Target, Token::Table);
+    let target = shaded(ctx.theme.style(Token::Target, Token::Table), false);
     if mark.target {
         paint_target_corners(&mut painter, area, ctx.glyphs, target);
     }

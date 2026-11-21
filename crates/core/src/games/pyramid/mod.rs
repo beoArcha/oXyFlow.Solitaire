@@ -184,4 +184,14 @@ impl Game for Pyramid {
     fn forced_finish(&self) -> Option<Vec<Move>> {
         self.finishing_moves()
     }
+
+    fn is_covered(&self, pile: PileRef) -> bool {
+        match pile {
+            PileRef::Pyramid { row, index } => {
+                let (row, index) = (usize::from(row), usize::from(index));
+                self.slot(row, index).is_some() && self.covered(row, index)
+            }
+            _ => false,
+        }
+    }
 }

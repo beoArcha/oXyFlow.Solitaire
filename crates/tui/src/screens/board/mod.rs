@@ -300,12 +300,10 @@ impl BoardScreen {
         let Some(session) = &self.session else {
             return Marks::default();
         };
-        let mut marks = marks::build(
-            &session.game().piles(),
-            &self.cursor,
-            self.pick.as_ref(),
-            self.hint,
-        );
+        let game = session.game();
+        let piles = game.piles();
+        let mut marks = marks::build(&piles, &self.cursor, self.pick.as_ref(), self.hint);
+        marks.blocked = marks::blocked(game, &piles);
         if !self.target_marks {
             marks.targets.clear();
         }
