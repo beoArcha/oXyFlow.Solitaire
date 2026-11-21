@@ -160,7 +160,7 @@ pub fn draw(
     ctx: &ViewCtx<'_>,
 ) {
     frame.render_widget(Clear, rect);
-    let mut title = t("common.dialog.help_title").into_owned();
+    let mut title = nav::window_title(modal).into_owned();
     let mut title_style = ctx.theme.style(Token::Accent, Token::Surface);
     if state.focused {
         title = format!("{} {title}", ctx.glyphs.focus_left);

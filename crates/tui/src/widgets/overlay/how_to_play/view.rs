@@ -190,7 +190,7 @@ fn close_label() -> String {
 /// Draws the window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
-    dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
+    dialog::draw_box(frame, &geometry, &t(state.title_key()), ctx);
     let parts = parts(geometry.body);
     draw_top_tabs(
         frame,

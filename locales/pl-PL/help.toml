@@ -73,6 +73,7 @@ close_rest = " zamyka to okno."
 
 [rules]
 title = "Jak grać"
+title_from_help = "Pomoc · Zasady"
 close = "Zamknij [{key}]"
 footer_tabs = "{left}/{right}: zakładka   {down}: gry"
 footer_games = "{left}/{right}: gra   {up}/{down}: fokus"

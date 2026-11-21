@@ -236,12 +236,28 @@ fn seed_entry_renders_in_polish_and_in_ascii() {
     let mut h = Harness::with(storage, PLAIN, 120, 40);
     open_seed_entry(&mut h);
     let text = h.text();
-    let title = crate::i18n::t("menu.new_game_from_seed");
+    let title = crate::i18n::t("menu.seed.title");
     assert!(text.contains(&*title));
     assert!(
         text.chars()
             .all(|ch| ch.is_ascii() || crate::glyphs::is_wgl4(ch))
     );
+}
+
+#[test]
+fn the_polish_seed_item_fits_at_100_by_30() {
+    let storage = MemoryStorage {
+        settings: Some(Settings {
+            locale: Locale::PlPl,
+            ..Settings::for_caps(&PLAIN)
+        }),
+        ..MemoryStorage::new()
+    };
+    let mut h = Harness::with(storage, PLAIN, 100, 30);
+    let label = crate::i18n::t("menu.new_game_from_seed").into_owned();
+    let text = h.text();
+    assert!(text.contains(&label), "{label}\n{text}");
+    crate::i18n::set_locale(Locale::EnUs);
 }
 
 #[test]

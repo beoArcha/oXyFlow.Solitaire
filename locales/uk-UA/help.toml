@@ -73,6 +73,7 @@ close_rest = " закриває це вікно."
 
 [rules]
 title = "Як грати"
+title_from_help = "Довідка · Правила"
 close = "Закрити [{key}]"
 footer_tabs = "{left}/{right}: вкладка   {down}: ігри"
 footer_games = "{left}/{right}: гра   {up}/{down}: фокус"
