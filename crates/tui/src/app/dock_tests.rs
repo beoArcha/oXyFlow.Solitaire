@@ -131,7 +131,15 @@ fn a_click_on_the_placement_button_cycles_the_side_and_keeps_the_window_open() {
     let mut h = harness(130, 40);
     start_first_game(&mut h);
     h.type_char('?');
-    let (column, row) = h.find("Dock: centre").unwrap_or((0, 0));
+    let key = crate::input::primary_key(crate::action::Action::Dock).unwrap_or_default();
+    let label = crate::i18n::tf(
+        "help.dock.button",
+        &[
+            ("side", &crate::i18n::t("help.dock.side_centre")),
+            ("key", &key),
+        ],
+    );
+    let (column, row) = h.find(&label).unwrap_or((0, 0));
     h.click(column + 2, row);
     assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
     assert_eq!(h.app.settings().help_dock, DockSide::Right);
