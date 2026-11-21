@@ -460,6 +460,68 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Fix:** compress the vertical card spacing of a column as it grows (face-down cards first, then face-up overlap) so the whole column, its last card fully visible, always fits above the status bar; fall back to a smaller card size only when compression is not enough. (The review text for this item was cut off after "Ensure dynamic vertical compression of"; the owner may refine the fix.)
 - **Acceptance:** a test builds the longest possible Yukon column (6 face-down + 18 face-up, and longer after moves) at 100 × 30 and 100 × 60 with every card size and finds the last card fully drawn above the status bar; the same test covers Klondike and Spider.
 
+### O-108 — Install scripts that check dependencies first (Linux, macOS, Windows)
+
+- **Owner:** Sonnet
+- **Priority:** P1. Building from source fails on a fresh Ubuntu (WSL).
+- **Depends on:** —
+- **Decision:** T-46
+- **Files:**
+  - `build/install.sh` (new: Linux and macOS);
+  - `build/install.ps1` (new: Windows);
+  - `build/README.md` (new);
+  - `README.md` ("Build from source");
+  - `docs/site/src/install.md` and `docs/site/src/pl/install.md`;
+  - `.github/workflows/pr.yml` (a job that runs the scripts' check mode and lints them);
+  - `docs/tech/workflow.md` (the new job);
+  - `docs/tech/decisions.md` (T-46);
+  - tests.
+- **Problem:** owner report of 2026-11-21. On Ubuntu under WSL, both `cargo install --git … --branch release oxysol` and the
+  `curl` + `cargo build` path from the README fail:
+  - first, `pkg-config` is missing;
+  - after `sudo apt install pkg-config`, the build stops in `alsa-sys`: `The system library alsa required by crate alsa-sys
+    was not found` (`alsa.pc` is missing).
+
+  The README names `build-essential libasound2-dev` but not `pkg-config`. Nothing checks the dependencies before a build
+  of several minutes, and the Linux and macOS paths are marked "written, not run".
+- **Fix:** one install script per platform in `build/`. Each script checks every dependency before it builds anything,
+  then acts by mode:
+  - `--check`: stops at the first problem, with a non-zero exit code.
+  - `--list`: stops and lists every missing dependency, with the exact command that installs it on this system.
+  - `--install`: installs what is missing through the system package manager, after asking. It checks again, and
+    builds and installs only if the second check passes.
+
+  Without a mode flag the script asks which of the three to use. In a non-interactive run it behaves like `--list`.
+
+  Dependencies to check:
+  - **Rust:** `rustup`/`cargo`. The pinned toolchain is installed by rustup on the first build.
+  - **C toolchain:** `cc`/`gcc` on Linux, the Xcode command line tools on macOS, and the MSVC Build Tools with a working
+    `link.exe` on Windows.
+  - **Linux only:** `pkg-config` and the ALSA headers (`libasound2-dev`, `alsa-lib-devel`, `alsa-lib` …).
+  - **Download tools:** `curl` and `tar`.
+
+  Package managers: `apt`, `dnf`, `pacman` and `zypper` on Linux, Homebrew on macOS (only if it is already present;
+  otherwise `--list` names the steps), and `winget` on Windows. An unknown distribution falls back to `--list`
+  behaviour, with the package names.
+
+  `--no-audio` skips the ALSA check and builds with `--no-default-features`. When only the sound dependencies are
+  missing, the scripts offer it as a choice.
+
+  The scripts build the `release` branch and install the binary like `cargo install`: `~/.cargo/bin`, or
+  `%USERPROFILE%\.cargo\bin` on Windows. They also work one-line from a URL, with `curl -fsSL …/build/install.sh | sh -s --
+  --list` and the PowerShell equivalent.
+- **Docs:**
+  - README, the site page and its Polish twin describe the scripts first, then the manual steps.
+  - The manual Linux line becomes `sudo apt install build-essential pkg-config libasound2-dev`.
+  - The "verified on" notes say what was actually run.
+- **Acceptance:**
+  - In CI, the `pr.yml` job runs `--check` and `--list` on Ubuntu, macOS and Windows runners. On a minimal Ubuntu
+    container without the ALSA headers it runs `--list` and checks the output names `libasound2-dev` and
+    `pkg-config`.
+  - ShellCheck passes on `install.sh`, and PSScriptAnalyzer passes on `install.ps1`.
+  - The owner runs `--install` on Ubuntu (WSL), and the PR records the result.
+  - Both locales of the site page are updated.
+
 **P3 — Main view polish, widgets and wording**
 
 ### O-78 — Main menu: Resume set apart and balanced under the logo
