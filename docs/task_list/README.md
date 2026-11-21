@@ -227,14 +227,14 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P4-07 | Site: language landing page | Sonnet | O-40, O-62 | DONE |
 | P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | DONE |
 | P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | DONE |
-| P4-08 | Card style: Swiss suits (Unicode) | Haiku | P5-02 | TODO |
+| P4-08 | Card style: Swiss suits (Unicode) | Haiku | P5-02 | DONE |
 | P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | DONE |
 | P4-10a | Game: Yukon (classic) | Opus | P4-09, P1-02 | DONE |
 | P4-10b | Yukon variant: Russian Solitaire | Haiku | P4-10a | DONE |
 | P4-10c | Yukon variant: Alaska | Haiku | P4-10b | DONE |
 | P4-10d | Yukon variant: Moosehide | Haiku | P4-10c | DONE |
 | P4-10e | Yukon variant: Australian Patience (stock, one pass) | Sonnet | P4-10d | DONE |
-| P4-10f | Solver for the Yukon family: winnable deals and the statistics check | Opus | P4-10e, P2-08 | TODO |
+| P4-10f | Solver for the Yukon family: winnable deals and the statistics check | Opus | P4-10e, P2-08 | DONE |
 | P4-01 | SQLite persistence | Sonnet | P3-01 | DONE |
 | P4-02 | Logging, panic hook, entry point | Haiku | P3-01, M-18 | DONE |
 | P4-03 | Autosave and resume | Sonnet | P3-03, P4-01 | DONE |
