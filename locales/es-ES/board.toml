@@ -157,7 +157,7 @@ menu = "{key}: menú"
 finish = "{key}: terminar"
 
 [counter]
-turned_over = "Volteadas: {count}"
+recycled = "Recargas del mazo: {count}"
 pass = "Pasada {pass} de {total}"
 last_pass = "Última pasada ({pass} de {total})"
 no_passes = "Sin pasadas restantes"
