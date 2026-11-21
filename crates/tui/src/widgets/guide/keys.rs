@@ -92,6 +92,7 @@ const fn goal_key(variant: Variant) -> &'static str {
         Variant::Spider(_) => "board.guide.goal.spider",
         Variant::FreeCell | Variant::Yukon(_) => "board.guide.goal.freecell",
         Variant::Pyramid(_) => "board.guide.goal.pyramid",
+        Variant::Golf => "rules.golf.goal",
     }
 }
 

@@ -7,6 +7,7 @@ spider = "Pająk"
 freecell = "FreeCell"
 pyramid = "Piramida"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Cel"
@@ -103,3 +104,15 @@ tips_1 = "Najpierw odsłaniaj zakryte karty, zaczynając od najdłuższych kolum
 tips_2 = "Grupa nie musi być uporządkowana, więc możesz sięgnąć głęboko w kolumnę po potrzebną kartę."
 tips_3 = "Króla trudno przenieść. Zachowaj pustą kolumnę dla króla, który blokuje zakryte karty."
 tips_4 = "Nie widzisz ruchu? Naciśnij {hint}, aby zobaczyć podpowiedź, albo {undo}, aby cofnąć ruch."
+
+[golf]
+goal = "Usuń wszystkie 35 kart z siedmiu kolumn, zagrywając je na stos odrzuconych."
+layout_1 = "Siedem kolumn po pięć odkrytych kart. Pierwsza karta talii trafia na stos odrzuconych, aby go zacząć; pozostałe 16 zostaje w talii."
+layout_2 = "Nie ma stosów bazowych ani ponownego rozdania: talię odkrywasz po jednej karcie, tylko raz."
+moves_1 = "Zagraj wierzchnią kartę kolumny na stos odrzuconych, gdy jej ranga jest o jeden wyższa lub niższa od wierzchniej karty stosu, w dowolnym kolorze: siódemka pasuje do szóstki i ósemki."
+moves_2 = "Król i as nie sąsiadują ze sobą, więc nie ma przejścia przez koniec: na króla pasuje tylko dama, a na asa tylko dwójka."
+moves_3 = "Każda zagrana karta staje się nową wierzchnią kartą stosu odrzuconych, więc ciąg może iść w górę, w dół albo zmienić kierunek."
+moves_4 = "Gdy żadna karta z kolumny nie pasuje, odkryj następną kartę z talii. Gdy talia jest pusta i nic nie pasuje, utknąłeś."
+tips_1 = "Szukaj najdłuższego ciągu, który możesz zagrać, zanim odkryjesz kartę z talii."
+tips_2 = "Ciąg przechodzący między kolumnami podtrzymuje serię, więc zaplanuj, którą kolumnę opróżnić najpierw."
+tips_3 = "Utknąłeś? Naciśnij {hint}, aby zobaczyć podpowiedź, lub {undo}, aby cofnąć ruch."

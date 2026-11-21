@@ -26,6 +26,7 @@ spider = "Acht Folgen von König bis Ass bilden, jede in einer Farbe."
 freecell = "Alle Karten liegen offen; vier freie Zellen schaffen Bewegungsspielraum."
 pyramid = "Kartenpaare mit Summe 13 abräumen; Könige zählen einzeln."
 yukon = "Jede offene Karte bewegt sich mit allen Karten darauf; es gibt keinen Talon."
+golf = "Spiele Spaltenkarten auf den Ablagestapel, wenn sie einen Rang höher oder niedriger sind."
 
 [seed]
 title = "Neues Spiel mit Seed"
@@ -53,6 +54,7 @@ spider = "Spider-Familie"
 free_cell = "FreeCell-Familie"
 pyramid = "Pyramide-Familie"
 yukon = "Yukon-Familie"
+golf = "Golf-Familie"
 
 [search]
 label = "Suchen"

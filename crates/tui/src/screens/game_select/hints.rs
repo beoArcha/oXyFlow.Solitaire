@@ -12,7 +12,8 @@ fn difficulty_key(variant: Variant) -> &'static str {
         Variant::Klondike(DrawCount::Three)
         | Variant::Spider(SuitCount::Two)
         | Variant::FreeCell
-        | Variant::Yukon(_) => "menu.difficulty.medium",
+        | Variant::Yukon(_)
+        | Variant::Golf => "menu.difficulty.medium",
         Variant::Spider(SuitCount::Four) | Variant::Pyramid(PyramidRules::Classic) => {
             "menu.difficulty.hard"
         }
@@ -26,6 +27,7 @@ const fn game_hint_key(variant: Variant) -> &'static str {
         Variant::FreeCell => "menu.game_hint.freecell",
         Variant::Pyramid(_) => "menu.game_hint.pyramid",
         Variant::Yukon(_) => "menu.game_hint.yukon",
+        Variant::Golf => "menu.game_hint.golf",
     }
 }
 

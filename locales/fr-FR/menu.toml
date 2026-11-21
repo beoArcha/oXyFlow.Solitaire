@@ -26,6 +26,7 @@ spider = "Forme huit suites du roi à l'as, chacune dans la même couleur."
 freecell = "Toutes les cartes sont visibles ; quatre cellules libres aident aux mouvements."
 pyramid = "Retire les paires dont la somme vaut 13 ; le roi se retire seul."
 yukon = "Toute carte visible se déplace avec les cartes posées dessus ; il n'y a pas de pioche."
+golf = "Joue les cartes des colonnes sur la défausse quand elles sont d'un rang plus haut ou plus bas."
 
 [seed]
 title = "Nouvelle partie avec graine"
@@ -53,6 +54,7 @@ spider = "Famille Spider"
 free_cell = "Famille FreeCell"
 pyramid = "Famille Pyramide"
 yukon = "Famille Yukon"
+golf = "Famille Golf"
 
 [search]
 label = "Chercher"

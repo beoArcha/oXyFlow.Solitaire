@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Piramide"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Scopo"
@@ -103,3 +104,15 @@ tips_1 = "Scopri prima le carte coperte, partendo dalle colonne più lunghe."
 tips_2 = "Un gruppo non deve essere in ordine, quindi puoi scavare a fondo in una colonna per raggiungere la carta che ti serve."
 tips_3 = "I re sono difficili da spostare. Tieni una colonna vuota per un re che blocca carte coperte."
 tips_4 = "Bloccato? Premi {hint} per un suggerimento, o {undo} per annullare una mossa."
+
+[golf]
+goal = "Elimina le 35 carte delle sette colonne giocandole sugli scarti."
+layout_1 = "Sette colonne di cinque carte scoperte. La prima carta del mazzo viene girata sugli scarti per iniziarli; le altre 16 restano nel mazzo."
+layout_2 = "Non ci sono fondazioni né nuova distribuzione: il mazzo si gira una carta alla volta, una sola volta."
+moves_1 = "Gioca la carta in cima a una colonna sugli scarti quando il suo grado è di uno più alto o più basso della carta in cima agli scarti, di qualsiasi seme: un 7 va su un 6 o su un 8."
+moves_2 = "Il re e l'asso non sono vicini, quindi non si torna da capo: sul re va solo una donna, sull'asso solo un 2."
+moves_3 = "Ogni carta giocata diventa la nuova carta in cima agli scarti, così una serie può salire, scendere o cambiare direzione."
+moves_4 = "Quando nessuna carta di colonna si adatta, gira la carta successiva del mazzo sugli scarti. A mazzo vuoto e senza carte giocabili, sei bloccato."
+tips_1 = "Cerca la serie più lunga che puoi giocare prima di girare una carta del mazzo."
+tips_2 = "Una serie che passa da una colonna all'altra mantiene la catena, quindi pianifica quale colonna svuotare per prima."
+tips_3 = "Bloccato? Premi {hint} per un suggerimento o {undo} per annullare una mossa."

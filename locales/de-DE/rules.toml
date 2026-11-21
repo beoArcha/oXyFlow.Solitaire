@@ -7,6 +7,7 @@ spider = "Spider"
 freecell = "FreeCell"
 pyramid = "Pyramide"
 yukon = "Yukon"
+golf = "Golf"
 
 [section]
 goal = "Ziel"
@@ -103,3 +104,15 @@ tips_1 = "Decke zuerst die verdeckten Karten auf, beginnend mit den längsten Sp
 tips_2 = "Eine Gruppe muss nicht geordnet sein, du kannst also tief in eine Spalte greifen, um die gesuchte Karte zu erreichen."
 tips_3 = "Könige sind schwer zu bewegen. Halte eine leere Spalte für einen König frei, der verdeckte Karten blockiert."
 tips_4 = "Kommst du nicht weiter? Drücke {hint} für einen Hinweis oder {undo}, um einen Zug zurückzunehmen."
+
+[golf]
+goal = "Räume alle 35 Karten der sieben Spalten ab, indem du sie auf den Ablagestapel spielst."
+layout_1 = "Sieben Spalten mit je fünf offenen Karten. Die erste Karte des Talons wird auf den Ablagestapel gelegt; die übrigen 16 bleiben im Talon."
+layout_2 = "Es gibt kein Fundament und kein erneutes Austeilen: Der Talon wird Karte für Karte aufgedeckt, nur einmal."
+moves_1 = "Spiele die oberste Karte einer Spalte auf den Ablagestapel, wenn ihr Rang einen höher oder niedriger ist als die oberste Ablagekarte, in beliebiger Farbe: eine 7 passt auf eine 6 oder eine 8."
+moves_2 = "König und Ass sind keine Nachbarn, es gibt also keinen Übergang: Auf einen König passt nur eine Dame, auf ein Ass nur eine 2."
+moves_3 = "Jede gespielte Karte wird zur neuen obersten Karte des Ablagestapels, sodass eine Folge aufwärts, abwärts oder in wechselnder Richtung laufen kann."
+moves_4 = "Passt keine Spaltenkarte, decke die nächste Karte des Talons auf. Ist der Talon leer und nichts passt, steckst du fest."
+tips_1 = "Suche die längste Folge, die du spielen kannst, bevor du eine Talonkarte aufdeckst."
+tips_2 = "Eine Folge, die zwischen Spalten wechselt, hält die Kette am Laufen; plane also, welche Spalte du zuerst leerst."
+tips_3 = "Steckst du fest? Drücke {hint} für einen Tipp oder {undo}, um einen Zug zurückzunehmen."
