@@ -273,7 +273,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | DONE |
 | O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | DONE |
 | O-70 | Language tooltip disappears when a window opens | Haiku | — | IN PROGRESS |
-| O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | TODO |
+| O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | IN PROGRESS |
 | O-72 | Docked Help: a margin between the version label and the panel | Haiku | — | TODO |
 | O-73 | Docked Help: dim the selection in the pane without focus | Haiku | — | IN PROGRESS |
 | O-74 | Help window: one footer layout and scroll indicator on every tab | Sonnet | O-71 | TODO |
@@ -300,7 +300,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-95 | Statistics: a plain summary line and footer hints for the action bar | Sonnet | O-82 | TODO |
 | O-96 | Settings: labelled Aura swatches, a Performance section, Left/Right in the footer | Haiku | — | TODO |
 | O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Haiku | O-95 | TODO |
-| O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | TODO |
+| O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | IN PROGRESS |
 | O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Haiku | O-87 | TODO |
 | O-100 | Spider and Pyramid: no `A` in slots that are not ace foundations | Haiku | — | TODO |
 | O-101 | Yukon footer: `Enter: pick up` and `a: quick move` when a card can move | Haiku | — | TODO |

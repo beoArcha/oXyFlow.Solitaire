@@ -188,6 +188,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **In review:** #213
 
 ### O-71 — Help window: a separator between the scrolling text and the footer
+- **In review:** #223
 
 - **Owner:** Haiku
 - **Depends on:** —
@@ -517,6 +518,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** tests for the three result styles in every theme (contrast passes), the unchecked mark equal to the legend, and a time rendered in the local offset.
 
 ### O-98 — Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer
+- **In review:** #222
 
 - **Owner:** Haiku
 - **Depends on:** —
