@@ -32,6 +32,7 @@ yukon_classic = "Юкон"
 yukon_russian = "Російський пасьянс"
 yukon_alaska = "Аляска"
 yukon_moosehide = "Moosehide"
+yukon_australian = "Австралійський пасьянс"
 
 [settings]
 title = "Налаштування"

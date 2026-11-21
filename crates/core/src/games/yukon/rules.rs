@@ -17,15 +17,24 @@ impl Yukon {
     pub(super) fn execute(&mut self, mv: Move) -> Result<(), MoveError> {
         match mv {
             Move::Transfer { from, to, count } => self.transfer(from, to, count),
+            Move::Stock if self.rules.has_stock() => self.draw(),
             Move::Stock | Move::Remove { .. } => Err(MoveError::Unsupported),
         }
     }
 
-    fn exists(pile: PileRef) -> bool {
+    /// Turns the top stock card onto the waste. The waste is never turned back: one pass only.
+    fn draw(&mut self) -> Result<(), MoveError> {
+        let card = self.stock.pop().ok_or(MoveError::StockEmpty)?;
+        self.waste.push(card);
+        Ok(())
+    }
+
+    fn exists(&self, pile: PileRef) -> bool {
         match pile {
+            PileRef::Waste => self.rules.has_stock(),
             PileRef::Foundation(i) => usize::from(i) < FOUNDATIONS,
             PileRef::Tableau(i) => usize::from(i) < COLUMNS,
-            PileRef::Stock | PileRef::Waste | PileRef::Cell(_) | PileRef::Pyramid { .. } => false,
+            PileRef::Stock | PileRef::Cell(_) | PileRef::Pyramid { .. } => false,
         }
     }
 
@@ -37,9 +46,10 @@ impl Yukon {
     }
 
     /// The cards of `pile` that may leave it: every face-up card of a column (a group moves with
-    /// all the cards above its bottom card), the top card of a foundation.
+    /// all the cards above its bottom card), the top card of the waste or of a foundation.
     pub(super) fn movable(&self, pile: PileRef) -> Result<&[Card], MoveError> {
         match pile {
+            PileRef::Waste if self.rules.has_stock() => Ok(top_card(&self.waste)),
             PileRef::Foundation(i) => self
                 .foundations
                 .get(usize::from(i))
@@ -65,7 +75,7 @@ impl Yukon {
         count: u8,
     ) -> Result<(), MoveError> {
         for pile in [from, to] {
-            if !Self::exists(pile) {
+            if !self.exists(pile) {
                 return Err(MoveError::NoSuchPile(pile));
             }
         }
@@ -115,6 +125,7 @@ impl Yukon {
 
     fn open_mut(&mut self, pile: PileRef) -> Option<&mut Vec<Card>> {
         match pile {
+            PileRef::Waste => Some(&mut self.waste),
             PileRef::Foundation(i) => self.foundations.get_mut(usize::from(i)),
             PileRef::Tableau(i) => self.columns.get_mut(usize::from(i)).map(|c| &mut c.up),
             _ => None,

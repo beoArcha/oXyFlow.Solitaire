@@ -8,10 +8,11 @@ use crate::pile::PileRef;
 type HintRule = fn(&Yukon, PileRef, PileRef, u8) -> bool;
 
 /// Hint priorities, best first.
-const HINT_RULES: [HintRule; 3] = [
+const HINT_RULES: [HintRule; 4] = [
     Yukon::to_foundation,
     Yukon::reveals_card,
     Yukon::improves_column,
+    Yukon::waste_to_column,
 ];
 
 fn columns() -> impl Iterator<Item = PileRef> {
@@ -23,12 +24,16 @@ fn foundations() -> impl Iterator<Item = PileRef> {
 }
 
 impl Yukon {
-    /// Every move [`Yukon::execute`] accepts: each valid transfer of every count from every
-    /// column and foundation onto every foundation and column.
+    /// Every move [`Yukon::execute`] accepts: the stock turn, then each valid transfer of every
+    /// count from the waste, every column and every foundation onto every foundation and column.
     pub(super) fn enumerate_moves(&self) -> Vec<Move> {
-        columns()
-            .chain(foundations())
-            .flat_map(|from| self.transfers_from(from))
+        let stock = (!self.stock.is_empty()).then_some(Move::Stock);
+        let sources = std::iter::once(PileRef::Waste)
+            .chain(columns())
+            .chain(foundations());
+        stock
+            .into_iter()
+            .chain(sources.flat_map(|from| self.transfers_from(from)))
             .collect()
     }
 
@@ -45,20 +50,26 @@ impl Yukon {
     }
 
     /// The best legal move: a card to a foundation, then a group that uncovers a face-down card,
-    /// then a group that leaves a card it did not fit on, or empties a column. Never a move out of
-    /// a foundation and never a group that already rests on a card it fits, so following the hints
-    /// cannot move a group back and forth. `None` when no such move exists.
+    /// then a group that leaves a card it did not fit on, or empties a column, then the waste onto
+    /// a column, and last the stock turn. Never a move out of a foundation and never a group that
+    /// already rests on a card it fits, so following the hints cannot move a group back and forth.
+    /// `None` when no such move exists.
     pub(super) fn suggest(&self) -> Option<Move> {
         let moves = self.enumerate_moves();
-        HINT_RULES.into_iter().find_map(|rule| {
+        let ranked = HINT_RULES.into_iter().find_map(|rule| {
             moves.iter().copied().find(|&mv| {
                 transfer_parts(mv).is_some_and(|(from, to, count)| rule(self, from, to, count))
             })
-        })
+        });
+        ranked.or_else(|| moves.contains(&Move::Stock).then_some(Move::Stock))
     }
 
     fn to_foundation(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
-        matches!(from, PileRef::Tableau(_)) && matches!(to, PileRef::Foundation(_))
+        matches!(from, PileRef::Waste | PileRef::Tableau(_)) && matches!(to, PileRef::Foundation(_))
+    }
+
+    fn waste_to_column(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
+        from == PileRef::Waste && matches!(to, PileRef::Tableau(_))
     }
 
     fn moves_all_face_up(&self, from: PileRef, count: u8) -> bool {

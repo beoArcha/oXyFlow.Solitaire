@@ -43,7 +43,7 @@ from a random seed and the game menu says so next to the game's name.
 
 ## Variants
 
-- **Classic:** the rules above. Other members of the Yukon family (Australian Patience) are planned.
+- **Classic:** the rules above. The other members of the family follow below.
 
 ## Russian Solitaire
 
@@ -72,3 +72,17 @@ The same layout, deal and group moves as Classic, with one change: a column buil
   clubs or the 6 of hearts on the 7 of spades, but not the 6 of spades).
 - **Group moves:** As in Classic. Only the bottom card of the moved group must fit the rule.
 - **Empty column, foundations, face-down cards, stock:** As in Classic.
+
+## Australian Patience
+
+The Yukon group moves with a stock and a different deal. The seven columns hold **four face-up cards each**
+(28 cards, none face down); the other 24 cards form the stock.
+
+- **Stock:** Turn the stock one card at a time onto the waste. There is one pass only and no redeal: once
+  the stock is empty, the waste stays where it is. The top card of the waste can go to a column or a
+  foundation.
+- **Tableau:** One rank lower in the **same suit** (a 6 of hearts goes on a 7 of hearts only).
+- **Group moves:** As in Classic. Only the bottom card of the moved group must fit the same-suit rule.
+- **Empty column:** Only a king, or a group with a king at the bottom.
+- **Foundations:** Ace to king by suit, as in Classic.
+- **Auto-finish:** Offered only when the stock and the waste are empty, so that no unseen card is left.

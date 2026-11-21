@@ -1,6 +1,7 @@
 //! Shared helpers for the Yukon tests. Cards are written as `"AS"`, `"10H"`, `"KD"`.
 
 mod alaska;
+mod australian;
 mod deal;
 mod finish;
 mod hints;
