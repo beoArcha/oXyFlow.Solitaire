@@ -28,6 +28,8 @@ mod quick_options;
 mod render_tests;
 mod search;
 #[cfg(test)]
+mod separator_tests;
+#[cfg(test)]
 mod tab_click_tests;
 mod tabs;
 #[cfg(test)]

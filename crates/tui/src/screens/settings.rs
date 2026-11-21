@@ -20,12 +20,12 @@ use ratatui::widgets::{Paragraph, Wrap};
 
 use self::arrows::{Arrows, glyphs, locate};
 use self::list::{Entry, entries, first_shown};
-use self::options::{FIELDS, Field, Step};
-use self::values::{changed, line, unavailable_reason_key};
+use self::options::{FIELDS, Step};
+use self::values::{changed, is_unavailable, line, unavailable_reason_key};
 use super::focus::{marker, step, tab_forward};
 use super::{Effect, ViewCtx};
 use crate::action::Action;
-use crate::app::{CardFontState, Screen};
+use crate::app::Screen;
 use crate::i18n::{t, tf};
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::theme::Token;
@@ -53,17 +53,17 @@ pub struct SettingsScreen {
     footer: FooterMap,
 }
 
+fn is_unavailable_row(index: usize, ctx: &ViewCtx<'_>) -> bool {
+    FIELDS
+        .get(index)
+        .is_some_and(|field| is_unavailable(*field, ctx.audio_status.is_ready(), ctx.font))
+}
+
 fn change_row(index: usize, step: Step, ctx: &ViewCtx<'_>) -> Effect {
     let Some(field) = FIELDS.get(index).copied() else {
         return Effect::None;
     };
-    if field.is_audio() && !ctx.audio_status.is_ready() {
-        return Effect::None;
-    }
-    if field == Field::ConsoleFont && ctx.font.card_font == CardFontState::Unavailable {
-        return Effect::None;
-    }
-    if font_rows::is_inert(field, ctx.font) {
+    if is_unavailable_row(index, ctx) {
         return Effect::None;
     }
     let settings = changed(field, ctx.settings, step, ctx.sound_styles);
@@ -259,6 +259,9 @@ impl SettingsScreen {
             let style = match entry {
                 Entry::Heading(_) => ctx.theme.style(Token::Accent, Token::Background),
                 Entry::Row(index) if index == self.focus => ctx.theme.focus(),
+                Entry::Row(index) if is_unavailable_row(index, ctx) => {
+                    ctx.theme.style(Token::TextMuted, Token::Background)
+                }
                 Entry::Row(_) | Entry::Gap => ctx.theme.base(),
             };
             if let Entry::Row(index) = entry {

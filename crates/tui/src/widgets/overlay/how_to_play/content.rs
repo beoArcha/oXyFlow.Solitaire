@@ -9,7 +9,7 @@ use crate::input::{binding_for, primary_key};
 pub use crate::widgets::text::wrap;
 
 /// Rows of text visible at once at 100 by 30, the smallest window: the first value before any event.
-pub const VIEW_ROWS: usize = 21;
+pub const VIEW_ROWS: usize = 20;
 /// Columns of text per row.
 pub const TEXT_WIDTH: usize = 76;
 

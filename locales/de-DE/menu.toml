@@ -44,6 +44,8 @@ label = "Spielanleitung"
 open = "Öffnen"
 play = "Spielen"
 language = "Sprache"
+favorite = "Favorit"
+winnable = "Lösbare Spiele"
 
 [family]
 klondike = "Klondike-Familie"
@@ -55,3 +57,8 @@ yukon = "Yukon-Familie"
 [search]
 label = "Suchen"
 clear = "Esc löscht"
+
+[winnable]
+button = "[ {key} Nur lösbare Spiele: {state} ]"
+on_hint = "An: Ein neues Spiel sucht eine nachweislich lösbare Verteilung; ein Seed wird direkt ausgeteilt"
+off_hint = "Aus: Ein neues Spiel teilt jede Verteilung aus, lösbar oder nicht"

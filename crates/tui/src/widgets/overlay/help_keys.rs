@@ -107,7 +107,7 @@ pub fn handle_key(
 /// Handles a mouse event: the wheel and the scroll bar scroll, a click on Close closes the window.
 pub fn handle_mouse(state: &mut HelpKeys, area: Rect, event: &MouseEvent) -> Option<Effect> {
     let geometry = geometry(area);
-    let (_, text, _) = parts(geometry.body);
+    let (_, text, _, _) = parts(geometry.body);
     state.set_view(text.height);
     match mouse::wheel_action(event) {
         Some(Action::Up) => state.scroll_by(-WHEEL_LINES),

@@ -62,7 +62,7 @@ fn track(window: Window) -> Rect {
     let (y, height) = match window {
         Window::Guide => (body.y, 17),
         Window::CommandLine => (body.y + 1, 21),
-        Window::Keys => (body.y + 1, 22),
+        Window::Keys => (body.y + 1, 21),
     };
     Rect::new(body.right() - 1, y, 1, height)
 }

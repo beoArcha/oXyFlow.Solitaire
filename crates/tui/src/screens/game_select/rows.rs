@@ -27,6 +27,8 @@ impl Heading {
 pub(super) enum Row {
     Heading(Heading),
     Item(Variant),
+    /// An empty line below the favourites group, before the first family.
+    Gap,
 }
 
 fn matches_query(variant: Variant, query: &str) -> bool {
@@ -54,12 +56,17 @@ pub(super) fn build(favourites: &[Variant], query: &str) -> Vec<Row> {
         .filter(|variant| favourites.contains(variant) && shown(variant))
         .collect();
     group(&mut rows, Heading::Favourites, starred);
+    let mut families = Vec::new();
     for family in Family::ALL {
         let members: Vec<Variant> = variants_of(family)
             .filter(|variant| !favourites.contains(variant) && shown(variant))
             .collect();
-        group(&mut rows, Heading::Family(family), members);
+        group(&mut families, Heading::Family(family), members);
     }
+    if !rows.is_empty() && !families.is_empty() {
+        rows.push(Row::Gap);
+    }
+    rows.extend(families);
     rows
 }
 
@@ -68,7 +75,7 @@ pub(super) fn items(rows: &[Row]) -> Vec<Variant> {
     rows.iter()
         .filter_map(|row| match row {
             Row::Item(variant) => Some(*variant),
-            Row::Heading(_) => None,
+            Row::Heading(_) | Row::Gap => None,
         })
         .collect()
 }

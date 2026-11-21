@@ -25,7 +25,7 @@ use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, KeyHint};
 use crate::widgets::language_picker::{LanguagePicker, Pointed};
 use crate::widgets::logo::logo;
-use crate::widgets::menu_list::MenuList;
+use crate::widgets::menu_list::{Highlight, MenuList};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Item {
@@ -111,6 +111,7 @@ pub struct MainMenu {
     footer: FooterMap,
     picker: LanguagePicker,
     selector_focus: bool,
+    other_pane_focused: bool,
     version: &'static str,
 }
 
@@ -139,7 +140,30 @@ impl MainMenu {
             footer: FooterMap::default(),
             picker: LanguagePicker::new(),
             selector_focus: false,
+            other_pane_focused: self.other_pane_focused,
         }
+    }
+
+    /// Records whether the focus of the application is in another pane, such as a docked help
+    /// window, so that the menu mutes its selection while it keeps its marker.
+    pub fn set_other_pane_focused(&mut self, focused: bool) {
+        self.other_pane_focused = focused;
+    }
+
+    fn highlight(&self) -> Highlight {
+        if self.selector_focus {
+            Highlight::Off
+        } else if self.other_pane_focused {
+            Highlight::Muted
+        } else {
+            Highlight::Focused
+        }
+    }
+
+    /// Clears the selector's tooltip, hover and keyboard focus when a window opens over the menu.
+    pub fn window_opened(&mut self) {
+        self.picker.forget_hover();
+        self.selector_focus = false;
     }
 
     /// Whether the seed field has the focus, so that typed characters are text.
@@ -372,7 +396,7 @@ impl MainMenu {
             })
             .collect();
         self.list
-            .draw(frame, list_area, &labels, ctx, !self.selector_focus);
+            .draw(frame, list_area, &labels, ctx, self.highlight());
         self.footer = footer::draw(
             frame,
             footer_area,
@@ -407,6 +431,8 @@ fn language_effect(locale: Option<Locale>, settings: &Settings) -> Effect {
     }
 }
 
+#[cfg(test)]
+mod dock_focus_tests;
 #[cfg(test)]
 mod focus_tests;
 #[cfg(test)]
