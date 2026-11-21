@@ -73,6 +73,7 @@ close_rest = " sluit dit venster."
 
 [rules]
 title = "Spelregels"
+title_from_help = "Help · Regels"
 close = "Sluiten [{key}]"
 footer_tabs = "{left}/{right}: tab   {down}: spellen"
 footer_games = "{left}/{right}: spel   {up}/{down}: focus verplaatsen"
