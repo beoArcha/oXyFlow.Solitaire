@@ -10,3 +10,6 @@ baton = "bâtons"
 coin = "deniers"
 cup = "coupes"
 sword = "épées"
+
+[style]
+spanish = "Espagnol"
