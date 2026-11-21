@@ -12,6 +12,7 @@ mod dock;
 mod full_screen;
 mod interface;
 mod priority;
+mod table;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
 pub use card_face::CardFaceTint;
@@ -21,6 +22,7 @@ pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 pub use interface::{AuraColour, AuraSize, AuraStyle};
 pub use priority::ProcessPriority;
+pub use table::{TableColour, TableFeel};
 
 use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -117,6 +119,11 @@ pub struct Settings {
     /// The color of face-up cards; the suit colors adapt to it. An older saved value without the
     /// field loads as `Theme`.
     pub card_face: CardFaceTint,
+    /// The colour of the table the cards lie on. An older saved value without the field loads as
+    /// `Theme`.
+    pub table_colour: TableColour,
+    /// The texture of the table. An older saved value without the field loads as `Plain`.
+    pub table_feel: TableFeel,
     /// The card size on the board. An older saved value without the field loads as `Auto`.
     pub card_size: CardSizeSetting,
     /// The colour of the aura. An older saved value without the field loads as `Theme`.
@@ -159,6 +166,8 @@ impl Default for Settings {
             full_screen: FullScreen::Auto,
             card_back: CardBack::Theme,
             card_face: CardFaceTint::Theme,
+            table_colour: TableColour::Theme,
+            table_feel: TableFeel::Plain,
             card_size: CardSizeSetting::Auto,
             aura_colour: AuraColour::Theme,
             aura_style: AuraStyle::Halo,

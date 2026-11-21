@@ -212,7 +212,10 @@ fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
     let tab_key = KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE);
     assert_eq!(handle(&mut modal, &tab_key, None), None);
     let rules = HowToPlay::new(Rules::Klondike);
-    assert_eq!(modal, Modal::HowToPlay(rules.focused(Focus::Tabs)));
+    assert_eq!(
+        modal,
+        Modal::HowToPlay(rules.focused(Focus::Tabs).reached_from_help())
+    );
 
     for _ in 0..3 {
         assert_eq!(handle(&mut modal, &tab_key, None), None);
@@ -223,5 +226,8 @@ fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
     assert_eq!(modal, Modal::help());
 
     assert_eq!(handle(&mut modal, &key(), Some(Action::Right)), None);
-    assert_eq!(modal, Modal::HowToPlay(rules.focused(Focus::Tabs)));
+    assert_eq!(
+        modal,
+        Modal::HowToPlay(rules.focused(Focus::Tabs).reached_from_help())
+    );
 }

@@ -309,6 +309,7 @@ impl BoardScreen {
         if !self.target_marks {
             marks.targets.clear();
         }
+        marks.completion = marks::completion(session.variant());
         marks
     }
 

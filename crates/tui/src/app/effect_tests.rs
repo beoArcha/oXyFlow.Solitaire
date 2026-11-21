@@ -254,7 +254,7 @@ fn hover_at(h: &mut Harness, column: u16, row: u16) {
 fn a_window_hides_the_language_tooltip_until_the_next_hover_or_focus() {
     let mut h = Harness::new();
     let name = h.app.settings().locale.own_name();
-    let Some((column, row)) = h.find("◄") else {
+    let Some((column, row)) = h.find("▀") else {
         panic!("the language selector is not drawn");
     };
     hover_at(&mut h, column + 2, row);

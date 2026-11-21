@@ -1,6 +1,8 @@
 //! Moving between the top tabs of the help window: which key or click leads to which tab, and with
 //! what focus the Rules tab opens.
 
+use std::borrow::Cow;
+
 use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
@@ -9,6 +11,7 @@ use super::how_to_play::{Focus, HowToPlay, Rules};
 use super::tabs::{self, HelpTab};
 use crate::action::Action;
 use crate::app::Modal;
+use crate::i18n::t;
 use crate::mouse;
 
 pub fn tab_of(modal: &Modal) -> Option<HelpTab> {
@@ -32,10 +35,21 @@ fn rules_focus(modal: &Modal) -> Option<Focus> {
 pub fn modal_for(tab: HelpTab, rules: Rules, entry: Option<Focus>) -> Modal {
     match tab {
         HelpTab::Keys => Modal::help(),
-        HelpTab::Rules => {
-            Modal::HowToPlay(HowToPlay::new(rules).focused(entry.unwrap_or(Focus::Games)))
-        }
+        HelpTab::Rules => Modal::HowToPlay(
+            HowToPlay::new(rules)
+                .focused(entry.unwrap_or(Focus::Games))
+                .reached_from_help(),
+        ),
         HelpTab::CommandLine => Modal::CommandLine(CommandLine::new()),
+    }
+}
+
+/// The title of the window: the Rules window names its own title, the other windows of the help
+/// window are titled "Help".
+pub fn window_title(modal: &Modal) -> Cow<'static, str> {
+    match modal {
+        Modal::HowToPlay(state) => t(state.title_key()),
+        _ => t("common.dialog.help_title"),
     }
 }
 
