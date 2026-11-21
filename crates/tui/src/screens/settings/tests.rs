@@ -13,6 +13,7 @@ mod interface;
 mod language;
 mod screen;
 mod styles;
+mod table;
 mod unavailable;
 
 use super::options::{FIELDS, Field, Step};
