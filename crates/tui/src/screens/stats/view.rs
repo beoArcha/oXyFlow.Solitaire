@@ -51,6 +51,7 @@ fn key_line() -> Vec<Segment> {
         Segment::button(Action::Select, t("stats.footer_replay")),
         Segment::plain("   "),
         Segment::button(Action::CopySeed, t("stats.footer_copy")),
+        Segment::plain("   "),
         Segment::button(Action::Back, t("stats.footer_back")),
     ]
 }

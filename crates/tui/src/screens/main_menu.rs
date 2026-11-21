@@ -160,6 +160,12 @@ impl MainMenu {
         }
     }
 
+    /// Clears the selector's tooltip, hover and keyboard focus when a window opens over the menu.
+    pub fn window_opened(&mut self) {
+        self.picker.forget_hover();
+        self.selector_focus = false;
+    }
+
     /// Whether the seed field has the focus, so that typed characters are text.
     pub fn captures_text(&self) -> bool {
         match &self.stage {

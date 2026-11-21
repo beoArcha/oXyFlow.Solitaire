@@ -7,6 +7,7 @@ use oxysol_core::{Move, PileRef, PileSnapshot, Session, Variant};
 
 use super::choices::{Choice, quick};
 use super::cursor::max_depth;
+use super::priority;
 use super::{BoardScreen, Pick, now};
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -28,6 +29,8 @@ pub(super) struct Part {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct Guidance {
     pub now: String,
+    /// Shorter wordings of `now`, longest first, for when the row is narrow.
+    pub shorter: Vec<String>,
     pub possible: Vec<Part>,
     /// Parts after the possible ones: restart, options, the key list and the way out. They are
     /// dropped by `drop_order` like the others.
@@ -106,9 +109,18 @@ fn run_part(drop_order: u8) -> Part {
 }
 
 impl Guidance {
-    /// The `Now:` row text cut to `width` columns.
+    /// The `Now:` row text for `width` columns: the first wording that fits, else the shortest one
+    /// cut to `width`.
     pub(super) fn now_line(&self, width: usize) -> String {
-        clip(&tf("board.action.now", &[("text", &self.now)]), width)
+        let lines: Vec<String> = std::iter::once(&self.now)
+            .chain(&self.shorter)
+            .map(|text| tf("board.action.now", &[("text", text)]))
+            .collect();
+        let fitting = lines.iter().find(|line| line.chars().count() <= width);
+        match (fitting, lines.last()) {
+            (Some(line), _) | (None, Some(line)) => clip(line, width),
+            (None, None) => String::new(),
+        }
     }
 
     /// The `Do:` row as segments: the prefix, the parts that fit `width` columns (least useful
@@ -130,19 +142,6 @@ impl Guidance {
         }
         segments.push(Segment::plain(after));
         segments
-    }
-
-    /// The Pause and Moves parts that the `Do:` row of `width` columns does not show; the `Now:`
-    /// row takes them so that they are always clickable.
-    pub(super) fn fallback(&self, width: usize) -> Vec<Part> {
-        let shown = self.visible_parts(width);
-        self.possible
-            .iter()
-            .chain(&self.tail)
-            .filter(|part| matches!(part.action, Some(Action::Pause | Action::Moves)))
-            .filter(|part| !shown.contains(part))
-            .cloned()
-            .collect()
     }
 
     fn visible_parts(&self, width: usize) -> Vec<Part> {
@@ -173,6 +172,7 @@ impl Guidance {
         usable.extend(ALWAYS);
         Self {
             now: t(now_key).into_owned(),
+            shorter: Vec::new(),
             possible,
             tail: tail(true),
             usable,
@@ -184,14 +184,14 @@ impl Guidance {
 /// Esc is taken by a pick, the way to the menu, which is kept longest of the tail.
 fn tail(with_menu: bool) -> Vec<Part> {
     let mut parts = vec![
-        part(Action::Restart, "board.action.restart", 2),
-        part(Action::Options, "board.action.options", 2),
-        part(Action::Pause, "board.action.pause", 4),
-        part(Action::Moves, "board.action.moves", 4),
-        part(Action::Help, "board.action.help", 8),
+        part(Action::Restart, "board.action.restart", priority::RESTART),
+        part(Action::Options, "board.action.options", priority::OPTIONS),
+        part(Action::Pause, "board.action.pause", priority::PAUSE),
+        part(Action::Moves, "board.action.moves", priority::MOVES),
+        part(Action::Help, "board.action.help", priority::HELP),
     ];
     if with_menu {
-        parts.push(part(Action::Back, "board.action.menu", 2));
+        parts.push(part(Action::Back, "board.action.menu", priority::MENU));
     }
     parts
 }
@@ -199,7 +199,11 @@ fn tail(with_menu: bool) -> Vec<Part> {
 fn won() -> Guidance {
     Guidance::closed(
         "board.action.won",
-        vec![part(Action::NewGame, "board.action.new_game", 0)],
+        vec![part(
+            Action::NewGame,
+            "board.action.new_game",
+            priority::PRIMARY,
+        )],
         Vec::new(),
     )
 }
@@ -208,10 +212,14 @@ fn stuck(session: &Session, undo_allowed: bool) -> Guidance {
     let mut possible = Vec::new();
     let mut usable = Vec::new();
     if undo_allowed && session.can_undo() {
-        possible.push(part(Action::Undo, "board.action.undo", 3));
+        possible.push(part(Action::Undo, "board.action.undo", priority::UNDO));
         usable.push(Action::Undo);
     }
-    possible.push(part(Action::NewGame, "board.action.new_game", 1));
+    possible.push(part(
+        Action::NewGame,
+        "board.action.new_game",
+        priority::PRIMARY,
+    ));
     Guidance::closed("board.action.stuck", possible, usable)
 }
 
@@ -221,9 +229,10 @@ impl BoardScreen {
     pub(super) fn guidance(&self) -> Option<Guidance> {
         let mut guidance = self.moment()?;
         if self.panel_unavailable() {
-            guidance
-                .tail
-                .insert(0, part(Action::Guide, "board.action.guide", 8));
+            guidance.tail.insert(
+                0,
+                part(Action::Guide, "board.action.guide", priority::GUIDE),
+            );
         }
         Some(guidance)
     }
@@ -270,43 +279,48 @@ impl BoardScreen {
         let mut possible = Vec::new();
         let mut usable = Vec::new();
         if found.is_some() {
-            possible.push(part(Action::Select, "board.action.pick_up", 0));
+            possible.push(part(
+                Action::Select,
+                "board.action.pick_up",
+                priority::PRIMARY,
+            ));
             usable.push(Action::Select);
         } else if on_stock && stock_ready {
-            possible.push(part(Action::Select, stock_key(variant), 0));
+            possible.push(part(Action::Select, stock_key(variant), priority::PRIMARY));
             usable.push(Action::Select);
         }
         if let Some(best) = best {
-            possible.push(quick_part(best, 1));
+            possible.push(quick_part(best, priority::QUICK));
             usable.push(Action::QuickMove);
         }
         if stock_ready && !on_stock {
-            possible.push(part(Action::Stock, stock_key(variant), 2));
+            possible.push(part(Action::Stock, stock_key(variant), priority::STOCK));
         }
         usable.extend(stock_ready.then_some(Action::Stock));
-        possible.push(plain("board.action.move", 9));
+        possible.push(plain("board.action.move", priority::MOVE_KEYS));
         if hint {
-            possible.push(part(Action::Hint, "board.action.hint", 3));
+            possible.push(part(Action::Hint, "board.action.hint", priority::HINT));
             usable.push(Action::Hint);
         }
         self.push_finish(&mut possible, &mut usable);
         if self.undo_allowed && session.can_undo() {
-            possible.push(part(Action::Undo, "board.action.undo", 4));
+            possible.push(part(Action::Undo, "board.action.undo", priority::UNDO));
             usable.push(Action::Undo);
         }
         if runs {
-            possible.push(run_part(1));
+            possible.push(run_part(priority::RUN));
         }
         usable.extend(runs.then_some(Action::RunMore));
         usable.extend(runs.then_some(Action::RunLess));
         if self.undo_allowed && session.can_redo() {
-            possible.push(part(Action::Redo, "board.action.redo", 7));
+            possible.push(part(Action::Redo, "board.action.redo", priority::REDO));
             usable.push(Action::Redo);
         }
-        possible.push(part(Action::Rules, "board.action.rules", 9));
+        possible.push(part(Action::Rules, "board.action.rules", priority::RULES));
         usable.extend(ALWAYS);
         Guidance {
             now: self.now_text(piles),
+            shorter: Vec::new(),
             possible,
             tail: tail(true),
             usable,
@@ -321,18 +335,19 @@ fn carrying(piles: &[PileSnapshot], pick: &Pick) -> Guidance {
         .filter(|choice| choice.target.is_some())
         .count();
     let mut possible = vec![
-        part(Action::Select, "board.action.drop", 0),
-        part(Action::Back, "board.action.put_back", 1),
-        plain("board.action.choose_target", 2),
+        part(Action::Select, "board.action.drop", priority::PRIMARY),
+        part(Action::Back, "board.action.put_back", priority::PUT_BACK),
+        plain("board.action.choose_target", priority::CHOOSE_TARGET),
     ];
     let mut usable = vec![Action::Select, Action::Back];
     if let Some(best) = quick(&pick.choices) {
-        possible.push(quick_part(best, 3));
+        possible.push(quick_part(best, priority::QUICK));
         usable.push(Action::QuickMove);
     }
     usable.extend(ALWAYS);
     Guidance {
         now: now::carrying(piles, pick.source, pick.count, targets),
+        shorter: now::carrying_shorter(piles, pick.source, pick.count, targets),
         possible,
         tail: tail(false),
         usable,
