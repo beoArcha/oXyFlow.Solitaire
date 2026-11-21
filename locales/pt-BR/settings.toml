@@ -179,8 +179,13 @@ marks_only = "Só marcas"
 thin = "Fino"
 thick = "Grosso"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Prévia"
+back = "verso"
+focus = "foco"
+carried = "levada"
+target = "destino"
+hidden = "A prévia precisa de uma janela maior."
 
 [preview]
 note = "Pré-visualização. Ao sair desta tela, pergunta-se se as alterações ficam."

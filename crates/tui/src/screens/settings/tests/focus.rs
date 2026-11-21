@@ -20,7 +20,7 @@ fn open() -> Harness {
 }
 
 fn focused(h: &mut Harness) -> Option<String> {
-    marked_text(&h.lines(), "►")
+    marked_text(&h.lines_without_pane(), "►")
 }
 
 fn is_row(text: Option<String>, index: usize) -> bool {
@@ -75,7 +75,10 @@ fn the_marker_is_on_the_focused_row_only() {
     let mut h = open();
     h.press(KeyCode::Tab);
     assert_eq!(
-        h.lines().iter().filter(|line| line.contains('►')).count(),
+        h.lines_without_pane()
+            .iter()
+            .filter(|line| line.contains('►'))
+            .count(),
         1
     );
 }

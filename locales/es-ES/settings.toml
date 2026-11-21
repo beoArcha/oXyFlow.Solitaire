@@ -179,8 +179,13 @@ marks_only = "Solo marcas"
 thin = "Fino"
 thick = "Grueso"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Vista previa"
+back = "dorso"
+focus = "foco"
+carried = "llevada"
+target = "destino"
+hidden = "La vista previa necesita una ventana más grande."
 
 [preview]
 note = "Vista previa. Al salir de esta pantalla se pregunta si se conservan los cambios."

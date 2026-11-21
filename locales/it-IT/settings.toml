@@ -179,8 +179,13 @@ marks_only = "Solo segni"
 thin = "Sottile"
 thick = "Spesso"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Anteprima"
+back = "dorso"
+focus = "cursore"
+carried = "presa"
+target = "meta"
+hidden = "L'anteprima richiede una finestra più grande."
 
 [preview]
 note = "Anteprima. Uscendo da questa schermata si chiede se tenere le modifiche."

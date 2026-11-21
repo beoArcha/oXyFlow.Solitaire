@@ -179,8 +179,13 @@ marks_only = "Tylko znaczniki"
 thin = "Cienka"
 thick = "Gruba"
 
-[sample]
-aura = "Aura:"
+[pane]
+title = "Podgląd"
+back = "rewers"
+focus = "fokus"
+carried = "wzięte"
+target = "cel"
+hidden = "Podgląd wymaga większego okna."
 
 [preview]
 note = "Podgląd. Przy wyjściu z tego ekranu pojawi się pytanie, czy zachować zmiany."

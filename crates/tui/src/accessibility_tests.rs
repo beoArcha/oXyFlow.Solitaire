@@ -55,7 +55,7 @@ const MENU_CORNER_ROWS: usize = 3;
 
 fn focused(h: &mut Harness) -> Option<String> {
     let glyphs = Glyphs::new(GlyphMode::Unicode);
-    let lines = h.lines();
+    let lines = h.lines_without_pane();
     let skip = if h.app.screen() == Screen::MainMenu {
         MENU_CORNER_ROWS
     } else {
