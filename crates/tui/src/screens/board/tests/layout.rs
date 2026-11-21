@@ -7,12 +7,17 @@ use ratatui::crossterm::event::KeyCode;
 use super::*;
 use crate::caps::TerminalCaps;
 use crate::glyphs::is_wgl4;
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, tf};
 use crate::settings::Settings;
 use crate::test_support::PLAIN;
 
 const KLONDIKE: Variant = Variant::Klondike(DrawCount::Three);
 const SEED: u64 = 5;
+
+fn recycled_text() -> String {
+    tf("board.counter.recycled", &[("count", "0")])
+}
+
 const SIZES: [(u16, u16); 5] = [(100, 30), (115, 35), (130, 30), (130, 40), (200, 60)];
 
 const GAMES: [Variant; 4] = [
@@ -112,12 +117,13 @@ fn a_standard_screen_puts_the_facts_in_the_game_box_and_has_no_header_row() {
     let panel: Vec<String> = lines.iter().map(|line| columns(line, 100, 130)).collect();
     assert!(panel[0].starts_with("┌ Guide (g: hide)"), "{}", panel[0]);
     assert!(panel[1].contains("Game"), "{}", panel[1]);
+    let recycled = recycled_text();
     let facts = [
         "Klondike, Draw 3",
         "seed 5",
         "Time 0:00",
         "Moves: 0",
-        "Turned over: 0",
+        recycled.as_str(),
     ];
     for (offset, fact) in facts.into_iter().enumerate() {
         let row = &panel[2 + offset];
@@ -189,8 +195,9 @@ fn no_fact_is_shown_twice() {
         let focus = now_row.split("  ").next().unwrap_or_default().trim_end();
         assert!(focus.contains(": "), "{focus}");
         assert_eq!(count(&text, focus), 1, "{size:?}: {focus}\n{text}");
+        let recycled = recycled_text();
         let facts = [
-            "Turned over: 0",
+            recycled.as_str(),
             "seed 5",
             "Moves: 1",
             "Time 0:00",

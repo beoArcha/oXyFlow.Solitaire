@@ -155,7 +155,7 @@ menu = "{key}: menu"
 finish = "{key}: terminer partie"
 
 [counter]
-turned_over = "Retournées : {count}"
+recycled = "Recyclages de la pioche : {count}"
 pass = "Passage {pass} sur {total}"
 last_pass = "Dernier passage ({pass} sur {total})"
 no_passes = "Plus aucun passage"

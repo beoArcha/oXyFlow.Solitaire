@@ -155,7 +155,7 @@ menu = "{key}: Menü"
 finish = "{key}: fertigstellen"
 
 [counter]
-turned_over = "Umgedreht: {count}"
+recycled = "Stapel-Umläufe: {count}"
 pass = "Durchlauf {pass} von {total}"
 last_pass = "Letzter Durchlauf ({pass} von {total})"
 no_passes = "Keine Durchläufe mehr übrig"

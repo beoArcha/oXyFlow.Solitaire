@@ -1,5 +1,6 @@
 use super::contrast::contrast_ratio;
 use super::*;
+use crate::settings::CardFaceTint;
 
 fn rgb(theme: ThemeId, token: Token) -> [u8; 3] {
     theme.palette().swatch(token).rgb
@@ -194,4 +195,57 @@ fn card_back_count_mark_reaches_text_target_on_every_back() {
             "{id:?}: card back count mark is {ratio}"
         );
     }
+}
+
+#[test]
+fn every_card_face_tint_keeps_both_suits_at_the_contrast_target_on_its_face() {
+    for id in ThemeId::ALL {
+        for tint in CardFaceTint::ALL {
+            let colors = face::face_colors(tint, &id.palette());
+            let target = if tint == CardFaceTint::Theme {
+                id.contrast_target()
+            } else {
+                7.0
+            };
+            for (name, ink) in [("red", colors.red), ("black", colors.black)] {
+                let ratio = contrast_ratio(ink.rgb, colors.face.rgb);
+                assert!(
+                    ratio >= target,
+                    "{id:?} {tint:?}: {name} on the face is {ratio}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn every_card_face_tint_tells_the_suits_apart_in_rgb_and_in_sixteen_colors() {
+    for id in ThemeId::ALL {
+        for tint in CardFaceTint::ALL {
+            let colors = face::face_colors(tint, &id.palette());
+            assert_ne!(colors.red.rgb, colors.black.rgb, "{id:?} {tint:?} rgb");
+            assert_ne!(
+                colors.red.ansi16, colors.black.ansi16,
+                "{id:?} {tint:?} ansi16"
+            );
+        }
+    }
+}
+
+#[test]
+fn the_card_face_style_is_the_theme_face_for_the_theme_tint_and_the_tint_colors_otherwise() {
+    for id in ThemeId::ALL {
+        let theme = Theme::new(id, ColorDepth::TrueColor);
+        for suit in [Token::CardRed, Token::CardBlack] {
+            assert_eq!(
+                theme.card_face_style(CardFaceTint::Theme, suit),
+                theme.style(suit, Token::CardFace)
+            );
+        }
+    }
+    let theme = Theme::new(ThemeId::Dark, ColorDepth::TrueColor);
+    let colors = face::face_colors(CardFaceTint::Dark, &ThemeId::Dark.palette());
+    let style = theme.card_face_style(CardFaceTint::Dark, Token::CardBlack);
+    assert_eq!(style.bg, Some(colors.face.resolve(ColorDepth::TrueColor)));
+    assert_eq!(style.fg, Some(colors.black.resolve(ColorDepth::TrueColor)));
 }

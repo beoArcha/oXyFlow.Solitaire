@@ -8,7 +8,7 @@ mod seed;
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
-use ratatui::layout::{Alignment, Constraint, Layout, Rect};
+use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
@@ -23,6 +23,10 @@ use crate::mouse::wheel_action;
 use crate::settings::Settings;
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, KeyHint};
+
+/// Empty columns kept on each side of the footer row, so that the version label and the key line
+/// do not touch a docked help window beside the menu.
+const FOOTER_MARGIN: u16 = 1;
 use crate::widgets::language_picker::{LanguagePicker, Pointed};
 use crate::widgets::logo::logo;
 use crate::widgets::menu_list::{Highlight, MenuList};
@@ -362,7 +366,7 @@ impl MainMenu {
         let rows = logo(ctx.glyphs.unicode);
         let items = items(ctx.saved.is_some());
         let logo_height = u16::try_from(rows.len()).unwrap_or(0);
-        let [_, logo_area, tagline_area, _, list_area, _, footer_area] = Layout::vertical([
+        let [_, logo_area, tagline_area, _, list_area, _, footer_row] = Layout::vertical([
             Constraint::Fill(1),
             Constraint::Length(logo_height),
             Constraint::Length(1),
@@ -372,6 +376,7 @@ impl MainMenu {
             Constraint::Length(1),
         ])
         .areas(area);
+        let footer_area = footer_row.inner(Margin::new(FOOTER_MARGIN, 0));
         let lines: Vec<Line> = rows
             .iter()
             .map(|row| Line::styled(*row, ctx.theme.style(Token::Accent, Token::Background)))
@@ -435,6 +440,8 @@ fn language_effect(locale: Option<Locale>, settings: &Settings) -> Effect {
 mod dock_focus_tests;
 #[cfg(test)]
 mod focus_tests;
+#[cfg(test)]
+mod footer_margin_tests;
 #[cfg(test)]
 mod language_tests;
 #[cfg(test)]

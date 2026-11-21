@@ -3,7 +3,7 @@ use ratatui::crossterm::event::KeyCode;
 
 use super::*;
 use crate::glyphs::is_wgl4;
-use crate::i18n::{Locale, set_locale, t};
+use crate::i18n::{Locale, set_locale, t, tf};
 use crate::screens::board::counters::{stock_text, stock_text_of};
 use crate::settings::Settings;
 use crate::storage::memory::MemoryStorage;
@@ -23,6 +23,10 @@ fn now_row(h: &mut Harness) -> String {
 
 fn header_row(h: &mut Harness) -> String {
     h.lines().into_iter().next().unwrap_or_default()
+}
+
+fn recycled(count: u32) -> String {
+    tf("board.counter.recycled", &[("count", &count.to_string())])
 }
 
 fn draw_stock(h: &mut Harness, times: usize) {
@@ -78,15 +82,56 @@ fn the_win_dialog_shows_the_time_and_the_moves() {
 }
 
 #[test]
-fn klondike_counts_how_often_the_waste_was_turned_over() {
+fn klondike_counts_how_often_the_waste_was_recycled_into_the_stock() {
     let mut h = start(KLONDIKE, SEED);
-    assert_counter(&mut h, "Turned over: 0");
+    assert_counter(&mut h, &recycled(0));
     draw_stock(&mut h, 24);
-    assert_counter(&mut h, "Turned over: 0");
+    assert_counter(&mut h, &recycled(0));
     draw_stock(&mut h, 1);
-    assert_counter(&mut h, "Turned over: 1");
+    assert_counter(&mut h, &recycled(1));
     h.type_char('u');
-    assert_counter(&mut h, "Turned over: 0");
+    assert_counter(&mut h, &recycled(0));
+}
+
+fn revealing_move(h: &Harness) -> Option<(PileRef, PileRef)> {
+    let piles = session(h).game().piles();
+    legal(h).into_iter().find_map(|mv| match mv {
+        Move::Transfer {
+            from: from @ PileRef::Tableau(_),
+            to,
+            count: 1,
+        } => {
+            let below = piles
+                .iter()
+                .find(|p| p.pile == from)?
+                .cards
+                .iter()
+                .rev()
+                .nth(1)?;
+            (!below.face_up).then_some((from, to))
+        }
+        _ => None,
+    })
+}
+
+#[test]
+fn turning_over_a_tableau_card_does_not_count_as_a_recycle() {
+    let (mut h, from, to) = (1..=60)
+        .find_map(|seed| {
+            let h = start(KLONDIKE, seed);
+            revealing_move(&h).map(|(from, to)| (h, from, to))
+        })
+        .expect("some seed has a move that turns a face-down card over");
+    drag(&mut h, from, to);
+    let piles = session(&h).game().piles();
+    let source = piles.iter().find(|p| p.pile == from);
+    assert!(
+        source
+            .and_then(|p| p.cards.last())
+            .is_some_and(|c| c.face_up),
+        "the card left under the move should now be face up"
+    );
+    assert_counter(&mut h, &recycled(0));
 }
 
 #[test]
@@ -147,7 +192,7 @@ fn the_counter_texts_follow_the_status_of_the_stock() {
         recycles_left,
         deals_left,
     };
-    assert_eq!(stock_text_of(&status(4, None, None), 3), "Turned over: 4");
+    assert_eq!(stock_text_of(&status(4, None, None), 3), recycled(4));
     assert_eq!(stock_text_of(&status(0, Some(2), None), 24), "Pass 1 of 3");
     assert_eq!(
         stock_text_of(&status(2, Some(0), None), 5),

@@ -156,7 +156,7 @@ menu = "{key}: menu"
 finish = "{key}: dokończ grę"
 
 [counter]
-turned_over = "Przełożono: {count}"
+recycled = "Zwroty talii: {count}"
 pass = "Przejście {pass} z {total}"
 last_pass = "Ostatnie przejście ({pass} z {total})"
 no_passes = "Brak przejść"
