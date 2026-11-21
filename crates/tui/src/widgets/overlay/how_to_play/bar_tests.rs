@@ -47,16 +47,16 @@ fn bar(h: &mut Harness) -> Vec<String> {
 fn the_scroll_bar_shows_the_visible_share_and_follows_the_text() {
     let mut h = opened(Locale::EnUs, TRUE_COLOR);
     let column = bar(&mut h);
-    assert_eq!(column.len(), 20);
-    let total = state(&h).metrics(20).total;
+    assert_eq!(column.len(), 21);
+    let total = state(&h).metrics(21).total;
     let thumb = column.iter().filter(|symbol| *symbol == "█").count();
-    assert_eq!(thumb, (20 * 20 + total / 2) / total);
+    assert_eq!(thumb, (21 * 21 + total / 2) / total);
     assert_eq!(column[0], "█");
-    assert_eq!(column[19], "░");
+    assert_eq!(column[20], "░");
     h.press(KeyCode::End);
     let column = bar(&mut h);
     assert_eq!(column[0], "░");
-    assert_eq!(column[19], "█");
+    assert_eq!(column[20], "█");
     assert_eq!(column.iter().filter(|symbol| *symbol == "█").count(), thumb);
 }
 
@@ -65,7 +65,7 @@ fn the_scroll_bar_is_ascii_in_the_ascii_set() {
     let mut h = opened(Locale::EnUs, PLAIN);
     let column = bar(&mut h);
     assert_eq!(column[0], "#");
-    assert_eq!(column[19], ":");
+    assert_eq!(column[20], ":");
     assert!(column.iter().all(|symbol| symbol == "#" || symbol == ":"));
 }
 
@@ -74,8 +74,8 @@ fn a_click_on_the_track_pages_and_a_drag_of_the_thumb_scrolls() {
     let mut h = opened(Locale::EnUs, TRUE_COLOR);
     let track = track();
     let max = state(&h).max_scroll();
-    down(&mut h, track.x, track.y + 19);
-    assert_eq!(state(&h).scroll, max.min(19));
+    down(&mut h, track.x, track.y + 20);
+    assert_eq!(state(&h).scroll, max.min(20));
     assert_eq!(state(&h).focus, Focus::Text);
     down(&mut h, track.x, track.y);
     assert_eq!(state(&h).scroll, 0, "a click above the thumb pages up");
@@ -85,14 +85,14 @@ fn a_click_on_the_track_pages_and_a_drag_of_the_thumb_scrolls() {
         &mut h,
         MouseEventKind::Drag(MouseButton::Left),
         track.x,
-        track.y + 19,
+        track.y + 20,
     );
     assert_eq!(state(&h).scroll, max);
     mouse(
         &mut h,
         MouseEventKind::Up(MouseButton::Left),
         track.x,
-        track.y + 19,
+        track.y + 20,
     );
     mouse(
         &mut h,
