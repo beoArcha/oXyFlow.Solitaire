@@ -82,7 +82,7 @@ impl Variant {
 pub enum DrawCount { One, Three }
 pub enum SuitCount { One, Two, Four }
 pub enum PyramidRules { Relaxed, Classic }
-pub enum YukonRules { Classic, Russian, Alaska }            // the Yukon family (P4-10a…e)
+pub enum YukonRules { Classic, Russian, Alaska, Moosehide } // the Yukon family (P4-10a…e)
 
 /// Stock counters (P2-06). `recycles` counts waste turned back into the stock (Klondike, Pyramid;
 /// Spider is always 0). The first traversal is pass 1, so the pass in progress is `recycles + 1`.
@@ -135,8 +135,8 @@ Rules of the `Game` contract:
   to a foundation). A foundation card may come back to a column. Classic: `BuildRule::DownAlternating`,
   `down = [0, 1, 2, 3, 4, 5, 6]`, `up = [1, 5, 5, 5, 5, 5, 5]`. Russian Solitaire: the same deal with
   `BuildRule::DownSameSuit`. Alaska: `BuildRule::UpOrDownSameSuit` (one rank higher or lower, same suit), the
-  classic deal. Moosehide (P4-10d) adds a `YukonRules` value, a `BuildRule`
-  variant with its `fits` arm, and the two arms in `setup.rs`; Australian Patience (P4-10e) also adds the stock (a `stock` field, `Move::Stock`,
+  classic deal. Moosehide: `BuildRule::DownOtherSuit` (one rank lower, any suit but the top card's own),
+  the classic deal. Australian Patience (P4-10e) also adds the stock (a `stock` field, `Move::Stock`,
   `stock_status`, `Variant::has_stock`). The hint ranks a foundation move, then a group that uncovers a
   face-down card, then a group that leaves a card it does not fit on (or empties a column); it never
   moves a group that already rests on a card it fits, so following the hints cannot cycle.
@@ -165,7 +165,7 @@ Rules of the `Game` contract:
   128-bit canonical keys (column and cell order ignored). Spider with 2 and 4 suits mostly answers
   `Unknown`. `SolveBudget::default_for` is tuned to about half a second per deal in a release build.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`,
-  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`.
+  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`.
 
 The session implements history by replaying the move log from the seed (decision T-03):
 

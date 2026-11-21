@@ -92,6 +92,7 @@ layout_1 = "Siedem kolumn. Pierwsza ma jedną odkrytą kartę, pozostałe od 1 d
 layout_2 = "Rozdaje się wszystkie 52 karty. Nie ma talii ani ponownego rozdania."
 layout_3 = "Rosyjski pasjans rozdaje tak samo, ale kolumny buduj malejąco w jednym kolorze zamiast naprzemiennie w czerwieni i czerni: szóstka kier kładzie się tylko na siódemkę kier."
 layout_4 = "Alaska rozdaje tak samo, ale kolumny buduje się o jedną wartość w górę lub w dół w jednym kolorze: szóstka kier kładzie się tylko na piątkę albo siódemkę kier."
+layout_5 = "Moosehide rozdaje tak samo, ale kolumny buduje się w dół o jedną wartość w dowolnym kolorze oprócz tego samego: szóstka trefl kładzie się na siódemkę pik, szóstka pik nie."
 moves_1 = "Kolumny buduj malejąco, naprzemiennie kolorami, na przykład czerwoną szóstkę na czarnej siódemce."
 moves_2 = "Dowolna odkryta karta przenosi się razem ze wszystkimi kartami leżącymi na niej, nawet jeśli nie są uporządkowane. Pasować musi tylko dolna karta przenoszonej grupy."
 moves_3 = "Na pustą kolumnę można położyć tylko króla albo grupę z królem na spodzie."

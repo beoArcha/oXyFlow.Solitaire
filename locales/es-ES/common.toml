@@ -31,6 +31,7 @@ pyramid_classic = "Pirámide, clásica"
 yukon_classic = "Yukon"
 yukon_russian = "Solitario ruso"
 yukon_alaska = "Alaska"
+yukon_moosehide = "Moosehide"
 
 [settings]
 title = "Ajustes"

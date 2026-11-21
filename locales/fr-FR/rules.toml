@@ -92,6 +92,7 @@ layout_1 = "Sept colonnes. La première contient une carte visible ; les autres,
 layout_2 = "Les 52 cartes sont distribuées. Il n'y a ni pioche ni nouvelle donne."
 layout_3 = "Le solitaire russe distribue de la même façon, mais construit les colonnes en descendant dans une même enseigne au lieu d'alterner les couleurs : un 6 de cœur ne va que sur un 7 de cœur."
 layout_4 = "Alaska distribue de la même façon, mais construit les colonnes en montant ou en descendant d'un rang dans une même enseigne : un 6 de cœur ne va que sur un 5 ou un 7 de cœur."
+layout_5 = "Moosehide distribue de la même façon, mais construit les colonnes en descendant d'un rang dans n'importe quelle enseigne sauf la même : un 6 de trèfle va sur un 7 de pique, un 6 de pique non."
 moves_1 = "Construis les colonnes en descendant et en alternant les couleurs, par exemple un 6 rouge sur un 7 noir."
 moves_2 = "Toute carte visible se déplace avec toutes les cartes posées dessus, même si elles ne sont pas en ordre. Seule la carte du bas du groupe déplacé doit convenir."
 moves_3 = "Seul un roi, ou un groupe avec un roi en bas, peut aller sur une colonne vide."

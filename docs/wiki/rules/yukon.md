@@ -43,8 +43,7 @@ from a random seed and the game menu says so next to the game's name.
 
 ## Variants
 
-- **Classic:** the rules above. Other members of the Yukon family (Moosehide, Australian Patience)
-  are planned.
+- **Classic:** the rules above. Other members of the Yukon family (Australian Patience) are planned.
 
 ## Russian Solitaire
 
@@ -62,4 +61,14 @@ rank in the **same suit**. A 6 of hearts goes on a 7 of hearts or a 5 of hearts,
 
 - **Tableau:** One rank higher or lower, in the same suit (for example, the 6 of clubs on the 5 or the 7 of clubs).
 - **Group moves:** As in Classic. Only the bottom card of the moved group must fit the same-suit rule.
+- **Empty column, foundations, face-down cards, stock:** As in Classic.
+
+## Moosehide
+
+The same layout, deal and group moves as Classic, with one change: a column builds down by one rank in
+**any suit except the card's own**. A 6 of clubs goes on a 7 of spades, but a 6 of spades does not.
+
+- **Tableau:** One rank lower, in any suit but the suit of the card it goes on (for example, the 6 of
+  clubs or the 6 of hearts on the 7 of spades, but not the 6 of spades).
+- **Group moves:** As in Classic. Only the bottom card of the moved group must fit the rule.
 - **Empty column, foundations, face-down cards, stock:** As in Classic.

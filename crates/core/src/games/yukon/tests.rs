@@ -4,6 +4,7 @@ mod alaska;
 mod deal;
 mod finish;
 mod hints;
+mod moosehide;
 mod rules;
 mod russian;
 
