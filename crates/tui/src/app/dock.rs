@@ -148,11 +148,12 @@ impl App {
     pub(super) fn on_modal_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
         let rules = overlay::rules_of(&self.board);
         let docked = self.dock_split().map(|(rect, _)| rect);
+        let area = self.screen_rect();
         let outcome = match (self.modal.as_mut(), docked) {
             (Some(modal), Some(rect)) => {
                 overlay::dock::handle_key(&mut self.dock, modal, rect, rules, key, action)
             }
-            (Some(modal), None) => overlay::handle_for(modal, key, action, rules),
+            (Some(modal), None) => overlay::handle_for(modal, key, action, rules, area),
             (None, _) => None,
         };
         self.sync_quick();
