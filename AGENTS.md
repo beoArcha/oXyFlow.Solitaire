@@ -49,7 +49,8 @@ with Klondike, Spider, FreeCell and Pyramid. Do not rename anything.
 - One task = one branch from current `main`, named `<type>/<ID>-<slug>` with type `feat`, `fix`,
   `refactor`, `chore`, `docs`, `test` or `ci`. Example: `feat/M-02-lint-nesting`.
 - Keep a PR small: one logical piece of functionality that compiles and leaves a working program.
-- Open a pull request to `main`. Title: `<type>(<scope>): <summary> [<ID>]`. PRs are squash-merged.
+- Open a pull request to `main`. Title: `<type>(<scope>): <summary> [<ID>]`. PRs are squash-merged by
+  GitHub auto-merge, which the orchestrator turns on after its review; do not turn it on yourself.
   Never push to `main` or `release`.
 - Change only the files listed in your card. If you need anything else — including a new
   dependency in `Cargo.toml` — stop and say so in the report.
