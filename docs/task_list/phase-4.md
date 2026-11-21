@@ -431,6 +431,9 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
   turned over, king to an empty column, foundations, win); the same seed gives the same deal; storage round trip
   of the variant; the menu entry and rules tab in all nine locales; board fit at 100 × 30; architecture games list
   updated.
+- **Done:** #192
+- **Follow-ups (from the report):** the statistics summary fits 100×30 only with 2 history rows; it needs scrolling or a compact form before P4-10b adds more rows.
+  The statistics winnability check (`w` / `W`) still asks about Yukon and stores "unknown" until P4-10f. The site pages do not link `docs/wiki/rules/yukon.md` yet.
 
 ### P4-10b — Yukon variant: Russian Solitaire
 
