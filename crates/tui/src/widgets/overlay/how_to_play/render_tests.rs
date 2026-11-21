@@ -157,12 +157,12 @@ fn the_arrows_and_tabs_switch_the_game_by_mouse() {
 fn keys_and_the_wheel_scroll_the_text() {
     let mut h = playing(Variant::Klondike(DrawCount::One));
     h.type_char('i');
-    assert!(h.text().contains("1-20 / "));
+    assert!(h.text().contains("1-21 / "));
     assert!(!h.text().contains("Stuck?"));
     h.press(KeyCode::Down);
-    assert!(h.text().contains("1-20 / "));
+    assert!(h.text().contains("1-21 / "));
     h.press(KeyCode::Down);
-    assert!(h.text().contains("2-21 / "));
+    assert!(h.text().contains("2-22 / "));
     h.press(KeyCode::PageDown);
     assert_eq!(shown(&h).map(|s| s.scroll), Some(20));
     wheel(&mut h, MouseEventKind::ScrollUp);
@@ -174,7 +174,7 @@ fn keys_and_the_wheel_scroll_the_text() {
     assert_eq!(state.scroll, state.max_scroll());
     assert!(h.text().contains("Stuck?"));
     h.press(KeyCode::Home);
-    assert!(h.text().contains("1-20 / "));
+    assert!(h.text().contains("1-21 / "));
 }
 
 #[test]

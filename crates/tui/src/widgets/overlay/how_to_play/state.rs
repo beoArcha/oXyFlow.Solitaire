@@ -75,13 +75,15 @@ impl Focus {
     }
 }
 
-/// The open window: the game on show, the first visible line of its text and the focus.
+/// The open window: the game on show, the first visible line of its text, the focus and the text
+/// rows the box shows.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HowToPlay {
     pub rules: Rules,
     pub scroll: u16,
     pub focus: Focus,
     pub(super) drag: Option<u16>,
+    view: u16,
 }
 
 impl HowToPlay {
@@ -92,7 +94,13 @@ impl HowToPlay {
             scroll: 0,
             focus: Focus::Games,
             drag: None,
+            view: content::VIEW_ROWS as u16,
         }
+    }
+
+    /// Takes the number of text rows the box shows at the current size.
+    pub fn set_view(&mut self, rows: u16) {
+        self.view = rows;
     }
 
     /// The same window with the focus on `focus`.
@@ -164,7 +172,7 @@ impl HowToPlay {
     /// The largest value of `scroll` for the current game: the last line sits on the last row.
     pub fn max_scroll(&self) -> u16 {
         let lines = content::rows(self.rules).len();
-        u16::try_from(lines.saturating_sub(content::VIEW_ROWS)).unwrap_or(u16::MAX)
+        u16::try_from(lines.saturating_sub(usize::from(self.view))).unwrap_or(u16::MAX)
     }
 
     /// Scrolls by `lines` (negative goes up), staying inside the text.
