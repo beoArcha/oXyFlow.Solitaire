@@ -132,10 +132,7 @@ fn a_window_100_by_30_keeps_the_whole_list_and_says_the_preview_is_hidden() {
         let text = h.text();
         assert!(text.contains(&*t("settings.pane.hidden")), "{locale:?}");
         let title = t("settings.pane.title");
-        assert!(
-            text.lines().all(|line| line.trim() != title),
-            "{locale:?}"
-        );
+        assert!(text.lines().all(|line| line.trim() != title), "{locale:?}");
         assert!(text.lines().count() <= 30);
     }
     set_locale(Locale::EnUs);

@@ -10,10 +10,10 @@ use oxysol_core::Variant;
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
 use ratatui::buffer::Buffer;
-use ratatui::layout::{Position, Rect};
 use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
+use ratatui::layout::{Position, Rect};
 
 use crate::app::{App, Deps, DisplayDeps};
 use crate::audio::{Audio, AudioSettings, AudioStatus, SoundCue, StyleInfo};
@@ -23,10 +23,10 @@ use crate::input::Input;
 use crate::settings::Settings;
 use crate::solver::{Answer, Proof, Query, Solver};
 use crate::storage::memory::MemoryStorage;
-use crate::theme::{Theme, Token};
 use crate::storage::{
     AssistCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
 };
+use crate::theme::{Theme, Token};
 
 /// The version string the test harness gives the menu.
 pub const TEST_VERSION: &str = "1.2.3-test";

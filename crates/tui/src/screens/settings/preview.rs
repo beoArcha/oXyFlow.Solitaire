@@ -120,7 +120,7 @@ fn marks() -> Marks {
             index: 0,
         }),
         targets: vec![pile(TARGET)],
-        hints: Vec::new(),
+        ..Marks::default()
     }
 }
 
