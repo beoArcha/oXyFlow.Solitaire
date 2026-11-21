@@ -1,6 +1,7 @@
 //! The font face and font size rows of the Interface group. In the classic Windows console they
-//! change the console font; in every other terminal they show the terminal's own zoom shortcut
-//! instead of a value, because only the player can change the font there.
+//! change the console font; in every other terminal the face row says that the terminal sets the
+//! face and the size row shows the terminal's own zoom shortcut, because only the player can change
+//! the font there.
 
 use super::options::Field;
 use crate::app::{CardFontState, FontFacts};
@@ -32,12 +33,18 @@ fn size_text(size: u8) -> String {
     tf("settings.value.pixels", &[("size", &size.to_string())])
 }
 
-/// The value of a font row: the terminal's shortcut where the game cannot change the font, the face
-/// the oXySol font holds while it is in use, else the choice and why it did not take.
+/// The value of a font row. Where the terminal draws its own font, the face row says so and the
+/// size row names the terminal's zoom shortcut. In the classic console the choice is shown, with the
+/// face the oXySol font holds or why the choice did not take.
 pub(super) fn value(field: Field, settings: &Settings, facts: FontFacts) -> String {
-    if let Some(keys) = facts.terminal.font_keys_key() {
-        return t(keys).into_owned();
+    match (field, facts.terminal.font_keys_key()) {
+        (Field::FontFace, Some(_)) => t("settings.value.terminal_font").into_owned(),
+        (Field::FontSize, Some(keys)) => t(keys).into_owned(),
+        _ => console_value(field, settings, facts),
     }
+}
+
+fn console_value(field: Field, settings: &Settings, facts: FontFacts) -> String {
     let option = value_text(field, settings);
     if field != Field::FontFace {
         return option;
