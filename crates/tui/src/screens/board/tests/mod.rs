@@ -24,6 +24,7 @@ mod quick;
 mod recycle;
 mod restarts;
 mod run_wrap;
+mod yukon_hints;
 mod zoom;
 
 use oxysol_core::{Move, PileRef, Session, Variant};
