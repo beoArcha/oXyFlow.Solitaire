@@ -93,7 +93,11 @@ fn browsing_names_the_place_and_the_actions_of_this_state() {
     let possible = row(&mut h, "Do:");
     assert!(possible.starts_with("Do: Enter: pick up"), "{possible}");
     assert!(possible.contains("s: turn stock"), "{possible}");
-    assert!(possible.contains("h: hint"), "{possible}");
+    let quick = tf(
+        "board.action.quick",
+        &[("key", &primary_key(Action::QuickMove).unwrap_or_default())],
+    );
+    assert!(possible.contains(&quick), "{possible}");
     assert!(!possible.contains("u: undo"), "{possible}");
 }
 
