@@ -2,7 +2,7 @@
 
 # oXySol
 
-A terminal solitaire: **Klondike, Spider, FreeCell and Pyramid** in one program, the single binary `oxysol`.
+A terminal solitaire: **Klondike, Spider, FreeCell, Pyramid and the Yukon family** in one program, the single binary `oxysol`.
 It runs in any modern terminal and is played with the keyboard or the mouse.
 
 ![Klondike in oXySol: the board, the guide panel and the possible moves panel](../img/en/klondike.svg)
@@ -19,5 +19,5 @@ All builds are on the [releases page](https://github.com/beoArcha/oXyFlow.Solita
 - [Screenshots and animations](../gallery.md) of every game and screen.
 
 Source code and issues: [beoArcha/oXyFlow.Solitare](https://github.com/beoArcha/oXyFlow.Solitare).
-The rules of the four games are in the
+The rules of the games are in the
 [wiki](https://github.com/beoArcha/oXyFlow.Solitare/tree/main/docs/wiki/rules) (English).

@@ -25,7 +25,7 @@ crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.r
 crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/ yukon/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/; yukon/ adds setup.rs)
 crates/core/src/solver/  mod.rs (API) face.rs hash.rs search/ (depth-first, best-first) klondike/ spider/
-                         freecell/ pyramid/ (each: mod.rs position.rs steps.rs tests.rs) tests/
+                         freecell/ pyramid/ yukon/ (each: mod.rs position.rs steps.rs tests.rs) tests/
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)

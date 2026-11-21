@@ -2,14 +2,21 @@
 
 # Funciones
 
-## Cuatro juegos
+## Juegos
 
 - **Klondike**: robando 1 o 3 cartas.
 - **Spider**: con 1, 2 o 4 palos.
 - **FreeCell**.
 - **Pirámide**: relajada o clásica.
+- **Familia Yukon**: Yukon, Solitario ruso, Alaska, Moosehide y Australiano (con mazo, una sola pasada).
 
 Un programa, un menú, las mismas teclas para todo.
+
+El menú de juegos agrupa los juegos por familias, marca los populares con una estrella, guarda tus favoritos en su propia lista y tiene un cuadro de búsqueda.
+
+## Estilos de cartas
+
+En Ajustes eliges el estilo de las caras (Internacional, Francés, Alemán, Italiano o Suizo) y el de los reversos (Celosía u Ornamento). Las cartas se dibujan con glifos vectoriales, y el palo siempre se muestra también como un signo junto al valor.
 
 ## Teclado y ratón
 

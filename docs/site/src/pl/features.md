@@ -2,14 +2,21 @@
 
 # Funkcje
 
-## Cztery gry
+## Gry
 
 - **Klondike**: 1 karta lub 3 karty.
 - **Pająk**: 1, 2 lub 4 kolory.
 - **FreeCell**.
 - **Piramida**: swobodna lub klasyczna.
+- **Rodzina Yukon**: Yukon, Rosyjski pasjans, Alaska, Moosehide i Australijski (z talią, jedno przejście).
 
 Jeden program, jedno menu, jeden zestaw klawiszy.
+
+Menu gier grupuje gry w rodziny, oznacza gwiazdką te popularne, trzyma ulubione na osobnej liście i ma pole wyszukiwania.
+
+## Style kart
+
+W Ustawieniach wybierasz styl awersów (Międzynarodowy, Francuski, Niemiecki, Włoski lub Szwajcarski) i styl rewersów (Kratka lub Ornament). Karty są rysowane glifami wektorowymi, a kolor karty zawsze jest pokazany także znakiem obok figury.
 
 ## Klawiatura i mysz
 

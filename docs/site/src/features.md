@@ -2,14 +2,21 @@
 
 # Features
 
-## Four games
+## Games
 
 - **Klondike**: draw 1 or draw 3.
 - **Spider**: 1, 2 or 4 suits.
 - **FreeCell**.
 - **Pyramid**: relaxed or classic.
+- **Yukon family**: Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience (with a stock, one pass).
 
 One binary, one menu, one set of keys.
+
+The game menu lists the games under family headings, marks the popular ones with a star, keeps your favourites in their own list and has a search box.
+
+## Card styles
+
+Settings has a front style (International, French, German, Italian or Swiss) and a back style (Lattice or Ornament). Cards are drawn with vector-based glyphs, and the suit is always shown as a sign next to the rank.
 
 ## Keyboard and mouse
 

@@ -2,14 +2,21 @@
 
 # Funktionen
 
-## Vier Spiele
+## Spiele
 
 - **Klondike**: eine oder drei Karten ziehen.
 - **Spider**: mit 1, 2 oder 4 Farben.
 - **FreeCell**.
 - **Pyramide**: locker oder klassisch.
+- **Yukon-Familie**: Yukon, Russisches Solitaire, Alaska, Moosehide und Australisch (mit Talon, ein Durchgang).
 
 Ein Programm, ein Menü, eine Tastenbelegung.
+
+Das Spielmenü ordnet die Spiele unter Familienüberschriften, markiert beliebte mit einem Stern, führt Favoriten in einer eigenen Liste und hat ein Suchfeld.
+
+## Kartenstile
+
+In den Einstellungen wählst du einen Vorderseitenstil (International, Französisch, Deutsch, Italienisch oder Schweizer) und einen Rückseitenstil (Gitter oder Ornament). Die Karten werden mit Vektor-Glyphen gezeichnet; die Farbe der Karte steht immer auch als Zeichen neben dem Wert.
 
 ## Tastatur und Maus
 

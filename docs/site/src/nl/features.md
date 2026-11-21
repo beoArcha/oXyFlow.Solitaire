@@ -2,14 +2,21 @@
 
 # Functies
 
-## Vier spellen
+## Spellen
 
 - **Klondike**: 1 of 3 kaarten trekken.
 - **Spider**: met 1, 2 of 4 kleuren.
 - **FreeCell**.
 - **Piramide**: ontspannen of klassiek.
+- **Yukon-familie**: Yukon, Russisch solitair, Alaska, Moosehide en Australisch (met stapel, één keer door).
 
 Eén programma, één menu, dezelfde toetsen overal.
+
+Het spelmenu groepeert de spellen per familie, markeert populaire met een ster, bewaart je favorieten in een eigen lijst en heeft een zoekveld.
+
+## Kaartstijlen
+
+In Instellingen kies je een voorkantstijl (Internationaal, Frans, Duits, Italiaans of Zwitsers) en een achterkantstijl (Tralie of Ornament). De kaarten worden met vectorglyphs getekend en de kleur van de kaart staat altijd ook als teken naast de waarde.
 
 ## Toetsenbord en muis
 

@@ -2,7 +2,7 @@
 
 # oXySol
 
-Le solitaire dans votre terminal : **Klondike, Spider, FreeCell et Pyramide** réunis dans un seul programme, un
+Le solitaire dans votre terminal : **Klondike, Spider, FreeCell, Pyramide et la famille Yukon** réunis dans un seul programme, un
 fichier unique : `oxysol`. Il fonctionne dans tout terminal moderne et se joue au clavier ou à la souris.
 
 ![Klondike dans oXySol : le plateau, le panneau du guide et le panneau des coups possibles](../img/fr/klondike.svg)
@@ -19,5 +19,5 @@ Toutes les versions sont sur la [page des publications](https://github.com/beoAr
 - [Captures d’écran et animations](gallery.md) de tous les jeux et de tous les écrans.
 
 Code source et signalements : [beoArcha/oXyFlow.Solitare](https://github.com/beoArcha/oXyFlow.Solitare).
-Les règles des quatre jeux se trouvent dans le
+Les règles des jeux se trouvent dans le
 [wiki](https://github.com/beoArcha/oXyFlow.Solitare/tree/main/docs/wiki/rules) (en anglais).
