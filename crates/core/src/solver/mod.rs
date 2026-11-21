@@ -9,8 +9,8 @@
 //! included, so it decides whether the deal as dealt can be won (the "thoroughly solvable"
 //! notion of the Klondike literature), not whether a player without that knowledge could win it.
 //!
-//! A game without a model ([`has_model`] is false: the Yukon family until P4-10f) answers
-//! `Unknown` for every deal at once, with no nodes spent.
+//! A game without a model ([`has_model`] is false) would answer `Unknown` for every deal at once,
+//! with no nodes spent; every variant has one now.
 
 mod face;
 mod freecell;
@@ -21,8 +21,9 @@ mod search;
 mod spider;
 #[cfg(test)]
 mod tests;
+mod yukon;
 
-use crate::game::{Variant, deal};
+use crate::game::{Variant, YukonRules, deal};
 use crate::moves::Move;
 use search::{Outcome, Searched, Strategy};
 
@@ -55,7 +56,8 @@ impl SolveBudget {
             Variant::FreeCell => DEFAULT_FREECELL_NODES,
             Variant::Spider(_) => DEFAULT_SPIDER_NODES,
             Variant::Pyramid(_) => DEFAULT_PYRAMID_NODES,
-            Variant::Yukon(_) => 0,
+            Variant::Yukon(YukonRules::Australian) => DEFAULT_AUSTRALIAN_NODES,
+            Variant::Yukon(_) => DEFAULT_YUKON_NODES,
         })
     }
 }
@@ -63,13 +65,21 @@ impl SolveBudget {
 /// Whether the solver has a model of `variant`. Without one, [`solve`] answers `Unknown` at once,
 /// so a search for a winnable deal of that variant cannot succeed.
 pub const fn has_model(variant: Variant) -> bool {
-    !matches!(variant, Variant::Yukon(_))
+    match variant {
+        Variant::Klondike(_)
+        | Variant::FreeCell
+        | Variant::Spider(_)
+        | Variant::Pyramid(_)
+        | Variant::Yukon(_) => true,
+    }
 }
 
 pub const DEFAULT_KLONDIKE_NODES: u64 = 100_000;
 pub const DEFAULT_FREECELL_NODES: u64 = 100_000;
 pub const DEFAULT_SPIDER_NODES: u64 = 60_000;
 pub const DEFAULT_PYRAMID_NODES: u64 = 500_000;
+pub const DEFAULT_YUKON_NODES: u64 = 100_000;
+pub const DEFAULT_AUSTRALIAN_NODES: u64 = 300_000;
 
 /// A verdict together with the positions it cost.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -128,7 +138,10 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
                 None => unknown(),
             }
         }
-        Variant::Yukon(_) => unknown(),
+        Variant::Yukon(rules) => match yukon::Position::from_piles(rules, &piles) {
+            Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
+            None => unknown(),
+        },
     }
 }
 

@@ -19,6 +19,8 @@ mod setup;
 #[cfg(test)]
 mod tests;
 
+pub(crate) use setup::BuildRule;
+
 use crate::card::Card;
 use crate::deck;
 use crate::game::{Game, StockStatus, YukonRules};

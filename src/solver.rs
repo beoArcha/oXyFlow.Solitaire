@@ -132,7 +132,7 @@ impl Solver for ThreadSolver {
 mod tests {
     use std::time::{Duration, Instant};
 
-    use oxysol_core::{DrawCount, Variant};
+    use oxysol_core::{DrawCount, Variant, YukonRules};
 
     use super::*;
     use crate::priority::Flavour;
@@ -166,6 +166,21 @@ mod tests {
         let ids: Vec<u64> = answers.iter().map(|answer| answer.id).collect();
         assert_eq!(ids, vec![1, 2, 3, 4]);
         assert!(answers.iter().any(|answer| answer.proof == Proof::Winnable));
+    }
+
+    #[test]
+    fn a_yukon_deal_gets_a_real_answer() {
+        let Ok(mut solver) = ThreadSolver::spawn() else {
+            panic!("the solver thread must start");
+        };
+        let yukon = Variant::Yukon(YukonRules::Classic);
+        solver.submit(query(1, yukon, 1));
+        solver.submit(query(2, yukon, 24));
+        let proofs: Vec<Proof> = collect(&mut solver, 2)
+            .iter()
+            .map(|answer| answer.proof)
+            .collect();
+        assert_eq!(proofs, vec![Proof::Winnable, Proof::Unwinnable]);
     }
 
     #[test]

@@ -1,7 +1,7 @@
 //! The winnability checks of the statistics screen: the header and the legend at 100 by 30 in every
 //! offered locale, the keys and buttons that start a check, its progress, and what it stores.
 
-use oxysol_core::{SolveBudget, Variant, Verdict, solve};
+use oxysol_core::{SolveBudget, Variant, Verdict, YukonRules, solve};
 use ratatui::crossterm::event::KeyCode;
 
 use super::support::{click_text, open_stats, three_games};
@@ -120,6 +120,34 @@ fn w_checks_the_selected_game_and_a_known_winnable_seed_turns_its_mark_to_a_chec
     let submitted = h.solver.borrow().submitted.clone();
     assert_eq!(submitted.len(), 1);
     assert_eq!((submitted[0].variant, submitted[0].seed), (FREECELL, seed));
+}
+
+#[test]
+fn w_checks_a_yukon_game_and_stores_the_answer() {
+    let yukon = Variant::Yukon(YukonRules::Alaska);
+    let seed = 13;
+    let storage = MemoryStorage {
+        history: vec![HistoryRow::finished(
+            1,
+            yukon,
+            seed,
+            Outcome::Abandoned,
+            30_000,
+        )],
+        ..MemoryStorage::new()
+    };
+    let mut h = open_stats(storage, WIDTH, HEIGHT);
+    let proof = match solve(yukon, seed, SolveBudget::default_for(yukon)) {
+        Verdict::Winnable { .. } => Proof::Winnable,
+        Verdict::Unwinnable => Proof::Unwinnable,
+        Verdict::Unknown => Proof::Unknown,
+    };
+    assert_eq!(proof, Proof::Winnable);
+    h.solver.borrow_mut().verdicts.insert(seed, proof);
+    h.type_char('w');
+    assert_eq!(proof_of(&h, 1), Some(Proof::Winnable));
+    let submitted = h.solver.borrow().submitted.clone();
+    assert_eq!((submitted[0].variant, submitted[0].seed), (yukon, seed));
 }
 
 #[test]

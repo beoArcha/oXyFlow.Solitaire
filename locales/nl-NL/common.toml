@@ -17,7 +17,6 @@ undo_hint = "{key} of een klik schakelt ongedaan maken in of uit voor het volgen
 winnable = "[ Alleen winbare spellen: {state} ]"
 winnable_hint = "Een nieuw spel zoekt naar een bewijsbaar winbaar spel; een getypte seed wordt direct gedeeld"
 slow_search = "{variant}  (het zoeken kan lang duren)"
-no_search = "{variant}  (nog geen zoekfunctie: willekeurig spel)"
 
 [variant]
 klondike_one = "Klondike, 1 kaart"

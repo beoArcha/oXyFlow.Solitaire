@@ -38,8 +38,9 @@ Yukon has no stock, and drawing from a stock is not supported. There is no redea
 
 ## Winnable deals
 
-The solver does not cover Yukon yet (P4-10f). With "Winnable deals only" on, a Yukon game is dealt
-from a random seed and the game menu says so next to the game's name.
+The solver covers every Yukon variant. With "Winnable deals only" on, a new game is a deal the solver
+has proven winnable, and the statistics check (`w` / `W`) answers for Yukon games too. Russian
+Solitaire is rarely winnable, so the game menu says its search can take long.
 
 ## Variants
 
