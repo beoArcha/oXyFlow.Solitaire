@@ -58,6 +58,50 @@ pub(super) fn carrying(
     )
 }
 
+/// The compact name of a pile, such as `T5`; the piles that are never crowded keep their name.
+fn short_pile_name(pile: PileRef) -> String {
+    let ordinal = |index: u8| (u16::from(index) + 1).to_string();
+    match pile {
+        PileRef::Tableau(index) => tf("board.name.tableau_short", &[("number", &ordinal(index))]),
+        PileRef::Foundation(index) => tf(
+            "board.name.foundation_short",
+            &[("number", &ordinal(index))],
+        ),
+        PileRef::Cell(index) => tf("board.name.free_cell_short", &[("number", &ordinal(index))]),
+        PileRef::Pyramid { row, index } => tf(
+            "board.name.pyramid_short",
+            &[("row", &ordinal(row)), ("position", &ordinal(index))],
+        ),
+        PileRef::Stock | PileRef::Waste => pile_name(pile),
+    }
+}
+
+/// The wordings of [`carrying`] for a narrow row, longest first: the compact column name with the
+/// targets, then without them. The source column stays in every one of them.
+pub(super) fn carrying_shorter(
+    piles: &[PileSnapshot],
+    source: PileRef,
+    count: u8,
+    targets: usize,
+) -> Vec<String> {
+    let what = what_of(piles, source, usize::from(count));
+    let pile = short_pile_name(source);
+    vec![
+        tf(
+            "board.action.carrying",
+            &[
+                ("what", &what),
+                ("pile", &pile),
+                ("targets", &targets_text(targets)),
+            ],
+        ),
+        tf(
+            "board.action.carrying_short",
+            &[("what", &what), ("pile", &pile)],
+        ),
+    ]
+}
+
 /// The row after a hint: the move it suggests, named in words.
 pub(super) fn hint(piles: &[PileSnapshot], mv: Move) -> String {
     match mv {

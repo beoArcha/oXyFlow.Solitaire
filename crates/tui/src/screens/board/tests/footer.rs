@@ -78,6 +78,7 @@ fn a_click_on_the_board_interrupts_a_running_finish_and_the_finish_button_starts
 fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
     let guidance = Guidance {
         now: String::new(),
+        shorter: Vec::new(),
         possible: vec![
             part(Action::Undo, "board.action.undo", 3),
             part(Action::Guide, "board.action.guide", 8),
@@ -132,7 +133,7 @@ fn board_at(width: u16, height: u16) -> Harness {
 }
 
 #[test]
-fn pause_and_moves_stay_clickable_after_one_move_at_100_columns_in_every_locale() {
+fn after_one_move_at_100_columns_the_now_row_has_no_buttons_in_every_locale() {
     for locale in Locale::offered() {
         for variant in [Variant::Klondike(DrawCount::One), Variant::FreeCell] {
             for (width, height) in [(100, 30), (130, 40)] {
@@ -141,38 +142,25 @@ fn pause_and_moves_stay_clickable_after_one_move_at_100_columns_in_every_locale(
                     panic!("{variant:?} seed 5 has a transfer");
                 };
                 drag(&mut h, from, to);
-                h.lines();
+                let lines = h.lines();
+                let reach = usize::from(h.app.board().chrome().now.width);
+                let row = |line: &String| line.chars().take(reach).collect::<String>();
+                let (now, possible) = (row(&lines[lines.len() - 2]), row(&lines[lines.len() - 1]));
                 for (action, key) in [
                     (Action::Pause, "board.action.pause"),
                     (Action::Moves, "board.action.moves"),
                 ] {
                     let text = do_text(action, key);
                     assert!(
-                        h.find(&text).is_some(),
-                        "{locale:?} {variant:?} {width}x{height} after one move: {text:?}\n{}",
-                        h.text()
+                        !now.contains(&text),
+                        "{locale:?} {variant:?} {width}x{height}: {text:?} in {now:?}"
                     );
                 }
+                assert!(possible.trim_end().chars().count() <= reach, "{possible}");
             }
         }
     }
     set_locale(Locale::EnUs);
-}
-
-#[test]
-fn a_fallback_button_on_the_now_row_runs_its_action_after_one_move() {
-    let mut h = board_game(Locale::EnUs, Variant::Klondike(DrawCount::One), 5, 100, 30);
-    let Some((from, to, _)) = first_transfer(&h) else {
-        panic!("seed 5 has a transfer");
-    };
-    drag(&mut h, from, to);
-    let lines = h.lines();
-    let (now, possible) = (&lines[lines.len() - 2], &lines[lines.len() - 1]);
-    assert!(now.starts_with("Now:"), "{now}");
-    assert!(now.contains("p: pause"), "the Now row carries Pause: {now}");
-    assert!(!possible.contains("p: pause"), "{possible}");
-    click_button(&mut h, Action::Pause, "board.action.pause");
-    assert!(matches!(h.app.modal(), Some(Modal::Pause { .. })));
 }
 
 fn click_button(h: &mut Harness, action: Action, key: &str) {
