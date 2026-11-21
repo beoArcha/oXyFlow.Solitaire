@@ -103,8 +103,9 @@ shift = "Shift"
 ctrl = "Ctrl"
 
 [dock]
-button = "Прикріпити: {side}"
+button = "Прикріпити: {side} [{key}]"
 side_centre = "по центру"
 side_right = "праворуч"
 side_left = "ліворуч"
 too_narrow = "Прикріплення вимагає 130 стовпців; вікно лишається по центру."
+footer = "{dock} Прикріпити  {focus} Фокус"

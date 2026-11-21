@@ -7,15 +7,14 @@ use ratatui::Frame;
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Alignment, Rect};
 use ratatui::style::{Modifier, Style};
-use ratatui::text::Span;
-use ratatui::widgets::Widget;
+use ratatui::text::{Line, Span};
 
 use crate::action::Action;
 use crate::i18n::t;
 use crate::input::primary_key;
 use crate::mouse::contains;
 use crate::screens::ViewCtx;
-use crate::theme::Token;
+use crate::theme::{Theme, Token};
 
 /// One piece of a row: text, and the action a click on it runs when it is a button.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -123,7 +122,7 @@ pub fn draw_to(
         Alignment::Center => area.x + area.width.saturating_sub(width) / 2,
         Alignment::Left | Alignment::Right => area.x,
     };
-    let hovered = base.add_modifier(Modifier::REVERSED);
+    let key = key_part_style(ctx.theme, base);
     let mut map = FooterMap {
         row: area.y,
         entries: Vec::with_capacity(segments.len()),
@@ -134,23 +133,51 @@ pub fn draw_to(
         if w == 0 {
             break;
         }
-        let rect = Rect::new(x, area.y, w, 1);
-        let style = match segment.action {
+        let line = match segment.action {
             Some(action) => {
-                let over = ctx.pointer.is_some_and(|cell| contains(rect, cell));
+                let over = ctx
+                    .pointer
+                    .is_some_and(|cell| contains(Rect::new(x, area.y, w, 1), cell));
                 map.entries.push(FooterEntry {
                     action,
                     col_start: x,
                     col_end: x + w,
                 });
-                if over { hovered } else { base }
+                let (key_text, label) = split_key(&segment.text);
+                let (key_style, label_style) = if over {
+                    (
+                        key.add_modifier(Modifier::REVERSED),
+                        base.add_modifier(Modifier::REVERSED),
+                    )
+                } else {
+                    (key, base)
+                };
+                Line::from(vec![
+                    Span::styled(key_text, key_style),
+                    Span::styled(label, label_style),
+                ])
             }
-            None => base,
+            None => Line::styled(segment.text.as_str(), base),
         };
-        Span::styled(segment.text.as_str(), style).render(rect, buf);
+        buf.set_line(x, area.y, &line, w);
         x += w;
     }
     map
+}
+
+/// The text of a button split at its first space: the key, then the label with its space. A text
+/// without a space is all key.
+fn split_key(text: &str) -> (&str, &str) {
+    match text.find(' ') {
+        Some(at) => text.split_at(at),
+        None => (text, ""),
+    }
+}
+
+/// The style of the key part of a button: the accent foreground on the background of `base`, so
+/// the key reads apart from its muted label. The label keeps `base`.
+pub fn key_part_style(theme: &Theme, base: Style) -> Style {
+    base.patch(Style::new().fg(theme.color(Token::Accent)))
 }
 
 fn text_width(text: &str) -> u16 {
@@ -165,6 +192,8 @@ pub fn key_style(ctx: &ViewCtx<'_>) -> Style {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::caps::ColorDepth;
+    use crate::theme::ThemeId;
 
     #[test]
     fn a_cell_inside_a_button_gives_its_action() {
@@ -192,5 +221,34 @@ mod tests {
         assert_eq!(texts, ["Enter Select", "   ", "Esc Back"]);
         assert_eq!(segments[0].action, Some(Action::Select));
         assert_eq!(segments[1].action, None);
+    }
+
+    #[test]
+    fn keys_and_labels_differ_in_every_theme_and_depth() {
+        for id in ThemeId::ALL {
+            for depth in [
+                ColorDepth::Ansi16,
+                ColorDepth::Ansi256,
+                ColorDepth::TrueColor,
+            ] {
+                let theme = Theme::new(id, depth);
+                for (fg, bg) in [
+                    (Token::TextMuted, Token::Background),
+                    (Token::Text, Token::Surface),
+                ] {
+                    let label = theme.style(fg, bg);
+                    let key = key_part_style(&theme, label);
+                    assert_ne!(key.fg, label.fg, "{id:?} {depth:?} {fg:?} on {bg:?}");
+                    assert_eq!(key.bg, label.bg, "{id:?} {depth:?} {bg:?}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn a_button_text_splits_at_its_first_space() {
+        assert_eq!(split_key("Enter Select"), ("Enter", " Select"));
+        assert_eq!(split_key("Shift+R Restart"), ("Shift+R", " Restart"));
+        assert_eq!(split_key("Esc"), ("Esc", ""));
     }
 }
