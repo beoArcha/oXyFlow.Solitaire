@@ -20,6 +20,8 @@ fn placeholders_name_what_an_empty_slot_is_for() {
     let expected = [
         (Placeholder::None, "", ""),
         (Placeholder::Ace, "A", "A"),
+        (Placeholder::King, "K", "K"),
+        (Placeholder::Thirteen, "13", "13"),
         (Placeholder::Recycle, "↑", "^"),
         (Placeholder::Spent, "x", "x"),
     ];

@@ -10,3 +10,6 @@ baton = "bastoni"
 coin = "denari"
 cup = "coppe"
 sword = "spade"
+
+[style]
+spanish = "Spagnolo"

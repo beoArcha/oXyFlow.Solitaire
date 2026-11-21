@@ -1,10 +1,19 @@
 //! Turning the controller state into the highlights the board draws.
 
-use oxysol_core::{Move, PileRef, PileSnapshot};
+use oxysol_core::{Move, PileRef, PileSnapshot, Variant};
 
 use super::Pick;
 use super::cursor::Cursor;
-use crate::widgets::pile::{CardPos, Marks};
+use crate::widgets::pile::{CardPos, Completion, Marks};
+
+/// What the foundations of `variant` collect, which decides the mark of an empty one.
+pub(super) fn completion(variant: Variant) -> Completion {
+    match variant {
+        Variant::Spider(_) => Completion::King,
+        Variant::Pyramid(_) => Completion::Thirteen,
+        Variant::Klondike(_) | Variant::FreeCell | Variant::Yukon(_) => Completion::Ace,
+    }
+}
 
 fn len_of(piles: &[PileSnapshot], pile: PileRef) -> usize {
     piles
@@ -67,5 +76,6 @@ pub(super) fn build(
             .map(|pick| pick.choices.iter().filter_map(|c| c.target).collect())
             .unwrap_or_default(),
         hints: hint.map(|mv| hints(piles, mv)).unwrap_or_default(),
+        ..Marks::default()
     }
 }
