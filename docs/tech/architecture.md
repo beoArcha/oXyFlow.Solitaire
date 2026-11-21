@@ -397,8 +397,9 @@ pub struct NullClipboard;                                // every copy fails wit
   mouse sections, `legend.rs`). A framed panel (WGL4 light box `┌─┐│└─┘`, ASCII `+-+|`) with its title in the
   top border (`Guide (g: hide)`; a click on the top border toggles it), full height at the right of the board:
   30 columns at Standard, 40 at Wide. From the top: a `Game` compartment (heading plus the game facts, closed by a
-  rule `├──┤`), then `Goal`, `Keys` (usable ones carry a marker symbol and bold type), `Mouse` and `Legend` (`►`
-  focus, `●` picked, `+` target, `?→` hint, in the symbols of the glyph set). Blank rows between the sections
+  rule `├──┤`), then `Goal`, `Keys` (usable ones carry the available mark `•`, `o` in ASCII, and bold type; the
+  focus symbol `►` never marks a key), `Mouse` and `Legend` (`►` focus, `•` available, `●` picked, `+` target,
+  `?→` hint, in the symbols of the glyph set). Blank rows between the sections
   appear only when every section still fits. It never repeats a fact of the controls strip. `Settings::guide_panel`
   (default `true`; an older saved value without the field loads as `true`) switches it; `Action::Guide`, key `g`,
   and the title click toggle it through `Effect::Apply`.

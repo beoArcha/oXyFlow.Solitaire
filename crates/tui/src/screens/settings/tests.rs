@@ -12,6 +12,7 @@ mod interface;
 mod language;
 mod screen;
 mod styles;
+mod unavailable;
 
 use super::options::{FIELDS, Field, Step};
 use super::values::{line, value_text};

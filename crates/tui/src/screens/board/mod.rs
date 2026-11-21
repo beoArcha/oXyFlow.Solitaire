@@ -17,6 +17,7 @@ mod mouse;
 mod moves;
 mod moves_panel;
 mod now;
+mod priority;
 mod status;
 #[cfg(test)]
 mod tests;

@@ -17,7 +17,7 @@ use crate::input::primary_key;
 use crate::mouse::contains;
 use crate::screens::ViewCtx;
 use crate::screens::focus::marker;
-use crate::theme::Token;
+use crate::theme::{Theme, Token};
 
 /// One board action in the list.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -68,21 +68,35 @@ pub fn row_text(entry: &MoveEntry, focused: bool, width: usize, ctx: &ViewCtx<'_
     format!("{head}{label}{gap}{}", entry.key)
 }
 
-fn entry_style(entry: &MoveEntry, focused: bool, hovered: bool, ctx: &ViewCtx<'_>) -> Style {
+/// The style of an entry that cannot run now and of its reason. It is the muted text on the
+/// surface in plain weight: the dim attribute made the text too faint on the dark background, so
+/// the entry carries its state in the `×` mark and the reason, not in faintness.
+pub fn unavailable_style(theme: &Theme) -> Style {
+    theme.style(Token::TextMuted, Token::Surface)
+}
+
+/// The style of an entry row: bold text when it can run, the unavailable style otherwise, reversed
+/// while it has the focus or the pointer.
+pub fn entry_style(entry: &MoveEntry, focused: bool, hovered: bool, ctx: &ViewCtx<'_>) -> Style {
     let style = if entry.active {
         ctx.theme
             .style(Token::Text, Token::Surface)
             .add_modifier(Modifier::BOLD)
     } else {
-        ctx.theme
-            .style(Token::TextMuted, Token::Surface)
-            .add_modifier(Modifier::DIM)
+        unavailable_style(ctx.theme)
     };
     if focused || hovered {
         style.add_modifier(Modifier::REVERSED)
     } else {
         style
     }
+}
+
+/// The entries with the available ones first; the order inside each group is kept.
+pub fn available_first(entries: &[MoveEntry]) -> Vec<MoveEntry> {
+    let mut ordered = entries.to_vec();
+    ordered.sort_by_key(|entry| !entry.active);
+    ordered
 }
 
 /// Whether every inactive entry can show its reason in `rows` rows.
@@ -139,13 +153,104 @@ pub fn draw(
         if let Some(reason) = reason {
             let indent = marker(ctx, false).chars().count() + 2;
             let text = format!("{}{}", " ".repeat(indent), clip(reason, width - indent));
-            let muted = ctx
-                .theme
-                .style(Token::TextMuted, Token::Surface)
-                .add_modifier(Modifier::DIM);
-            draw_row(buf, Rect::new(inner.x, y, inner.width, 1), &text, muted);
+            draw_row(
+                buf,
+                Rect::new(inner.x, y, inner.width, 1),
+                &text,
+                unavailable_style(ctx.theme),
+            );
             y += 1;
         }
     }
     map
+}
+
+#[cfg(test)]
+mod tests {
+    use ratatui::style::{Color, Modifier, Style};
+
+    use super::{MoveEntry, available_first, unavailable_style};
+    use crate::action::Action;
+    use crate::theme::{Theme, ThemeId, Token};
+
+    fn entry(action: Action, active: bool) -> MoveEntry {
+        MoveEntry {
+            action,
+            label: String::new(),
+            key: String::new(),
+            active,
+            reason: (!active).then(String::new),
+        }
+    }
+
+    fn rgb_of(color: Option<Color>) -> [u8; 3] {
+        match color {
+            Some(Color::Rgb(r, g, b)) => [r, g, b],
+            other => panic!("expected a true-colour value, found {other:?}"),
+        }
+    }
+
+    #[test]
+    fn the_unavailable_style_reaches_the_contrast_target_in_every_theme() {
+        for id in ThemeId::ALL {
+            let theme = Theme::new(id, crate::caps::ColorDepth::TrueColor);
+            let style = unavailable_style(&theme);
+            let ratio = crate::theme::contrast::contrast_ratio(rgb_of(style.fg), rgb_of(style.bg));
+            assert!(
+                ratio >= id.contrast_target(),
+                "{id:?}: unavailable text is {ratio}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_unavailable_style_is_not_dimmed_in_any_theme() {
+        for id in ThemeId::ALL {
+            let theme = Theme::new(id, crate::caps::ColorDepth::TrueColor);
+            let style: Style = unavailable_style(&theme);
+            assert!(
+                !style.add_modifier.contains(Modifier::DIM),
+                "{id:?}: the dim attribute is set"
+            );
+        }
+    }
+
+    #[test]
+    fn the_unavailable_style_is_the_muted_token_on_the_surface() {
+        let theme = Theme::new(ThemeId::Dark, crate::caps::ColorDepth::TrueColor);
+        assert_eq!(
+            unavailable_style(&theme),
+            theme.style(Token::TextMuted, Token::Surface)
+        );
+    }
+
+    #[test]
+    fn available_entries_come_first_and_keep_their_order() {
+        let entries = [
+            entry(Action::Stock, false),
+            entry(Action::Select, true),
+            entry(Action::Hint, false),
+            entry(Action::Undo, true),
+            entry(Action::Redo, false),
+        ];
+        let ordered = available_first(&entries);
+        let actions: Vec<Action> = ordered.iter().map(|entry| entry.action).collect();
+        assert_eq!(
+            actions,
+            [
+                Action::Select,
+                Action::Undo,
+                Action::Stock,
+                Action::Hint,
+                Action::Redo
+            ]
+        );
+    }
+
+    #[test]
+    fn ordering_leaves_the_input_untouched() {
+        let entries = [entry(Action::Stock, false), entry(Action::Select, true)];
+        let _ordered = available_first(&entries);
+        assert_eq!(entries[0].action, Action::Stock);
+    }
 }

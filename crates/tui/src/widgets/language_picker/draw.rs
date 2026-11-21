@@ -185,7 +185,7 @@ impl LanguagePicker {
         frame.render_widget(Paragraph::new(lines), origin);
         if let Some(highlighted) = self.open {
             self.draw_list(frame, area, highlighted, current, flags, ctx);
-        } else if focused || ctx.pointer.is_some_and(|cell| contains(origin, cell)) {
+        } else if focused || self.pointer.is_some_and(|cell| contains(origin, cell)) {
             draw_tooltip(frame, area, origin, current, ctx);
         }
     }

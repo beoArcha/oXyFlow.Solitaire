@@ -98,7 +98,7 @@ fn g_opens_the_guide_as_a_window_with_every_section_on_narrow_screens() {
             "Goal",
             "Build the four",
             "Keys",
-            "► Arrows",
+            "• Arrows",
             "g/Esc: close",
         ];
         for needle in needles {
