@@ -93,6 +93,7 @@ layout_2 = "Todas as 52 cartas são distribuídas. Não há monte nem nova distr
 layout_3 = "A paciência russa distribui da mesma forma, mas monta as colunas em ordem decrescente no mesmo naipe, em vez de cores alternadas: um 6 de copas só vai sobre um 7 de copas."
 layout_4 = "A paciência Alasca distribui da mesma forma, mas monta as colunas em ordem crescente ou decrescente de uma carta no mesmo naipe: um 6 de copas só vai sobre um 5 ou um 7 de copas."
 layout_5 = "Moosehide distribui do mesmo jeito, mas monta as colunas descendo uma carta em qualquer naipe, exceto o mesmo: um 6 de paus vai sobre um 7 de espadas, um 6 de espadas não."
+layout_6 = "A paciência australiana distribui sete colunas de quatro cartas viradas para cima; as outras 24 cartas formam o monte. O monte é virado carta a carta para o descarte: uma única passada, sem redistribuir. A carta do topo do descarte pode ir para uma coluna ou uma fundação. As colunas descem em um só naipe, como na paciência russa."
 moves_1 = "Construa as colunas em ordem decrescente com cores alternadas, por exemplo um 6 vermelho sobre um 7 preto."
 moves_2 = "Qualquer carta aberta se move junto com todas as cartas sobre ela, mesmo fora de ordem. Só a carta de baixo do grupo movido precisa encaixar."
 moves_3 = "Apenas um rei, ou um grupo com um rei embaixo, pode ir para uma coluna vazia."

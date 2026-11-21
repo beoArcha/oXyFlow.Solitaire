@@ -162,6 +162,7 @@ const YUKON: Page = Page {
         "rules.yukon.layout_3",
         "rules.yukon.layout_4",
         "rules.yukon.layout_5",
+        "rules.yukon.layout_6",
     ],
     moves: &[
         "rules.yukon.moves_1",

@@ -49,6 +49,9 @@ pub enum YukonRules {
     Alaska,
     /// Moosehide: the classic deal; columns build down by one rank in any suit but the card's own.
     Moosehide,
+    /// Australian Patience: seven columns of four face-up cards, a stock turned once to a waste;
+    /// columns build downward in the same suit.
+    Australian,
 }
 
 /// The state of a game's stock, read-only. A recycle turns the waste back into the stock and
@@ -80,7 +83,7 @@ pub enum Variant {
 
 impl Variant {
     /// Every concrete variant the menu can offer.
-    pub const ALL: [Variant; 12] = [
+    pub const ALL: [Variant; 13] = [
         Variant::Klondike(DrawCount::One),
         Variant::Klondike(DrawCount::Three),
         Variant::Spider(SuitCount::One),
@@ -93,11 +96,17 @@ impl Variant {
         Variant::Yukon(YukonRules::Russian),
         Variant::Yukon(YukonRules::Alaska),
         Variant::Yukon(YukonRules::Moosehide),
+        Variant::Yukon(YukonRules::Australian),
     ];
 
-    /// Whether the variant deals part of the deck to a stock: every game except FreeCell and Yukon.
+    /// Whether the variant deals part of the deck to a stock: every game except FreeCell and the
+    /// Yukon family, where only Australian Patience has one.
     pub const fn has_stock(self) -> bool {
-        !matches!(self, Variant::FreeCell | Variant::Yukon(_))
+        match self {
+            Variant::FreeCell => false,
+            Variant::Yukon(rules) => matches!(rules, YukonRules::Australian),
+            _ => true,
+        }
     }
 }
 
@@ -157,9 +166,9 @@ mod tests {
     }
 
     #[test]
-    fn all_lists_twelve_distinct_variants() {
+    fn all_lists_thirteen_distinct_variants() {
         let unique: HashSet<_> = Variant::ALL.iter().collect();
-        assert_eq!(unique.len(), 12);
+        assert_eq!(unique.len(), 13);
     }
 
     #[test]
@@ -195,6 +204,10 @@ mod tests {
                 Variant::Yukon(YukonRules::Moosehide),
                 r#"{"yukon":"moosehide"}"#,
             ),
+            (
+                Variant::Yukon(YukonRules::Australian),
+                r#"{"yukon":"australian"}"#,
+            ),
         ];
         assert_eq!(cases.len(), Variant::ALL.len());
         for (variant, json) in cases {
@@ -216,7 +229,7 @@ mod tests {
     }
 
     #[test]
-    fn only_freecell_and_yukon_have_no_stock() {
+    fn only_freecell_and_yukon_without_a_stock_have_no_stock() {
         for variant in Variant::ALL {
             let stock = deal(variant, 3).stock_status().is_some();
             assert_eq!(variant.has_stock(), stock, "{variant:?}");

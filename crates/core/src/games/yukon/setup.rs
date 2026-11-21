@@ -39,18 +39,27 @@ impl BuildRule {
 }
 
 /// How the shuffled deck is dealt to the columns, column 1 first: `down[i]` face-down cards with
-/// `up[i]` face-up cards on top. The deal must use the whole deck; a rule set with a stock
-/// (Australian Patience, P4-10e) adds the stock pile and the cards it holds.
+/// `up[i]` face-up cards on top; the `stock` cards that remain go to the stock pile (Australian
+/// Patience). The deal must use the whole deck.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Deal {
     pub(crate) down: [usize; COLUMNS],
     pub(crate) up: [usize; COLUMNS],
+    pub(crate) stock: usize,
 }
 
 /// Classic Yukon: column *i* has *i* face-down cards; column 1 one face-up card, the others five.
 const CLASSIC_DEAL: Deal = Deal {
     down: [0, 1, 2, 3, 4, 5, 6],
     up: [1, 5, 5, 5, 5, 5, 5],
+    stock: 0,
+};
+
+/// Australian Patience: four face-up cards in every column, the other 24 cards in the stock.
+const AUSTRALIAN_DEAL: Deal = Deal {
+    down: [0; COLUMNS],
+    up: [4; COLUMNS],
+    stock: 24,
 };
 
 impl YukonRules {
@@ -61,6 +70,7 @@ impl YukonRules {
             YukonRules::Russian => BuildRule::DownSameSuit,
             YukonRules::Alaska => BuildRule::UpOrDownSameSuit,
             YukonRules::Moosehide => BuildRule::DownOtherSuit,
+            YukonRules::Australian => BuildRule::DownSameSuit,
         }
     }
 
@@ -71,6 +81,12 @@ impl YukonRules {
             | YukonRules::Russian
             | YukonRules::Alaska
             | YukonRules::Moosehide => CLASSIC_DEAL,
+            YukonRules::Australian => AUSTRALIAN_DEAL,
         }
+    }
+
+    /// Whether the deal leaves cards in a stock, which is drawn once through to the waste.
+    pub(crate) const fn has_stock(self) -> bool {
+        self.deal_plan().stock > 0
     }
 }

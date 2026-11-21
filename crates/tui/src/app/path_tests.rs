@@ -3,7 +3,8 @@
 use super::*;
 use crate::i18n::t;
 use crate::screens::variant_label_key;
-use crate::test_support::Harness;
+use crate::storage::memory::MemoryStorage;
+use crate::test_support::{Harness, TRUE_COLOR};
 use oxysol_core::Variant;
 use ratatui::crossterm::event::KeyCode;
 
@@ -91,7 +92,7 @@ fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_keyboard() {
 #[test]
 fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_mouse() {
     for variant in Variant::ALL {
-        let mut h = Harness::new();
+        let mut h = Harness::with(MemoryStorage::new(), TRUE_COLOR, 160, 40);
 
         click_text(&mut h, &t("common.menu.new_game"));
         assert_eq!(h.app.screen(), Screen::GameSelect, "{variant:?}");

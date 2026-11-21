@@ -77,12 +77,12 @@ pub enum MoveError { /* rejection reasons: Unsupported, NoSuchPile, EmptySource,
 pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules), Yukon(YukonRules) }
 impl Variant {
     pub const ALL: [Variant; 9];                            // every concrete variant, menu order
-    pub const fn has_stock(self) -> bool;                   // false for FreeCell and Yukon
+    pub const fn has_stock(self) -> bool;                   // false for FreeCell and Yukon except Australian Patience
 }
 pub enum DrawCount { One, Three }
 pub enum SuitCount { One, Two, Four }
 pub enum PyramidRules { Relaxed, Classic }
-pub enum YukonRules { Classic, Russian, Alaska, Moosehide } // the Yukon family (P4-10a…e)
+pub enum YukonRules { Classic, Russian, Alaska, Moosehide, Australian } // the Yukon family (P4-10a…e)
 
 /// Stock counters (P2-06). `recycles` counts waste turned back into the stock (Klondike, Pyramid;
 /// Spider is always 0). The first traversal is pass 1, so the pass in progress is `recycles + 1`.
@@ -129,17 +129,22 @@ Rules of the `Game` contract:
 - **The Yukon family (P4-10a):** `games/yukon/` plays every rule set with one move code. A rule set is a
   `YukonRules` value; `games/yukon/setup.rs` maps it to its building rule (`YukonRules::build` →
   `BuildRule`, checked by `BuildRule::fits(top, card)`) and its deal (`YukonRules::deal_plan` → `Deal
-  { down: [usize; 7], up: [usize; 7] }`, face-down and face-up cards per column; the deal uses the
-  whole deck). Any face-up card moves with every card above it, in or out of sequence; only the bottom
+  { down: [usize; 7], up: [usize; 7], stock: usize }`, face-down and face-up cards per column and the
+  cards left for the stock; the deal uses the whole deck). Any face-up card moves with every card above it, in or out of sequence; only the bottom
   card of the group is checked (`BuildRule::fits` on a column top, a king on an empty column, one card
   to a foundation). A foundation card may come back to a column. Classic: `BuildRule::DownAlternating`,
   `down = [0, 1, 2, 3, 4, 5, 6]`, `up = [1, 5, 5, 5, 5, 5, 5]`. Russian Solitaire: the same deal with
   `BuildRule::DownSameSuit`. Alaska: `BuildRule::UpOrDownSameSuit` (one rank higher or lower, same suit), the
   classic deal. Moosehide: `BuildRule::DownOtherSuit` (one rank lower, any suit but the top card's own),
-  the classic deal. Australian Patience (P4-10e) also adds the stock (a `stock` field, `Move::Stock`,
-  `stock_status`, `Variant::has_stock`). The hint ranks a foundation move, then a group that uncovers a
-  face-down card, then a group that leaves a card it does not fit on (or empties a column); it never
-  moves a group that already rests on a card it fits, so following the hints cannot cycle.
+  the classic deal. Australian Patience: `BuildRule::DownSameSuit`, `down = [0; 7]`, `up = [4; 7]`,
+  `stock = 24`; a rule set with `stock > 0` (`YukonRules::has_stock`) also has the stock and waste piles
+  (`PileRef::Stock`, `PileRef::Waste` in `piles()`), `Move::Stock` turns one card onto the waste (an empty
+  stock is `MoveError::StockEmpty`; the waste never goes back, one pass only), the waste top moves to a
+  column or a foundation, and `stock_status` reports `recycles_left: Some(0)`. The forced finish needs
+  the stock and the waste empty as well. The hint ranks a foundation move (also from the waste), then a
+  group that uncovers a face-down card, then a group that leaves a card it does not fit on (or empties
+  a column), then the waste onto a column, and last the stock turn; it never moves a group that already
+  rests on a card it fits, so following the hints cannot cycle.
 - The solver (P2-08, `crate::solver`, decision T-29) answers for one deal whether it can be won:
 
   ```rust
@@ -165,7 +170,7 @@ Rules of the `Game` contract:
   128-bit canonical keys (column and cell order ignored). Spider with 2 and 4 suits mostly answers
   `Unknown`. `SolveBudget::default_for` is tuned to about half a second per deal in a release build.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`,
-  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`.
+  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`, `{"yukon":"australian"}`.
 
 The session implements history by replaying the move log from the seed (decision T-03):
 

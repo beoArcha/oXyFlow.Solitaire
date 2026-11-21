@@ -1,4 +1,4 @@
-//! Yukon and its family: seven columns, four foundations, no stock. Any face-up card moves with
+//! Yukon and its family: seven columns, four foundations; Australian Patience adds a one-pass stock. Any face-up card moves with
 //! every card above it, in or out of sequence; only the bottom card of the group must fit.
 //!
 //! The module follows the shared layout of the games: state and deal here, validation and
@@ -8,7 +8,9 @@
 //! building rule is `setup::BuildRule` (returned by `YukonRules::build`) and its layout a
 //! `setup::Deal` (returned by `YukonRules::deal_plan`). Russian Solitaire, Alaska and Moosehide
 //! add a `YukonRules` value, a `BuildRule` variant with its arm in `BuildRule::fits` if the rule is
-//! new, and the two `match` arms in `setup`; the move code stays as it is.
+//! new, and the two `match` arms in `setup`; the move code stays as it is. A deal with
+//! `Deal::stock` above 0 (Australian Patience) turns on the stock and the waste: [`Move::Stock`]
+//! draws one card, the waste top moves like a column card, and there is no redeal.
 
 mod finish;
 mod moves;
@@ -40,6 +42,8 @@ struct Column {
 #[derive(Debug, Clone)]
 pub(crate) struct Yukon {
     rules: YukonRules,
+    stock: Vec<Card>,
+    waste: Vec<Card>,
     foundations: [Vec<Card>; FOUNDATIONS],
     columns: [Column; COLUMNS],
 }
@@ -48,6 +52,8 @@ impl Yukon {
     fn empty(rules: YukonRules) -> Self {
         Self {
             rules,
+            stock: Vec::new(),
+            waste: Vec::new(),
             foundations: Default::default(),
             columns: Default::default(),
         }
@@ -65,6 +71,7 @@ impl Yukon {
             column.down = rest.by_ref().take(down).collect();
             column.up = rest.by_ref().take(up).collect();
         }
+        game.stock = rest.take(plan.stock).collect();
         game
     }
 }
@@ -106,11 +113,26 @@ impl Game for Yukon {
             .iter()
             .enumerate()
             .map(|(i, c)| snapshot(PileRef::Tableau(index_ref(i)), &c.down, &c.up));
-        foundations.chain(columns).collect()
+        let stock = self.rules.has_stock().then(|| {
+            [
+                snapshot(PileRef::Stock, &self.stock, &[]),
+                snapshot(PileRef::Waste, &[], &self.waste),
+            ]
+        });
+        stock
+            .into_iter()
+            .flatten()
+            .chain(foundations)
+            .chain(columns)
+            .collect()
     }
 
     fn stock_status(&self) -> Option<StockStatus> {
-        None
+        self.rules.has_stock().then_some(StockStatus {
+            recycles: 0,
+            recycles_left: Some(0),
+            deals_left: None,
+        })
     }
 
     fn forced_finish(&self) -> Option<Vec<Move>> {
