@@ -225,7 +225,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-34 | Windows Terminal: test the card font on a real machine | User + Sonnet | P5-02 | DONE |
 | U-02 | Artwork review | User | P5-02, M-19…M-24 | DONE |
 | P4-07 | Site: language landing page | Sonnet | O-40, O-62 | DONE |
-| P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | TODO |
+| P3-29 | Settings: an Interface section (colors, aura, size, font) | Sonnet | P3-16, P3-21, P3-24, P3-27 | DONE |
 | P4-06 | Automatic moves in statistics: failed attempts and streaks | Sonnet | P4-05 | DONE |
 | P4-08 | Card style: Swiss suits (Unicode) | Haiku | P5-02 | TODO |
 | P4-09 | Game menu: stars, favourites, families and search | Sonnet | P3-04, P3-17, O-59 | DONE |
@@ -247,8 +247,8 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-15 | `--new-window` flag and the command-line options in Help | not recorded (follow-up) | O-05, O-14 | DONE |
 | O-19 | `--new-window`: alacritty, kitty, wezterm and foot on Linux | not recorded (follow-up) | O-15 | DONE |
 | P4-11 | Language selector: stray glyph, reachable with Up, Tab hint in the footer | Haiku | P3-37 | DONE |
-| P4-13 | Process priority: `--priority` flag, Settings row, solver threads below the UI thread | Sonnet | P3-29 | TODO |
-| P4-14 | Docs-only pull requests run a docs check instead of the full build; light `xtask` (O-67 F4) | Sonnet | O-62, O-64 | TODO |
+| P4-13 | Process priority: `--priority` flag, Settings row, solver threads below the UI thread | Sonnet | P3-29 | DONE |
+| P4-14 | Docs-only pull requests run a docs check instead of the full build; light `xtask` (O-67 F4) | Sonnet | O-62, O-64 | DONE |
 | P4-12 | Statistics: a clear winnable column and a check for unchecked deals | Haiku | P4-04, P2-08 | DONE |
 ### Phase 5 (0.5.x) — Themes, colour vision, Spanish cards, Golf
 

@@ -347,6 +347,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** tests for each row (value, persistence, immediate preview, revert on cancel); the
   unsupported-terminal note; the console font change verified by hand in the classic console (say
   where); both locales.
+- **Done:** #185, #188
 
 ### P4-06 — Automatic moves in statistics: failed attempts and streaks
 
@@ -545,6 +546,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 - **Acceptance:** tests through the fake for each level on Windows and Unix mappings, the privilege note, the flag
   parsing (valid, invalid, flag beats setting), the setting persistence and the solver thread priority call; the real
   priority checked by hand in Task Manager (Details → Priority) — say what to check; all nine locales.
+- **Done:** #189
 
 ### P4-14 — Docs-only pull requests run a docs check instead of the full build; light `xtask` (O-67 F4)
 
@@ -571,6 +573,7 @@ Micro cards in this phase (micro.md): M-19, M-20, M-21, M-22, M-23, M-24 (artwor
 
 ## Done before the 2026-11 replan
 - **Done:** #169 (`w` / `W` check one or all unchecked deals off the UI thread; header `Win?`)
+- **Done:** #186, #190
 
 ### P4-01 — SQLite persistence
 
