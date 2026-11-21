@@ -8,7 +8,10 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 - Branch from `main` as `<type>/<ID>-<slug>`, type `feat`, `fix`, `refactor`, `chore`, `docs`,
   `test` or `ci`. Example: `feat/M-02-lint-nesting`.
 - Open a pull request to `main` titled `<type>(<scope>): <summary> [<ID>]`.
-- Pull requests are squash-merged. Nothing is pushed to `main` or `release` directly.
+- Pull requests are squash-merged by GitHub auto-merge (decided in O-50). After the review the orchestrator runs
+  `gh pr merge <n> --squash --auto`; GitHub merges once the branch is up to date with `main` and the required
+  checks `check`, `check-windows`, `deny` and `site` pass. Agents do not turn auto-merge on themselves.
+- Nothing is pushed to `main` or `release` directly.
 
 ## Local checks
 
@@ -212,9 +215,10 @@ The version is `major.minor.patch`.
    ```
 
 2. Rulesets (Settings, Rules, Rulesets):
-   - `main`: require a pull request before merging; required status check `check` (the job of
-     `pr.yml`, available after its first run); allow squash merges only in the repository's merge
-     settings; block force pushes and deletion.
+   - `main`: require a pull request before merging (no approvals required); required status checks
+     `check`, `check-windows`, `deny` and `site` (jobs of `pr.yml`, available after its first run);
+     require branches to be up to date before merging; allow squash merges only; block force pushes
+     and deletion. In the repository's general settings, allow auto-merge.
    - `release`: restrict updates; block force pushes and deletion; add the deploy key from step 1
      as the only bypass actor.
 
@@ -242,8 +246,10 @@ before dispatching the second. Current hotspots:
 - `docs/tech/decisions.md` (IDs are assigned by the orchestrator in the card)
 - `docs/task_list/**` (edited by the orchestrator only)
 
-A merged PR changes the base of every open one: before merging the next PR the orchestrator merges
-`main` into it (or asks its agent to) and runs `cargo xtask check --quick` again.
+A merged PR changes the base of every open one. Because `main` requires up-to-date branches, GitHub
+holds an auto-merge PR that is behind; the orchestrator runs `gh pr update-branch <n>` (or asks its
+agent to merge `origin/main`), the required checks run again, and auto-merge completes. A conflict is
+resolved in the branch and checked with `cargo xtask check --quick` before it is pushed.
 
 ## Translations
 
