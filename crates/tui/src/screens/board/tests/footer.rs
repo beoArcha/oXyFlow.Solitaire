@@ -2,13 +2,13 @@
 //! a running finish and a click on the `f` button starts it, and a narrow row keeps the way to the
 //! key list and the way out.
 
-use ratatui::crossterm::event::{KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
+use ratatui::crossterm::event::{KeyCode, KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 
 use super::finish::{KLONDIKE, KLONDIKE_SEED, at_forced_win, is_won, win_open};
 use super::{drag, first_transfer, start};
 use crate::action::Action;
 use crate::app::Modal;
-use crate::i18n::{Locale, set_locale, tf};
+use crate::i18n::{Locale, set_locale, t, tf};
 use crate::input::primary_key;
 use crate::screens::Effect;
 use crate::screens::board::guidance::{Guidance, part};
@@ -230,4 +230,54 @@ fn the_moves_button_toggles_the_moves_panel_at_130_columns() {
     assert!(!h.app.aids().moves_panel);
     click_button(&mut h, Action::Moves, "board.action.moves");
     assert!(h.app.aids().moves_panel);
+}
+
+/// The text of a row template before its `{text}` slot, read from the locale of the running test.
+fn row_prefix(key: &str) -> String {
+    let template = t(key);
+    let before = template
+        .split("{text}")
+        .next()
+        .unwrap_or_default()
+        .to_owned();
+    assert!(!before.is_empty(), "{key} has no prefix");
+    before
+}
+
+/// Asserts that the `Now:` and `Do:` rows, the last two lines, start with their full prefixes.
+fn assert_row_prefixes(h: &mut Harness, case: &str) {
+    let now_prefix = row_prefix("board.action.now");
+    let do_prefix = row_prefix("board.action.possible");
+    let lines = h.lines();
+    let (now, possible) = (&lines[lines.len() - 2], &lines[lines.len() - 1]);
+    assert!(now.starts_with(&now_prefix), "{case}: {now:?}");
+    assert!(possible.starts_with(&do_prefix), "{case}: {possible:?}");
+}
+
+#[test]
+fn both_footer_rows_keep_their_prefix_beside_each_side_panel_in_every_variant() {
+    for locale in Locale::offered() {
+        for variant in Variant::ALL {
+            for (width, height) in [(100, 30), (130, 40)] {
+                let cases: [(&str, KeyCode); 2] = if width < 130 {
+                    [
+                        ("guide window", KeyCode::Char('g')),
+                        ("moves window", KeyCode::Char('v')),
+                    ]
+                } else {
+                    [
+                        ("guide panel", KeyCode::Char('v')),
+                        ("moves panel", KeyCode::Char('g')),
+                    ]
+                };
+                for (panel, key) in cases {
+                    let mut h = board_game(locale, variant, 5, width, height);
+                    h.press(key);
+                    let case = format!("{locale:?} {variant:?} {width}x{height} {panel}");
+                    assert_row_prefixes(&mut h, &case);
+                }
+            }
+        }
+    }
+    set_locale(Locale::EnUs);
 }

@@ -141,17 +141,17 @@ fn scrolling_works_in_rules_tab() {
     h.press(KeyCode::Tab);
     h.press(KeyCode::Tab);
     assert_eq!(shown(&h).map(|state| state.1), Some(Focus::Text));
-    assert!(h.text().contains("1-20 / "));
+    assert!(h.text().contains("1-21 / "));
 
     h.press(KeyCode::Down);
-    assert!(h.text().contains("2-21 / "));
+    assert!(h.text().contains("2-22 / "));
 
     h.press(KeyCode::PageDown);
     let state = shown_rules(&h).expect("open rules");
     assert!(state.scroll >= 19);
 
     h.press(KeyCode::Home);
-    assert!(h.text().contains("1-20 / "));
+    assert!(h.text().contains("1-21 / "));
 
     h.send(Input::Mouse(MouseEvent {
         kind: MouseEventKind::ScrollDown,
@@ -159,7 +159,7 @@ fn scrolling_works_in_rules_tab() {
         row: 15,
         modifiers: KeyModifiers::NONE,
     }));
-    assert!(h.text().contains("4-23 / "));
+    assert!(h.text().contains("4-24 / "));
 }
 
 #[test]
