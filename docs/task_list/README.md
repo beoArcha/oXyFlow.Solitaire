@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 18 | 35 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 18 | 38 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 7 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
@@ -310,6 +310,9 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-106 | Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid) | Sonnet | O-87 | TODO |
 | O-107 | Yukon: column 7 never runs off the bottom | Sonnet | — | TODO |
 | O-108 | Install scripts that check dependencies first (Linux, macOS, Windows) | Sonnet | — | TODO |
+| O-109 | Full screen recovery and short CLI flags | Sonnet | — | TODO |
+| O-110 | Quick move from the exposed waste pile | Sonnet | — | TODO |
+| O-111 | Default console width and three window sizes | Sonnet | O-109 | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 

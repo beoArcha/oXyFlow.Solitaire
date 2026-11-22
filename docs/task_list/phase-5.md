@@ -5,11 +5,11 @@ Goal: the table, the card face and the aura are set apart from the theme; the lo
 Exit criteria:
 
 - P3-32, P3-33, P3-34, P3-35, P5-03, P5-04 and P5-05 are DONE;
-- the visual fixes O-69 to O-107 are DONE, or `BLOCKED` with the owner's decision on the card;
+- the visual fixes O-69 to O-107 and the owner follow-ups O-109 to O-111 are DONE, or `BLOCKED` with the owner's decision on the card;
 - every new theme option passes the contrast tests, and the four-colour deck works at every card size;
 - Golf's solver verdicts replay on the engine for seeds 0 to 49, and the Spider table is in T-29.
 
-Order of work: the Interface options first, then the card style and the games, which do not touch those files. The visual fixes (O-69 to O-107) go by priority, P1 before P2 before P3, respecting each card's dependencies; Settings cards run one at a time in the order O-86, O-94, O-102, O-103, O-96, because they share the Settings screen.
+Order of work: the Interface options first, then the card style and the games, which do not touch those files. The visual fixes (O-69 to O-107) go by priority, P1 before P2 before P3, respecting each card's dependencies; Settings cards run one at a time in the order O-86, O-94, O-102, O-103, O-96, because they share the Settings screen. Owner follow-ups O-109 to O-111 follow the visual fixes; O-109 and O-111 run sequentially because they share Settings and CLI files.
 
 ### P3-32 — Table color and feel
 
@@ -521,6 +521,33 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
   - ShellCheck passes on `install.sh`, and PSScriptAnalyzer passes on `install.ps1`.
   - The owner runs `--install` on Ubuntu (WSL), and the PR records the result.
   - Both locales of the site page are updated.
+
+### O-109 — Full screen recovery and short CLI flags
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `src/cli.rs`, `src/main.rs`, `src/console/display.rs`, `crates/tui/src/app/display.rs`, `crates/tui/src/screens/settings/**`, tests
+- **Problem:** full screen no longer works when changed in Settings or requested at launch; the CLI accepts only the long full-screen and help commands.
+- **Fix:** restore full-screen switching both from the Settings option and from the launch flag; accept `-fs` as an alias for `--fullscreen` and `-h` as an alias for `--help`. Preserve `--no-fullscreen` and existing help output.
+- **Acceptance:** tests cover entering and leaving full screen through Settings, the launch override, both aliases, and the existing long forms; the last full-screen flag still wins.
+
+### O-110 — Quick move from the exposed waste pile
+
+- **Owner:** Sonnet
+- **Depends on:** —
+- **Files:** `crates/tui/src/app/**`, `crates/tui/src/screens/board/**`, tests
+- **Problem:** a shortcut can draw a card from the stock, but there is no corresponding shortcut to move the exposed waste card when it has a legal destination.
+- **Fix:** add a keyboard shortcut that checks legal destinations for the exposed waste card and sends the selected move through the existing command pattern. When more than one destination is legal, use the last position in the existing destination order. Choose a key that does not conflict with current bindings and show it in the board hints.
+- **Acceptance:** tests cover no legal move, one legal move, multiple legal moves (the last destination is used), and that the move is submitted through the command path; the hint is visible and the action works by keyboard and mouse-accessible controls.
+
+### O-111 — Default console width and three window sizes
+
+- **Owner:** Sonnet
+- **Depends on:** O-109
+- **Files:** `src/console.rs`, `crates/tui/src/settings.rs`, `crates/tui/src/settings/**`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
+- **Problem:** a newly opened console starts at 120 columns instead of 130, and Settings has no choice of console window size beside Full screen.
+- **Fix:** set the default width to 130 columns. Add Small, Medium and Large size choices beside Full screen: 130 × 40, 195 × 60 and 260 × 80 respectively. A selected size requests both its width and height for a console window the game owns; existing terminal sessions remain user-resizable.
+- **Acceptance:** tests cover the default 130-column startup and each size's requested dimensions; all nine locales name the choices and fit the Settings layout at 100 × 30.
 
 **P3 — Main view polish, widgets and wording**
 
