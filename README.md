@@ -24,7 +24,7 @@ still arriving.
 
 - **Fourteen games in six families.** Klondike (draw 1 and draw 3), Spider (1, 2 and 4 suits), FreeCell, Pyramid
   (Relaxed and Classic), the Yukon family (Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience) and
-  Golf. The game menu groups them by family, stars the popular ones, keeps your favourites and finds a game as you
+  Golf. The game menu groups them by family, stars the popular ones, keeps your favorites and finds a game as you
   type its name.
 - **Deals you can trust.** Every deal has a seed you can copy and replay. A new game can wait for a deal that a solver
   has proven winnable, and "New game from seed" offers three curated deals for each of five difficulty levels in every
@@ -33,14 +33,14 @@ still arriving.
   undo and redo, quick moves (`a` for the card under the cursor, `e` for the waste card) and auto-finish once the
   win is certain.
 - **Built for every pair of eyes.** A low-vision mode with 7:1 contrast and larger, bolder cards; five themes,
-  including High contrast; colour-vision modes for protanopia, deuteranopia, tritanopia and monochrome; a four-colour
-  deck; and focus that is always marked by a symbol, never by colour alone.
+  including High contrast; color-vision modes for protanopia, deuteranopia, tritanopia and monochrome; a four-color
+  deck; and focus that is always marked by a symbol, never by color alone.
 - **Cards your way.** Six front styles (International, French, German, Italian, Spanish and Swiss), two back styles,
-  table colours and textures, card face tints and four card sizes that follow the window.
+  table colors and textures, card face tints and four card sizes that follow the window.
 - **Statistics and history.** Wins, streaks, personal bests and every game you played, in your local time, with a mark
   for each deal that was checked as winnable.
 - **Nine languages.** English, Polski, Deutsch, Español, Français, Italiano, Nederlands, Português (Brasil) and
-  Українська. On first start the game follows your system language.
+  Українська. Pick a language from the main menu or in Settings; it applies at once.
 
 ## Screenshots
 
@@ -136,7 +136,7 @@ cards back.
 | `-n`, `--new-window` | Open the game in its own console window and return to the prompt |
 | `-fs`, `--fullscreen` / `--no-fullscreen` | Start in full screen or in a window, whatever the setting says |
 | `--ascii` | Draw cards with ASCII characters only |
-| `--colors <16\|256\|truecolor>` | Set the colour depth of the terminal |
+| `--colors <16\|256\|truecolor>` | Set the color depth of the terminal |
 | `--priority <level>` | Process priority for this run: `highest`, `high`, `normal`, `low` or `lowest` |
 | `-h`, `--help` / `--version` | Print the help or the version, and exit |
 
@@ -155,15 +155,15 @@ program and writes nothing anywhere else.
 Accessibility is a requirement in oXySol, not a finishing touch.
 
 - Every action works by keyboard and by mouse.
-- Focus is marked by a symbol (`►`, or `>` in ASCII), and the line under the board says in words where the cursor is
-  and what you can do there.
-- Colour never carries meaning alone: suits are signs (♠ ♥ ♦ ♣) beside the rank, picked cards and targets have their
-  own marks, and events are announced with ✓ or ✗.
+- Focus is marked by a symbol (`►`, or `>` in ASCII), and the two lines under the board say in words where the
+  cursor is and what you can do there.
+- Color never carries meaning alone: suits are signs (♠ ♥ ♦ ♣) beside the rank, picked cards and targets have
+  their own marks, and events are announced with ✓ or ✗.
 - **Low vision**, offered on first start and in Settings, sets 7:1 contrast in any theme, the largest cards that fit,
   a thick aura, bold rank and suit and, in the classic Windows console, a larger font. Turning it off restores your
   previous settings.
-- **Colour vision** remaps colours for protanopia, deuteranopia, tritanopia or monochrome, and the four-colour deck
-  gives every suit its own colour.
+- **Color vision** remaps colors for protanopia, deuteranopia, tritanopia or monochrome, and the four-color deck
+  gives every suit its own color.
 - `--ascii` and `--colors 16` serve limited terminals.
 
 ## Development
