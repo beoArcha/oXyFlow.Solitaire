@@ -114,7 +114,7 @@ Ctrl+0 change the console font size; other terminals zoom with their own keys.
 
 The game is available in nine languages: English, Polish, German, Spanish, French, Italian, Dutch, Brazilian Portuguese
 and Ukrainian. Pick one with the flag selector in the top-left corner of the main menu, or in Settings; it applies at
-once. On the first start the game follows your system language. This website is available in the same nine languages.
+once. This website is available in the same nine languages.
 
 ## What it is not yet
 
