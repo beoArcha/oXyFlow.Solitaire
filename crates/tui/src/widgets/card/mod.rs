@@ -186,7 +186,14 @@ fn draw_with(
     if mark.target {
         paint_target_corners(&mut painter, area, ctx.glyphs, target, low_vision);
     }
-    paint_top_row(&mut painter, area, (face, mark), ctx.glyphs, &look, low_vision);
+    paint_top_row(
+        &mut painter,
+        area,
+        (face, mark),
+        ctx.glyphs,
+        &look,
+        low_vision,
+    );
     paint_bottom_row(&mut painter, area, (face, badge), ctx.glyphs, &look);
     match face {
         Face::Up(card) => paint_center(

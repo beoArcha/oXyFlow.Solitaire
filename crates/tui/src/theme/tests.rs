@@ -438,8 +438,14 @@ fn low_vision_reaches_seven_to_one_on_every_text_pair_for_every_theme_and_vision
             }
             let felt_contrast = contrast_ratio(palette.table.rgb, palette.background.rgb);
             assert_eq!(palette.field_edge, felt_contrast < 3.0, "{id:?} {vision:?}");
-            assert_ne!(palette.card_red.rgb, palette.card_black.rgb, "{id:?} {vision:?}");
-            assert_ne!(palette.focus_bg.rgb, palette.background.rgb, "{id:?} {vision:?}");
+            assert_ne!(
+                palette.card_red.rgb, palette.card_black.rgb,
+                "{id:?} {vision:?}"
+            );
+            assert_ne!(
+                palette.focus_bg.rgb, palette.background.rgb,
+                "{id:?} {vision:?}"
+            );
         }
     }
 }

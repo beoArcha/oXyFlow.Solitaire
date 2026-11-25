@@ -16,7 +16,9 @@ const WHITE: [u8; 3] = [255, 255, 255];
 const BLACK: [u8; 3] = [0, 0, 0];
 
 fn luminance(rgb: [u8; 3]) -> f32 {
-    0.2126 * srgb_to_linear(rgb[0]) + 0.7152 * srgb_to_linear(rgb[1]) + 0.0722 * srgb_to_linear(rgb[2])
+    0.2126 * srgb_to_linear(rgb[0])
+        + 0.7152 * srgb_to_linear(rgb[1])
+        + 0.0722 * srgb_to_linear(rgb[2])
 }
 
 fn push_toward(from: [u8; 3], toward: [u8; 3], bg: [u8; 3], target: f32) -> [u8; 3] {
@@ -39,9 +41,9 @@ fn ensure_contrast(fg: Swatch, bg: [u8; 3], target: f32) -> Swatch {
         BLACK
     };
     let rgb = push_toward(fg.rgb, toward, bg, target);
-    let ansi16 = if rgb == WHITE {
+    let ansi16 = if rgb == WHITE || (toward == WHITE && luminance(rgb) > 0.5) {
         Color::White
-    } else if rgb == BLACK {
+    } else if rgb == BLACK || (toward == BLACK && luminance(rgb) < 0.05) {
         Color::Black
     } else {
         fg.ansi16
@@ -91,13 +93,40 @@ fn adjust_bg_for_pair(bg: Swatch, target: f32) -> Swatch {
     Swatch { rgb, ..bg }
 }
 
+fn adjust_card_back(card_back: Swatch, table: [u8; 3]) -> Swatch {
+    let has_mark_headroom = |rgb: [u8; 3]| {
+        contrast_ratio(WHITE, rgb) >= TEXT_TARGET + 0.5
+            || contrast_ratio(BLACK, rgb) >= TEXT_TARGET + 0.5
+    };
+    if contrast_ratio(card_back.rgb, table) >= GRAPHIC_TARGET && has_mark_headroom(card_back.rgb) {
+        return card_back;
+    }
+    let toward = if contrast_ratio(WHITE, table) >= contrast_ratio(BLACK, table) {
+        WHITE
+    } else {
+        BLACK
+    };
+    let rgb = (1..=100)
+        .map(|percent| mix(card_back.rgb, toward, percent))
+        .find(|rgb| contrast_ratio(*rgb, table) >= GRAPHIC_TARGET && has_mark_headroom(*rgb))
+        .unwrap_or(toward);
+    let ansi16 = if rgb == WHITE || (toward == WHITE && luminance(rgb) > 0.25) {
+        Color::White
+    } else if rgb == BLACK || (toward == BLACK && luminance(rgb) < 0.05) {
+        Color::Black
+    } else {
+        card_back.ansi16
+    };
+    Swatch { rgb, ansi16 }
+}
+
 /// Adapts `palette` so every text pair reaches 7:1, `text_muted` equals `text` (no dim text),
 /// and every graphic/mark/edge pair reaches at least 3:1.
 #[must_use]
 pub fn remap(mut palette: Palette) -> Palette {
     palette.table = darken_for_headroom(palette.table, TABLE_WHITE_TARGET);
     palette.focus_bg = adjust_bg_for_pair(palette.focus_bg, TEXT_TARGET + 0.5);
-    palette.card_back = adjust_bg_for_pair(palette.card_back, TEXT_TARGET + 0.5);
+    palette.card_back = adjust_card_back(palette.card_back, palette.table.rgb);
 
     let bg = palette.background.rgb;
     let surface = palette.surface.rgb;
@@ -112,11 +141,8 @@ pub fn remap(mut palette: Palette) -> Palette {
     palette.table_text = ensure_contrast(palette.table_text, table, TEXT_TARGET);
     palette.card_red = ensure_contrast(palette.card_red, palette.card_face.rgb, TEXT_TARGET);
     palette.card_black = ensure_contrast(palette.card_black, palette.card_face.rgb, TEXT_TARGET);
-    palette.card_back_mark = ensure_contrast(
-        palette.card_back_mark,
-        palette.card_back.rgb,
-        TEXT_TARGET,
-    );
+    palette.card_back_mark =
+        ensure_contrast(palette.card_back_mark, palette.card_back.rgb, TEXT_TARGET);
     palette.aura_focus = ensure_contrast(palette.aura_focus, table, TEXT_TARGET);
     palette.aura_carry = ensure_contrast(palette.aura_carry, table, TEXT_TARGET);
 

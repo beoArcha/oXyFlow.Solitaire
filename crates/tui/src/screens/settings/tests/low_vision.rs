@@ -13,7 +13,9 @@ use super::{canonical_tab, focus_in_tab, open_settings, switch_to_tab};
 use crate::app::{ConsoleFont, DisplayDeps, DisplayFacts, FontFacts, FontStep, NullConsoleDisplay};
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::settings::tests::settings_menu_index;
-use crate::settings::{AuraSize, CardSizeSetting, LOW_VISION_MIN_FONT_SIZE, Settings, TerminalKind};
+use crate::settings::{
+    AuraSize, CardSizeSetting, LOW_VISION_MIN_FONT_SIZE, Settings, TerminalKind,
+};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, TRUE_COLOR};
 use crate::theme::ThemeId;
@@ -81,10 +83,7 @@ fn turning_low_vision_on_in_owned_classic_console_raises_and_restores_font_size(
     focus_in_tab(&mut h, Tab::Popular, Field::LowVision);
     h.press(KeyCode::Right);
     assert!(h.app.settings().low_vision);
-    assert_eq!(
-        h.app.settings().console_font_size,
-        LOW_VISION_MIN_FONT_SIZE
-    );
+    assert_eq!(h.app.settings().console_font_size, LOW_VISION_MIN_FONT_SIZE);
     assert_eq!(sizes.borrow().last().copied(), Some(Some(24)));
 
     h.press(KeyCode::Right);
@@ -148,9 +147,14 @@ fn low_vision_renders_settings_at_100x30_and_130x40_across_all_nine_locales() {
             h.press(KeyCode::Enter);
             switch_to_tab(&mut h, canonical_tab(Field::LowVision));
             let lines = h.lines();
-            assert!(lines.len() <= usize::from(height), "{locale:?} {width}x{height}");
             assert!(
-                lines.iter().all(|l| l.chars().count() <= usize::from(width)),
+                lines.len() <= usize::from(height),
+                "{locale:?} {width}x{height}"
+            );
+            assert!(
+                lines
+                    .iter()
+                    .all(|l| l.chars().count() <= usize::from(width)),
                 "{locale:?} {width}x{height} overflow"
             );
             let text = lines.join("\n");

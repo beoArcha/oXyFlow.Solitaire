@@ -127,12 +127,11 @@ impl Grid {
         let group_gap = group_gap(counts);
         let wide_step = size.wide_waste_step();
         let wide_cols = columns_for(counts, size, (wide_step, MIN_GAP), fanned);
-        let waste_step =
-            if wider_fan && row_width(wide_cols, size, MIN_GAP, counts) <= area.width {
-                wide_step
-            } else {
-                size.waste_step()
-            };
+        let waste_step = if wider_fan && row_width(wide_cols, size, MIN_GAP, counts) <= area.width {
+            wide_step
+        } else {
+            size.waste_step()
+        };
         let columns = columns_for(counts, size, (waste_step, MIN_GAP), fanned);
         let (gap, margin) = spacing(area.width.saturating_sub(group_gap), columns, size.width);
         let tableau_y = (area.y + size.height + size.row_gap()).min(area.bottom());

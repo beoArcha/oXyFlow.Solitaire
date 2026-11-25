@@ -75,7 +75,11 @@ fn low_vision_enlarges_focus_and_target_marks_without_relying_on_color() {
         let top: String = (0..area.width)
             .map(|x| focus_buf[(x, 0)].symbol())
             .collect();
-        let doubled = if mode == GlyphMode::Unicode { "►►" } else { ">>" };
+        let doubled = if mode == GlyphMode::Unicode {
+            "►►"
+        } else {
+            ">>"
+        };
         assert!(top.contains(doubled), "{mode:?}: {top}");
 
         let mut target_buf = Buffer::empty(area);
@@ -107,9 +111,7 @@ fn low_vision_enlarges_focus_and_target_marks_without_relying_on_color() {
             None,
             &ctx,
         );
-        let mid: String = (0..area.width)
-            .map(|x| slot_buf[(x, 3)].symbol())
-            .collect();
+        let mid: String = (0..area.width).map(|x| slot_buf[(x, 3)].symbol()).collect();
         assert!(mid.contains("+++"), "{mode:?}: {mid}");
     }
 }

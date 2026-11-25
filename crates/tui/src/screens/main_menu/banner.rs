@@ -100,8 +100,7 @@ pub(super) fn handle_action(
 
 /// Applies the player's answer (`Yes` or `Not now`), marks the offer as answered, and saves.
 pub(super) fn effect(accept: bool, ctx: &ViewCtx<'_>) -> Effect {
-    let classic_console =
-        ctx.font.terminal == TerminalKind::ClassicConsole && ctx.font.owns_window;
+    let classic_console = ctx.font.terminal == TerminalKind::ClassicConsole && ctx.font.owns_window;
     let mut next = if accept {
         ctx.settings.with_low_vision(true, classic_console)
     } else {
@@ -160,13 +159,20 @@ impl Banner {
         };
         frame.render_widget(block, box_rect);
         let inner = box_rect.inner(Margin::new(1, 1));
-        let prompt = Line::styled(t("menu.low_vision.prompt").into_owned(), ctx.theme.surface());
+        let prompt = Line::styled(
+            t("menu.low_vision.prompt").into_owned(),
+            ctx.theme.surface(),
+        );
         frame.render_widget(
             Paragraph::new(prompt).alignment(Alignment::Center),
             Rect::new(inner.x, inner.y, inner.width, 1),
         );
 
-        let yes_text = button_label("menu.low_vision.yes", focused == Some(BannerButton::Yes), ctx);
+        let yes_text = button_label(
+            "menu.low_vision.yes",
+            focused == Some(BannerButton::Yes),
+            ctx,
+        );
         let not_now_text = button_label(
             "menu.low_vision.not_now",
             focused == Some(BannerButton::NotNow),
@@ -183,7 +189,10 @@ impl Banner {
             Rect::new(start_x + yes_w + gap_w, buttons_y, not_now_w, 1).intersection(inner);
 
         let line = Line::from(vec![
-            Span::styled(yes_text, button_style(focused == Some(BannerButton::Yes), ctx)),
+            Span::styled(
+                yes_text,
+                button_style(focused == Some(BannerButton::Yes), ctx),
+            ),
             Span::styled(BUTTON_GAP, ctx.theme.surface()),
             Span::styled(
                 not_now_text,

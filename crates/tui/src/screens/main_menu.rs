@@ -403,19 +403,28 @@ impl MainMenu {
         let list_height = MenuList::height(&list_rows);
         let (logo_area, tagline_area, list_area, banner_area, footer_row) =
             if !ctx.settings.low_vision_offered {
-                let [_, logo_area, tagline_area, _, list_area, _, banner_area, _, footer_row] =
-                    Layout::vertical([
-                        Constraint::Fill(1),
-                        Constraint::Length(logo_height),
-                        Constraint::Length(1),
-                        Constraint::Length(1),
-                        Constraint::Length(list_height),
-                        Constraint::Length(1),
-                        Constraint::Length(banner::HEIGHT),
-                        Constraint::Fill(1),
-                        Constraint::Length(1),
-                    ])
-                    .areas(area);
+                let [
+                    _,
+                    logo_area,
+                    tagline_area,
+                    _,
+                    list_area,
+                    _,
+                    banner_area,
+                    _,
+                    footer_row,
+                ] = Layout::vertical([
+                    Constraint::Fill(1),
+                    Constraint::Length(logo_height),
+                    Constraint::Length(1),
+                    Constraint::Length(1),
+                    Constraint::Length(list_height),
+                    Constraint::Length(1),
+                    Constraint::Length(banner::HEIGHT),
+                    Constraint::Fill(1),
+                    Constraint::Length(1),
+                ])
+                .areas(area);
                 (
                     logo_area,
                     tagline_area,

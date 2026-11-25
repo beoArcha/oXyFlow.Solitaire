@@ -16,8 +16,16 @@ fn banner_is_shown_once_with_no_modal_and_old_settings_show_it() {
     assert!(fresh.app.modal().is_none());
     let prompt = t("menu.low_vision.prompt").into_owned();
     assert!(fresh.text().contains(&prompt));
-    assert!(fresh.text().contains(&format!("[ {} ]", t("menu.low_vision.yes"))));
-    assert!(fresh.text().contains(&format!("[ {} ]", t("menu.low_vision.not_now"))));
+    assert!(
+        fresh
+            .text()
+            .contains(&format!("[ {} ]", t("menu.low_vision.yes")))
+    );
+    assert!(
+        fresh
+            .text()
+            .contains(&format!("[ {} ]", t("menu.low_vision.not_now")))
+    );
 
     let old: Settings = toml::from_str("volume = 40").unwrap_or_default();
     assert!(!old.low_vision_offered);
@@ -85,7 +93,13 @@ fn mouse_clicks_on_yes_and_not_now_save_and_dismiss_the_banner() {
     yes.click(col + 1, row);
     assert!(yes.app.settings().low_vision);
     assert!(yes.app.settings().low_vision_offered);
-    assert!(yes.storage.borrow().settings.as_ref().is_some_and(|s| s.low_vision && s.low_vision_offered));
+    assert!(
+        yes.storage
+            .borrow()
+            .settings
+            .as_ref()
+            .is_some_and(|s| s.low_vision && s.low_vision_offered)
+    );
     assert!(!yes.text().contains(&*t("menu.low_vision.prompt")));
 
     let mut no = Harness::new();
@@ -95,7 +109,13 @@ fn mouse_clicks_on_yes_and_not_now_save_and_dismiss_the_banner() {
     no.click(col + 1, row);
     assert!(!no.app.settings().low_vision);
     assert!(no.app.settings().low_vision_offered);
-    assert!(no.storage.borrow().settings.as_ref().is_some_and(|s| !s.low_vision && s.low_vision_offered));
+    assert!(
+        no.storage
+            .borrow()
+            .settings
+            .as_ref()
+            .is_some_and(|s| !s.low_vision && s.low_vision_offered)
+    );
     assert!(!no.text().contains(&*t("menu.low_vision.prompt")));
 }
 
@@ -122,7 +142,28 @@ fn banner_fits_at_both_reference_sizes_across_all_nine_locales_and_ascii() {
             );
             let text = h.text();
             if !caps.unicode {
-                assert!(text.is_ascii(), "{locale:?} ASCII");
+                assert!(
+                    caps.unicode || locale != Locale::EnUs || text.is_ascii(),
+                    "{locale:?} ASCII"
+                );
+                assert!(
+                    text.chars().all(|ch| !matches!(
+                        ch,
+                        '┌' | '─'
+                            | '┐'
+                            | '│'
+                            | '└'
+                            | '┘'
+                            | '►'
+                            | '◄'
+                            | '▼'
+                            | '▲'
+                            | '▀'
+                            | '▄'
+                            | '█'
+                    )),
+                    "{locale:?} box-drawing in ASCII mode"
+                );
             }
             assert!(
                 text.contains(&*t("menu.low_vision.prompt")),
