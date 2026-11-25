@@ -4,11 +4,15 @@
 //! (complete a run, join a suit, turn a card over); positions that differ only by column order
 //! share one key. Nothing is pruned that a win could need, so an exhausted search is a proof.
 
+mod heuristic;
+mod multi;
+mod multi_moves;
 mod position;
 mod steps;
 #[cfg(test)]
 mod tests;
 
+pub(in crate::solver) use multi::search as search_multi;
 pub(in crate::solver) use position::Position;
 
 use crate::moves::Move;

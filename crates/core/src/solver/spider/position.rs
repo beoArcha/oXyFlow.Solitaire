@@ -3,7 +3,7 @@
 
 use crate::pile::{PileRef, PileSnapshot};
 use crate::solver::face::{self, Face, NONE, fill, hidden_count, rank, suit};
-use crate::solver::hash::{PositionHash, column_hash, feed_unordered};
+use crate::solver::hash::{PositionHash, column_hash};
 
 pub(super) const COLUMNS: usize = 10;
 pub(super) const RUN: usize = 13;
@@ -135,16 +135,18 @@ impl Position {
     }
 
     pub(super) fn key(&self) -> u128 {
-        let columns = (0..COLUMNS)
-            .map(|i| {
-                column_hash(
-                    u8::try_from(self.hidden[i]).unwrap_or(0),
-                    &self.cols[i][..self.len[i]],
-                )
-            })
-            .collect();
+        let mut columns = [0u64; COLUMNS];
+        for (i, slot) in columns.iter_mut().enumerate() {
+            *slot = column_hash(
+                u8::try_from(self.hidden[i]).unwrap_or(0),
+                &self.cols[i][..self.len[i]],
+            );
+        }
+        columns.sort_unstable();
         let mut hash = PositionHash::new();
-        feed_unordered(&mut hash, columns);
+        for value in columns {
+            hash.feed(value);
+        }
         hash.feed(u64::try_from(self.stock_len).unwrap_or(0));
         hash.feed(u64::from(self.removed));
         hash.key()
