@@ -5,6 +5,7 @@ use crate::card::Card;
 use crate::games::transfer_parts;
 use crate::moves::Move;
 use crate::pile::PileRef;
+use crate::rules;
 
 type HintRule = fn(&FreeCell, PileRef, PileRef, u8) -> bool;
 
@@ -84,10 +85,23 @@ impl FreeCell {
             && matches!(to, PileRef::Foundation(_))
     }
 
-    fn column_extends_run(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
+    /// Whether the first of the `count` moved cards already rests on the card it builds on, so
+    /// moving it only shuffles a finished link (and invites moving it straight back).
+    fn rests_on_link(&self, from: PileRef, count: u8) -> bool {
+        self.column(from).is_some_and(|cards| {
+            let start = cards.len().saturating_sub(usize::from(count));
+            start
+                .checked_sub(1)
+                .and_then(|under| cards.get(under).zip(cards.get(start)))
+                .is_some_and(|(&under, &first)| rules::fits_alternating(under, first))
+        })
+    }
+
+    fn column_extends_run(&self, from: PileRef, to: PileRef, count: u8) -> bool {
         matches!(from, PileRef::Tableau(_))
             && matches!(to, PileRef::Tableau(_))
             && !self.column_is_empty(to)
+            && !self.rests_on_link(from, count)
     }
 
     fn cell_to_column(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
@@ -98,9 +112,12 @@ impl FreeCell {
         matches!(from, PileRef::Tableau(_))
             && self.column_is_empty(to)
             && !self.moves_whole_column(from, count)
+            && !self.rests_on_link(from, count)
     }
 
-    fn column_to_cell(&self, from: PileRef, to: PileRef, _count: u8) -> bool {
-        matches!(from, PileRef::Tableau(_)) && matches!(to, PileRef::Cell(_))
+    fn column_to_cell(&self, from: PileRef, to: PileRef, count: u8) -> bool {
+        matches!(from, PileRef::Tableau(_))
+            && matches!(to, PileRef::Cell(_))
+            && !self.rests_on_link(from, count)
     }
 }

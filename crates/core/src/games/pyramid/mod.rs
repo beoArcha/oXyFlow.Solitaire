@@ -14,6 +14,7 @@ use crate::card::{Card, Rank};
 use crate::deck;
 use crate::game::{Game, PyramidRules, StockStatus};
 use crate::games::index_ref;
+use crate::games::progress::{self, HintProfile};
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot, TableCard};
 
@@ -102,6 +103,9 @@ fn face_up(card: Card) -> TableCard {
     }
 }
 
+/// The hint profile of this game, chosen by the hints-only measurement of T-48.
+const HINT_PROFILE: HintProfile = HintProfile::Rules;
+
 impl Game for Pyramid {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError> {
         if self.is_won() {
@@ -121,7 +125,9 @@ impl Game for Pyramid {
         if self.is_won() {
             return None;
         }
-        self.suggest()
+        progress::hint(self, HINT_PROFILE, progress::PLAY_KNOWLEDGE, || {
+            self.suggest()
+        })
     }
 
     fn is_won(&self) -> bool {

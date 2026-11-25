@@ -45,8 +45,30 @@ fn a_cell_card_to_a_column_beats_a_column_to_an_empty_column() {
 #[test]
 fn a_run_may_go_to_an_empty_column_before_a_cell() {
     let mut game = table();
-    game.columns[0] = cards("KS QH");
+    game.columns[0] = cards("KS 2H");
     assert_hint(&game, Some(transfer(tab(0), tab(1), 1)));
+}
+
+#[test]
+fn a_card_resting_on_its_link_is_not_moved_aside() {
+    let mut game = table();
+    game.columns[0] = cards("KS QH");
+    assert!(game.legal_moves().contains(&transfer(tab(0), tab(1), 1)));
+    assert!(game.legal_moves().contains(&transfer(tab(0), cell(0), 1)));
+    assert_hint(&game, None);
+}
+
+#[test]
+fn following_the_hints_never_moves_a_card_back_and_forth() {
+    let mut game = table();
+    game.columns[0] = cards("9C 8H");
+    game.columns[1] = cards("9S");
+    for _ in 0..4 {
+        let Some(mv) = game.hint() else { break };
+        assert_eq!(game.apply(mv), Ok(()));
+    }
+    assert_eq!(game.columns[0], cards("9C 8H"));
+    assert_eq!(game.columns[1], cards("9S"));
 }
 
 #[test]
@@ -77,5 +99,5 @@ fn a_whole_run_is_never_hinted_to_an_empty_column() {
     let mut game = table();
     game.columns[0] = cards("8S 7H");
     assert!(game.legal_moves().contains(&transfer(tab(0), tab(1), 2)));
-    assert_hint(&game, Some(transfer(tab(0), tab(1), 1)));
+    assert_hint(&game, None);
 }
