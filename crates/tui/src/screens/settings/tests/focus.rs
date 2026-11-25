@@ -4,7 +4,7 @@ use ratatui::crossterm::event::KeyCode;
 
 use super::{index_of, settings_menu_index};
 use crate::app::Screen;
-use crate::i18n::t;
+use crate::i18n::{t, tf};
 use crate::screens::focus::marked_text;
 use crate::screens::settings::options::{FIELDS, Field};
 use crate::test_support::Harness;
@@ -72,12 +72,13 @@ fn space_changes_the_focused_row_forward_like_enter() {
 
 #[test]
 fn the_marker_is_on_the_focused_row_only() {
+    let hint = tf("settings.footer.arrows", &[("arrows", "◄ ►")]);
     let mut h = open();
     h.press(KeyCode::Tab);
     assert_eq!(
         h.lines_without_pane()
             .iter()
-            .filter(|line| line.contains('►'))
+            .filter(|line| line.contains('►') && !line.contains(&hint))
             .count(),
         1
     );

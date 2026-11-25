@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Pantalla"
 interface = "Interfaz"
 sound = "Sonido"
+performance = "Rendimiento"
 hints = "Pistas y ayuda"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Sonido no disponible: no se pudo cargar el estilo de sonido sele
 
 [footer]
 change = "Cambiar"
+arrows = "{arrows} Cambiar"
 
 [graphics]
 title = "Comprobación gráfica"
@@ -198,7 +200,7 @@ note = "Vista previa. Al salir de esta pantalla se pregunta si se conservan los 
 position = "fila {row} de {total}"
 
 [confirm]
-keep_interface = "¿Conservar los ajustes de interfaz cambiados?"
+keep_interface = "¿Conservar los ajustes cambiados?"
 
 [face]
 consolas = "Consolas"

@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Vídeo"
 interface = "Interface"
 sound = "Áudio"
+performance = "Desempenho"
 hints = "Dicas e ajuda"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Áudio indisponível: o estilo sonoro selecionado não pôde ser
 
 [footer]
 change = "Mudar"
+arrows = "{arrows} Mudar"
 
 [graphics]
 title = "Verificação gráfica"
@@ -198,7 +200,7 @@ note = "Pré-visualização. Ao sair desta tela, pergunta-se se as alterações 
 position = "linha {row} de {total}"
 
 [confirm]
-keep_interface = "Manter as configurações de interface alteradas?"
+keep_interface = "Manter as configurações alteradas?"
 
 [face]
 consolas = "Consolas"

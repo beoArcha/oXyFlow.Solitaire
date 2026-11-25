@@ -32,7 +32,7 @@ use crate::theme::Theme;
 use crate::widgets::footer::FooterMap;
 use crate::widgets::overlay;
 
-pub use deps::Deps;
+pub use deps::{Deps, Zone};
 pub use display::{ConsoleDisplay, DisplayDeps, DisplayFacts, NullConsoleDisplay};
 pub use font::{
     CardFontState, ConsoleFont, FontFacts, FontStep, NullConsoleFont, font_step_for_key,
@@ -127,6 +127,7 @@ impl App {
             solver,
             display,
             version,
+            zone,
         } = deps;
         let (display, priority) = display.split_priority();
         let settings = Settings::for_caps(&caps);
@@ -164,7 +165,7 @@ impl App {
             menu: MainMenu::start(start_seed, version),
             select: GameSelect::new(),
             settings_screen: SettingsScreen::new(),
-            stats: StatsScreen::new(),
+            stats: StatsScreen::new(zone),
             board: BoardScreen::new(),
             area: None,
             pointer: None,

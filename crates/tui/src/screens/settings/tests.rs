@@ -7,6 +7,8 @@ mod card_size;
 mod console_font;
 mod focus;
 mod font_rows;
+mod footer;
+mod groups;
 mod guide;
 mod hints;
 mod interface;
@@ -78,6 +80,12 @@ fn settings_menu_index() -> usize {
 }
 
 /// Position of a row in the settings list, in the order of `FIELDS`.
+/// A window 130 columns wide and as high as the list needs with its chrome, so every row is drawn.
+pub(super) fn fitting_size() -> (u16, u16) {
+    let lines = u16::try_from(super::list::entries().len()).unwrap_or(u16::MAX);
+    (130, lines + super::CHROME_ROWS)
+}
+
 fn index_of(field: Field) -> usize {
     FIELDS
         .iter()

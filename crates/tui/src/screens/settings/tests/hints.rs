@@ -3,7 +3,7 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::super::options::{FIELDS, Field, Group};
-use super::{bare, line_of, move_down, open_settings};
+use super::{bare, fitting_size, line_of, move_down, open_settings};
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::Effect;
 use crate::settings::{Aid, Settings};
@@ -37,6 +37,8 @@ fn the_aid_rows_close_the_list_in_one_group_in_this_order() {
 #[test]
 fn the_group_is_named_in_both_locales_and_the_old_board_heading_is_gone() {
     let mut h = open_settings();
+    let (width, height) = fitting_size();
+    h.resize(width, height);
     let text = h.text();
     assert!(text.contains("Hints and help"), "{text}");
     assert!(!text.contains("Board"), "{text}");

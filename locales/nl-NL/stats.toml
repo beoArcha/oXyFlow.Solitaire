@@ -36,7 +36,8 @@ longest = "Beste reeks"
 assisted = "Hulp"
 
 [history]
-title = "Geschiedenis, nieuwste eerst, tijden in UTC"
+title_utc = "Geschiedenis, nieuwste eerst, tijden in UTC"
+title_local = "Geschiedenis, nieuwste eerst, lokale tijd"
 date = "Datum"
 variant = "Spel"
 seed = "Seed"

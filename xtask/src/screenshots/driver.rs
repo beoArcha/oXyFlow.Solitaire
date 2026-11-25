@@ -8,7 +8,7 @@ use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::storage::memory::MemoryStorage;
 use oxysol_tui::theme::{Theme, Token};
-use oxysol_tui::{App, Deps, Input, NullClipboard, NullSolver, SavedGame, Settings};
+use oxysol_tui::{App, Deps, Input, NullClipboard, NullSolver, SavedGame, Settings, Zone};
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
 use ratatui::style::Color;
@@ -54,6 +54,7 @@ impl Driver {
             solver: Box::new(NullSolver::default()),
             display: DisplayDeps::none(),
             version: env!("CARGO_PKG_VERSION"),
+            zone: Zone::Utc,
         });
         Self {
             app,

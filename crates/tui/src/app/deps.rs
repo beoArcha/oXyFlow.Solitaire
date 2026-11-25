@@ -25,4 +25,27 @@ pub struct Deps {
     pub display: DisplayDeps,
     /// The effective version (T-21, R-23) the main menu shows; the binary computes it at build time.
     pub version: &'static str,
+    /// The time zone of the statistics history; the binary reads the system offset at startup.
+    pub zone: Zone,
+}
+
+/// The time zone the statistics history shows its times in. The binary reads the system's offset
+/// from UTC once at startup; when the system cannot give it, the history stays in UTC.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Zone {
+    /// The system's local time zone, `minutes` east of UTC (negative to the west).
+    Local { minutes: i32 },
+    /// UTC, because the local offset is unknown.
+    #[default]
+    Utc,
+}
+
+impl Zone {
+    /// The offset from UTC in whole minutes; zero for UTC.
+    pub const fn minutes(self) -> i32 {
+        match self {
+            Self::Local { minutes } => minutes,
+            Self::Utc => 0,
+        }
+    }
 }

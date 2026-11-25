@@ -67,11 +67,11 @@ pub const FIELDS: [Field; 31] = [
     Field::AuraColour,
     Field::AuraStyle,
     Field::AuraSize,
-    Field::Priority,
     Field::SoundStyle,
     Field::Cues,
     Field::Music,
     Field::Volume,
+    Field::Priority,
     Field::Aura,
     Field::TargetMarks,
     Field::GuidePanel,
@@ -86,12 +86,19 @@ pub enum Group {
     Display,
     Interface,
     Sound,
+    Performance,
     Hints,
 }
 
 impl Group {
     /// The groups, top to bottom.
-    pub const ALL: [Group; 4] = [Group::Display, Group::Interface, Group::Sound, Group::Hints];
+    pub const ALL: [Group; 5] = [
+        Group::Display,
+        Group::Interface,
+        Group::Sound,
+        Group::Performance,
+        Group::Hints,
+    ];
 
     /// Localization key of the heading.
     pub const fn label_key(self) -> &'static str {
@@ -99,6 +106,7 @@ impl Group {
             Group::Display => "settings.group.display",
             Group::Interface => "settings.group.interface",
             Group::Sound => "settings.group.sound",
+            Group::Performance => "settings.group.performance",
             Group::Hints => "settings.group.hints",
         }
     }
@@ -187,10 +195,11 @@ impl Field {
         }
     }
 
-    /// Whether the row belongs to the Interface section: its changes show at once and are kept only
-    /// after confirmation.
+    /// Whether the row's changes show at once and are kept only after confirmation: the Interface
+    /// rows, and Process priority, which is saved with them (its saved value is part of the
+    /// interface baseline in `Settings::with_interface_of`).
     pub const fn is_interface(self) -> bool {
-        matches!(self.group(), Group::Interface)
+        matches!(self, Field::Priority) || matches!(self.group(), Group::Interface)
     }
 
     /// Whether the row needs the sound output.
@@ -255,8 +264,8 @@ impl Field {
             | Field::CardSize
             | Field::AuraColour
             | Field::AuraStyle
-            | Field::AuraSize
-            | Field::Priority => Group::Interface,
+            | Field::AuraSize => Group::Interface,
+            Field::Priority => Group::Performance,
             Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
             Field::Aura
             | Field::TargetMarks

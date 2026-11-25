@@ -239,6 +239,7 @@ pub struct Deps {
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
     pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
     pub display: DisplayDeps,             // console (O-16, P3-16): `Box<dyn ConsoleDisplay>`, `DisplayFacts { owns_window, kind, flag }`, `Box<dyn ConsoleFont>`
+    pub zone: Zone,                       // statistics history (O-97): `Zone::Local { minutes }` = the system's offset from UTC, or `Zone::Utc` when it is unknown
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
@@ -314,7 +315,7 @@ pub struct NullClipboard;                                // every copy fails wit
   settings, caps, `audio_status`, `sound_styles`, `saved: Option<SavedSummary>` (variant, elapsed, moves of the saved game, for the Resume row), clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
-  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `Enter` Change).
+  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `◄ ►` Change as plain text, then `Enter` Change, O-96).
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
   character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.
@@ -485,7 +486,7 @@ pub struct NullClipboard;                                // every copy fails wit
   "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
   closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
   are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
-- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound and Hints. Interface
+- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound, Performance (O-96: process priority) and Hints. Interface
   holds every row about look: theme, card back, front style, back style, symbols, console font, card size and the aura look
   (`Settings::aura_colour` `AuraColour { Theme, Text, Selection, Hint }`, `aura_style` `AuraStyle { Halo, Frame, MarksOnly }`,
   `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
@@ -606,15 +607,15 @@ pub struct NullClipboard;                                // every copy fails wit
   zero. The share is quick moves over manual plus quick moves, the finish excluded; a game is assisted when the share is above
   `ASSISTED_ABOVE_PERCENT` (80) with at least `ASSISTED_MIN_MOVES` (10) such moves. The counters are information only and never
   block a move. The game has no separate auto-move to the foundations, so only the quick move and the finish are counted.
-- **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
-  selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
+- **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `time.rs`
+  the dates in `Deps::zone`, `list.rs` selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
   A summary per variant and undo mode (games played, won, win rate, best winning time, fewest moves in a win,
   current and longest streak; once a game without undo has finished, a "No restart" column beside the wins counts the wins
 without a restart, `-` for the undo rows; only finished games count, an abandoned game ends a streak, wins without a move
-  count are skipped for "fewest moves") sits above the history list, newest first: UTC date and time (the
-  standard library cannot convert to local time and no dependency was added), game, seed, result, playing
-  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). The status line under the buttons shows the
+  count are skipped for "fewest moves") sits above the history list, newest first: date and time in `Deps::zone`
+  (O-97), game, seed, result, playing
+  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). The heading says "local time" when `Deps::zone` is `Zone::Local` and "times in UTC" when it is `Zone::Utc`, so the label is always true. The binary (`src/main.rs`) reads the system offset with the `time` crate (feature `local-offset`, the O-97 dependency) as the first step of `start`, before any thread exists, and falls back to `Zone::Utc` with one INFO log; the TUI never depends on `time`. The status line under the buttons shows the
   assist line of the selected game (P4-06; `stats/assist.rs`): the share of automatic moves, the failed quick moves, the longest
   run of quick moves, the auto-finish moves and the tag "assisted game"; the check keys show instead for a row without counted
   moves. The summary has an "Assisted" column (finished games above the threshold) from 110 columns. Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed
@@ -835,8 +836,8 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the size changed (the face, family, weight and index are kept; a step passes width 0, Reset restores the start width). A refusal is
   logged at `info` and the step reports no change. `main` builds it only for `TerminalKind::ClassicConsole` and when the font can be read.
 - **Process priority (P4-13):** `Settings::process_priority` (`ProcessPriority`: `Highest`, `High`, `Normal` default, `Low`,
-  `Lowest`; never real time) is a row of the Interface group, so a change is previewed and confirmed like the other
-  Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
+  `Lowest`; never real time) sits in the Performance group (O-96) but keeps the Interface path: a change is previewed and
+  confirmed like the Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
   setting. `App` asks the `PriorityControl` trait (`DisplayDeps::priority`) at start and on every change of the level, once
   per level; the answer is a `PriorityOutcome` (`Applied`, `NeedsPrivileges`, `Failed`) that the row shows beside the value
   (`FontFacts::priority`), never an error log per frame. `src/priority.rs` holds the pure `native_value(Flavour, level)` and

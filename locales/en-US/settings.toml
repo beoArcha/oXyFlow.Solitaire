@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Display"
 interface = "Interface"
 sound = "Sound"
+performance = "Performance"
 hints = "Hints and help"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Sound is unavailable: the selected sound style cannot be loaded.
 
 [footer]
 change = "Change"
+arrows = "{arrows} Change"
 
 [graphics]
 title = "Graphics check"
@@ -194,11 +196,11 @@ target = "target"
 hidden = "Preview needs a larger window."
 
 [preview]
-note = "Preview. Leaving this screen asks whether to keep the interface changes."
+note = "Preview. Leaving this screen asks whether to keep the changes."
 position = "row {row} of {total}"
 
 [confirm]
-keep_interface = "Keep the changed interface settings?"
+keep_interface = "Keep the changed settings?"
 
 [face]
 consolas = "Consolas"
