@@ -4,6 +4,7 @@ mod assist;
 mod aura;
 mod aura_look;
 mod commands;
+mod compressed;
 mod counters;
 mod face_down;
 mod finish;

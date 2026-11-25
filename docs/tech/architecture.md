@@ -702,7 +702,9 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `Chrome { class, header: Option<Rect>, field, body, guide: Option<Rect>, moves: Option<Rect>, now, possible }`. The same result drives rendering and hit-testing. Two layouts:
   columns (Klondike, Spider, FreeCell, Yukon, Golf) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
   that fits the window and is not above `Settings::card_size` (`layout::compute_within`; `compute` has no limit; a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
-  face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter.
+  face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter. When even that
+  would stack face-up cards of a tableau column, the next smaller card size is taken (O-107), so the last card of the
+  longest column always stays fully drawn above the status rows.
   Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).
 - **Themes:** `ThemeId { Dark, Light, HighContrast, Monokai, Dracula }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
   `Token`; `Theme::new(id, depth)` resolves it: true color emits the RGB, 256 colors use `rgb_to_ansi256`,
