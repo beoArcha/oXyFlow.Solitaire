@@ -6,6 +6,7 @@ use ratatui::text::Line;
 use crate::clock::format_elapsed;
 use crate::i18n::{t, tf};
 use crate::screens::{SavedSummary, variant_label_key};
+use crate::widgets::menu_list::Row;
 
 /// The room the marker and the margin of the list take from the row.
 const MARGIN: u16 = 4;
@@ -26,4 +27,18 @@ pub fn label(saved: SavedSummary, columns: u16) -> String {
         .into_iter()
         .find(|text| Line::raw(text.as_str()).width() <= room)
         .unwrap_or(shortest)
+}
+
+/// The Resume row: the word `Resume` and, muted, the game details after it. The row is followed by
+/// an empty row, so the other entries sit one row lower and apart from it. A text that does not
+/// start with the word is drawn whole.
+pub fn row(saved: SavedSummary, columns: u16) -> Row {
+    let text = label(saved, columns);
+    let word = t("menu.resume");
+    if let Some(details) = text.strip_prefix(word.as_ref()) {
+        return Row::new(word.as_ref())
+            .with_detail(details)
+            .with_gap_after();
+    }
+    Row::new(text).with_gap_after()
 }
