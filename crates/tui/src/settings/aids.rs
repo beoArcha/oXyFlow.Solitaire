@@ -13,6 +13,7 @@ pub struct Aids {
     pub guide_panel: bool,
     pub moves_panel: bool,
     pub auto_finish: bool,
+    pub quick_move: bool,
 }
 
 /// One aid, as a row of the "Hints and help" group and of the quick options dialog.
@@ -23,16 +24,18 @@ pub enum Aid {
     GuidePanel,
     MovesPanel,
     AutoFinish,
+    QuickMove,
 }
 
 impl Aid {
     /// Every aid, top to bottom.
-    pub const ALL: [Aid; 5] = [
+    pub const ALL: [Aid; 6] = [
         Aid::Aura,
         Aid::TargetMarks,
         Aid::GuidePanel,
         Aid::MovesPanel,
         Aid::AutoFinish,
+        Aid::QuickMove,
     ];
 
     /// Localization key of the row label.
@@ -43,6 +46,7 @@ impl Aid {
             Aid::GuidePanel => "settings.row.guide_panel",
             Aid::MovesPanel => "settings.row.moves_panel",
             Aid::AutoFinish => "settings.row.auto_finish",
+            Aid::QuickMove => "settings.row.quick_move",
         }
     }
 
@@ -54,6 +58,7 @@ impl Aid {
             Aid::GuidePanel => "settings.desc.guide_panel",
             Aid::MovesPanel => "settings.desc.moves_panel",
             Aid::AutoFinish => "settings.desc.auto_finish",
+            Aid::QuickMove => "settings.desc.quick_move",
         }
     }
 
@@ -70,6 +75,7 @@ impl Aid {
             Aid::GuidePanel => aids.guide_panel,
             Aid::MovesPanel => aids.moves_panel,
             Aid::AutoFinish => aids.auto_finish,
+            Aid::QuickMove => aids.quick_move,
         }
     }
 
@@ -115,6 +121,7 @@ impl Aid {
             Aid::GuidePanel => next.guide_panel = !aids.guide_panel,
             Aid::MovesPanel => next.moves_panel = !aids.moves_panel,
             Aid::AutoFinish => next.auto_finish = !aids.auto_finish,
+            Aid::QuickMove => next.quick_move = !aids.quick_move,
         }
         next
     }
@@ -129,6 +136,7 @@ impl Settings {
             guide_panel: self.guide_panel,
             moves_panel: self.moves_panel,
             auto_finish: self.auto_finish,
+            quick_move: self.quick_move,
         }
     }
 
@@ -140,6 +148,7 @@ impl Settings {
             guide_panel: aids.guide_panel,
             moves_panel: aids.moves_panel,
             auto_finish: aids.auto_finish,
+            quick_move: aids.quick_move,
             ..self.clone()
         }
     }
@@ -157,6 +166,7 @@ mod tests {
             guide_panel: false,
             moves_panel: false,
             auto_finish: false,
+            quick_move: false,
         };
         let settings = Settings::default().with_aids(aids);
         assert_eq!(settings.aids(), aids);

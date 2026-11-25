@@ -11,6 +11,7 @@ use super::*;
 use crate::app::Screen;
 use crate::input::Input;
 use crate::layout::{BoardGeometry, Hit};
+use crate::settings::{Aids, Settings};
 
 const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
 const RELAXED: Variant = Variant::Pyramid(PyramidRules::Relaxed);
@@ -171,6 +172,24 @@ fn a_double_click_on_a_card_quick_moves_it() {
     click(&mut h, source);
     assert_eq!(moves_made(&h), 1);
     assert_eq!(pile_len(&h, from), before - usize::from(count));
+}
+
+#[test]
+fn a_double_click_does_nothing_when_quick_move_is_off() {
+    let mut h = start(KLONDIKE, 5);
+    h.app.apply(Effect::Quick(Aids {
+        quick_move: false,
+        ..Settings::default().aids()
+    }));
+    let (from, _, count) = first_move(&h);
+    let before = pile_len(&h, from);
+    let source = must(card_cell(&h, from, before - usize::from(count)));
+    click(&mut h, source);
+    wait(&mut h, 150);
+    click(&mut h, source);
+    assert_eq!(moves_made(&h), 0);
+    assert_eq!(pile_len(&h, from), before);
+    assert_eq!(status(&h), Some(crate::screens::board::status::QUICK_OFF));
 }
 
 #[test]

@@ -42,10 +42,11 @@ pub enum Field {
     GuidePanel,
     MovesPanel,
     AutoFinish,
+    QuickMove,
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 30] = [
+pub const FIELDS: [Field; 31] = [
     Field::Language,
     Field::Colors,
     Field::FullScreen,
@@ -76,6 +77,7 @@ pub const FIELDS: [Field; 30] = [
     Field::GuidePanel,
     Field::MovesPanel,
     Field::AutoFinish,
+    Field::QuickMove,
 ];
 
 /// A heading of the settings screen; the rows of a group follow its heading.
@@ -180,6 +182,7 @@ impl Field {
             Field::GuidePanel => Some(Aid::GuidePanel),
             Field::MovesPanel => Some(Aid::MovesPanel),
             Field::AutoFinish => Some(Aid::AutoFinish),
+            Field::QuickMove => Some(Aid::QuickMove),
             _ => None,
         }
     }
@@ -259,7 +262,8 @@ impl Field {
             | Field::TargetMarks
             | Field::GuidePanel
             | Field::MovesPanel
-            | Field::AutoFinish => Group::Hints,
+            | Field::AutoFinish
+            | Field::QuickMove => Group::Hints,
         }
     }
 

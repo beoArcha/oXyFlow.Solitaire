@@ -168,7 +168,8 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         | Field::TargetMarks
         | Field::GuidePanel
         | Field::MovesPanel
-        | Field::AutoFinish => aid_text(field, settings),
+        | Field::AutoFinish
+        | Field::QuickMove => aid_text(field, settings),
     }
 }
 
@@ -321,7 +322,8 @@ pub fn changed(
         | Field::TargetMarks
         | Field::GuidePanel
         | Field::MovesPanel
-        | Field::AutoFinish => return toggled_aid(field, settings),
+        | Field::AutoFinish
+        | Field::QuickMove => return toggled_aid(field, settings),
     }
     next
 }

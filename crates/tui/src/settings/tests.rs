@@ -138,6 +138,28 @@ fn auto_finish_is_on_by_default_and_old_values_without_it_keep_it_on() {
 }
 
 #[test]
+fn quick_move_is_on_by_default_and_old_values_without_it_keep_it_on() {
+    assert!(Settings::default().quick_move);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(parsed, Ok(ref s) if s.quick_move));
+    let off = toml::from_str::<Settings>("quick_move = false");
+    assert!(matches!(off, Ok(ref s) if !s.quick_move));
+}
+
+#[test]
+fn quick_move_off_round_trips_through_the_aids() {
+    let settings = Settings {
+        quick_move: false,
+        ..Settings::default()
+    };
+    assert!(!settings.aids().quick_move);
+    let text = toml::to_string(&settings);
+    assert!(text.is_ok());
+    let back = text.map(|t| toml::from_str::<Settings>(&t));
+    assert!(matches!(back, Ok(Ok(ref s)) if *s == settings && !s.quick_move));
+}
+
+#[test]
 fn the_aura_is_full_by_default_and_old_values_without_it_keep_it_full() {
     assert_eq!(Settings::default().aura, AuraMode::Full);
     let parsed = toml::from_str::<Settings>("volume = 10");

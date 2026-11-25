@@ -108,6 +108,9 @@ pub struct Settings {
     /// Whether a forced win is played out automatically move by move. An older saved value without
     /// the field loads as `true`.
     pub auto_finish: bool,
+    /// Whether `a` and a double click move a card to its best target (quick move). When off they do
+    /// nothing and the moves window says why. An older saved value without the field loads as `true`.
+    pub quick_move: bool,
     /// Which halos the board draws. An older saved value without the field loads as `Full`.
     pub aura: AuraMode,
     /// Whether the board marks the places a carried run can go (`+` and the target halo). An older
@@ -169,6 +172,7 @@ impl Default for Settings {
             undo_allowed: true,
             winnable_only: false,
             auto_finish: true,
+            quick_move: true,
             aura: AuraMode::Full,
             target_marks: true,
             full_screen: FullScreen::Auto,

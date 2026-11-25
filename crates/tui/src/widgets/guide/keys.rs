@@ -31,7 +31,7 @@ const fn entry(actions: &'static [Action], label: &'static str) -> Entry {
     Entry { actions, label }
 }
 
-fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
+fn entries(variant: Variant, undo_allowed: bool, quick_move: bool) -> Vec<Entry> {
     let pyramid = matches!(variant, Variant::Pyramid(_));
     let mut rows = vec![
         entry(
@@ -47,8 +47,10 @@ fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
             },
         ),
         entry(&[Action::Back], "board.guide.back"),
-        entry(&[Action::QuickMove], "board.guide.quick"),
     ];
+    if quick_move {
+        rows.push(entry(&[Action::QuickMove], "board.guide.quick"));
+    }
     if !pyramid {
         rows.push(entry(
             &[Action::RunMore, Action::RunLess],
@@ -80,8 +82,9 @@ fn entries(variant: Variant, undo_allowed: bool) -> Vec<Entry> {
     rows
 }
 
-fn mouse_gestures(variant: Variant) -> Vec<&'static str> {
-    let mut gestures = vec![MOUSE_CLICK, MOUSE_DOUBLE];
+fn mouse_gestures(variant: Variant, quick_move: bool) -> Vec<&'static str> {
+    let mut gestures = vec![MOUSE_CLICK];
+    gestures.extend(quick_move.then_some(MOUSE_DOUBLE));
     gestures.extend(variant.has_stock().then_some(MOUSE_STOCK));
     gestures.push(MOUSE_RIGHT);
     gestures
@@ -163,7 +166,7 @@ pub(super) fn goal(variant: Variant, width: usize, ctx: &ViewCtx<'_>) -> Vec<Lin
 
 /// The lines of the `Keys` section below its heading, the `n` row last.
 pub(super) fn keys(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
-    let rows = entries(guide.variant, guide.undo_allowed);
+    let rows = entries(guide.variant, guide.undo_allowed, ctx.settings.quick_move);
     let key_width = rows
         .iter()
         .map(|entry| keys_text(entry.actions).chars().count())
@@ -177,7 +180,7 @@ pub(super) fn keys(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Li
 /// The lines of the `Mouse` section below its heading.
 pub(super) fn mouse(variant: Variant, width: usize, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
     let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
-    mouse_gestures(variant)
+    mouse_gestures(variant, ctx.settings.quick_move)
         .iter()
         .map(|key| Line::styled(clip(&t(key), width), muted))
         .collect()

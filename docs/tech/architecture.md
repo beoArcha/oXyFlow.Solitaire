@@ -462,7 +462,9 @@ pub struct NullClipboard;                                // every copy fails wit
   `settings/arrows.rs` records the arrows' cells when the screen draws: a click on `◄` steps the value back, a click on
   `►` forward, a click elsewhere on the row forward as before (`settings/values.rs::line`).
 - **Aids and quick options (P3-27):** the board aids are `Settings::aura`, `target_marks` (default `true`; an older
-  value without the field loads as `true`), `guide_panel`, `moves_panel` and `auto_finish`; `settings/aids.rs` holds them as
+  value without the field loads as `true`), `guide_panel`, `moves_panel`, `auto_finish` and `quick_move` (O-114, default `true`, an older value loads as
+  `true`; when off, `a` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
+  out quick move, and the moves window shows it unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
   `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
   `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings groups them under
   "Hints and help" (`Group::Hints`, replacing the old Board group), after Display and Sound; the moves panel and the
@@ -712,7 +714,9 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
   `ThemeId::contrast_target()` (4.5, High Contrast 7.0).
 - **Readable card faces (P3-14, replaces the P3-13 pixel font):** `widgets/card/` is a module (`mod.rs` drawing,
-  labels and the three entry points `draw`, `draw_back_row`, `draw_fanned`, `draw_collapsed`; `frame.rs` borders;
+  labels and the entry points `draw`, `draw_back_row`, `draw_fanned`, `draw_collapsed` and `draw_covered` (a
+  card covered from below by the next one: its big centre pip is drawn only when the whole pip area is visible and
+  the card is not blocked, otherwise only its rank and suit, O-106); `frame.rs` borders;
   `mark.rs` `Mark` and `Hint`; `rows.rs` corner labels, marker symbols and the stock badge; `slot.rs` placeholders;
   `paint.rs` clipped painting; `face.rs` centre layout; `art.rs` suit pictograms). The rank is text, never a
   picture: a face-up card of 9x7, 11x9 or 13x11 draws one bold row `K ♣` (the localized corner label, one space,
