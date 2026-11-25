@@ -98,7 +98,7 @@ fn the_focused_aid_row_is_explained_in_both_locales() {
 #[test]
 fn target_marks_and_the_moves_panel_have_their_own_rows() {
     let mut h = open_settings();
-    h.resize(140, 43);
+    h.resize(140, 46);
     assert!(bare(&line_of(&mut h, "Target marks")).ends_with("On"));
     assert!(bare(&line_of(&mut h, "Possible moves panel")).ends_with("On"));
     move_down(&mut h, index_of(Aid::TargetMarks));

@@ -12,7 +12,7 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
 
 ### P3-36 — Themes as data and the interface size scale
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P3-29, P3-30
 - **Files:** `crates/tui/src/theme/**`, `assets/themes/` (new), `crates/tui/src/layout/**`,
   `crates/tui/src/settings.rs`, `src/` (loading a user theme), `docs/tech/ui-inventory.md`, tests
@@ -30,7 +30,7 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
 
 ### P6-04 — Card style: four-colour French
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P5-03, P3-35
 - **Files:** `assets/cards/fronts/french-four-colour/style.toml` (new), `locales/*/cards.toml` (the style name key)
 - **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
@@ -44,7 +44,7 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
 
 ### P6-05 — Game: TriPeaks
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P5-04
 - **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/tripeaks/**`, `crates/core/src/solver/tripeaks*` (new,
   if the solver is in this card), the variant list of `oxysol-core` where the games are matched,
@@ -63,7 +63,7 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
 
 ### P6-06 — More game options
 
-- **Owner:** Opus (finalizes the scope), then Haiku
+- **Owner:** Large (finalizes the scope), then Small
 - **Status:** DRAFT (the owner chooses the options; Opus writes the final scope before dispatch)
 - **Depends on:** P4-09, P3-27
 - **Files:** `crates/core/src/games/**` (only the options of the games named), `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, `locales/*/menu.toml`, tests
@@ -94,7 +94,7 @@ The cards reuse that pipeline; they do not copy input handling, state updates or
 
 ### P6-07 — Dev bridge: headless driver, virtual clock and UI state snapshot
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** T-12, T-14
 - **Files:** `crates/tui/Cargo.toml` (feature `dev`), `crates/tui/src/clock.rs`, `crates/tui/src/terminal.rs`,
   `crates/tui/src/headless/**` (new, `#[cfg(feature = "dev")]`), `crates/tui/src/app/snapshot.rs` (new,
@@ -141,7 +141,7 @@ The cards reuse that pipeline; they do not copy input handling, state updates or
 
 ### P6-08 — Dev bridge: `--dev-bridge` JSON-lines protocol
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P6-07
 - **Files:** `Cargo.toml` (feature `dev-bridge = ["oxysol-tui/dev"]`, off by default), `src/cli.rs`, `src/main.rs`,
   `src/dev_bridge/**` (new, `#[cfg(feature = "dev-bridge")]`), `src/lib.rs`, `docs/tech/architecture.md` (application
@@ -186,7 +186,7 @@ The cards reuse that pipeline; they do not copy input handling, state updates or
 
 ### P6-09 — Dev bridge: `--dev-log` structured log and determinism tests
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P6-08
 - **Files:** `src/dev_bridge/**`, `src/cli.rs`, `tests/integration/dev_bridge.rs`, `xtask/src/**` (one step in
   `cargo xtask check` that builds and tests with `--features dev-bridge`), `docs/tech/workflow.md` (the new check step),

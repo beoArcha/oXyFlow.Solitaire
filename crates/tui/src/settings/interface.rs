@@ -110,8 +110,10 @@ impl Settings {
     pub fn with_interface_of(&self, saved: &Settings) -> Settings {
         Settings {
             theme: saved.theme,
+            color_vision: saved.color_vision,
             card_back: saved.card_back,
             card_face: saved.card_face,
+            four_color_deck: saved.four_color_deck,
             table_colour: saved.table_colour,
             table_feel: saved.table_feel,
             front_style: saved.front_style.clone(),

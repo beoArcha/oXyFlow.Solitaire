@@ -11,7 +11,7 @@ Order of work: the card style, then the game.
 
 ### P7-04 — Card style: Hungarian suits (Unicode)
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P6-04
 - **Files:** `assets/cards/fronts/hungarian/style.toml` (new), `locales/*/cards.toml` (the style name key)
 - **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
@@ -25,7 +25,7 @@ Order of work: the card style, then the game.
 
 ### P7-05 — Game: Scorpion
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a public-domain rules source the owner names)
 - **Depends on:** P6-05
 - **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/scorpion/**`, the variant list of `oxysol-core`
@@ -57,7 +57,7 @@ the renderer into the dev feature and make `xtask` use it and `Headless`. Nothin
 
 ### P7-06 — Screenshots: one SVG renderer for the dev bridge and the player site
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P6-07
 - **Files:**
   - `crates/tui/src/headless/svg/**` (new, feature `dev`; moved from `xtask/src/screenshots/{grid,shapes,svg}.rs`)
@@ -89,7 +89,7 @@ the renderer into the dev feature and make `xtask` use it and `Headless`. Nothin
 
 ### P7-07 — Screenshots: deterministic PNG and image paths in the bridge `snapshot`
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P7-06, P6-08
 - **Files:**
   - `Cargo.toml` (feature `dev-bridge` adds `resvg`, which is already a workspace dependency, with its `text` feature)
@@ -121,7 +121,7 @@ the renderer into the dev feature and make `xtask` use it and `Headless`. Nothin
 
 ### P7-08 — Batch runner: `--dev-script` and `--dev-out`
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P7-07, P6-09
 - **Files:** `src/cli.rs`, `src/dev_bridge/**`, `docs/tech/architecture.md`, `tests/integration/dev_bridge.rs`, tests
 - **Scope:**
@@ -145,7 +145,7 @@ the renderer into the dev feature and make `xtask` use it and `Headless`. Nothin
 
 ### P7-09 — Baseline scenario pack and the viewport runner
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P7-08
 - **Files:** `dev/scenarios/*.jsonl` (new), `dev/scenarios/README.md` (new), `xtask/src/scenarios.rs` (new, `cargo xtask
   scenarios`), `xtask/src/main.rs`, `docs/tech/workflow.md` (the command), `.gitignore` (the output folder), tests

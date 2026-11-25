@@ -73,7 +73,7 @@ fn act(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, action: Action) -> Effect
 
 /// The window is wide enough for the preview pane beside the list and high enough for the whole
 /// list, including the table settings.
-const SCREEN_SIZE: (u16, u16) = (130, 43);
+const SCREEN_SIZE: (u16, u16) = (130, 46);
 
 fn render(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>) -> Vec<String> {
     let mut terminal = Terminal::new(TestBackend::new(SCREEN_SIZE.0, SCREEN_SIZE.1))
