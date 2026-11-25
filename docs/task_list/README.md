@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 18 | 38 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 18 | 41 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 7 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
@@ -325,6 +325,9 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-110 | Quick move from the exposed waste pile | Medium | — | TODO |
 | O-111 | Default console width and three window sizes | Medium | O-109 | TODO |
 | O-112 | Roles by model tier instead of model names (R-26) | Large | — | DONE |
+| O-113 | New game: described in the guide and a button on the board | Small | P3-35 | TODO |
+| O-114 | Quick move can be turned off (Quick options and Settings) | Small | P3-35 | TODO |
+| O-115 | Is it winnable? A check for the deal and for the current position | Medium | P5-05 | TODO |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 
