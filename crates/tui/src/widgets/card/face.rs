@@ -16,6 +16,13 @@ use crate::glyphs::Glyphs;
 const TEXT_BAND: u16 = 3;
 const WIDE_INTERIOR: u16 = 11;
 
+/// How much of a card's height is uncovered from below when drawing its centre.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) struct Visibility {
+    pub(super) rows: Option<u16>,
+    pub(super) blocked: bool,
+}
+
 /// The scale that fits `interior`, the card area inside the border, or `None` for the compact face.
 pub(super) fn scale_for(interior: Rect) -> Option<Scale> {
     let big = |scale: Scale, gap: u16| {
@@ -60,11 +67,17 @@ fn paint_large(
     scale: Scale,
     (card, glyphs): (Card, &Glyphs),
     style: Style,
+    (show_text, show_pip): (bool, bool),
 ) {
-    let text = text_row(card, glyphs, interior);
-    if width_of(&text) <= interior.width {
-        let bold = style.add_modifier(Modifier::BOLD);
-        painter.text(centered(interior, &text), interior.y, &text, bold);
+    if show_text {
+        let text = text_row(card, glyphs, interior);
+        if width_of(&text) <= interior.width {
+            let bold = style.add_modifier(Modifier::BOLD);
+            painter.text(centered(interior, &text), interior.y, &text, bold);
+        }
+    }
+    if !show_pip {
+        return;
     }
     let top = interior.y + art_offset(interior, scale);
     if let Some(glyph) = font_glyph(card, glyphs) {
@@ -86,13 +99,28 @@ fn paint_compact(painter: &mut Painter<'_>, area: Rect, card: Card, glyphs: &Gly
 pub(super) fn paint_center(
     painter: &mut Painter<'_>,
     area: Rect,
-    card: Card,
-    glyphs: &Glyphs,
+    (card, glyphs): (Card, &Glyphs),
     style: Style,
+    visible: Visibility,
 ) {
     let interior = Rect::new(area.x + 1, area.y + 1, area.width - 2, area.height - 2);
-    match scale_for(interior) {
-        Some(scale) => paint_large(painter, interior, scale, (card, glyphs), style),
-        None => paint_compact(painter, area, card, glyphs, style),
+    let scale = scale_for(interior);
+    let pip_bottom = match scale {
+        Some(scale) => 1 + art_offset(interior, scale) + scale.suit_height(),
+        None => area.height / 2 + 1,
+    };
+    let show_pip = !visible.blocked && visible.rows.is_none_or(|rows| rows >= pip_bottom);
+    let show_text = visible.rows.is_none_or(|rows| rows >= 2);
+    match scale {
+        Some(scale) => paint_large(
+            painter,
+            interior,
+            scale,
+            (card, glyphs),
+            style,
+            (show_text, show_pip),
+        ),
+        None if show_pip => paint_compact(painter, area, card, glyphs, style),
+        None => {}
     }
 }
