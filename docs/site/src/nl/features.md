@@ -4,86 +4,87 @@
 
 ## Spellen
 
-- **Klondike**: 1 of 3 kaarten trekken.
-- **Spider**: met 1, 2 of 4 kleuren.
+Veertien spellen in zes families, één programma, één set toetsen:
+
+- **Klondike**: 1 kaart trekken of 3 kaarten trekken.
+- **Spider**: 1, 2 of 4 kleuren.
 - **FreeCell**.
 - **Piramide**: ontspannen of klassiek.
-- **Yukon-familie**: Yukon, Russisch solitair, Alaska, Moosehide en Australisch (met stapel, één keer door).
+- **Yukon-familie**: Yukon, Russisch solitair, Alaska, Moosehide en Australisch.
+- **Golf**: zeven kolommen leegmaken op de aflegstapel, steeds één rang omhoog of omlaag.
 
-Eén programma, één menu, dezelfde toetsen overal.
+Het spelmenu zet de spellen onder familiekoppen, geeft de populaire spellen een ster, houdt je favorieten in een eigen lijst en vindt een spel terwijl je de naam typt. De regels van elk spel staan in het helpvenster (`i`, "Spelregels").
 
-Het spelmenu groepeert de spellen per familie, markeert populaire met een ster, bewaart je favorieten in een eigen lijst en heeft een zoekveld.
+## Verdelingen: seeds, winbare spellen en moeilijkheid
 
-## Kaartstijlen
+Elke verdeling heeft een **seed**. Kopieer die met `c` om de verdeling opnieuw te spelen of te delen.
 
-In Instellingen kies je een voorkantstijl (Internationaal, Frans, Duits, Italiaans of Zwitsers) en een achterkantstijl (Tralie of Ornament). De kaarten worden met vectorglyphs getekend en de kleur van de kaart staat altijd ook als teken naast de waarde.
-
-## Toetsenbord en muis
-
-Elke actie werkt met het toetsenbord en met de muis. Klik op een kaart om hem op te pakken en klik op een doel om hem
-neer te leggen. Dubbelklikken stuurt een kaart naar een aflegstapel, je kunt een kaart naar zijn doel slepen, en met
-de rechtermuisknop leg je hem terug. De volledige lijst met toetsen staat in het helpvenster (`?`).
-
-## Kaartgrootte
-
-`]` maakt de kaarten groter en `[` kleiner; `0` gaat terug naar de automatische grootte, die zich aan het venster
-aanpast. Ctrl+scrollwiel en de instelling Kaartgrootte  doen hetzelfde. Een grootte die niet in het venster
-past, wordt vanzelf kleiner. In de klassieke Windows-console veranderen Ctrl+Plus, Ctrl+Min en Ctrl+0 de
-lettergrootte van de console.
+- **Alleen winbare verdelingen.** Een nieuw spel kan wachten op een verdeling die de ingebouwde oplosser bewezen winbaar heeft gevonden. De oplosser kent elke kaart, dus "winbaar" betekent dat de verdeling gewonnen kan worden, niet dat ze makkelijk is.
+- **Nieuw spel uit een seed.** Kies eerst het spel en dan waar de seed vandaan komt: een seed typen, een van de verdelingen kiezen die je al hebt gespeeld (de nieuwste eerst, met resultaat en tijd), het spel er willekeurig een laten kiezen, of een van de **geselecteerde verdelingen** nemen.
+- **Vijf moeilijkheidsniveaus.** Elk spel biedt voor elk niveau drie geselecteerde verdelingen, van heel makkelijk tot heel moeilijk. Alle zijn bewezen winbaar. De niveaus komen uit metingen: hoeveel werk de oplosser nodig had, hoe lang de winnende lijn is en of het alleen volgen van de hints genoeg is om de verdeling te winnen.
 
 ## Hulp tijdens het spelen
 
-- **Gidspaneel** (`g`): het doel van het spel, de toetsen en wat de geselecteerde kaart kan. Het staat naast het
-  speelveld op terminals van minstens 130 kolommen breed en opent op smallere terminals in een venster.
-- **Paneel met mogelijke zetten** (`v`): elke zet die je nu kunt doen, elk met zijn toets.
-- **Hints** (`h`): het spel markeert een zet op het speelveld en benoemt hem.
-- **Automatisch afmaken**: als het spel zeker gewonnen is, worden de resterende zetten voor je gespeeld. Dit kun je
-  uitzetten in de Instellingen.
+- **Gidspaneel** (`g`): de spelgegevens, het doel van het spel, de toetsen (met een teken bij wat nu werkt) en de muisacties. Vanaf 130 kolommen staat het naast het bord, met bovenaan een knop **Nieuw spel**; op smallere terminals opent het in een venster.
+- **Zettenpaneel** (`v`): elke zet die je nu kunt doen, met zijn toets, en de reden wanneer een zet niet mogelijk is.
+- **Hints** (`h`): het spel markeert een zet op het bord en noemt die. Hints gebruiken alleen wat je kunt zien: ze kijken nooit in verborgen kaarten of in de stapel.
+- **Snelle zetten**: `a` stuurt de kaarten onder de cursor naar hun beste doel, `e` doet hetzelfde voor de bovenste kaart van de aflegstapel, vanaf elke plek op het bord, en een dubbelklik werkt als `a`. Snelle zetten kun je uitzetten in de instellingen of in de snelle opties (`o`) als je elke kaart zelf wilt neerleggen.
+- **Automatisch voltooien**: zodra de overwinning zeker is, worden de resterende zetten voor je gespeeld. Dit kan uitgezet worden.
 - **Ongedaan maken en opnieuw** (`u`, `r`), met een optie om zonder ongedaan maken te spelen.
 
-## Seeds, winbare spellen, statistieken
+## Toetsenbord en muis
 
-Elk spel heeft een **seed** (startwaarde). Kopieer hem (`c`) om een spel opnieuw te spelen of te delen, of start een
-spel vanuit elke gewenste seed met ‘Nieuw spel vanuit seed’. Met een optie zoekt een nieuw spel
-naar een verdeling waarvan bewezen is dat hij te winnen is. Het scherm **Statistieken** toont de resultaten per spel en
-een geschiedenis van alle spellen, de nieuwste eerst, en laat je een seed opnieuw spelen.
+Elke actie werkt met het toetsenbord en met de muis. Klik op een kaart om hem op te pakken en op een doel om hem neer te leggen, dubbelklik voor een snelle zet, sleep een kaart naar zijn doel en klik met de rechtermuisknop om hem terug te leggen. Voetteksten en knoppen zoals Nieuw spel of Sluiten tonen hun toets, en het actieve tabblad van een venster ziet er nooit uit als de knop in focus. Het helpvenster (`?`) toont elke toets; het kan ook aan de zijkant van het scherm vastgezet blijven (`d`).
 
-## Thema’s voor comfort en toegankelijkheid
+## Instellingen
 
-Vijf thema’s, te kiezen in de Instellingen. Elk thema staat hier op dezelfde stelling.
+De instellingen hebben drie tabbladen:
 
-**Dark** (donker) en **Light** (licht) voor elke dag.
+- **Populair** opent als eerste en verzamelt de instellingen die het vaakst veranderd worden: taal, slechtziendheid, thema, kaartgrootte, kaartrug, volume, gloed en automatisch voltooien.
+- **Audio & Beeld** bevat alles over het uiterlijk en het geluid: kleuren, volledig scherm en venstergrootte, thema, kleurenzicht, kaartstijlen en -tinten, de tafel, de gloed, het consolelettertype, het geluid en de procesprioriteit.
+- **Spel** bevat de taal en de hulpmiddelen: gloed, doelmarkeringen, het gidspaneel en het zettenpaneel, automatisch voltooien en snelle zetten.
 
-![Het thema Dark](../img/nl/theme-dark.svg)
+Een voorbeeld naast de lijst toont een wijziging voordat je die behoudt.
 
-![Het thema Light](../img/nl/theme-light.svg)
+## Kaarten en tafel
 
-**High contrast** (hoog contrast) is gemaakt voor slechtzienden: witte tekst op puur zwart met felgele en cyaan
-accenten, een kader rond het speelveld en een tekstcontrast van minstens 7:1 (de andere thema’s halen minstens 4,5:1;
-tests controleren beide).
+- **Zes voorkantstijlen**: Internationaal, Frans, Duits, Italiaans, Spaans en Zwitsers, elk met zijn eigen kleurtekens of letters voor hofkaarten.
+- **Twee achterkantstijlen** (Rooster en Ornament) en kaartrugkleuren uit het thema, Monokai of Dracula.
+- **Kleurtint van de kaartvoorkant**: die van het thema, wit, ivoor, lichtgrijs of donker.
+- **Tafel**: de kleur van het thema, groen laken, blauw, rood, grijs, bruin of zwart, en het oppervlak effen, vilt of gelijnd.
+- **Kaartgrootte**: maak de kaarten groter met `]` en kleiner met `[`; `0` herstelt de automatische grootte die in het venster past. Lange kolommen sluiten dichter op elkaar zodat hun laatste kaart altijd volledig zichtbaar blijft, en de kaarten worden alleen kleiner als dichter op elkaar sluiten niet genoeg is.
 
-![Het thema High contrast](../img/nl/theme-high-contrast.svg)
+## Thema's en toegankelijkheid
 
-**Monokai** en **Dracula** zijn er ook.
+Vijf thema's: **Donker** en **Licht** voor het dagelijks spelen, **Hoog contrast** voor slechtziendheid, **Monokai** en **Dracula**. Elk wordt hier in dezelfde positie getoond.
+
+![Het thema Donker](../img/nl/theme-dark.svg)
+
+![Het thema Licht](../img/nl/theme-light.svg)
+
+![Het thema Hoog contrast](../img/nl/theme-high-contrast.svg)
 
 ![Het thema Monokai](../img/nl/theme-monokai.svg)
 
 ![Het thema Dracula](../img/nl/theme-dracula.svg)
 
-**Kleur is nooit de enige drager van informatie.** De kleuren van de kaarten staan als tekens (♠ ♥ ♦ ♣) naast de
-waarde, het geselecteerde element is gemarkeerd met een symbool, opgepakte kaarten en doelen hebben hun eigen
-markeringen, en een regel onder het speelveld zegt in woorden waar de cursor staat en wat hij kan doen. Het spel blijft
-bruikbaar voor kleurenblinde spelers. Speciale modi voor kleurenblindheid staan gepland, maar zitten nog niet in het
-spel.
+- **Slechtziendheid.** Eén schakelaar, aangeboden bij de eerste start en in de instellingen: tekstcontrast van minstens 7:1 in elk thema, de grootst mogelijke kaarten die passen, een dikke gloed, vet gedrukte rang en kleurteken, grotere focus- en doelmarkeringen en, in de klassieke Windows-console, een groter lettertype. Elk onderdeel blijft aan te passen, en als je de modus uitzet, komen je eerdere instellingen terug.
+- **Kleurenzicht.** Modi voor protanopie, deuteranopie, tritanopie en monochroom veranderen de kleuren zodat de dingen die je uit elkaar moet kunnen houden, uit elkaar blijven. Het **vierkleurendek** geeft elke kleur een eigen kleur: schoppen zwart, harten rood, ruiten blauw en klaveren groen.
+- **Kleur is nooit het enige signaal.** Kleuren zijn tekens (♠ ♥ ♦ ♣) naast de rang, het item in focus is met een teken gemarkeerd, opgepakte kaarten en doelen hebben hun eigen markeringen, winbaarheidsresultaten dragen ✓ of ✗, en een regel onder het bord zegt in woorden waar de cursor staat en wat hij kan doen.
+
+## Statistieken
+
+Het statistiekenscherm toont de resultaten per spel (overwinningen, reeksen, beste tijd en minste zetten) en een geschiedenis van elke verdeling, de nieuwste eerst en in je lokale tijd. Vanuit de geschiedenis kun je een seed opnieuw spelen, hem kopiëren, of de oplosser laten controleren of een verdeling winbaar was.
+
+## Windows-console
+
+Op Windows bezit een spel dat met een dubbelklik of met `oxysol -n` gestart wordt, zijn eigen consolevenster. Het opent standaard op volledig scherm, en in een venster kun je de grootte in de instellingen kiezen: 130 × 40, 195 × 60 of 260 × 80. Een spel dat in een al geopende console start, laat die console zoals ze is. In de klassieke Windows-console veranderen Ctrl+Plus, Ctrl+Min en Ctrl+0 de lettergrootte van de console; andere terminals zoomen met hun eigen toetsen.
 
 ## Talen
 
-De interface van het spel is beschikbaar in negen talen: Engels, Pools, Duits, Spaans, Frans, Italiaans, Nederlands, Braziliaans Portugees en Oekraïens. Kies de taal met de vlaggenkiezer in de linkerbovenhoek
-van het hoofdmenu, of in de Instellingen; de wijziging geldt meteen.
-
-Deze website is beschikbaar in negen talen: met de links boven aan elke pagina wissel je tussen de talen.
+Het spel is beschikbaar in negen talen: Engels, Pools, Duits, Spaans, Frans, Italiaans, Nederlands, Braziliaans Portugees en Oekraïens. Kies er een met de vlaggenkiezer linksboven in het hoofdmenu, of in de instellingen; hij geldt meteen. Deze website is beschikbaar in dezelfde negen talen.
 
 ## Wat het nog niet is
 
-oXySol is een voorlopige versie. Reken op wat ruwe randjes en meld ze in de
+oXySol is een pre-release. Reken op ruwe randjes, en laat ons die weten via de
 [issuetracker](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

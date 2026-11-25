@@ -2,7 +2,7 @@
 
 # Capturas de pantalla y animaciones
 
-Todas las imágenes de esta página se generan a partir del juego real con `cargo xtask screenshots`, así que muestran lo
+Todas las imágenes de esta página se generan a partir del juego real con `cargo xtask-art screenshots`, así que muestran lo
 que dibuja el programa.
 
 ## Juegos
@@ -45,7 +45,7 @@ que dibuja el programa.
 
 ### Una jugada
 
-![Animación: el cursor coge el as de tréboles y lo deja en una fundación](../img/es/anim-move.svg)
+![Animación: el cursor coge el as de tréboles y lo deja en una base](../img/es/anim-move.svg)
 
 ### Final automático
 
@@ -59,4 +59,4 @@ Si tu sistema pide reducir el movimiento, las animaciones muestran su último fo
 
 ## Temas
 
-Los cinco temas están en la [página de funciones](features.md#temas-para-la-comodidad-y-la-accesibilidad).
+Los cinco temas están en la [página de funciones](features.md#temas-y-accesibilidad).

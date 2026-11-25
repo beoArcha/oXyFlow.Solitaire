@@ -2,7 +2,7 @@
 
 # Screenshot e animazioni
 
-Ogni immagine di questa pagina è generata dal gioco vero e proprio con `cargo xtask screenshots`, quindi mostra
+Ogni immagine di questa pagina è generata dal gioco vero e proprio con `cargo xtask-art screenshots`, quindi mostra
 quello che il programma disegna.
 
 ## Giochi
@@ -59,4 +59,4 @@ Se il tuo sistema chiede di ridurre il movimento, le animazioni mostrano l’ult
 
 ## Temi
 
-I cinque temi sono nella [pagina delle funzionalità](features.md#temi-per-comfort-e-accessibilità).
+I cinque temi sono nella [pagina delle funzionalità](features.md#temi-e-accessibilità).

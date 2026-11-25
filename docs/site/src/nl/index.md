@@ -2,7 +2,7 @@
 
 # oXySol
 
-Patience in je terminal: **Klondike, Spider, FreeCell, Piramide en de Yukon-familie** in één programma — één enkel bestand: `oxysol`.
+Veertien solitairespellen voor je terminal: **Klondike, Spider, FreeCell, Piramide, de Yukon-familie en Golf** in één programma, `oxysol`.
 Het werkt in elke moderne terminal en je speelt het met het toetsenbord of de muis.
 
 ![Klondike in oXySol: het speelveld, het gidspaneel en het paneel met mogelijke zetten](../img/nl/klondike.svg)
@@ -15,7 +15,7 @@ Het werkt in elke moderne terminal en je speelt het met het toetsenbord of de mu
 Alle versies staan op de [releasepagina](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 - [Download een kant-en-klare versie of bouw het programma vanuit de broncode](install.md) op Windows, Linux of macOS.
-- [Functies](features.md): gids, hints, automatisch afmaken, statistieken, thema’s, talen.
+- [Functies](features.md): uitgekozen verdelingen per moeilijkheidsgraad, hints, slechtziendheid en kleurenzicht, kaartstijlen, statistieken en talen.
 - [Schermafbeeldingen en animaties](gallery.md) van alle spellen en schermen.
 
 Broncode en meldingen: [beoArcha/oXyFlow.Solitaire](https://github.com/beoArcha/oXyFlow.Solitaire).

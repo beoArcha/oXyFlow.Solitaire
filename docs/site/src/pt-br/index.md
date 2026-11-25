@@ -2,7 +2,7 @@
 
 # oXySol
 
-Paciência no terminal: **Klondike, Spider, FreeCell, Pirâmide e a família Yukon** em um único programa, um só arquivo: `oxysol`.
+Quatorze jogos de paciência para o terminal: **Klondike, Spider, FreeCell, Pirâmide, a família Yukon e Golf** em um único programa, `oxysol`.
 Funciona em qualquer terminal moderno e pode ser jogado com teclado ou mouse.
 
 ![Klondike no oXySol: a mesa, o painel do guia e o painel de jogadas possíveis](../img/pt/klondike.svg)
@@ -15,7 +15,7 @@ Funciona em qualquer terminal moderno e pode ser jogado com teclado ou mouse.
 Todas as versões estão na [página de lançamentos](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 - [Baixe uma versão pronta ou compile a partir do código-fonte](install.md) no Windows, Linux ou macOS.
-- [Recursos](features.md): guia, dicas, finalização automática, estatísticas, temas, idiomas.
+- [Recursos](features.md): partidas selecionadas por dificuldade, dicas, baixa visão e visão de cores, estilos de carta, estatísticas e idiomas.
 - [Capturas de tela e animações](gallery.md) de todos os jogos e telas.
 
 Código-fonte e relatos de problemas: [beoArcha/oXyFlow.Solitaire](https://github.com/beoArcha/oXyFlow.Solitaire).

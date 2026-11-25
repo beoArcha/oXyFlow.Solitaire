@@ -2,7 +2,7 @@
 
 # Zrzuty ekranu i animacje
 
-Każdy obraz na tej stronie powstał z prawdziwej gry za pomocą `cargo xtask screenshots`, więc pokazuje to, co
+Każdy obraz na tej stronie powstał z prawdziwej gry za pomocą `cargo xtask-art screenshots`, więc pokazuje to, co
 rysuje program.
 
 ## Gry
@@ -59,4 +59,4 @@ Jeśli system prosi o ograniczenie ruchu, animacje pokazują ostatnią klatkę z
 
 ## Motywy
 
-Pięć motywów jest na [stronie funkcji](features.md#motywy-dla-wygody-i-dostępności).
+Pięć motywów jest na [stronie funkcji](features.md#motywy-i-dostępność).

@@ -4,84 +4,87 @@
 
 ## Gry
 
-- **Klondike**: 1 karta lub 3 karty.
+Czternaście gier w sześciu rodzinach, jeden program, jeden zestaw klawiszy:
+
+- **Klondike**: dobieranie 1 karty albo 3 kart.
 - **Pająk**: 1, 2 lub 4 kolory.
 - **FreeCell**.
-- **Piramida**: swobodna lub klasyczna.
-- **Rodzina Yukon**: Yukon, Rosyjski pasjans, Alaska, Moosehide i Australijski (z talią, jedno przejście).
+- **Piramida**: swobodna albo klasyczna.
+- **Rodzina Yukon**: Yukon, Rosyjski pasjans, Alaska, Moosehide i Australijski.
+- **Golf**: opróżnianie siedmiu kolumn na stos odrzuconych, po jednej randze w górę lub w dół naraz.
 
-Jeden program, jedno menu, jeden zestaw klawiszy.
+Menu gier grupuje gry pod nagłówkami rodzin, oznacza gwiazdką te popularne, trzyma ulubione na osobnej liście i znajduje grę, kiedy wpisujesz jej nazwę. Zasady każdej gry są w oknie pomocy (`i`, „Jak grać”).
 
-Menu gier grupuje gry w rodziny, oznacza gwiazdką te popularne, trzyma ulubione na osobnej liście i ma pole wyszukiwania.
+## Rozdania: ziarna, rozdania do wygrania i poziomy trudności
 
-## Style kart
+Każde rozdanie ma **ziarno** (seed). Skopiuj je klawiszem `c`, żeby powtórzyć rozdanie albo się nim podzielić.
 
-W Ustawieniach wybierasz styl awersów (Międzynarodowy, Francuski, Niemiecki, Włoski lub Szwajcarski) i styl rewersów (Kratka lub Ornament). Karty są rysowane glifami wektorowymi, a kolor karty zawsze jest pokazany także znakiem obok figury.
+- **Tylko rozdania do wygrania.** Nowa gra może poczekać na rozdanie, które wbudowany solver udowodnił jako możliwe do wygrania. Solver zna każdą kartę, więc „do wygrania” oznacza, że rozdanie da się wygrać, a nie że jest łatwe.
+- **Nowa gra z ziarna.** Najpierw wybierz grę, potem skąd ma pochodzić ziarno: wpisz je, wybierz jedno z rozdań, które już grałeś (najnowsze na początku, z wynikiem i czasem), pozwól grze wylosować jedno z nich albo weź jedno z **wyselekcjonowanych rozdań**.
+- **Pięć poziomów trudności.** Każda gra oferuje po trzy wyselekcjonowane rozdania na poziom, od bardzo łatwego do bardzo trudnego. Wszystkie są udowodnione jako możliwe do wygrania. Poziomy wynikają z pomiarów: ile pracy wymagał solver, jak długa jest linia wygrywająca i czy samo podążanie za podpowiedziami wystarcza, by wygrać rozdanie.
+
+## Pomoc podczas gry
+
+- **Panel przewodnika** (`g`): informacje o partii, cel gry, klawisze (z oznaczeniem tych działających teraz) oraz obsługę myszy. Przy 130 kolumnach lub więcej stoi obok planszy, z przyciskiem **Nowa gra** u góry; na węższych terminalach otwiera się w oknie.
+- **Panel możliwych ruchów** (`v`): każdy ruch, który możesz teraz wykonać, z jego klawiszem, oraz powód, gdy ruch nie jest możliwy.
+- **Podpowiedzi** (`h`): gra zaznacza ruch na planszy i go nazywa. Podpowiedzi korzystają tylko z tego, co widzisz: nigdy nie zaglądają w karty zakryte ani w talię.
+- **Szybkie ruchy**: `a` wysyła karty pod kursorem na najlepsze miejsce, `e` robi to samo z wierzchnią kartą stosu odrzuconych z dowolnego miejsca na planszy, a dwuklik działa jak `a`. Szybkie ruchy można wyłączyć w ustawieniach albo w szybkich opcjach (`o`), jeśli wolisz sam układać każdą kartę.
+- **Automatyczne kończenie**: gdy wygrana jest pewna, pozostałe ruchy są wykonywane za Ciebie. Można to wyłączyć.
+- **Cofnij i ponów** (`u`, `r`), z opcją gry bez cofania.
 
 ## Klawiatura i mysz
 
-Każdą czynność wykonasz klawiaturą i myszą. Kliknij kartę, aby ją wziąć, i kliknij cel, aby ją położyć. Dwukrotne
-kliknięcie wysyła kartę na stos końcowy, przeciągnięcie przenosi kartę na cel, a prawy przycisk odkłada ją z powrotem.
-Pełna lista klawiszy jest w oknie pomocy (`?`).
+Każda czynność działa klawiaturą i myszą. Kliknij kartę, żeby ją podnieść, a potem cel, żeby ją położyć, zrób dwuklik dla szybkiego ruchu, przeciągnij kartę na cel albo kliknij prawym przyciskiem, żeby ją odłożyć. Stopki i przyciski takie jak Nowa gra czy Zamknij pokazują swój klawisz, a aktywna zakładka okna nigdy nie wygląda jak przycisk w fokusie. Okno pomocy (`?`) wymienia każdy klawisz; może też zostać przycumowane z boku ekranu (`d`).
 
-## Rozmiar kart
+## Ustawienia
 
-Klawisz `]` powiększa karty, a `[` je zmniejsza; `0` przywraca rozmiar automatyczny, dopasowany do okna.
-To samo robi Ctrl+kółko myszy i ustawienie „Rozmiar kart”. Rozmiar, który nie mieści się w oknie, zmniejsza się sam.
-W klasycznej konsoli Windows Ctrl+Plus, Ctrl+Minus i Ctrl+0 zmieniają rozmiar czcionki konsoli.
+Ustawienia mają trzy zakładki:
 
-## Pomoc w trakcie gry
+- **Popularne** otwiera się pierwsza i zbiera ustawienia zmieniane najczęściej: język, tryb słabowidzący, motyw, rozmiar kart, rewers kart, głośność, aurę i automatyczne kończenie.
+- **Dźwięk i wygląd** zawiera wszystko, co dotyczy wyglądu i dźwięku: kolory, pełny ekran i rozmiar okna, motyw, widzenie barw, style i odcienie kart, stół, aurę, czcionkę konsoli, dźwięk i priorytet procesu.
+- **Rozgrywka** zawiera język i pomoce: aurę, znaczniki celów, panele przewodnika i możliwych ruchów, automatyczne kończenie i szybkie ruchy.
 
-- **Panel przewodnika** (`g`): cel gry, klawisze i to, co może zrobić zaznaczona karta. Przy planszy stoi na terminalach
-  szerokich na co najmniej 130 kolumn, a na węższych otwiera się w oknie.
-- **Panel możliwych ruchów** (`v`): każdy ruch, który możesz teraz wykonać, razem z jego klawiszem.
-- **Podpowiedzi** (`h`): gra zaznacza ruch na planszy i go nazywa.
-- **Automatyczne kończenie**: gdy wygrana jest pewna, pozostałe ruchy wykonują się same. Można to wyłączyć
-  w Ustawieniach.
-- **Cofnij i ponów** (`u`, `r`), z opcją gry bez cofania.
+Podgląd obok listy pokazuje zmianę, zanim ją zachowasz.
 
-## Ziarna, rozdania do wygrania, statystyki
+## Karty i stół
 
-Każde rozdanie ma **ziarno**. Skopiuj je (`c`), aby zagrać to samo rozdanie jeszcze raz lub podać je dalej, albo
-zacznij grę z dowolnego ziarna przez „Nowa gra z ziarna”. Opcja sprawia, że nowa gra szuka rozdania, o którym
-udowodniono, że da się je wygrać. Ekran **statystyk** pokazuje wyniki dla każdej gry oraz historię wszystkich
-rozdań, od najnowszego, i pozwala zagrać dane ziarno ponownie.
+- **Sześć stylów awersów**: Międzynarodowy, Francuski, Niemiecki, Włoski, Hiszpański i Szwajcarski, każdy z własnymi znakami kolorów albo oznaczeniami figur.
+- **Dwa style rewersów** (Kratka i Ornament) oraz kolory rewersów z motywu, Monokai lub Dracula.
+- **Odcień tła karty**: z motywu, biały, kremowy, jasnoszary albo ciemny.
+- **Stół**: kolor motywu, zielony filc, niebieski, czerwony, szary, brązowy lub czarny, oraz powierzchnia gładka, filcowa albo liniowana.
+- **Rozmiar kart**: powiększaj karty klawiszem `]`, a pomniejszaj klawiszem `[`; `0` przywraca automatyczny rozmiar, który mieści się w oknie. Długie kolumny się zbliżają, żeby ich ostatnia karta była zawsze w całości widoczna, a karty zmniejszają się tylko wtedy, gdy samo zbliżanie nie wystarcza.
 
-## Motywy dla wygody i dostępności
+## Motywy i dostępność
 
-Pięć motywów, wybieranych w Ustawieniach. Każdy z nich widać tu na tym samym układzie kart.
-
-**Ciemny** i **Jasny** na co dzień.
+Pięć motywów: **Ciemny** i **Jasny** do codziennej gry, **Wysoki kontrast** dla słabego wzroku, **Monokai** i **Dracula**. Każdy pokazano tutaj na tej samej pozycji.
 
 ![Motyw Ciemny](../img/pl/theme-dark.svg)
 
 ![Motyw Jasny](../img/pl/theme-light.svg)
 
-**Wysoki kontrast** powstał dla osób słabowidzących: biały tekst na czarnym tle z jaskrawymi żółtymi i
-turkusowymi akcentami, ramka wokół pola gry oraz kontrast tekstu co najmniej 7:1 (pozostałe motywy trzymają co
-najmniej 4,5:1; sprawdzają to testy).
-
 ![Motyw Wysoki kontrast](../img/pl/theme-high-contrast.svg)
-
-**Monokai** i **Dracula** też są dostępne.
 
 ![Motyw Monokai](../img/pl/theme-monokai.svg)
 
 ![Motyw Dracula](../img/pl/theme-dracula.svg)
 
-**Barwa nigdy nie jest jedynym nośnikiem informacji.** Znak koloru karty (♠ ♥ ♦ ♣) stoi obok figury, więc barwy nie
-trzeba odróżniać; zaznaczony element ma swój symbol, wzięte karty i cele mają własne oznaczenia, a wiersz pod planszą mówi słowami,
-gdzie jest kursor i co może zrobić. Gra pozostaje użyteczna dla osób z zaburzeniami widzenia barw. Specjalne tryby
-widzenia barw są w planach; w grze jeszcze ich nie ma.
+- **Tryb słabowidzący.** Jeden przełącznik, proponowany przy pierwszym uruchomieniu i w ustawieniach: kontrast tekstu co najmniej 7:1 w każdym motywie, największe karty, jakie się mieszczą, gruba aura, pogrubiona ranga i kolor, większe znaczniki fokusu i celów oraz, w klasycznej konsoli Windows, większa czcionka. Każdy element pozostaje do regulacji, a wyłączenie trybu przywraca wcześniejsze ustawienia.
+- **Widzenie barw.** Tryby dla protanopii, deuteranopii, tritanopii i monochromatyczny zmieniają kolory tak, żeby to, co musisz rozróżniać, pozostało rozróżnialne. **Talia czterokolorowa** nadaje każdemu kolorowi własną barwę: piki czarne, kiery czerwone, karo niebieskie i trefle zielone.
+- **Kolor nigdy nie jest jedynym sygnałem.** Kolory to znaki (♠ ♥ ♦ ♣) obok rangi, element w fokusie ma symbol, podniesione karty i cele mają własne znaczniki, wyniki sprawdzania wygranej mają ✓ albo ✗, a linia pod planszą mówi słowami, gdzie jest kursor i co może zrobić.
+
+## Statystyki
+
+Ekran statystyk pokazuje wyniki każdej gry (wygrane, serie, najlepszy czas i najmniejszą liczbę ruchów) oraz historię każdego rozdania, najnowsze na początku i w Twoim czasie lokalnym. Z historii możesz ponownie zagrać ziarno, skopiować je albo poprosić solver, żeby sprawdził, czy rozdanie było możliwe do wygrania.
+
+## Konsola Windows
+
+W Windows gra uruchomiona dwukrotnym kliknięciem albo poleceniem `oxysol -n` ma własne okno konsoli. Domyślnie otwiera się na pełnym ekranie, a w trybie okienkowym jej rozmiar wybierzesz w ustawieniach: 130 × 40, 195 × 60 lub 260 × 80. Gra uruchomiona w już otwartej konsoli zostawia tę konsolę bez zmian. W klasycznej konsoli Windows Ctrl+Plus, Ctrl+Minus i Ctrl+0 zmieniają rozmiar czcionki konsoli; inne terminale powiększają klawiszami, które mają własne.
 
 ## Języki
 
-Interfejs gry jest dostępny w dziewięciu językach: po angielsku, polsku, niemiecku, hiszpańsku, francusku, włosku, niderlandzku, portugalsku (brazylijskim) i ukraińsku. Język wybierzesz przełącznikiem z flagą w
-lewym górnym rogu menu głównego albo w Ustawieniach; zmiana działa od razu.
+Gra jest dostępna w dziewięciu językach: angielskim, polskim, niemieckim, hiszpańskim, francuskim, włoskim, niderlandzkim, portugalskim brazylijskim i ukraińskim. Wybierz jeden z selektora flag w lewym górnym rogu menu głównego albo w ustawieniach; zmiana działa od razu. Ta strona jest dostępna w tych samych dziewięciu językach.
 
-Ta strona jest dostępna w dziewięciu językach: przełączają je odnośniki na górze każdej strony.
+## Czego jeszcze nie ma
 
-## Czego jeszcze brakuje
-
-oXySol jest w wersji przedpremierowej. Spodziewaj się niedociągnięć i zgłaszaj je w
-[systemie zgłoszeń](https://github.com/beoArcha/oXyFlow.Solitaire/issues).
+oXySol jest wersją przedpremierową. Spodziewaj się nierówności i zgłaszaj je w
+[rejestrze zgłoszeń](https://github.com/beoArcha/oXyFlow.Solitaire/issues).
