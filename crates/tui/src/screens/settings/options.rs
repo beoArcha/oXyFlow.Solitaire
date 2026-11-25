@@ -18,6 +18,7 @@ pub enum Field {
     Colors,
     FullScreen,
     WindowSize,
+    LowVision,
     Theme,
     ColorVision,
     CardBack,
@@ -49,10 +50,11 @@ pub enum Field {
 }
 
 /// Every setting, in canonical order (Audio & Visual, then Gameplay).
-pub const FIELDS: [Field; 32] = [
+pub const FIELDS: [Field; 33] = [
     Field::Colors,
     Field::FullScreen,
     Field::WindowSize,
+    Field::LowVision,
     Field::Theme,
     Field::ColorVision,
     Field::CardBack,
@@ -166,6 +168,14 @@ fn font_row_key(field: Field, facts: FontFacts) -> &'static str {
     }
 }
 
+fn low_vision_key(facts: FontFacts) -> &'static str {
+    match facts.terminal {
+        TerminalKind::ClassicConsole if facts.owns_window => "settings.desc.low_vision_console",
+        TerminalKind::WindowsTerminal => "settings.desc.low_vision_wt",
+        _ => "settings.desc.low_vision_other",
+    }
+}
+
 impl Field {
     /// The aid a row switches, for the gameplay aids shared with the quick options dialog.
     pub const fn aid(self) -> Option<Aid> {
@@ -186,7 +196,8 @@ impl Field {
     pub const fn is_interface(self) -> bool {
         matches!(
             self,
-            Field::Theme
+            Field::LowVision
+                | Field::Theme
                 | Field::ColorVision
                 | Field::CardBack
                 | Field::CardFace
@@ -222,6 +233,7 @@ impl Field {
         }
         match self {
             Field::Language => "settings.row.language",
+            Field::LowVision => "settings.row.low_vision",
             Field::Theme => "settings.row.theme",
             Field::ColorVision => "settings.row.color_vision",
             Field::CardBack => "settings.row.card_back",
@@ -254,6 +266,7 @@ impl Field {
     /// in Windows Terminal, in another terminal and when the font is missing or refused.
     pub fn describe(self, facts: FontFacts) -> String {
         match self {
+            Field::LowVision => t(low_vision_key(facts)).into_owned(),
             Field::ConsoleFont => t(console_font_key(facts)).into_owned(),
             Field::FontFace | Field::FontSize => t(font_row_key(self, facts)).into_owned(),
             Field::WindowSize => t(window_size_key(facts)).into_owned(),
@@ -268,6 +281,7 @@ impl Field {
         }
         match self {
             Field::Language => "settings.desc.language",
+            Field::LowVision => "settings.desc.low_vision_other",
             Field::Theme => "settings.desc.theme",
             Field::ColorVision => "settings.desc.color_vision",
             Field::CardBack => "settings.desc.card_back",

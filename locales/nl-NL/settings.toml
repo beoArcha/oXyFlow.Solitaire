@@ -2,6 +2,7 @@
 
 [row]
 language = "Taal"
+low_vision = "Slechtziendheid"
 theme = "Thema"
 card_back = "Kaartrug"
 card_face = "Kaartkleur"
@@ -51,6 +52,9 @@ italian = "Italiaans"
 
 [desc]
 language = "De taal van alle tekst. Verandert direct."
+low_vision_console = "Hoog contrast (7:1), grootste kaarten, dikke gloed, vette tekst, bredere waaiers, consoleletter 24+ px."
+low_vision_wt = "Hoog contrast (7:1), grootste kaarten, dikke gloed, vette tekst, bredere waaiers. Letter vergroten: Ctrl+= / Ctrl+-."
+low_vision_other = "Hoog contrast (7:1), grootste kaarten, dikke gloed, vette tekst, bredere waaiers. Vergroot het terminallettertype."
 theme = "De kleuren van de interface."
 card_back = "Kleuren en patroon van de achterkant van dichte kaarten."
 card_face = "Kleur van open kaarten. De symbolen passen zich aan zodat het contrast blijft. Thema gebruikt de kleuren van het thema."

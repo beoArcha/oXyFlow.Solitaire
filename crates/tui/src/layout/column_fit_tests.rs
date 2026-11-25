@@ -202,8 +202,7 @@ fn assert_visible_cards_and_hits(
     }
 }
 
-#[test]
-fn yukon_klondike_and_spider_columns_fit_above_status_bar_for_every_card_size() {
+fn assert_long_columns_fit(wider_fan: bool) {
     let fixture = Fixture::new();
     let ctx = fixture.ctx();
     let cases = [
@@ -267,8 +266,10 @@ fn yukon_klondike_and_spider_columns_fit_above_status_bar_for_every_card_size() 
                 None => unreachable!("pile exists"),
             };
             for limit in SIZES.into_iter().map(Some).chain([None]) {
-                let what = format!("{variant:?} ({down}+{up}) {width}x{height} limit={limit:?}");
-                let geometry = compute_within(variant, &piles, parts.body, limit);
+                let what = format!(
+                    "wide={wider_fan} {variant:?} ({down}+{up}) {width}x{height} limit={limit:?}"
+                );
+                let geometry = compute_with(variant, &piles, parts.body, limit, wider_fan);
                 let placed = match geometry.pile(pile) {
                     Some(placed) => placed,
                     None => unreachable!("{what}: missing pile"),
@@ -295,6 +296,11 @@ fn yukon_klondike_and_spider_columns_fit_above_status_bar_for_every_card_size() 
             }
         }
     }
+}
+
+#[test]
+fn yukon_klondike_and_spider_columns_fit_above_status_bar_for_every_card_size() {
+    assert_long_columns_fit(false);
 }
 
 #[test]
@@ -395,4 +401,52 @@ fn compressed_yukon_column_shows_collapsed_bar_ranks_and_full_last_card() {
             "└───J♠┘",
         ]
     );
+}
+
+#[test]
+fn o107_long_columns_still_fit_last_card_above_status_bar_with_wider_fans() {
+    assert_long_columns_fit(true);
+}
+
+#[test]
+fn wider_fan_widens_tableau_waste_and_pyramid_steps_when_room_permits() {
+    let body = Rect::new(0, 0, 140, 44);
+    let klondike = Variant::Klondike(DrawCount::Three);
+    let mut session = oxysol_core::Session::new(klondike, 7);
+    assert!(session.apply(oxysol_core::Move::Stock).is_ok());
+    let piles = session.game().piles();
+    let normal = compute_with(klondike, &piles, body, None, false);
+    let wide = compute_with(klondike, &piles, body, None, true);
+    let normal_waste = normal.pile(PileRef::Waste).expect("waste");
+    let wide_waste = wide.pile(PileRef::Waste).expect("waste");
+    assert!(
+        wide_waste.cards[1].x - wide_waste.cards[0].x
+            > normal_waste.cards[1].x - normal_waste.cards[0].x
+    );
+
+    let normal_col = normal.pile(PileRef::Tableau(2)).expect("col 2");
+    let wide_col = wide.pile(PileRef::Tableau(2)).expect("col 2");
+    assert!(
+        wide_col.cards[1].y - wide_col.cards[0].y >= normal_col.cards[1].y - normal_col.cards[0].y
+    );
+    assert!(wide_col.cards.last().expect("top").y > normal_col.cards.last().expect("top").y);
+
+    let pyramid = Variant::Pyramid(oxysol_core::PyramidRules::Relaxed);
+    let pyr_piles = deal(pyramid, 7).piles();
+    let pyr_normal = compute_with(pyramid, &pyr_piles, Rect::new(0, 0, 140, 50), None, false);
+    let pyr_wide = compute_with(pyramid, &pyr_piles, Rect::new(0, 0, 140, 50), None, true);
+    assert_eq!(pyr_wide.card, pyr_normal.card);
+    let n_r1 = pyr_normal
+        .pile(PileRef::Pyramid { row: 1, index: 0 })
+        .expect("row 1");
+    let w_r1 = pyr_wide
+        .pile(PileRef::Pyramid { row: 1, index: 0 })
+        .expect("row 1");
+    let n_r0 = pyr_normal
+        .pile(PileRef::Pyramid { row: 0, index: 0 })
+        .expect("row 0");
+    let w_r0 = pyr_wide
+        .pile(PileRef::Pyramid { row: 0, index: 0 })
+        .expect("row 0");
+    assert!(w_r1.slot.y - w_r0.slot.y > n_r1.slot.y - n_r0.slot.y);
 }

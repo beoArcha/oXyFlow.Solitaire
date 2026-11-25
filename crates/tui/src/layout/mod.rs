@@ -105,7 +105,7 @@ impl BoardGeometry {
 /// Places the piles of `variant` (as listed by `Game::piles()`) inside `area`, with the largest
 /// card size that fits. Every rectangle lies inside `area`.
 pub fn compute(variant: Variant, piles: &[PileSnapshot], area: Rect) -> BoardGeometry {
-    compute_within(variant, piles, area, None)
+    compute_with(variant, piles, area, None, false)
 }
 
 /// Like [`compute`], with cards no larger than `limit` (the size the player chose); a limit that
@@ -116,9 +116,21 @@ pub fn compute_within(
     area: Rect,
     limit: Option<CardSize>,
 ) -> BoardGeometry {
+    compute_with(variant, piles, area, limit, false)
+}
+
+/// Like [`compute_within`], optionally widening tableau, waste and pyramid fan steps when room
+/// permits (low-vision mode).
+pub fn compute_with(
+    variant: Variant,
+    piles: &[PileSnapshot],
+    area: Rect,
+    limit: Option<CardSize>,
+    wider_fan: bool,
+) -> BoardGeometry {
     let mut geometry = match variant {
-        Variant::Pyramid(_) => pyramid::compute(piles, area, limit),
-        _ => columns::compute(variant, piles, area, limit),
+        Variant::Pyramid(_) => pyramid::compute(piles, area, limit, wider_fan),
+        _ => columns::compute(variant, piles, area, limit, wider_fan),
     };
     geometry.clamp(area);
     geometry

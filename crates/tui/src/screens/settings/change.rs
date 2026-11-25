@@ -4,11 +4,12 @@ use super::options::{
     AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FULL_SCREEN_MODES, Field,
     GLYPH_MODES, Step, WINDOW_SIZES, back_styles, front_styles,
 };
+use crate::app::FontFacts;
 use crate::audio::StyleInfo;
 use crate::i18n::Locale;
 use crate::settings::{
     CONSOLE_FONT_SIZES, CardFaceTint, CardSizeSetting, ColorVision, ConsoleFace, ProcessPriority,
-    Settings, TableColour, TableFeel,
+    Settings, TableColour, TableFeel, TerminalKind,
 };
 use crate::theme::ThemeId;
 
@@ -46,15 +47,32 @@ fn toggled_aid(field: Field, settings: &Settings) -> Settings {
 }
 
 /// The settings after one step on `field`. Everything else stays as it was.
+#[cfg(test)]
 pub fn changed(
     field: Field,
     settings: &Settings,
     step: Step,
     sound_styles: &[StyleInfo],
 ) -> Settings {
+    changed_for_facts(field, settings, step, sound_styles, FontFacts::default())
+}
+
+/// The settings after one step on `field`, taking terminal/console `facts` into account for
+/// low-vision console font sizing.
+pub fn changed_for_facts(
+    field: Field,
+    settings: &Settings,
+    step: Step,
+    sound_styles: &[StyleInfo],
+    facts: FontFacts,
+) -> Settings {
     let mut next = settings.clone();
     match field {
         Field::Language => next.locale = cycle(&Locale::offered(), settings.locale, step),
+        Field::LowVision => {
+            let classic = facts.terminal == TerminalKind::ClassicConsole && facts.owns_window;
+            return settings.with_low_vision(!settings.low_vision, classic);
+        }
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
         Field::ColorVision => {
             next.color_vision = cycle(&ColorVision::ALL, settings.color_vision, step);

@@ -12,6 +12,7 @@ mod console_face;
 mod dock;
 mod full_screen;
 mod interface;
+mod low_vision;
 mod priority;
 mod table;
 mod window_size;
@@ -24,6 +25,7 @@ pub use console_face::{CONSOLE_FONT_SIZES, ConsoleFace};
 pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 pub use interface::{AuraColour, AuraSize, AuraStyle};
+pub use low_vision::{LOW_VISION_MIN_FONT_SIZE, LowVisionBackup};
 pub use priority::ProcessPriority;
 pub use table::{TableColour, TableFeel};
 pub use window_size::WindowSize;
@@ -151,6 +153,16 @@ pub struct Settings {
     /// The process priority asked of the system. An older saved value without the field loads as
     /// `Normal`; `--priority` overrides it for one run.
     pub process_priority: ProcessPriority,
+    /// Low-vision mode: 7:1 contrast, largest fitting cards, thick aura, bold card text, wider fan
+    /// steps, and raised console font size on an owned classic console. An older saved value without
+    /// the field loads as `false`.
+    pub low_vision: bool,
+    /// Whether the first-start low-vision banner on the main menu has already been answered. An
+    /// older saved value without the field loads as `false`.
+    pub low_vision_offered: bool,
+    /// Values saved when low-vision mode turned on so turning it off restores them. An older saved
+    /// value without the field loads as `None`.
+    pub low_vision_saved: Option<LowVisionBackup>,
     pub favourites: Vec<oxysol_core::Variant>,
 }
 
@@ -193,6 +205,9 @@ impl Default for Settings {
             aura_style: AuraStyle::Halo,
             aura_size: AuraSize::Thin,
             process_priority: ProcessPriority::Normal,
+            low_vision: false,
+            low_vision_offered: false,
+            low_vision_saved: None,
             favourites: Vec::new(),
         }
     }

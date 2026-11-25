@@ -10,6 +10,7 @@ mod dump;
 mod face_tint;
 mod faces;
 mod focus;
+mod low_vision;
 mod marks;
 mod slots;
 mod styles;

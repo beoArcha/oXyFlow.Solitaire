@@ -90,6 +90,7 @@ pub struct BoardScreen {
     target_marks: bool,
     panel_focus: Option<usize>,
     field_edge: bool,
+    low_vision: bool,
     card_size: CardSizeSetting,
     auto_finish: bool,
     quick_move: bool,
@@ -137,6 +138,7 @@ impl Default for BoardScreen {
             target_marks: true,
             panel_focus: None,
             field_edge: false,
+            low_vision: false,
             card_size: CardSizeSetting::Auto,
             auto_finish: true,
             quick_move: true,
@@ -334,6 +336,7 @@ impl BoardScreen {
         self.moves_panel = ctx.settings.moves_panel;
         self.target_marks = ctx.settings.target_marks;
         self.field_edge = ctx.theme.field_edge();
+        self.low_vision = ctx.settings.low_vision;
         self.card_size = ctx.settings.card_size;
         self.auto_finish = ctx.settings.auto_finish;
         self.quick_move = ctx.settings.quick_move;

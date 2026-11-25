@@ -73,11 +73,12 @@ impl BoardScreen {
 
     pub(super) fn geometry(&self, piles: &[PileSnapshot]) -> Option<BoardGeometry> {
         let session = self.session.as_ref()?;
-        Some(layout::compute_within(
+        Some(layout::compute_with(
             session.variant(),
             piles,
             self.chrome().body,
             self.card_size.size(),
+            self.low_vision,
         ))
     }
 

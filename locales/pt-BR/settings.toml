@@ -2,6 +2,7 @@
 
 [row]
 language = "Idioma"
+low_vision = "Baixa visão"
 theme = "Tema"
 card_back = "Verso da carta"
 card_face = "Fundo da carta"
@@ -51,6 +52,9 @@ italian = "Italiano"
 
 [desc]
 language = "O idioma de todo o texto. Muda imediatamente."
+low_vision_console = "Alto contraste (7:1), maiores cartas, aura grossa, texto em negrito, leques largos, fonte do console 24+ px."
+low_vision_wt = "Alto contraste (7:1), maiores cartas, aura grossa, texto em negrito, leques largos. Aumentar fonte: Ctrl+= / Ctrl+-."
+low_vision_other = "Alto contraste (7:1), maiores cartas, aura grossa, texto em negrito, leques largos. Aumente a fonte do terminal."
 theme = "As cores da interface."
 card_back = "As cores e o padrão do verso das cartas ocultas."
 card_face = "Cor das cartas viradas para cima. Os naipes se ajustam para manter o contraste. Tema usa as cores do tema."

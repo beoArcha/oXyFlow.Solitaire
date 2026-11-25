@@ -25,7 +25,7 @@ use self::list::first_shown;
 use self::options::{Field, Step};
 use self::plan::{Pane, Places, plan};
 use self::tabs::{Tab, TabBar, draw_tabs};
-use self::values::changed;
+use self::values::changed_for_facts;
 use self::view::{
     CHROME_ROWS, draw_description, draw_list, draw_reason, draw_title, footer_segments,
     is_unavailable_field, list_width,
@@ -63,7 +63,7 @@ fn change_field(field: Option<Field>, step: Step, ctx: &ViewCtx<'_>) -> Effect {
     if is_unavailable_field(field, ctx) {
         return Effect::None;
     }
-    let settings = changed(field, ctx.settings, step, ctx.sound_styles);
+    let settings = changed_for_facts(field, ctx.settings, step, ctx.sound_styles, ctx.font);
     if field.is_interface() {
         Effect::Preview(settings)
     } else {

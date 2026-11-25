@@ -2,6 +2,7 @@
 
 [row]
 language = "Lingua"
+low_vision = "Ipovisione"
 theme = "Tema"
 card_back = "Dorso carte"
 card_face = "Fondo carte"
@@ -51,6 +52,9 @@ italian = "Italiano"
 
 [desc]
 language = "La lingua di tutti i testi. Cambia subito."
+low_vision_console = "Alto contrasto (7:1), carte massime, aura spessa, testo in grassetto, ventagli ampi, carattere console 24+ px."
+low_vision_wt = "Alto contrasto (7:1), carte massime, aura spessa, testo in grassetto, ventagli ampi. Ingrandisci: Ctrl+= / Ctrl+-."
+low_vision_other = "Alto contrasto (7:1), carte massime, aura spessa, testo in grassetto, ventagli ampi. Ingrandisci il carattere del terminale."
 theme = "I colori dell'interfaccia."
 card_back = "Colori e motivo del dorso delle carte coperte."
 card_face = "Colore delle carte scoperte. I semi si adattano per mantenere il contrasto. Tema usa i colori del tema."
