@@ -50,7 +50,7 @@ use self::dialog::{Button, Geometry, Text};
 pub use self::graphics_check::GraphicsCheck;
 pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
 pub use self::help_keys::HelpKeys;
-pub use self::how_to_play::{Focus, HowToPlay, Rules};
+pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::moves_window::MovesWindow;
 pub use self::quick_options::QuickOptions;
 pub use self::tabs::{HelpTab, TopTabs};
@@ -268,8 +268,8 @@ pub fn handle_for(
         return quick_options::handle(state, key, action);
     }
     if nav::tab_of(modal).is_some() {
-        if let Some((target, entry)) = nav::target(modal, key, action) {
-            *modal = nav::modal_for(target, rules, entry);
+        if let Some(target) = nav::target(modal, key, action) {
+            *modal = nav::modal_for(target, rules);
             return None;
         }
         return match modal {
@@ -323,7 +323,7 @@ pub fn handle_mouse(
     if nav::tab_of(modal).is_some() {
         let body = geometry(area, modal, board, now).body;
         if let Some(target) = nav::clicked_tab(modal, body, event) {
-            *modal = nav::modal_for(target, rules_of(board), None);
+            *modal = nav::modal_for(target, rules_of(board));
             return None;
         }
         return match modal {

@@ -10,7 +10,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::content::{self, Kind, Row};
-use super::state::{Focus, HowToPlay, Rules};
+use super::state::{HowToPlay, Rules};
 use crate::i18n::t;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
@@ -110,22 +110,17 @@ pub fn tabs(row: Rect) -> Tabs {
 
 fn draw_tabs(frame: &mut Frame, row: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) {
     let placed = tabs(row);
-    let focused = state.focus == Focus::Games;
     let plain = ctx.theme.surface();
-    if focused {
-        let (left, right) = arrows(ctx);
-        frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
-        frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
-    }
+    let (left, right) = arrows(ctx);
+    frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
+    frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
     for (rules, rect) in placed.games {
         let name = t(rules.name_key());
         let (text, style) = if rules == state.rules {
-            let selected = if focused {
-                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED)
-            } else {
-                plain
-            };
-            (format!("[{name}]"), selected)
+            (
+                format!("[{name}]"),
+                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED),
+            )
         } else {
             (format!(" {name} "), plain)
         };
@@ -156,13 +151,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t(state.title_key()), ctx);
     let parts = parts(geometry.body);
-    draw_top_tabs(
-        frame,
-        parts.top_tabs,
-        HelpTab::Rules,
-        state.focus == Focus::Tabs,
-        ctx,
-    );
+    draw_top_tabs(frame, parts.top_tabs, HelpTab::Rules, false, ctx);
     draw_tabs(frame, parts.game_tabs, state, ctx);
     let rows = content::rows(state.rules);
     let first = usize::from(state.scroll);
@@ -177,16 +166,6 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
         Paragraph::new(lines).style(ctx.theme.surface()),
         parts.text.inner(Margin::new(1, 0)),
     );
-    if state.focus == Focus::Text {
-        let mark = Line::styled(ctx.glyphs.focus_left, ctx.theme.surface());
-        frame.render_widget(
-            Paragraph::new(mark),
-            Rect {
-                height: 1,
-                ..parts.text
-            },
-        );
-    }
     scrollbar::draw(
         frame,
         scrollbar::track_of(parts.text),
