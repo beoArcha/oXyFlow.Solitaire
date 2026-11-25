@@ -3,21 +3,22 @@
 <style>.d{visibility:hidden;animation-duration:5320ms;animation-iteration-count:infinite;animation-timing-function:step-end}@media (prefers-reduced-motion:reduce){.d{animation:none;visibility:visible}}@keyframes k1{0%,16.916%{visibility:hidden}16.917%,100%{visibility:visible}}@keyframes k2{0%,21.804%{visibility:hidden}21.805%,100%{visibility:visible}}@keyframes k3{0%,26.691%{visibility:hidden}26.692%,100%{visibility:visible}}@keyframes k5{0%,54.886%{visibility:hidden}54.887%,100%{visibility:visible}}@keyframes k6{0%,66.164%{visibility:hidden}66.165%,100%{visibility:visible}}</style>
 <rect width="1080" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<text x="252 261 270 279 288 297 306 315 324" y="14" fill="#8cbeff">Klondike,</text>
-<text x="342" y="14" fill="#8cbeff">1</text>
-<text x="360 369 378 387 396" y="14" fill="#8cbeff">карта</text>
-<text x="414" y="14" fill="#8cbeff">|</text>
-<text x="432 441 450 459 468" y="14" fill="#8cbeff">зерно</text>
-<text x="486" y="14" fill="#8cbeff" text-decoration="underline">7</text>
-<text x="504" y="14" fill="#8cbeff">|</text>
-<text x="522 531 540" y="14" fill="#8cbeff">Час</text>
-<text x="558 567 576 585" y="14" fill="#8cbeff">0:00</text>
-<text x="603" y="14" fill="#8cbeff">|</text>
-<text x="621 630 639 648 657" y="14" fill="#8cbeff">Ходи:</text>
-<text x="675" y="14" fill="#8cbeff">0</text>
-<text x="693" y="14" fill="#8cbeff">|</text>
-<text x="711 720 729 738 747 756 765 774 783 792 801 810" y="14" fill="#8cbeff">Перекладено:</text>
-<text x="828" y="14" fill="#8cbeff">0</text>
+<text x="225 234 243 252 261 270 279 288 297" y="14" fill="#8cbeff">Klondike,</text>
+<text x="315" y="14" fill="#8cbeff">1</text>
+<text x="333 342 351 360 369" y="14" fill="#8cbeff">карта</text>
+<text x="387" y="14" fill="#8cbeff">|</text>
+<text x="405 414 423 432 441" y="14" fill="#8cbeff">зерно</text>
+<text x="459" y="14" fill="#8cbeff" text-decoration="underline">7</text>
+<text x="477" y="14" fill="#8cbeff">|</text>
+<text x="495 504 513" y="14" fill="#8cbeff">Час</text>
+<text x="531 540 549 558" y="14" fill="#8cbeff">0:00</text>
+<text x="576" y="14" fill="#8cbeff">|</text>
+<text x="594 603 612 621 630" y="14" fill="#8cbeff">Ходи:</text>
+<text x="648" y="14" fill="#8cbeff">0</text>
+<text x="666" y="14" fill="#8cbeff">|</text>
+<text x="684 693 702 711 720 729 738 747 756" y="14" fill="#8cbeff">Повернень</text>
+<text x="774 783 792 801 810 819 828" y="14" fill="#8cbeff">колоди:</text>
+<text x="846" y="14" fill="#8cbeff">0</text>
 <rect x="0" y="19" width="171" height="19" fill="#287850"/>
 <rect x="171" y="19" width="81" height="19" fill="#b8d0f8"/>
 <rect x="252" y="19" width="828" height="19" fill="#287850"/>
@@ -285,31 +286,31 @@
 <text x="252 261 270 279 288" y="622" fill="#e8ecf4">бубен</text>
 <rect x="0" y="627" width="1080" height="19" fill="#242a3a"/>
 <text x="0 9 18 27" y="641" fill="#e8ecf4">Дії:</text>
-<text x="45 54" y="641" fill="#e8ecf4">s:</text>
+<text x="45 54" y="641" fill="#8cbeff">s:</text>
 <text x="72 81 90 99 108 117" y="641" fill="#e8ecf4">колода</text>
 <text x="135" y="641" fill="#e8ecf4">|</text>
-<text x="153 162" y="641" fill="#e8ecf4">h:</text>
+<text x="153 162" y="641" fill="#8cbeff">h:</text>
 <text x="180 189 198 207 216 225 234 243" y="641" fill="#e8ecf4">підказка</text>
 <text x="261" y="641" fill="#e8ecf4">|</text>
-<text x="279 288" y="641" fill="#e8ecf4">g:</text>
+<text x="279 288" y="641" fill="#8cbeff">g:</text>
 <text x="306 315 324" y="641" fill="#e8ecf4">гід</text>
 <text x="342" y="641" fill="#e8ecf4">|</text>
-<text x="360 369 378 387 396 405 414 423" y="641" fill="#e8ecf4">Shift+R:</text>
+<text x="360 369 378 387 396 405 414 423" y="641" fill="#8cbeff">Shift+R:</text>
 <text x="441 450 459 468 477 486 495 504" y="641" fill="#e8ecf4">спочатку</text>
 <text x="522" y="641" fill="#e8ecf4">|</text>
-<text x="540 549" y="641" fill="#e8ecf4">o:</text>
+<text x="540 549" y="641" fill="#8cbeff">o:</text>
 <text x="567 576 585 594 603" y="641" fill="#e8ecf4">опції</text>
 <text x="621" y="641" fill="#e8ecf4">|</text>
-<text x="639 648" y="641" fill="#e8ecf4">p:</text>
+<text x="639 648" y="641" fill="#8cbeff">p:</text>
 <text x="666 675 684 693 702" y="641" fill="#e8ecf4">пауза</text>
 <text x="720" y="641" fill="#e8ecf4">|</text>
-<text x="738 747" y="641" fill="#e8ecf4">v:</text>
+<text x="738 747" y="641" fill="#8cbeff">v:</text>
 <text x="765 774 783 792" y="641" fill="#e8ecf4">ходи</text>
 <text x="810" y="641" fill="#e8ecf4">|</text>
-<text x="828 837" y="641" fill="#e8ecf4">?:</text>
+<text x="828 837" y="641" fill="#8cbeff">?:</text>
 <text x="855 864 873 882 891 900 909" y="641" fill="#e8ecf4">клавіші</text>
 <text x="927" y="641" fill="#e8ecf4">|</text>
-<text x="945 954 963 972" y="641" fill="#e8ecf4">Esc:</text>
+<text x="945 954 963 972" y="641" fill="#8cbeff">Esc:</text>
 <text x="990 999 1008 1017" y="641" fill="#e8ecf4">меню</text>
 <g class="d" style="animation-name:k1"><rect x="162" y="152" width="99" height="19" fill="#287850"/>
 <rect x="162" y="171" width="9" height="19" fill="#287850"/>
@@ -531,32 +532,32 @@
 <text x="171 180 189" y="622" fill="#e8ecf4">туз</text>
 <text x="207 216 225 234" y="622" fill="#e8ecf4">треф</text>
 <rect x="45" y="627" width="1035" height="19" fill="#242a3a"/>
-<text x="45 54 63 72 81 90" y="641" fill="#e8ecf4">Enter:</text>
+<text x="45 54 63 72 81 90" y="641" fill="#8cbeff">Enter:</text>
 <text x="108 117 126 135 144" y="641" fill="#e8ecf4">взяти</text>
 <text x="162" y="641" fill="#e8ecf4">|</text>
-<text x="180 189" y="641" fill="#e8ecf4">a:</text>
+<text x="180 189" y="641" fill="#8cbeff">a:</text>
 <text x="207 216" y="641" fill="#e8ecf4">на</text>
 <text x="234 243 252 261" y="641" fill="#e8ecf4">базу</text>
 <text x="279" y="641" fill="#e8ecf4">|</text>
-<text x="297 306" y="641" fill="#e8ecf4">s:</text>
+<text x="297 306" y="641" fill="#8cbeff">s:</text>
 <text x="324 333 342 351 360 369" y="641" fill="#e8ecf4">колода</text>
 <text x="387" y="641" fill="#e8ecf4">|</text>
-<text x="405 414" y="641" fill="#e8ecf4">h:</text>
+<text x="405 414" y="641" fill="#8cbeff">h:</text>
 <text x="432 441 450 459 468 477 486 495" y="641" fill="#e8ecf4">підказка</text>
 <text x="513" y="641" fill="#e8ecf4">|</text>
-<text x="531 540 549 558 567 576 585 594" y="641" fill="#e8ecf4">Shift+R:</text>
+<text x="531 540 549 558 567 576 585 594" y="641" fill="#8cbeff">Shift+R:</text>
 <text x="612 621 630 639 648 657 666 675" y="641" fill="#e8ecf4">спочатку</text>
 <text x="693" y="641" fill="#e8ecf4">|</text>
-<text x="711 720" y="641" fill="#e8ecf4">o:</text>
+<text x="711 720" y="641" fill="#8cbeff">o:</text>
 <text x="738 747 756 765 774" y="641" fill="#e8ecf4">опції</text>
 <text x="792" y="641" fill="#e8ecf4">|</text>
-<text x="810 819" y="641" fill="#e8ecf4">p:</text>
+<text x="810 819" y="641" fill="#8cbeff">p:</text>
 <text x="837 846 855 864 873" y="641" fill="#e8ecf4">пауза</text>
 <text x="891" y="641" fill="#e8ecf4">|</text>
-<text x="909 918" y="641" fill="#e8ecf4">v:</text>
+<text x="909 918" y="641" fill="#8cbeff">v:</text>
 <text x="936 945 954 963" y="641" fill="#e8ecf4">ходи</text>
 <text x="981" y="641" fill="#e8ecf4">|</text>
-<text x="999 1008 1017 1026" y="641" fill="#e8ecf4">Esc:</text>
+<text x="999 1008 1017 1026" y="641" fill="#8cbeff">Esc:</text>
 <text x="1044 1053 1062 1071" y="641" fill="#e8ecf4">меню</text>
 </g><g class="d" style="animation-name:k3"><rect x="486" y="19" width="423" height="19" fill="#287850"/>
 <path fill="#ffd666" d="M504 28h5v1h-5zM508 28h5v1h-5zM513 28h5v1h-5zM517 28h5v1h-5zM522 28h5v1h-5zM526 28h5v1h-5zM531 28h5v1h-5zM535 28h5v1h-5zM540 28h5v1h-5zM544 28h5v1h-5zM549 28h5v1h-5zM553 28h5v1h-5zM558 28h5v1h-5zM562 28h5v1h-5zM612 28h5v1h-5zM616 28h5v1h-5zM621 28h5v1h-5zM625 28h5v1h-5zM630 28h5v1h-5zM634 28h5v1h-5zM639 28h5v1h-5zM643 28h5v1h-5zM648 28h5v1h-5zM652 28h5v1h-5zM657 28h5v1h-5zM661 28h5v1h-5zM666 28h5v1h-5zM670 28h5v1h-5zM720 28h5v1h-5zM724 28h5v1h-5zM729 28h5v1h-5zM733 28h5v1h-5zM738 28h5v1h-5zM742 28h5v1h-5zM747 28h5v1h-5zM751 28h5v1h-5zM756 28h5v1h-5zM760 28h5v1h-5zM765 28h5v1h-5zM769 28h5v1h-5zM774 28h5v1h-5zM778 28h5v1h-5zM828 28h5v1h-5zM832 28h5v1h-5zM837 28h5v1h-5zM841 28h5v1h-5zM846 28h5v1h-5zM850 28h5v1h-5zM855 28h5v1h-5zM859 28h5v1h-5zM864 28h5v1h-5zM868 28h5v1h-5zM873 28h5v1h-5zM877 28h5v1h-5zM882 28h5v1h-5zM886 28h5v1h-5z"/>
@@ -698,26 +699,26 @@
 <rect x="108" y="627" width="972" height="19" fill="#242a3a"/>
 <text x="108 117 126 135 144 153 162 171" y="641" fill="#e8ecf4">покласти</text>
 <text x="189" y="641" fill="#e8ecf4">|</text>
-<text x="207 216 225 234" y="641" fill="#e8ecf4">Esc:</text>
+<text x="207 216 225 234" y="641" fill="#8cbeff">Esc:</text>
 <text x="252 261 270 279 288 297 306 315 324" y="641" fill="#e8ecf4">повернути</text>
 <text x="342" y="641" fill="#e8ecf4">|</text>
 <text x="360 369 378 387 396 405 414 423" y="641" fill="#e8ecf4">Стрілки:</text>
 <text x="441 450 459 468" y="641" fill="#e8ecf4">ціль</text>
 <text x="486" y="641" fill="#e8ecf4">|</text>
-<text x="504 513" y="641" fill="#e8ecf4">a:</text>
+<text x="504 513" y="641" fill="#8cbeff">a:</text>
 <text x="531 540" y="641" fill="#e8ecf4">на</text>
 <text x="558 567 576 585" y="641" fill="#e8ecf4">базу</text>
 <text x="603" y="641" fill="#e8ecf4">|</text>
-<text x="621 630 639 648 657 666 675 684" y="641" fill="#e8ecf4">Shift+R:</text>
+<text x="621 630 639 648 657 666 675 684" y="641" fill="#8cbeff">Shift+R:</text>
 <text x="702 711 720 729 738 747 756 765" y="641" fill="#e8ecf4">спочатку</text>
 <text x="783" y="641" fill="#e8ecf4">|</text>
-<text x="801 810" y="641" fill="#e8ecf4">o:</text>
+<text x="801 810" y="641" fill="#8cbeff">o:</text>
 <text x="828 837 846 855 864" y="641" fill="#e8ecf4">опції</text>
 <text x="882" y="641" fill="#e8ecf4">|</text>
-<text x="900 909" y="641" fill="#e8ecf4">p:</text>
+<text x="900 909" y="641" fill="#8cbeff">p:</text>
 <text x="927 936 945 954 963" y="641" fill="#e8ecf4">пауза</text>
 <text x="981" y="641" fill="#e8ecf4">|</text>
-<text x="999 1008" y="641" fill="#e8ecf4">v:</text>
+<text x="999 1008" y="641" fill="#8cbeff">v:</text>
 <text x="1026 1035 1044 1053" y="641" fill="#e8ecf4">ходи</text>
 </g><g class="d" style="animation-name:k5"><rect x="810" y="19" width="18" height="19" fill="#287850"/>
 <rect x="828" y="19" width="63" height="19" fill="#242a3a"/>
@@ -764,8 +765,8 @@
 <rect x="873" y="190" width="18" height="19" fill="#287850"/>
 <path fill="#96dcff" d="M873 198h6v1h-6zM873 200h6v1h-6zM876 198h6v1h-6zM876 200h6v1h-6z"/>
 <text x="882" y="204" fill="#96dcff">●</text>
-</g><g class="d" style="animation-name:k6"><rect x="675" y="0" width="9" height="19" fill="#181c26"/>
-<text x="675" y="14" fill="#8cbeff">1</text>
+</g><g class="d" style="animation-name:k6"><rect x="648" y="0" width="9" height="19" fill="#181c26"/>
+<text x="648" y="14" fill="#8cbeff">1</text>
 <rect x="486" y="19" width="333" height="19" fill="#287850"/>
 <rect x="819" y="19" width="9" height="19" fill="#242a3a"/>
 <rect x="828" y="19" width="18" height="19" fill="#fafaf4"/>
@@ -866,35 +867,36 @@
 <text x="108 117" y="622" fill="#e8ecf4">4:</text>
 <text x="135 144 153" y="622" fill="#e8ecf4">туз</text>
 <text x="171 180 189 198" y="622" fill="#e8ecf4">треф</text>
-<rect x="927" y="608" width="153" height="19" fill="#242a3a"/>
+<rect x="909" y="608" width="171" height="19" fill="#242a3a"/>
+<text x="909" y="622" fill="#96e6a0">✓</text>
 <text x="927 936 945 954 963" y="622" fill="#96e6a0">Карти</text>
 <text x="981 990 999 1008 1017 1026 1035 1044 1053 1062 1071" y="622" fill="#96e6a0">переміщено.</text>
 <rect x="45" y="627" width="1017" height="19" fill="#242a3a"/>
-<text x="45 54" y="641" fill="#e8ecf4">s:</text>
+<text x="45 54" y="641" fill="#8cbeff">s:</text>
 <text x="72 81 90 99 108 117" y="641" fill="#e8ecf4">колода</text>
 <text x="135" y="641" fill="#e8ecf4">|</text>
-<text x="153 162" y="641" fill="#e8ecf4">h:</text>
+<text x="153 162" y="641" fill="#8cbeff">h:</text>
 <text x="180 189 198 207 216 225 234 243" y="641" fill="#e8ecf4">підказка</text>
 <text x="261" y="641" fill="#e8ecf4">|</text>
-<text x="279 288" y="641" fill="#e8ecf4">u:</text>
+<text x="279 288" y="641" fill="#8cbeff">u:</text>
 <text x="306 315 324 333 342 351 360 369 378" y="641" fill="#e8ecf4">скасувати</text>
 <text x="396" y="641" fill="#e8ecf4">|</text>
-<text x="414 423" y="641" fill="#e8ecf4">g:</text>
+<text x="414 423" y="641" fill="#8cbeff">g:</text>
 <text x="441 450 459" y="641" fill="#e8ecf4">гід</text>
 <text x="477" y="641" fill="#e8ecf4">|</text>
-<text x="495 504 513 522 531 540 549 558" y="641" fill="#e8ecf4">Shift+R:</text>
+<text x="495 504 513 522 531 540 549 558" y="641" fill="#8cbeff">Shift+R:</text>
 <text x="576 585 594 603 612 621 630 639" y="641" fill="#e8ecf4">спочатку</text>
 <text x="657" y="641" fill="#e8ecf4">|</text>
-<text x="675 684" y="641" fill="#e8ecf4">o:</text>
+<text x="675 684" y="641" fill="#8cbeff">o:</text>
 <text x="702 711 720 729 738" y="641" fill="#e8ecf4">опції</text>
 <text x="756" y="641" fill="#e8ecf4">|</text>
-<text x="774 783" y="641" fill="#e8ecf4">p:</text>
+<text x="774 783" y="641" fill="#8cbeff">p:</text>
 <text x="801 810 819 828 837" y="641" fill="#e8ecf4">пауза</text>
 <text x="855" y="641" fill="#e8ecf4">|</text>
-<text x="873 882" y="641" fill="#e8ecf4">v:</text>
+<text x="873 882" y="641" fill="#8cbeff">v:</text>
 <text x="900 909 918 927" y="641" fill="#e8ecf4">ходи</text>
 <text x="945" y="641" fill="#e8ecf4">|</text>
-<text x="963 972 981 990" y="641" fill="#e8ecf4">Esc:</text>
+<text x="963 972 981 990" y="641" fill="#8cbeff">Esc:</text>
 <text x="1008 1017 1026 1035" y="641" fill="#e8ecf4">меню</text>
 </g></g>
 </svg>

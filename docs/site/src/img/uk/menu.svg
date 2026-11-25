@@ -3,46 +3,68 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<rect x="27" y="19" width="36" height="19" fill="#0057b7"/>
-<path fill="#0057b7" d="M27 19h9v9.5h-9zM36 19h9v9.5h-9zM45 19h9v9.5h-9zM54 19h9v9.5h-9z"/>
-<text x="9" y="33" fill="#8cbeff">◄</text>
-<text x="72" y="33" fill="#8cbeff">►</text>
-<text x="90" y="33" fill="#8cbeff">▼</text>
-<rect x="27" y="38" width="36" height="19" fill="#ffd700"/>
-<path fill="#ffd700" d="M27 38h9v9.5h-9zM36 38h9v9.5h-9zM45 38h9v9.5h-9zM54 38h9v9.5h-9z"/>
-<text x="72 81" y="52" fill="#8cbeff">UA</text>
-<path fill="#8cbeff" d="M306 114h9v19h-9zM315 114h9v19h-9zM351 114h9v19h-9zM360 114h9v19h-9zM477 123.5h9v9.5h-9zM486 114h9v19h-9zM495 114h9v19h-9zM504 114h9v19h-9zM513 114h9v19h-9zM612 114h9v19h-9zM621 114h9v19h-9z"/>
-<path fill="#8cbeff" d="M243 142.5h9v9.5h-9zM252 133h9v19h-9zM261 133h9v19h-9zM270 142.5h9v9.5h-9zM315 133h9v9.5h-9zM324 133h9v19h-9zM342 133h9v19h-9zM351 133h9v9.5h-9zM387 133h9v19h-9zM396 133h9v19h-9zM432 133h9v19h-9zM441 133h9v19h-9zM468 133h9v19h-9zM477 133h9v19h-9zM549 142.5h9v9.5h-9zM558 133h9v19h-9zM567 133h9v19h-9zM576 142.5h9v9.5h-9zM612 133h9v19h-9zM621 133h9v19h-9z"/>
-<path fill="#8cbeff" d="M234 152h9v19h-9zM243 152h9v19h-9zM270 152h9v19h-9zM279 152h9v19h-9zM324 152h9v19h-9zM333 152h9v19h-9zM342 152h9v19h-9zM396 152h9v9.5h-9zM405 152h9v19h-9zM423 152h9v19h-9zM432 152h9v9.5h-9zM477 152h9v9.5h-9zM486 152h9v19h-9zM495 152h9v19h-9zM504 152h9v19h-9zM513 161.5h9v9.5h-9zM540 152h9v19h-9zM549 152h9v19h-9zM576 152h9v19h-9zM585 152h9v19h-9zM612 152h9v19h-9zM621 152h9v19h-9z"/>
-<path fill="#8cbeff" d="M234 171h9v19h-9zM243 171h9v19h-9zM270 171h9v19h-9zM279 171h9v19h-9zM315 180.5h9v9.5h-9zM324 171h9v19h-9zM342 171h9v19h-9zM351 180.5h9v9.5h-9zM405 171h9v19h-9zM414 171h9v19h-9zM423 171h9v19h-9zM504 171h9v19h-9zM513 171h9v19h-9zM540 171h9v19h-9zM549 171h9v19h-9zM576 171h9v19h-9zM585 171h9v19h-9zM612 171h9v19h-9zM621 171h9v19h-9zM648 180.5h9v9.5h-9zM657 180.5h9v9.5h-9z"/>
-<path fill="#8cbeff" d="M243 190h9v9.5h-9zM252 190h9v19h-9zM261 190h9v19h-9zM270 190h9v9.5h-9zM306 190h9v19h-9zM315 190h9v19h-9zM351 190h9v19h-9zM360 190h9v19h-9zM396 190h9v9.5h-9zM405 190h9v19h-9zM414 190h9v19h-9zM468 190h9v19h-9zM477 190h9v19h-9zM486 190h9v19h-9zM495 190h9v19h-9zM504 190h9v9.5h-9zM549 190h9v9.5h-9zM558 190h9v19h-9zM567 190h9v19h-9zM576 190h9v9.5h-9zM621 190h9v9.5h-9zM630 190h9v19h-9zM639 190h9v19h-9zM648 190h9v9.5h-9z"/>
-<text x="279 288 297 306 315 324 333 342 351" y="223" fill="#b8c2d6">Найкращий</text>
-<text x="369 378 387 396 405 414 423" y="223" fill="#b8c2d6">офісний</text>
-<text x="441 450 459 468 477 486 495" y="223" fill="#b8c2d6">пасьянс</text>
-<text x="513 522 531" y="223" fill="#b8c2d6">для</text>
-<text x="549 558 567 576 585 594 603 612 621" y="223" fill="#b8c2d6">термінала</text>
-<rect x="360" y="247" width="90" height="19" fill="#ffd666"/>
-<text x="360" y="261" fill="#141820">►</text>
-<text x="378 387 396 405" y="261" fill="#141820">Нова</text>
-<text x="423 432 441" y="261" fill="#141820">гра</text>
-<text x="378 387 396 405" y="280" fill="#e8ecf4">Нова</text>
-<text x="423 432 441" y="280" fill="#e8ecf4">гра</text>
-<text x="459 468" y="280" fill="#e8ecf4">за</text>
-<text x="486 495 504 513 522 531" y="280" fill="#e8ecf4">зерном</text>
-<text x="378 387 396 405 414 423 432 441 450 459" y="299" fill="#e8ecf4">Статистика</text>
-<text x="378 387 396 405 414 423 432 441 450 459 468 477" y="318" fill="#e8ecf4">Налаштування</text>
-<text x="378 387" y="337" fill="#e8ecf4">Як</text>
-<text x="405 414 423 432 441" y="337" fill="#e8ecf4">грати</text>
-<text x="378 387 396 405 414 423 432" y="356" fill="#e8ecf4">Довідка</text>
-<text x="378 387 396 405 414" y="375" fill="#e8ecf4">Вийти</text>
-<text x="234 243 252 261 270" y="641" fill="#b8c2d6">Enter</text>
+<rect x="9" y="19" width="36" height="19" fill="#0057b7"/>
+<path fill="#0057b7" d="M9 19h9v9.5h-9zM18 19h9v9.5h-9zM27 19h9v9.5h-9zM36 19h9v9.5h-9z"/>
+<rect x="9" y="38" width="36" height="19" fill="#ffd700"/>
+<path fill="#ffd700" d="M9 38h9v9.5h-9zM18 38h9v9.5h-9zM27 38h9v9.5h-9zM36 38h9v9.5h-9z"/>
+<text x="54 63" y="52" fill="#8cbeff">UA</text>
+<text x="81" y="52" fill="#8cbeff">▼</text>
+<path fill="#8cbeff" d="M306 133h9v19h-9zM315 133h9v19h-9zM351 133h9v19h-9zM360 133h9v19h-9zM477 142.5h9v9.5h-9zM486 133h9v19h-9zM495 133h9v19h-9zM504 133h9v19h-9zM513 133h9v19h-9zM612 133h9v19h-9zM621 133h9v19h-9z"/>
+<path fill="#8cbeff" d="M243 161.5h9v9.5h-9zM252 152h9v19h-9zM261 152h9v19h-9zM270 161.5h9v9.5h-9zM315 152h9v9.5h-9zM324 152h9v19h-9zM342 152h9v19h-9zM351 152h9v9.5h-9zM387 152h9v19h-9zM396 152h9v19h-9zM432 152h9v19h-9zM441 152h9v19h-9zM468 152h9v19h-9zM477 152h9v19h-9zM549 161.5h9v9.5h-9zM558 152h9v19h-9zM567 152h9v19h-9zM576 161.5h9v9.5h-9zM612 152h9v19h-9zM621 152h9v19h-9z"/>
+<path fill="#8cbeff" d="M234 171h9v19h-9zM243 171h9v19h-9zM270 171h9v19h-9zM279 171h9v19h-9zM324 171h9v19h-9zM333 171h9v19h-9zM342 171h9v19h-9zM396 171h9v9.5h-9zM405 171h9v19h-9zM423 171h9v19h-9zM432 171h9v9.5h-9zM477 171h9v9.5h-9zM486 171h9v19h-9zM495 171h9v19h-9zM504 171h9v19h-9zM513 180.5h9v9.5h-9zM540 171h9v19h-9zM549 171h9v19h-9zM576 171h9v19h-9zM585 171h9v19h-9zM612 171h9v19h-9zM621 171h9v19h-9z"/>
+<path fill="#8cbeff" d="M234 190h9v19h-9zM243 190h9v19h-9zM270 190h9v19h-9zM279 190h9v19h-9zM315 199.5h9v9.5h-9zM324 190h9v19h-9zM342 190h9v19h-9zM351 199.5h9v9.5h-9zM405 190h9v19h-9zM414 190h9v19h-9zM423 190h9v19h-9zM504 190h9v19h-9zM513 190h9v19h-9zM540 190h9v19h-9zM549 190h9v19h-9zM576 190h9v19h-9zM585 190h9v19h-9zM612 190h9v19h-9zM621 190h9v19h-9zM648 199.5h9v9.5h-9zM657 199.5h9v9.5h-9z"/>
+<path fill="#8cbeff" d="M243 209h9v9.5h-9zM252 209h9v19h-9zM261 209h9v19h-9zM270 209h9v9.5h-9zM306 209h9v19h-9zM315 209h9v19h-9zM351 209h9v19h-9zM360 209h9v19h-9zM396 209h9v9.5h-9zM405 209h9v19h-9zM414 209h9v19h-9zM468 209h9v19h-9zM477 209h9v19h-9zM486 209h9v19h-9zM495 209h9v19h-9zM504 209h9v9.5h-9zM549 209h9v9.5h-9zM558 209h9v19h-9zM567 209h9v19h-9zM576 209h9v9.5h-9zM621 209h9v9.5h-9zM630 209h9v19h-9zM639 209h9v19h-9zM648 209h9v9.5h-9z"/>
+<text x="279 288 297 306 315 324 333 342 351" y="242" fill="#b8c2d6">Найкращий</text>
+<text x="369 378 387 396 405 414 423" y="242" fill="#b8c2d6">офісний</text>
+<text x="441 450 459 468 477 486 495" y="242" fill="#b8c2d6">пасьянс</text>
+<text x="513 522 531" y="242" fill="#b8c2d6">для</text>
+<text x="549 558 567 576 585 594 603 612 621" y="242" fill="#b8c2d6">термінала</text>
+<rect x="360" y="266" width="90" height="19" fill="#ffd666"/>
+<text x="360" y="280" fill="#141820">►</text>
+<text x="378 387 396 405" y="280" fill="#141820">Нова</text>
+<text x="423 432 441" y="280" fill="#141820">гра</text>
+<text x="378 387 396 405" y="299" fill="#e8ecf4">Нова</text>
+<text x="423 432 441" y="299" fill="#e8ecf4">гра</text>
+<text x="459 468" y="299" fill="#e8ecf4">за</text>
+<text x="486 495 504 513 522 531" y="299" fill="#e8ecf4">зерном</text>
+<text x="378 387 396 405 414 423 432 441 450 459" y="318" fill="#e8ecf4">Статистика</text>
+<text x="378 387 396 405 414 423 432 441 450 459 468 477" y="337" fill="#e8ecf4">Налаштування</text>
+<text x="378 387" y="356" fill="#e8ecf4">Як</text>
+<text x="405 414 423 432 441" y="356" fill="#e8ecf4">грати</text>
+<text x="378 387 396 405 414 423 432" y="375" fill="#e8ecf4">Довідка</text>
+<text x="378 387 396 405 414" y="394" fill="#e8ecf4">Вийти</text>
+<rect x="99" y="418" width="702" height="19" fill="#242a3a"/>
+<path fill="#6e7a96" d="M103 427h1v10h-1zM103 427h5v1h-5zM108 427h5v1h-5zM112 427h5v1h-5zM117 427h5v1h-5zM121 427h5v1h-5zM126 427h5v1h-5zM130 427h5v1h-5zM135 427h5v1h-5zM139 427h5v1h-5zM144 427h5v1h-5zM148 427h5v1h-5zM153 427h5v1h-5zM157 427h5v1h-5zM162 427h5v1h-5zM166 427h5v1h-5zM171 427h5v1h-5zM175 427h5v1h-5zM180 427h5v1h-5zM184 427h5v1h-5zM189 427h5v1h-5zM193 427h5v1h-5zM198 427h5v1h-5zM202 427h5v1h-5zM207 427h5v1h-5zM211 427h5v1h-5zM216 427h5v1h-5zM220 427h5v1h-5zM225 427h5v1h-5zM229 427h5v1h-5zM234 427h5v1h-5zM238 427h5v1h-5zM243 427h5v1h-5zM247 427h5v1h-5zM252 427h5v1h-5zM256 427h5v1h-5zM261 427h5v1h-5zM265 427h5v1h-5zM270 427h5v1h-5zM274 427h5v1h-5zM279 427h5v1h-5zM283 427h5v1h-5zM288 427h5v1h-5zM292 427h5v1h-5zM297 427h5v1h-5zM301 427h5v1h-5zM306 427h5v1h-5zM310 427h5v1h-5zM315 427h5v1h-5zM319 427h5v1h-5zM324 427h5v1h-5zM328 427h5v1h-5zM333 427h5v1h-5zM337 427h5v1h-5zM342 427h5v1h-5zM346 427h5v1h-5zM351 427h5v1h-5zM355 427h5v1h-5zM360 427h5v1h-5zM364 427h5v1h-5zM369 427h5v1h-5zM373 427h5v1h-5zM378 427h5v1h-5zM382 427h5v1h-5zM387 427h5v1h-5zM391 427h5v1h-5zM396 427h5v1h-5zM400 427h5v1h-5zM405 427h5v1h-5zM409 427h5v1h-5zM414 427h5v1h-5zM418 427h5v1h-5zM423 427h5v1h-5zM427 427h5v1h-5zM432 427h5v1h-5zM436 427h5v1h-5zM441 427h5v1h-5zM445 427h5v1h-5zM450 427h5v1h-5zM454 427h5v1h-5zM459 427h5v1h-5zM463 427h5v1h-5zM468 427h5v1h-5zM472 427h5v1h-5zM477 427h5v1h-5zM481 427h5v1h-5zM486 427h5v1h-5zM490 427h5v1h-5zM495 427h5v1h-5zM499 427h5v1h-5zM504 427h5v1h-5zM508 427h5v1h-5zM513 427h5v1h-5zM517 427h5v1h-5zM522 427h5v1h-5zM526 427h5v1h-5zM531 427h5v1h-5zM535 427h5v1h-5zM540 427h5v1h-5zM544 427h5v1h-5zM549 427h5v1h-5zM553 427h5v1h-5zM558 427h5v1h-5zM562 427h5v1h-5zM567 427h5v1h-5zM571 427h5v1h-5zM576 427h5v1h-5zM580 427h5v1h-5zM585 427h5v1h-5zM589 427h5v1h-5zM594 427h5v1h-5zM598 427h5v1h-5zM603 427h5v1h-5zM607 427h5v1h-5zM612 427h5v1h-5zM616 427h5v1h-5zM621 427h5v1h-5zM625 427h5v1h-5zM630 427h5v1h-5zM634 427h5v1h-5zM639 427h5v1h-5zM643 427h5v1h-5zM648 427h5v1h-5zM652 427h5v1h-5zM657 427h5v1h-5zM661 427h5v1h-5zM666 427h5v1h-5zM670 427h5v1h-5zM675 427h5v1h-5zM679 427h5v1h-5zM684 427h5v1h-5zM688 427h5v1h-5zM693 427h5v1h-5zM697 427h5v1h-5zM702 427h5v1h-5zM706 427h5v1h-5zM711 427h5v1h-5zM715 427h5v1h-5zM720 427h5v1h-5zM724 427h5v1h-5zM729 427h5v1h-5zM733 427h5v1h-5zM738 427h5v1h-5zM742 427h5v1h-5zM747 427h5v1h-5zM751 427h5v1h-5zM756 427h5v1h-5zM760 427h5v1h-5zM765 427h5v1h-5zM769 427h5v1h-5zM774 427h5v1h-5zM778 427h5v1h-5zM783 427h5v1h-5zM787 427h5v1h-5zM796 427h1v10h-1zM792 427h5v1h-5z"/>
+<rect x="99" y="437" width="702" height="19" fill="#242a3a"/>
+<path fill="#6e7a96" d="M103 437h1v10h-1zM103 446h1v10h-1zM796 437h1v10h-1zM796 446h1v10h-1z"/>
+<text x="171 180 189 198 207" y="451" fill="#e8ecf4">Режим</text>
+<text x="225 234 243 252 261 270 279 288" y="451" fill="#e8ecf4">слабкого</text>
+<text x="306 315 324 333 342" y="451" fill="#e8ecf4">зору?</text>
+<text x="360 369 378 387 396 405 414 423 432" y="451" fill="#e8ecf4">(контраст</text>
+<text x="450 459 468 477" y="451" fill="#e8ecf4">7:1,</text>
+<text x="495 504 513 522 531 540" y="451" fill="#e8ecf4">більші</text>
+<text x="558 567 576 585 594 603" y="451" fill="#e8ecf4">карти,</text>
+<text x="621 630 639 648 657 666" y="451" fill="#e8ecf4">жирний</text>
+<text x="684 693 702 711 720 729" y="451" fill="#e8ecf4">текст)</text>
+<rect x="99" y="456" width="702" height="19" fill="#242a3a"/>
+<path fill="#6e7a96" d="M103 456h1v10h-1zM103 465h1v10h-1zM796 456h1v10h-1zM796 465h1v10h-1z"/>
+<text x="351" y="470" fill="#8cbeff">[</text>
+<text x="369 378 387" y="470" fill="#8cbeff">Так</text>
+<text x="405" y="470" fill="#8cbeff">]</text>
+<text x="459" y="470" fill="#8cbeff">[</text>
+<text x="477 486" y="470" fill="#8cbeff">Не</text>
+<text x="504 513 522 531 540" y="470" fill="#8cbeff">зараз</text>
+<text x="558" y="470" fill="#8cbeff">]</text>
+<rect x="99" y="475" width="702" height="19" fill="#242a3a"/>
+<path fill="#6e7a96" d="M103 475h1v10h-1zM103 484h5v1h-5zM108 484h5v1h-5zM112 484h5v1h-5zM117 484h5v1h-5zM121 484h5v1h-5zM126 484h5v1h-5zM130 484h5v1h-5zM135 484h5v1h-5zM139 484h5v1h-5zM144 484h5v1h-5zM148 484h5v1h-5zM153 484h5v1h-5zM157 484h5v1h-5zM162 484h5v1h-5zM166 484h5v1h-5zM171 484h5v1h-5zM175 484h5v1h-5zM180 484h5v1h-5zM184 484h5v1h-5zM189 484h5v1h-5zM193 484h5v1h-5zM198 484h5v1h-5zM202 484h5v1h-5zM207 484h5v1h-5zM211 484h5v1h-5zM216 484h5v1h-5zM220 484h5v1h-5zM225 484h5v1h-5zM229 484h5v1h-5zM234 484h5v1h-5zM238 484h5v1h-5zM243 484h5v1h-5zM247 484h5v1h-5zM252 484h5v1h-5zM256 484h5v1h-5zM261 484h5v1h-5zM265 484h5v1h-5zM270 484h5v1h-5zM274 484h5v1h-5zM279 484h5v1h-5zM283 484h5v1h-5zM288 484h5v1h-5zM292 484h5v1h-5zM297 484h5v1h-5zM301 484h5v1h-5zM306 484h5v1h-5zM310 484h5v1h-5zM315 484h5v1h-5zM319 484h5v1h-5zM324 484h5v1h-5zM328 484h5v1h-5zM333 484h5v1h-5zM337 484h5v1h-5zM342 484h5v1h-5zM346 484h5v1h-5zM351 484h5v1h-5zM355 484h5v1h-5zM360 484h5v1h-5zM364 484h5v1h-5zM369 484h5v1h-5zM373 484h5v1h-5zM378 484h5v1h-5zM382 484h5v1h-5zM387 484h5v1h-5zM391 484h5v1h-5zM396 484h5v1h-5zM400 484h5v1h-5zM405 484h5v1h-5zM409 484h5v1h-5zM414 484h5v1h-5zM418 484h5v1h-5zM423 484h5v1h-5zM427 484h5v1h-5zM432 484h5v1h-5zM436 484h5v1h-5zM441 484h5v1h-5zM445 484h5v1h-5zM450 484h5v1h-5zM454 484h5v1h-5zM459 484h5v1h-5zM463 484h5v1h-5zM468 484h5v1h-5zM472 484h5v1h-5zM477 484h5v1h-5zM481 484h5v1h-5zM486 484h5v1h-5zM490 484h5v1h-5zM495 484h5v1h-5zM499 484h5v1h-5zM504 484h5v1h-5zM508 484h5v1h-5zM513 484h5v1h-5zM517 484h5v1h-5zM522 484h5v1h-5zM526 484h5v1h-5zM531 484h5v1h-5zM535 484h5v1h-5zM540 484h5v1h-5zM544 484h5v1h-5zM549 484h5v1h-5zM553 484h5v1h-5zM558 484h5v1h-5zM562 484h5v1h-5zM567 484h5v1h-5zM571 484h5v1h-5zM576 484h5v1h-5zM580 484h5v1h-5zM585 484h5v1h-5zM589 484h5v1h-5zM594 484h5v1h-5zM598 484h5v1h-5zM603 484h5v1h-5zM607 484h5v1h-5zM612 484h5v1h-5zM616 484h5v1h-5zM621 484h5v1h-5zM625 484h5v1h-5zM630 484h5v1h-5zM634 484h5v1h-5zM639 484h5v1h-5zM643 484h5v1h-5zM648 484h5v1h-5zM652 484h5v1h-5zM657 484h5v1h-5zM661 484h5v1h-5zM666 484h5v1h-5zM670 484h5v1h-5zM675 484h5v1h-5zM679 484h5v1h-5zM684 484h5v1h-5zM688 484h5v1h-5zM693 484h5v1h-5zM697 484h5v1h-5zM702 484h5v1h-5zM706 484h5v1h-5zM711 484h5v1h-5zM715 484h5v1h-5zM720 484h5v1h-5zM724 484h5v1h-5zM729 484h5v1h-5zM733 484h5v1h-5zM738 484h5v1h-5zM742 484h5v1h-5zM747 484h5v1h-5zM751 484h5v1h-5zM756 484h5v1h-5zM760 484h5v1h-5zM765 484h5v1h-5zM769 484h5v1h-5zM774 484h5v1h-5zM778 484h5v1h-5zM783 484h5v1h-5zM787 484h5v1h-5zM796 475h1v10h-1zM792 484h5v1h-5z"/>
+<text x="234 243 252 261 270" y="641" fill="#8cbeff">Enter</text>
 <text x="288 297 306 315 324 333 342 351" y="641" fill="#b8c2d6">Відкрити</text>
-<text x="387 396 405" y="641" fill="#b8c2d6">Tab</text>
+<text x="387 396 405" y="641" fill="#8cbeff">Tab</text>
 <text x="423 432 441 450" y="641" fill="#b8c2d6">Мова</text>
-<text x="486" y="641" fill="#b8c2d6">q</text>
+<text x="486" y="641" fill="#8cbeff">q</text>
 <text x="504 513 522 531 540" y="641" fill="#b8c2d6">Вийти</text>
-<text x="576" y="641" fill="#b8c2d6">?</text>
+<text x="576" y="641" fill="#8cbeff">?</text>
 <text x="594 603 612 621 630 639 648" y="641" fill="#b8c2d6">Довідка</text>
-<text x="846 855 864 873 882 891" y="641" fill="#b8c2d6">v0.5.0</text>
+<text x="837 846 855 864 873 882" y="641" fill="#b8c2d6">v0.5.0</text>
 </g>
 </svg>

@@ -3,33 +3,30 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<rect x="27" y="19" width="9" height="19" fill="#009246"/>
-<rect x="36" y="19" width="18" height="19" fill="#ffffff"/>
-<rect x="54" y="19" width="9" height="19" fill="#ce2b37"/>
-<path fill="#009246" d="M27 19h9v9.5h-9z"/>
-<path fill="#ce2b37" d="M54 19h9v9.5h-9z"/>
-<path fill="#ffffff" d="M36 19h9v9.5h-9zM45 19h9v9.5h-9z"/>
-<text x="9" y="33" fill="#8cbeff">◄</text>
-<text x="72" y="33" fill="#8cbeff">►</text>
-<text x="90" y="33" fill="#8cbeff">▼</text>
-<rect x="27" y="38" width="9" height="19" fill="#009246"/>
-<rect x="36" y="38" width="18" height="19" fill="#ffffff"/>
-<rect x="54" y="38" width="9" height="19" fill="#ce2b37"/>
-<path fill="#009246" d="M27 38h9v9.5h-9z"/>
-<path fill="#ce2b37" d="M54 38h9v9.5h-9z"/>
-<path fill="#ffffff" d="M36 38h9v9.5h-9zM45 38h9v9.5h-9z"/>
-<text x="72 81" y="52" fill="#8cbeff">IT</text>
+<rect x="9" y="19" width="9" height="19" fill="#009246"/>
+<rect x="18" y="19" width="18" height="19" fill="#ffffff"/>
+<rect x="36" y="19" width="9" height="19" fill="#ce2b37"/>
+<path fill="#009246" d="M9 19h9v9.5h-9z"/>
+<path fill="#ce2b37" d="M36 19h9v9.5h-9z"/>
+<path fill="#ffffff" d="M18 19h9v9.5h-9zM27 19h9v9.5h-9z"/>
+<rect x="9" y="38" width="9" height="19" fill="#009246"/>
+<rect x="18" y="38" width="18" height="19" fill="#ffffff"/>
+<rect x="36" y="38" width="9" height="19" fill="#ce2b37"/>
+<path fill="#009246" d="M9 38h9v9.5h-9z"/>
+<path fill="#ce2b37" d="M36 38h9v9.5h-9z"/>
+<path fill="#ffffff" d="M18 38h9v9.5h-9zM27 38h9v9.5h-9z"/>
+<text x="54 63" y="52" fill="#8cbeff">IT</text>
+<text x="81" y="52" fill="#8cbeff">▼</text>
 <rect x="36" y="57" width="819" height="19" fill="#242a3a"/>
-<path fill="#ffd666" d="M39 65h1v11h-1zM41 65h1v11h-1zM39 65h6v1h-6zM39 67h6v1h-6zM108 65h6v1h-6zM108 67h6v1h-6zM111 65h6v1h-6zM111 67h6v1h-6zM117 65h6v1h-6zM117 67h6v1h-6zM120 65h6v1h-6zM120 67h6v1h-6zM126 65h6v1h-6zM126 67h6v1h-6zM129 65h6v1h-6zM129 67h6v1h-6zM135 65h6v1h-6zM135 67h6v1h-6zM138 65h6v1h-6zM138 67h6v1h-6zM144 65h6v1h-6zM144 67h6v1h-6zM147 65h6v1h-6zM147 67h6v1h-6zM153 65h6v1h-6zM153 67h6v1h-6zM156 65h6v1h-6zM156 67h6v1h-6zM162 65h6v1h-6zM162 67h6v1h-6zM165 65h6v1h-6zM165 67h6v1h-6zM171 65h6v1h-6zM171 67h6v1h-6zM174 65h6v1h-6zM174 67h6v1h-6zM180 65h6v1h-6zM180 67h6v1h-6zM183 65h6v1h-6zM183 67h6v1h-6zM189 65h6v1h-6zM189 67h6v1h-6zM192 65h6v1h-6zM192 67h6v1h-6zM198 65h6v1h-6zM198 67h6v1h-6zM201 65h6v1h-6zM201 67h6v1h-6zM207 65h6v1h-6zM207 67h6v1h-6zM210 65h6v1h-6zM210 67h6v1h-6zM216 65h6v1h-6zM216 67h6v1h-6zM219 65h6v1h-6zM219 67h6v1h-6zM225 65h6v1h-6zM225 67h6v1h-6zM228 65h6v1h-6zM228 67h6v1h-6zM234 65h6v1h-6zM234 67h6v1h-6zM237 65h6v1h-6zM237 67h6v1h-6zM243 65h6v1h-6zM243 67h6v1h-6zM246 65h6v1h-6zM246 67h6v1h-6zM252 65h6v1h-6zM252 67h6v1h-6zM255 65h6v1h-6zM255 67h6v1h-6zM261 65h6v1h-6zM261 67h6v1h-6zM264 65h6v1h-6zM264 67h6v1h-6zM270 65h6v1h-6zM270 67h6v1h-6zM273 65h6v1h-6zM273 67h6v1h-6zM279 65h6v1h-6zM279 67h6v1h-6zM282 65h6v1h-6zM282 67h6v1h-6zM288 65h6v1h-6zM288 67h6v1h-6zM291 65h6v1h-6zM291 67h6v1h-6zM297 65h6v1h-6zM297 67h6v1h-6zM300 65h6v1h-6zM300 67h6v1h-6zM306 65h6v1h-6zM306 67h6v1h-6zM309 65h6v1h-6zM309 67h6v1h-6zM315 65h6v1h-6zM315 67h6v1h-6zM318 65h6v1h-6zM318 67h6v1h-6zM324 65h6v1h-6zM324 67h6v1h-6zM327 65h6v1h-6zM327 67h6v1h-6zM333 65h6v1h-6zM333 67h6v1h-6zM336 65h6v1h-6zM336 67h6v1h-6zM342 65h6v1h-6zM342 67h6v1h-6zM345 65h6v1h-6zM345 67h6v1h-6zM351 65h6v1h-6zM351 67h6v1h-6zM354 65h6v1h-6zM354 67h6v1h-6zM360 65h6v1h-6zM360 67h6v1h-6zM363 65h6v1h-6zM363 67h6v1h-6zM369 65h6v1h-6zM369 67h6v1h-6zM372 65h6v1h-6zM372 67h6v1h-6zM378 65h6v1h-6zM378 67h6v1h-6zM381 65h6v1h-6zM381 67h6v1h-6zM387 65h6v1h-6zM387 67h6v1h-6zM390 65h6v1h-6zM390 67h6v1h-6zM396 65h6v1h-6zM396 67h6v1h-6zM399 65h6v1h-6zM399 67h6v1h-6zM405 65h6v1h-6zM405 67h6v1h-6zM408 65h6v1h-6zM408 67h6v1h-6zM414 65h6v1h-6zM414 67h6v1h-6zM417 65h6v1h-6zM417 67h6v1h-6zM423 65h6v1h-6zM423 67h6v1h-6zM426 65h6v1h-6zM426 67h6v1h-6zM432 65h6v1h-6zM432 67h6v1h-6zM435 65h6v1h-6zM435 67h6v1h-6zM441 65h6v1h-6zM441 67h6v1h-6zM444 65h6v1h-6zM444 67h6v1h-6zM450 65h6v1h-6zM450 67h6v1h-6zM453 65h6v1h-6zM453 67h6v1h-6zM459 65h6v1h-6zM459 67h6v1h-6zM462 65h6v1h-6zM462 67h6v1h-6zM468 65h6v1h-6zM468 67h6v1h-6zM471 65h6v1h-6zM471 67h6v1h-6zM477 65h6v1h-6zM477 67h6v1h-6zM480 65h6v1h-6zM480 67h6v1h-6zM486 65h6v1h-6zM486 67h6v1h-6zM489 65h6v1h-6zM489 67h6v1h-6zM495 65h6v1h-6zM495 67h6v1h-6zM498 65h6v1h-6zM498 67h6v1h-6zM504 65h6v1h-6zM504 67h6v1h-6zM507 65h6v1h-6zM507 67h6v1h-6zM513 65h6v1h-6zM513 67h6v1h-6zM516 65h6v1h-6zM516 67h6v1h-6zM522 65h6v1h-6zM522 67h6v1h-6zM525 65h6v1h-6zM525 67h6v1h-6zM531 65h6v1h-6zM531 67h6v1h-6zM534 65h6v1h-6zM534 67h6v1h-6zM540 65h6v1h-6zM540 67h6v1h-6zM543 65h6v1h-6zM543 67h6v1h-6zM549 65h6v1h-6zM549 67h6v1h-6zM552 65h6v1h-6zM552 67h6v1h-6zM558 65h6v1h-6zM558 67h6v1h-6zM561 65h6v1h-6zM561 67h6v1h-6zM567 65h6v1h-6zM567 67h6v1h-6zM570 65h6v1h-6zM570 67h6v1h-6zM576 65h6v1h-6zM576 67h6v1h-6zM579 65h6v1h-6zM579 67h6v1h-6zM585 65h6v1h-6zM585 67h6v1h-6zM588 65h6v1h-6zM588 67h6v1h-6zM594 65h6v1h-6zM594 67h6v1h-6zM597 65h6v1h-6zM597 67h6v1h-6zM603 65h6v1h-6zM603 67h6v1h-6zM606 65h6v1h-6zM606 67h6v1h-6zM612 65h6v1h-6zM612 67h6v1h-6zM615 65h6v1h-6zM615 67h6v1h-6zM621 65h6v1h-6zM621 67h6v1h-6zM624 65h6v1h-6zM624 67h6v1h-6zM630 65h6v1h-6zM630 67h6v1h-6zM633 65h6v1h-6zM633 67h6v1h-6zM639 65h6v1h-6zM639 67h6v1h-6zM642 65h6v1h-6zM642 67h6v1h-6zM648 65h6v1h-6zM648 67h6v1h-6zM651 65h6v1h-6zM651 67h6v1h-6zM657 65h6v1h-6zM657 67h6v1h-6zM660 65h6v1h-6zM660 67h6v1h-6zM666 65h6v1h-6zM666 67h6v1h-6zM669 65h6v1h-6zM669 67h6v1h-6zM675 65h6v1h-6zM675 67h6v1h-6zM678 65h6v1h-6zM678 67h6v1h-6zM684 65h6v1h-6zM684 67h6v1h-6zM687 65h6v1h-6zM687 67h6v1h-6zM693 65h6v1h-6zM693 67h6v1h-6zM696 65h6v1h-6zM696 67h6v1h-6zM702 65h6v1h-6zM702 67h6v1h-6zM705 65h6v1h-6zM705 67h6v1h-6zM711 65h6v1h-6zM711 67h6v1h-6zM714 65h6v1h-6zM714 67h6v1h-6zM849 65h1v11h-1zM851 65h1v11h-1zM846 65h6v1h-6zM846 67h6v1h-6z"/>
+<path fill="#ffd666" d="M39 65h1v11h-1zM41 65h1v11h-1zM39 65h6v1h-6zM39 67h6v1h-6zM108 65h6v1h-6zM108 67h6v1h-6zM111 65h6v1h-6zM111 67h6v1h-6zM117 65h6v1h-6zM117 67h6v1h-6zM120 65h6v1h-6zM120 67h6v1h-6zM126 65h6v1h-6zM126 67h6v1h-6zM129 65h6v1h-6zM129 67h6v1h-6zM135 65h6v1h-6zM135 67h6v1h-6zM138 65h6v1h-6zM138 67h6v1h-6zM144 65h6v1h-6zM144 67h6v1h-6zM147 65h6v1h-6zM147 67h6v1h-6zM153 65h6v1h-6zM153 67h6v1h-6zM156 65h6v1h-6zM156 67h6v1h-6zM162 65h6v1h-6zM162 67h6v1h-6zM165 65h6v1h-6zM165 67h6v1h-6zM171 65h6v1h-6zM171 67h6v1h-6zM174 65h6v1h-6zM174 67h6v1h-6zM180 65h6v1h-6zM180 67h6v1h-6zM183 65h6v1h-6zM183 67h6v1h-6zM189 65h6v1h-6zM189 67h6v1h-6zM192 65h6v1h-6zM192 67h6v1h-6zM198 65h6v1h-6zM198 67h6v1h-6zM201 65h6v1h-6zM201 67h6v1h-6zM207 65h6v1h-6zM207 67h6v1h-6zM210 65h6v1h-6zM210 67h6v1h-6zM216 65h6v1h-6zM216 67h6v1h-6zM219 65h6v1h-6zM219 67h6v1h-6zM225 65h6v1h-6zM225 67h6v1h-6zM228 65h6v1h-6zM228 67h6v1h-6zM234 65h6v1h-6zM234 67h6v1h-6zM237 65h6v1h-6zM237 67h6v1h-6zM243 65h6v1h-6zM243 67h6v1h-6zM246 65h6v1h-6zM246 67h6v1h-6zM252 65h6v1h-6zM252 67h6v1h-6zM255 65h6v1h-6zM255 67h6v1h-6zM261 65h6v1h-6zM261 67h6v1h-6zM264 65h6v1h-6zM264 67h6v1h-6zM270 65h6v1h-6zM270 67h6v1h-6zM273 65h6v1h-6zM273 67h6v1h-6zM279 65h6v1h-6zM279 67h6v1h-6zM282 65h6v1h-6zM282 67h6v1h-6zM288 65h6v1h-6zM288 67h6v1h-6zM291 65h6v1h-6zM291 67h6v1h-6zM297 65h6v1h-6zM297 67h6v1h-6zM300 65h6v1h-6zM300 67h6v1h-6zM306 65h6v1h-6zM306 67h6v1h-6zM309 65h6v1h-6zM309 67h6v1h-6zM315 65h6v1h-6zM315 67h6v1h-6zM318 65h6v1h-6zM318 67h6v1h-6zM324 65h6v1h-6zM324 67h6v1h-6zM327 65h6v1h-6zM327 67h6v1h-6zM333 65h6v1h-6zM333 67h6v1h-6zM336 65h6v1h-6zM336 67h6v1h-6zM342 65h6v1h-6zM342 67h6v1h-6zM345 65h6v1h-6zM345 67h6v1h-6zM351 65h6v1h-6zM351 67h6v1h-6zM354 65h6v1h-6zM354 67h6v1h-6zM360 65h6v1h-6zM360 67h6v1h-6zM363 65h6v1h-6zM363 67h6v1h-6zM369 65h6v1h-6zM369 67h6v1h-6zM372 65h6v1h-6zM372 67h6v1h-6zM378 65h6v1h-6zM378 67h6v1h-6zM381 65h6v1h-6zM381 67h6v1h-6zM387 65h6v1h-6zM387 67h6v1h-6zM390 65h6v1h-6zM390 67h6v1h-6zM396 65h6v1h-6zM396 67h6v1h-6zM399 65h6v1h-6zM399 67h6v1h-6zM405 65h6v1h-6zM405 67h6v1h-6zM408 65h6v1h-6zM408 67h6v1h-6zM414 65h6v1h-6zM414 67h6v1h-6zM417 65h6v1h-6zM417 67h6v1h-6zM423 65h6v1h-6zM423 67h6v1h-6zM426 65h6v1h-6zM426 67h6v1h-6zM432 65h6v1h-6zM432 67h6v1h-6zM435 65h6v1h-6zM435 67h6v1h-6zM441 65h6v1h-6zM441 67h6v1h-6zM444 65h6v1h-6zM444 67h6v1h-6zM450 65h6v1h-6zM450 67h6v1h-6zM453 65h6v1h-6zM453 67h6v1h-6zM459 65h6v1h-6zM459 67h6v1h-6zM462 65h6v1h-6zM462 67h6v1h-6zM468 65h6v1h-6zM468 67h6v1h-6zM471 65h6v1h-6zM471 67h6v1h-6zM477 65h6v1h-6zM477 67h6v1h-6zM480 65h6v1h-6zM480 67h6v1h-6zM486 65h6v1h-6zM486 67h6v1h-6zM489 65h6v1h-6zM489 67h6v1h-6zM495 65h6v1h-6zM495 67h6v1h-6zM498 65h6v1h-6zM498 67h6v1h-6zM504 65h6v1h-6zM504 67h6v1h-6zM507 65h6v1h-6zM507 67h6v1h-6zM513 65h6v1h-6zM513 67h6v1h-6zM516 65h6v1h-6zM516 67h6v1h-6zM522 65h6v1h-6zM522 67h6v1h-6zM525 65h6v1h-6zM525 67h6v1h-6zM531 65h6v1h-6zM531 67h6v1h-6zM534 65h6v1h-6zM534 67h6v1h-6zM540 65h6v1h-6zM540 67h6v1h-6zM543 65h6v1h-6zM543 67h6v1h-6zM549 65h6v1h-6zM549 67h6v1h-6zM552 65h6v1h-6zM552 67h6v1h-6zM558 65h6v1h-6zM558 67h6v1h-6zM561 65h6v1h-6zM561 67h6v1h-6zM567 65h6v1h-6zM567 67h6v1h-6zM570 65h6v1h-6zM570 67h6v1h-6zM576 65h6v1h-6zM576 67h6v1h-6zM579 65h6v1h-6zM579 67h6v1h-6zM585 65h6v1h-6zM585 67h6v1h-6zM588 65h6v1h-6zM588 67h6v1h-6zM594 65h6v1h-6zM594 67h6v1h-6zM597 65h6v1h-6zM597 67h6v1h-6zM603 65h6v1h-6zM603 67h6v1h-6zM606 65h6v1h-6zM606 67h6v1h-6zM612 65h6v1h-6zM612 67h6v1h-6zM615 65h6v1h-6zM615 67h6v1h-6zM621 65h6v1h-6zM621 67h6v1h-6zM624 65h6v1h-6zM624 67h6v1h-6zM630 65h6v1h-6zM630 67h6v1h-6zM633 65h6v1h-6zM633 67h6v1h-6zM639 65h6v1h-6zM639 67h6v1h-6zM642 65h6v1h-6zM642 67h6v1h-6zM648 65h6v1h-6zM648 67h6v1h-6zM651 65h6v1h-6zM651 67h6v1h-6zM657 65h6v1h-6zM657 67h6v1h-6zM660 65h6v1h-6zM660 67h6v1h-6zM666 65h6v1h-6zM666 67h6v1h-6zM669 65h6v1h-6zM669 67h6v1h-6zM675 65h6v1h-6zM675 67h6v1h-6zM678 65h6v1h-6zM678 67h6v1h-6zM849 65h1v11h-1zM851 65h1v11h-1zM846 65h6v1h-6zM846 67h6v1h-6z"/>
 <text x="54 63 72 81 90" y="71" fill="#8cbeff">Aiuto</text>
-<text x="720 729 738 747 756 765 774" y="71" fill="#8cbeff">Ancora:</text>
-<text x="792 801 810 819 828 837" y="71" fill="#8cbeff">centro</text>
-<rect x="36" y="76" width="243" height="19" fill="#242a3a"/>
-<rect x="279" y="76" width="63" height="19" fill="#e8ecf4"/>
-<rect x="342" y="76" width="513" height="19" fill="#242a3a"/>
+<text x="684 693 702 711 720 729 738" y="71" fill="#8cbeff">Ancora:</text>
+<text x="756 765 774 783 792 801" y="71" fill="#8cbeff">centro</text>
+<text x="819 828 837" y="71" fill="#8cbeff">[d]</text>
+<rect x="36" y="76" width="819" height="19" fill="#242a3a"/>
 <path fill="#ffd666" d="M39 76h1v11h-1zM41 76h1v11h-1zM39 84h1v11h-1zM41 84h1v11h-1zM849 76h1v11h-1zM851 76h1v11h-1zM849 84h1v11h-1zM851 84h1v11h-1z"/>
 <text x="261" y="90" fill="#e8ecf4">◄</text>
-<text x="279 288 297 306 315 324 333" y="90" fill="#242a3a" font-weight="bold">[Tasti]</text>
+<text x="279 288 297 306 315 324 333" y="90" fill="#8cbeff" font-weight="bold" text-decoration="underline">[Tasti]</text>
 <text x="369 378 387 396 405 414" y="90" fill="#e8ecf4">Regole</text>
 <text x="459 468 477 486" y="90" fill="#e8ecf4">Riga</text>
 <text x="504 513" y="90" fill="#e8ecf4">di</text>
@@ -138,27 +135,27 @@
 <rect x="36" y="323" width="819" height="19" fill="#242a3a"/>
 <path fill="#8cbeff" d="M837 323h9v19h-9z"/>
 <path fill="#ffd666" d="M39 323h1v11h-1zM41 323h1v11h-1zM39 331h1v11h-1zM41 331h1v11h-1zM849 323h1v11h-1zM851 323h1v11h-1zM849 331h1v11h-1zM851 331h1v11h-1z"/>
-<text x="45" y="337" fill="#8cbeff">+</text>
-<text x="189 198 207" y="337" fill="#e8ecf4">Più</text>
-<text x="225 234 243 252 261" y="337" fill="#e8ecf4">carte</text>
+<text x="45" y="337" fill="#8cbeff">e</text>
+<text x="189 198 207 216 225 234 243" y="337" fill="#e8ecf4">Scarti:</text>
+<text x="261 270 279 288 297" y="337" fill="#e8ecf4">mossa</text>
+<text x="315 324 333 342 351 360" y="337" fill="#e8ecf4">rapida</text>
 <text x="441" y="337" fill="#8cbeff">q</text>
 <text x="585 594 603 612" y="337" fill="#e8ecf4">Esci</text>
 <rect x="36" y="342" width="819" height="19" fill="#242a3a"/>
 <path fill="#8cbeff" d="M837 342h9v19h-9z"/>
 <path fill="#ffd666" d="M39 342h1v11h-1zM41 342h1v11h-1zM39 350h1v11h-1zM41 350h1v11h-1zM849 342h1v11h-1zM851 342h1v11h-1zM849 350h1v11h-1zM851 350h1v11h-1z"/>
-<text x="45" y="356" fill="#8cbeff">-</text>
-<text x="189 198 207 216" y="356" fill="#e8ecf4">Meno</text>
-<text x="234 243 252 261 270" y="356" fill="#e8ecf4">carte</text>
+<text x="45" y="356" fill="#8cbeff">+</text>
+<text x="189 198 207" y="356" fill="#e8ecf4">Più</text>
+<text x="225 234 243 252 261" y="356" fill="#e8ecf4">carte</text>
 <text x="441 450 459 468 477 486" y="356" fill="#8cbeff">Ctrl+C</text>
 <text x="585 594 603 612" y="356" fill="#e8ecf4">Esci</text>
 <text x="630 639 648 657 666 675" y="356" fill="#e8ecf4">subito</text>
 <rect x="36" y="361" width="819" height="19" fill="#242a3a"/>
 <path fill="#8cbeff" d="M837 361h9v19h-9z"/>
 <path fill="#ffd666" d="M39 361h1v11h-1zM41 361h1v11h-1zM39 369h1v11h-1zM41 369h1v11h-1zM849 361h1v11h-1zM851 361h1v11h-1zM849 369h1v11h-1zM851 369h1v11h-1z"/>
-<text x="45" y="375" fill="#8cbeff">u</text>
-<text x="63" y="375" fill="#8cbeff">/</text>
-<text x="81 90 99 108 117 126" y="375" fill="#8cbeff">Ctrl+Z</text>
-<text x="189 198 207 216 225 234 243" y="375" fill="#e8ecf4">Annulla</text>
+<text x="45" y="375" fill="#8cbeff">-</text>
+<text x="189 198 207 216" y="375" fill="#e8ecf4">Meno</text>
+<text x="234 243 252 261 270" y="375" fill="#e8ecf4">carte</text>
 <text x="441" y="375" fill="#8cbeff">?</text>
 <text x="459" y="375" fill="#8cbeff">/</text>
 <text x="477 486" y="375" fill="#8cbeff">F1</text>
@@ -166,45 +163,45 @@
 <rect x="36" y="380" width="819" height="19" fill="#242a3a"/>
 <path fill="#8cbeff" d="M837 380h9v19h-9z"/>
 <path fill="#ffd666" d="M39 380h1v11h-1zM41 380h1v11h-1zM39 388h1v11h-1zM41 388h1v11h-1zM849 380h1v11h-1zM851 380h1v11h-1zM849 388h1v11h-1zM851 388h1v11h-1z"/>
-<text x="45" y="394" fill="#8cbeff">r</text>
+<text x="45" y="394" fill="#8cbeff">u</text>
 <text x="63" y="394" fill="#8cbeff">/</text>
-<text x="81 90 99 108 117 126" y="394" fill="#8cbeff">Ctrl+Y</text>
-<text x="189 198 207 216 225 234" y="394" fill="#e8ecf4">Ripeti</text>
+<text x="81 90 99 108 117 126" y="394" fill="#8cbeff">Ctrl+Z</text>
+<text x="189 198 207 216 225 234 243" y="394" fill="#e8ecf4">Annulla</text>
 <text x="441" y="394" fill="#8cbeff">i</text>
 <text x="585 594 603 612" y="394" fill="#e8ecf4">Come</text>
 <text x="630 639 648 657 666 675 684" y="394" fill="#e8ecf4">giocare</text>
 <rect x="36" y="399" width="819" height="19" fill="#242a3a"/>
 <path fill="#8cbeff" d="M837 399h9v19h-9z"/>
 <path fill="#ffd666" d="M39 399h1v11h-1zM41 399h1v11h-1zM39 407h1v11h-1zM41 407h1v11h-1zM849 399h1v11h-1zM851 399h1v11h-1zM849 407h1v11h-1zM851 407h1v11h-1z"/>
-<text x="45" y="413" fill="#8cbeff">h</text>
-<text x="189 198 207 216 225 234 243 252 261 270 279 288" y="413" fill="#e8ecf4">Suggerimento</text>
+<text x="45" y="413" fill="#8cbeff">r</text>
+<text x="63" y="413" fill="#8cbeff">/</text>
+<text x="81 90 99 108 117 126" y="413" fill="#8cbeff">Ctrl+Y</text>
+<text x="189 198 207 216 225 234" y="413" fill="#e8ecf4">Ripeti</text>
 <text x="441" y="413" fill="#8cbeff">d</text>
 <text x="585 594 603 612 621 630" y="413" fill="#e8ecf4">Ancora</text>
 <text x="648 657 666 675 684 693 702 711" y="413" fill="#e8ecf4">finestra</text>
 <rect x="36" y="418" width="819" height="19" fill="#242a3a"/>
 <path fill="#8cbeff" d="M837 418h9v19h-9z"/>
 <path fill="#ffd666" d="M39 418h1v11h-1zM41 418h1v11h-1zM39 426h1v11h-1zM41 426h1v11h-1zM849 418h1v11h-1zM851 418h1v11h-1zM849 426h1v11h-1zM851 426h1v11h-1z"/>
-<text x="45" y="432" fill="#8cbeff">f</text>
-<text x="189 198 207 216 225 234 243 252" y="432" fill="#e8ecf4">Completa</text>
-<text x="270 279 288 297 306 315 324" y="432" fill="#e8ecf4">partita</text>
+<text x="45" y="432" fill="#8cbeff">h</text>
+<text x="189 198 207 216 225 234 243 252 261 270 279 288" y="432" fill="#e8ecf4">Suggerimento</text>
 <text x="441 450" y="432" fill="#8cbeff">F6</text>
 <text x="585 594 603 612 621 630" y="432" fill="#e8ecf4">Attiva</text>
 <text x="648 657 666 675 684 693 702 711" y="432" fill="#e8ecf4">finestra</text>
 <text x="729 738 747 756 765 774 783 792" y="432" fill="#e8ecf4">ancorata</text>
 <rect x="36" y="437" width="819" height="19" fill="#242a3a"/>
-<path fill="#8cbeff" d="M837 437h9v19h-9z"/>
+<path fill="#495061" d="M837 437h9v19h-9z"/>
 <path fill="#ffd666" d="M39 437h1v11h-1zM41 437h1v11h-1zM39 445h1v11h-1zM41 445h1v11h-1zM849 437h1v11h-1zM851 437h1v11h-1zM849 445h1v11h-1zM851 445h1v11h-1z"/>
-<text x="45" y="451" fill="#8cbeff">g</text>
-<text x="189 198 207 216 225 234 243 252" y="451" fill="#e8ecf4">Pannello</text>
-<text x="270 279 288 297 306" y="451" fill="#e8ecf4">guida</text>
+<text x="45" y="451" fill="#8cbeff">f</text>
+<text x="189 198 207 216 225 234 243 252" y="451" fill="#e8ecf4">Completa</text>
+<text x="270 279 288 297 306 315 324" y="451" fill="#e8ecf4">partita</text>
 <text x="441 450 459 468 477" y="451" fill="#e8ecf4" font-weight="bold">Mouse</text>
 <rect x="36" y="456" width="819" height="19" fill="#242a3a"/>
-<path fill="#8cbeff" d="M837 456h9v19h-9z"/>
+<path fill="#495061" d="M837 456h9v19h-9z"/>
 <path fill="#ffd666" d="M39 456h1v11h-1zM41 456h1v11h-1zM39 464h1v11h-1zM41 464h1v11h-1zM849 456h1v11h-1zM851 456h1v11h-1zM849 464h1v11h-1zM851 464h1v11h-1z"/>
-<text x="45" y="470" fill="#8cbeff">v</text>
+<text x="45" y="470" fill="#8cbeff">g</text>
 <text x="189 198 207 216 225 234 243 252" y="470" fill="#e8ecf4">Pannello</text>
-<text x="270 279 288 297 306" y="470" fill="#e8ecf4">mosse</text>
-<text x="324 333 342 351 360 369 378 387 396" y="470" fill="#e8ecf4">possibili</text>
+<text x="270 279 288 297 306" y="470" fill="#e8ecf4">guida</text>
 <text x="441 450 459 468" y="470" fill="#8cbeff">Clic</text>
 <text x="486 495" y="470" fill="#8cbeff">su</text>
 <text x="513 522 531 540 549" y="470" fill="#8cbeff">carta</text>
@@ -216,51 +213,49 @@
 <rect x="36" y="475" width="819" height="19" fill="#242a3a"/>
 <path fill="#495061" d="M837 475h9v19h-9z"/>
 <path fill="#ffd666" d="M39 475h1v11h-1zM41 475h1v11h-1zM39 483h1v11h-1zM41 483h1v11h-1zM849 475h1v11h-1zM851 475h1v11h-1zM849 483h1v11h-1zM851 483h1v11h-1z"/>
-<text x="45" y="489" fill="#8cbeff">o</text>
-<text x="189 198 207 216 225 234 243" y="489" fill="#e8ecf4">Opzioni</text>
-<text x="261 270 279 288 297 306" y="489" fill="#e8ecf4">rapide</text>
+<text x="45" y="489" fill="#8cbeff">v</text>
+<text x="189 198 207 216 225 234 243 252" y="489" fill="#e8ecf4">Pannello</text>
+<text x="270 279 288 297 306" y="489" fill="#e8ecf4">mosse</text>
+<text x="324 333 342 351 360 369 378 387 396" y="489" fill="#e8ecf4">possibili</text>
 <text x="441 450 459 468" y="489" fill="#8cbeff">Clic</text>
 <text x="486 495 504 513 522" y="489" fill="#8cbeff">mazzo</text>
 <text x="585 594 603 612 621" y="489" fill="#e8ecf4">Pesca</text>
 <text x="639 648 657" y="489" fill="#e8ecf4">dal</text>
 <text x="675 684 693 702 711" y="489" fill="#e8ecf4">mazzo</text>
 <rect x="36" y="494" width="819" height="19" fill="#242a3a"/>
-<path fill="#495061" d="M837 494h9v19h-9z"/>
+<path fill="#6e7a96" d="M45 503h5v1h-5zM49 503h5v1h-5zM54 503h5v1h-5zM58 503h5v1h-5zM63 503h5v1h-5zM67 503h5v1h-5zM72 503h5v1h-5zM76 503h5v1h-5zM81 503h5v1h-5zM85 503h5v1h-5zM90 503h5v1h-5zM94 503h5v1h-5zM99 503h5v1h-5zM103 503h5v1h-5zM108 503h5v1h-5zM112 503h5v1h-5zM117 503h5v1h-5zM121 503h5v1h-5zM126 503h5v1h-5zM130 503h5v1h-5zM135 503h5v1h-5zM139 503h5v1h-5zM144 503h5v1h-5zM148 503h5v1h-5zM153 503h5v1h-5zM157 503h5v1h-5zM162 503h5v1h-5zM166 503h5v1h-5zM171 503h5v1h-5zM175 503h5v1h-5zM180 503h5v1h-5zM184 503h5v1h-5zM189 503h5v1h-5zM193 503h5v1h-5zM198 503h5v1h-5zM202 503h5v1h-5zM207 503h5v1h-5zM211 503h5v1h-5zM216 503h5v1h-5zM220 503h5v1h-5zM225 503h5v1h-5zM229 503h5v1h-5zM234 503h5v1h-5zM238 503h5v1h-5zM243 503h5v1h-5zM247 503h5v1h-5zM252 503h5v1h-5zM256 503h5v1h-5zM261 503h5v1h-5zM265 503h5v1h-5zM270 503h5v1h-5zM274 503h5v1h-5zM279 503h5v1h-5zM283 503h5v1h-5zM288 503h5v1h-5zM292 503h5v1h-5zM297 503h5v1h-5zM301 503h5v1h-5zM306 503h5v1h-5zM310 503h5v1h-5zM315 503h5v1h-5zM319 503h5v1h-5zM324 503h5v1h-5zM328 503h5v1h-5zM333 503h5v1h-5zM337 503h5v1h-5zM342 503h5v1h-5zM346 503h5v1h-5zM351 503h5v1h-5zM355 503h5v1h-5zM360 503h5v1h-5zM364 503h5v1h-5zM369 503h5v1h-5zM373 503h5v1h-5zM378 503h5v1h-5zM382 503h5v1h-5zM387 503h5v1h-5zM391 503h5v1h-5zM396 503h5v1h-5zM400 503h5v1h-5zM405 503h5v1h-5zM409 503h5v1h-5zM414 503h5v1h-5zM418 503h5v1h-5zM423 503h5v1h-5zM427 503h5v1h-5zM432 503h5v1h-5zM436 503h5v1h-5zM441 503h5v1h-5zM445 503h5v1h-5zM450 503h5v1h-5zM454 503h5v1h-5zM459 503h5v1h-5zM463 503h5v1h-5zM468 503h5v1h-5zM472 503h5v1h-5zM477 503h5v1h-5zM481 503h5v1h-5zM486 503h5v1h-5zM490 503h5v1h-5zM495 503h5v1h-5zM499 503h5v1h-5zM504 503h5v1h-5zM508 503h5v1h-5zM513 503h5v1h-5zM517 503h5v1h-5zM522 503h5v1h-5zM526 503h5v1h-5zM531 503h5v1h-5zM535 503h5v1h-5zM540 503h5v1h-5zM544 503h5v1h-5zM549 503h5v1h-5zM553 503h5v1h-5zM558 503h5v1h-5zM562 503h5v1h-5zM567 503h5v1h-5zM571 503h5v1h-5zM576 503h5v1h-5zM580 503h5v1h-5zM585 503h5v1h-5zM589 503h5v1h-5zM594 503h5v1h-5zM598 503h5v1h-5zM603 503h5v1h-5zM607 503h5v1h-5zM612 503h5v1h-5zM616 503h5v1h-5zM621 503h5v1h-5zM625 503h5v1h-5zM630 503h5v1h-5zM634 503h5v1h-5zM639 503h5v1h-5zM643 503h5v1h-5zM648 503h5v1h-5zM652 503h5v1h-5zM657 503h5v1h-5zM661 503h5v1h-5zM666 503h5v1h-5zM670 503h5v1h-5zM675 503h5v1h-5zM679 503h5v1h-5zM684 503h5v1h-5zM688 503h5v1h-5zM693 503h5v1h-5zM697 503h5v1h-5zM702 503h5v1h-5zM706 503h5v1h-5zM711 503h5v1h-5zM715 503h5v1h-5zM720 503h5v1h-5zM724 503h5v1h-5zM729 503h5v1h-5zM733 503h5v1h-5zM738 503h5v1h-5zM742 503h5v1h-5zM747 503h5v1h-5zM751 503h5v1h-5zM756 503h5v1h-5zM760 503h5v1h-5zM765 503h5v1h-5zM769 503h5v1h-5zM774 503h5v1h-5zM778 503h5v1h-5zM783 503h5v1h-5zM787 503h5v1h-5zM792 503h5v1h-5zM796 503h5v1h-5zM801 503h5v1h-5zM805 503h5v1h-5zM810 503h5v1h-5zM814 503h5v1h-5zM819 503h5v1h-5zM823 503h5v1h-5zM828 503h5v1h-5zM832 503h5v1h-5zM837 503h5v1h-5zM841 503h5v1h-5z"/>
 <path fill="#ffd666" d="M39 494h1v11h-1zM41 494h1v11h-1zM39 502h1v11h-1zM41 502h1v11h-1zM849 494h1v11h-1zM851 494h1v11h-1zM849 502h1v11h-1zM851 502h1v11h-1z"/>
-<text x="441 450 459 468 477 486" y="508" fill="#8cbeff">Doppio</text>
-<text x="504 513 522 531" y="508" fill="#8cbeff">clic</text>
-<text x="585 594 603 612 621" y="508" fill="#e8ecf4">Mossa</text>
-<text x="639 648 657 666 675 684" y="508" fill="#e8ecf4">rapida</text>
-<text x="702 711 720 729 738" y="508" fill="#e8ecf4">sulla</text>
-<text x="756 765 774 783" y="508" fill="#e8ecf4">meta</text>
 <rect x="36" y="513" width="819" height="19" fill="#242a3a"/>
 <path fill="#ffd666" d="M39 513h1v11h-1zM41 513h1v11h-1zM39 521h1v11h-1zM41 521h1v11h-1zM849 513h1v11h-1zM851 513h1v11h-1zM849 521h1v11h-1zM851 521h1v11h-1z"/>
-<text x="288 297 306" y="527" fill="#e8ecf4">Esc</text>
-<text x="324" y="527" fill="#e8ecf4">o</text>
-<text x="342 351 360 369 378" y="527" fill="#e8ecf4">Enter</text>
-<text x="396 405 414 423 432 441" y="527" fill="#e8ecf4">chiude</text>
-<text x="459 468 477 486 495 504" y="527" fill="#e8ecf4">questa</text>
-<text x="522 531 540 549 558 567 576 585 594" y="527" fill="#e8ecf4">finestra.</text>
+<text x="54 63 72 81" y="527" fill="#8cbeff">Tab:</text>
+<text x="99 108 117 126 135 144" y="527" fill="#b8c2d6">scheda</text>
+<text x="171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306 315" y="527" fill="#b8c2d6">Su/Giù/PgUp/PgDn:</text>
+<text x="333 342 351 360 369 378" y="527" fill="#b8c2d6">scorri</text>
+<text x="405 414 423 432" y="527" fill="#8cbeff">Esc:</text>
+<text x="450 459 468 477 486 495" y="527" fill="#b8c2d6">chiudi</text>
+<text x="756 765 774 783" y="527" fill="#b8c2d6">1-21</text>
+<text x="801" y="527" fill="#b8c2d6">/</text>
+<text x="819 828" y="527" fill="#b8c2d6">24</text>
 <rect x="36" y="532" width="819" height="19" fill="#242a3a"/>
 <path fill="#ffd666" d="M39 532h1v11h-1zM41 532h1v11h-1zM39 540h1v11h-1zM41 540h1v11h-1zM849 532h1v11h-1zM851 532h1v11h-1zM849 540h1v11h-1zM851 540h1v11h-1z"/>
 <rect x="36" y="551" width="333" height="19" fill="#242a3a"/>
-<rect x="369" y="551" width="144" height="19" fill="#e8ecf4"/>
+<rect x="369" y="551" width="144" height="19" fill="#ffd666"/>
 <rect x="513" y="551" width="342" height="19" fill="#242a3a"/>
 <path fill="#ffd666" d="M39 551h1v11h-1zM41 551h1v11h-1zM39 559h1v11h-1zM41 559h1v11h-1zM849 551h1v11h-1zM851 551h1v11h-1zM849 559h1v11h-1zM851 559h1v11h-1z"/>
-<text x="369" y="565" fill="#242a3a" font-weight="bold">►</text>
-<text x="387 396 405 414 423 432" y="565" fill="#242a3a" font-weight="bold">Chiudi</text>
-<text x="450 459 468 477 486" y="565" fill="#242a3a" font-weight="bold">[Esc]</text>
-<text x="504" y="565" fill="#242a3a" font-weight="bold">◄</text>
+<text x="369" y="565" fill="#141820" font-weight="bold">►</text>
+<text x="387 396 405 414 423 432" y="565" fill="#141820" font-weight="bold">Chiudi</text>
+<text x="450 459 468 477 486" y="565" fill="#141820" font-weight="bold">[Esc]</text>
+<text x="504" y="565" fill="#141820" font-weight="bold">◄</text>
 <rect x="36" y="570" width="819" height="19" fill="#242a3a"/>
 <path fill="#ffd666" d="M39 570h1v11h-1zM41 570h1v11h-1zM39 578h6v1h-6zM39 580h6v1h-6zM45 578h6v1h-6zM45 580h6v1h-6zM48 578h6v1h-6zM48 580h6v1h-6zM54 578h6v1h-6zM54 580h6v1h-6zM57 578h6v1h-6zM57 580h6v1h-6zM63 578h6v1h-6zM63 580h6v1h-6zM66 578h6v1h-6zM66 580h6v1h-6zM72 578h6v1h-6zM72 580h6v1h-6zM75 578h6v1h-6zM75 580h6v1h-6zM81 578h6v1h-6zM81 580h6v1h-6zM84 578h6v1h-6zM84 580h6v1h-6zM90 578h6v1h-6zM90 580h6v1h-6zM93 578h6v1h-6zM93 580h6v1h-6zM99 578h6v1h-6zM99 580h6v1h-6zM102 578h6v1h-6zM102 580h6v1h-6zM108 578h6v1h-6zM108 580h6v1h-6zM111 578h6v1h-6zM111 580h6v1h-6zM117 578h6v1h-6zM117 580h6v1h-6zM120 578h6v1h-6zM120 580h6v1h-6zM126 578h6v1h-6zM126 580h6v1h-6zM129 578h6v1h-6zM129 580h6v1h-6zM135 578h6v1h-6zM135 580h6v1h-6zM138 578h6v1h-6zM138 580h6v1h-6zM144 578h6v1h-6zM144 580h6v1h-6zM147 578h6v1h-6zM147 580h6v1h-6zM153 578h6v1h-6zM153 580h6v1h-6zM156 578h6v1h-6zM156 580h6v1h-6zM162 578h6v1h-6zM162 580h6v1h-6zM165 578h6v1h-6zM165 580h6v1h-6zM171 578h6v1h-6zM171 580h6v1h-6zM174 578h6v1h-6zM174 580h6v1h-6zM180 578h6v1h-6zM180 580h6v1h-6zM183 578h6v1h-6zM183 580h6v1h-6zM189 578h6v1h-6zM189 580h6v1h-6zM192 578h6v1h-6zM192 580h6v1h-6zM198 578h6v1h-6zM198 580h6v1h-6zM201 578h6v1h-6zM201 580h6v1h-6zM207 578h6v1h-6zM207 580h6v1h-6zM210 578h6v1h-6zM210 580h6v1h-6zM216 578h6v1h-6zM216 580h6v1h-6zM219 578h6v1h-6zM219 580h6v1h-6zM225 578h6v1h-6zM225 580h6v1h-6zM228 578h6v1h-6zM228 580h6v1h-6zM234 578h6v1h-6zM234 580h6v1h-6zM237 578h6v1h-6zM237 580h6v1h-6zM243 578h6v1h-6zM243 580h6v1h-6zM246 578h6v1h-6zM246 580h6v1h-6zM252 578h6v1h-6zM252 580h6v1h-6zM255 578h6v1h-6zM255 580h6v1h-6zM261 578h6v1h-6zM261 580h6v1h-6zM264 578h6v1h-6zM264 580h6v1h-6zM270 578h6v1h-6zM270 580h6v1h-6zM273 578h6v1h-6zM273 580h6v1h-6zM279 578h6v1h-6zM279 580h6v1h-6zM282 578h6v1h-6zM282 580h6v1h-6zM288 578h6v1h-6zM288 580h6v1h-6zM291 578h6v1h-6zM291 580h6v1h-6zM297 578h6v1h-6zM297 580h6v1h-6zM300 578h6v1h-6zM300 580h6v1h-6zM306 578h6v1h-6zM306 580h6v1h-6zM309 578h6v1h-6zM309 580h6v1h-6zM315 578h6v1h-6zM315 580h6v1h-6zM318 578h6v1h-6zM318 580h6v1h-6zM324 578h6v1h-6zM324 580h6v1h-6zM327 578h6v1h-6zM327 580h6v1h-6zM333 578h6v1h-6zM333 580h6v1h-6zM336 578h6v1h-6zM336 580h6v1h-6zM342 578h6v1h-6zM342 580h6v1h-6zM345 578h6v1h-6zM345 580h6v1h-6zM351 578h6v1h-6zM351 580h6v1h-6zM354 578h6v1h-6zM354 580h6v1h-6zM360 578h6v1h-6zM360 580h6v1h-6zM363 578h6v1h-6zM363 580h6v1h-6zM369 578h6v1h-6zM369 580h6v1h-6zM372 578h6v1h-6zM372 580h6v1h-6zM378 578h6v1h-6zM378 580h6v1h-6zM381 578h6v1h-6zM381 580h6v1h-6zM387 578h6v1h-6zM387 580h6v1h-6zM390 578h6v1h-6zM390 580h6v1h-6zM396 578h6v1h-6zM396 580h6v1h-6zM399 578h6v1h-6zM399 580h6v1h-6zM405 578h6v1h-6zM405 580h6v1h-6zM408 578h6v1h-6zM408 580h6v1h-6zM414 578h6v1h-6zM414 580h6v1h-6zM417 578h6v1h-6zM417 580h6v1h-6zM423 578h6v1h-6zM423 580h6v1h-6zM426 578h6v1h-6zM426 580h6v1h-6zM432 578h6v1h-6zM432 580h6v1h-6zM435 578h6v1h-6zM435 580h6v1h-6zM441 578h6v1h-6zM441 580h6v1h-6zM444 578h6v1h-6zM444 580h6v1h-6zM450 578h6v1h-6zM450 580h6v1h-6zM453 578h6v1h-6zM453 580h6v1h-6zM459 578h6v1h-6zM459 580h6v1h-6zM462 578h6v1h-6zM462 580h6v1h-6zM468 578h6v1h-6zM468 580h6v1h-6zM471 578h6v1h-6zM471 580h6v1h-6zM477 578h6v1h-6zM477 580h6v1h-6zM480 578h6v1h-6zM480 580h6v1h-6zM486 578h6v1h-6zM486 580h6v1h-6zM489 578h6v1h-6zM489 580h6v1h-6zM495 578h6v1h-6zM495 580h6v1h-6zM498 578h6v1h-6zM498 580h6v1h-6zM504 578h6v1h-6zM504 580h6v1h-6zM507 578h6v1h-6zM507 580h6v1h-6zM513 578h6v1h-6zM513 580h6v1h-6zM516 578h6v1h-6zM516 580h6v1h-6zM522 578h6v1h-6zM522 580h6v1h-6zM525 578h6v1h-6zM525 580h6v1h-6zM531 578h6v1h-6zM531 580h6v1h-6zM534 578h6v1h-6zM534 580h6v1h-6zM540 578h6v1h-6zM540 580h6v1h-6zM543 578h6v1h-6zM543 580h6v1h-6zM549 578h6v1h-6zM549 580h6v1h-6zM552 578h6v1h-6zM552 580h6v1h-6zM558 578h6v1h-6zM558 580h6v1h-6zM561 578h6v1h-6zM561 580h6v1h-6zM567 578h6v1h-6zM567 580h6v1h-6zM570 578h6v1h-6zM570 580h6v1h-6zM576 578h6v1h-6zM576 580h6v1h-6zM579 578h6v1h-6zM579 580h6v1h-6zM585 578h6v1h-6zM585 580h6v1h-6zM588 578h6v1h-6zM588 580h6v1h-6zM594 578h6v1h-6zM594 580h6v1h-6zM597 578h6v1h-6zM597 580h6v1h-6zM603 578h6v1h-6zM603 580h6v1h-6zM606 578h6v1h-6zM606 580h6v1h-6zM612 578h6v1h-6zM612 580h6v1h-6zM615 578h6v1h-6zM615 580h6v1h-6zM621 578h6v1h-6zM621 580h6v1h-6zM624 578h6v1h-6zM624 580h6v1h-6zM630 578h6v1h-6zM630 580h6v1h-6zM633 578h6v1h-6zM633 580h6v1h-6zM639 578h6v1h-6zM639 580h6v1h-6zM642 578h6v1h-6zM642 580h6v1h-6zM648 578h6v1h-6zM648 580h6v1h-6zM651 578h6v1h-6zM651 580h6v1h-6zM657 578h6v1h-6zM657 580h6v1h-6zM660 578h6v1h-6zM660 580h6v1h-6zM666 578h6v1h-6zM666 580h6v1h-6zM669 578h6v1h-6zM669 580h6v1h-6zM675 578h6v1h-6zM675 580h6v1h-6zM678 578h6v1h-6zM678 580h6v1h-6zM684 578h6v1h-6zM684 580h6v1h-6zM687 578h6v1h-6zM687 580h6v1h-6zM693 578h6v1h-6zM693 580h6v1h-6zM696 578h6v1h-6zM696 580h6v1h-6zM702 578h6v1h-6zM702 580h6v1h-6zM705 578h6v1h-6zM705 580h6v1h-6zM711 578h6v1h-6zM711 580h6v1h-6zM714 578h6v1h-6zM714 580h6v1h-6zM720 578h6v1h-6zM720 580h6v1h-6zM723 578h6v1h-6zM723 580h6v1h-6zM729 578h6v1h-6zM729 580h6v1h-6zM732 578h6v1h-6zM732 580h6v1h-6zM738 578h6v1h-6zM738 580h6v1h-6zM741 578h6v1h-6zM741 580h6v1h-6zM747 578h6v1h-6zM747 580h6v1h-6zM750 578h6v1h-6zM750 580h6v1h-6zM756 578h6v1h-6zM756 580h6v1h-6zM759 578h6v1h-6zM759 580h6v1h-6zM765 578h6v1h-6zM765 580h6v1h-6zM768 578h6v1h-6zM768 580h6v1h-6zM774 578h6v1h-6zM774 580h6v1h-6zM777 578h6v1h-6zM777 580h6v1h-6zM783 578h6v1h-6zM783 580h6v1h-6zM786 578h6v1h-6zM786 580h6v1h-6zM792 578h6v1h-6zM792 580h6v1h-6zM795 578h6v1h-6zM795 580h6v1h-6zM801 578h6v1h-6zM801 580h6v1h-6zM804 578h6v1h-6zM804 580h6v1h-6zM810 578h6v1h-6zM810 580h6v1h-6zM813 578h6v1h-6zM813 580h6v1h-6zM819 578h6v1h-6zM819 580h6v1h-6zM822 578h6v1h-6zM822 580h6v1h-6zM828 578h6v1h-6zM828 580h6v1h-6zM831 578h6v1h-6zM831 580h6v1h-6zM837 578h6v1h-6zM837 580h6v1h-6zM840 578h6v1h-6zM840 580h6v1h-6zM849 570h1v11h-1zM851 570h1v11h-1zM846 578h6v1h-6zM846 580h6v1h-6z"/>
-<text x="261 270 279 288 297" y="641" fill="#b8c2d6">Enter</text>
+<text x="261 270 279 288 297" y="641" fill="#8cbeff">Enter</text>
 <text x="315 324 333 342" y="641" fill="#b8c2d6">Apri</text>
-<text x="378 387 396" y="641" fill="#b8c2d6">Tab</text>
+<text x="378 387 396" y="641" fill="#8cbeff">Tab</text>
 <text x="414 423 432 441 450 459" y="641" fill="#b8c2d6">Lingua</text>
-<text x="495" y="641" fill="#b8c2d6">q</text>
+<text x="495" y="641" fill="#8cbeff">q</text>
 <text x="513 522 531 540" y="641" fill="#b8c2d6">Esci</text>
-<text x="576" y="641" fill="#b8c2d6">?</text>
+<text x="576" y="641" fill="#8cbeff">?</text>
 <text x="594 603 612 621 630" y="641" fill="#b8c2d6">Aiuto</text>
-<text x="846 855 864 873 882 891" y="641" fill="#b8c2d6">v0.5.0</text>
+<text x="837 846 855 864 873 882" y="641" fill="#b8c2d6">v0.5.0</text>
 </g>
 </svg>
