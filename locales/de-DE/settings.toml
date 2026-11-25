@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Anzeige"
 interface = "Oberfläche"
 sound = "Ton"
+performance = "Leistung"
 hints = "Hinweise und Hilfe"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Ton nicht verfügbar: Der gewählte Klangstil kann nicht geladen
 
 [footer]
 change = "Ändern"
+arrows = "{arrows} Ändern"
 
 [graphics]
 title = "Grafikprüfung"
@@ -198,7 +200,7 @@ note = "Vorschau. Beim Verlassen dieses Bildschirms wird gefragt, ob die Änderu
 position = "Zeile {row} von {total}"
 
 [confirm]
-keep_interface = "Die geänderten Oberflächen-Einstellungen behalten?"
+keep_interface = "Die geänderten Einstellungen behalten?"
 
 [face]
 consolas = "Consolas"

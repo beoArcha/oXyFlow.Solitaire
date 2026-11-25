@@ -2,7 +2,7 @@ use ratatui::crossterm::event::KeyCode;
 
 use super::{changed, index_of, move_down, open_settings, settings_menu_index, value};
 use crate::app::FontFacts;
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, tf};
 use crate::screens::settings::options::{Field, Step};
 use crate::screens::settings::values::line;
 use crate::settings::Settings;
@@ -22,17 +22,23 @@ fn arrow_cells(h: &mut Harness) -> Option<((u16, u16), (u16, u16))> {
     ))
 }
 
+/// The `◄` arrows of the list: the footer's own `◄ ► Change` hint is not a row.
+fn arrows_in_list(h: &mut Harness) -> usize {
+    let hint = tf("settings.footer.arrows", &[("arrows", "◄ ►")]);
+    h.text().replace(&hint, "").matches('◄').count()
+}
+
 #[test]
 fn only_the_focused_row_shows_its_value_between_arrows() {
     set_locale(Locale::EnUs);
     let mut h = open_settings();
     let language = format!("◄ {} ►", value(Field::Language, h.app.settings()));
     assert!(h.text().contains(&language), "{}", h.text());
-    assert_eq!(h.text().matches('◄').count(), 1);
+    assert_eq!(arrows_in_list(&mut h), 1);
     move_down(&mut h, index_of(Field::Theme));
     let theme = format!("◄ {} ►", value(Field::Theme, h.app.settings()));
     assert!(h.text().contains(&theme), "{}", h.text());
-    assert_eq!(h.text().matches('◄').count(), 1);
+    assert_eq!(arrows_in_list(&mut h), 1);
 }
 
 #[test]

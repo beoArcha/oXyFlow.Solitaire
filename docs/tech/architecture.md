@@ -314,7 +314,7 @@ pub struct NullClipboard;                                // every copy fails wit
   settings, caps, `audio_status`, `sound_styles`, `saved: Option<SavedSummary>` (variant, elapsed, moves of the saved game, for the Resume row), clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
-  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `Enter` Change).
+  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `◄ ►` Change as plain text, then `Enter` Change, O-96).
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
   character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.
@@ -487,7 +487,7 @@ pub struct NullClipboard;                                // every copy fails wit
   "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
   closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
   are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
-- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound and Hints. Interface
+- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound, Performance (O-96: process priority) and Hints. Interface
   holds every row about look: theme, card back, front style, back style, symbols, console font, card size and the aura look
   (`Settings::aura_colour` `AuraColour { Theme, Text, Selection, Hint }`, `aura_style` `AuraStyle { Halo, Frame, MarksOnly }`,
   `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
@@ -837,8 +837,8 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the size changed (the face, family, weight and index are kept; a step passes width 0, Reset restores the start width). A refusal is
   logged at `info` and the step reports no change. `main` builds it only for `TerminalKind::ClassicConsole` and when the font can be read.
 - **Process priority (P4-13):** `Settings::process_priority` (`ProcessPriority`: `Highest`, `High`, `Normal` default, `Low`,
-  `Lowest`; never real time) is a row of the Interface group, so a change is previewed and confirmed like the other
-  Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
+  `Lowest`; never real time) sits in the Performance group (O-96) but keeps the Interface path: a change is previewed and
+  confirmed like the Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
   setting. `App` asks the `PriorityControl` trait (`DisplayDeps::priority`) at start and on every change of the level, once
   per level; the answer is a `PriorityOutcome` (`Applied`, `NeedsPrivileges`, `Failed`) that the row shows beside the value
   (`FontFacts::priority`), never an error log per frame. `src/priority.rs` holds the pure `native_value(Flavour, level)` and

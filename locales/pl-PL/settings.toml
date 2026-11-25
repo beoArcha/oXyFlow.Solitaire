@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Wyświetlanie"
 interface = "Interfejs"
 sound = "Dźwięk"
+performance = "Wydajność"
 hints = "Podpowiedzi i pomoc"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Dźwięk jest niedostępny: nie można wczytać wybranego stylu 
 
 [footer]
 change = "Zmień"
+arrows = "{arrows} Zmień"
 
 [graphics]
 title = "Sprawdzenie grafiki"
@@ -198,7 +200,7 @@ note = "Podgląd. Przy wyjściu z tego ekranu pojawi się pytanie, czy zachować
 position = "wiersz {row} z {total}"
 
 [confirm]
-keep_interface = "Zachować zmienione ustawienia interfejsu?"
+keep_interface = "Zachować zmienione ustawienia?"
 
 [face]
 consolas = "Consolas"
