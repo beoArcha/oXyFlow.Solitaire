@@ -59,4 +59,4 @@ If your system asks for reduced motion, the animations show their last frame ins
 
 ## Themes
 
-The five themes are on the [features page](features.md#themes-for-comfort-and-accessibility).
+The five themes are on the [features page](features.md#themes-and-accessibility).

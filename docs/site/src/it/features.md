@@ -25,7 +25,7 @@ Ogni distribuzione ha un **seed**. Copialo con `c` per rigiocare la distribuzion
 
 ## Aiuto durante il gioco
 
-- **Pannello guida** (`g`): lo scopo del gioco, i tasti che funzionano in questo momento e che cosa può fare la carta a fuoco. A 130 colonne o più sta accanto al tavolo, con un pulsante **Nuova partita** in alto; sui terminali più stretti si apre in una finestra.
+- **Pannello guida** (`g`): i dati della partita, lo scopo del gioco, i tasti (con l'indicazione di quelli attivi ora) e le azioni del mouse. A 130 colonne o più sta accanto al tavolo, con un pulsante **Nuova partita** in alto; sui terminali più stretti si apre in una finestra.
 - **Pannello mosse possibili** (`v`): ogni mossa che puoi fare ora, con il suo tasto, e il motivo quando una mossa non è possibile.
 - **Suggerimenti** (`h`): il gioco evidenzia una mossa sul tavolo e la nomina. I suggerimenti usano solo ciò che puoi vedere: non guardano mai le carte coperte né il mazzo.
 - **Mosse rapide**: `a` invia le carte sotto il cursore alla loro meta migliore, `e` fa lo stesso per la carta in cima agli scarti da qualsiasi punto del tavolo, e il doppio clic funziona come `a`. Le mosse rapide si possono disattivare nelle impostazioni o nelle opzioni rapide (`o`) se preferisci posare ogni carta da solo.
@@ -34,7 +34,7 @@ Ogni distribuzione ha un **seed**. Copialo con `c` per rigiocare la distribuzion
 
 ## Tastiera e mouse
 
-Ogni azione funziona con la tastiera e con il mouse. Clicca una carta per prenderla e una meta per posarla, fai doppio clic per una mossa rapida, trascina una carta sulla sua meta e fai clic destro per rimetterla a posto. I pulsanti in finestre e pannelli mostrano il loro tasto, e la scheda attiva di una finestra non sembra mai il pulsante a fuoco. La finestra di aiuto (`?`) elenca ogni tasto; può anche restare ancorata al lato dello schermo (`d`).
+Ogni azione funziona con la tastiera e con il mouse. Clicca una carta per prenderla e una meta per posarla, fai doppio clic per una mossa rapida, trascina una carta sulla sua meta e fai clic destro per rimetterla a posto. Le righe in basso e i pulsanti come Nuova partita o Chiudi mostrano il loro tasto, e la scheda attiva di una finestra non sembra mai il pulsante a fuoco. La finestra di aiuto (`?`) elenca ogni tasto; può anche restare ancorata al lato dello schermo (`d`).
 
 ## Impostazioni
 
@@ -42,13 +42,13 @@ Le impostazioni hanno tre schede:
 
 - **Popolari** si apre per prima e raccoglie le impostazioni cambiate più spesso: lingua, ipovisione, tema, dimensione delle carte, dorso delle carte, volume, aura e completamento automatico.
 - **Audio e video** contiene tutto ciò che riguarda aspetto e suono: colori, schermo intero e dimensione della finestra, tema, visione dei colori, stili e tinte delle carte, il tavolo, l'aura, il carattere della console, il suono e la priorità del processo.
-- **Gioco** contiene gli aiuti: indicatori destinazione, pannelli guida e mosse, completamento automatico e mosse rapide.
+- **Gioco** contiene la lingua e gli aiuti: aura, indicatori destinazione, pannelli guida e mosse, completamento automatico e mosse rapide.
 
 Un'anteprima accanto all'elenco mostra una modifica prima che tu la confermi.
 
 ## Carte e tavolo
 
-- **Sei stili di facce**: Internazionale, Francese, Tedesco, Italiano, Spagnolo e Svizzero, ognuno con i propri segni di seme.
+- **Sei stili di facce**: Internazionale, Francese, Tedesco, Italiano, Spagnolo e Svizzero, ognuno con i propri segni di seme o lettere delle figure.
 - **Due stili di dorso** (Reticolo e Ornamento) e colori di dorso dal tema, Monokai o Dracula.
 - **Tinta del fondo delle carte**: quella del tema, bianco, avorio, grigio chiaro o scuro.
 - **Tavolo**: il colore del tema, feltro verde, blu, rosso, grigio, marrone o nero, e la superficie liscia, di feltro o rigata.
@@ -58,19 +58,19 @@ Un'anteprima accanto all'elenco mostra una modifica prima che tu la confermi.
 
 Cinque temi: **Scuro** e **Chiaro** per il gioco quotidiano, **Contrasto elevato** per l'ipovisione, **Monokai** e **Dracula**. Ognuno è mostrato qui nella stessa posizione.
 
-![Il tema Scuro](img/it/theme-dark.svg)
+![Il tema Scuro](../img/it/theme-dark.svg)
 
-![Il tema Chiaro](img/it/theme-light.svg)
+![Il tema Chiaro](../img/it/theme-light.svg)
 
-![Il tema Contrasto elevato](img/it/theme-high-contrast.svg)
+![Il tema Contrasto elevato](../img/it/theme-high-contrast.svg)
 
-![Il tema Monokai](img/it/theme-monokai.svg)
+![Il tema Monokai](../img/it/theme-monokai.svg)
 
-![Il tema Dracula](img/it/theme-dracula.svg)
+![Il tema Dracula](../img/it/theme-dracula.svg)
 
-- **Ipovisione.** Un unico interruttore, offerto al primo avvio e nelle impostazioni: contrasto del testo di almeno 7:1 in ogni tema, le carte più grandi che entrano, un alone spesso, rango e seme in grassetto, indicatori di focus e di destinazione più grandi e, nella console classica di Windows, un carattere più grande. Ogni parte resta regolabile, e disattivare la modalità ripristina le impostazioni precedenti.
+- **Ipovisione.** Un unico interruttore, offerto al primo avvio e nelle impostazioni: contrasto del testo di almeno 7:1 in ogni tema, le carte più grandi che entrano, un alone spesso, grado e seme in grassetto, indicatori di focus e di destinazione più grandi e, nella console classica di Windows, un carattere più grande. Ogni parte resta regolabile, e disattivare la modalità ripristina le impostazioni precedenti.
 - **Visione dei colori.** Modalità per protanopia, deuteranopia, tritanopia e monocromatico cambiano i colori perché ciò che devi distinguere resti distinguibile. Il **mazzo a quattro colori** dà a ogni seme il suo colore: picche nere, cuori rossi, quadri blu e fiori verdi.
-- **Il colore non è mai l'unico segnale.** I semi sono segni (♠ ♥ ♦ ♣) accanto al rango, l'elemento a fuoco è segnato da un simbolo, le carte prese e le destinazioni hanno segni propri, i risultati portano ✓ o ✗, e una riga sotto il tavolo dice a parole dove si trova il cursore e che cosa può fare.
+- **Il colore non è mai l'unico segnale.** I semi sono segni (♠ ♥ ♦ ♣) accanto al grado, l'elemento a fuoco è segnato da un simbolo, le carte prese e le destinazioni hanno segni propri, i risultati di risolvibilità portano ✓ o ✗, e una riga sotto il tavolo dice a parole dove si trova il cursore e che cosa può fare.
 
 ## Statistiche
 
@@ -82,7 +82,7 @@ Su Windows, un gioco avviato con un doppio clic, o con `oxysol -n`, possiede la 
 
 ## Lingue
 
-Il gioco è disponibile in nove lingue: inglese, polacco, tedesco, spagnolo, francese, italiano, olandese, portoghese brasiliano e ucraino. Scegline una con il selettore di bandiere nell'angolo in alto a sinistra del menu principale, oppure nelle impostazioni; si applica subito. Al primo avvio il gioco segue la lingua del sistema. Questo sito è disponibile nelle stesse nove lingue.
+Il gioco è disponibile in nove lingue: inglese, polacco, tedesco, spagnolo, francese, italiano, olandese, portoghese brasiliano e ucraino. Scegline una con il selettore di bandiere nell'angolo in alto a sinistra del menu principale, oppure nelle impostazioni; si applica subito. Questo sito è disponibile nelle stesse nove lingue.
 
 ## Cosa non è ancora
 

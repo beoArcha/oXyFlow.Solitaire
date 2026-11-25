@@ -4,9 +4,9 @@ oXySol is designed to work completely with either keyboard or mouse, without rel
 
 ## Keyboard, mouse and focus
 
-- Every action has a key and a mouse action; buttons show their key, and `?` lists every key.
+- Every action has a key and a mouse action; screen footers and shortcut buttons like New game or Close show their key, and `?` lists every key.
 - The focused item is marked by a symbol (`►`, or `>` in ASCII). In windows, the active tab is shown in brackets,
-  bold and underlined, and the focused button is framed by `▶ ◄` in reverse video, so the two never look alike.
+  bold and underlined, and the focused button is framed by `► ◄` in reverse video, so the two never look alike.
 - The line under the board says in words where the cursor is and what it can do there.
 
 ## Color vision
@@ -15,7 +15,7 @@ oXySol is designed to work completely with either keyboard or mouse, without rel
   replaces the colors that carry meaning (focus, target, hint, success, error) with colors that stay distinct for that
   kind of vision; tests simulate each one.
 - **Four-color deck**: black spades, red hearts, blue diamonds and green clubs, in every mode and card size.
-- Results carry a sign as well as a color: `✓` or `✗` (`+` or `x` in ASCII).
+- Winnability results carry a sign as well as a color: `✓` or `✗` (`+` or `x` in ASCII).
 
 ## Low-vision mode
 

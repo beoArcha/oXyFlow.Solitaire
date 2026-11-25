@@ -47,9 +47,9 @@ o que o programa desenha.
 
 ![Animação: o cursor pega o ás de paus e o coloca em uma fundação](../img/pt/anim-move.svg)
 
-### Finalização automática
+### Conclusão automática
 
-![Animação: a finalização automática joga uma partida vencida jogada por jogada](../img/pt/anim-auto-finish.svg)
+![Animação: a conclusão automática joga uma partida vencida jogada por jogada](../img/pt/anim-auto-finish.svg)
 
 ### Uma vitória
 
@@ -59,4 +59,4 @@ Se o seu sistema pede movimento reduzido, as animações mostram o último quadr
 
 ## Temas
 
-Os cinco temas estão na [página de recursos](features.md#temas-para-conforto-e-acessibilidade).
+Os cinco temas estão na [página de recursos](features.md#temas-e-acessibilidade).

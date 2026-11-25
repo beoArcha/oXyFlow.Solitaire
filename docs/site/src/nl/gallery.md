@@ -45,11 +45,11 @@ programma tekent.
 
 ### Een zet
 
-![Animatie: de cursor pakt klaveren aas op en legt hem op een aflegstapel](../img/nl/anim-move.svg)
+![Animatie: de cursor pakt klaveren aas op en legt hem op een fundament](../img/nl/anim-move.svg)
 
-### Automatisch afmaken
+### Automatisch voltooien
 
-![Animatie: automatisch afmaken speelt een gewonnen spel zet voor zet uit](../img/nl/anim-auto-finish.svg)
+![Animatie: automatisch voltooien speelt een gewonnen spel zet voor zet uit](../img/nl/anim-auto-finish.svg)
 
 ### Een overwinning
 
@@ -59,4 +59,4 @@ Als je systeem om minder beweging vraagt, tonen de animaties hun laatste beeld i
 
 ## Thema’s
 
-De vijf thema’s staan op de [pagina Functies](features.md#themas-voor-comfort-en-toegankelijkheid).
+De vijf thema’s staan op de [pagina Functies](features.md#themas-en-toegankelijkheid).

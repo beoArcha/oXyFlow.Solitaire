@@ -25,16 +25,16 @@ Elke verdeling heeft een **seed**. Kopieer die met `c` om de verdeling opnieuw t
 
 ## Hulp tijdens het spelen
 
-- **Gidspaneel** (`g`): het doel van het spel, de toetsen die nu werken en wat de kaart in focus kan doen. Vanaf 130 kolommen staat het naast het bord, met bovenaan een knop **Nieuw spel**; op smallere terminals opent het in een venster.
+- **Gidspaneel** (`g`): de spelgegevens, het doel van het spel, de toetsen (met een teken bij wat nu werkt) en de muisacties. Vanaf 130 kolommen staat het naast het bord, met bovenaan een knop **Nieuw spel**; op smallere terminals opent het in een venster.
 - **Zettenpaneel** (`v`): elke zet die je nu kunt doen, met zijn toets, en de reden wanneer een zet niet mogelijk is.
-- **Hints** (`h`): het spel markeert een zet op het bord en noemt die. Hints gebruiken alleen wat je kunt zien: ze kijken nooit in verborgen kaarten of in de voorraad.
+- **Hints** (`h`): het spel markeert een zet op het bord en noemt die. Hints gebruiken alleen wat je kunt zien: ze kijken nooit in verborgen kaarten of in de stapel.
 - **Snelle zetten**: `a` stuurt de kaarten onder de cursor naar hun beste doel, `e` doet hetzelfde voor de bovenste kaart van de aflegstapel, vanaf elke plek op het bord, en een dubbelklik werkt als `a`. Snelle zetten kun je uitzetten in de instellingen of in de snelle opties (`o`) als je elke kaart zelf wilt neerleggen.
 - **Automatisch voltooien**: zodra de overwinning zeker is, worden de resterende zetten voor je gespeeld. Dit kan uitgezet worden.
 - **Ongedaan maken en opnieuw** (`u`, `r`), met een optie om zonder ongedaan maken te spelen.
 
 ## Toetsenbord en muis
 
-Elke actie werkt met het toetsenbord en met de muis. Klik op een kaart om hem op te pakken en op een doel om hem neer te leggen, dubbelklik voor een snelle zet, sleep een kaart naar zijn doel en klik met de rechtermuisknop om hem terug te leggen. Knoppen in vensters en panelen tonen hun toets, en het actieve tabblad van een venster ziet er nooit uit als de knop in focus. Het helpvenster (`?`) toont elke toets; het kan ook aan de zijkant van het scherm vastgezet blijven (`d`).
+Elke actie werkt met het toetsenbord en met de muis. Klik op een kaart om hem op te pakken en op een doel om hem neer te leggen, dubbelklik voor een snelle zet, sleep een kaart naar zijn doel en klik met de rechtermuisknop om hem terug te leggen. Voetteksten en knoppen zoals Nieuw spel of Sluiten tonen hun toets, en het actieve tabblad van een venster ziet er nooit uit als de knop in focus. Het helpvenster (`?`) toont elke toets; het kan ook aan de zijkant van het scherm vastgezet blijven (`d`).
 
 ## Instellingen
 
@@ -42,13 +42,13 @@ De instellingen hebben drie tabbladen:
 
 - **Populair** opent als eerste en verzamelt de instellingen die het vaakst veranderd worden: taal, slechtziendheid, thema, kaartgrootte, kaartrug, volume, gloed en automatisch voltooien.
 - **Audio & Beeld** bevat alles over het uiterlijk en het geluid: kleuren, volledig scherm en venstergrootte, thema, kleurenzicht, kaartstijlen en -tinten, de tafel, de gloed, het consolelettertype, het geluid en de procesprioriteit.
-- **Spel** bevat de hulpmiddelen: doelmarkeringen, het gidspaneel en het zettenpaneel, automatisch voltooien en snelle zetten.
+- **Spel** bevat de taal en de hulpmiddelen: gloed, doelmarkeringen, het gidspaneel en het zettenpaneel, automatisch voltooien en snelle zetten.
 
 Een voorbeeld naast de lijst toont een wijziging voordat je die behoudt.
 
 ## Kaarten en tafel
 
-- **Zes voorkantstijlen**: Internationaal, Frans, Duits, Italiaans, Spaans en Zwitsers, elk met zijn eigen kleurtekens.
+- **Zes voorkantstijlen**: Internationaal, Frans, Duits, Italiaans, Spaans en Zwitsers, elk met zijn eigen kleurtekens of letters voor hofkaarten.
 - **Twee achterkantstijlen** (Rooster en Ornament) en kaartrugkleuren uit het thema, Monokai of Dracula.
 - **Kleurtint van de kaartvoorkant**: die van het thema, wit, ivoor, lichtgrijs of donker.
 - **Tafel**: de kleur van het thema, groen laken, blauw, rood, grijs, bruin of zwart, en het oppervlak effen, vilt of gelijnd.
@@ -58,19 +58,19 @@ Een voorbeeld naast de lijst toont een wijziging voordat je die behoudt.
 
 Vijf thema's: **Donker** en **Licht** voor het dagelijks spelen, **Hoog contrast** voor slechtziendheid, **Monokai** en **Dracula**. Elk wordt hier in dezelfde positie getoond.
 
-![Het thema Donker](img/nl/theme-dark.svg)
+![Het thema Donker](../img/nl/theme-dark.svg)
 
-![Het thema Licht](img/nl/theme-light.svg)
+![Het thema Licht](../img/nl/theme-light.svg)
 
-![Het thema Hoog contrast](img/nl/theme-high-contrast.svg)
+![Het thema Hoog contrast](../img/nl/theme-high-contrast.svg)
 
-![Het thema Monokai](img/nl/theme-monokai.svg)
+![Het thema Monokai](../img/nl/theme-monokai.svg)
 
-![Het thema Dracula](img/nl/theme-dracula.svg)
+![Het thema Dracula](../img/nl/theme-dracula.svg)
 
 - **Slechtziendheid.** Eén schakelaar, aangeboden bij de eerste start en in de instellingen: tekstcontrast van minstens 7:1 in elk thema, de grootst mogelijke kaarten die passen, een dikke gloed, vet gedrukte rang en kleurteken, grotere focus- en doelmarkeringen en, in de klassieke Windows-console, een groter lettertype. Elk onderdeel blijft aan te passen, en als je de modus uitzet, komen je eerdere instellingen terug.
 - **Kleurenzicht.** Modi voor protanopie, deuteranopie, tritanopie en monochroom veranderen de kleuren zodat de dingen die je uit elkaar moet kunnen houden, uit elkaar blijven. Het **vierkleurendek** geeft elke kleur een eigen kleur: schoppen zwart, harten rood, ruiten blauw en klaveren groen.
-- **Kleur is nooit het enige signaal.** Kleuren zijn tekens (♠ ♥ ♦ ♣) naast de rang, het item in focus is met een teken gemarkeerd, opgepakte kaarten en doelen hebben hun eigen markeringen, resultaten dragen ✓ of ✗, en een regel onder het bord zegt in woorden waar de cursor staat en wat hij kan doen.
+- **Kleur is nooit het enige signaal.** Kleuren zijn tekens (♠ ♥ ♦ ♣) naast de rang, het item in focus is met een teken gemarkeerd, opgepakte kaarten en doelen hebben hun eigen markeringen, winbaarheidsresultaten dragen ✓ of ✗, en een regel onder het bord zegt in woorden waar de cursor staat en wat hij kan doen.
 
 ## Statistieken
 
@@ -82,7 +82,7 @@ Op Windows bezit een spel dat met een dubbelklik of met `oxysol -n` gestart word
 
 ## Talen
 
-Het spel is beschikbaar in negen talen: Engels, Pools, Duits, Spaans, Frans, Italiaans, Nederlands, Braziliaans Portugees en Oekraïens. Kies er een met de vlaggenkiezer linksboven in het hoofdmenu, of in de instellingen; hij geldt meteen. Bij de eerste start volgt het spel de taal van je systeem. Deze website is beschikbaar in dezelfde negen talen.
+Het spel is beschikbaar in negen talen: Engels, Pools, Duits, Spaans, Frans, Italiaans, Nederlands, Braziliaans Portugees en Oekraïens. Kies er een met de vlaggenkiezer linksboven in het hoofdmenu, of in de instellingen; hij geldt meteen. Deze website is beschikbaar in dezelfde negen talen.
 
 ## Wat het nog niet is
 

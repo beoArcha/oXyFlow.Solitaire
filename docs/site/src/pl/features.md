@@ -25,7 +25,7 @@ Każde rozdanie ma **ziarno** (seed). Skopiuj je klawiszem `c`, żeby powtórzy�
 
 ## Pomoc podczas gry
 
-- **Panel przewodnika** (`g`): cel gry, klawisze działające w tej chwili i to, co może zrobić karta w fokusie. Przy 130 kolumnach lub więcej stoi obok planszy, z przyciskiem **Nowa gra** u góry; na węższych terminalach otwiera się w oknie.
+- **Panel przewodnika** (`g`): informacje o partii, cel gry, klawisze (z oznaczeniem tych działających teraz) oraz obsługę myszy. Przy 130 kolumnach lub więcej stoi obok planszy, z przyciskiem **Nowa gra** u góry; na węższych terminalach otwiera się w oknie.
 - **Panel możliwych ruchów** (`v`): każdy ruch, który możesz teraz wykonać, z jego klawiszem, oraz powód, gdy ruch nie jest możliwy.
 - **Podpowiedzi** (`h`): gra zaznacza ruch na planszy i go nazywa. Podpowiedzi korzystają tylko z tego, co widzisz: nigdy nie zaglądają w karty zakryte ani w talię.
 - **Szybkie ruchy**: `a` wysyła karty pod kursorem na najlepsze miejsce, `e` robi to samo z wierzchnią kartą stosu odrzuconych z dowolnego miejsca na planszy, a dwuklik działa jak `a`. Szybkie ruchy można wyłączyć w ustawieniach albo w szybkich opcjach (`o`), jeśli wolisz sam układać każdą kartę.
@@ -34,7 +34,7 @@ Każde rozdanie ma **ziarno** (seed). Skopiuj je klawiszem `c`, żeby powtórzy�
 
 ## Klawiatura i mysz
 
-Każda czynność działa klawiaturą i myszą. Kliknij kartę, żeby ją podnieść, a potem cel, żeby ją położyć, zrób dwuklik dla szybkiego ruchu, przeciągnij kartę na cel albo kliknij prawym przyciskiem, żeby ją odłożyć. Przyciski w oknach i panelach pokazują swój klawisz, a aktywna zakładka okna nigdy nie wygląda jak przycisk w fokusie. Okno pomocy (`?`) wymienia każdy klawisz; może też zostać przycumowane z boku ekranu (`d`).
+Każda czynność działa klawiaturą i myszą. Kliknij kartę, żeby ją podnieść, a potem cel, żeby ją położyć, zrób dwuklik dla szybkiego ruchu, przeciągnij kartę na cel albo kliknij prawym przyciskiem, żeby ją odłożyć. Stopki i przyciski takie jak Nowa gra czy Zamknij pokazują swój klawisz, a aktywna zakładka okna nigdy nie wygląda jak przycisk w fokusie. Okno pomocy (`?`) wymienia każdy klawisz; może też zostać przycumowane z boku ekranu (`d`).
 
 ## Ustawienia
 
@@ -42,13 +42,13 @@ Ustawienia mają trzy zakładki:
 
 - **Popularne** otwiera się pierwsza i zbiera ustawienia zmieniane najczęściej: język, tryb słabowidzący, motyw, rozmiar kart, rewers kart, głośność, aurę i automatyczne kończenie.
 - **Dźwięk i wygląd** zawiera wszystko, co dotyczy wyglądu i dźwięku: kolory, pełny ekran i rozmiar okna, motyw, widzenie barw, style i odcienie kart, stół, aurę, czcionkę konsoli, dźwięk i priorytet procesu.
-- **Rozgrywka** zawiera pomoce: znaczniki celów, panele przewodnika i możliwych ruchów, automatyczne kończenie i szybkie ruchy.
+- **Rozgrywka** zawiera język i pomoce: aurę, znaczniki celów, panele przewodnika i możliwych ruchów, automatyczne kończenie i szybkie ruchy.
 
 Podgląd obok listy pokazuje zmianę, zanim ją zachowasz.
 
 ## Karty i stół
 
-- **Sześć stylów awersów**: Międzynarodowy, Francuski, Niemiecki, Włoski, Hiszpański i Szwajcarski, każdy z własnymi znakami kolorów.
+- **Sześć stylów awersów**: Międzynarodowy, Francuski, Niemiecki, Włoski, Hiszpański i Szwajcarski, każdy z własnymi znakami kolorów albo oznaczeniami figur.
 - **Dwa style rewersów** (Kratka i Ornament) oraz kolory rewersów z motywu, Monokai lub Dracula.
 - **Odcień tła karty**: z motywu, biały, kremowy, jasnoszary albo ciemny.
 - **Stół**: kolor motywu, zielony filc, niebieski, czerwony, szary, brązowy lub czarny, oraz powierzchnia gładka, filcowa albo liniowana.
@@ -58,19 +58,19 @@ Podgląd obok listy pokazuje zmianę, zanim ją zachowasz.
 
 Pięć motywów: **Ciemny** i **Jasny** do codziennej gry, **Wysoki kontrast** dla słabego wzroku, **Monokai** i **Dracula**. Każdy pokazano tutaj na tej samej pozycji.
 
-![Motyw Ciemny](img/pl/theme-dark.svg)
+![Motyw Ciemny](../img/pl/theme-dark.svg)
 
-![Motyw Jasny](img/pl/theme-light.svg)
+![Motyw Jasny](../img/pl/theme-light.svg)
 
-![Motyw Wysoki kontrast](img/pl/theme-high-contrast.svg)
+![Motyw Wysoki kontrast](../img/pl/theme-high-contrast.svg)
 
-![Motyw Monokai](img/pl/theme-monokai.svg)
+![Motyw Monokai](../img/pl/theme-monokai.svg)
 
-![Motyw Dracula](img/pl/theme-dracula.svg)
+![Motyw Dracula](../img/pl/theme-dracula.svg)
 
 - **Tryb słabowidzący.** Jeden przełącznik, proponowany przy pierwszym uruchomieniu i w ustawieniach: kontrast tekstu co najmniej 7:1 w każdym motywie, największe karty, jakie się mieszczą, gruba aura, pogrubiona ranga i kolor, większe znaczniki fokusu i celów oraz, w klasycznej konsoli Windows, większa czcionka. Każdy element pozostaje do regulacji, a wyłączenie trybu przywraca wcześniejsze ustawienia.
 - **Widzenie barw.** Tryby dla protanopii, deuteranopii, tritanopii i monochromatyczny zmieniają kolory tak, żeby to, co musisz rozróżniać, pozostało rozróżnialne. **Talia czterokolorowa** nadaje każdemu kolorowi własną barwę: piki czarne, kiery czerwone, karo niebieskie i trefle zielone.
-- **Kolor nigdy nie jest jedynym sygnałem.** Kolory to znaki (♠ ♥ ♦ ♣) obok rangi, element w fokusie ma symbol, podniesione karty i cele mają własne znaczniki, wyniki noszą ✓ albo ✗, a linia pod planszą mówi słowami, gdzie jest kursor i co może zrobić.
+- **Kolor nigdy nie jest jedynym sygnałem.** Kolory to znaki (♠ ♥ ♦ ♣) obok rangi, element w fokusie ma symbol, podniesione karty i cele mają własne znaczniki, wyniki sprawdzania wygranej mają ✓ albo ✗, a linia pod planszą mówi słowami, gdzie jest kursor i co może zrobić.
 
 ## Statystyki
 
@@ -82,7 +82,7 @@ W Windows gra uruchomiona dwukrotnym kliknięciem albo poleceniem `oxysol -n` ma
 
 ## Języki
 
-Gra jest dostępna w dziewięciu językach: angielskim, polskim, niemieckim, hiszpańskim, francuskim, włoskim, niderlandzkim, portugalskim brazylijskim i ukraińskim. Wybierz jeden z selektora flag w lewym górnym rogu menu głównego albo w ustawieniach; zmiana działa od razu. Przy pierwszym uruchomieniu gra idzie za językiem systemu. Ta strona jest dostępna w tych samych dziewięciu językach.
+Gra jest dostępna w dziewięciu językach: angielskim, polskim, niemieckim, hiszpańskim, francuskim, włoskim, niderlandzkim, portugalskim brazylijskim i ukraińskim. Wybierz jeden z selektora flag w lewym górnym rogu menu głównego albo w ustawieniach; zmiana działa od razu. Ta strona jest dostępna w tych samych dziewięciu językach.
 
 ## Czego jeszcze nie ma
 

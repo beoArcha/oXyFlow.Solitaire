@@ -9,7 +9,7 @@ Programm zeichnet.
 
 ### Klondike
 
-![Klondike mit dem Hilfe-Panel und dem Panel der möglichen Züge neben dem Spielfeld](../img/de/klondike.svg)
+![Klondike mit der Leitfaden-Leiste und der Züge-Leiste neben dem Spielfeld](../img/de/klondike.svg)
 
 ### Spider
 
@@ -37,15 +37,15 @@ Programm zeichnet.
 
 ![Das Hilfefenster mit allen Tasten](../img/de/help.svg)
 
-### Tipps und das Hilfe-Panel
+### Hinweise und die Leitfaden-Leiste
 
-![Ein Tipp, auf dem Spielfeld markiert und im Hilfe-Panel erklärt](../img/de/guide.svg)
+![Ein Hinweis, auf dem Spielfeld markiert und in der Leitfaden-Leiste erklärt](../img/de/guide.svg)
 
 ## Animationen
 
 ### Ein Zug
 
-![Animation: Der Cursor nimmt das Kreuz-Ass auf und legt es auf einen Ablagestapel](../img/de/anim-move.svg)
+![Animation: Der Cursor nimmt das Kreuz-Ass auf und legt es auf ein Fundament](../img/de/anim-move.svg)
 
 ### Automatisches Beenden
 
@@ -57,6 +57,6 @@ Programm zeichnet.
 
 Wenn dein System reduzierte Bewegung wünscht, zeigen die Animationen ihr letztes Bild, statt sich zu bewegen.
 
-## Farbschemata
+## Designs
 
-Die fünf Farbschemata stehen auf der [Seite Funktionen](features.md#farbschemata-für-komfort-und-barrierefreiheit).
+Die fünf Designs stehen auf der [Seite Funktionen](features.md#designs-und-barrierefreiheit).

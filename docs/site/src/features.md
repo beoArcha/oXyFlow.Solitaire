@@ -13,7 +13,7 @@ Fourteen games in six families, one program, one set of keys:
 - **Yukon family**: Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience.
 - **Golf**: clear seven columns onto the waste, one rank up or down at a time.
 
-The game menu lists the games under family headings, stars the popular ones, keeps your favourites in their own list
+The game menu lists the games under family headings, stars the popular ones, keeps your favorites in their own list
 and finds a game as you type its name. The rules of every game are in the help window (`i`, "How to play").
 
 ## Deals: seeds, winnable deals and difficulty
@@ -31,7 +31,7 @@ Every deal has a **seed**. Copy it with `c` to replay or share the deal.
 
 ## Help while you play
 
-- **Guide panel** (`g`): the goal of the game, the keys that work now and what the focused card can do. At 130 columns
+- **Guide panel** (`g`): the game facts, the goal, the keys (marking those that work now) and the mouse gestures. At 130 columns
   or more it sits beside the board, with a **New game** button at the top; on narrower terminals it opens in a window.
 - **Possible moves panel** (`v`): every move you can make now, each with its key, and the reason when a move is not
   possible.
@@ -46,8 +46,8 @@ Every deal has a **seed**. Copy it with `c` to replay or share the deal.
 ## Keyboard and mouse
 
 Every action works with the keyboard and with the mouse. Click a card to pick it up and click a target to drop it,
-double-click for a quick move, drag a card onto its target, right-click to put it back. Buttons in windows and panels
-show their key, and the active tab of a window never looks like the focused button. The help window (`?`) lists every
+double-click for a quick move, drag a card onto its target, right-click to put it back. Screen footers and shortcut buttons such as
+New game or Close show their key, and the active tab of a window never looks like the focused button. The help window (`?`) lists every
 key; it can also stay docked at the side of the screen (`d`).
 
 ## Settings
@@ -58,13 +58,13 @@ Settings has three tabs:
   back, volume, aura and auto-finish.
 - **Audio & Visual** holds everything about the look and sound: colors, full screen and window size, theme, color
   vision, card styles and tints, the table, the aura, the console font, sound and the process priority.
-- **Gameplay** holds the aids: target marks, the guide and moves panels, auto-finish and quick moves.
+- **Gameplay** holds the language and the aids: aura, target marks, the guide and moves panels, auto-finish and quick moves.
 
 A preview beside the list shows a change before you keep it.
 
 ## Cards and table
 
-- **Six front styles**: International, French, German, Italian, Spanish and Swiss, each with its own suit signs.
+- **Six front styles**: International, French, German, Italian, Spanish and Swiss, each with its own suit signs or court labels.
 - **Two back styles** (Lattice and Ornament) and back colors from the theme, Monokai or Dracula.
 - **Card face tint**: the theme's own, white, ivory, light grey or dark.
 - **Table**: the theme's color, green felt, blue, red, grey, brown or black, plain, felt or lined.
@@ -94,7 +94,7 @@ Each one is shown here on the same position.
   you must tell apart stay apart. The **four-color deck** gives every suit its own color: black spades, red hearts,
   blue diamonds and green clubs.
 - **Color is never the only signal.** Suits are signs (♠ ♥ ♦ ♣) beside the rank, the focused item is marked with a
-  symbol, picked cards and targets have their own marks, results carry ✓ or ✗, and a line under the board says in
+  symbol, picked cards and targets have their own marks, winnability results carry ✓ or ✗, and a line under the board says in
   words where the cursor is and what it can do.
 
 ## Statistics

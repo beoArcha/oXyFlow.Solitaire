@@ -59,4 +59,4 @@ Jeśli system prosi o ograniczenie ruchu, animacje pokazują ostatnią klatkę z
 
 ## Motywy
 
-Pięć motywów jest na [stronie funkcji](features.md#motywy-dla-wygody-i-dostępności).
+Pięć motywów jest na [stronie funkcji](features.md#motywy-i-dostępność).

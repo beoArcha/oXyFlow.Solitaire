@@ -11,7 +11,7 @@ Catorce juegos en seis familias, un solo programa, un solo conjunto de teclas:
 - **FreeCell**.
 - **Pirámide**: relajada o clásica.
 - **Familia Yukon**: Yukon, Solitario ruso, Alaska, Moosehide y Australiano.
-- **Golf**: despejar siete columnas sobre el descarte, una categoría más alta o más baja cada vez.
+- **Golf**: despejar siete columnas sobre el descarte, un rango más alto o más bajo cada vez.
 
 El menú de juegos agrupa los juegos bajo encabezados de familia, marca con una estrella los populares, guarda tus favoritos en su propia lista y encuentra un juego a medida que escribes su nombre. Las reglas de cada juego están en la ventana de ayuda (`i`, "Cómo jugar").
 
@@ -25,7 +25,7 @@ Cada reparto tiene una **semilla**. Cópiala con `c` para repetir el reparto o c
 
 ## Ayuda mientras juegas
 
-- **Panel de guía** (`g`): el objetivo del juego, las teclas que funcionan ahora y lo que puede hacer la carta enfocada. A 130 columnas o más se sitúa junto al tablero, con un botón **Nueva partida** arriba; en terminales más estrechas se abre en una ventana.
+- **Panel de guía** (`g`): los datos de la partida, el objetivo del juego, las teclas (marcando las que funcionan ahora) y las acciones del ratón. A 130 columnas o más se sitúa junto al tablero, con un botón **Nueva partida** arriba; en terminales más estrechas se abre en una ventana.
 - **Panel de jugadas posibles** (`v`): cada jugada que puedes hacer ahora, con su tecla, y el motivo cuando una jugada no es posible.
 - **Pistas** (`h`): el juego marca una jugada en el tablero y la nombra. Las pistas solo usan lo que puedes ver: nunca miran las cartas boca abajo ni dentro del mazo.
 - **Jugadas rápidas**: `a` envía las cartas bajo el cursor a su mejor destino, `e` hace lo mismo con la carta de arriba del descarte desde cualquier punto del tablero, y un doble clic funciona como `a`. Las jugadas rápidas se pueden desactivar en Ajustes o en las opciones rápidas (`o`) si prefieres colocar cada carta tú mismo.
@@ -34,7 +34,7 @@ Cada reparto tiene una **semilla**. Cópiala con `c` para repetir el reparto o c
 
 ## Teclado y ratón
 
-Cada acción funciona con el teclado y con el ratón. Haz clic en una carta para cogerla y en un destino para soltarla, haz doble clic para una jugada rápida, arrastra una carta a su destino y haz clic derecho para devolverla. Los botones de ventanas y paneles muestran su tecla, y la pestaña activa de una ventana nunca parece el botón enfocado. La ventana de ayuda (`?`) lista cada tecla; también puede quedarse anclada al lado de la pantalla (`d`).
+Cada acción funciona con el teclado y con el ratón. Haz clic en una carta para cogerla y en un destino para soltarla, haz doble clic para una jugada rápida, arrastra una carta a su destino y haz clic derecho para devolverla. Las barras inferiores y botones como Nueva partida o Cerrar muestran su tecla, y la pestaña activa de una ventana nunca parece el botón enfocado. La ventana de ayuda (`?`) lista cada tecla; también puede quedarse anclada al lado de la pantalla (`d`).
 
 ## Ajustes
 
@@ -42,13 +42,13 @@ Los ajustes tienen tres pestañas:
 
 - **Populares** se abre primero y reúne los ajustes que más se cambian: idioma, baja visión, tema, tamaño de cartas, reverso de carta, volumen, aura y autoterminar.
 - **Audio y visual** contiene todo lo relativo al aspecto y al sonido: colores, pantalla completa y tamaño de ventana, tema, visión del color, estilos de cartas y tonos, la mesa, el aura, la fuente de la consola, el sonido y la prioridad del proceso.
-- **Juego** contiene las ayudas: marcas de destino, los paneles de guía y de jugadas, autoterminar y jugadas rápidas.
+- **Juego** contiene el idioma y las ayudas: aura, marcas de destino, los paneles de guía y de jugadas, autoterminar y jugadas rápidas.
 
 Una vista previa junto a la lista muestra un cambio antes de que lo conserves.
 
 ## Cartas y mesa
 
-- **Seis estilos de caras**: Internacional, Francés, Alemán, Italiano, Español y Suizo, cada uno con sus propios signos de palo.
+- **Seis estilos de caras**: Internacional, Francés, Alemán, Italiano, Español y Suizo, cada uno con sus propios signos de palo o letras de figuras.
 - **Dos estilos de reverso** (Celosía y Ornamento) y colores de reverso del tema, Monokai o Dracula.
 - **Tono de la cara de la carta**: el del propio tema, blanco, marfil, gris claro u oscuro.
 - **Mesa**: el color del tema, fieltro verde, azul, rojo, gris, marrón o negro, y la textura lisa, de fieltro o rayada.
@@ -58,19 +58,19 @@ Una vista previa junto a la lista muestra un cambio antes de que lo conserves.
 
 Cinco temas: **Oscuro** y **Claro** para el día a día, **Alto contraste** para baja visión, **Monokai** y **Dracula**. Cada uno se muestra aquí en la misma posición.
 
-![El tema Oscuro](img/es/theme-dark.svg)
+![El tema Oscuro](../img/es/theme-dark.svg)
 
-![El tema Claro](img/es/theme-light.svg)
+![El tema Claro](../img/es/theme-light.svg)
 
-![El tema Alto contraste](img/es/theme-high-contrast.svg)
+![El tema Alto contraste](../img/es/theme-high-contrast.svg)
 
-![El tema Monokai](img/es/theme-monokai.svg)
+![El tema Monokai](../img/es/theme-monokai.svg)
 
-![El tema Dracula](img/es/theme-dracula.svg)
+![El tema Dracula](../img/es/theme-dracula.svg)
 
 - **Baja visión.** Un único interruptor, ofrecido en el primer arranque y en Ajustes: contraste de texto de al menos 7:1 en cualquier tema, las cartas más grandes que quepan, un aura gruesa, rango y palo en negrita, marcas de foco y de destino más grandes y, en la consola clásica de Windows, una fuente más grande. Cada parte sigue siendo ajustable, y al desactivar el modo se recuperan tus ajustes anteriores.
 - **Visión del color.** Modos para protanopía, deuteranopía, tritanopía y monocromo que cambian los colores para que lo que debes distinguir siga distinguiéndose. La **baraja de cuatro colores** da a cada palo su propio color: picas negras, corazones rojos, diamantes azules y tréboles verdes.
-- **El color nunca es la única señal.** Los palos son signos (♠ ♥ ♦ ♣) junto al rango, el elemento enfocado lleva un símbolo, las cartas cogidas y los destinos tienen sus propias marcas, los resultados llevan ✓ o ✗, y una línea bajo el tablero dice con palabras dónde está el cursor y qué puede hacer.
+- **El color nunca es la única señal.** Los palos son signos (♠ ♥ ♦ ♣) junto al rango, el elemento enfocado lleva un símbolo, las cartas cogidas y los destinos tienen sus propias marcas, los resultados de ganabilidad llevan ✓ o ✗, y una línea bajo el tablero dice con palabras dónde está el cursor y qué puede hacer.
 
 ## Estadísticas
 
@@ -82,7 +82,7 @@ En Windows, un juego iniciado con doble clic, o con `oxysol -n`, es dueño de su
 
 ## Idiomas
 
-El juego está disponible en nueve idiomas: inglés, polaco, alemán, español, francés, italiano, neerlandés, portugués de Brasil y ucraniano. Elige uno con el selector de banderas de la esquina superior izquierda del menú principal, o en Ajustes; se aplica al instante. En el primer arranque, el juego sigue el idioma de tu sistema. Este sitio web está disponible en los mismos nueve idiomas.
+El juego está disponible en nueve idiomas: inglés, polaco, alemán, español, francés, italiano, neerlandés, portugués de Brasil y ucraniano. Elige uno con el selector de banderas de la esquina superior izquierda del menú principal, o en Ajustes; se aplica al instante. Este sitio web está disponible en los mismos nueve idiomas.
 
 ## Lo que aún no es
 

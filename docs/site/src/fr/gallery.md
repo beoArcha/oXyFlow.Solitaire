@@ -29,9 +29,9 @@ le programme affiche.
 
 ![Le menu principal d’oXySol](../img/fr/menu.svg)
 
-### Réglages
+### Paramètres
 
-![L’écran des réglages](../img/fr/settings.svg)
+![L’écran des paramètres](../img/fr/settings.svg)
 
 ### Aide
 
@@ -59,4 +59,4 @@ Si votre système demande de réduire les animations, elles affichent leur derni
 
 ## Thèmes
 
-Les cinq thèmes sont sur la [page des fonctionnalités](features.md#des-thèmes-pour-le-confort-et-laccessibilité).
+Les cinq thèmes sont sur la [page des fonctionnalités](features.md#thèmes-et-accessibilité).

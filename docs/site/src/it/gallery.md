@@ -59,4 +59,4 @@ Se il tuo sistema chiede di ridurre il movimento, le animazioni mostrano l’ult
 
 ## Temi
 
-I cinque temi sono nella [pagina delle funzionalità](features.md#temi-per-comfort-e-accessibilità).
+I cinque temi sono nella [pagina delle funzionalità](features.md#temi-e-accessibilità).

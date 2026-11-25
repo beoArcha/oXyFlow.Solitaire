@@ -25,7 +25,7 @@ Jede Austeilung hat einen **Seed**. Kopiere ihn mit `c`, um die Austeilung noch 
 
 ## Hilfe während des Spiels
 
-- **Leitfaden-Leiste** (`g`): das Ziel des Spiels, die Tasten, die jetzt wirken, und was die markierte Karte tun kann. Ab 130 Spalten steht sie neben dem Spielfeld, mit einem Knopf **Neues Spiel** oben; auf schmaleren Terminals öffnet sie sich in einem Fenster.
+- **Leitfaden-Leiste** (`g`): die Spielangaben, das Ziel des Spiels, die Tasten (mit Markierung der jetzt nutzbaren) und die Mausaktionen. Ab 130 Spalten steht sie neben dem Spielfeld, mit einem Knopf **Neues Spiel** oben; auf schmaleren Terminals öffnet sie sich in einem Fenster.
 - **Züge-Leiste** (`v`): jeder Zug, den du jetzt machen kannst, mit seiner Taste, und der Grund, wenn ein Zug nicht möglich ist.
 - **Hinweise** (`h`): Das Spiel markiert einen Zug auf dem Spielfeld und benennt ihn. Hinweise verwenden nur, was du sehen kannst: Sie schauen nie in verdeckte Karten oder in den Talon.
 - **Schnelle Züge**: `a` schickt die Karten unter dem Cursor zu ihrem besten Ziel, `e` tut dasselbe für die oberste Karte des Ablagestapels, von überall auf dem Spielfeld, und ein Doppelklick wirkt wie `a`. Schnelle Züge lassen sich in den Einstellungen oder in den Schnelloptionen (`o`) abschalten, wenn du jede Karte selbst ablegen willst.
@@ -34,7 +34,7 @@ Jede Austeilung hat einen **Seed**. Kopiere ihn mit `c`, um die Austeilung noch 
 
 ## Tastatur und Maus
 
-Jede Aktion funktioniert mit der Tastatur und mit der Maus. Klicke eine Karte an, um sie aufzunehmen, und dann ein Ziel, um sie abzulegen, mache einen Doppelklick für einen schnellen Zug, ziehe eine Karte auf ihr Ziel oder klicke mit der rechten Taste, um sie zurückzulegen. Knöpfe in Fenstern und Leisten zeigen ihre Taste, und der aktive Reiter eines Fensters sieht nie wie der fokussierte Knopf aus. Das Hilfefenster (`?`) listet jede Taste auf; es kann auch seitlich am Bildschirm angedockt bleiben (`d`).
+Jede Aktion funktioniert mit der Tastatur und mit der Maus. Klicke eine Karte an, um sie aufzunehmen, und dann ein Ziel, um sie abzulegen, mache einen Doppelklick für einen schnellen Zug, ziehe eine Karte auf ihr Ziel oder klicke mit der rechten Taste, um sie zurückzulegen. Fußzeilen und Knöpfe wie Neues Spiel oder Schließen zeigen ihre Taste, und der aktive Reiter eines Fensters sieht nie wie der fokussierte Knopf aus. Das Hilfefenster (`?`) listet jede Taste auf; es kann auch seitlich am Bildschirm angedockt bleiben (`d`).
 
 ## Einstellungen
 
@@ -42,13 +42,13 @@ Die Einstellungen haben drei Reiter:
 
 - **Beliebt** öffnet sich zuerst und sammelt die Einstellungen, die am häufigsten geändert werden: Sprache, Sehhilfemodus, Design, Kartengröße, Kartenrücken, Lautstärke, Leuchten und Automatisches Beenden.
 - **Audio & Optik** enthält alles über Aussehen und Klang: Farben, Vollbild und Fenstergröße, Design, Farbsehen, Kartenstile und Kartenfarbe, den Tisch, das Leuchten, die Konsolenschrift, Klang und die Prozesspriorität.
-- **Spielablauf** enthält die Hilfen: Zielmarkierungen, die Leitfaden- und die Züge-Leiste, Automatisches Beenden und schnelle Züge.
+- **Spielablauf** enthält die Sprache und die Hilfen: Leuchten, Zielmarkierungen, die Leitfaden- und die Züge-Leiste, Automatisches Beenden und schnelle Züge.
 
 Eine Vorschau neben der Liste zeigt eine Änderung, bevor du sie behältst.
 
 ## Karten und Tisch
 
-- **Sechs Vorderseiten-Stile**: International, Französisch, Deutsch, Italienisch, Spanisch und Schweizer, jeweils mit eigenen Farbzeichen.
+- **Sechs Vorderseiten-Stile**: International, Französisch, Deutsch, Italienisch, Spanisch und Schweizer, jeweils mit eigenen Farbzeichen oder Bildkarten-Kürzeln.
 - **Zwei Rückenstile** (Gitter und Ornament) und Rückenfarben aus dem Design, Monokai oder Dracula.
 - **Kartenfarbe**: die des Designs, Weiß, Elfenbein, Hellgrau oder Dunkel.
 - **Tisch**: die Farbe des Designs, Grünfilz, Blau, Rot, Grau, Braun oder Schwarz, und die Oberfläche schlicht, Filz oder liniert.
@@ -58,19 +58,19 @@ Eine Vorschau neben der Liste zeigt eine Änderung, bevor du sie behältst.
 
 Fünf Designs: **Dunkel** und **Hell** für den Alltag, **Hoher Kontrast** für Sehschwächen, **Monokai** und **Dracula**. Jedes wird hier an derselben Position gezeigt.
 
-![Das Design Dunkel](img/de/theme-dark.svg)
+![Das Design Dunkel](../img/de/theme-dark.svg)
 
-![Das Design Hell](img/de/theme-light.svg)
+![Das Design Hell](../img/de/theme-light.svg)
 
-![Das Design Hoher Kontrast](img/de/theme-high-contrast.svg)
+![Das Design Hoher Kontrast](../img/de/theme-high-contrast.svg)
 
-![Das Design Monokai](img/de/theme-monokai.svg)
+![Das Design Monokai](../img/de/theme-monokai.svg)
 
-![Das Design Dracula](img/de/theme-dracula.svg)
+![Das Design Dracula](../img/de/theme-dracula.svg)
 
 - **Sehhilfemodus.** Ein Schalter, angeboten beim ersten Start und in den Einstellungen: Textkontrast von mindestens 7:1 in jedem Design, die größten Karten, die passen, ein dicker Leuchtrand, Rang und Farbzeichen in Fett, größere Fokus- und Zielmarkierungen und in der klassischen Windows-Konsole eine größere Schrift. Jeder Teil bleibt einstellbar, und wenn du den Modus ausschaltest, kehren deine früheren Einstellungen zurück.
 - **Farbsehen.** Die Modi für Protanopie, Deuteranopie, Tritanopie und Monochrom ändern die Farben, damit Dinge, die du unterscheiden musst, unterscheidbar bleiben. Das **Vierfarbige Deck** gibt jeder Farbe eine eigene Farbe: Pik schwarz, Herz rot, Karo blau und Kreuz grün.
-- **Farbe ist nie das einzige Signal.** Farbzeichen (♠ ♥ ♦ ♣) stehen neben dem Rang, die markierte Stelle trägt ein Symbol, aufgenommene Karten und Ziele haben eigene Markierungen, Ergebnisse tragen ✓ oder ✗, und eine Zeile unter dem Spielfeld sagt in Worten, wo der Cursor steht und was er tun kann.
+- **Farbe ist nie das einzige Signal.** Farbzeichen (♠ ♥ ♦ ♣) stehen neben dem Rang, die markierte Stelle trägt ein Symbol, aufgenommene Karten und Ziele haben eigene Markierungen, Ergebnisse der Lösbarkeitsprüfung tragen ✓ oder ✗, und eine Zeile unter dem Spielfeld sagt in Worten, wo der Cursor steht und was er tun kann.
 
 ## Statistik
 
@@ -82,7 +82,7 @@ Unter Windows besitzt ein Spiel, das per Doppelklick oder mit `oxysol -n` gestar
 
 ## Sprachen
 
-Das Spiel gibt es in neun Sprachen: Englisch, Polnisch, Deutsch, Spanisch, Französisch, Italienisch, Niederländisch, brasilianisches Portugiesisch und Ukrainisch. Wähle eine mit der Flaggenauswahl oben links im Hauptmenü oder in den Einstellungen; sie gilt sofort. Beim ersten Start folgt das Spiel der Systemsprache. Diese Website gibt es in denselben neun Sprachen.
+Das Spiel gibt es in neun Sprachen: Englisch, Polnisch, Deutsch, Spanisch, Französisch, Italienisch, Niederländisch, brasilianisches Portugiesisch und Ukrainisch. Wähle eine mit der Flaggenauswahl oben links im Hauptmenü oder in den Einstellungen; sie gilt sofort. Diese Website gibt es in denselben neun Sprachen.
 
 ## Was noch fehlt
 

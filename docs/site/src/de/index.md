@@ -5,7 +5,7 @@
 Vierzehn Solitär-Spiele für das Terminal: **Klondike, Spider, FreeCell, Pyramide, die Yukon-Familie und Golf** in einem Programm, `oxysol`.
 Es läuft in jedem modernen Terminal und wird mit der Tastatur oder der Maus gespielt.
 
-![Klondike in oXySol: das Spielfeld, das Hilfe-Panel und das Panel der möglichen Züge](../img/de/klondike.svg)
+![Klondike in oXySol: das Spielfeld, die Leitfaden-Leiste und die Züge-Leiste](../img/de/klondike.svg)
 
 **Stand:** Vorabversion, in Entwicklung.
 
