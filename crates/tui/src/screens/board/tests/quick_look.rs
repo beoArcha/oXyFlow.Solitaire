@@ -11,8 +11,8 @@ use crate::action::Action;
 use crate::app::Modal;
 use crate::i18n::{Locale, set_locale, t, tf};
 use crate::input::primary_key;
-use crate::settings::{Aid, Settings};
 use crate::layout::STANDARD_MIN_WIDTH;
+use crate::settings::{Aid, Settings};
 use crate::theme::{Theme, ThemeId, Token};
 
 const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
@@ -36,7 +36,11 @@ fn game_with(settings: Settings, size: (u16, u16)) -> Harness {
 
 fn open(h: &mut Harness) {
     h.type_char('o');
-    assert!(matches!(h.app.modal(), Some(Modal::Quick(_))), "{}", h.text());
+    assert!(
+        matches!(h.app.modal(), Some(Modal::Quick(_))),
+        "{}",
+        h.text()
+    );
 }
 
 fn theme_of(h: &Harness) -> Theme {
@@ -84,7 +88,11 @@ fn the_focused_row_is_drawn_with_the_settings_selection_colour_in_every_theme() 
         let mut h = game_with(settings, WIDE);
         open(&mut h);
         let theme = theme_of(&h);
-        assert_eq!(aura_row(&mut h).bg, theme.color(Token::FocusBg), "{theme_id:?}");
+        assert_eq!(
+            aura_row(&mut h).bg,
+            theme.color(Token::FocusBg),
+            "{theme_id:?}"
+        );
     }
 }
 
