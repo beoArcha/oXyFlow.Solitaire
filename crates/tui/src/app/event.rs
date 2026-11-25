@@ -13,6 +13,14 @@ use crate::screens::{Effect, ViewCtx};
 use crate::widgets::overlay;
 use crate::widgets::too_small::is_too_small;
 
+/// The cell a button is drawn hovered at: only a mouse move or drag sets it. A click, a wheel turn
+/// and every key clear it, so a button is never left highlighted after it was used; the next move
+/// brings the hover back (O-93).
+fn hover_cell(event: &MouseEvent) -> Option<(u16, u16)> {
+    matches!(event.kind, MouseEventKind::Moved | MouseEventKind::Drag(_))
+        .then_some((event.column, event.row))
+}
+
 impl App {
     pub(super) fn too_small(&self) -> bool {
         self.area
@@ -23,9 +31,12 @@ impl App {
     pub fn handle(&mut self, input: Input, now: Instant) {
         self.now = now;
         let effect = match input {
-            Input::Key(key) => self.on_key(key),
+            Input::Key(key) => {
+                self.pointer = None;
+                self.on_key(key)
+            }
             Input::Mouse(event) => {
-                self.pointer = Some((event.column, event.row));
+                self.pointer = hover_cell(&event);
                 self.on_mouse(&event)
             }
             Input::Resize(width, height) => {
