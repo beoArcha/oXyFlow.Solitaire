@@ -4,7 +4,7 @@
 use oxysol_core::{DrawCount, PileRef, PileSnapshot, Rank, Variant};
 use ratatui::layout::Rect;
 
-use super::fan::fan;
+use super::fan::{fan, fits_cleanly};
 use super::size::{CardSize, FAN_BUDGET, spacing};
 use super::{BoardGeometry, PileGeometry};
 
@@ -73,11 +73,18 @@ fn group_gap(counts: Counts) -> u16 {
     }
 }
 
-fn fits(counts: Counts, fanned: bool, size: CardSize, area: Rect) -> bool {
+fn fits(counts: Counts, fanned: bool, piles: &[PileSnapshot], size: CardSize, area: Rect) -> bool {
     let columns = columns_for(counts, size, MIN_GAP, fanned);
     let width = columns * size.width + columns.saturating_sub(1) * MIN_GAP + group_gap(counts);
     let height = 2 * size.height + size.row_gap() + FAN_BUDGET;
-    width <= area.width && height <= area.height
+    if width > area.width || height > area.height {
+        return false;
+    }
+    let room = area.height.saturating_sub(size.height + size.row_gap());
+    piles
+        .iter()
+        .filter(|pile| matches!(pile.pile, PileRef::Tableau(_)))
+        .all(|pile| fits_cleanly(&pile.cards, size, room))
 }
 
 struct Grid {
@@ -93,8 +100,15 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(counts: Counts, fanned: bool, area: Rect, limit: Option<CardSize>) -> Self {
-        let size = CardSize::largest_fit_within(limit, |size| fits(counts, fanned, size, area));
+    fn new(
+        counts: Counts,
+        fanned: bool,
+        piles: &[PileSnapshot],
+        area: Rect,
+        limit: Option<CardSize>,
+    ) -> Self {
+        let size =
+            CardSize::largest_fit_within(limit, |size| fits(counts, fanned, piles, size, area));
         let group_gap = group_gap(counts);
         let columns = columns_for(counts, size, MIN_GAP, fanned);
         let (gap, margin) = spacing(area.width.saturating_sub(group_gap), columns, size.width);
@@ -192,7 +206,7 @@ pub(super) fn compute(
 ) -> BoardGeometry {
     let counts = Counts::of(piles);
     let fanned = variant == Variant::Klondike(DrawCount::Three);
-    let grid = Grid::new(counts, fanned, area, limit);
+    let grid = Grid::new(counts, fanned, piles, area, limit);
     let waste_column = u16::from(counts.stock);
     let cells_column = waste_column + if counts.waste { grid.waste_columns } else { 0 };
     let placed = piles
