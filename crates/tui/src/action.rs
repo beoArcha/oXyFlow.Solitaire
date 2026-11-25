@@ -22,6 +22,7 @@ pub enum Action {
     Options,
     Stock,
     QuickMove,
+    WasteQuickMove,
     RunMore,
     RunLess,
     ZoomIn,
@@ -40,7 +41,7 @@ pub enum Action {
 
 impl Action {
     /// Every action, in the order the help overlay lists them.
-    pub const ALL: [Action; 33] = [
+    pub const ALL: [Action; 34] = [
         Action::Up,
         Action::Down,
         Action::Left,
@@ -51,6 +52,7 @@ impl Action {
         Action::Back,
         Action::Stock,
         Action::QuickMove,
+        Action::WasteQuickMove,
         Action::RunMore,
         Action::RunLess,
         Action::ZoomIn,
@@ -98,6 +100,7 @@ impl Action {
             Action::Options => "help.action.options",
             Action::Stock => "help.action.stock",
             Action::QuickMove => "help.action.quick_move",
+            Action::WasteQuickMove => "help.action.waste_quick_move",
             Action::RunMore => "help.action.run_more",
             Action::RunLess => "help.action.run_less",
             Action::ZoomIn => "help.action.zoom_in",

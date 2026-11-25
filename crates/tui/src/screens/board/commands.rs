@@ -40,6 +40,7 @@ impl BoardScreen {
             Action::Menu => Effect::Goto(Screen::MainMenu),
             Action::Stock => self.play(Move::Stock),
             Action::QuickMove => self.quick_move(),
+            Action::WasteQuickMove => self.waste_quick_move(),
             Action::Undo => self.undo(),
             Action::Redo => self.redo(),
             Action::Hint => self.hint(),
