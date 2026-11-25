@@ -3,130 +3,241 @@
 <style></style>
 <rect width="900" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<text x="324 333 342 351 360 369 378 387 396 405" y="14" fill="#8cbeff">Paramètres</text>
-<text x="432 441 450 459 468 477" y="14" fill="#8cbeff">(ligne</text>
-<text x="495" y="14" fill="#8cbeff">1</text>
-<text x="513 522 531" y="14" fill="#8cbeff">sur</text>
-<text x="549 558 567" y="14" fill="#8cbeff">25)</text>
-<text x="108 117 126 135 144 153 162 171 180" y="52" fill="#8cbeff">Affichage</text>
-<rect x="90" y="57" width="405" height="19" fill="#ffd666"/>
-<text x="90" y="71" fill="#141820">►</text>
-<text x="108 117 126 135 144 153" y="71" fill="#141820">Langue</text>
-<text x="171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="71" fill="#141820">.......................</text>
-<text x="387" y="71" fill="#141820">◄</text>
-<text x="405 414 423 432 441 450 459 468" y="71" fill="#141820">Français</text>
-<text x="486" y="71" fill="#141820">►</text>
-<text x="108 117 126 135 144 153 162 171" y="90" fill="#e8ecf4">Couleurs</text>
-<text x="189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="90" fill="#e8ecf4">.....................</text>
-<text x="405 414 423 432" y="90" fill="#e8ecf4">Auto</text>
-<text x="108 117 126 135 144" y="109" fill="#e8ecf4">Plein</text>
-<text x="162 171 180 189 198" y="109" fill="#e8ecf4">écran</text>
-<text x="216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="109" fill="#e8ecf4">..................</text>
-<text x="405 414 423 432" y="109" fill="#e8ecf4">Auto</text>
-<text x="108 117 126 135 144 153 162 171 180" y="147" fill="#8cbeff">Interface</text>
-<text x="108 117 126 135 144" y="166" fill="#e8ecf4">Thème</text>
-<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="166" fill="#e8ecf4">........................</text>
-<text x="405 414 423 432 441 450" y="166" fill="#e8ecf4">Sombre</text>
-<path fill="#80848d" d="M459 171h9v19h-9zM468 171h9v19h-9zM477 171h9v19h-9zM486 171h9v19h-9z"/>
-<text x="108 117 126" y="185" fill="#e8ecf4">Dos</text>
-<text x="144 153" y="185" fill="#e8ecf4">de</text>
-<text x="171 180 189 198 207" y="185" fill="#e8ecf4">carte</text>
-<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="185" fill="#e8ecf4">.................</text>
-<text x="405 414 423 432 441" y="185" fill="#e8ecf4">Thème</text>
-<text x="108 117 126 135 144" y="204" fill="#e8ecf4">Style</text>
-<text x="162 171 180" y="204" fill="#e8ecf4">des</text>
-<text x="198 207 216 225 234" y="204" fill="#e8ecf4">faces</text>
-<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="204" fill="#e8ecf4">..............</text>
-<text x="405 414 423 432 441 450 459 468 477 486 495 504 513" y="204" fill="#e8ecf4">International</text>
-<text x="108 117 126 135 144" y="223" fill="#e8ecf4">Style</text>
-<text x="162 171 180" y="223" fill="#e8ecf4">des</text>
-<text x="198 207 216" y="223" fill="#e8ecf4">dos</text>
-<text x="234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="223" fill="#e8ecf4">................</text>
-<text x="405 414 423 432 441 450 459 468" y="223" fill="#e8ecf4">Treillis</text>
-<text x="108 117 126 135 144 153 162 171" y="242" fill="#e8ecf4">Symboles</text>
-<text x="189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="242" fill="#e8ecf4">.....................</text>
-<text x="405 414 423 432 441 450 459" y="242" fill="#e8ecf4">Unicode</text>
-<text x="108 117 126 135 144 153" y="261" fill="#e8ecf4">Police</text>
-<text x="171 180" y="261" fill="#e8ecf4">de</text>
-<text x="198 207" y="261" fill="#e8ecf4">la</text>
-<text x="225 234 243 252 261 270 279" y="261" fill="#e8ecf4">console</text>
-<text x="297 306 315 324 333 342 351 360 369" y="261" fill="#e8ecf4">.........</text>
-<text x="405 414 423 432 441 450 459 468 477 486 495 504" y="261" fill="#e8ecf4">indisponible</text>
-<text x="108 117 126 135 144 153" y="280" fill="#e8ecf4">Police</text>
-<text x="171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="280" fill="#e8ecf4">.......................</text>
-<text x="405 414 423 432 441 450 459 468 477 486 495 504" y="280" fill="#e8ecf4">Ctrl+Shift+=</text>
-<text x="522" y="280" fill="#e8ecf4">/</text>
-<text x="540 549 558 567 576 585" y="280" fill="#e8ecf4">Ctrl+-</text>
-<text x="108 117 126 135 144 153" y="299" fill="#e8ecf4">Taille</text>
-<text x="171 180" y="299" fill="#e8ecf4">de</text>
-<text x="198 207 216 225 234 243" y="299" fill="#e8ecf4">police</text>
-<text x="261 270 279 288 297 306 315 324 333 342 351 360 369" y="299" fill="#e8ecf4">.............</text>
-<text x="405 414 423 432 441 450 459 468 477 486 495 504" y="299" fill="#e8ecf4">Ctrl+Shift+=</text>
-<text x="522" y="299" fill="#e8ecf4">/</text>
-<text x="540 549 558 567 576 585" y="299" fill="#e8ecf4">Ctrl+-</text>
-<text x="108 117 126 135 144 153" y="318" fill="#e8ecf4">Taille</text>
-<text x="171 180 189" y="318" fill="#e8ecf4">des</text>
-<text x="207 216 225 234 243 252" y="318" fill="#e8ecf4">cartes</text>
-<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="318" fill="#e8ecf4">............</text>
-<text x="405 414 423 432" y="318" fill="#e8ecf4">Auto</text>
-<text x="108 117 126 135 144 153 162" y="337" fill="#e8ecf4">Couleur</text>
-<text x="180 189" y="337" fill="#e8ecf4">de</text>
-<text x="207 216 225 234 243 252" y="337" fill="#e8ecf4">l'aura</text>
-<text x="270 279 288 297 306 315 324 333 342 351 360 369" y="337" fill="#e8ecf4">............</text>
-<text x="405 414 423 432 441" y="337" fill="#e8ecf4">Thème</text>
-<text x="108 117 126 135 144" y="356" fill="#e8ecf4">Style</text>
-<text x="162 171" y="356" fill="#e8ecf4">de</text>
-<text x="189 198 207 216 225 234" y="356" fill="#e8ecf4">l'aura</text>
-<text x="252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="356" fill="#e8ecf4">..............</text>
-<text x="405 414 423 432" y="356" fill="#e8ecf4">Halo</text>
-<text x="108 117 126 135 144 153" y="375" fill="#e8ecf4">Taille</text>
-<text x="171 180" y="375" fill="#e8ecf4">de</text>
-<text x="198 207 216 225 234 243" y="375" fill="#e8ecf4">l'aura</text>
-<text x="261 270 279 288 297 306 315 324 333 342 351 360 369" y="375" fill="#e8ecf4">.............</text>
-<text x="405 414 423" y="375" fill="#e8ecf4">Fin</text>
-<text x="108 117 126 135 144 153 162 171" y="394" fill="#e8ecf4">Priorité</text>
-<text x="189 198" y="394" fill="#e8ecf4">du</text>
-<text x="216 225 234 243 252 261 270 279 288" y="394" fill="#e8ecf4">processus</text>
-<text x="306 315 324 333 342 351 360 369" y="394" fill="#e8ecf4">........</text>
-<text x="405 414 423 432 441 450 459" y="394" fill="#e8ecf4">Normale</text>
-<text x="108 117 126" y="432" fill="#8cbeff">Son</text>
-<text x="108 117 126 135 144" y="451" fill="#e8ecf4">Style</text>
-<text x="162 171 180 189 198 207" y="451" fill="#e8ecf4">sonore</text>
-<text x="225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="451" fill="#e8ecf4">.................</text>
-<text x="405 414 423 432 441 450 459" y="451" fill="#e8ecf4">Default</text>
-<text x="108 117 126 135 144 153" y="470" fill="#e8ecf4">Effets</text>
-<text x="171 180 189 198 207 216 225" y="470" fill="#e8ecf4">sonores</text>
-<text x="243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="470" fill="#e8ecf4">...............</text>
-<text x="405 414 423" y="470" fill="#e8ecf4">Oui</text>
-<text x="108 117 126 135 144 153 162" y="489" fill="#e8ecf4">Musique</text>
-<text x="180 189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="489" fill="#e8ecf4">......................</text>
-<text x="405 414 423" y="489" fill="#e8ecf4">Non</text>
-<text x="108 117 126 135 144 153" y="508" fill="#e8ecf4">Volume</text>
-<text x="171 180 189 198 207 216 225 234 243 252 261 270 279 288 297 306 315 324 333 342 351 360 369" y="508" fill="#e8ecf4">.......................</text>
-<text x="405 414 423" y="508" fill="#e8ecf4">70%</text>
-<rect x="405" y="551" width="36" height="19" fill="#287850"/>
-<rect x="459" y="551" width="36" height="19" fill="#287850"/>
-<rect x="513" y="551" width="36" height="19" fill="#287850"/>
-<path fill="#5d976a" d="M405 551h9v19h-9zM432 551h9v19h-9z"/>
-<path fill="#70a4a4" d="M414 551h9v19h-9zM423 551h9v19h-9zM468 551h9v19h-9zM477 551h9v19h-9zM522 551h9v19h-9zM531 551h9v19h-9z"/>
-<path fill="#a7d5d3" d="M459 551h9v19h-9zM486 551h9v19h-9z"/>
-<text x="342 351 360 369" y="565" fill="#b8c2d6">Aura</text>
-<text x="387" y="565" fill="#b8c2d6">:</text>
-<text x="513" y="565" fill="#ffd666">·</text>
-<text x="540" y="565" fill="#ffd666">·</text>
-<text x="225 234" y="584" fill="#b8c2d6">La</text>
-<text x="252 261 270 279 288 297" y="584" fill="#b8c2d6">langue</text>
-<text x="315 324" y="584" fill="#b8c2d6">de</text>
-<text x="342 351 360 369" y="584" fill="#b8c2d6">tous</text>
-<text x="387 396 405" y="584" fill="#b8c2d6">les</text>
-<text x="423 432 441 450 459 468 477" y="584" fill="#b8c2d6">textes.</text>
-<text x="495 504 513 522 531 540 549 558 567 576" y="584" fill="#b8c2d6">Changement</text>
-<text x="594 603 612 621 630 639 648 657 666" y="584" fill="#b8c2d6">immédiat.</text>
-<text x="288 297 306 315 324" y="641" fill="#b8c2d6">Enter</text>
-<text x="342 351 360 369 378 387 396 405" y="641" fill="#b8c2d6">Modifier</text>
-<text x="441 450 459" y="641" fill="#b8c2d6">Esc</text>
-<text x="477 486 495 504 513 522" y="641" fill="#b8c2d6">Retour</text>
-<text x="558" y="641" fill="#b8c2d6">?</text>
-<text x="576 585 594 603" y="641" fill="#b8c2d6">Aide</text>
+<text x="405 414 423 432 441 450 459 468 477 486" y="90" fill="#8cbeff">Paramètres</text>
+<rect x="414" y="114" width="108" height="19" fill="#242a3a"/>
+<path fill="#b8c2d6" d="M400 114h1v10h-1zM400 123h1v10h-1zM535 114h1v10h-1zM535 123h1v10h-1z"/>
+<text x="225" y="128" fill="#e8ecf4">◄</text>
+<text x="252 261 270 279 288" y="128" fill="#e8ecf4">Audio</text>
+<text x="306" y="128" fill="#e8ecf4">&amp;</text>
+<text x="324 333 342 351 360 369" y="128" fill="#e8ecf4">visuel</text>
+<text x="414 423 432 441 450 459 468 477 486 495 504 513" y="128" fill="#8cbeff" font-weight="bold" text-decoration="underline">[Populaires]</text>
+<text x="558 567 576 585 594 603 612 621 630 639" y="128" fill="#e8ecf4">Jouabilité</text>
+<text x="666" y="128" fill="#e8ecf4">►</text>
+<rect x="0" y="152" width="405" height="19" fill="#ffd666"/>
+<rect x="423" y="152" width="477" height="19" fill="#287850"/>
+<text x="0" y="166" fill="#141820">►</text>
+<text x="18 27 36 45 54 63" y="166" fill="#141820">Langue</text>
+<text x="81 90 99 108 117 126 135 144 153 162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="166" fill="#141820">.......................</text>
+<text x="297" y="166" fill="#141820">◄</text>
+<text x="315 324 333 342 351 360 369 378" y="166" fill="#141820">Français</text>
+<text x="396" y="166" fill="#141820">►</text>
+<text x="630 639 648 657 666 675" y="166" fill="#ecf6f0">Aperçu</text>
+<rect x="423" y="171" width="477" height="19" fill="#287850"/>
+<text x="18 27 36 45 54" y="185" fill="#e8ecf4">Basse</text>
+<text x="72 81 90 99 108 117" y="185" fill="#e8ecf4">vision</text>
+<text x="135 144 153 162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="185" fill="#e8ecf4">.................</text>
+<text x="315 324 333" y="185" fill="#e8ecf4">Non</text>
+<rect x="423" y="190" width="477" height="19" fill="#287850"/>
+<text x="18 27 36 45 54" y="204" fill="#e8ecf4">Thème</text>
+<text x="72 81 90 99 108 117 126 135 144 153 162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="204" fill="#e8ecf4">........................</text>
+<text x="315 324 333 342 351 360" y="204" fill="#e8ecf4">Sombre</text>
+<rect x="423" y="209" width="477" height="19" fill="#287850"/>
+<text x="18 27 36 45 54 63" y="223" fill="#e8ecf4">Taille</text>
+<text x="81 90 99" y="223" fill="#e8ecf4">des</text>
+<text x="117 126 135 144 153 162" y="223" fill="#e8ecf4">cartes</text>
+<text x="180 189 198 207 216 225 234 243 252 261 270 279" y="223" fill="#e8ecf4">............</text>
+<text x="315 324 333 342" y="223" fill="#e8ecf4">Auto</text>
+<rect x="423" y="228" width="477" height="19" fill="#287850"/>
+<path fill="#5d976a" d="M558 228h9v19h-9zM567 228h9v19h-9zM576 228h9v19h-9zM585 228h9v19h-9zM594 228h9v19h-9zM603 228h9v19h-9zM612 228h9v19h-9zM621 228h9v19h-9zM630 228h9v19h-9zM639 228h9v19h-9zM648 228h9v19h-9z"/>
+<path fill="#a7d5d3" d="M666 228h9v19h-9zM675 228h9v19h-9zM684 228h9v19h-9zM693 228h9v19h-9zM702 228h9v19h-9zM711 228h9v19h-9zM720 228h9v19h-9zM729 228h9v19h-9zM738 228h9v19h-9zM747 228h9v19h-9zM756 228h9v19h-9z"/>
+<text x="18 27 36" y="242" fill="#e8ecf4">Dos</text>
+<text x="54 63" y="242" fill="#e8ecf4">de</text>
+<text x="81 90 99 108 117" y="242" fill="#e8ecf4">carte</text>
+<text x="135 144 153 162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="242" fill="#e8ecf4">.................</text>
+<text x="315 324 333 342 351" y="242" fill="#e8ecf4">Thème</text>
+<text x="774 783 792 801 810 819 828 837 846 855 864" y="242" fill="#ffd666">···········</text>
+<rect x="423" y="247" width="36" height="19" fill="#287850"/>
+<rect x="459" y="247" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="247" width="27" height="19" fill="#287850"/>
+<rect x="567" y="247" width="9" height="19" fill="#242a3a"/>
+<rect x="576" y="247" width="18" height="19" fill="#fafaf4"/>
+<rect x="594" y="247" width="54" height="19" fill="#242a3a"/>
+<rect x="648" y="247" width="36" height="19" fill="#287850"/>
+<rect x="684" y="247" width="18" height="19" fill="#fafaf4"/>
+<rect x="702" y="247" width="90" height="19" fill="#287850"/>
+<rect x="792" y="247" width="18" height="19" fill="#fafaf4"/>
+<rect x="810" y="247" width="90" height="19" fill="#287850"/>
+<path fill="#101428" d="M463 256h1v10h-1zM463 256h5v1h-5zM468 256h5v1h-5zM472 256h5v1h-5zM477 256h5v1h-5zM481 256h5v1h-5zM486 256h5v1h-5zM490 256h5v1h-5zM495 256h5v1h-5zM499 256h5v1h-5zM504 256h5v1h-5zM508 256h5v1h-5zM513 256h5v1h-5zM517 256h5v1h-5zM522 256h5v1h-5zM526 256h5v1h-5zM535 256h1v10h-1zM531 256h5v1h-5z"/>
+<path fill="#5d976a" d="M558 247h9v19h-9zM648 247h9v19h-9z"/>
+<path fill="#96dcff" d="M679 256h1v10h-1zM678 255h6v1h-6zM678 257h6v1h-6zM702 255h6v1h-6zM702 257h6v1h-6zM705 255h6v1h-6zM705 257h6v1h-6zM711 255h6v1h-6zM711 257h6v1h-6zM714 255h6v1h-6zM714 257h6v1h-6zM720 255h6v1h-6zM720 257h6v1h-6zM723 255h6v1h-6zM723 257h6v1h-6zM729 255h6v1h-6zM729 257h6v1h-6zM732 255h6v1h-6zM732 257h6v1h-6zM751 256h1v10h-1zM747 255h6v1h-6zM747 257h6v1h-6z"/>
+<path fill="#a7d5d3" d="M666 247h9v19h-9zM756 247h9v19h-9z"/>
+<path fill="#ffd666" d="M570 255h1v11h-1zM572 255h1v11h-1zM570 255h6v1h-6zM570 257h6v1h-6zM594 255h6v1h-6zM594 257h6v1h-6zM597 255h6v1h-6zM597 257h6v1h-6zM603 255h6v1h-6zM603 257h6v1h-6zM606 255h6v1h-6zM606 257h6v1h-6zM612 255h6v1h-6zM612 257h6v1h-6zM615 255h6v1h-6zM615 257h6v1h-6zM621 255h6v1h-6zM621 257h6v1h-6zM624 255h6v1h-6zM624 257h6v1h-6zM642 255h1v11h-1zM644 255h1v11h-1zM639 255h6v1h-6zM639 257h6v1h-6zM810 256h5v1h-5zM814 256h5v1h-5zM819 256h5v1h-5zM823 256h5v1h-5zM828 256h5v1h-5zM832 256h5v1h-5zM837 256h5v1h-5zM841 256h5v1h-5zM846 256h5v1h-5zM850 256h5v1h-5z"/>
+<text x="18 27 36 45 54 63" y="261" fill="#e8ecf4">Volume</text>
+<text x="81 90 99 108 117 126 135 144 153 162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="261" fill="#e8ecf4">.......................</text>
+<text x="315 324 333" y="261" fill="#e8ecf4">70%</text>
+<text x="576 585" y="261" fill="#a61414">D♥</text>
+<text x="630" y="261" fill="#ffd666">►</text>
+<text x="684 693" y="261" fill="#101014">V♠</text>
+<text x="738" y="261" fill="#96dcff">●</text>
+<text x="774 783" y="261" fill="#ffd666">·+</text>
+<text x="792 801" y="261" fill="#a61414">R♦</text>
+<text x="855 864" y="261" fill="#ffd666">+·</text>
+<rect x="423" y="266" width="36" height="19" fill="#287850"/>
+<rect x="459" y="266" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="266" width="27" height="19" fill="#287850"/>
+<rect x="567" y="266" width="9" height="19" fill="#242a3a"/>
+<rect x="576" y="266" width="63" height="19" fill="#fafaf4"/>
+<rect x="639" y="266" width="9" height="19" fill="#242a3a"/>
+<rect x="648" y="266" width="36" height="19" fill="#287850"/>
+<rect x="684" y="266" width="63" height="19" fill="#fafaf4"/>
+<rect x="747" y="266" width="45" height="19" fill="#287850"/>
+<rect x="792" y="266" width="63" height="19" fill="#fafaf4"/>
+<rect x="855" y="266" width="45" height="19" fill="#287850"/>
+<path fill="#101428" d="M463 266h1v10h-1zM463 275h1v10h-1zM535 266h1v10h-1zM535 275h1v10h-1z"/>
+<path fill="#5d976a" d="M558 266h9v19h-9zM648 266h9v19h-9z"/>
+<path fill="#647290" d="M468 266h9v19h-9zM477 266h9v19h-9zM486 266h9v19h-9zM495 266h9v19h-9zM504 266h9v19h-9zM513 266h9v19h-9zM522 266h9v19h-9z"/>
+<path fill="#96dcff" d="M679 266h1v10h-1zM679 275h1v10h-1zM751 266h1v10h-1zM751 275h1v10h-1z"/>
+<path fill="#a7d5d3" d="M666 266h9v19h-9zM756 266h9v19h-9z"/>
+<path fill="#ffd666" d="M570 266h1v11h-1zM572 266h1v11h-1zM570 274h1v11h-1zM572 274h1v11h-1zM642 266h1v11h-1zM644 266h1v11h-1zM642 274h1v11h-1zM644 274h1v11h-1zM787 266h1v10h-1zM787 275h1v10h-1zM859 266h1v10h-1zM859 275h1v10h-1z"/>
+<text x="18 27 36 45" y="280" fill="#e8ecf4">Aura</text>
+<text x="63 72 81 90 99 108 117 126 135 144 153 162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="280" fill="#e8ecf4">.........................</text>
+<text x="315 324 333 342 351 360 369 378" y="280" fill="#e8ecf4">Complète</text>
+<text x="594" y="280" fill="#a61414" font-weight="bold">D</text>
+<text x="612" y="280" fill="#a61414" font-weight="bold">♥</text>
+<text x="702" y="280" fill="#101014" font-weight="bold">V</text>
+<text x="720" y="280" fill="#101014" font-weight="bold">♠</text>
+<text x="774" y="280" fill="#ffd666">·</text>
+<text x="810" y="280" fill="#a61414" font-weight="bold">R</text>
+<text x="828" y="280" fill="#a61414" font-weight="bold">♦</text>
+<text x="864" y="280" fill="#ffd666">·</text>
+<rect x="423" y="285" width="36" height="19" fill="#287850"/>
+<rect x="459" y="285" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="285" width="27" height="19" fill="#287850"/>
+<rect x="567" y="285" width="9" height="19" fill="#242a3a"/>
+<rect x="576" y="285" width="63" height="19" fill="#fafaf4"/>
+<rect x="639" y="285" width="9" height="19" fill="#242a3a"/>
+<rect x="648" y="285" width="36" height="19" fill="#287850"/>
+<rect x="684" y="285" width="63" height="19" fill="#fafaf4"/>
+<rect x="747" y="285" width="45" height="19" fill="#287850"/>
+<rect x="792" y="285" width="63" height="19" fill="#fafaf4"/>
+<rect x="855" y="285" width="45" height="19" fill="#287850"/>
+<path fill="#101428" d="M463 285h1v10h-1zM463 294h1v10h-1zM535 285h1v10h-1zM535 294h1v10h-1z"/>
+<path fill="#5d976a" d="M558 285h9v19h-9zM648 285h9v19h-9z"/>
+<path fill="#647290" d="M468 285h9v19h-9zM477 285h9v19h-9zM486 285h9v19h-9zM495 285h9v19h-9zM504 285h9v19h-9zM513 285h9v19h-9zM522 285h9v19h-9z"/>
+<path fill="#96dcff" d="M679 285h1v10h-1zM679 294h1v10h-1zM751 285h1v10h-1zM751 294h1v10h-1z"/>
+<path fill="#a7d5d3" d="M666 285h9v19h-9zM756 285h9v19h-9z"/>
+<path fill="#ffd666" d="M570 285h1v11h-1zM572 285h1v11h-1zM570 293h1v11h-1zM572 293h1v11h-1zM642 285h1v11h-1zM644 285h1v11h-1zM642 293h1v11h-1zM644 293h1v11h-1zM787 285h1v10h-1zM787 294h1v10h-1zM859 285h1v10h-1zM859 294h1v10h-1z"/>
+<text x="18 27 36" y="299" fill="#e8ecf4">Fin</text>
+<text x="54 63 72 81 90 99 108 117 126 135 144" y="299" fill="#e8ecf4">automatique</text>
+<text x="162 171 180 189 198 207 216 225 234 243 252 261 270 279" y="299" fill="#e8ecf4">..............</text>
+<text x="315 324 333" y="299" fill="#e8ecf4">Oui</text>
+<text x="774" y="299" fill="#ffd666">·</text>
+<text x="864" y="299" fill="#ffd666">·</text>
+<rect x="423" y="304" width="36" height="19" fill="#287850"/>
+<rect x="459" y="304" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="304" width="27" height="19" fill="#287850"/>
+<rect x="567" y="304" width="9" height="19" fill="#242a3a"/>
+<rect x="576" y="304" width="63" height="19" fill="#fafaf4"/>
+<rect x="639" y="304" width="9" height="19" fill="#242a3a"/>
+<rect x="648" y="304" width="36" height="19" fill="#287850"/>
+<rect x="684" y="304" width="63" height="19" fill="#fafaf4"/>
+<rect x="747" y="304" width="45" height="19" fill="#287850"/>
+<rect x="792" y="304" width="63" height="19" fill="#fafaf4"/>
+<rect x="855" y="304" width="45" height="19" fill="#287850"/>
+<path fill="#101014" d="M702 313.5h9v9.5h-9zM711 304h9v19h-9zM720 313.5h9v9.5h-9z"/>
+<path fill="#101428" d="M463 304h1v10h-1zM463 313h1v10h-1zM535 304h1v10h-1zM535 313h1v10h-1z"/>
+<path fill="#5d976a" d="M558 304h9v19h-9zM648 304h9v19h-9z"/>
+<path fill="#647290" d="M468 304h9v19h-9zM477 304h9v19h-9zM486 304h9v19h-9zM495 304h9v19h-9zM504 304h9v19h-9zM513 304h9v19h-9zM522 304h9v19h-9z"/>
+<path fill="#96dcff" d="M679 304h1v10h-1zM679 313h1v10h-1zM751 304h1v10h-1zM751 313h1v10h-1z"/>
+<path fill="#a61414" d="M585 304h9v19h-9zM594 304h9v19h-9zM603 313.5h9v9.5h-9zM612 304h9v19h-9zM621 304h9v19h-9zM810 313.5h9v9.5h-9zM819 304h9v19h-9zM828 313.5h9v9.5h-9z"/>
+<path fill="#a7d5d3" d="M666 304h9v19h-9zM756 304h9v19h-9z"/>
+<path fill="#ffd666" d="M570 304h1v11h-1zM572 304h1v11h-1zM570 312h1v11h-1zM572 312h1v11h-1zM642 304h1v11h-1zM644 304h1v11h-1zM642 312h1v11h-1zM644 312h1v11h-1zM787 304h1v10h-1zM787 313h1v10h-1zM859 304h1v10h-1zM859 313h1v10h-1z"/>
+<text x="774" y="318" fill="#ffd666">·</text>
+<text x="864" y="318" fill="#ffd666">·</text>
+<rect x="423" y="323" width="36" height="19" fill="#287850"/>
+<rect x="459" y="323" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="323" width="27" height="19" fill="#287850"/>
+<rect x="567" y="323" width="9" height="19" fill="#242a3a"/>
+<rect x="576" y="323" width="63" height="19" fill="#fafaf4"/>
+<rect x="639" y="323" width="9" height="19" fill="#242a3a"/>
+<rect x="648" y="323" width="36" height="19" fill="#287850"/>
+<rect x="684" y="323" width="63" height="19" fill="#fafaf4"/>
+<rect x="747" y="323" width="45" height="19" fill="#287850"/>
+<rect x="792" y="323" width="63" height="19" fill="#fafaf4"/>
+<rect x="855" y="323" width="45" height="19" fill="#287850"/>
+<path fill="#101014" d="M693 323h9v9.5h-9zM702 323h9v9.5h-9zM711 323h9v19h-9zM720 323h9v9.5h-9zM729 323h9v9.5h-9z"/>
+<path fill="#101428" d="M463 323h1v10h-1zM463 332h1v10h-1zM535 323h1v10h-1zM535 332h1v10h-1z"/>
+<path fill="#5d976a" d="M558 323h9v19h-9zM648 323h9v19h-9z"/>
+<path fill="#647290" d="M468 323h9v19h-9zM477 323h9v19h-9zM486 323h9v19h-9zM495 323h9v19h-9zM504 323h9v19h-9zM513 323h9v19h-9zM522 323h9v19h-9z"/>
+<path fill="#96dcff" d="M679 323h1v10h-1zM679 332h1v10h-1zM751 323h1v10h-1zM751 332h1v10h-1z"/>
+<path fill="#a61414" d="M594 323h9v9.5h-9zM603 323h9v19h-9zM612 323h9v9.5h-9zM810 323h9v9.5h-9zM819 323h9v19h-9zM828 323h9v9.5h-9z"/>
+<path fill="#a7d5d3" d="M666 323h9v19h-9zM756 323h9v19h-9z"/>
+<path fill="#ffd666" d="M570 323h1v11h-1zM572 323h1v11h-1zM570 331h1v11h-1zM572 331h1v11h-1zM642 323h1v11h-1zM644 323h1v11h-1zM642 331h1v11h-1zM644 331h1v11h-1zM787 323h1v10h-1zM787 332h1v10h-1zM859 323h1v10h-1zM859 332h1v10h-1z"/>
+<text x="774" y="337" fill="#ffd666">·</text>
+<text x="864" y="337" fill="#ffd666">·</text>
+<rect x="423" y="342" width="36" height="19" fill="#287850"/>
+<rect x="459" y="342" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="342" width="27" height="19" fill="#287850"/>
+<rect x="567" y="342" width="9" height="19" fill="#242a3a"/>
+<rect x="576" y="342" width="63" height="19" fill="#fafaf4"/>
+<rect x="639" y="342" width="9" height="19" fill="#242a3a"/>
+<rect x="648" y="342" width="36" height="19" fill="#287850"/>
+<rect x="684" y="342" width="63" height="19" fill="#fafaf4"/>
+<rect x="747" y="342" width="45" height="19" fill="#287850"/>
+<rect x="792" y="342" width="63" height="19" fill="#fafaf4"/>
+<rect x="855" y="342" width="45" height="19" fill="#287850"/>
+<path fill="#101428" d="M463 342h1v10h-1zM463 351h1v10h-1zM535 342h1v10h-1zM535 351h1v10h-1z"/>
+<path fill="#5d976a" d="M558 342h9v19h-9zM648 342h9v19h-9z"/>
+<path fill="#647290" d="M468 342h9v19h-9zM477 342h9v19h-9zM486 342h9v19h-9zM495 342h9v19h-9zM504 342h9v19h-9zM513 342h9v19h-9zM522 342h9v19h-9z"/>
+<path fill="#96dcff" d="M679 342h1v10h-1zM679 351h1v10h-1zM751 342h1v10h-1zM751 351h1v10h-1z"/>
+<path fill="#a7d5d3" d="M666 342h9v19h-9zM756 342h9v19h-9z"/>
+<path fill="#ffd666" d="M570 342h1v11h-1zM572 342h1v11h-1zM570 350h1v11h-1zM572 350h1v11h-1zM642 342h1v11h-1zM644 342h1v11h-1zM642 350h1v11h-1zM644 350h1v11h-1zM787 342h1v10h-1zM787 351h1v10h-1zM859 342h1v10h-1zM859 351h1v10h-1z"/>
+<text x="774" y="356" fill="#ffd666">·</text>
+<text x="864" y="356" fill="#ffd666">·</text>
+<rect x="423" y="361" width="36" height="19" fill="#287850"/>
+<rect x="459" y="361" width="81" height="19" fill="#b8d0f8"/>
+<rect x="540" y="361" width="27" height="19" fill="#287850"/>
+<rect x="567" y="361" width="54" height="19" fill="#242a3a"/>
+<rect x="621" y="361" width="18" height="19" fill="#fafaf4"/>
+<rect x="639" y="361" width="9" height="19" fill="#242a3a"/>
+<rect x="648" y="361" width="81" height="19" fill="#287850"/>
+<rect x="729" y="361" width="18" height="19" fill="#fafaf4"/>
+<rect x="747" y="361" width="90" height="19" fill="#287850"/>
+<rect x="837" y="361" width="18" height="19" fill="#fafaf4"/>
+<rect x="855" y="361" width="45" height="19" fill="#287850"/>
+<path fill="#101428" d="M463 361h1v10h-1zM463 370h5v1h-5zM468 370h5v1h-5zM472 370h5v1h-5zM477 370h5v1h-5zM481 370h5v1h-5zM486 370h5v1h-5zM490 370h5v1h-5zM495 370h5v1h-5zM499 370h5v1h-5zM504 370h5v1h-5zM508 370h5v1h-5zM513 370h5v1h-5zM517 370h5v1h-5zM522 370h5v1h-5zM526 370h5v1h-5zM535 361h1v10h-1zM531 370h5v1h-5z"/>
+<path fill="#5d976a" d="M558 361h9v19h-9zM648 361h9v19h-9z"/>
+<path fill="#96dcff" d="M679 361h1v10h-1zM678 369h6v1h-6zM678 371h6v1h-6zM684 369h6v1h-6zM684 371h6v1h-6zM687 369h6v1h-6zM687 371h6v1h-6zM693 369h6v1h-6zM693 371h6v1h-6zM696 369h6v1h-6zM696 371h6v1h-6zM702 369h6v1h-6zM702 371h6v1h-6zM705 369h6v1h-6zM705 371h6v1h-6zM711 369h6v1h-6zM711 371h6v1h-6zM714 369h6v1h-6zM714 371h6v1h-6zM720 369h6v1h-6zM720 371h6v1h-6zM723 369h6v1h-6zM723 371h6v1h-6zM751 361h1v10h-1zM747 369h6v1h-6zM747 371h6v1h-6z"/>
+<path fill="#a7d5d3" d="M666 361h9v19h-9zM756 361h9v19h-9z"/>
+<path fill="#ffd666" d="M570 361h1v11h-1zM572 361h1v11h-1zM570 369h6v1h-6zM570 371h6v1h-6zM576 369h6v1h-6zM576 371h6v1h-6zM579 369h6v1h-6zM579 371h6v1h-6zM585 369h6v1h-6zM585 371h6v1h-6zM588 369h6v1h-6zM588 371h6v1h-6zM594 369h6v1h-6zM594 371h6v1h-6zM597 369h6v1h-6zM597 371h6v1h-6zM603 369h6v1h-6zM603 371h6v1h-6zM606 369h6v1h-6zM606 371h6v1h-6zM612 369h6v1h-6zM612 371h6v1h-6zM615 369h6v1h-6zM615 371h6v1h-6zM642 361h1v11h-1zM644 361h1v11h-1zM639 369h6v1h-6zM639 371h6v1h-6zM787 361h1v10h-1zM787 370h5v1h-5zM792 370h5v1h-5zM796 370h5v1h-5zM801 370h5v1h-5zM805 370h5v1h-5zM810 370h5v1h-5zM814 370h5v1h-5zM819 370h5v1h-5zM823 370h5v1h-5zM828 370h5v1h-5zM832 370h5v1h-5zM859 361h1v10h-1zM855 370h5v1h-5z"/>
+<text x="621 630" y="375" fill="#a61414">D♥</text>
+<text x="729 738" y="375" fill="#101014">V♠</text>
+<text x="774" y="375" fill="#ffd666">·</text>
+<text x="837 846" y="375" fill="#a61414">R♦</text>
+<text x="864" y="375" fill="#ffd666">·</text>
+<rect x="423" y="380" width="477" height="19" fill="#287850"/>
+<path fill="#5d976a" d="M558 380h9v19h-9zM567 380h9v19h-9zM576 380h9v19h-9zM585 380h9v19h-9zM594 380h9v19h-9zM603 380h9v19h-9zM612 380h9v19h-9zM621 380h9v19h-9zM630 380h9v19h-9zM639 380h9v19h-9zM648 380h9v19h-9z"/>
+<path fill="#a7d5d3" d="M666 380h9v19h-9zM675 380h9v19h-9zM684 380h9v19h-9zM693 380h9v19h-9zM702 380h9v19h-9zM711 380h9v19h-9zM720 380h9v19h-9zM729 380h9v19h-9zM738 380h9v19h-9zM747 380h9v19h-9zM756 380h9v19h-9z"/>
+<text x="774 783 792 801 810 819 828 837 846 855 864" y="394" fill="#ffd666">···········</text>
+<rect x="423" y="399" width="477" height="19" fill="#287850"/>
+<text x="486 495 504" y="413" fill="#ecf6f0">dos</text>
+<text x="585 594 603 612 621" y="413" fill="#ecf6f0">focus</text>
+<text x="693 702 711 720 729" y="413" fill="#ecf6f0">prise</text>
+<text x="801 810 819 828 837" y="413" fill="#ecf6f0">cible</text>
+<rect x="423" y="418" width="477" height="19" fill="#287850"/>
+<rect x="423" y="437" width="477" height="19" fill="#287850"/>
+<rect x="423" y="456" width="477" height="19" fill="#287850"/>
+<text x="225 234" y="527" fill="#b8c2d6">La</text>
+<text x="252 261 270 279 288 297" y="527" fill="#b8c2d6">langue</text>
+<text x="315 324" y="527" fill="#b8c2d6">de</text>
+<text x="342 351 360 369" y="527" fill="#b8c2d6">tous</text>
+<text x="387 396 405" y="527" fill="#b8c2d6">les</text>
+<text x="423 432 441 450 459 468 477" y="527" fill="#b8c2d6">textes.</text>
+<text x="495 504 513 522 531 540 549 558 567 576" y="527" fill="#b8c2d6">Changement</text>
+<text x="594 603 612 621 630 639 648 657 666" y="527" fill="#b8c2d6">immédiat.</text>
+<text x="99" y="641" fill="#b8c2d6">◄</text>
+<text x="117" y="641" fill="#b8c2d6">►</text>
+<text x="135 144 153 162 171 180 189 198" y="641" fill="#b8c2d6">Modifier</text>
+<text x="234 243 252 261 270 279 288 297 306" y="641" fill="#b8c2d6">Shift+Tab</text>
+<text x="324" y="641" fill="#b8c2d6">/</text>
+<text x="342 351 360" y="641" fill="#b8c2d6">Tab</text>
+<text x="378" y="641" fill="#b8c2d6">:</text>
+<text x="396 405 414 423 432 441" y="641" fill="#b8c2d6">onglet</text>
+<text x="477 486 495 504 513" y="641" fill="#8cbeff">Enter</text>
+<text x="531 540 549 558 567 576 585 594" y="641" fill="#b8c2d6">Modifier</text>
+<text x="630 639 648" y="641" fill="#8cbeff">Esc</text>
+<text x="666 675 684 693 702 711" y="641" fill="#b8c2d6">Retour</text>
+<text x="747" y="641" fill="#8cbeff">?</text>
+<text x="765 774 783 792" y="641" fill="#b8c2d6">Aide</text>
 </g>
 </svg>
