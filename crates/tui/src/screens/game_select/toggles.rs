@@ -2,6 +2,7 @@
 
 use ratatui::Frame;
 use ratatui::layout::{Alignment, Rect};
+use ratatui::style::Style;
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
@@ -65,17 +66,29 @@ fn winnable_hint(on: bool) -> String {
     }
 }
 
-pub(super) fn draw_hints(frame: &mut Frame, areas: [Rect; 2], ctx: &ViewCtx<'_>) {
+pub(super) fn draw_hints(
+    frame: &mut Frame,
+    undo_area: Rect,
+    winnable_area: Option<Rect>,
+    ctx: &ViewCtx<'_>,
+) {
     let key = primary_key(Action::Undo).unwrap_or_default();
-    let hints = [
-        tf("common.select.undo_hint", &[("key", &key)]),
-        winnable_hint(ctx.settings.winnable_only),
-    ];
     let muted = ctx.theme.style(Token::TextMuted, Token::Background);
-    for (hint, area) in hints.into_iter().zip(areas) {
-        frame.render_widget(
-            Paragraph::new(Line::styled(hint, muted)).alignment(Alignment::Center),
+    let undo = tf("common.select.undo_hint", &[("key", &key)]);
+    draw_centered(frame, undo_area, undo, muted);
+    if let Some(area) = winnable_area {
+        draw_centered(
+            frame,
             area,
+            winnable_hint(ctx.settings.winnable_only),
+            muted,
         );
     }
+}
+
+fn draw_centered(frame: &mut Frame, area: Rect, text: String, style: Style) {
+    frame.render_widget(
+        Paragraph::new(Line::styled(text, style)).alignment(Alignment::Center),
+        area,
+    );
 }

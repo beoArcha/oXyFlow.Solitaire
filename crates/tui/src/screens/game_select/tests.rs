@@ -117,10 +117,11 @@ fn a_game_dealt_from_a_typed_seed_uses_the_chosen_mode() {
     let mut h = Harness::new();
     h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
+    h.type_char('u');
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::Enter);
     h.type_char('4');
     h.type_char('2');
-    h.press(KeyCode::Enter);
-    h.type_char('u');
     h.press(KeyCode::Enter);
     assert!(!h.app.board().undo_allowed());
     assert_eq!(h.storage.borrow().history[0].seed, 42);

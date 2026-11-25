@@ -1,4 +1,5 @@
 use super::*;
+use crate::i18n::{t, tf};
 use crate::screens::Effect;
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
@@ -180,13 +181,14 @@ fn a_later_new_game_draws_a_fresh_seed_not_the_command_line_one() {
 }
 
 #[test]
-fn escape_from_the_games_of_a_command_line_seed_returns_to_the_seed_field() {
+fn escape_from_the_games_of_a_command_line_seed_returns_to_the_menu_items() {
     let mut h = Harness::starting_at_seed(77);
+    let games = tf("menu.select_seed", &[("seed", "77")]);
+    let item = t("menu.new_game_from_seed").into_owned();
+    assert!(h.text().contains(&games));
     h.press(KeyCode::Esc);
-    assert!(h.text().contains("Type a seed:"));
-    assert!(h.text().contains("77_"));
-    h.press(KeyCode::Esc);
-    assert!(!h.text().contains("Type a seed:"));
+    assert!(!h.text().contains(&games));
+    assert!(h.text().contains(&item));
     assert_eq!(h.app.screen(), Screen::MainMenu);
 }
 
@@ -204,6 +206,8 @@ fn help_and_rules_keys_open_their_overlays_outside_a_text_field() {
 fn help_and_rules_keys_are_typed_into_the_seed_field() {
     let mut h = Harness::new();
     h.press(KeyCode::Down);
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::Enter);
     h.press(KeyCode::Enter);
     h.type_char('1');
     h.type_char('?');

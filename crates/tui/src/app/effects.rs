@@ -66,6 +66,9 @@ impl App {
         if self.screen == Screen::Stats && screen != Screen::Stats {
             self.stop_stats_check();
         }
+        if screen == Screen::MainMenu {
+            self.refresh_menu_history();
+        }
         self.screen = screen;
         if screen == Screen::Stats {
             self.refresh_stats();
@@ -85,6 +88,21 @@ impl App {
                 self.stats.show_failure();
             }
         }
+    }
+
+    /// Hands the menu the game history, the statistics' zone and a fresh seed for the random replay.
+    /// A fresh seed is drawn only while there is a game to replay, so the seeds of new games do not
+    /// move on an empty history.
+    pub(crate) fn refresh_menu_history(&mut self) {
+        let history = self.storage.history();
+        if let Err(error) = &history {
+            tracing::warn!(%error, "the game history could not be read");
+        }
+        let fresh_seed = match &history {
+            Ok(games) if !games.is_empty() => (self.seeds)(),
+            _ => 0,
+        };
+        self.menu.set_history(history, self.zone, fresh_seed);
     }
 
     /// Copies a seed to the clipboard and announces the result on the statistics screen. A failure

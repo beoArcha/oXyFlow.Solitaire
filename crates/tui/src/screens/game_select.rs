@@ -48,16 +48,28 @@ const LIST: usize = 0;
 const TOGGLE: usize = 1;
 const WINNABLE: usize = 2;
 const RING_LEN: usize = 3;
+const RING_WITHOUT_WINNABLE: usize = 2;
 
 /// Rows of the screen that are not the list: title, gap, search, legend, gap, hint, gap, two
 /// toggles, two toggle hints and the footer.
 const CHROME_ROWS: u16 = 12;
+
+/// What Enter on a variant means: a game starts (`Play`), or the game is chosen before its seed
+/// (`BeforeSeed`, the first step of "New game from seed"). The caller takes the variant from the
+/// `Effect::Start` the list returns in that case.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum Purpose {
+    #[default]
+    Play,
+    BeforeSeed,
+}
 
 /// State of the game selection screen.
 #[derive(Debug, Default)]
 pub struct GameSelect {
     list: ListView,
     seed: Option<u64>,
+    purpose: Purpose,
     focus: usize,
     search: Option<String>,
     search_area: Rect,
@@ -68,9 +80,9 @@ pub struct GameSelect {
 
 /// The name of `variant` in the list. With winnable deals on, it also says when the search can
 /// take long.
-fn label_of(variant: Variant, ctx: &ViewCtx<'_>) -> String {
+fn label_of(variant: Variant, winnable: bool) -> String {
     let name = t(variant_label_key(variant));
-    if !ctx.settings.winnable_only {
+    if !winnable {
         name.into_owned()
     } else if slow_to_prove(variant) {
         tf("common.select.slow_search", &[("variant", &name)])
@@ -90,6 +102,29 @@ impl GameSelect {
         Self {
             seed: Some(seed),
             ..Self::default()
+        }
+    }
+
+    /// The list of "New game from seed": the game is chosen before its seed, and Enter names that
+    /// next step.
+    pub fn before_seed() -> Self {
+        Self {
+            purpose: Purpose::BeforeSeed,
+            ..Self::default()
+        }
+    }
+
+    /// Whether the winnable-deals toggle is offered. "New game from seed" does not offer it: the
+    /// game it lists is dealt from the seed chosen next, as typed, so the toggle would only mislead.
+    pub fn offers_winnable(&self) -> bool {
+        self.purpose == Purpose::Play
+    }
+
+    fn ring_len(&self) -> usize {
+        if self.offers_winnable() {
+            RING_LEN
+        } else {
+            RING_WITHOUT_WINNABLE
         }
     }
 
@@ -224,7 +259,11 @@ impl GameSelect {
             return Effect::None;
         }
         if key.code == KeyCode::Char(WINNABLE_KEY) && !self.captures_text() {
-            return Self::toggle_winnable(ctx);
+            return if self.offers_winnable() {
+                Self::toggle_winnable(ctx)
+            } else {
+                Effect::None
+            };
         }
         match action {
             Some(Action::Undo) => Self::toggle_undo(ctx),
@@ -236,7 +275,7 @@ impl GameSelect {
 
     fn handle_focused(&mut self, action: Action, ctx: &ViewCtx<'_>) -> Effect {
         if let Some(forward) = tab_forward(action) {
-            self.focus = step(self.focus, RING_LEN, forward);
+            self.focus = step(self.focus, self.ring_len(), forward);
             return Effect::None;
         }
         if self.focus != LIST {
@@ -260,7 +299,7 @@ impl GameSelect {
             self.focus = TOGGLE;
             return Self::toggle_undo(ctx);
         }
-        if pressed.is_some_and(|cell| contains(self.winnable, cell)) {
+        if self.offers_winnable() && pressed.is_some_and(|cell| contains(self.winnable, cell)) {
             self.focus = WINNABLE;
             return Self::toggle_winnable(ctx);
         }

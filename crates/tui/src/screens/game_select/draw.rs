@@ -9,9 +9,10 @@ use ratatui::widgets::Paragraph;
 use super::list::Content;
 use super::rows::{self, Row, items};
 use super::{
-    CHROME_ROWS, FOOTER, GameSelect, LIST, TOGGLE, WINNABLE, WINNABLE_KEY, hints, label_of, search,
-    toggles,
+    CHROME_ROWS, FOOTER, GameSelect, LIST, Purpose, TOGGLE, WINNABLE, WINNABLE_KEY, hints,
+    label_of, search, toggles,
 };
+use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::KeySpec;
 use crate::screens::ViewCtx;
@@ -19,25 +20,32 @@ use crate::theme::Token;
 use crate::widgets::footer::{self, Segment};
 use oxysol_core::Variant;
 
-fn footer_segments() -> Vec<Segment> {
-    let winnable = format!(
-        "{} {}",
-        KeySpec::ch(WINNABLE_KEY).display(),
-        t("menu.footer.winnable")
-    );
-    let mut segments = footer::key_segments(&FOOTER);
+fn footer_segments(purpose: Purpose, offers_winnable: bool) -> Vec<Segment> {
+    let mut hints = FOOTER;
+    if purpose == Purpose::BeforeSeed {
+        hints[0] = (Action::Select, "menu.footer.seed_options");
+    }
+    let mut segments = footer::key_segments(&hints);
     segments.push(Segment::plain("   "));
     segments.push(Segment::plain(format!("/ {}", t("menu.search.label"))));
-    segments.push(Segment::plain("   "));
-    segments.push(Segment::plain(winnable));
+    if offers_winnable {
+        let winnable = format!(
+            "{} {}",
+            KeySpec::ch(WINNABLE_KEY).display(),
+            t("menu.footer.winnable")
+        );
+        segments.push(Segment::plain("   "));
+        segments.push(Segment::plain(winnable));
+    }
     segments
 }
 
 impl GameSelect {
     fn title(&self) -> String {
-        match self.seed {
-            Some(seed) => tf("menu.select_seed", &[("seed", &seed.to_string())]),
-            None => t("common.select.title").into_owned(),
+        match (self.seed, self.purpose) {
+            (Some(seed), _) => tf("menu.select_seed", &[("seed", &seed.to_string())]),
+            (None, Purpose::BeforeSeed) => t("menu.seed.choose_game").into_owned(),
+            (None, Purpose::Play) => t("common.select.title").into_owned(),
         }
     }
 
@@ -52,7 +60,8 @@ impl GameSelect {
             search::draw_no_match(frame, area, self.query(), ctx);
             return;
         }
-        let label = |variant: Variant| label_of(variant, ctx);
+        let winnable = self.offers_winnable() && ctx.settings.winnable_only;
+        let label = |variant: Variant| label_of(variant, winnable);
         let content = Content {
             rows,
             favourites: &ctx.settings.favourites,
@@ -118,13 +127,19 @@ impl GameSelect {
             ctx.theme.style(Token::TextMuted, Token::Background),
         );
         frame.render_widget(Paragraph::new(hint).alignment(Alignment::Center), hint_area);
+        let offers_winnable = self.offers_winnable();
         self.toggle = toggles::draw_undo(frame, undo_area, self.focus == TOGGLE, ctx);
-        self.winnable = toggles::draw_winnable(frame, winnable_area, self.focus == WINNABLE, ctx);
-        toggles::draw_hints(frame, [undo_hint_area, winnable_hint_area], ctx);
+        self.winnable = if offers_winnable {
+            toggles::draw_winnable(frame, winnable_area, self.focus == WINNABLE, ctx)
+        } else {
+            Rect::default()
+        };
+        let winnable_hint = offers_winnable.then_some(winnable_hint_area);
+        toggles::draw_hints(frame, undo_hint_area, winnable_hint, ctx);
         self.footer = footer::draw(
             frame,
             footer_area,
-            &footer_segments(),
+            &footer_segments(self.purpose, offers_winnable),
             Alignment::Center,
             footer::key_style(ctx),
             ctx,
