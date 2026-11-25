@@ -9,12 +9,12 @@ Usage: oxysol [options]
 
 Options:
   --version                    print the version and license, and exit
-  --help                       print this help and exit
+  -h, --help                   print this help and exit
 
 Display:
   --ascii                      draw cards with ASCII characters only
   --colors <16|256|truecolor>  color depth of the terminal
-  --fullscreen                 start in full screen, whatever the setting says
+  -fs, --fullscreen            start in full screen, whatever the setting says
   --no-fullscreen              start in a window, whatever the setting says
 
 Game:

@@ -9,12 +9,12 @@ Aufruf: oxysol [Optionen]
 
 Optionen:
   --version                    Version und Lizenz ausgeben und beenden
-  --help                       diese Hilfe ausgeben und beenden
+  -h, --help                   diese Hilfe ausgeben und beenden
 
 Anzeige:
   --ascii                      Karten nur mit ASCII-Zeichen zeichnen
   --colors <16|256|truecolor>  Farbtiefe des Terminals
-  --fullscreen                 im Vollbild starten, unabhängig von Einstellungen
+  -fs, --fullscreen            im Vollbild starten, unabhängig von Einstellungen
   --no-fullscreen              im Fenster starten, unabhängig von Einstellungen
 
 Spiel:

@@ -81,13 +81,23 @@ fn help_prints_the_options_and_exits_zero() {
     let Some(home) = home else {
         return;
     };
-    let output = run_oxysol(&["--help"], home.path(), &[]);
-    let Some(output) = output else {
-        panic!("the binary did not start");
-    };
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(output.status.success(), "{:?}", output.status);
-    assert!(stdout.contains("--seed"), "stdout was {stdout:?}");
+    for flag in ["--help", "-h"] {
+        let output = run_oxysol(&[flag], home.path(), &[]);
+        let Some(output) = output else {
+            panic!("the binary did not start");
+        };
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        assert!(output.status.success(), "{flag}: {:?}", output.status);
+        assert!(stdout.contains("--seed"), "{flag}: stdout was {stdout:?}");
+        assert!(
+            stdout.contains("-h, --help"),
+            "{flag}: stdout was {stdout:?}"
+        );
+        assert!(
+            stdout.contains("-fs, --fullscreen"),
+            "{flag}: stdout was {stdout:?}"
+        );
+    }
 }
 
 #[test]

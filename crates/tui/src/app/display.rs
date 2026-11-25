@@ -140,7 +140,18 @@ impl App {
                     }
                 }
             }
-            Decision::Hint => state.name_key(facts.kind.hint_key()),
+            Decision::Hint => {
+                if !state.hinted {
+                    tracing::info!(
+                        kind = ?facts.kind,
+                        owns_window = facts.owns_window,
+                        setting = ?self.settings.full_screen,
+                        flag = ?facts.flag,
+                        "full screen is left to the terminal; naming its key instead"
+                    );
+                }
+                state.name_key(facts.kind.hint_key());
+            }
         }
     }
 

@@ -9,12 +9,12 @@ Gebruik: oxysol [opties]
 
 Opties:
   --version                    toon versie en licentie en sluit af
-  --help                       toon deze help en sluit af
+  -h, --help                   toon deze help en sluit af
 
 Weergave:
   --ascii                      toon kaarten alleen met ASCII-tekens
   --colors <16|256|truecolor>  kleurdiepte van de terminal
-  --fullscreen                 start schermvullend, ongeacht instelling
+  -fs, --fullscreen            start schermvullend, ongeacht instelling
   --no-fullscreen              start in venster, ongeacht instelling
 
 Spel:
