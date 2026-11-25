@@ -79,6 +79,68 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   history records the option, both locales; the winnable-deals option (P3-20) is either correct for the option or turned
   off for it, and the PR says which.
 
+### O-115 — Is it winnable? A check for the deal and for the current position
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-25.
+- **Depends on:** P5-05 (merged); moved to phase 6 on 2026-11-25 (owner: new solver features go to the next phase)
+- **Decision:** T-47
+- **Files:** `crates/core/src/solver/mod.rs` and the per-game `Position::from_piles` paths it already uses (a new entry
+  point that solves the current position), `crates/tui/src/solver.rs`, `crates/tui/src/app/deals.rs` or a new
+  `crates/tui/src/app/winnable.rs`, `crates/tui/src/input/table.rs`, `crates/tui/src/widgets/guide/**`,
+  `crates/tui/src/screens/board/{guide_view,moves_panel}.rs`, `crates/tui/src/widgets/overlay/{guide_window,moves_window}.rs`,
+  `src/` (the worker that answers the new query), `docs/tech/architecture.md` (solver contract),
+  `docs/tech/decisions.md` (T-47), `locales/*/{board,help}.toml`, tests
+- **Shared files:** `crates/tui/src/input.rs` if the key table needs it, `locales/en-US/*.toml`, `docs/tech/decisions.md`
+- **Problem:** the player cannot ask whether the deal is winnable, nor whether the game can still be won from where they
+  are now.
+- **Fix:**
+  - One action **Check: winnable?** that answers two questions at once:
+    - **This deal:** the stored proof of the deal (T-30) when there is one, otherwise a fresh check from the start.
+    - **From here:** a check of the current position (core gets an entry point that solves from the current piles and
+      counters, with the same models, budgets and replay rule as T-29).
+  - Each answer is **winnable**, **not winnable** (only after an exhausted search) or **unknown** (budget reached), with a
+    sign as well as colour (`✓`, `✗`, `?` and ASCII forms).
+  - It runs in the background through the `Solver` trait and never blocks input; a move, undo or new game cancels the
+    check of the old position and clears the answer. A variant without a solver says the check is not available.
+  - Where: a button in the guide panel and window (`g`) and in the moves panel and window (`v`), and the key `w` on the
+    board. The button and the key are listed in the guide, the help keys and the footer hints where they fit.
+  - The text says that "winnable" means solvable with every card known (T-29), so it is not a promise for a player who
+    cannot see the face-down cards.
+- **Open question for the owner (before dispatch):** does using the check mark the game in statistics (like a hint), or
+  not at all?
+- **Acceptance:** core tests: the new entry point returns the same verdict as `solve` on a fresh deal, finds a won line
+  from a mid-game position and replays it on the engine, and returns unknown on a tiny budget; TUI tests: `w` and both
+  buttons start the check, the answer appears with its sign, a move clears it, an answer for an old position is ignored;
+  the input never waits for the solver; every complete locale.
+
+
+### P6-10 — Hint and in-play check knowledge: full, or the player's with a stock memory
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-25.
+- **Depends on:** P5-07 (hint profiles, `HintKnowledge`), O-115 (in-play winnable check)
+- **Decision:** the orchestrator assigns one at dispatch
+- **Files:** `crates/core/src/games/progress.rs`, `crates/core/src/game.rs` (a hint call that takes the knowledge),
+  `crates/core/src/solver/**` (only the in-play position check of O-115), `crates/tui/src/settings.rs`,
+  `crates/tui/src/screens/settings/**` (Gameplay section), `crates/tui/src/widgets/overlay/quick_options.rs`,
+  the board hint call, `locales/*/{settings,board}.toml`, `docs/tech/architecture.md`, `docs/tech/decisions.md`, tests
+- **Shared files:** `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/en-US/*.toml`
+- **Problem:** a hint in play (P5-07) always uses the player's knowledge with a fixed stock memory of 3; the owner wants
+  it to be a choice.
+- **Fix:**
+  - Judging a seed, before or after a game (winnable deals, statistics check, the "this deal" answer of O-115), always
+    uses full knowledge. Unchanged.
+  - In play (hints and the "from here" answer of O-115) a setting chooses: **full knowledge** (every card, stock order
+    included) or **the player's knowledge** with a **stock memory** of 1 to N cards (default 3): the hint may use the
+    identity of at most that many stock cards the player has already seen, and nothing else hidden.
+  - A stock with fewer cards than the memory, or no stock at all, is handled: the memory is capped by what was seen.
+  - The setting is in Settings (Gameplay) and Quick options; an old settings file reads as the player's knowledge, 3.
+- **Acceptance:** core tests: with the player's knowledge no hint depends on a face-down card or an unseen stock card
+  (two deals that differ only in hidden cards give the same hint); the memory of 1, 3 and N with a long, short and
+  empty stock; full knowledge may differ. TUI tests: the setting changes the hint; every complete locale. The hints-only
+  table of T-48 measured for both knowledge modes.
+
 ## Developer testing infrastructure: headless backend and JSON-lines dev bridge
 
 Owner request 2026-11-21. An agent or a script drives the real application without a terminal: it sends one JSON command

@@ -4,20 +4,20 @@
 //! the whole list fits a 100 × 30 terminal.
 
 use ratatui::Frame;
-use ratatui::layout::{Alignment, Constraint, Layout, Rect};
+use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::style::Modifier;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Button, Geometry};
 use super::help_keys::HelpKeys;
-use super::tabs::{HelpTab, draw_top_tabs};
+use super::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs, help_footer_segments};
 use crate::action::{Action, HelpGroup};
 use crate::i18n::{t, tf};
 use crate::input::{KEY_TABLE, KeySpec, primary_key};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
-use crate::widgets::footer::{self, FooterMap, Segment};
+use crate::widgets::footer::FooterMap;
 use crate::widgets::scrollbar;
 
 const GAP: u16 = 4;
@@ -225,17 +225,6 @@ pub(super) fn geometry(area: Rect) -> Geometry {
     )
 }
 
-/// The footer of the keys tab: the two keys that close it, each a button.
-fn close_segments() -> Vec<Segment> {
-    let key = |action: Action| primary_key(action).unwrap_or_default();
-    vec![
-        Segment::button(Action::Back, key(Action::Back)),
-        Segment::plain(t("help.overlay.close_or")),
-        Segment::button(Action::Select, key(Action::Select)),
-        Segment::plain(t("help.overlay.close_rest")),
-    ]
-}
-
 /// Draws the help window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
@@ -255,30 +244,28 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) 
     .areas(body);
     let first = usize::from(state.scroll);
     let rows = usize::from(text.height);
-    let column = |sections: &[Section]| -> Vec<Line<'static>> {
-        columns
-            .lines(sections, ctx)
-            .into_iter()
-            .skip(first)
-            .take(rows)
-            .collect()
+    let left_lines = columns.lines(&columns.left, ctx);
+    let right_lines = columns.lines(&columns.right, ctx);
+    let total = left_lines.len().max(right_lines.len());
+    let shown = total.saturating_sub(first).min(rows);
+    let slice = |lines: Vec<Line<'static>>| -> Vec<Line<'static>> {
+        lines.into_iter().skip(first).take(rows).collect()
     };
     frame.render_widget(
-        Paragraph::new(column(&columns.left)).style(ctx.theme.surface()),
+        Paragraph::new(slice(left_lines)).style(ctx.theme.surface()),
         left,
     );
     frame.render_widget(
-        Paragraph::new(column(&columns.right)).style(ctx.theme.surface()),
+        Paragraph::new(slice(right_lines)).style(ctx.theme.surface()),
         right,
     );
     scrollbar::draw(frame, scrollbar::track_of(text), state.metrics(), ctx);
     draw_rule(frame, rule, ctx);
-    let buttons_drawn = footer::draw(
+    let buttons_drawn = draw_footer_buttons(
         frame,
         footer,
-        &close_segments(),
-        Alignment::Center,
-        ctx.theme.surface(),
+        &help_footer_segments(false),
+        (first + 1, first + shown, total),
         ctx,
     );
     dialog::draw_buttons(frame, &geometry, &buttons(), ctx);

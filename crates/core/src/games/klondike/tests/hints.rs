@@ -58,13 +58,23 @@ fn a_move_that_empties_a_column_beats_the_waste() {
 }
 
 #[test]
-fn the_waste_to_the_tableau_beats_a_king_and_the_stock() {
+fn the_waste_to_the_tableau_beats_the_stock() {
+    let mut game = table();
+    game.stock = cards("9S");
+    game.waste = cards("6D");
+    game.columns[0] = column("", "7S");
+    game.columns[1] = column("", "KH");
+    assert_hint(&game, Some(transfer(WASTE, tab(0), 1)));
+}
+
+#[test]
+fn turning_a_card_over_beats_a_waste_play() {
     let mut game = table();
     game.stock = cards("9S");
     game.waste = cards("6D");
     game.columns[0] = column("", "7S");
     game.columns[1] = column("9C", "KH");
-    assert_hint(&game, Some(transfer(WASTE, tab(0), 1)));
+    assert_hint(&game, Some(transfer(tab(1), tab(2), 1)));
 }
 
 #[test]

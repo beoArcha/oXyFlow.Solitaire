@@ -10,16 +10,16 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::content::{self, Kind, Row};
-use super::state::{Focus, HowToPlay, Rules};
-use crate::action::Action;
-use crate::i18n::{t, tf};
-use crate::input::primary_key;
+use super::state::{HowToPlay, Rules};
+use crate::i18n::t;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
-use crate::widgets::footer::{FooterMap, Segment};
+use crate::widgets::footer::FooterMap;
 use crate::widgets::overlay::dialog::{self, Geometry};
 use crate::widgets::overlay::help;
-use crate::widgets::overlay::tabs::{HelpTab, arrows, draw_footer_buttons, draw_top_tabs};
+use crate::widgets::overlay::tabs::{
+    HelpTab, arrows, draw_footer_buttons, draw_top_tabs, help_footer_segments,
+};
 use crate::widgets::scrollbar;
 
 /// Rows of the window that are not text: the borders, the button row, the top tab row, the game
@@ -110,22 +110,17 @@ pub fn tabs(row: Rect) -> Tabs {
 
 fn draw_tabs(frame: &mut Frame, row: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) {
     let placed = tabs(row);
-    let focused = state.focus == Focus::Games;
     let plain = ctx.theme.surface();
-    if focused {
-        let (left, right) = arrows(ctx);
-        frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
-        frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
-    }
+    let (left, right) = arrows(ctx);
+    frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
+    frame.render_widget(Paragraph::new(Line::styled(right, plain)), placed.next);
     for (rules, rect) in placed.games {
         let name = t(rules.name_key());
         let (text, style) = if rules == state.rules {
-            let selected = if focused {
-                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED)
-            } else {
-                plain
-            };
-            (format!("[{name}]"), selected)
+            (
+                format!("[{name}]"),
+                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED),
+            )
         } else {
             (format!(" {name} "), plain)
         };
@@ -151,54 +146,12 @@ fn line_of(row: &Row, ctx: &ViewCtx<'_>) -> Line<'static> {
     }
 }
 
-fn key_name(action: Action) -> String {
-    primary_key(action).unwrap_or_default()
-}
-
-fn footer_segments(focus: Focus) -> Vec<Segment> {
-    let move_keys = tf(
-        footer_key(focus),
-        &[
-            ("left", &key_name(Action::Left)),
-            ("right", &key_name(Action::Right)),
-            ("up", &key_name(Action::Up)),
-            ("down", &key_name(Action::Down)),
-        ],
-    );
-    vec![
-        Segment::plain(move_keys),
-        Segment::plain("   "),
-        Segment::button(Action::Back, close_label()),
-    ]
-}
-
-fn footer_key(focus: Focus) -> &'static str {
-    match focus {
-        Focus::Tabs => "help.rules.footer_tabs",
-        Focus::Games => "help.rules.footer_games",
-        Focus::Text => "help.rules.footer_text",
-    }
-}
-
-fn close_label() -> String {
-    tf(
-        "help.rules.footer_close",
-        &[("back", &key_name(Action::Back))],
-    )
-}
-
 /// Draws the window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
     dialog::draw_box(frame, &geometry, &t(state.title_key()), ctx);
     let parts = parts(geometry.body);
-    draw_top_tabs(
-        frame,
-        parts.top_tabs,
-        HelpTab::Rules,
-        state.focus == Focus::Tabs,
-        ctx,
-    );
+    draw_top_tabs(frame, parts.top_tabs, HelpTab::Rules, false, ctx);
     draw_tabs(frame, parts.game_tabs, state, ctx);
     let rows = content::rows(state.rules);
     let first = usize::from(state.scroll);
@@ -213,16 +166,6 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
         Paragraph::new(lines).style(ctx.theme.surface()),
         parts.text.inner(Margin::new(1, 0)),
     );
-    if state.focus == Focus::Text {
-        let mark = Line::styled(ctx.glyphs.focus_left, ctx.theme.surface());
-        frame.render_widget(
-            Paragraph::new(mark),
-            Rect {
-                height: 1,
-                ..parts.text
-            },
-        );
-    }
     scrollbar::draw(
         frame,
         scrollbar::track_of(parts.text),
@@ -233,7 +176,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     let buttons_drawn = draw_footer_buttons(
         frame,
         parts.footer,
-        &footer_segments(state.focus),
+        &help_footer_segments(true),
         (first + 1, first + shown, rows.len()),
         ctx,
     );

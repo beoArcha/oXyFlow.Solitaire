@@ -68,16 +68,12 @@ win_time = "Час: {time}"
 same_seed = "Те саме зерно"
 best_time = "Кращий час для {game}!"
 best_moves = "Найменше ходів для {game}!"
-close_or = " або "
-close_rest = " закриває це вікно."
 
 [rules]
 title = "Як грати"
 title_from_help = "Довідка · Правила"
 close = "Закрити [{key}]"
-footer_tabs = "{left}/{right}: вкладка   {down}: ігри"
-footer_games = "{left}/{right}: гра   {up}/{down}: фокус"
-footer_text = "{up}/{down}/PgUp/PgDn: прокрутка   {up} вгорі: ігри"
+footer_game = "{left}/{right}: гра"
 footer_close = "{back}: закрити"
 position = "{from}-{to} / {total}"
 
@@ -87,8 +83,8 @@ rules = "Правила"
 command_line = "Командний рядок"
 
 [command_line]
-footer_tab = "{key}: наступна вкладка"
-footer_move = "{up}/{down}/PgUp/PgDn: прокрутка"
+footer_tab = "{key}: вкладка"
+footer_move = "{up}/{down}/PgUp/PgDn: рух"
 footer_close = "{back}: закрити"
 
 [key]
