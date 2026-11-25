@@ -3,6 +3,9 @@
 mod back;
 mod board;
 mod color_vision;
+mod covered;
+mod covered_board;
+mod covered_games;
 mod dump;
 mod face_tint;
 mod faces;

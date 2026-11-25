@@ -714,7 +714,9 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
   `ThemeId::contrast_target()` (4.5, High Contrast 7.0).
 - **Readable card faces (P3-14, replaces the P3-13 pixel font):** `widgets/card/` is a module (`mod.rs` drawing,
-  labels and the three entry points `draw`, `draw_back_row`, `draw_fanned`, `draw_collapsed`; `frame.rs` borders;
+  labels and the entry points `draw`, `draw_back_row`, `draw_fanned`, `draw_collapsed` and `draw_covered` (a
+  card covered from below by the next one: its big centre pip is drawn only when the whole pip area is visible and
+  the card is not blocked, otherwise only its rank and suit, O-106); `frame.rs` borders;
   `mark.rs` `Mark` and `Hint`; `rows.rs` corner labels, marker symbols and the stock badge; `slot.rs` placeholders;
   `paint.rs` clipped painting; `face.rs` centre layout; `art.rs` suit pictograms). The rank is text, never a
   picture: a face-up card of 9x7, 11x9 or 13x11 draws one bold row `K ♣` (the localized corner label, one space,

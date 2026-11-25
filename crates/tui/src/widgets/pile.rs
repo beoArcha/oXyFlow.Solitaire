@@ -90,15 +90,17 @@ enum Cover {
     Free,
     /// The next card starts this many columns to the right (a fanned waste).
     Beside(u16),
-    /// The next card starts one row lower: only the top row shows.
-    OneRow,
+    /// The next card starts this many rows lower, covering the card from that row down.
+    Below(u16),
 }
 
 fn cover(geometry: &PileGeometry, index: usize) -> Cover {
     let rect = geometry.cards[index];
     match geometry.cards.get(index + 1) {
         Some(next) if next.y == rect.y && next.x > rect.x => Cover::Beside(next.x - rect.x),
-        Some(next) if next.x == rect.x && next.y == rect.y + 1 => Cover::OneRow,
+        Some(next) if next.x == rect.x && next.y > rect.y && next.y < rect.bottom() => {
+            Cover::Below(next.y - rect.y)
+        }
         _ => Cover::Free,
     }
 }
@@ -139,9 +141,10 @@ pub fn draw(
         };
         let mark = marks.mark(pile, index, len);
         match cover(geometry, index) {
-            Cover::OneRow if !table_card.face_up => card::draw_back_row(buf, rect, mark, ctx),
+            Cover::Below(1) if !table_card.face_up => card::draw_back_row(buf, rect, mark, ctx),
+            Cover::Below(visible) => card::draw_covered(buf, rect, visible, (face, mark), ctx),
             Cover::Beside(visible) => card::draw_fanned(buf, rect, visible, (face, mark), ctx),
-            _ => {
+            Cover::Free => {
                 let shown_badge = badge.filter(|_| index + 1 == len);
                 card::draw(buf, rect, face, mark, shown_badge, ctx);
             }
