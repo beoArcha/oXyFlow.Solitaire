@@ -80,6 +80,8 @@ fn the_seed_entry_marks_the_field_and_the_focused_button() {
         let mut h = harness(locale, caps, Vec::new());
         h.press(KeyCode::Tab);
         h.press(KeyCode::Enter);
+        h.press(KeyCode::Enter);
+        h.press(KeyCode::Enter);
         assert!(h.text().contains(&format!("{} [ _", marker(caps))));
         h.press(KeyCode::Tab);
         let continue_label = t("menu.seed.continue").into_owned();

@@ -29,7 +29,20 @@ yukon = "Toute carte visible se déplace avec les cartes posées dessus ; il n'y
 golf = "Joue les cartes des colonnes sur la défausse quand elles sont d'un rang plus haut ou plus bas."
 
 [seed]
-title = "Nouvelle partie avec graine"
+title_game = "Nouvelle partie avec graine : {game}"
+choose_game = "Nouvelle partie avec graine : choisir un jeu"
+options_prompt = "Choisissez l'origine de la graine."
+type_seed = "Saisir une graine"
+levels = "Niveaux de difficulté"
+levels_prompt = "Trois parties sélectionnées par niveau, de très facile à très difficile."
+levels_none = "Ce jeu n'a pas encore de parties sélectionnées."
+played = "Graines jouées"
+random_replay = "Rejeu au hasard"
+played_prompt = "Parties déjà jouées à ce jeu, de la plus récente à la plus ancienne."
+played_none = "Aucune partie de cette variante n'a encore été jouée."
+history_unreadable = "L'historique des parties n'a pas pu être lu, aucune partie ne peut donc être rejouée."
+played_row = "{when} · {result} · graine {seed}"
+level_seed = "{level} : {seed}"
 prompt = "Saisis une graine : un nombre entier de 0 à 18446744073709551615."
 continue = "Continuer"
 back = "Retour"
@@ -38,12 +51,20 @@ error_empty = "Saisis d'abord une graine."
 error_not_numeric = "Une graine est un nombre entier : utilise uniquement les chiffres 0 à 9."
 error_out_of_range = "Cette graine est trop grande. La plus grande graine est 18446744073709551615."
 
+[seed.level]
+very_easy = "Très facile"
+easy = "Facile"
+medium = "Moyen"
+hard = "Difficile"
+very_hard = "Très difficile"
+
 [how_to_play]
 label = "Comment jouer"
 
 [footer]
 open = "Ouvrir"
 play = "Jouer"
+seed_options = "Options de graine"
 language = "Langue"
 favorite = "Favori"
 winnable = "Donnes gagnables"

@@ -317,7 +317,7 @@ pub struct NullClipboard;                                // every copy fails wit
   each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
   that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `◄ ►` Change and `Shift+Tab / Tab: tab` as plain text, then `Enter` Change, O-96, O-103).
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
-  A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
+  A screen that types text reports it through `captures_text` (the typing page of the seed screen, and the game search): then a typed
   character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.
   `App` tells the board the terminal size (`BoardScreen::resize`) so cursor movement uses the drawn geometry.
 - **Modals:** while a modal is open it takes all input, and the board clock stops. `overlay::handle`
@@ -325,7 +325,7 @@ pub struct NullClipboard;                                // every copy fails wit
 - **Focus (P3-17):** `Action::FocusNext` (Tab) and `Action::FocusPrevious` (Shift+Tab, `KeyCode::BackTab`) are
   rows of `KEY_TABLE` (group Navigation), so the help window lists them. Every screen and dialog owns a focus
   ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
-  Rings: main menu language selector, then its items (initial focus stays on the first item); seed entry field, Continue, Back; game selection list, then the undo toggle; settings
+  Rings: main menu language selector, then its items (initial focus stays on the first item); New game from seed: its game list, then the seed options (type a seed, played seeds, random replay, difficulty levels); on the typing page the field, Continue, Back; game selection list, then the undo toggle; settings
   rows (by Up/Down within the active tab; Tab and Shift+Tab switch settings tabs, O-103); statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
   Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
   (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
@@ -361,6 +361,24 @@ pub struct NullClipboard;                                // every copy fails wit
   while the pointer (`ViewCtx::pointer`) is over the corner or the selector has the focus. A flag is data in `i18n/flags.rs`
   (`Flag { code, pixels }`); a new locale adds its flag there and names it in the locale list. Flag colors are
   content, not theme tokens (T-34).
+- **New game from seed (P5-06, T-49):** `main_menu.rs` asks for the game first: the item opens the game list in
+  `Purpose::BeforeSeed` (`GameSelect::before_seed`; its title is `menu.seed.choose_game`, and its Enter label is
+  `Seed options`). Enter on a game opens the seed screen of that variant (`main_menu/seed_screen.rs`, `SeedScreen`),
+  and no effect leaves the list. The game list of this flow does not offer the winnable-deals toggle (its `w` key does
+  nothing there): the seed chosen next is always dealt as typed. The seed screen's options, in order:
+  **Type a seed** (the typing page, `seed.rs`: the same validation, Continue and Back; Continue returns
+  `Effect::Start` with `Some(seed)`, as a typed seed always did); **Played seeds** (`seed_played.rs`: the games of that
+  variant in the history, newest first, one row per game named `1970-01-01 00:01 · Won · seed 10` in the statistics'
+  zone; with no game, or an unreadable history, the options show `menu.seed.played_none` or
+  `menu.seed.history_unreadable` and start nothing); **Random replay** (one of those played seeds, picked by
+  `SplitMix64` from a fresh seed, starts at once; with no game the same message, nothing starts); and **Difficulty
+  levels** (`seed_levels.rs`: the five levels of `oxysol_core::curated::seeds`, three seeds each, easiest first, one row
+  per seed named `Very easy: 1234`; while the table has no entry for the variant the page says `menu.seed.levels_none`
+  and starts nothing). Enter on a played seed or a level seed starts it. Esc or Back steps one page back: typing,
+  played seeds and levels to the options, the options to the game list, the game list to the menu items. The seeds
+  are read through a `Lookup` function, so tests give the screen seeds of their own. The app hands the menu the history
+  (`MainMenu::set_history`, from `App::refresh_menu_history`) each time the main menu is shown, with the fresh seed
+  drawn from `Deps::seeds` only while the history has a game to replay.
 - **How to play (P3-10, O-14, O-15):** `Modal::Help` (the keys table), `Modal::HowToPlay(HowToPlay { rules, scroll })`
   (the rules pages) and `Modal::CommandLine(CommandLine { scroll })` (the options of `oxysol --help`) form the help
   window (`widgets/overlay/`): three top tabs ("Keys", "Rules" and "Command line") switch between them by
@@ -542,7 +560,7 @@ pub struct NullClipboard;                                // every copy fails wit
   refuses `Action::Undo` and `Action::Redo` (status `board.status.undo_off`, an illegal-move cue), leaves
   them out of the `Do:` row and the guide panel and adds a "No undo" badge to the game information.
   `Settings::undo_allowed` (default `true`, an older value without the field loads as `true`) is the last
-  choice; the game selection (also behind "New game from seed" and `--seed`) shows `[ Undo: on|off ]`,
+  choice; the game selection (also the first step of "New game from seed", and of `--seed`) shows `[ Undo: on|off ]`,
   switched by `Action::Undo` (`u`) or a click, through `Effect::Apply`. A new game from the board keeps
   the mode of the running game; "Play this seed again" in the statistics replays the row's own mode.
   *Game menu (P4-09):* the game selection lists the variants under family headings in the fixed order of
@@ -817,9 +835,8 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `OXYSOL_LOG` and `$TERMINAL`; the plans are pure and unit-tested, only the spawn is not.
 - **Seeds (R-18):** the binary supplies fresh seeds through `Deps::seeds` (from
   `std::collections::hash_map::RandomState` mixed with the clock — no new dependency). `--seed <u64>`
-  (`Deps::start_seed`) opens the main menu on the game selection for that seed, the stage that
-  "New game from seed" reaches after a typed seed; the chosen variant starts the deal. Every other new
-  game takes a fresh seed. The board header shows the seed; the menu offers "New game from seed".
+  (`Deps::start_seed`) opens the main menu on the games dealt from that seed (`Stage::Variants`; Esc from them goes to
+  the menu items). "New game from seed" no longer reaches that stage. Every other new game takes a fresh seed. The board header shows the seed; the menu offers "New game from seed".
 - **Full screen (R-22, T-33):** `Settings::full_screen` is `Auto` (default), `On` or `Off`; `--fullscreen` and
   `--no-fullscreen` (`Cli::full_screen`) override it until the player changes the setting. `App` asks the pure
   `settings::decide(setting, flag, owns_window, kind)` at start and on every change of the setting and calls the

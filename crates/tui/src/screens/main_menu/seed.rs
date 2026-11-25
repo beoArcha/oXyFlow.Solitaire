@@ -1,6 +1,7 @@
-//! The seed entry stage of the main menu: a field that takes decimal digits, the validation of
-//! what was typed, and the two buttons that submit or leave it. Tab visits the field, Continue and
-//! Back in that order and wraps. Typed digits go to the field only while the field has the focus.
+//! The typing page of the seed screen (after a game is chosen): a field that takes decimal digits,
+//! the validation of what was typed, and the two buttons that submit or leave it. Tab visits the
+//! field, Continue and Back in that order and wraps. Typed digits go to the field only while the
+//! field has the focus.
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseEvent};
@@ -91,14 +92,6 @@ pub struct SeedField {
 }
 
 impl SeedField {
-    /// A field that already holds `seed`, used when coming back from the game selection.
-    pub fn with_seed(seed: u64) -> Self {
-        Self {
-            text: seed.to_string(),
-            ..Self::default()
-        }
-    }
-
     /// Whether the field has the focus, so that typed characters are its text.
     pub fn captures_text(&self) -> bool {
         self.stop() == Stop::Field
@@ -186,8 +179,9 @@ impl SeedField {
         }
     }
 
-    /// Draws the title, the field, the message, the buttons and the key line.
-    pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
+    /// Draws the title (the game and the seed prompt), the field, the message, the buttons and the
+    /// key line.
+    pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>, title: &str) {
         let [
             _,
             title_area,
@@ -213,7 +207,7 @@ impl SeedField {
         ])
         .areas(area);
         let accent = ctx.theme.style(Token::Accent, Token::Background);
-        draw_line(frame, title_area, &t("menu.seed.title"), accent);
+        draw_line(frame, title_area, title, accent);
         draw_line(frame, prompt_area, &t("menu.seed.prompt"), ctx.theme.base());
         self.draw_field(frame, field_area, ctx);
         let message = self.error.map(|error| t(error.message_key()).into_owned());

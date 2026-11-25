@@ -100,6 +100,7 @@ pub struct App {
     modal: Option<Modal>,
     dock: overlay::dock::DockState,
     menu: MainMenu,
+    zone: Zone,
     select: GameSelect,
     settings_screen: SettingsScreen,
     stats: StatsScreen,
@@ -164,6 +165,7 @@ impl App {
             modal: None,
             dock: overlay::dock::DockState::default(),
             menu: MainMenu::start(start_seed, version),
+            zone,
             select: GameSelect::new(),
             settings_screen: SettingsScreen::new(),
             stats: StatsScreen::new(zone),
@@ -175,6 +177,7 @@ impl App {
             quit: false,
         };
         app.load_stored_state();
+        app.refresh_menu_history();
         app.fit_sound_style();
         app.fit_card_styles();
         app.sync_console_look();

@@ -28,9 +28,12 @@ fn selector_focused(h: &mut Harness) -> bool {
             .any(|loc| h.text().contains(loc.own_name()))
 }
 
+/// The typing page of "New game from seed": the item, the first game, then "Type a seed".
 fn seed_entry() -> Harness {
     let mut h = Harness::new();
     h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::Enter);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::MainMenu);
     h
@@ -194,15 +197,14 @@ fn typed_digits_go_to_the_field_only_while_it_has_the_focus() {
 }
 
 #[test]
-fn enter_on_continue_submits_the_seed_and_enter_again_deals_the_game() {
+fn enter_on_continue_deals_the_typed_seed_of_the_chosen_game() {
     let mut h = seed_entry();
     for digit in "771".chars() {
         h.type_char(digit);
     }
     h.press(KeyCode::Tab);
     h.press(KeyCode::Enter);
-    assert!(h.text().contains("Choose a game for seed 771"));
-    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Board);
     assert_eq!(h.app.board().session().map(|s| s.seed()), Some(771));
 }
 
@@ -212,21 +214,21 @@ fn space_presses_the_focused_continue_button() {
     h.type_char('5');
     h.press(KeyCode::Tab);
     h.type_char(' ');
-    assert!(h.text().contains("Choose a game for seed 5"));
+    assert_eq!(h.app.screen(), Screen::Board);
+    assert_eq!(h.app.board().session().map(|s| s.seed()), Some(5));
 }
 
 #[test]
-fn back_returns_to_the_menu_items_by_enter_and_by_space() {
+fn back_on_the_typing_page_returns_to_the_options_then_to_the_items() {
     let mut h = seed_entry();
     h.press(KeyCode::Tab);
     h.press(KeyCode::Tab);
     h.press(KeyCode::Enter);
-    assert!(h.text().contains(STATISTICS));
+    assert!(h.text().contains("Difficulty levels"));
     assert_eq!(h.app.screen(), Screen::MainMenu);
-    h.press(KeyCode::Enter);
-    h.press(KeyCode::Tab);
-    h.press(KeyCode::Tab);
-    h.type_char(' ');
+    h.press(KeyCode::Esc);
+    assert!(h.text().contains("choose a game"));
+    h.press(KeyCode::Esc);
     assert!(h.text().contains(STATISTICS));
     assert_eq!(h.app.screen(), Screen::MainMenu);
 }
@@ -252,6 +254,8 @@ fn the_seed_entry_marks_its_focus_in_ascii_and_in_polish() {
     };
     let mut h = Harness::with(storage, PLAIN, 100, 30);
     h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::Enter);
     h.press(KeyCode::Enter);
     assert!(h.text().contains("> [ _"));
     h.press(KeyCode::Tab);

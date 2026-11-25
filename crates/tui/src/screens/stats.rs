@@ -15,6 +15,8 @@ mod time;
 mod view;
 
 pub use self::check::Target;
+pub(crate) use self::format::outcome_label;
+pub(crate) use self::time::format_date_time;
 
 #[cfg(test)]
 mod tests;

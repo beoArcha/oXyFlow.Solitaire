@@ -31,7 +31,7 @@ fn format_count(value: Option<u32>) -> String {
     value.map_or_else(|| NONE.to_owned(), |count| count.to_string())
 }
 
-fn outcome_label(outcome: Option<Outcome>) -> String {
+pub(crate) fn outcome_label(outcome: Option<Outcome>) -> String {
     let key = match outcome {
         Some(Outcome::Won) => "stats.outcome.won",
         Some(Outcome::Abandoned) => "stats.outcome.abandoned",

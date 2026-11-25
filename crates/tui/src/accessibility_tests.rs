@@ -128,11 +128,10 @@ const MENU_KEYS: [&str; 7] = [
 fn check_menu_outcome(key: &str, h: &mut Harness) {
     match key {
         "common.menu.new_game" => assert_eq!(h.app.screen(), Screen::GameSelect),
-        "menu.new_game_from_seed" => {
-            h.type_char('4');
-            h.type_char('2');
-            assert!(h.text().contains("42"), "seed field takes digits");
-        }
+        "menu.new_game_from_seed" => assert!(
+            h.text().contains(&t("menu.seed.choose_game").into_owned()),
+            "the seed item opens the game list"
+        ),
         "stats.label" => assert_eq!(h.app.screen(), Screen::Stats),
         "common.menu.settings" => assert_eq!(h.app.screen(), Screen::Settings),
         "menu.how_to_play.label" => assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_)))),
@@ -205,6 +204,8 @@ fn every_variant_is_reached_and_dealt_by_keyboard() {
 #[test]
 fn a_seed_typed_by_keyboard_deals_the_chosen_variant() {
     let mut h = menu_at(menu_index("menu.new_game_from_seed"));
+    h.press(KeyCode::Enter);
+    h.press(KeyCode::Enter);
     h.press(KeyCode::Enter);
     for digit in "771".chars() {
         h.type_char(digit);
