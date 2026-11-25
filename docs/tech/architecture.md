@@ -724,9 +724,10 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the card is not blocked, otherwise only its rank and suit, O-106); `frame.rs` borders;
   `mark.rs` `Mark` and `Hint`; `rows.rs` corner labels, marker symbols and the stock badge; `slot.rs` placeholders;
   `paint.rs` clipped painting; `face.rs` centre layout; `art.rs` suit pictograms). The rank is text, never a
-  picture: a face-up card of 9x7, 11x9 or 13x11 draws one bold row `K ♣` (the localized corner label, one space,
-  the suit symbol; two spaces at 13x11) in the suit color at the top of its interior, with the suit pictogram
-  below it (5x2 at 9x7, 5x3 at 11x9, 7x4 at 13x11); 7x5 keeps the single suit symbol. The corner labels stay in
+  picture: a face-up card of 9x7 draws one bold row `K ♣` (the localized corner label, one space, the suit symbol)
+  in the suit color at the top of its interior, with the 5x2 suit pictogram below it; 11x9 and 13x11 draw no such
+  row (O-99, owner decision): the corner labels carry rank and suit and the 7x4 pictogram takes the interior,
+  centred at 13x11; a covered card of these sizes shows its corner label only; 7x5 keeps the single suit symbol. The corner labels stay in
   the top-left and bottom-right corners. Unicode art uses only WGL4 characters, ASCII art only printable ASCII;
   the ASCII suits are lowercase `c d h s`, so the Polish queen of diamonds is `Dd`, not `DD`. No two ranks render
   the same at any size, in both locales and both glyph modes (tested).

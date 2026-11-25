@@ -309,3 +309,52 @@ fn a_front_gives_its_suits_the_card_colors_of_the_theme() {
         }
     }
 }
+
+const LARGEST_SIZES: [(u16, u16); 2] = [(11, 9), (13, 11)];
+
+#[test]
+fn the_rank_stays_readable_in_the_corners_of_the_two_largest_cards_in_every_front_and_mode() {
+    for id in front_ids() {
+        for mode in ALL_MODES {
+            let fixture = Fixture::styled(mode, &id, "lattice");
+            for size in LARGEST_SIZES {
+                for face in every_card() {
+                    let lines = card_lines(&fixture, size, face);
+                    let corner = label(face, &fixture.glyphs);
+                    let case = format!("{id} {mode:?} {size:?} {corner}");
+                    assert!(lines[0].contains(&corner), "{case}: {}", lines[0]);
+                    assert!(lines[lines.len() - 1].contains(&corner), "{case}");
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn a_covered_card_of_the_two_largest_sizes_keeps_its_rank_and_suit_in_the_corner() {
+    for id in front_ids() {
+        for mode in ALL_MODES {
+            let fixture = Fixture::styled(mode, &id, "lattice");
+            for size in LARGEST_SIZES {
+                for face in every_card() {
+                    for visible in 1..size.1 {
+                        let area = Rect::new(0, 0, size.0, size.1);
+                        let mut buf = Buffer::empty(area);
+                        draw_covered(
+                            &mut buf,
+                            area,
+                            visible,
+                            (Face::Up(face), Mark::default()),
+                            &fixture.ctx(),
+                        );
+                        let lines = rows(&buf, area);
+                        let corner = label(face, &fixture.glyphs);
+                        let case = format!("{id} {mode:?} {size:?} {corner} visible={visible}");
+                        let top: String = lines[0].chars().skip(1).collect();
+                        assert!(top.starts_with(&corner), "{case}: {}", lines[0]);
+                    }
+                }
+            }
+        }
+    }
+}

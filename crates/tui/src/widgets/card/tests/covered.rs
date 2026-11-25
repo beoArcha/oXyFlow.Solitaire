@@ -21,8 +21,7 @@ fn sample_cards() -> [Card; 4] {
 
 fn pip_scale(size: (u16, u16)) -> Option<Scale> {
     match size {
-        (13, 11) => Some(Scale::Large),
-        (11, 9) => Some(Scale::Medium),
+        (13, 11) | (11, 9) => Some(Scale::Large),
         (9, 7) => Some(Scale::Small),
         _ => None,
     }
@@ -30,7 +29,7 @@ fn pip_scale(size: (u16, u16)) -> Option<Scale> {
 
 fn pip_bottom(size: (u16, u16)) -> u16 {
     match size {
-        (13, 11) => 8,
+        (13, 11) => 7,
         (11, 9) => 6,
         (9, 7) => 5,
         _ => 3,
@@ -100,7 +99,7 @@ fn assert_header_readable(
         "{what}: corner {corner:?} missing in {:?}",
         lines[0]
     );
-    if visible_rows >= 2 && size.0 >= 9 {
+    if visible_rows >= 2 && size.0 >= 9 && size.1 < 9 {
         let rank = rank_in(c.rank, glyphs);
         let suit = glyphs.suit(c.suit);
         assert!(
