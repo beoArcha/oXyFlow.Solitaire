@@ -191,6 +191,8 @@ deal_row = "repartir fila"
 undo_redo = "deshacer / rehacer"
 copy_seed = "copiar semilla"
 hint = "pista"
+new_game = "nueva partida"
+new_game_button = "[{key}: {label}]"
 rules = "cómo jugar"
 help = "todas las teclas"
 

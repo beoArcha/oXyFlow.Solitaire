@@ -1,21 +1,24 @@
 //! The guide panel beside the board: a framed panel with its title in the top border, a `Game`
-//! compartment with the game information on top, then the `Goal`, `Keys`, `Mouse` and `Legend`
-//! sections. It never repeats a fact of the controls strip under the board: what is focused and
+//! compartment with the game information and the new game button on top, then the `Goal`, `Keys`,
+//! `Mouse` and `Legend` sections. The `n` row of the `Keys` section is the first thing a short panel
+//! drops. It never repeats a fact of the controls strip under the board: what is focused and
 //! what can be done now live there, the panel holds the game facts and the fixed reference.
 
 mod keys;
 mod legend;
+pub mod new_game;
 #[cfg(test)]
 mod tests;
 
 use oxysol_core::Variant;
 use ratatui::buffer::Buffer;
-use ratatui::layout::Rect;
+use ratatui::layout::{Alignment, Rect};
 use ratatui::style::Modifier;
 use ratatui::symbols::border;
 use ratatui::text::Line;
 use ratatui::widgets::{Block, Paragraph, Widget};
 
+use super::footer::{self, Segment};
 use super::text::clip;
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -96,13 +99,28 @@ fn section(key: &str, body: Vec<Line<'static>>, ctx: &ViewCtx<'_>) -> Vec<Line<'
     lines
 }
 
-/// A section with the rank at which a short panel drops it: 0 is never dropped, a higher rank goes
-/// first.
-type Ranked = (u8, Vec<Line<'static>>);
+/// A part of the panel: its lines, the rank at which a short panel drops it (0 is never dropped, a
+/// higher rank goes first), and whether it continues the part above it, with no blank row between.
+struct Part {
+    rank: u8,
+    glued: bool,
+    lines: Vec<Line<'static>>,
+}
 
-fn sections(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Ranked> {
+impl Part {
+    fn new(rank: u8, lines: Vec<Line<'static>>) -> Self {
+        Self {
+            rank,
+            glued: false,
+            lines,
+        }
+    }
+}
+
+fn sections(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Part> {
+    let (keys, new_game) = without_last(keys::keys(guide, width, ctx));
     vec![
-        (
+        Part::new(
             0,
             section(
                 "board.guide.goal_title",
@@ -110,11 +128,13 @@ fn sections(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Ranked> {
                 ctx,
             ),
         ),
-        (
-            0,
-            section("board.guide.keys_title", keys::keys(guide, width, ctx), ctx),
-        ),
-        (
+        Part::new(0, section("board.guide.keys_title", keys, ctx)),
+        Part {
+            rank: 3,
+            glued: true,
+            lines: new_game,
+        },
+        Part::new(
             2,
             section(
                 "board.guide.mouse_title",
@@ -122,30 +142,36 @@ fn sections(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Ranked> {
                 ctx,
             ),
         ),
-        (
+        Part::new(
             1,
             section("board.guide.legend_title", legend::lines(width, ctx), ctx),
         ),
     ]
 }
 
-/// The sections that fit `rows` rows: the mouse section goes first and the legend next, so a
-/// short panel never shows a heading without its lines.
-fn fitted(mut sections: Vec<Ranked>, rows: usize) -> Vec<Vec<Line<'static>>> {
-    let total = |sections: &[Ranked]| sections.iter().map(|(_, lines)| lines.len()).sum::<usize>();
-    while total(&sections) > rows {
-        let Some(index) = sections
+/// The lines without their last one, and that last one, which is the `n` row of the `Keys` list.
+fn without_last(mut lines: Vec<Line<'static>>) -> (Vec<Line<'static>>, Vec<Line<'static>>) {
+    let last = lines.split_off(lines.len().saturating_sub(1));
+    (lines, last)
+}
+
+/// The parts that fit `rows` rows: the `n` row goes first, then the mouse section and the legend,
+/// so a short panel never shows a heading without its lines.
+fn fitted(mut parts: Vec<Part>, rows: usize) -> Vec<Part> {
+    let total = |parts: &[Part]| parts.iter().map(|part| part.lines.len()).sum::<usize>();
+    while total(&parts) > rows {
+        let Some(index) = parts
             .iter()
             .enumerate()
-            .filter(|(_, (rank, _))| *rank > 0)
-            .max_by_key(|(_, (rank, _))| *rank)
+            .filter(|(_, part)| part.rank > 0)
+            .max_by_key(|(_, part)| part.rank)
             .map(|(index, _)| index)
         else {
             break;
         };
-        sections.remove(index);
+        parts.remove(index);
     }
-    sections.into_iter().map(|(_, lines)| lines).collect()
+    parts
 }
 
 /// Every line of the guide, for the window: the `Game` facts, then every section, a blank row
@@ -153,25 +179,26 @@ fn fitted(mut sections: Vec<Ranked>, rows: usize) -> Vec<Vec<Line<'static>>> {
 pub fn window_lines(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
     let mut game = vec![heading("board.guide.game_title", ctx)];
     game.extend(guide.game.iter().cloned());
-    let mut all = vec![game];
-    all.extend(
-        sections(guide, width, ctx)
-            .into_iter()
-            .map(|(_, lines)| lines),
-    );
+    let mut all = vec![Part::new(0, game)];
+    all.extend(sections(guide, width, ctx));
     stacked(all, usize::MAX)
 }
 
-/// The sections one after another, with a blank row between them when all of them still fit.
-fn stacked(sections: Vec<Vec<Line<'static>>>, rows: usize) -> Vec<Line<'static>> {
-    let total: usize = sections.iter().map(Vec::len).sum();
-    let spaced = total + sections.len().saturating_sub(1) <= rows;
+/// The parts one after another, with a blank row between them when all of them still fit.
+fn stacked(parts: Vec<Part>, rows: usize) -> Vec<Line<'static>> {
+    let total: usize = parts.iter().map(|part| part.lines.len()).sum();
+    let gaps = parts
+        .iter()
+        .filter(|part| !part.glued)
+        .count()
+        .saturating_sub(1);
+    let spaced = total + gaps <= rows;
     let mut lines = Vec::new();
-    for (index, body) in sections.into_iter().enumerate() {
-        if spaced && index > 0 {
+    for (index, part) in parts.into_iter().enumerate() {
+        if spaced && index > 0 && !part.glued {
             lines.push(Line::raw(String::new()));
         }
-        lines.extend(body);
+        lines.extend(part.lines);
     }
     lines
 }
@@ -218,8 +245,8 @@ fn draw_rule(buf: &mut Buffer, area: Rect, row: u16, ctx: &ViewCtx<'_>) {
     }
 }
 
-/// Draws the panel into `area`: the frame, the `Game` compartment, a rule, then the sections,
-/// cut at the bottom when the panel is shorter than they are.
+/// Draws the panel into `area`: the frame, the `Game` compartment with its new game button, a
+/// rule, then the sections, cut at the bottom when the panel is shorter than they are.
 pub fn draw(buf: &mut Buffer, area: Rect, guide: &Guide<'_>, ctx: &ViewCtx<'_>) {
     if area.width <= 2 * SIDE || area.height <= FRAME_ROWS {
         return;
@@ -237,6 +264,11 @@ pub fn draw(buf: &mut Buffer, area: Rect, guide: &Guide<'_>, ctx: &ViewCtx<'_>) 
         rule.min(last) - area.y - 1,
     );
     Paragraph::new(game).render(top, buf);
+    if let Some(rect) = new_game::button(area) {
+        let segments = [Segment::button(Action::NewGame, new_game::text())];
+        let base = ctx.theme.style(Token::Text, Token::Surface);
+        footer::draw_to(buf, rect, &segments, Alignment::Left, base, ctx);
+    }
     if rule + 1 >= last {
         return;
     }
@@ -247,6 +279,6 @@ pub fn draw(buf: &mut Buffer, area: Rect, guide: &Guide<'_>, ctx: &ViewCtx<'_>) 
         ctx,
     );
     let rest = Rect::new(top.x, rule + 1, top.width, last - rule - 1);
-    let sections = fitted(sections(guide, width, ctx), usize::from(rest.height));
-    Paragraph::new(stacked(sections, usize::from(rest.height))).render(rest, buf);
+    let parts = fitted(sections(guide, width, ctx), usize::from(rest.height));
+    Paragraph::new(stacked(parts, usize::from(rest.height))).render(rest, buf);
 }
