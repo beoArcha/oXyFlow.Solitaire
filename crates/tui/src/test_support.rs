@@ -15,7 +15,7 @@ use ratatui::crossterm::event::{
 };
 use ratatui::layout::{Position, Rect};
 
-use crate::app::{App, Deps, DisplayDeps};
+use crate::app::{App, Deps, DisplayDeps, Zone};
 use crate::audio::{Audio, AudioSettings, AudioStatus, SoundCue, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::clipboard::{Clipboard, ClipboardError};
@@ -251,16 +251,35 @@ impl Harness {
 
     /// A harness whose application was started with the command-line seed `seed`.
     pub fn starting_at_seed(seed: u64) -> Self {
-        Self::build(MemoryStorage::new(), TRUE_COLOR, 120, 40, Some(seed), None)
+        Self::build(
+            MemoryStorage::new(),
+            TRUE_COLOR,
+            120,
+            40,
+            Some(seed),
+            None,
+            Zone::Utc,
+        )
     }
 
     /// A harness whose application was given `display` for the full-screen switch.
     pub fn with_display(storage: MemoryStorage, display: DisplayDeps) -> Self {
-        Self::build(storage, TRUE_COLOR, 120, 40, None, Some(display))
+        Self::build(storage, TRUE_COLOR, 120, 40, None, Some(display), Zone::Utc)
     }
 
     pub fn with(storage: MemoryStorage, caps: TerminalCaps, width: u16, height: u16) -> Self {
-        Self::build(storage, caps, width, height, None, None)
+        Self::build(storage, caps, width, height, None, None, Zone::Utc)
+    }
+
+    /// Like [`Harness::with`], with the statistics history shown in `zone`.
+    pub fn with_zone(
+        storage: MemoryStorage,
+        caps: TerminalCaps,
+        width: u16,
+        height: u16,
+        zone: Zone,
+    ) -> Self {
+        Self::build(storage, caps, width, height, None, None, zone)
     }
 
     fn build(
@@ -270,6 +289,7 @@ impl Harness {
         height: u16,
         start_seed: Option<u64>,
         display: Option<DisplayDeps>,
+        zone: Zone,
     ) -> Self {
         let storage = Rc::new(RefCell::new(storage));
         let audio = Rc::new(RefCell::new(AudioLog::default()));
@@ -290,6 +310,7 @@ impl Harness {
             solver: Box::new(StubSolver(Rc::clone(&solver))),
             display: display.unwrap_or_else(DisplayDeps::none),
             version: TEST_VERSION,
+            zone,
         });
         Self {
             app,

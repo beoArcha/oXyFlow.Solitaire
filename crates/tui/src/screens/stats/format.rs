@@ -3,6 +3,8 @@
 use std::time::Duration;
 
 use super::summary::Summary;
+use super::time::format_date_time;
+use crate::app::Zone;
 use crate::clock::format_elapsed;
 use crate::glyphs::Glyphs;
 use crate::i18n::t;
@@ -15,31 +17,7 @@ use oxysol_core::Variant;
 const NONE: &str = "-";
 /// The first column that is right-aligned: the counts and times, not the texts.
 const FIRST_RIGHT_COLUMN: usize = 5;
-const MILLIS_PER_DAY: i64 = 86_400_000;
-const MILLIS_PER_MINUTE: i64 = 60_000;
 const COLUMN_GAP: &str = " ";
-
-/// Year, month and day of a day count since 1970-01-01 in the proleptic Gregorian calendar.
-fn civil_date(days: i64) -> (i64, i64, i64) {
-    let shifted = days + 719_468;
-    let era = shifted.div_euclid(146_097);
-    let doe = shifted.rem_euclid(146_097);
-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mi = (5 * doy + 2) / 153;
-    let day = doy - (153 * mi + 2) / 5 + 1;
-    let mo = if mi < 10 { mi + 3 } else { mi - 9 };
-    (yoe + era * 400 + i64::from(mo <= 2), mo, day)
-}
-
-/// `YYYY-MM-DD HH:MM` in UTC for Unix milliseconds. The standard library cannot convert to the
-/// local time zone, so the history is shown in UTC and its heading says so.
-pub fn format_utc(unix_ms: i64) -> String {
-    let days = unix_ms.div_euclid(MILLIS_PER_DAY);
-    let m = unix_ms.rem_euclid(MILLIS_PER_DAY) / MILLIS_PER_MINUTE;
-    let (y, mo, d) = civil_date(days);
-    format!("{y:04}-{mo:02}-{d:02} {:02}:{:02}", m / 60, m % 60)
-}
 
 /// `m:ss` or `h:mm:ss`; `-` when unknown.
 pub fn format_time(elapsed_ms: Option<u64>) -> String {
@@ -217,7 +195,8 @@ pub fn summary_lines(summaries: &[Summary], show_mode: bool, with_longest: bool)
 }
 
 /// The widest possible cell of each history column, so that the columns keep their place while
-/// the list scrolls: the longest variant name, outcome label, time and count.
+/// the list scrolls: the longest variant name, outcome label, time and count. Every date has the
+/// same width in every zone, so the date floor needs no zone.
 fn history_floor(glyphs: &Glyphs, short: bool) -> Vec<String> {
     let outcomes = [Some(Outcome::Won), Some(Outcome::Abandoned), None].map(outcome_label);
     let proofs = [
@@ -261,9 +240,9 @@ fn history_header_cells(short: bool) -> Vec<String> {
     .collect()
 }
 
-fn history_cells(record: &GameRecord, glyphs: &Glyphs, short: bool) -> Vec<String> {
+fn history_cells(record: &GameRecord, glyphs: &Glyphs, short: bool, zone: Zone) -> Vec<String> {
     vec![
-        format_utc(record.started_at_ms),
+        format_date_time(record.started_at_ms, zone),
         variant_label(record.variant),
         record.seed.to_string(),
         winnable_cell(record.proof, glyphs, short),
@@ -303,9 +282,14 @@ pub fn history_header(glyphs: &Glyphs, short: bool) -> String {
 
 /// The cells of one history row, each padded to its column, without the focus marker columns. The
 /// screen styles the [`RESULT_COLUMN`] cell by the result.
-pub fn history_columns(record: &GameRecord, glyphs: &Glyphs, short: bool) -> Vec<String> {
+pub fn history_columns(
+    record: &GameRecord,
+    glyphs: &Glyphs,
+    short: bool,
+    zone: Zone,
+) -> Vec<String> {
     pad_cells(
-        &history_cells(record, glyphs, short),
+        &history_cells(record, glyphs, short, zone),
         &history_widths(glyphs, short),
         FIRST_RIGHT_COLUMN,
     )

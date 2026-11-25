@@ -9,10 +9,11 @@ mod screen;
 mod scrollbar;
 mod support;
 mod winnable;
+mod zone;
 
 use oxysol_core::{DrawCount, Variant};
 
-use super::format::{format_time, format_utc, history_header};
+use super::format::{format_time, history_header};
 use crate::glyphs::Glyphs;
 use crate::settings::GlyphMode;
 use crate::storage::{GameCounters, GameId, GameRecord, Outcome};
@@ -40,15 +41,6 @@ pub fn record(
         proof: None,
         counters: GameCounters::default(),
     }
-}
-
-#[test]
-fn utc_dates_are_formatted_without_a_dependency() {
-    assert_eq!(format_utc(0), "1970-01-01 00:00");
-    assert_eq!(format_utc(1_700_000_000_000), "2023-11-14 22:13");
-    assert_eq!(format_utc(951_782_400_000), "2000-02-29 00:00");
-    assert_eq!(format_utc(-1), "1969-12-31 23:59");
-    assert_eq!(format_utc(4_102_444_799_000), "2099-12-31 23:59");
 }
 
 #[test]

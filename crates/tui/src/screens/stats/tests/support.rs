@@ -1,7 +1,7 @@
 use oxysol_core::{DrawCount, Variant};
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseEvent, MouseEventKind};
 
-use crate::app::Screen;
+use crate::app::{Screen, Zone};
 use crate::glyphs::Glyphs;
 use crate::input::Input;
 use crate::screens::stats::format::history_columns;
@@ -14,7 +14,7 @@ pub(super) const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
 pub(super) const STATISTICS_ITEM: usize = 2;
 
 pub(super) fn history_row(record: &GameRecord, glyphs: &Glyphs, short: bool) -> String {
-    history_columns(record, glyphs, short).join(" ")
+    history_columns(record, glyphs, short, Zone::Utc).join(" ")
 }
 
 pub(super) fn row(

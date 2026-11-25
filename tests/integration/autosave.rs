@@ -13,6 +13,7 @@ use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::{
     App, AssistCounters, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio,
     NullClipboard, NullSolver, Outcome, Proof, SavedGame, Screen, Settings, Storage, StorageError,
+    Zone,
 };
 use rusqlite::Connection;
 use tempfile::TempDir;
@@ -64,6 +65,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
         solver: Box::new(NullSolver::default()),
         display: DisplayDeps::none(),
         version: "0.0.0-test",
+        zone: Zone::Utc,
     });
     Player {
         app,

@@ -36,7 +36,8 @@ longest = "Mejor racha"
 assisted = "Asist."
 
 [history]
-title = "Historial, más reciente primero, hora en UTC"
+title_utc = "Historial, más reciente primero, hora en UTC"
+title_local = "Historial, más reciente primero, hora local"
 date = "Fecha"
 variant = "Juego"
 seed = "Semilla"

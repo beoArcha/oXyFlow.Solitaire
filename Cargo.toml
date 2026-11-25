@@ -30,6 +30,7 @@ rusqlite.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
+time.workspace = true
 toml.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
@@ -69,6 +70,7 @@ proc-macro2 = { version = "1.0.107", features = ["span-locations"] }
 toml_edit = "0.25.19"
 ra-ap-rustc_lexer = "0.185.0"
 tempfile = "3.27.0"
+time = { version = "0.3.55", features = ["local-offset"] }
 midly = "0.5.3"
 cpal = "0.18.2"
 arboard = { version = "3.7.0", default-features = false }
