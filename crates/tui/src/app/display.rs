@@ -8,12 +8,17 @@ use crate::screens::Effect;
 use crate::settings::{Decision, GlyphMode, Settings, TerminalKind, decide};
 use crate::widgets::overlay::GraphicsCheck;
 
-/// Switches the console window between full screen and its window. The application (`oxysol`)
-/// implements it with the console API; the TUI never touches the console itself.
+/// Switches the console window between full screen and its window, and resizes an owned window.
+/// The application (`oxysol`) implements it with the console API; the TUI never touches the
+/// console itself.
 pub trait ConsoleDisplay {
     /// Switches full screen on or off. Returns whether the console obeyed; a refusal is not an
     /// error, the game goes on in the window it has.
     fn set_full_screen(&mut self, on: bool) -> bool;
+
+    /// Requests a console window size in character cells (`columns`, `rows`). Returns whether the
+    /// console obeyed; a refusal is not an error, the game goes on with the size it has.
+    fn set_window_size(&mut self, columns: u16, rows: u16) -> bool;
 }
 
 /// A display that cannot switch anything.
@@ -22,6 +27,10 @@ pub struct NullConsoleDisplay;
 
 impl ConsoleDisplay for NullConsoleDisplay {
     fn set_full_screen(&mut self, _on: bool) -> bool {
+        false
+    }
+
+    fn set_window_size(&mut self, _columns: u16, _rows: u16) -> bool {
         false
     }
 }
@@ -161,6 +170,22 @@ impl App {
         self.sync_full_screen();
     }
 
+    /// Requests the configured window size when the console is owned, windowed, and resizable by
+    /// the game (`ClassicConsole`).
+    pub(super) fn sync_window_size(&mut self) {
+        let state = &mut self.full_screen;
+        if state.active
+            || !state.facts.owns_window
+            || state.facts.kind != TerminalKind::ClassicConsole
+        {
+            return;
+        }
+        let (columns, rows) = self.settings.window_size.dimensions();
+        if !state.display.set_window_size(columns, rows) {
+            tracing::info!(columns, rows, "the console kept its window size");
+        }
+    }
+
     /// Brings the console font in line with the option "Use the oXySol font in this console": asks
     /// for the card font when it is on and sets the old font back when it is off. A refusal is a
     /// state the Settings row shows, never an error.
@@ -218,7 +243,7 @@ impl App {
         }
     }
 
-    /// What the screens know about the console font.
+    /// What the screens know about the console font and window state.
     pub(super) fn font_facts(&self) -> FontFacts {
         FontFacts {
             terminal: self.full_screen.facts.kind,
@@ -226,6 +251,8 @@ impl App {
             face: self.full_screen.face,
             cell_px: self.full_screen.font.cell_size(),
             priority: self.priority.outcome,
+            owns_window: self.full_screen.facts.owns_window,
+            full_screen_active: self.full_screen.active,
         }
     }
 

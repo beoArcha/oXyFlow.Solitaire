@@ -33,6 +33,17 @@ pub fn widened(current: (u16, u16), largest: (u16, u16)) -> Option<(u16, u16)> {
     Some((width, height))
 }
 
+/// Clamps a requested window size `(columns, rows)` to `largest`, or returns `None` when
+/// either dimension is zero.
+pub fn fit_window(requested: (u16, u16), largest: (u16, u16)) -> Option<(u16, u16)> {
+    let columns = requested.0.min(largest.0);
+    let rows = requested.1.min(largest.1);
+    if columns == 0 || rows == 0 {
+        return None;
+    }
+    Some((columns, rows))
+}
+
 /// Decides whether the process should wait for Enter before it exits.
 ///
 /// Only a failed run, in a console that this process created, with an interactive stdin, waits.
@@ -66,144 +77,283 @@ pub fn owns_window() -> bool {
 }
 
 #[cfg(windows)]
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-struct Coord {
-    x: i16,
-    y: i16,
-}
-
-#[cfg(windows)]
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-struct SmallRect {
-    left: i16,
-    top: i16,
-    right: i16,
-    bottom: i16,
-}
-
-#[cfg(windows)]
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default)]
-struct ConsoleScreenBufferInfo {
-    size: Coord,
-    cursor_position: Coord,
-    attributes: u16,
-    window: SmallRect,
-    maximum_window_size: Coord,
-}
-
-/// Widens an owned console window to at least 130 columns and 30 rows if the screen allows it.
-#[cfg(windows)]
 #[allow(
     unsafe_code,
     reason = "Win32 console sizing APIs have no safe wrappers in std and the crate avoids windows-sys"
 )]
-pub fn widen_owned_window() {
+mod win {
+    use std::ffi::c_void;
+
+    #[repr(C)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+    struct Coord {
+        x: i16,
+        y: i16,
+    }
+
+    #[repr(C)]
+    #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+    struct SmallRect {
+        left: i16,
+        top: i16,
+        right: i16,
+        bottom: i16,
+    }
+
+    #[repr(C)]
+    #[derive(Clone, Copy, Debug, Default)]
+    struct ConsoleScreenBufferInfo {
+        size: Coord,
+        cursor_position: Coord,
+        attributes: u16,
+        window: SmallRect,
+        maximum_window_size: Coord,
+    }
+
     #[link(name = "kernel32")]
     unsafe extern "system" {
-        fn GetStdHandle(std_handle: u32) -> *mut std::ffi::c_void;
+        fn CreateFileW(
+            file_name: *const u16,
+            desired_access: u32,
+            share_mode: u32,
+            security_attributes: *const c_void,
+            creation_disposition: u32,
+            flags_and_attributes: u32,
+            template_file: *mut c_void,
+        ) -> *mut c_void;
+        fn CloseHandle(object: *mut c_void) -> i32;
+        fn GetConsoleMode(console_handle: *mut c_void, mode: *mut u32) -> i32;
+        fn SetConsoleMode(console_handle: *mut c_void, mode: u32) -> i32;
+        fn WriteConsoleA(
+            console_output: *mut c_void,
+            buffer: *const u8,
+            chars_to_write: u32,
+            chars_written: *mut u32,
+            reserved: *mut c_void,
+        ) -> i32;
         fn GetConsoleScreenBufferInfo(
-            console_output: *mut std::ffi::c_void,
+            console_output: *mut c_void,
             info: *mut ConsoleScreenBufferInfo,
         ) -> i32;
-        fn GetLargestConsoleWindowSize(console_output: *mut std::ffi::c_void) -> Coord;
-        fn SetConsoleScreenBufferSize(console_output: *mut std::ffi::c_void, size: Coord) -> i32;
+        fn GetLargestConsoleWindowSize(console_output: *mut c_void) -> Coord;
+        fn SetConsoleScreenBufferSize(console_output: *mut c_void, size: Coord) -> i32;
         fn SetConsoleWindowInfo(
-            console_output: *mut std::ffi::c_void,
+            console_output: *mut c_void,
             absolute: i32,
             console_window: *const SmallRect,
         ) -> i32;
     }
 
-    const STD_OUTPUT_HANDLE: u32 = 0xFFFF_FFF5;
+    const GENERIC_READ_WRITE: u32 = 0xC000_0000;
+    const FILE_SHARE_READ_WRITE: u32 = 0x0000_0003;
+    const OPEN_EXISTING: u32 = 3;
+    const ENABLE_VIRTUAL_TERMINAL_PROCESSING: u32 = 0x0004;
+    const CONOUT: [u16; 8] = [
+        b'C' as u16,
+        b'O' as u16,
+        b'N' as u16,
+        b'O' as u16,
+        b'U' as u16,
+        b'T' as u16,
+        b'$' as u16,
+        0,
+    ];
 
-    // SAFETY: GetStdHandle is called with standard constant STD_OUTPUT_HANDLE.
-    let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
-    if stdout.is_null() || stdout == (-1_isize as *mut std::ffi::c_void) {
-        tracing::debug!("the standard output handle is not available");
-        return;
+    struct OwnedHandle(*mut c_void);
+
+    impl Drop for OwnedHandle {
+        fn drop(&mut self) {
+            // SAFETY: `self.0` is a valid handle returned by `CreateFileW`.
+            unsafe {
+                let _ = CloseHandle(self.0);
+            }
+        }
     }
 
-    let mut info = ConsoleScreenBufferInfo::default();
-    // SAFETY: stdout is checked for validity and info points to valid stack memory.
-    let info_ok = unsafe { GetConsoleScreenBufferInfo(stdout, &mut info) };
-    if info_ok == 0 {
-        tracing::debug!("failed to read console screen buffer info");
-        return;
+    pub(super) struct ConsoleHandle {
+        stdout: OwnedHandle,
+        buffer: Coord,
+        pub(super) current: (u16, u16),
+        pub(super) largest: (u16, u16),
     }
 
-    let current_cols = i32::from(info.window.right) - i32::from(info.window.left) + 1;
-    let current_rows = i32::from(info.window.bottom) - i32::from(info.window.top) + 1;
-    if current_cols <= 0 || current_rows <= 0 {
-        tracing::debug!("invalid current console window dimensions");
-        return;
-    }
-    let Ok(cols) = u16::try_from(current_cols) else {
-        tracing::debug!("console columns exceed u16");
-        return;
-    };
-    let Ok(rows) = u16::try_from(current_rows) else {
-        tracing::debug!("console rows exceed u16");
-        return;
-    };
-
-    // SAFETY: stdout is a valid console handle.
-    let largest = unsafe { GetLargestConsoleWindowSize(stdout) };
-    if largest.x <= 0 || largest.y <= 0 {
-        tracing::debug!("failed to read largest console window size");
-        return;
-    }
-    let Ok(max_cols) = u16::try_from(largest.x) else {
-        tracing::debug!("largest columns exceed u16");
-        return;
-    };
-    let Ok(max_rows) = u16::try_from(largest.y) else {
-        tracing::debug!("largest rows exceed u16");
-        return;
-    };
-
-    let Some((new_cols, new_rows)) = widened((cols, rows), (max_cols, max_rows)) else {
-        return;
-    };
-
-    let Ok(target_x) = i16::try_from(new_cols) else {
-        tracing::debug!("target columns exceed i16");
-        return;
-    };
-    let Ok(target_y) = i16::try_from(new_rows) else {
-        tracing::debug!("target rows exceed i16");
-        return;
-    };
-
-    let target_buffer = Coord {
-        x: info.size.x.max(target_x),
-        y: info.size.y.max(target_y),
-    };
-    // SAFETY: stdout is a valid handle and target buffer dimensions are non-negative.
-    let buffer_ok = unsafe { SetConsoleScreenBufferSize(stdout, target_buffer) };
-    if buffer_ok == 0 {
-        tracing::debug!("failed to set console screen buffer size");
-        return;
+    fn u16_pair(x: i32, y: i32) -> Option<(u16, u16)> {
+        if x <= 0 || y <= 0 {
+            return None;
+        }
+        Some((u16::try_from(x).ok()?, u16::try_from(y).ok()?))
     }
 
-    let target_window = SmallRect {
-        left: 0,
-        top: 0,
-        right: target_x - 1,
-        bottom: target_y - 1,
-    };
-    // SAFETY: stdout is a valid handle and target window fits within the updated screen buffer.
-    let window_ok = unsafe { SetConsoleWindowInfo(stdout, 1, &target_window) };
-    if window_ok == 0 {
-        tracing::debug!("failed to set console window info");
+    fn window_size_of(info: &ConsoleScreenBufferInfo) -> Option<(u16, u16)> {
+        u16_pair(
+            i32::from(info.window.right) - i32::from(info.window.left) + 1,
+            i32::from(info.window.bottom) - i32::from(info.window.top) + 1,
+        )
     }
+
+    pub(super) fn query_console() -> Option<ConsoleHandle> {
+        // SAFETY: `CONOUT` is null-terminated UTF-16 `"CONOUT$"` and all flags are valid constants.
+        let raw = unsafe {
+            CreateFileW(
+                CONOUT.as_ptr(),
+                GENERIC_READ_WRITE,
+                FILE_SHARE_READ_WRITE,
+                std::ptr::null(),
+                OPEN_EXISTING,
+                0,
+                std::ptr::null_mut(),
+            )
+        };
+        if raw.is_null() || raw == (-1_isize as *mut c_void) {
+            tracing::debug!("the active console output handle is not available");
+            return None;
+        }
+        let stdout = OwnedHandle(raw);
+        let mut info = ConsoleScreenBufferInfo::default();
+        // SAFETY: stdout.0 is valid and info points to stack memory.
+        if unsafe { GetConsoleScreenBufferInfo(stdout.0, &mut info) } == 0 {
+            tracing::debug!("failed to read console screen buffer info");
+            return None;
+        }
+        let current = window_size_of(&info)?;
+        // SAFETY: stdout.0 is a valid console handle.
+        let max = unsafe { GetLargestConsoleWindowSize(stdout.0) };
+        let largest = u16_pair(i32::from(max.x), i32::from(max.y))?;
+        Some(ConsoleHandle {
+            stdout,
+            buffer: info.size,
+            current,
+            largest,
+        })
+    }
+
+    fn set_buffer(stdout: *mut c_void, size: Coord) -> bool {
+        // SAFETY: stdout is a valid console handle and size holds positive dimensions.
+        let ok = unsafe { SetConsoleScreenBufferSize(stdout, size) } != 0;
+        if !ok {
+            tracing::debug!(
+                x = size.x,
+                y = size.y,
+                "failed to set console screen buffer size"
+            );
+        }
+        ok
+    }
+
+    fn resize_with_vt(stdout: *mut c_void, target: (u16, u16)) -> bool {
+        let mut mode = 0_u32;
+        // SAFETY: stdout is a valid console handle and mode is stack-allocated.
+        if unsafe { GetConsoleMode(stdout, &mut mode) } == 0 {
+            return false;
+        }
+        if mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING == 0 {
+            // SAFETY: stdout is a valid console handle and mode adds VT processing.
+            let _ = unsafe { SetConsoleMode(stdout, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING) };
+        }
+        let seq = format!("\x1b[8;{};{}t", target.1, target.0);
+        let Ok(len) = u32::try_from(seq.len()) else {
+            return false;
+        };
+        let mut written = 0_u32;
+        // SAFETY: stdout is a valid console handle and seq.as_ptr() is valid for len bytes.
+        if unsafe {
+            WriteConsoleA(
+                stdout,
+                seq.as_ptr(),
+                len,
+                &mut written,
+                std::ptr::null_mut(),
+            )
+        } == 0
+        {
+            return false;
+        }
+        let mut info = ConsoleScreenBufferInfo::default();
+        // SAFETY: stdout is valid and info points to stack memory.
+        if unsafe { GetConsoleScreenBufferInfo(stdout, &mut info) } == 0 {
+            return false;
+        }
+        window_size_of(&info) == Some(target)
+    }
+
+    pub(super) fn apply_window_size(
+        handle: &ConsoleHandle,
+        target: (u16, u16),
+        exact_buffer: bool,
+    ) -> bool {
+        let (Ok(target_x), Ok(target_y)) = (i16::try_from(target.0), i16::try_from(target.1))
+        else {
+            return false;
+        };
+        let safe_buffer = Coord {
+            x: handle.buffer.x.max(target_x),
+            y: handle.buffer.y.max(target_y),
+        };
+        if safe_buffer != handle.buffer && !set_buffer(handle.stdout.0, safe_buffer) {
+            return false;
+        }
+        let rect = SmallRect {
+            left: 0,
+            top: 0,
+            right: target_x - 1,
+            bottom: target_y - 1,
+        };
+        // SAFETY: stdout.0 is a valid handle and rect fits within safe_buffer.
+        if unsafe { SetConsoleWindowInfo(handle.stdout.0, 1, &rect) } == 0
+            && !resize_with_vt(handle.stdout.0, target)
+        {
+            let error = std::io::Error::last_os_error();
+            tracing::debug!(target_x, target_y, %error, "failed to resize console window");
+            return false;
+        }
+        let exact = Coord {
+            x: target_x,
+            y: target_y,
+        };
+        if exact_buffer && exact != safe_buffer && !set_buffer(handle.stdout.0, exact) {
+            let _ = resize_with_vt(handle.stdout.0, target);
+        }
+        true
+    }
+}
+
+/// Widens an owned console window to at least 130 columns and 30 rows if the screen allows it.
+#[cfg(windows)]
+pub fn widen_owned_window() {
+    let Some(handle) = win::query_console() else {
+        return;
+    };
+    let Some(target) = widened(handle.current, handle.largest) else {
+        return;
+    };
+    let _ = win::apply_window_size(&handle, target, false);
 }
 
 /// Resizing an owned console window is only implemented on Windows.
 #[cfg(not(windows))]
 pub fn widen_owned_window() {}
+
+/// Requests `columns` by `rows` (clamped to the largest window that fits) for an owned classic
+/// console window. Returns whether the resize was applied.
+#[cfg(windows)]
+pub fn set_owned_window_size(columns: u16, rows: u16) -> bool {
+    if !owns_window() {
+        return false;
+    }
+    let Some(handle) = win::query_console() else {
+        return false;
+    };
+    let Some(target) = fit_window((columns, rows), handle.largest) else {
+        return false;
+    };
+    win::apply_window_size(&handle, target, true)
+}
+
+/// Resizing an owned console window is only implemented on Windows.
+#[cfg(not(windows))]
+pub fn set_owned_window_size(_columns: u16, _rows: u16) -> bool {
+    false
+}
 
 /// Prints the localized prompt to stderr and waits for one line from stdin.
 pub fn wait_for_enter() {
@@ -266,5 +416,19 @@ mod tests {
     fn widened_returns_none_when_largest_cannot_fit_target_rows() {
         assert_eq!(widened((120, 25), (200, 28)), None);
         assert_eq!(widened((120, 45), (200, 40)), None);
+    }
+
+    #[test]
+    fn default_console_target_is_130_columns() {
+        assert_eq!(TARGET_COLUMNS, 130);
+        assert_eq!(TARGET_ROWS, 30);
+    }
+
+    #[test]
+    fn fit_window_clamps_to_largest_and_rejects_zero() {
+        assert_eq!(fit_window((130, 40), (200, 60)), Some((130, 40)));
+        assert_eq!(fit_window((260, 80), (220, 55)), Some((220, 55)));
+        assert_eq!(fit_window((0, 40), (200, 60)), None);
+        assert_eq!(fit_window((130, 40), (200, 0)), None);
     }
 }

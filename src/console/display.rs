@@ -40,6 +40,12 @@ impl ConsoleDisplay for ConsoleWindow {
             }
         }
     }
+
+    fn set_window_size(&mut self, columns: u16, rows: u16) -> bool {
+        let applied = crate::console::set_owned_window_size(columns, rows);
+        tracing::info!(columns, rows, applied, "the console window size request");
+        applied
+    }
 }
 
 impl Drop for ConsoleWindow {
@@ -218,6 +224,7 @@ mod tests {
     fn a_platform_without_a_console_api_refuses() {
         let mut window = ConsoleWindow::default();
         assert!(!window.set_full_screen(true));
+        assert!(!window.set_window_size(130, 40));
         assert!(!window.entered);
     }
 }

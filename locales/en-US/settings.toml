@@ -18,6 +18,7 @@ font_size = "Font size"
 colors = "Colors"
 card_size = "Card size"
 full_screen = "Full screen"
+window_size = "Window size"
 sound_style = "Sound style"
 cues = "Sound cues"
 music = "Music"
@@ -75,6 +76,10 @@ font_terminal_other = "This terminal draws its own font and the game cannot chan
 colors = "How many colors the terminal is asked to show. Auto detects it."
 card_size = "Auto fits the window; a size that does not fit falls back. Keys ] [ 0 or Ctrl+wheel."
 full_screen = "Auto: on only in the window the game opened itself. In a console: Alt+Enter or F11."
+window_size = "Size of an owned console window when windowed: Small 130x40, Medium 195x60, Large 260x80."
+window_size_full_screen = "Full screen is active; this size applies when the window leaves full screen."
+window_size_not_owned = "Existing console windows keep their size. Start with --new-window or double-click to resize."
+window_size_terminal = "This terminal keeps its own window size and the game cannot resize it."
 sound_style = "The sound of the cues and the music."
 cues = "Short sounds for moves and for a win."
 music = "Background music while a game is open."
@@ -108,6 +113,11 @@ needs_columns = "{value} (needs {needed} columns, now {now})"
 needs_privileges = "needs privileges"
 [full_screen]
 auto = "Auto"
+
+[window_size]
+small = "Small (130x40)"
+medium = "Medium (195x60)"
+large = "Large (260x80)"
 
 [card_size]
 auto = "Auto"
