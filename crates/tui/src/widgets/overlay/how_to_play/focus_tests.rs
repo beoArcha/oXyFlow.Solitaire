@@ -1,11 +1,9 @@
-//! The focus of the Rules tab: its order, what Left and Right do on each part, how each part is
-//! drawn without color, what the footer says and the scroll bar of the text.
+//! Key groups, accessibility without color, and footer behavior on the Rules tab.
 
 use ratatui::crossterm::event::KeyCode;
 use ratatui::layout::Rect;
 use ratatui::style::Modifier;
 
-use super::state::Focus;
 use super::*;
 use crate::app::Modal;
 use crate::caps::TerminalCaps;
@@ -38,182 +36,147 @@ fn row_of(h: &mut Harness, needle: &str) -> usize {
 }
 
 #[test]
-fn the_window_opens_on_the_games_and_the_focus_walks_down_and_up_in_reading_order() {
-    let mut state = HowToPlay::new(Rules::Klondike);
-    assert_eq!(state.focus, Focus::Games);
-    state.up();
-    assert_eq!(state.focus, Focus::Tabs);
-    state.up();
-    assert_eq!(state.focus, Focus::Tabs);
-    state.down();
-    assert_eq!(state.focus, Focus::Games);
-    state.down();
-    assert_eq!(state.focus, Focus::Text);
-    assert_eq!(state.scroll, 0);
-}
-
-#[test]
-fn in_the_text_up_and_down_scroll_and_up_at_the_top_returns_to_the_games() {
-    let mut state = HowToPlay::new(Rules::Klondike).focused(Focus::Text);
-    state.down();
-    state.down();
-    assert_eq!(state.scroll, 2);
-    state.up();
-    assert_eq!((state.scroll, state.focus), (1, Focus::Text));
-    state.up();
-    assert_eq!((state.scroll, state.focus), (0, Focus::Text));
-    state.up();
-    assert_eq!((state.scroll, state.focus), (0, Focus::Games));
-}
-
-#[test]
-fn tab_and_shift_tab_follow_the_same_order_and_leave_at_the_ends() {
-    let mut state = HowToPlay::new(Rules::Klondike).focused(Focus::Tabs);
-    assert!(state.step_focus(true));
-    assert_eq!(state.focus, Focus::Games);
-    assert!(state.step_focus(true));
-    assert_eq!(state.focus, Focus::Text);
-    assert!(!state.step_focus(true));
-    assert_eq!(state.focus, Focus::Text);
-    assert!(state.step_focus(false));
-    assert!(state.step_focus(false));
-    assert_eq!(state.focus, Focus::Tabs);
-    assert!(!state.step_focus(false));
-}
-
-#[test]
-fn left_and_right_switch_the_game_only_while_the_games_row_has_the_focus() {
+fn the_selected_game_is_marked_without_color_in_unicode_and_ascii() {
     let mut h = opened(Locale::EnUs, TRUE_COLOR);
-    assert_eq!(state(&h).focus, Focus::Games);
-    h.press(KeyCode::Right);
-    assert_eq!(state(&h).rules, Rules::Spider);
-    h.press(KeyCode::Left);
-    assert_eq!(state(&h).rules, Rules::Klondike);
-
-    h.press(KeyCode::Down);
-    assert_eq!(state(&h).focus, Focus::Text);
-    h.press(KeyCode::Right);
-    h.press(KeyCode::Left);
-    assert_eq!(state(&h).rules, Rules::Klondike);
-    assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
-}
-
-#[test]
-fn left_and_right_switch_the_top_tab_while_the_tabs_row_has_the_focus() {
-    let mut h = opened(Locale::EnUs, TRUE_COLOR);
-    h.press(KeyCode::Up);
-    assert_eq!(state(&h).focus, Focus::Tabs);
-    h.press(KeyCode::Right);
-    assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
-    h.press(KeyCode::Left);
-    assert_eq!(state(&h).focus, Focus::Tabs);
-    h.press(KeyCode::Left);
-    assert_eq!(h.app.modal(), Some(&Modal::help()));
-}
-
-#[test]
-fn the_focused_row_has_arrows_and_a_reversed_selection_the_other_row_has_neither() {
-    let mut h = opened(Locale::EnUs, TRUE_COLOR);
-    let tabs_row = row_of(&mut h, "[Rules]");
     let games_row = row_of(&mut h, "[Klondike]");
     let lines = h.lines();
     assert!(lines[games_row].contains('◄') && lines[games_row].contains('►'));
-    assert!(!lines[tabs_row].contains('◄') && !lines[tabs_row].contains('►'));
     let (column, row) = h.find("[Klondike]").expect("games selection");
-    let focused = &h.terminal.backend().buffer()[(column, row)];
+    let selected = &h.terminal.backend().buffer()[(column, row)];
     assert!(
-        focused
+        selected
             .modifier
             .contains(Modifier::REVERSED | Modifier::BOLD)
     );
-    let (column, row) = h.find("[Rules]").expect("tab selection");
-    let plain = &h.terminal.backend().buffer()[(column, row)];
-    assert!(!plain.modifier.contains(Modifier::REVERSED));
-    assert!(!plain.modifier.contains(Modifier::BOLD));
 
-    h.press(KeyCode::Up);
-    let lines = h.lines();
-    assert!(lines[tabs_row].contains('◄') && lines[tabs_row].contains('►'));
-    assert!(!lines[games_row].contains('◄') && !lines[games_row].contains('►'));
-    assert!(lines[games_row].contains("[Klondike]"));
-    let (column, row) = h.find("[Rules]").expect("tab selection");
-    let now_focused = &h.terminal.backend().buffer()[(column, row)];
-    assert!(now_focused.modifier.contains(Modifier::REVERSED));
+    let mut ascii = opened(Locale::EnUs, PLAIN);
+    let ascii_row = row_of(&mut ascii, "[Klondike]");
+    let ascii_lines = ascii.lines();
+    assert!(ascii_lines[ascii_row].contains(" < ") && ascii_lines[ascii_row].contains(" > "));
+    assert!(ascii_lines[ascii_row].contains("[Klondike]"));
 }
 
 #[test]
-fn the_focus_shows_without_color_and_in_ascii() {
-    let mut h = opened(Locale::EnUs, PLAIN);
-    let tabs_row = row_of(&mut h, "[Rules]");
-    let games_row = row_of(&mut h, "[Klondike]");
-    let lines = h.lines();
-    assert!(lines[games_row].contains(" < ") && lines[games_row].contains(" > "));
-    assert!(!lines[tabs_row].contains(" < ") && !lines[tabs_row].contains(" > "));
-    assert!(lines[games_row].contains("[Klondike]"));
-    h.press(KeyCode::Down);
-    let lines = h.lines();
-    assert!(!lines[games_row].contains(" < ") && !lines[games_row].contains(" > "));
-    assert!(lines[games_row].contains("[Klondike]"));
-}
-
-#[test]
-fn the_text_shows_its_focus_with_a_marker_in_the_margin() {
-    let mut h = opened(Locale::EnUs, TRUE_COLOR);
-    let parts = view::parts(geometry(AREA).body);
-    let marker_at = |h: &mut Harness| {
-        let lines = h.lines();
-        lines[usize::from(parts.text.y)]
-            .chars()
-            .nth(usize::from(parts.text.x))
-    };
-    assert_ne!(marker_at(&mut h), Some('►'));
-    h.press(KeyCode::Down);
-    assert_eq!(marker_at(&mut h), Some('►'));
-}
-
-#[test]
-fn the_footer_names_what_left_and_right_do_for_the_focused_row() {
-    for (locale, tabs, games) in [
-        (Locale::EnUs, "Left/Right: tab", "Left/Right: game"),
-        (Locale::PlPl, "Lewo/Prawo: zakładka", "Lewo/Prawo: gra"),
-    ] {
+fn tab_and_shift_tab_switch_the_main_tab_from_rules_in_every_locale() {
+    for locale in Locale::offered() {
         let mut h = opened(locale, TRUE_COLOR);
-        assert!(h.text().contains(games), "{locale:?} games");
-        h.press(KeyCode::Up);
-        assert!(h.text().contains(tabs), "{locale:?} tabs");
-        h.press(KeyCode::Down);
-        h.press(KeyCode::Down);
-        let text = h.text();
-        assert!(!text.contains("Left/Right"), "{locale:?} text");
-        assert!(text.contains("PgUp/PgDn"), "{locale:?} text");
+        h.press(KeyCode::Tab);
+        assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
+        let command_line = i18n::t("help.tab.command_line");
+        assert!(
+            h.text().contains(&format!("[{command_line}]")),
+            "{locale:?}: missing [{command_line}]"
+        );
+
+        h.press(KeyCode::BackTab);
+        assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
+        let rules = i18n::t("help.tab.rules");
+        assert!(
+            h.text().contains(&format!("[{rules}]")),
+            "{locale:?}: missing [{rules}]"
+        );
+
+        h.press(KeyCode::BackTab);
+        assert!(matches!(h.app.modal(), Some(Modal::Help(_))));
+        let keys = i18n::t("help.tab.keys");
+        assert!(
+            h.text().contains(&format!("[{keys}]")),
+            "{locale:?}: missing [{keys}]"
+        );
     }
     i18n::set_locale(Locale::EnUs);
 }
 
 #[test]
-fn the_footer_keeps_its_close_button_clickable_on_every_row() {
-    for presses in [0, 1, 2] {
-        let mut h = opened(Locale::EnUs, TRUE_COLOR);
-        for _ in 0..presses {
-            h.press(KeyCode::Down);
-        }
-        let (column, row) = h.find("Esc: close").expect("footer button");
-        h.click(column + 1, row);
-        assert!(h.app.modal().is_none(), "after {presses} presses");
+fn left_and_right_switch_the_game_from_the_rules_text_in_every_locale() {
+    for locale in Locale::offered() {
+        let mut h = opened(locale, TRUE_COLOR);
+        h.press(KeyCode::Down);
+        assert_eq!(state(&h).scroll, 1, "{locale:?}");
+
+        h.press(KeyCode::Right);
+        assert_eq!(state(&h).rules, Rules::Spider, "{locale:?}");
+        assert_eq!(state(&h).scroll, 0, "{locale:?}");
+        let spider = i18n::t(Rules::Spider.name_key());
+        let spider_text = content::rows(Rules::Spider)[0].text.clone();
+        let rendered = h.text();
+        assert!(
+            rendered.contains(&format!("[{spider}]")),
+            "{locale:?}: missing [{spider}]"
+        );
+        assert!(
+            rendered.contains(&spider_text),
+            "{locale:?}: missing {spider_text}"
+        );
+
+        h.press(KeyCode::Left);
+        assert_eq!(state(&h).rules, Rules::Klondike, "{locale:?}");
+        let klondike = i18n::t(Rules::Klondike.name_key());
+        assert!(
+            h.text().contains(&format!("[{klondike}]")),
+            "{locale:?}: missing [{klondike}]"
+        );
     }
+    i18n::set_locale(Locale::EnUs);
 }
 
 #[test]
-fn clicking_the_games_or_the_text_moves_the_focus_there() {
+fn up_and_down_scroll_from_the_start_in_every_locale() {
+    for locale in Locale::offered() {
+        let mut h = opened(locale, TRUE_COLOR);
+        assert_eq!(state(&h).scroll, 0, "{locale:?}");
+        assert!(h.text().contains("1-20 / "), "{locale:?}");
+
+        h.press(KeyCode::Down);
+        assert_eq!(state(&h).scroll, 1, "{locale:?}");
+        assert!(h.text().contains("2-21 / "), "{locale:?}");
+
+        h.press(KeyCode::Up);
+        assert_eq!(state(&h).scroll, 0, "{locale:?}");
+        assert!(h.text().contains("1-20 / "), "{locale:?}");
+
+        h.press(KeyCode::PageDown);
+        assert!(state(&h).scroll >= 19, "{locale:?}");
+        h.press(KeyCode::Home);
+        assert_eq!(state(&h).scroll, 0, "{locale:?}");
+        h.press(KeyCode::End);
+        assert_eq!(state(&h).scroll, state(&h).max_scroll(), "{locale:?}");
+    }
+    i18n::set_locale(Locale::EnUs);
+}
+
+#[test]
+fn the_footer_keeps_its_entries_across_every_locale() {
+    for locale in Locale::offered() {
+        let mut h = opened(locale, TRUE_COLOR);
+        let tab = i18n::tf("help.command_line.footer_tab", &[("key", "Tab")]);
+        let game = i18n::tf(
+            "help.rules.footer_game",
+            &[
+                ("left", &i18n::t("help.key.left")),
+                ("right", &i18n::t("help.key.right")),
+            ],
+        );
+        let move_keys = i18n::tf(
+            "help.command_line.footer_move",
+            &[
+                ("up", &i18n::t("help.key.up")),
+                ("down", &i18n::t("help.key.down")),
+            ],
+        );
+        let close = i18n::tf("help.command_line.footer_close", &[("back", "Esc")]);
+        let text = h.text();
+        for entry in [&tab, &game, &move_keys, &close] {
+            assert!(text.contains(entry.as_str()), "{locale:?}: missing {entry}");
+        }
+    }
+    i18n::set_locale(Locale::EnUs);
+}
+
+#[test]
+fn the_footer_keeps_its_close_button_clickable() {
     let mut h = opened(Locale::EnUs, TRUE_COLOR);
-    h.press(KeyCode::Up);
-    let (column, row) = h.find("Spider").expect("game tab");
-    h.click(column, row);
-    assert_eq!(
-        (state(&h).rules, state(&h).focus),
-        (Rules::Spider, Focus::Games)
-    );
-    let parts = view::parts(geometry(AREA).body);
-    h.click(parts.text.x + 10, parts.text.y + 3);
-    assert_eq!(state(&h).focus, Focus::Text);
+    let (column, row) = h.find("Esc: close").expect("footer button");
+    h.click(column + 1, row);
+    assert!(h.app.modal().is_none());
 }

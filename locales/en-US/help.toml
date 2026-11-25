@@ -68,16 +68,12 @@ win_time = "Time: {time}"
 same_seed = "Same seed"
 best_time = "Best time for {game}!"
 best_moves = "Fewest moves for {game}!"
-close_or = " or "
-close_rest = " closes this window."
 
 [rules]
 title = "How to play"
 title_from_help = "Help · Rules"
 close = "Close [{key}]"
-footer_tabs = "{left}/{right}: tab   {down}: games"
-footer_games = "{left}/{right}: game   {up}/{down}: move focus"
-footer_text = "{up}/{down}/PgUp/PgDn: scroll   {up} at top: games"
+footer_game = "{left}/{right}: game"
 footer_close = "{back}: close"
 position = "{from}-{to} / {total}"
 

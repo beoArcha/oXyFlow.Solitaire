@@ -68,16 +68,12 @@ win_time = "Czas: {time}"
 same_seed = "To samo ziarno"
 best_time = "Najlepszy czas: {game}!"
 best_moves = "Najmniej ruchów: {game}!"
-close_or = " lub "
-close_rest = " zamyka to okno."
 
 [rules]
 title = "Jak grać"
 title_from_help = "Pomoc · Zasady"
 close = "Zamknij [{key}]"
-footer_tabs = "{left}/{right}: zakładka   {down}: gry"
-footer_games = "{left}/{right}: gra   {up}/{down}: fokus"
-footer_text = "{up}/{down}/PgUp/PgDn: przewijanie   {up} na górze: gry"
+footer_game = "{left}/{right}: gra"
 footer_close = "{back}: zamknij"
 position = "{from}-{to} / {total}"
 
@@ -87,7 +83,7 @@ rules = "Zasady"
 command_line = "Wiersz poleceń"
 
 [command_line]
-footer_tab = "{key}: następna zakładka"
+footer_tab = "{key}: zakładka"
 footer_move = "{up}/{down}/PgUp/PgDn: przewijanie"
 footer_close = "{back}: zamknij"
 

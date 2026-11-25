@@ -65,7 +65,7 @@ fn scrolling_stays_inside_the_text() {
 
 #[test]
 fn keys_scroll_switch_and_close() {
-    let mut state = HowToPlay::new(Rules::Klondike).focused(Focus::Text);
+    let mut state = HowToPlay::new(Rules::Klondike);
     assert_eq!(press(&mut state, KeyCode::Down), None);
     assert_eq!(state.scroll, 1);
     assert_eq!(press(&mut state, KeyCode::Char('j')), None);
@@ -82,7 +82,6 @@ fn keys_scroll_switch_and_close() {
     assert_eq!(press(&mut state, KeyCode::Home), None);
     assert_eq!(state.scroll, 0);
 
-    state.focus = Focus::Games;
     assert_eq!(press(&mut state, KeyCode::Right), None);
     assert_eq!(state.rules, Rules::Spider);
     assert_eq!(press(&mut state, KeyCode::Left), None);

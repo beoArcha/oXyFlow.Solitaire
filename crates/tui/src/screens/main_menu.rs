@@ -29,7 +29,7 @@ use crate::widgets::footer::{self, FooterMap, KeyHint};
 const FOOTER_MARGIN: u16 = 1;
 use crate::widgets::language_picker::{LanguagePicker, Pointed};
 use crate::widgets::logo::logo;
-use crate::widgets::menu_list::{Highlight, MenuList};
+use crate::widgets::menu_list::{Highlight, MenuList, Row};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Item {
@@ -365,13 +365,20 @@ impl MainMenu {
     fn draw_items(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let rows = logo(ctx.glyphs.unicode);
         let items = items(ctx.saved.is_some());
+        let list_rows: Vec<Row> = items
+            .iter()
+            .map(|item| match (item, ctx.saved) {
+                (Item::Resume, Some(saved)) => resume::row(saved, area.width),
+                _ => Row::new(t(label_key(*item)).into_owned()),
+            })
+            .collect();
         let logo_height = u16::try_from(rows.len()).unwrap_or(0);
         let [_, logo_area, tagline_area, _, list_area, _, footer_row] = Layout::vertical([
             Constraint::Fill(1),
             Constraint::Length(logo_height),
             Constraint::Length(1),
             Constraint::Length(1),
-            Constraint::Length(u16::try_from(items.len()).unwrap_or(0)),
+            Constraint::Length(MenuList::height(&list_rows)),
             Constraint::Fill(2),
             Constraint::Length(1),
         ])
@@ -393,15 +400,8 @@ impl MainMenu {
             Paragraph::new(tagline).alignment(Alignment::Center),
             tagline_area,
         );
-        let labels: Vec<String> = items
-            .iter()
-            .map(|item| match (item, ctx.saved) {
-                (Item::Resume, Some(saved)) => resume::label(saved, list_area.width),
-                _ => t(label_key(*item)).into_owned(),
-            })
-            .collect();
         self.list
-            .draw(frame, list_area, &labels, ctx, self.highlight());
+            .draw(frame, list_area, &list_rows, ctx, self.highlight());
         self.footer = footer::draw(
             frame,
             footer_area,

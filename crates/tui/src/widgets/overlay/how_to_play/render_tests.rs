@@ -163,8 +163,6 @@ fn keys_and_the_wheel_scroll_the_text() {
     assert!(h.text().contains("1-20 / "));
     assert!(!h.text().contains("Stuck?"));
     h.press(KeyCode::Down);
-    assert!(h.text().contains("1-20 / "));
-    h.press(KeyCode::Down);
     assert!(h.text().contains("2-21 / "));
     h.press(KeyCode::PageDown);
     assert_eq!(shown(&h).map(|s| s.scroll), Some(20));

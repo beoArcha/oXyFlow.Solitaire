@@ -11,13 +11,12 @@ use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Geometry};
 use super::help;
-use super::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs};
+use super::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs, help_footer_segments};
 use crate::action::Action;
-use crate::i18n::{t, tf};
-use crate::input::primary_key;
+use crate::i18n::t;
 use crate::mouse;
 use crate::screens::{Effect, ViewCtx};
-use crate::widgets::footer::{FooterMap, Segment};
+use crate::widgets::footer::FooterMap;
 use crate::widgets::scrollbar::{self, Metrics};
 
 /// Rows of text visible at once at 100 by 30: the box body minus the tab row, the separator row and
@@ -168,39 +167,6 @@ pub fn geometry(area: Rect) -> Geometry {
     help::geometry(area)
 }
 
-fn key_name(action: Action) -> String {
-    primary_key(action).unwrap_or_default()
-}
-
-fn footer_segments() -> Vec<Segment> {
-    let move_keys = tf(
-        "help.command_line.footer_move",
-        &[
-            ("up", &key_name(Action::Up)),
-            ("down", &key_name(Action::Down)),
-        ],
-    );
-    vec![
-        Segment::button(
-            Action::FocusNext,
-            tf(
-                "help.command_line.footer_tab",
-                &[("key", &key_name(Action::FocusNext))],
-            ),
-        ),
-        Segment::plain("   "),
-        Segment::plain(move_keys),
-        Segment::plain("   "),
-        Segment::button(
-            Action::Back,
-            tf(
-                "help.command_line.footer_close",
-                &[("back", &key_name(Action::Back))],
-            ),
-        ),
-    ]
-}
-
 /// Draws the tab over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_>) -> FooterMap {
     let geometry = geometry(area);
@@ -242,7 +208,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_
     let buttons_drawn = draw_footer_buttons(
         frame,
         footer,
-        &footer_segments(),
+        &help_footer_segments(false),
         (first + 1, first + count, all.len()),
         ctx,
     );

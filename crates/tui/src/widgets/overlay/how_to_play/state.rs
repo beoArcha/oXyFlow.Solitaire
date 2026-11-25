@@ -59,45 +59,22 @@ impl Rules {
     }
 }
 
-/// The part of the window that has the focus, top to bottom in reading order. Left and Right act
-/// on the tabs and on the games, Up and Down scroll the text.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Focus {
-    Tabs,
-    Games,
-    Text,
-}
-
-impl Focus {
-    const ORDER: [Focus; 3] = [Focus::Tabs, Focus::Games, Focus::Text];
-
-    fn index(self) -> usize {
-        Self::ORDER
-            .iter()
-            .position(|focus| *focus == self)
-            .unwrap_or(0)
-    }
-}
-
-/// The open window: the game on show, the first visible line of its text, the focus and the text
-/// rows the box shows.
+/// The open window: the game on show and the first visible line of its text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HowToPlay {
     pub rules: Rules,
     pub scroll: u16,
-    pub focus: Focus,
     pub from_help: bool,
     pub(super) drag: Option<u16>,
     view: u16,
 }
 
 impl HowToPlay {
-    /// The window opened on `rules`, at the top, with the focus on the games.
+    /// The window opened on `rules`, at the top.
     pub const fn new(rules: Rules) -> Self {
         Self {
             rules,
             scroll: 0,
-            focus: Focus::Games,
             from_help: false,
             drag: None,
             view: content::VIEW_ROWS as u16,
@@ -125,12 +102,6 @@ impl HowToPlay {
         self.view = rows;
     }
 
-    /// The same window with the focus on `focus`.
-    pub const fn focused(mut self, focus: Focus) -> Self {
-        self.focus = focus;
-        self
-    }
-
     /// The window opened on the game of `variant`.
     pub const fn for_variant(variant: Variant) -> Self {
         Self::new(Rules::of(variant))
@@ -148,49 +119,11 @@ impl HowToPlay {
         self.show(Rules::ALL[next]);
     }
 
-    /// Shows `rules` from the top; the focus stays where it is.
+    /// Shows `rules` from the top.
     pub fn show(&mut self, rules: Rules) {
         let from_help = self.from_help;
-        *self = Self::new(rules).focused(self.focus);
+        *self = Self::new(rules);
         self.from_help = from_help;
-    }
-
-    /// Up: the text scrolls a line, and at its top the focus goes up to the games; on the games
-    /// it goes up to the tabs.
-    pub fn up(&mut self) {
-        match self.focus {
-            Focus::Text if self.scroll > 0 => self.scroll_by(-1),
-            Focus::Text => self.focus = Focus::Games,
-            Focus::Games => self.focus = Focus::Tabs,
-            Focus::Tabs => {}
-        }
-    }
-
-    /// Down: the focus goes down from the tabs to the games and on to the text, where it scrolls.
-    pub fn down(&mut self) {
-        match self.focus {
-            Focus::Tabs => self.focus = Focus::Games,
-            Focus::Games => self.focus = Focus::Text,
-            Focus::Text => self.scroll_by(1),
-        }
-    }
-
-    /// Tab (`forward`) or Shift+Tab moves the focus one part on. `false` when the focus is
-    /// already at that end, so that the key leaves for the next or the previous tab.
-    pub fn step_focus(&mut self, forward: bool) -> bool {
-        let index = self.focus.index();
-        let next = if forward {
-            index + 1
-        } else {
-            index.wrapping_sub(1)
-        };
-        match Focus::ORDER.get(next) {
-            Some(focus) => {
-                self.focus = *focus;
-                true
-            }
-            None => false,
-        }
     }
 
     /// The largest value of `scroll` for the current game: the last line sits on the last row.

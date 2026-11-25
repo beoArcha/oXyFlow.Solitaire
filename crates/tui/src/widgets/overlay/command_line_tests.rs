@@ -123,7 +123,7 @@ fn keys_step_through_the_tabs_in_both_directions() {
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.press(KeyCode::Left);
     assert!(matches!(h.app.modal(), Some(Modal::HowToPlay(_))));
-    h.press(KeyCode::Right);
+    h.press(KeyCode::Tab);
     assert!(matches!(h.app.modal(), Some(Modal::CommandLine(_))));
     h.type_char('?');
     assert_eq!(h.app.modal(), Some(&Modal::help()));
