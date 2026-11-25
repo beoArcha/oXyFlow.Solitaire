@@ -4,6 +4,7 @@ mod footer;
 mod math;
 mod render;
 mod restarts;
+mod results;
 mod screen;
 mod scrollbar;
 mod support;
@@ -11,10 +12,11 @@ mod winnable;
 
 use oxysol_core::{DrawCount, Variant};
 
-use super::format::{format_time, format_utc, history_header, history_row};
+use super::format::{format_time, format_utc, history_header};
 use crate::glyphs::Glyphs;
 use crate::settings::GlyphMode;
 use crate::storage::{GameCounters, GameId, GameRecord, Outcome};
+use support::history_row;
 
 pub const KLONDIKE: Variant = Variant::Klondike(DrawCount::One);
 

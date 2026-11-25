@@ -57,7 +57,6 @@ unchecked = "неперевірено"
 yes = "так"
 no = "ні"
 unknown = "невідомо"
-unchecked = "-"
 
 [button]
 replay = "Зіграти це зерно знову"
