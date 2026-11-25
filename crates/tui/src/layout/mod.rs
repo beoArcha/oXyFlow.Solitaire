@@ -7,6 +7,8 @@
 mod chrome;
 #[cfg(test)]
 mod chrome_tests;
+#[cfg(test)]
+mod column_fit_tests;
 mod columns;
 mod fan;
 #[cfg(test)]
