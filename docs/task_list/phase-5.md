@@ -13,7 +13,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P3-32 — Table color and feel
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** O-26, P3-29
 - **Files:** `crates/tui/src/theme/**`, `crates/tui/src/screens/board/view.rs`, `crates/tui/src/settings.rs`
   and the Interface section, locales, tests
@@ -27,7 +27,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P3-33 — Card face tint
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** O-26, P3-29
 - **Files:** `crates/tui/src/theme/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/settings.rs` and the
   Interface section, locales, tests
@@ -39,7 +39,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P3-34 — Low-vision mode
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-26, P3-16, P3-29
 - **Files:** `crates/tui/src/settings.rs` and the Interface section, `crates/tui/src/theme/**`,
   `crates/tui/src/widgets/{aura,card}/**`, `crates/tui/src/layout/**`, locales, tests, `docs/wiki/`
@@ -53,7 +53,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P3-35 — Color-blind modes
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-26, P3-29
 - **Files:** `crates/tui/src/theme/**` (palettes and a simulation used by tests),
   `crates/tui/src/widgets/{card,aura}/**`, `crates/tui/src/screens/board/{controls,now}.rs`,
@@ -70,7 +70,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P5-03 — Card style: Spanish suits (Unicode)
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P4-08
 - **Files:** `assets/cards/fronts/spanish/style.toml` (new), `locales/*/cards.toml` (the style name key)
 - **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
@@ -84,7 +84,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P5-04 — Game: Golf
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P4-10a
 - **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/golf/**`, `crates/core/src/solver/golf*` (new, with
   the solver), the variant list of `oxysol-core` where the games are matched, `crates/tui/src/screens/main_menu/**`
@@ -103,7 +103,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P5-05 — Solver: Spider with 2 and 4 suits
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P2-08
 - **Files:** `crates/core/src/solver/spider/**`, `crates/core/src/solver/mod.rs` (only if the budget type changes),
   `docs/tech/decisions.md` (T-29 numbers and any budget change)
@@ -117,7 +117,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P5-06 — New game from seed: game first, then a seed from played games, random replay, five difficulty levels
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P4-09, P2-08
 - **Files:** the new-game-from-seed screen under `crates/tui/src/screens/**`, `crates/core` (curated seed table per
   game, if stored there), `locales/*` (all nine), tests, `docs/tech/architecture.md` (screen flow)
@@ -133,7 +133,7 @@ Order of work: the Interface options first, then the card style and the games, w
 
 ### P5-07 — Better hints: a hint that leads toward a win
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P4-10a
 - **Files:** the hint code of each game (`crates/core/src/games/*/mod.rs` and a new `hints.rs` per game where it
   grows), its tests, `docs/tech/decisions.md` (only for a decision the orchestrator names)
@@ -198,7 +198,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-72 — Docked Help: a margin between the version label and the panel
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/widgets/overlay/dock/**`, `crates/tui/src/screens/main_menu.rs`, tests
 - **Problem:** with Help docked right (`Dock: right`) the version (`v0.5.0`) in the bottom-right corner of the main view touches the double yellow border of the panel.
@@ -237,7 +237,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-85 — `Turned over` counter: counts what its label says
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**` (header), `crates/core/src/session/**` only if the count lives there, `locales/*/board.toml`, tests
 - **Problem:** moving `A ♥` to a foundation uncovers the face-down `2 ♦` in column 4, but the top bar still shows `Turned over: 0`.
@@ -256,7 +256,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-100 — Spider and Pyramid: no `A` in slots that are not ace foundations
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, tests
 - **Problem:** Spider (1 suit) draws `A` in all 8 top completion slots, although Spider removes full king-to-ace runs and does not build up from aces; Pyramid (Relaxed) draws `A` in the bottom-right pile of removed cards, where pairs that add up to 13 go.
@@ -265,7 +265,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-101 — Yukon footer: `Enter: pick up` and `a: quick move` when a card can move
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**`, `crates/tui/src/widgets/footer.rs`, tests
 - **Problem:** in Yukon, with the focus on a playable face-up card (`J ♥` in column 1), the `Do:` bar shows only `Arrows: move | h: hint | i: how to play…`, without `Enter: pick up` and `a: quick move`.
@@ -274,7 +274,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-102 — Settings: a live preview pane instead of the 4 × 1 swatch
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `crates/tui/src/settings.rs`, `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs` (reuse only), tests
 - **Problem:** the inline 4 × 1 grey hatch next to `Card back` (theme Dracula) shows neither the theme colours nor the back style (Lattice); `Front style`, `Back style`, `Symbols`, `Card size` and the Aura options have only text or small unlabelled swatches.
@@ -295,7 +295,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-74 — Help window: one footer layout and scroll indicator on every tab
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-71
 - **Files:** `crates/tui/src/widgets/overlay/**`, `locales/*/help.toml`, tests
 - **Problem:** the footer differs by tab: `Keys` has a scrollbar but no line counter (`1-X / Y`) and no scroll hints; `Rules` has no `Tab` hint and says `Up/Down: move focus`, which is unclear; `Command line` shows `Tab: next tab`, the scroll keys and the counter.
@@ -304,7 +304,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-75 — Windows: the active tab and the focused button look different
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** —
 - **Files:** `crates/tui/src/widgets/overlay/**`, `crates/tui/src/theme/**`, tests
 - **Problem:** the same solid white background with black text marks the active tabs (`[Keys]`, `[Klondike]`, `[Command line]`) and the focused `▶ Close [Esc] ◄` button, so it is unclear what `Enter` will do.
@@ -313,7 +313,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-76 — Docking and pane focus keys shown where they apply
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/widgets/overlay/**`, `locales/*/help.toml`, tests
 - **Problem:** the top border shows only `Dock: centre` without the key that changes it; docked mode does not say how to move focus between the panes (`F6`).
@@ -322,7 +322,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-77 — Docked Help: key and description on one line
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-74
 - **Files:** `crates/tui/src/widgets/overlay/help_keys.rs`, `crates/tui/src/widgets/overlay/dock/**`, tests
 - **Problem:** in the narrow docked panel every shortcut takes two lines (key, then description), which means long scrolling although most pairs fit on one row.
@@ -351,7 +351,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-89 — Keyboard focus skips face-down cards
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**` (focus movement), tests
 - **Problem:** arrow keys can put the focus on face-down tableau cards, and picking one up gives `Illegal move: the card is face down.`
@@ -360,7 +360,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-90 — Quick options: the app's selection colour, one name for Aura, real buttons
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** O-75
 - **Files:** `crates/tui/src/widgets/overlay/quick_options.rs`, `locales/*/settings.toml`, tests
 - **Problem:** the active row uses a white highlight instead of the yellow selection used everywhere else; the setting is called `Aura` but its description says `Glow:`; the bottom actions (`Save as default`, `Close [Esc]`) have no button style and no focus hints.
@@ -389,7 +389,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-93 — Footer: the `v: moves` highlight clears
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/screens/board/**`, tests
 - **Problem:** `v: moves` stays highlighted in solid white after the `Possible moves` panel is closed.
@@ -408,7 +408,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-95 — Statistics: a plain summary line and footer hints for the action bar
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-82
 - **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `locales/*/stats.toml`, tests
 - **Problem:** the line `Automatic 27% (7 of 26) · failed 3 · run 1 · finish 0` reads like internal data and does not say what `7 of 26` means next to 123 games; the action bar (`[ Play this seed again ]`, `[ Copy seed ]`, `[ Check ]`, `[ Check all ]`, `[ Back ]`) has no footer hints for `Check`, `Check all` or moving between buttons.
@@ -417,7 +417,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-103 — Settings in three tabs: Audio & Visual, Popular (default), Gameplay
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-102
 - **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `crates/tui/src/settings.rs`, `locales/*/settings.toml`, `docs/tech/architecture.md` (settings screen contract), tests
 - **Problem:** the flat list of 23 options is long and mixes display, sound, system and gameplay settings in one column, leaving no room for previews and making the common ones slow to reach.
@@ -426,7 +426,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-104 — FreeCell: a gap between the free cells and the foundations
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**` (FreeCell layout), tests
 - **Problem:** FreeCell's top row has 8 evenly spaced slots (4 empty free cells, then 4 `A` foundations) with no gap or divider between the two groups.
@@ -435,7 +435,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-105 — Pyramid: blocked cards look different from playable ones
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**` (Pyramid), `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, `crates/tui/src/theme/**` (a token if needed), tests
 - **Problem:** all 28 pyramid cards have the same bright white face whether or not cards in the row below cover them, so the player has to trace overlaps to see what is playable.
@@ -444,7 +444,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-106 — Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid)
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-87
 - **Files:** `crates/tui/src/widgets/card/**`, `crates/tui/src/widgets/pile.rs`, tests
 - **Problem:** in dense face-up columns (FreeCell, Yukon) and overlapped Pyramid rows, a covered card shows a clipped half or a 1 to 2 px tip of its large centre pip just under the rank and suit header, which looks ragged.
@@ -453,7 +453,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-107 — Yukon: column 7 never runs off the bottom
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/board/**` (column layout), `crates/tui/src/layout/**`, tests
 - **Problem:** at Moves 0 with Large cards the last card of column 7 (`A ♣`) already almost touches the bottom status bar; one or two more cards would push it off screen.
@@ -462,7 +462,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-108 — Install scripts that check dependencies first (Linux, macOS, Windows)
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Priority:** P1. Building from source fails on a fresh Ubuntu (WSL).
 - **Depends on:** —
 - **Decision:** T-46
@@ -524,7 +524,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-109 — Full screen recovery and short CLI flags
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** —
 - **Files:** `src/cli.rs`, `src/main.rs`, `src/console/display.rs`, `crates/tui/src/app/display.rs`, `crates/tui/src/screens/settings/**`, tests
 - **Problem:** full screen no longer works when changed in Settings or requested at launch; the CLI accepts only the long full-screen and help commands.
@@ -533,7 +533,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-110 — Quick move from the exposed waste pile
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** —
 - **Files:** `crates/tui/src/app/**`, `crates/tui/src/screens/board/**`, tests
 - **Problem:** a shortcut can draw a card from the stock, but there is no corresponding shortcut to move the exposed waste card when it has a legal destination.
@@ -542,7 +542,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-111 — Default console width and three window sizes
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** O-109
 - **Files:** `src/console.rs`, `crates/tui/src/settings.rs`, `crates/tui/src/settings/**`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
 - **Problem:** a newly opened console starts at 120 columns instead of 130, and Settings has no choice of console window size beside Full screen.
@@ -551,9 +551,19 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 **P3 — Main view polish, widgets and wording**
 
+### O-112 — Roles by model tier instead of model names
+
+- **Owner:** Large (orchestrator)
+- **Depends on:** —
+- **Decision:** R-26
+- **Files:** `AGENTS.md`, `docs/task_list/README.md`, `docs/task_list/phase-*.md` (owners of open cards), `docs/tech/decisions.md` (R-26)
+- **Scope:** owner request 2026-11-25: roles and card owners name a model tier (huge, large, medium, small, very small,
+  embedded), never a model. Open cards are renamed (Sonnet → Medium, Haiku → Small, Opus → Large, Fable → Huge); done
+  cards keep the name of the model that did them, as a record.
+
 ### O-78 — Main menu: Resume set apart and balanced under the logo
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/main_menu.rs`, `crates/tui/src/screens/main_menu/resume.rs`, tests
 - **Problem:** the menu block is aligned to the long `Resume: Klondike, Draw 1, 0:47, Moves 26` entry, so the shorter items look shifted left under the centred `oXySol` logo.
@@ -562,7 +572,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-79 — Bottom key bar: keys in an accent colour
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/widgets/footer.rs`, `crates/tui/src/theme/**` (a token if needed), tests
 - **Problem:** in `Enter Open  Tab Language  q Quit  ? Help` keys and labels share one colour, so the bar is hard to scan.
@@ -571,7 +581,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-80 — Language selector: quieter at rest, clearer when open
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** O-70
 - **Files:** `crates/tui/src/widgets/language_picker/**`, tests
 - **Problem:** at rest the widget shows three arrows (`◄`, `►`, `▼`), which is noise; in the open list the two-letter codes (`EN`, `PL`, `DE` …) compete with the full language names.
@@ -580,7 +590,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-81 — Window title by context, en-US spelling and wording
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/widgets/overlay/**`, `locales/en-US/help.toml`, `locales/pl-PL/menu.toml`, tests
 - **Problem:** opening How to play shows the generic title `Help`; en-US uses the British `centre` (`Dock: centre`, `stays centred`); the Polish `Nowa gra z ziarna` may be unclear to players who do not know the term; Vim users pressing `j`/`k` may hit `h` (Hint) by accident.
@@ -589,7 +599,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-96 — Settings: labelled Aura swatches, a Performance section, Left/Right in the footer
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** —
 - **Files:** `crates/tui/src/screens/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, tests
 - **Problem:** the three `Aura:` preview swatches have no labels; `Process priority` sits under `Interface` rather than a performance or system group; the footer says only `Enter Change` although the rows also take `◄ ►`.
@@ -598,7 +608,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-97 — Statistics table: results by style, the legend's unchecked mark, local time
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** O-95
 - **Files:** `crates/tui/src/screens/stats.rs`, `crates/tui/src/screens/stats/**`, `locales/*/stats.toml`, tests
 - **Problem:** every `Result` (`Won`, `Abandoned`, `In progress`) has the same white text; unchecked rows in `Winnable` show `· -` while the legend says `· not checked`; times are shown in UTC.
@@ -617,7 +627,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 
 ### O-99 — Large cards: consider dropping the centred rank and suit line (optional)
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** O-87
 - **Files:** `crates/tui/src/widgets/card/**`, tests
 - **Problem:** `Large` cards show rank and suit three times: top-left (`9♠`), a centred line under the top border (`9 ♠`) and bottom-right (`9♠`).

@@ -14,7 +14,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-01 — UI/UX test plan
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P8-04, P8-05, P7-03
 - **Files:** `docs/tech/ui-test-plan.md` (new)
 - **Scope:** a plan, not code. For every screen (main menu, game menu, the board of every game, Settings and each of its
@@ -28,7 +28,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P7-01 — E2E harness and core scenarios
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P3-09, P4-02
 - **Files:** `tests/e2e/**`
 - **Scope:** in-process tests (decision T-12): a `Harness` combining `App`, a 120 × 40
@@ -47,7 +47,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-02 — Keyboard and mouse journeys per screen and per game
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P9-01, P7-01
 - **Files:** `tests/e2e/**` (the journeys), `crates/tui/src/**/tests*` only where a journey needs a test hook
 - **Shared files:** `crates/tui/src/app.rs` (only if a hook must be added there)
@@ -58,7 +58,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-03 — Locale fit at the minimum size, all nine languages
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P9-01, O-57
 - **Files:** `crates/tui/src/**/tests*` (layout tests over every complete locale), `locales/*/*.toml` (text fit only)
 - **Shared files:** `locales/en-US/*.toml`, `locales/pl-PL/*.toml` (only if the source text itself must change)
@@ -70,7 +70,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-04 — Accessibility audit
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P9-01, P3-34, P3-35
 - **Files:** `docs/tech/accessibility-audit.md` (new), tests, and the files named by the findings
 - **Scope:** audit the game against the accessibility rules of AGENTS.md, item by item: every action by keyboard and by
@@ -107,7 +107,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-05 — Card style: Portuguese suits (Unicode)
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P8-04
 - **Files:** `assets/cards/fronts/portuguese/style.toml` (new), `locales/*/cards.toml` (the style name key)
 - **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
@@ -118,7 +118,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-06 — Game: La Belle Lucie
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a public-domain rules source the owner names)
 - **Depends on:** P8-05
 - **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/belle_lucie/**`, the variant list of `oxysol-core`
@@ -133,7 +133,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P9-07 — New themes
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Status:** DRAFT (the owner names the two themes and their public source before dispatch)
 - **Depends on:** P3-36
 - **Files:** `assets/themes/<name>.toml` (two new files), `docs/tech/decisions.md` (the credit, as T-32 gives it)
@@ -145,7 +145,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P8-01 — Fixes and visual polish
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** U-03
 - **Files:** as required by the U-03 findings
 - **Scope:** fix the matrix findings, each with a reproducing test where possible. Then a visual
@@ -157,7 +157,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P8-02 — Final review
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P8-01
 - **Files:** fixes across the repository
 - **Scope:** review the whole project against `master_prompt.md` and `decisions.md`: architecture
@@ -170,7 +170,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### F-03 — Checkpoint: release sign-off
 
-- **Owner:** Opus (Fable only on escalation — R-14)
+- **Owner:** Large (Huge only on escalation — R-14)
 - **Depends on:** P8-02
 - **Scope:** read the P8-02 report and the U-03 table, not the code. Decide: release, or the list
   of blocking items. Record post-MVP items (configurable per-game options, streaming music, raster
@@ -179,7 +179,7 @@ Micro cards in this phase (micro.md): M-28 and M-29 (E2E scenarios, DRAFT until 
 
 ### P8-03 — Stable 0.9 release that ends the plan
 
-- **Owner:** Haiku + User
+- **Owner:** Small + User
 - **Depends on:** F-03, P7-02
 - **Files:** `metadata.toml`, `Cargo.toml`, `Cargo.lock`
 - **Scope:** Haiku: `metadata.toml` reads `0.9.0` from the PR that closed phase 8 (R-23, R-25); the version
