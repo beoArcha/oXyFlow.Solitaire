@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Вигляд"
 interface = "Інтерфейс"
 sound = "Звук"
+performance = "Продуктивність"
 hints = "Підказки та допомога"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Звук недоступний: не вдалося заван�
 
 [footer]
 change = "Змінити"
+arrows = "{arrows} Змінити"
 
 [graphics]
 title = "Перевірка графіки"
@@ -198,7 +200,7 @@ note = "Перегляд. Під час виходу з цього екрана 
 position = "рядок {row} з {total}"
 
 [confirm]
-keep_interface = "Зберегти змінені налаштування інтерфейсу?"
+keep_interface = "Зберегти змінені налаштування?"
 
 [face]
 consolas = "Consolas"

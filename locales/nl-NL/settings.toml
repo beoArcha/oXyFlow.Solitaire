@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Beeld"
 interface = "Interface"
 sound = "Geluid"
+performance = "Prestaties"
 hints = "Hints en hulp"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Geluid niet beschikbaar: gekozen geluidstijl kan niet geladen wo
 
 [footer]
 change = "Wijzigen"
+arrows = "{arrows} Wijzigen"
 
 [graphics]
 title = "Grafische controle"
@@ -198,7 +200,7 @@ note = "Voorbeeld. Bij het verlaten van dit scherm wordt gevraagd of de wijzigin
 position = "rij {row} van {total}"
 
 [confirm]
-keep_interface = "De gewijzigde interface-instellingen bewaren?"
+keep_interface = "De gewijzigde instellingen bewaren?"
 
 [face]
 consolas = "Consolas"

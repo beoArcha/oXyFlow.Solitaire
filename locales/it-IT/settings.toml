@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Visualizzazione"
 interface = "Interfaccia"
 sound = "Suono"
+performance = "Prestazioni"
 hints = "Suggerimenti e aiuto"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Audio non disponibile: impossibile caricare lo stile sonoro scel
 
 [footer]
 change = "Cambia"
+arrows = "{arrows} Cambia"
 
 [graphics]
 title = "Controllo grafico"
@@ -198,7 +200,7 @@ note = "Anteprima. Uscendo da questa schermata si chiede se tenere le modifiche.
 position = "riga {row} di {total}"
 
 [confirm]
-keep_interface = "Mantenere le impostazioni dell'interfaccia modificate?"
+keep_interface = "Mantenere le impostazioni modificate?"
 
 [face]
 consolas = "Consolas"

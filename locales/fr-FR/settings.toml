@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Affichage"
 interface = "Interface"
 sound = "Son"
+performance = "Performances"
 hints = "Indices et aide"
 
 [style]
@@ -159,6 +160,7 @@ style_failed = "Son indisponible : impossible de charger le style sonore sélect
 
 [footer]
 change = "Modifier"
+arrows = "{arrows} Modifier"
 
 [graphics]
 title = "Contrôle graphique"
@@ -198,7 +200,7 @@ note = "Aperçu. En quittant cet écran, on demande si les changements sont cons
 position = "ligne {row} sur {total}"
 
 [confirm]
-keep_interface = "Conserver les réglages d'interface modifiés ?"
+keep_interface = "Conserver les réglages modifiés ?"
 
 [face]
 consolas = "Consolas"
