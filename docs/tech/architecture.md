@@ -331,7 +331,7 @@ pub struct NullClipboard;                                // every copy fails wit
   (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
   press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
   digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in
-  ASCII) directly before its label and, for buttons, reverse video; `MenuList` draws the marker next to the label.
+  ASCII) directly before its label and, for buttons, bold reverse video (`Theme::focused_button`, O-75); `MenuList` draws the marker next to the label.
 - **Docked help window (P3-28):** only the help window (`Modal::Help`, `HowToPlay`, `CommandLine`, with its
   tabs) docks; the Guide window and the confirm, pause, win and alert dialogs stay centred. `d` cycles the
   placement centre → right → left, also by a click on the placement button on the top border (`Dock: <side>`);
@@ -372,14 +372,12 @@ pub struct NullClipboard;                                // every copy fails wit
   picks the game of the board's session, else Klondike. Keys: Tab cycles the tabs, Left/Right switches
   games in Rules, Up/Down/PgUp/PgDn/Home/End and the wheel scroll, Esc/Enter/Close close; arrows, tabs and
   Close are clickable.
-  *Selector focus (O-23):* the Rules tab has three parts in reading order, the tabs row, the games row and the text
-  (`how_to_play::Focus`; the window opens on the games). Up and Down move the focus down and up through them; inside
-  the text they scroll, and Up at the top returns the focus to the games. Left and Right act on the focused part only:
-  the top tab on the tabs row, the game on the games row, nothing in the text. Tab and Shift+Tab take the same order and
-  continue to the next or the previous top tab at either end; Keys and Command line, which have only a tabs row, keep
-  Tab and Left/Right for the top tabs. The focused row shows the arrows `◄ ►` (`<` `>` in ASCII) and its selection in
-  bold reverse video; the other row shows its selection as plain `[Name]` without arrows; the focused text shows `►` in
-  its left margin. The footer names what Left/Right does for the focused part (`help.rules.footer_*`).
+  *Selector keys (O-74) and styles (O-75):* the Rules tab has no focus rows: Tab and Shift+Tab switch the main Help
+  tab as on Keys and Command line, Left and Right switch the game, Up, Down, PageUp, PageDown, Home and End scroll
+  the text, exactly as the shared footer says. The active main tab and the selected game are shown as `[Name]` in
+  the active-tab style (`Theme::active_tab`: accent on surface, bold and underlined); a focused button is framed by
+  `▶ ◄` (`>` `<` in ASCII) in the focused-button style (`Theme::focused_button`: bold reverse video), so the two
+  never look alike, with or without colour.
   *Close and scroll bar (O-23):* the Close button of every tab and of the guide window reads `Close [Esc]`
   (`help.rules.close` with the key). Every scrolling window (Rules, Command line, guide window) draws a vertical
   scroll bar (`widgets/scrollbar.rs`) in the last column inside the frame, from `Glyphs::scroll_track` and

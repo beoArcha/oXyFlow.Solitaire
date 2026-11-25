@@ -133,7 +133,7 @@ fn draw_row(frame: &mut Frame, row: Rect, name: &str, ctx: &ViewCtx<'_>) {
         "{} {} {}",
         ctx.glyphs.focus_right, name, ctx.glyphs.focus_left
     );
-    let style = ctx.theme.surface().add_modifier(Modifier::BOLD);
+    let style = ctx.theme.active_tab();
     let (start, end) = span(row, name);
     let placed = Rect::new(start, row.y, end.saturating_sub(start), row.height).intersection(row);
     frame.render_widget(Paragraph::new(Line::styled(text, style)), placed);
@@ -206,10 +206,7 @@ pub fn draw(
         Paragraph::new(Line::styled(footer_hints(), ctx.theme.surface())),
         hints_rect(rect),
     );
-    let close_style = ctx
-        .theme
-        .surface()
-        .add_modifier(Modifier::BOLD | Modifier::REVERSED);
+    let close_style = ctx.theme.focused_button();
     frame.render_widget(
         Paragraph::new(Line::styled(close_label(), close_style)),
         close_rect(rect),

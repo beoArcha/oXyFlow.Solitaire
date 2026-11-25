@@ -3,7 +3,6 @@
 
 use ratatui::Frame;
 use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
-use ratatui::style::Modifier;
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
@@ -147,7 +146,7 @@ pub fn arrows(ctx: &ViewCtx<'_>) -> (String, String) {
 }
 
 /// Draws the tabs in `row`. The row that has the focus shows the arrows and its tab in bold
-/// reverse video; a row without the focus shows its tab in brackets, in plain type.
+/// underlined accent text; a row without the focus shows its tab in brackets, in plain type.
 pub fn draw_top_tabs(
     frame: &mut Frame,
     row: Rect,
@@ -166,7 +165,7 @@ pub fn draw_top_tabs(
         let name = t(tab.label_key());
         let (text, style) = if tab == current {
             let selected = if focused {
-                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED)
+                ctx.theme.active_tab()
             } else {
                 plain
             };

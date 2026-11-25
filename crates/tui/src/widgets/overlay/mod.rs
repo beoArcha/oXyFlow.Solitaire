@@ -33,6 +33,8 @@ mod search;
 mod separator_tests;
 #[cfg(test)]
 mod tab_click_tests;
+#[cfg(test)]
+mod tab_focus_tests;
 mod tabs;
 #[cfg(test)]
 mod tests;

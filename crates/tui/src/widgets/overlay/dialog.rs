@@ -1,10 +1,10 @@
 //! Dialog chrome: a centered box with a title, text lines and a row of buttons. The focused button
-//! is framed by markers and drawn bold and reversed, so focus is visible without color. Borders
-//! and markers use only WGL4 characters in Unicode mode and plain ASCII otherwise.
+//! is framed by markers and drawn in the focus highlight with bold reverse video, so focus is
+//! visible without color. Borders and markers use only WGL4 characters in Unicode mode and plain
+//! ASCII otherwise.
 
 use ratatui::Frame;
 use ratatui::layout::{Alignment, Margin, Rect};
-use ratatui::style::Modifier;
 use ratatui::symbols::border;
 use ratatui::text::Line;
 use ratatui::widgets::{Block, Clear, Paragraph, Wrap};
@@ -208,17 +208,15 @@ pub fn draw_lines(frame: &mut Frame, area: Rect, lines: &[String], ctx: &ViewCtx
     );
 }
 
-/// Draws each button in its rectangle. The focused one is framed by markers and drawn bold and
-/// reversed; the others keep the same width with blanks in place of the markers.
+/// Draws each button in its rectangle. The focused one is framed by markers and drawn in the
+/// focused button style; the others keep the same width with blanks in place of the markers.
 pub fn draw_buttons(frame: &mut Frame, geometry: &Geometry, buttons: &[Button], ctx: &ViewCtx<'_>) {
     let (left, right) = markers(ctx);
     for (button, rect) in buttons.iter().zip(&geometry.buttons) {
         let (text, style) = if button.focused {
             (
                 format!("{left} {} {right}", button.label),
-                ctx.theme
-                    .surface()
-                    .add_modifier(Modifier::BOLD | Modifier::REVERSED),
+                ctx.theme.focused_button(),
             )
         } else {
             (format!("  {}  ", button.label), ctx.theme.surface())
