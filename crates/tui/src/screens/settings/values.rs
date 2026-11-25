@@ -1,6 +1,8 @@
 //! What a row of the settings screen shows and when it is unavailable.
 
+#[cfg(test)]
 pub use super::change::changed;
+pub use super::change::changed_for_facts;
 use super::font_rows;
 use super::options::{FIELDS, Field};
 use super::priority_row;
@@ -127,6 +129,7 @@ fn aid_text(field: Field, settings: &Settings) -> String {
 pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo]) -> String {
     match field {
         Field::Language => settings.locale.own_name().to_owned(),
+        Field::LowVision => switch_text(settings.low_vision),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
         Field::ColorVision => t(settings.color_vision.label_key()).into_owned(),
         Field::CardBack => t(card_back_key(settings.card_back)).into_owned(),

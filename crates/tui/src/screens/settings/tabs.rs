@@ -25,10 +25,11 @@ pub enum Tab {
     Gameplay,
 }
 
-const AUDIO_VISUAL_FIELDS: [Field; 25] = [
+const AUDIO_VISUAL_FIELDS: [Field; 26] = [
     Field::Colors,
     Field::FullScreen,
     Field::WindowSize,
+    Field::LowVision,
     Field::Theme,
     Field::ColorVision,
     Field::CardBack,
@@ -53,8 +54,9 @@ const AUDIO_VISUAL_FIELDS: [Field; 25] = [
     Field::Priority,
 ];
 
-const POPULAR_FIELDS: [Field; 7] = [
+const POPULAR_FIELDS: [Field; 8] = [
     Field::Language,
+    Field::LowVision,
     Field::Theme,
     Field::CardSize,
     Field::CardBack,

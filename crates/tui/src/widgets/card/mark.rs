@@ -40,8 +40,9 @@ impl Mark {
     }
 
     /// The symbols of the top row, most important first. A target is marked in the corners and
-    /// in the middle of an empty slot instead.
-    pub(super) fn symbols(self, glyphs: &Glyphs) -> Vec<&'static str> {
+    /// in the middle of an empty slot instead. When `low_vision` is on, the focus marker is doubled
+    /// where space permits.
+    pub(super) fn symbols(self, glyphs: &Glyphs, low_vision: bool) -> Vec<&'static str> {
         let hint = self.hint.map(|role| match role {
             Hint::Source => glyphs.hint_source,
             Hint::Target => glyphs.hint_target,
@@ -49,6 +50,7 @@ impl Mark {
         [
             self.selected.then_some(glyphs.selected),
             self.focus.then_some(glyphs.focus_left),
+            (low_vision && self.focus).then_some(glyphs.focus_left),
             hint,
         ]
         .into_iter()

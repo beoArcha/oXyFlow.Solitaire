@@ -16,6 +16,7 @@ mod guide_new_game;
 mod guide_window;
 mod guide_winnable;
 mod layout;
+mod low_vision;
 mod mouse;
 mod moves;
 mod moves_panel;

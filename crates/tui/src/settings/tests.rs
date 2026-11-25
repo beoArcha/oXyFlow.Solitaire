@@ -400,3 +400,75 @@ fn color_vision_and_four_color_deck_are_previewed_with_interface() {
     assert_eq!(kept.color_vision, ColorVision::Normal);
     assert!(!kept.four_color_deck);
 }
+
+#[test]
+fn low_vision_defaults_off_and_unoffered_and_old_settings_load_as_not_offered() {
+    let defaults = Settings::default();
+    assert!(!defaults.low_vision);
+    assert!(!defaults.low_vision_offered);
+    assert_eq!(defaults.low_vision_saved, None);
+
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(
+        parsed,
+        Ok(ref s) if !s.low_vision && !s.low_vision_offered && s.low_vision_saved.is_none()
+    ));
+}
+
+#[test]
+fn low_vision_bundle_applies_and_reverts_exact_previous_values() {
+    let base = Settings {
+        theme: ThemeId::Dracula,
+        card_size: CardSizeSetting::Medium,
+        aura_size: AuraSize::Thin,
+        console_font_size: 16,
+        ..Settings::default()
+    };
+
+    let on_classic = base.with_low_vision(true, true);
+    assert!(on_classic.low_vision);
+    assert_eq!(on_classic.theme, ThemeId::HighContrast);
+    assert_eq!(on_classic.card_size, CardSizeSetting::Auto);
+    assert_eq!(on_classic.aura_size, AuraSize::Thick);
+    assert_eq!(on_classic.console_font_size, LOW_VISION_MIN_FONT_SIZE);
+
+    let adjusted = Settings {
+        theme: ThemeId::Monokai,
+        card_size: CardSizeSetting::Large,
+        aura_size: AuraSize::Thin,
+        console_font_size: 32,
+        ..on_classic
+    };
+    let reverted = adjusted.with_low_vision(false, true);
+    assert!(!reverted.low_vision);
+    assert_eq!(reverted.low_vision_saved, None);
+    assert_eq!(reverted, base);
+
+    let on_other = base.with_low_vision(true, false);
+    assert_eq!(on_other.console_font_size, 16);
+    assert_eq!(on_other.with_low_vision(false, false), base);
+
+    let already_large = Settings {
+        console_font_size: 28,
+        ..base.clone()
+    };
+    let kept_large = already_large.with_low_vision(true, true);
+    assert_eq!(kept_large.console_font_size, 28);
+    assert_eq!(kept_large.with_low_vision(false, true), already_large);
+}
+
+#[test]
+fn low_vision_round_trips_and_previews_with_interface() {
+    let base = Settings {
+        theme: ThemeId::Light,
+        console_font_size: 14,
+        ..Settings::default()
+    };
+    let on = base.with_low_vision(true, true);
+    let text = toml::to_string(&on).unwrap_or_default();
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == on));
+
+    let kept = on.with_interface_of(&base);
+    assert_eq!(kept, base);
+}
