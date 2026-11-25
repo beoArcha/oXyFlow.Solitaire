@@ -3,6 +3,8 @@
 use std::path::PathBuf;
 
 use crate::check_result::CheckResultError;
+#[cfg(feature = "art")]
+use crate::curated_seeds::CuratedSeedsError;
 use crate::fonts::FontsError;
 #[cfg(feature = "art")]
 use crate::icon::IconError;
@@ -75,6 +77,9 @@ pub enum XtaskError {
     #[cfg(feature = "art")]
     #[error(transparent)]
     Icon(#[from] IconError),
+    #[cfg(feature = "art")]
+    #[error(transparent)]
+    CuratedSeeds(#[from] CuratedSeedsError),
     #[cfg(feature = "art")]
     #[error(transparent)]
     LocaleDiff(#[from] LocaleDiffError),
