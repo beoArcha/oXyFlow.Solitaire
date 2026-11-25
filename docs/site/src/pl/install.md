@@ -22,6 +22,35 @@ wydania pozwala sprawdzić pobrany plik.
 
 Budujesz gałąź `release`, czyli ostatni commit, który przeszedł pełną kontrolę w systemach Linux, Windows i macOS.
 
+### Przez skrypt instalacyjny (zalecane)
+
+Skrypty w katalogu `build/` najpierw sprawdzają wszystkie wymagane zależności, a dopiero potem budują i instalują
+`oxysol` w `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` w systemie Windows):
+
+- `--check` — zatrzymuje się przy pierwszej brakującej zależności z niezerowym kodem wyjścia.
+- `--list` — wypisuje wszystkie brakujące zależności wraz z dokładnym poleceniem instalacji dla tego systemu.
+- `--install` — pyta o zgodę przed instalacją brakujących zależności przez menedżer pakietów, sprawdza ponownie i
+  buduje dopiero wtedy, gdy drugie sprawdzenie przejdzie.
+- `--no-audio` — pomija sprawdzanie ALSA i `pkg-config` w systemie Linux i buduje z `--no-default-features`.
+
+Bez flagi trybu interaktywny terminal pyta, którego trybu użyć; uruchomienie nieinteraktywne działa jak `--list`.
+
+**Linux i macOS** (tryby `--check` i `--list` sprawdzone w CI; `--install` jeszcze niesprawdzone):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (tryby `--check` i `--list` sprawdzone w systemie Windows; `--install` jeszcze niesprawdzone):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Zamień `--list` na `--install`, aby zainstalować brakujące zależności i zbudować grę.
+
+### Ręcznie
+
 **Potrzebny jest Rust.** Zainstaluj go przez [rustup](https://rustup.rs). Dokładna wersja narzędzi jest przypięta w
 pliku `rust-toolchain.toml`; rustup sam ją znajdzie i zainstaluje przy pierwszej kompilacji, więc nic więcej nie
 trzeba ustawiać. Kompilacja buduje też odrobinę kodu w C (SQLite), więc potrzebny jest kompilator C:
@@ -29,8 +58,8 @@ trzeba ustawiać. Kompilacja buduje też odrobinę kodu w C (SQLite), więc potr
 - **Windows:** Visual Studio Build Tools (lub Visual Studio) z pakietem „Programowanie aplikacji klasycznych w
   języku C++” (ang. „Desktop development with C++”). rustup proponuje ich instalację.
 - **macOS:** narzędzia wiersza poleceń Xcode: `xcode-select --install`.
-- **Linux:** kompilator C (`gcc` lub `cc`) i `curl`. Dla dźwięku także nagłówki ALSA, na przykład
-  `sudo apt install build-essential libasound2-dev` w Debianie i Ubuntu. Bez nich zbuduj program poleceniem
+- **Linux:** kompilator C (`gcc` lub `cc`), `curl` i `tar`. Dla dźwięku także `pkg-config` i nagłówki ALSA, na przykład
+  `sudo apt install build-essential pkg-config libasound2-dev` w Debianie i Ubuntu. Bez nich zbuduj program poleceniem
   `cargo build --release --no-default-features`, które pomija dźwięk.
 
 Pierwsza kompilacja trwa kilka minut.
