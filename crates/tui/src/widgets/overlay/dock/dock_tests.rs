@@ -7,6 +7,9 @@ use super::super::{CommandLine, HowToPlay, Rules};
 use super::dock_view;
 use super::{self as dock, DockState};
 use crate::app::Modal;
+
+#[path = "keys_tests.rs"]
+mod keys_tests;
 use crate::input::action_for_key;
 use crate::screens::Effect;
 use crate::settings::DockSide;
