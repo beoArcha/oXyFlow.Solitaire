@@ -2,7 +2,7 @@
 
 use super::options::{
     AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FULL_SCREEN_MODES, Field,
-    GLYPH_MODES, Step, back_styles, front_styles,
+    GLYPH_MODES, Step, WINDOW_SIZES, back_styles, front_styles,
 };
 use crate::audio::StyleInfo;
 use crate::i18n::Locale;
@@ -94,6 +94,9 @@ pub fn changed(
         }
         Field::FullScreen => {
             next.full_screen = cycle(&FULL_SCREEN_MODES, settings.full_screen, step);
+        }
+        Field::WindowSize => {
+            next.window_size = cycle(&WINDOW_SIZES, settings.window_size, step);
         }
         Field::SoundStyle => {
             let ids: Vec<&str> = sound_styles.iter().map(|style| style.id.as_str()).collect();

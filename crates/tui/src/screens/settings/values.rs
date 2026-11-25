@@ -8,7 +8,7 @@ use crate::app::{CardFontState, FontFacts};
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
 use crate::i18n::{t, tf};
-use crate::settings::{CardBack, ColorMode, FullScreen, GlyphMode, Settings};
+use crate::settings::{CardBack, ColorMode, FullScreen, GlyphMode, Settings, TerminalKind};
 use crate::theme::ThemeId;
 use crate::theme::table::felt_for;
 
@@ -146,6 +146,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::AuraSize => t(settings.aura_size.label_key()).into_owned(),
         Field::Priority => t(settings.process_priority.label_key()).into_owned(),
         Field::FullScreen => t(full_screen_key(settings.full_screen)).into_owned(),
+        Field::WindowSize => t(settings.window_size.label_key()).into_owned(),
         Field::SoundStyle => sound_style_name(sound_styles, &settings.sound_style).to_owned(),
         Field::Cues => switch_text(settings.cues),
         Field::Music => switch_text(settings.music),
@@ -176,6 +177,8 @@ fn console_font_value(settings: &Settings, facts: FontFacts) -> String {
 pub(super) fn is_unavailable(field: Field, audio_available: bool, facts: FontFacts) -> bool {
     (field.is_audio() && !audio_available)
         || (field == Field::ConsoleFont && facts.card_font == CardFontState::Unavailable)
+        || (field == Field::WindowSize
+            && (facts.terminal != TerminalKind::ClassicConsole || !facts.owns_window))
         || font_rows::is_inert(field, facts)
 }
 
@@ -201,6 +204,9 @@ pub fn line(
     }
     if field == Field::Priority {
         value = priority_row::value(settings, facts);
+    }
+    if field == Field::WindowSize && is_unavailable(field, audio_available, facts) {
+        value = t("settings.value.unavailable").into_owned();
     }
     if field.is_audio() && !audio_available {
         value = format!("{value} ({})", t("settings.value.unavailable"));

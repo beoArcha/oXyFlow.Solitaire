@@ -14,6 +14,7 @@ mod full_screen;
 mod interface;
 mod priority;
 mod table;
+mod window_size;
 pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
 pub use card_face::CardFaceTint;
@@ -25,6 +26,7 @@ pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
 pub use interface::{AuraColour, AuraSize, AuraStyle};
 pub use priority::ProcessPriority;
 pub use table::{TableColour, TableFeel};
+pub use window_size::WindowSize;
 
 use crate::audio::AudioSettings;
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -119,6 +121,9 @@ pub struct Settings {
     /// Whether the game fills the whole screen. An older saved value without the field loads as
     /// `Auto`.
     pub full_screen: FullScreen,
+    /// The window size requested for a console window the game owns, when windowed. An older
+    /// saved value without the field loads as `Small`.
+    pub window_size: WindowSize,
     /// Which pattern and palette face-down cards use.
     pub card_back: CardBack,
     /// The color of face-up cards; the suit colors adapt to it. An older saved value without the
@@ -176,6 +181,7 @@ impl Default for Settings {
             aura: AuraMode::Full,
             target_marks: true,
             full_screen: FullScreen::Auto,
+            window_size: WindowSize::Small,
             card_back: CardBack::Theme,
             card_face: CardFaceTint::Theme,
             color_vision: ColorVision::Normal,

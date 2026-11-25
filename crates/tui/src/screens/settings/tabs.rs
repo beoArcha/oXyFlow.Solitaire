@@ -25,9 +25,10 @@ pub enum Tab {
     Gameplay,
 }
 
-const AUDIO_VISUAL_FIELDS: [Field; 24] = [
+const AUDIO_VISUAL_FIELDS: [Field; 25] = [
     Field::Colors,
     Field::FullScreen,
+    Field::WindowSize,
     Field::Theme,
     Field::ColorVision,
     Field::CardBack,
