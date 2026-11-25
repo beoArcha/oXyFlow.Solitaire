@@ -24,6 +24,7 @@ Order of work: the Interface options first, then the card style and the games, w
   is shown with a warning and the nearest passing shade is offered.
 - **Acceptance:** every preset and feel rendered in every theme; the contrast tests run on each
   combination; the choice remembered; both locales.
+- **Done:** #236
 
 ### P3-33 — Card face tint
 
@@ -36,6 +37,7 @@ Order of work: the Interface options first, then the card style and the games, w
   and black suits keep their contrast on the chosen face (tested).
 - **Acceptance:** every tint at every card size in every theme; suit contrast tests per tint; the choice
   remembered; both locales.
+- **Done:** #228
 
 ### P3-34 — Low-vision mode
 
@@ -50,6 +52,7 @@ Order of work: the Interface options first, then the card style and the games, w
   The mode is offered on the first start and in Settings.
 - **Acceptance:** the bundle applied and reverted; every text pair at 7:1 in the mode; renders at
   100 × 30 and 130 × 40; both locales; a wiki page section.
+- **Done:** #274 (scope extended: `app.rs`, main-menu banner, board layout; started by Dad, finished by Beo)
 
 ### P3-35 — Color-blind modes
 
@@ -67,6 +70,7 @@ Order of work: the Interface options first, then the card style and the games, w
   difference between tokens that must be told apart.
 - **Acceptance:** the simulation tests per mode; the four-color deck at every card size; the signs on
   events; renders per mode; both locales.
+- **Done:** #249
 
 ### P5-03 — Card style: Spanish suits (Unicode)
 
@@ -81,6 +85,7 @@ Order of work: the Interface options first, then the card style and the games, w
     the PR, ASCII letters (suggested O, C, E, B), colour tokens, and colour never the only signal.
 - **Acceptance:** the same tests as P4-08 for this style; both locales carry the style name; the symbol table with its
   coverage is in the PR description.
+- **Done:** #230
 
 ### P5-04 — Game: Golf
 
@@ -100,6 +105,7 @@ Order of work: the Interface options first, then the card style and the games, w
   - Rules tab, menu entry and the rules page as in P4-10.
 - **Acceptance:** engine tests for each legal and illegal move and for the stock; on 50 seeds (0 to 49) every solver
   verdict of "winnable" replays on the engine, and the timing is recorded in the PR; both locales.
+- **Done:** #240
 
 ### P5-05 — Solver: Spider with 2 and 4 suits
 
@@ -114,6 +120,7 @@ Order of work: the Interface options first, then the card style and the games, w
 - **Acceptance:** before and after tables for 2 and 4 suits on seeds 0 to 49 (winnable, unwinnable, unknown, average
   and slowest time); every "winnable" replays on the engine; no "unwinnable" without an exhausted search; the 1-suit row
   does not get worse.
+- **Done:** #250 (scope extended by the orchestrator: `solver/mod.rs` dispatch, `solver/tests/api.rs`; `tui/src/solver.rs` (slow-to-prove list))
 
 ### P5-06 — New game from seed: game first, then a seed from played games, random replay, five difficulty levels
 
@@ -134,6 +141,7 @@ Order of work: the Interface options first, then the card style and the games, w
     part (Codex), and the screen flow part (Haiku) reads it; the two run in parallel.
 - **Acceptance:** keyboard and mouse tests for the flow; the curated table has 3 × 5 seeds for every game variant
   with a proof of winnability; the levels are ordered by the chosen metric (documented in the card's PR).
+- **Done:** #273, #275, #277 (T-49 rules by the orchestrator; generator `cargo xtask-art curated-seeds`; three seeds per level (owner); scope extended to `app/effects.rs`, `screens/stats.rs` re-exports)
 
 ### P5-07 — Better hints: a hint that leads toward a win
 
@@ -148,6 +156,7 @@ Order of work: the Interface options first, then the card style and the games, w
 - **Acceptance:** for each variant, a table on seeds 0 to 199: deals won by playing hints only, before and after; no
   variant gets worse; following hints still never repeats a position; a hint never takes longer than the existing
   budget.
+- **Done:** #254 (finished by the orchestrator after the agent hit its quota; `games/progress.rs` (hint profiles), Spider and FreeCell rule fixes, T-48)
 
 ### O-68 — Help window: a mouse click on the Keys and Command line tabs switches to them
 
@@ -208,6 +217,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** with Help docked right (`Dock: right`) the version (`v0.5.0`) in the bottom-right corner of the main view touches the double yellow border of the panel.
 - **Fix:** keep one or two columns between the main view's footer and the docked panel border.
 - **Acceptance:** a test docks Help left and right and finds at least one empty column between the version label (and any footer text) and the panel border.
+- **Done:** #226
 
 ### O-82 — Statistics footer: a space between `Copy seed` and `Esc Back`
 
@@ -247,6 +257,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** moving `A ♥` to a foundation uncovers the face-down `2 ♦` in column 4, but the top bar still shows `Turned over: 0`.
 - **Fix:** decide from the code what the counter counts: if it counts stock turns, rename it (for example `Stock draws`); if it is meant to count revealed cards, count each face-down tableau card that turns over. Record the choice on the card.
 - **Acceptance:** a test reveals a tableau card and checks the counter (or the new label); all nine locales.
+- **Done:** #227
 
 ### O-86 — Settings: `Font face` shows its own value
 
@@ -266,6 +277,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** Spider (1 suit) draws `A` in all 8 top completion slots, although Spider removes full king-to-ace runs and does not build up from aces; Pyramid (Relaxed) draws `A` in the bottom-right pile of removed cards, where pairs that add up to 13 go.
 - **Fix:** a marker that fits the game: in Spider `K`, `✓` or an empty frame; in Pyramid `13`, `×` or an empty frame. Each has a WGL4 and an ASCII form, and the How to play text agrees.
 - **Acceptance:** a test renders a fresh Spider and Pyramid deal and finds no `A` in those slots; Klondike, FreeCell and Yukon foundations still show `A`.
+- **Done:** #234
 
 ### O-101 — Yukon footer: `Enter: pick up` and `a: quick move` when a card can move
 
@@ -275,6 +287,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** in Yukon, with the focus on a playable face-up card (`J ♥` in column 1), the `Do:` bar shows only `Arrows: move | h: hint | i: how to play…`, without `Enter: pick up` and `a: quick move`.
 - **Fix:** the contextual hints offer `Enter: pick up` and `a: quick move` whenever the focused card or group can move, in every Yukon variant (likely the footer still assumes a game without group moves from any face-up card).
 - **Acceptance:** a test focuses a movable face-up card in each Yukon variant and finds both hints; a face-down or blocked card does not show them.
+- **Done:** #231
 
 ### O-102 — Settings: a live preview pane instead of the 4 × 1 swatch
 
@@ -286,6 +299,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** a test changes each listed option and finds the preview changed; the 4 × 1 swatch is gone; fits at 100 × 30 (preview below or hidden) and 130 × 40 (side by side) in all nine locales.
 
 **P2 — Focus, navigation and consistency**
+- **Done:** #241
 
 ### O-73 — Docked Help: dim the selection in the pane without focus
 
@@ -305,6 +319,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the footer differs by tab: `Keys` has a scrollbar but no line counter (`1-X / Y`) and no scroll hints; `Rules` has no `Tab` hint and says `Up/Down: move focus`, which is unclear; `Command line` shows `Tab: next tab`, the scroll keys and the counter.
 - **Fix:** one footer format for `Keys`, `Rules` and `Command line`: the line counter whenever the text overflows, the main tab switch (`Tab`), the game switch on `Rules` (`Left/Right`), scrolling and closing (`Esc`).
 - **Acceptance:** a test renders each tab with overflowing text and finds the same footer entries in the same order; all nine locales.
+- **Done:** #251
 
 ### O-75 — Windows: the active tab and the focused button look different
 
@@ -314,6 +329,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the same solid white background with black text marks the active tabs (`[Keys]`, `[Klondike]`, `[Command line]`) and the focused `▶ Close [Esc] ◄` button, so it is unclear what `Enter` will do.
 - **Fix:** a separate style for the active tab and for the focused button, so the player sees at once what `Enter` triggers; neither relies on colour alone.
 - **Acceptance:** a test checks that the active-tab and focused-button styles differ in every theme and that both keep a non-colour marker; contrast tests pass.
+- **Done:** #268 (finished by the orchestrator after the agent hit its quota)
 
 ### O-76 — Docking and pane focus keys shown where they apply
 
@@ -323,6 +339,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the top border shows only `Dock: centre` without the key that changes it; docked mode does not say how to move focus between the panes (`F6`).
 - **Fix:** the border label names the key (`Dock: center [d]`, key taken from the key table) and the docked panel footer shows compact `d Dock  F6 Focus` hints.
 - **Acceptance:** a test finds the key in the border label and the two hints in the docked footer; keys come from the key table, not literals; all nine locales.
+- **Done:** #229
 
 ### O-77 — Docked Help: key and description on one line
 
@@ -332,6 +349,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** in the narrow docked panel every shortcut takes two lines (key, then description), which means long scrolling although most pairs fit on one row.
 - **Fix:** a two-column row (a key column of about 11 to 12 characters and the description on the same line); only long key combinations (for example `Ctrl +/-/0`) wrap to a second line.
 - **Acceptance:** a test at the docking width finds key and description on one row for short keys and a wrap only for long ones; fewer rows than before; all nine locales fit.
+- **Done:** #270
 
 ### O-87 — Large cards: a spade with a clear stem
 
@@ -361,6 +379,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** arrow keys can put the focus on face-down tableau cards, and picking one up gives `Illegal move: the card is face down.`
 - **Fix:** Up and Down within a column skip face-down cards; entering a column lands on the first face-up card, or on the empty slot.
 - **Acceptance:** tests in Klondike and Yukon move through columns with face-down cards and never focus one; the mouse is unchanged.
+- **Done:** #237
 
 ### O-90 — Quick options: the app's selection colour, one name for Aura, real buttons
 
@@ -370,6 +389,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the active row uses a white highlight instead of the yellow selection used everywhere else; the setting is called `Aura` but its description says `Glow:`; the bottom actions (`Save as default`, `Close [Esc]`) have no button style and no focus hints.
 - **Fix:** the yellow selection style for the active row, `Aura` in every label and description, and the bottom actions drawn and focused like the other windows' buttons (`[…]`).
 - **Acceptance:** a test checks the row style token, the word `Glow` is gone from all nine locales, and the buttons can be focused and pressed by keyboard and mouse.
+- **Done:** #269
 
 ### O-91 — Possible moves: readable unavailable entries, active ones first
 
@@ -399,6 +419,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** `v: moves` stays highlighted in solid white after the `Possible moves` panel is closed.
 - **Fix:** hover and click highlights on footer entries clear when the panel is toggled off and when the player goes back to the keyboard.
 - **Acceptance:** a test opens and closes the panel by mouse and by key and finds no highlight left on the entry.
+- **Done:** #253 (the hover cell lives in `crates/tui/src/app/event.rs`)
 
 ### O-94 — Settings: unavailable rows dimmed; no reference to a missing screen
 
@@ -418,6 +439,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the line `Automatic 27% (7 of 26) · failed 3 · run 1 · finish 0` reads like internal data and does not say what `7 of 26` means next to 123 games; the action bar (`[ Play this seed again ]`, `[ Copy seed ]`, `[ Check ]`, `[ Check all ]`, `[ Back ]`) has no footer hints for `Check`, `Check all` or moving between buttons.
 - **Fix:** a line a player understands (what is counted and out of what), and footer hints for every action-bar button and for moving between them.
 - **Acceptance:** a test renders the summary and finds the new wording and every action in the footer; fits at 100 × 60 (T-40) in all nine locales.
+- **Done:** #248
 
 ### O-103 — Settings in three tabs: Audio & Visual, Popular (default), Gameplay
 
@@ -427,6 +449,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the flat list of 23 options is long and mixes display, sound, system and gameplay settings in one column, leaving no room for previews and making the common ones slow to reach.
 - **Fix:** three tabs with `Popular` in the middle and active by default (`◄ Audio & Visual │ [Popular] │ Gameplay ►`). **Popular:** the 7 or 8 most changed settings (for example Language, Theme, Card size, Card back, Volume, Aura, Auto-finish) as aliases of their canonical rows; a change in either place shows in both. **Audio & Visual:** Colors, Full screen, Theme, Card back, Front style, Back style, Symbols, Console font, Font face, Font size, Card size, Aura colour, Aura style, Aura size, Sound style, Sound cues, Music, Volume, Process priority. **Gameplay:** Language, Aura, Target marks, Guide panel, Possible moves panel, Auto-finish and later gameplay options. `Tab` / `Shift+Tab` (optionally `[` / `]`) switch tabs from anywhere, so `Left` / `Right` only change values; the footer says `Shift+Tab / Tab: tab`. This replaces the `Performance` section part of O-96 (Process priority goes to Audio & Visual).
 - **Acceptance:** tests: Popular is active on open; every setting is reachable in its canonical tab; changing an alias changes the canonical value and the other way round; Tab and Shift+Tab switch tabs and Left/Right never do; keyboard and mouse reach every tab and row; all nine locales fit at 100 × 30.
+- **Done:** #271
 
 ### O-104 — FreeCell: a gap between the free cells and the foundations
 
@@ -436,6 +459,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** FreeCell's top row has 8 evenly spaced slots (4 empty free cells, then 4 `A` foundations) with no gap or divider between the two groups.
 - **Fix:** a wider gap between slot 4 and slot 5, and optionally a quiet distinct style for the free cells, so the two zones read apart without colour.
 - **Acceptance:** a test finds a wider gap between the fourth and fifth slot than between the others at every card size; FreeCell still fits at 100 × 30.
+- **Done:** #238
 
 ### O-105 — Pyramid: blocked cards look different from playable ones
 
@@ -445,6 +469,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** all 28 pyramid cards have the same bright white face whether or not cards in the row below cover them, so the player has to trace overlaps to see what is playable.
 - **Fix:** a subtle dim or shade (face or border) on covered cards so uncovered, playable cards stand out; it must not rely on colour alone (for example a dimmer frame glyph as well) and must pass the contrast tests.
 - **Acceptance:** a test on a fresh deal finds the 7 bottom cards in the playable style and the 21 others in the blocked style; contrast tests pass in every theme.
+- **Done:** #239
 
 ### O-106 — Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid)
 
@@ -454,6 +479,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** in dense face-up columns (FreeCell, Yukon) and overlapped Pyramid rows, a covered card shows a clipped half or a 1 to 2 px tip of its large centre pip just under the rank and suit header, which looks ragged.
 - **Fix:** when a card is covered from below, do not draw the clipped part of its centre pip (or tidy the visible header strip), so a covered card shows only a clean rank and suit index.
 - **Acceptance:** snapshots of covered cards in each of the three games at every card size show no partial pip rows; an uncovered card is unchanged.
+- **Done:** #261
 
 ### O-107 — Yukon: column 7 never runs off the bottom
 
@@ -463,6 +489,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** at Moves 0 with Large cards the last card of column 7 (`A ♣`) already almost touches the bottom status bar; one or two more cards would push it off screen.
 - **Fix:** compress the vertical card spacing of a column as it grows (face-down cards first, then face-up overlap) so the whole column, its last card fully visible, always fits above the status bar; fall back to a smaller card size only when compression is not enough. (The review text for this item was cut off after "Ensure dynamic vertical compression of"; the owner may refine the fix.)
 - **Acceptance:** a test builds the longest possible Yukon column (6 face-down + 18 face-up, and longer after moves) at 100 × 30 and 100 × 60 with every card size and finds the last card fully drawn above the status bar; the same test covers Klondike and Spider.
+- **Done:** #257
 
 ### O-108 — Install scripts that check dependencies first (Linux, macOS, Windows)
 
@@ -525,6 +552,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
   - ShellCheck passes on `install.sh`, and PSScriptAnalyzer passes on `install.ps1`.
   - The owner runs `--install` on Ubuntu (WSL), and the PR records the result.
   - Both locales of the site page are updated.
+- **Done:** #243, #246 (site install pages in all nine languages; T-46)
 
 ### O-109 — Full screen recovery and short CLI flags
 
@@ -534,6 +562,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** full screen no longer works when changed in Settings or requested at launch; the CLI accepts only the long full-screen and help commands.
 - **Fix:** restore full-screen switching both from the Settings option and from the launch flag; accept `-fs` as an alias for `--fullscreen` and `-h` as an alias for `--help`. Preserve `--no-fullscreen` and existing help output.
 - **Acceptance:** tests cover entering and leaving full screen through Settings, the launch override, both aliases, and the existing long forms; the last full-screen flag still wins.
+- **Done:** #244, #256
 
 ### O-110 — Quick move from the exposed waste pile
 
@@ -543,6 +572,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** a shortcut can draw a card from the stock, but there is no corresponding shortcut to move the exposed waste card when it has a legal destination.
 - **Fix:** add a keyboard shortcut that checks legal destinations for the exposed waste card and sends the selected move through the existing command pattern. When more than one destination is legal, use the last position in the existing destination order. Choose a key that does not conflict with current bindings and show it in the board hints.
 - **Acceptance:** tests cover no legal move, one legal move, multiple legal moves (the last destination is used), and that the move is submitted through the command path; the hint is visible and the action works by keyboard and mouse-accessible controls.
+- **Done:** #265 (owner decision: new key `e`; `action.rs`, `input/table.rs`, `widgets/guide/keys.rs`)
 
 ### O-111 — Default console width and three window sizes
 
@@ -554,6 +584,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** tests cover the default 130-column startup and each size's requested dimensions; all nine locales name the choices and fit the Settings layout at 100 × 30.
 
 **P3 — Main view polish, widgets and wording**
+- **Done:** #272 (scope extended: `app/{display,font,effects}.rs`, `app.rs`, `src/console/display.rs`)
 
 ### O-112 — Roles by model tier instead of model names
 
@@ -564,6 +595,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Scope:** owner request 2026-11-25: roles and card owners name a model tier (huge, large, medium, small, very small,
   embedded), never a model. Open cards are renamed (Sonnet → Medium, Haiku → Small, Opus → Large, Fable → Huge); done
   cards keep the name of the model that did them, as a record.
+- **Done:** #245
 
 ### O-113 — New game: described where the keys are, and a button for it
 
@@ -583,6 +615,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** a render test finds `n: new game` in the guide panel and the button on the board at 100 × 30 and
   100 × 60 in every offered locale (text read from the locale); a mouse test clicks the button and gets the confirmation;
   the same test with `n`; every complete locale.
+- **Done:** #247, #259 (owner decisions: the button sits on the side panel Game box heading; `n` last in the guide Keys list)
 
 ### O-114 — Quick move can be turned off (Quick options and Settings)
 
@@ -605,6 +638,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** a test turns the setting off and finds that `a` and a double-click leave the table unchanged, the
   hints are hidden and the moves window gives the reason; on again restores them; the Quick options row and the Settings
   row change the same value; an old settings file loads with quick move on; every complete locale.
+- **Done:** #262 (scope extended: `settings/**`, `widgets/guide/{keys,mod}.rs`, `screens/board/status.rs`)
 
 ### O-78 — Main menu: Resume set apart and balanced under the logo
 
@@ -614,6 +648,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the menu block is aligned to the long `Resume: Klondike, Draw 1, 0:47, Moves 26` entry, so the shorter items look shifted left under the centred `oXySol` logo.
 - **Fix:** one empty row between `Resume` and the other entries, and the game details of `Resume` in a muted secondary colour when it is not selected.
 - **Acceptance:** a test finds the empty row and the muted style; the menu still fits at 100 × 30 in all nine locales.
+- **Done:** #252
 
 ### O-79 — Bottom key bar: keys in an accent colour
 
@@ -623,6 +658,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** in `Enter Open  Tab Language  q Quit  ? Help` keys and labels share one colour, so the bar is hard to scan.
 - **Fix:** keys in an accent colour (for example the light blue of the `Keys` tab), labels muted; the key/label split stays readable without colour (spacing as today).
 - **Acceptance:** a test checks that key and label styles differ in every theme; contrast tests pass.
+- **Done:** #233
 
 ### O-80 — Language selector: quieter at rest, clearer when open
 
@@ -632,6 +668,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** at rest the widget shows three arrows (`◄`, `►`, `▼`), which is noise; in the open list the two-letter codes (`EN`, `PL`, `DE` …) compete with the full language names.
 - **Fix:** at rest show only `[flag] PL ▾`; show `◄ ►` only while the widget has focus; dim the two-letter codes in the open list. Keep a WGL4 and an ASCII form of each arrow.
 - **Acceptance:** tests of the rest, focused and open states in Unicode and ASCII mode; mouse targets still work.
+- **Done:** #232
 
 ### O-81 — Window title by context, en-US spelling and wording
 
@@ -641,6 +678,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** opening How to play shows the generic title `Help`; en-US uses the British `centre` (`Dock: centre`, `stays centred`); the Polish `Nowa gra z ziarna` may be unclear to players who do not know the term; Vim users pressing `j`/`k` may hit `h` (Hint) by accident.
 - **Fix:** the title follows how the window was opened (`How to play`, or `Help · Rules`); en-US `centre` → `center` and `centred` → `centered`; Polish `Nowa gra z ziarna (seed)` or `Nowa gra z kodu (seed)` (the owner picks); decide whether `h` needs a guard or a note when hints affect the statistics (record the answer on the card; change code only if the owner asks).
 - **Acceptance:** tests for both titles; locale parity passes; the Polish line fits at 100 × 30.
+- **Done:** #235
 
 ### O-96 — Settings: labelled Aura swatches, a Performance section, Left/Right in the footer
 
@@ -650,6 +688,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** the three `Aura:` preview swatches have no labels; `Process priority` sits under `Interface` rather than a performance or system group; the footer says only `Enter Change` although the rows also take `◄ ►`.
 - **Fix:** label the swatches (focus, carried, target); move `Process priority` into a `Performance` section; add `Left/Right` to the footer hint.
 - **Acceptance:** a test finds the three labels, the new section with the priority row, and the footer hint; all nine locales fit at 100 × 30.
+- **Done:** #266
 
 ### O-97 — Statistics table: results by style, the legend's unchecked mark, local time
 
@@ -659,6 +698,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Problem:** every `Result` (`Won`, `Abandoned`, `In progress`) has the same white text; unchecked rows in `Winnable` show `· -` while the legend says `· not checked`; times are shown in UTC.
 - **Fix:** a style per result (for example green won, muted abandoned, accent in progress) with the word still carrying the meaning; unchecked cells show exactly the legend mark; local time instead of UTC (or a setting), stated in the header.
 - **Acceptance:** tests for the three result styles in every theme (contrast passes), the unchecked mark equal to the legend, and a time rendered in the local offset.
+- **Done:** #264, #267 (local time via the `time` crate (owner approved the dependency))
 
 ### O-98 — Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer
 - **Done:** #222
@@ -680,6 +720,7 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
 - **Acceptance:** before and after snapshots for every card style in the PR; the rank stays readable at the large size.
 
 ## Done before the 2026-11 replan
+- **Done:** #263 (owner accepted the proposal for 11x9 and 13x11)
 
 ### X-01 — Spike: card font in real terminals
 
