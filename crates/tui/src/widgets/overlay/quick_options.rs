@@ -8,7 +8,7 @@
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
 use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::style::Style;
 use ratatui::text::Line;
 use ratatui::widgets::{Paragraph, Wrap};
 
@@ -22,7 +22,7 @@ use crate::screens::{Effect, ViewCtx};
 use crate::settings::{Aid, Aids};
 use crate::theme::Token;
 
-const BOX_WIDTH: u16 = 66;
+const BOX_WIDTH: u16 = 76;
 const AID_ROWS: u16 = Aid::ALL.len() as u16;
 const DESCRIPTION_ROWS: u16 = 2;
 const BODY_ROWS: u16 = 1 + 1 + AID_ROWS + 1 + DESCRIPTION_ROWS + 1;
@@ -144,12 +144,13 @@ fn row_text(
     format!("{} {name} {leaders} {value}", marker(ctx, focused))
 }
 
+/// The focused row takes the selection style of the other lists (`Theme::focus`), the others the
+/// dialog's text.
 fn row_style(focused: bool, ctx: &ViewCtx<'_>) -> Style {
-    let style = ctx.theme.style(Token::Text, Token::Surface);
     if focused {
-        style.add_modifier(Modifier::BOLD | Modifier::REVERSED)
+        ctx.theme.focus()
     } else {
-        style
+        ctx.theme.style(Token::Text, Token::Surface)
     }
 }
 
