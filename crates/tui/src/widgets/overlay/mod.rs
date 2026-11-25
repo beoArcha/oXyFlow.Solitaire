@@ -9,6 +9,8 @@ mod dialog;
 pub mod dock;
 #[cfg(test)]
 mod focus_tests;
+#[cfg(test)]
+mod footer_tests;
 mod graphics_check;
 mod guide_window;
 mod help;

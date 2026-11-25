@@ -172,20 +172,32 @@ fn the_text_shows_its_focus_with_a_marker_in_the_margin() {
 }
 
 #[test]
-fn the_footer_names_what_left_and_right_do_for_the_focused_row() {
-    for (locale, tabs, games) in [
-        (Locale::EnUs, "Left/Right: tab", "Left/Right: game"),
-        (Locale::PlPl, "Lewo/Prawo: zakładka", "Lewo/Prawo: gra"),
-    ] {
+fn the_footer_keeps_its_entries_across_every_focus_row() {
+    for locale in Locale::offered() {
         let mut h = opened(locale, TRUE_COLOR);
-        assert!(h.text().contains(games), "{locale:?} games");
-        h.press(KeyCode::Up);
-        assert!(h.text().contains(tabs), "{locale:?} tabs");
-        h.press(KeyCode::Down);
-        h.press(KeyCode::Down);
-        let text = h.text();
-        assert!(!text.contains("Left/Right"), "{locale:?} text");
-        assert!(text.contains("PgUp/PgDn"), "{locale:?} text");
+        let tab = i18n::tf("help.command_line.footer_tab", &[("key", "Tab")]);
+        let game = i18n::tf(
+            "help.rules.footer_game",
+            &[
+                ("left", &i18n::t("help.key.left")),
+                ("right", &i18n::t("help.key.right")),
+            ],
+        );
+        let move_keys = i18n::tf(
+            "help.command_line.footer_move",
+            &[
+                ("up", &i18n::t("help.key.up")),
+                ("down", &i18n::t("help.key.down")),
+            ],
+        );
+        let close = i18n::tf("help.command_line.footer_close", &[("back", "Esc")]);
+        for _ in 0..3 {
+            let text = h.text();
+            for entry in [&tab, &game, &move_keys, &close] {
+                assert!(text.contains(entry.as_str()), "{locale:?}: missing {entry}");
+            }
+            h.press(KeyCode::Down);
+        }
     }
     i18n::set_locale(Locale::EnUs);
 }

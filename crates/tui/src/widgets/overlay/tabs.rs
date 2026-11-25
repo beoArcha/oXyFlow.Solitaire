@@ -7,7 +7,9 @@ use ratatui::style::Modifier;
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
+use crate::action::Action;
 use crate::i18n::{t, tf};
+use crate::input::primary_key;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, Segment};
@@ -176,7 +178,53 @@ pub fn draw_top_tabs(
     }
 }
 
-/// Draws the footer of a scrolling tab: the segments on the left, the visible range on the right.
+fn key_name(action: Action) -> String {
+    primary_key(action).unwrap_or_default()
+}
+
+/// The footer hints shared by the Help window tabs: main tab switch, optional game switch on
+/// Rules, scrolling, and closing.
+pub fn help_footer_segments(game_switch: bool) -> Vec<Segment> {
+    let mut segments = vec![
+        Segment::button(
+            Action::FocusNext,
+            tf(
+                "help.command_line.footer_tab",
+                &[("key", &key_name(Action::FocusNext))],
+            ),
+        ),
+        Segment::plain("  "),
+    ];
+    if game_switch {
+        segments.push(Segment::plain(tf(
+            "help.rules.footer_game",
+            &[
+                ("left", &key_name(Action::Left)),
+                ("right", &key_name(Action::Right)),
+            ],
+        )));
+        segments.push(Segment::plain("  "));
+    }
+    segments.push(Segment::plain(tf(
+        "help.command_line.footer_move",
+        &[
+            ("up", &key_name(Action::Up)),
+            ("down", &key_name(Action::Down)),
+        ],
+    )));
+    segments.push(Segment::plain("  "));
+    segments.push(Segment::button(
+        Action::Back,
+        tf(
+            "help.command_line.footer_close",
+            &[("back", &key_name(Action::Back))],
+        ),
+    ));
+    segments
+}
+
+/// Draws the footer of a scrolling tab: the segments on the left, and the visible range on the
+/// right whenever the text overflows.
 pub fn draw_footer_buttons(
     frame: &mut Frame,
     row: Rect,
@@ -185,24 +233,33 @@ pub fn draw_footer_buttons(
     ctx: &ViewCtx<'_>,
 ) -> FooterMap {
     let (from, to, total) = shown;
-    let position = tf(
-        "help.rules.position",
-        &[
-            ("from", &from.to_string()),
-            ("to", &to.to_string()),
-            ("total", &total.to_string()),
-        ],
-    );
-    let [left, right] = Layout::horizontal([
-        Constraint::Fill(1),
-        Constraint::Length(columns_of(&position)),
-    ])
-    .areas(row.inner(Margin::new(1, 0)));
+    let overflow = total > 0 && (from > 1 || to < total);
+    let position = if overflow {
+        tf(
+            "help.rules.position",
+            &[
+                ("from", &from.to_string()),
+                ("to", &to.to_string()),
+                ("total", &total.to_string()),
+            ],
+        )
+    } else {
+        String::new()
+    };
+    let pos_width = if overflow {
+        columns_of(&position).saturating_add(1)
+    } else {
+        0
+    };
+    let [left, right] = Layout::horizontal([Constraint::Fill(1), Constraint::Length(pos_width)])
+        .areas(row.inner(Margin::new(1, 0)));
     let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
     let buttons = footer::draw(frame, left, segments, Alignment::Left, muted, ctx);
-    frame.render_widget(
-        Paragraph::new(Line::styled(position, muted)).alignment(Alignment::Right),
-        right,
-    );
+    if overflow {
+        frame.render_widget(
+            Paragraph::new(Line::styled(position, muted)).alignment(Alignment::Right),
+            right,
+        );
+    }
     buttons
 }

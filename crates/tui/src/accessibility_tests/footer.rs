@@ -334,6 +334,7 @@ fn help_open(locale: Locale) -> Harness {
 fn rules_tab(locale: Locale) -> Harness {
     let mut h = help_open(locale);
     h.press(KeyCode::Tab);
+    h.lines();
     h
 }
 
@@ -345,26 +346,31 @@ fn command_line_tab(locale: Locale) -> Harness {
 }
 
 #[test]
-fn the_keys_tab_buttons_close_the_help_window_like_their_keys() {
+fn the_keys_tab_buttons_act_like_their_keys() {
     each_locale(|locale| {
         assert!(matches!(
             help_open(locale).app.modal(),
             Some(crate::app::Modal::Help(_))
         ));
-        let line = t("help.overlay.close_rest").into_owned();
+        let close = tf("help.command_line.footer_close", &[("back", "Esc")]);
+        let tab = tf("help.command_line.footer_tab", &[("key", "Tab")]);
         let buttons = [
-            (Action::Back, "Esc".to_owned(), line.clone()),
-            (Action::Select, "Enter".to_owned(), line),
+            (Action::FocusNext, tab, close.clone()),
+            (Action::Back, close.clone(), close),
         ];
         assert_window_buttons_match_keys(locale, &help_open, &buttons, "keys tab");
     });
 }
 
 #[test]
-fn the_rules_tab_close_button_closes_the_help_window_like_its_key() {
+fn the_rules_tab_buttons_act_like_their_keys() {
     each_locale(|locale| {
-        let close = tf("help.rules.footer_close", &[("back", "Esc")]);
-        let buttons = [(Action::Back, close.clone(), close)];
+        let close = tf("help.command_line.footer_close", &[("back", "Esc")]);
+        let tab = tf("help.command_line.footer_tab", &[("key", "Tab")]);
+        let buttons = [
+            (Action::FocusNext, tab, close.clone()),
+            (Action::Back, close.clone(), close),
+        ];
         assert_window_buttons_match_keys(locale, &rules_tab, &buttons, "rules tab");
     });
 }
