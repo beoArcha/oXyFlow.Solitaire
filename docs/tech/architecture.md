@@ -912,6 +912,14 @@ the `art` feature of `xtask` so every other command builds without `oxysol-tui`,
 feature they fail with that hint. `cargo xtask check` builds and tests `xtask` with the feature, so the icon check
 (a unit test) still runs in every gate. `fonts` needs only Python and stays light.
 
+Curated deals (P5-06, decision T-49): `oxysol_core::curated` reads `crates/core/src/curated/table.rs`, three seeds per
+difficulty level (very easy to very hard) for each of the 14 variants, and `cargo xtask-art curated-seeds` writes that
+table and `docs/tech/curated-seeds.md` (E, L, H and D of every chosen seed). The generator scans seeds from 0 with
+`solve_report` at `SolveBudget::default_for`, plays `Game::hint()` alone, scores the pool by rank percentiles, cuts it
+into five quintiles, and replays every chosen seed before writing. Run it in a release build:
+`cargo run --release -p xtask --features art -- curated-seeds`. Its output is deterministic apart from the run-time line
+of the report.
+
 Definitions used by `xtask lint`:
 
 - **LOC:** lines that are neither blank nor comment-only.
