@@ -1,6 +1,7 @@
 //! Engine of oXySol. Pure logic: no terminal, no files, no clock, no locale.
 
 pub mod card;
+pub mod curated;
 pub mod deck;
 pub mod game;
 mod games;
