@@ -1,12 +1,13 @@
 //! A vertical list with one focused item: the base of the menus. The focused item has a marker
 //! directly before its label and reverse video, so the focus is visible without color. Up and Down
 //! move it, and so do Tab and Shift+Tab, wrapping at both ends. Keys, the wheel and clicks all work.
+//! A row may carry a muted detail after its label and an empty row below it; neither takes focus.
 
 use ratatui::Frame;
 use ratatui::crossterm::event::MouseEvent;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
-use ratatui::text::Line;
+use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use crate::action::Action;
@@ -24,6 +25,51 @@ pub enum Highlight {
     Muted,
     /// The list does not hold the focus: no item is marked.
     Off,
+}
+
+/// One item of a list: its label, an optional detail drawn after the label, and whether an empty
+/// row follows it. The detail is muted unless the item is selected.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Row {
+    label: String,
+    detail: Option<String>,
+    gap_after: bool,
+}
+
+impl Row {
+    /// A row with `label` only.
+    pub fn new(label: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            detail: None,
+            gap_after: false,
+        }
+    }
+
+    /// The same row with `detail` drawn after the label.
+    pub fn with_detail(self, detail: impl Into<String>) -> Self {
+        Self {
+            detail: Some(detail.into()),
+            ..self
+        }
+    }
+
+    /// The same row followed by one empty row, which takes neither focus nor clicks.
+    pub fn with_gap_after(self) -> Self {
+        Self {
+            gap_after: true,
+            ..self
+        }
+    }
+
+    fn width(&self) -> usize {
+        let detail = self.detail.as_ref().map_or(0, |text| text.chars().count());
+        self.label.chars().count() + detail
+    }
+
+    fn height(&self) -> u16 {
+        1 + u16::from(self.gap_after)
+    }
 }
 
 /// Focus state and the screen rectangles of the items drawn last.
@@ -45,6 +91,12 @@ impl MenuList {
     /// A list focused on its first item.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// The rows of `rows` drawn one under the other, empty rows included.
+    pub fn height(rows: &[Row]) -> u16 {
+        rows.iter()
+            .fold(0, |sum, row| sum.saturating_add(row.height()))
     }
 
     /// The index of the focused item.
@@ -76,42 +128,55 @@ impl MenuList {
         Some(index)
     }
 
-    /// Draws the items centered in `area`, one row each, and remembers where they are. The
-    /// focused item is marked unless `highlight` is `Off`, and drawn in the focus style only when
-    /// `highlight` is `Focused`.
+    /// Draws the rows centered in `area`, one row each (plus the empty rows), and remembers where
+    /// the items are. The focused item is marked unless `highlight` is `Off`, and drawn in the focus
+    /// style only when `highlight` is `Focused`.
     pub fn draw(
         &mut self,
         frame: &mut Frame,
         area: Rect,
-        labels: &[String],
+        rows: &[Row],
         ctx: &ViewCtx<'_>,
         highlight: Highlight,
     ) {
-        let widest = labels
-            .iter()
-            .map(|label| label.chars().count())
-            .max()
-            .unwrap_or(0);
+        let widest = rows.iter().map(Row::width).max().unwrap_or(0);
         let width = u16::try_from(widest + 2)
             .unwrap_or(u16::MAX)
             .min(area.width);
         let x = area.x + (area.width - width) / 2;
-        let focus = self.focus.min(labels.len().saturating_sub(1));
+        let focus = self.focus.min(rows.len().saturating_sub(1));
         self.hits.clear();
-        for (index, label) in labels.iter().enumerate() {
-            let Ok(offset) = u16::try_from(index) else {
-                break;
-            };
+        let mut offset: u16 = 0;
+        for (index, row) in rows.iter().enumerate() {
             if offset >= area.height {
                 break;
             }
-            let row = Rect::new(x, area.y + offset, width, 1);
-            let focused = highlight != Highlight::Off && index == focus;
-            let style = item_style(ctx, highlight, index == focus);
-            let text = format!("{} {label}", marker(ctx, focused));
-            frame.render_widget(Paragraph::new(Line::styled(text, style)), row);
-            self.hits.push(row);
+            let rect = Rect::new(x, area.y + offset, width, 1);
+            let is_focus = index == focus;
+            let focused = highlight != Highlight::Off && is_focus;
+            let line = item_line(ctx, highlight, is_focus, focused, row);
+            frame.render_widget(Paragraph::new(line), rect);
+            self.hits.push(rect);
+            offset = offset.saturating_add(row.height());
         }
+    }
+}
+
+fn item_line(
+    ctx: &ViewCtx<'_>,
+    highlight: Highlight,
+    is_focus: bool,
+    focused: bool,
+    row: &Row,
+) -> Line<'static> {
+    let style = item_style(ctx, highlight, is_focus);
+    let head = format!("{} {}", marker(ctx, focused), row.label);
+    match &row.detail {
+        Some(detail) => Line::from(vec![
+            Span::styled(head, style),
+            Span::styled(detail.clone(), detail_style(ctx, style, is_focus)),
+        ]),
+        None => Line::styled(head, style),
     }
 }
 
@@ -120,6 +185,14 @@ fn item_style(ctx: &ViewCtx<'_>, highlight: Highlight, is_focus: bool) -> Style 
         (Highlight::Focused, true) => ctx.theme.focus(),
         (Highlight::Muted, true) => ctx.theme.style(Token::TextMuted, Token::Background),
         _ => ctx.theme.base(),
+    }
+}
+
+fn detail_style(ctx: &ViewCtx<'_>, selected: Style, is_focus: bool) -> Style {
+    if is_focus {
+        selected
+    } else {
+        ctx.theme.style(Token::TextMuted, Token::Background)
     }
 }
 
@@ -197,5 +270,23 @@ mod tests {
         let click = mouse(MouseEventKind::Down(MouseButton::Left), 1, 1);
         assert_eq!(list.on_mouse(&click, 3), None);
         assert_eq!(list.focus(), 0);
+    }
+
+    #[test]
+    fn an_empty_row_after_an_item_adds_one_row_of_height() {
+        let rows = [
+            Row::new("first").with_gap_after(),
+            Row::new("second").with_detail(": muted"),
+            Row::new("third"),
+        ];
+        assert_eq!(MenuList::height(&rows), 4);
+        assert_eq!(MenuList::height(&[]), 0);
+    }
+
+    #[test]
+    fn a_row_is_as_wide_as_its_label_and_its_detail() {
+        let row = Row::new("Resume").with_detail(": Klondike");
+        assert_eq!(row.width(), "Resume: Klondike".chars().count());
+        assert_eq!(Row::new("New game").width(), "New game".chars().count());
     }
 }
