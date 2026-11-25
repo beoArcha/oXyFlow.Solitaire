@@ -13,6 +13,7 @@ mod guide;
 mod hints;
 mod interface;
 mod language;
+mod low_vision;
 mod preview;
 mod screen;
 mod styles;

@@ -2,6 +2,7 @@
 
 [row]
 language = "Język"
+low_vision = "Tryb słabowidzący"
 theme = "Motyw"
 card_back = "Rewers kart"
 card_face = "Tło kart"
@@ -51,6 +52,9 @@ italian = "Włoski"
 
 [desc]
 language = "Język wszystkich tekstów. Zmienia się od razu."
+low_vision_console = "Wysoki kontrast (7:1), największe karty, gruba aura, pogrubiony tekst, szersze wachlarze, czcionka 24+ px."
+low_vision_wt = "Wysoki kontrast (7:1), największe karty, gruba aura, pogrubiony tekst, szersze wachlarze. Powiększ czcionkę: Ctrl+= / Ctrl+-."
+low_vision_other = "Wysoki kontrast (7:1), największe karty, gruba aura, pogrubiony tekst, szersze wachlarze. Powiększ czcionkę terminala."
 theme = "Kolory interfejsu."
 card_back = "Kolory i wzór rewersów kart zakrytych."
 card_face = "Kolor kart odkrytych. Kolory znaków dopasowują się, by zachować kontrast. Motyw używa kolorów motywu."

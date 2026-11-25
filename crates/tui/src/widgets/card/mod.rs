@@ -85,8 +85,9 @@ struct Look {
 
 fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
     let theme = ctx.theme;
+    let low_vision = ctx.settings.low_vision;
     let blocked = mark.blocked && matches!(face, Face::Up(_));
-    let fill = match face {
+    let mut fill = match face {
         Face::Up(card) => {
             if ctx.settings.four_color_deck {
                 theme.card_suit_style(ctx.settings.card_face, card.suit, true)
@@ -97,7 +98,10 @@ fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
         Face::Down => back::style(ctx),
         Face::Slot(_) => theme.style(Token::Slot, Token::Table),
     };
-    let border = match mark.token() {
+    if low_vision && matches!(face, Face::Up(_)) {
+        fill = fill.add_modifier(Modifier::BOLD);
+    }
+    let mut border = match mark.token() {
         Some(Token::BorderFocus) => theme.style(Token::BorderFocus, Token::Surface),
         Some(token) => theme.style(token, Token::Table),
         None => match face {
@@ -105,9 +109,12 @@ fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
             _ => fill,
         },
     };
+    if low_vision && (mark.focus || mark.target) {
+        border = border.add_modifier(Modifier::BOLD);
+    }
     Look {
-        fill: shaded(fill, blocked),
-        border: shaded(border, blocked && mark.token().is_none()),
+        fill: shaded(fill, blocked && !low_vision),
+        border: shaded(border, blocked && !low_vision && mark.token().is_none()),
     }
 }
 
@@ -169,11 +176,17 @@ fn draw_with(
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);
     let theme = ctx.theme;
+    let low_vision = ctx.settings.low_vision;
     let target = shaded(theme.style(Token::Target, Token::Table), false);
+    let target = if low_vision {
+        target.add_modifier(Modifier::BOLD)
+    } else {
+        target
+    };
     if mark.target {
-        paint_target_corners(&mut painter, area, ctx.glyphs, target);
+        paint_target_corners(&mut painter, area, ctx.glyphs, target, low_vision);
     }
-    paint_top_row(&mut painter, area, (face, mark), ctx.glyphs, &look);
+    paint_top_row(&mut painter, area, (face, mark), ctx.glyphs, &look, low_vision);
     paint_bottom_row(&mut painter, area, (face, badge), ctx.glyphs, &look);
     match face {
         Face::Up(card) => paint_center(
@@ -192,6 +205,7 @@ fn draw_with(
             (placeholder, mark.target),
             ctx.glyphs,
             (theme.style(Token::Slot, Token::Table), target),
+            low_vision,
         ),
         Face::Down => {}
     }

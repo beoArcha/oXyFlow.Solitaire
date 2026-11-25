@@ -2,6 +2,7 @@
 
 [row]
 language = "Sprache"
+low_vision = "Sehhilfemodus"
 theme = "Design"
 card_back = "Kartenrücken"
 card_face = "Kartenfarbe"
@@ -51,6 +52,9 @@ italian = "Italienisch"
 
 [desc]
 language = "Die Sprache aller Texte. Ändert sich sofort."
+low_vision_console = "Hoher Kontrast (7:1), größte Karten, dickes Leuchten, fetter Text, breitere Fächer, Konsolenschrift 24+ px."
+low_vision_wt = "Hoher Kontrast (7:1), größte Karten, dickes Leuchten, fetter Text, breitere Fächer. Schrift vergrößern: Ctrl+= / Ctrl+-."
+low_vision_other = "Hoher Kontrast (7:1), größte Karten, dickes Leuchten, fetter Text, breitere Fächer. Terminalschrift vergrößern."
 theme = "Die Farben der Benutzeroberfläche."
 card_back = "Farben und Muster der Rückseiten verdeckter Karten."
 card_face = "Farbe der offenen Karten. Die Symbole passen sich an, damit der Kontrast bleibt. Design nutzt die Farben des Designs."

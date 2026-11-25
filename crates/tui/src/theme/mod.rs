@@ -8,6 +8,7 @@ pub mod dracula;
 pub mod face;
 pub mod high_contrast;
 pub mod light;
+pub mod low_vision;
 pub mod monokai;
 pub mod palette;
 pub mod table;
@@ -70,7 +71,17 @@ pub struct Theme {
     id: ThemeId,
     depth: ColorDepth,
     vision: ColorVision,
+    low_vision: bool,
     palette: Palette,
+}
+
+fn palette_for(id: ThemeId, vision: ColorVision, low_vision: bool) -> Palette {
+    let remapped = vision::remap(id, id.palette(), vision);
+    if low_vision {
+        low_vision::remap(remapped)
+    } else {
+        remapped
+    }
 }
 
 impl Theme {
@@ -80,6 +91,7 @@ impl Theme {
             id,
             depth,
             vision: ColorVision::Normal,
+            low_vision: false,
             palette: id.palette(),
         }
     }
@@ -88,9 +100,23 @@ impl Theme {
     pub fn with_color_vision(&self, vision: ColorVision) -> Self {
         Self {
             vision,
-            palette: vision::remap(self.id, self.id.palette(), vision),
+            palette: palette_for(self.id, vision, self.low_vision),
             ..*self
         }
+    }
+
+    /// This theme with low-vision contrast (7:1 for every text pair, no dim text) enabled or off.
+    pub fn with_low_vision(&self, low_vision: bool) -> Self {
+        Self {
+            low_vision,
+            palette: palette_for(self.id, self.vision, low_vision),
+            ..*self
+        }
+    }
+
+    /// The resolved palette.
+    pub fn palette(&self) -> &Palette {
+        &self.palette
     }
 
     /// Which theme this is.
@@ -143,7 +169,12 @@ impl Theme {
     /// This theme with its felt replaced by the felt of `colour` (or the shade of it that passes the
     /// contrast tests here). Every token of the table, the texture and the cards on it follow.
     pub fn with_table(&self, colour: TableColour) -> Self {
-        let felt = table::felt(self.id, &self.palette, colour);
+        let target = if self.low_vision {
+            7.0
+        } else {
+            self.id.contrast_target()
+        };
+        let felt = table::felt_with_target(target, &self.palette, colour);
         Self {
             palette: Palette {
                 table: felt.swatch,
@@ -192,8 +223,12 @@ impl Theme {
     ) -> Style {
         match card_back {
             CardBack::Theme => self.style(mark, background),
-            CardBack::Monokai => Theme::new(ThemeId::Monokai, self.depth).style(mark, background),
-            CardBack::Dracula => Theme::new(ThemeId::Dracula, self.depth).style(mark, background),
+            CardBack::Monokai => Theme::new(ThemeId::Monokai, self.depth)
+                .with_low_vision(self.low_vision)
+                .style(mark, background),
+            CardBack::Dracula => Theme::new(ThemeId::Dracula, self.depth)
+                .with_low_vision(self.low_vision)
+                .style(mark, background),
         }
     }
 }

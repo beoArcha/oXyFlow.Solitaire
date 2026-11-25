@@ -74,6 +74,30 @@ impl CardSize {
     pub const fn waste_step(self) -> u16 {
         self.width.div_ceil(2)
     }
+
+    /// Wider face-up step used in low-vision mode when room permits.
+    pub const fn wide_up_step(self) -> u16 {
+        let max = self.height.saturating_sub(1);
+        let next = self.up_step() + 1;
+        if next < max { next } else { max }
+    }
+
+    /// Wider face-down step used in low-vision mode when room permits.
+    pub const fn wide_down_step(self) -> u16 {
+        self.down_step() + 1
+    }
+
+    /// Wider pyramid row step used in low-vision mode when height permits.
+    pub const fn wide_pyramid_step(self) -> u16 {
+        self.wide_up_step()
+    }
+
+    /// Wider waste fan step used in low-vision mode when width permits.
+    pub const fn wide_waste_step(self) -> u16 {
+        let max = self.width.saturating_sub(1);
+        let next = self.waste_step() + 1;
+        if next < max { next } else { max }
+    }
 }
 
 /// The gap between `count` cards in a row of width `available` and the left margin that centers
