@@ -84,17 +84,27 @@ fn plans(size: CardSize, collapsible: bool) -> Vec<Plan> {
 }
 
 fn squeezed(count: usize, prefix: usize, collapse: bool, height: u16, room: u16) -> Vec<u16> {
-    let floor = u16::from(collapse);
     let last = room.saturating_sub(height);
+    let has_face_down = prefix > 0 && prefix < count;
+    let floor = u16::from(collapse || has_face_down).min(last);
     (0..count)
         .map(|index| {
-            if collapse && index < prefix {
+            if has_face_down && index < prefix {
                 return 0;
             }
             let behind = u16::try_from(count - 1 - index).unwrap_or(u16::MAX);
             last.saturating_sub(behind).max(floor)
         })
         .collect()
+}
+
+/// Whether `cards` fits in `room` rows without stacking face-up cards on top of each other.
+pub(super) fn fits_cleanly(cards: &[TableCard], size: CardSize, room: u16) -> bool {
+    let prefix = leading_face_down(cards);
+    let collapsible = prefix >= 2 && prefix < cards.len();
+    plans(size, collapsible)
+        .into_iter()
+        .any(|plan| fits(&offsets(cards, plan, prefix), size.height, room))
 }
 
 /// Offsets for `cards` (bottom to top) in a column of `room` rows whose cards are `size` tall.
