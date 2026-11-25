@@ -191,6 +191,8 @@ deal_row = "роздати ряд"
 undo_redo = "скасувати / повторити"
 copy_seed = "копіювати зерно"
 hint = "підказка"
+new_game = "нова гра"
+new_game_button = "[{key}: {label}]"
 rules = "як грати"
 help = "усі клавіші"
 

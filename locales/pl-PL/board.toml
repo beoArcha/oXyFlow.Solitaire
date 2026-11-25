@@ -191,6 +191,8 @@ deal_row = "rozdaj rząd"
 undo_redo = "cofnij / ponów"
 copy_seed = "kopiuj ziarno"
 hint = "podpowiedź"
+new_game = "nowa gra"
+new_game_button = "[{key}: {label}]"
 rules = "jak grać"
 help = "wszystkie klawisze"
 

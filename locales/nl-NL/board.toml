@@ -190,6 +190,8 @@ deal_row = "rij delen"
 undo_redo = "ongedaan / opnieuw"
 copy_seed = "kopieer seed"
 hint = "hint"
+new_game = "nieuw spel"
+new_game_button = "[{key}: {label}]"
 rules = "spelregels"
 help = "alle toetsen"
 

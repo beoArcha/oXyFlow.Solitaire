@@ -77,6 +77,7 @@ fn entries(variant: Variant, undo_allowed: bool, quick_move: bool) -> Vec<Entry>
         entry(&[Action::CopySeed], "board.guide.copy_seed"),
         entry(&[Action::Rules], "board.guide.rules"),
         entry(&[Action::Help], "board.guide.help"),
+        entry(&[Action::NewGame], "board.guide.new_game"),
     ]);
     rows
 }
@@ -163,7 +164,7 @@ pub(super) fn goal(variant: Variant, width: usize, ctx: &ViewCtx<'_>) -> Vec<Lin
         .collect()
 }
 
-/// The lines of the `Keys` section below its heading.
+/// The lines of the `Keys` section below its heading, the `n` row last.
 pub(super) fn keys(guide: &Guide<'_>, width: usize, ctx: &ViewCtx<'_>) -> Vec<Line<'static>> {
     let rows = entries(guide.variant, guide.undo_allowed, ctx.settings.quick_move);
     let key_width = rows

@@ -23,6 +23,36 @@ pas de son. Le fichier `SHA256SUMS` de la page de publication permet de vérifie
 On compile la branche `release`, qui contient le dernier commit ayant passé la vérification complète sous Linux,
 Windows et macOS.
 
+### Avec les scripts d’installation (recommandé)
+
+Les scripts du dossier `build/` vérifient d’abord toutes les dépendances requises, puis compilent et installent `oxysol`
+dans `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` sous Windows) :
+
+- `--check` — s’arrête à la première dépendance manquante, avec un code de sortie non nul.
+- `--list` — liste toutes les dépendances manquantes et la commande d’installation pour votre système.
+- `--install` — demande confirmation avant d’installer les dépendances manquantes via votre gestionnaire de paquets,
+  vérifie à nouveau, et ne compile que si la seconde vérification réussit.
+- `--no-audio` — ignore sous Linux la vérification ALSA/`pkg-config` et compile avec `--no-default-features`.
+
+Sans option de mode, un terminal interactif demande le mode à utiliser ; une exécution non interactive se comporte comme
+`--list`.
+
+**Linux et macOS** (`--check` et `--list` vérifiés en CI ; `--install` pas encore vérifié) :
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (`--check` et `--list` vérifiés sous Windows ; `--install` pas encore vérifié) :
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Remplacez `--list` par `--install` pour installer les dépendances manquantes et compiler.
+
+### Étapes manuelles
+
 **Rust est nécessaire.** Installez-le avec [rustup](https://rustup.rs). La chaîne d’outils exacte est fixée dans
 `rust-toolchain.toml` ; rustup la détecte tout seul et l’installe lors de la première compilation, aucune autre
 configuration n’est donc nécessaire. La compilation inclut aussi un peu de code C (SQLite), il faut donc une chaîne
@@ -31,8 +61,8 @@ d’outils C :
 - **Windows :** les Build Tools de Visual Studio (ou Visual Studio) avec la charge de travail « Développement Desktop
   en C++ » (« Desktop development with C++ »). rustup propose de les installer.
 - **macOS :** les outils en ligne de commande Xcode : `xcode-select --install`.
-- **Linux :** un compilateur C (`gcc` ou `cc`) et `curl`. Pour le son, il faut aussi les en-têtes ALSA, par exemple
-  `sudo apt install build-essential libasound2-dev` sous Debian et Ubuntu. Sans eux, compilez avec
+- **Linux :** un compilateur C (`gcc` ou `cc`), `curl` et `tar`. Pour le son, il faut aussi `pkg-config` et les en-têtes
+  ALSA, par exemple `sudo apt install build-essential pkg-config libasound2-dev` sous Debian et Ubuntu. Sans eux, compilez avec
   `cargo build --release --no-default-features`, qui laisse le son de côté.
 
 La première compilation prend quelques minutes.

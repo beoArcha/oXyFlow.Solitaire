@@ -190,6 +190,8 @@ deal_row = "deal a row"
 undo_redo = "undo / redo"
 copy_seed = "copy seed"
 hint = "hint"
+new_game = "new game"
+new_game_button = "[{key}: {label}]"
 rules = "how to play"
 help = "all keys"
 

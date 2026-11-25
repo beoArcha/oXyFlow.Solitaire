@@ -23,6 +23,36 @@ tengono i file del gioco in una cartella `data` accanto al programma. Le version
 Si compila il branch `release`, che contiene l’ultimo commit ad aver superato il controllo completo su Linux, Windows
 e macOS.
 
+### Con gli script di installazione (consigliato)
+
+Gli script nella cartella `build/` controllano prima tutte le dipendenze richieste, poi compilano e installano `oxysol`
+in `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` su Windows):
+
+- `--check` — si ferma alla prima dipendenza mancante, con un codice di uscita diverso da zero.
+- `--list` — elenca tutte le dipendenze mancanti e il comando di installazione per il tuo sistema.
+- `--install` — chiede conferma prima di installare le dipendenze mancanti con il gestore di pacchetti, ricontrolla e
+  compila solo se il secondo controllo ha successo.
+- `--no-audio` — salta su Linux il controllo di ALSA/`pkg-config` e compila con `--no-default-features`.
+
+Senza un’opzione di modalità, un terminale interattivo chiede quale modalità usare; un’esecuzione non interattiva si
+comporta come `--list`.
+
+**Linux e macOS** (`--check` e `--list` verificati in CI; `--install` non ancora verificato):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (`--check` e `--list` verificati su Windows; `--install` non ancora verificato):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Sostituisci `--list` con `--install` per installare le dipendenze mancanti e compilare.
+
+### Passaggi manuali
+
 **Serve Rust.** Installalo con [rustup](https://rustup.rs). La toolchain esatta è fissata in `rust-toolchain.toml`;
 rustup la riconosce da solo e la installa alla prima compilazione, quindi non serve nessun’altra configurazione. La
 compilazione include anche un po’ di codice C (SQLite), quindi serve una toolchain C:
@@ -30,8 +60,8 @@ compilazione include anche un po’ di codice C (SQLite), quindi serve una toolc
 - **Windows:** i Build Tools di Visual Studio (o Visual Studio) con il carico di lavoro «Sviluppo di applicazioni
   desktop con C++» («Desktop development with C++»). rustup si offre di installarli.
 - **macOS:** gli strumenti da riga di comando di Xcode: `xcode-select --install`.
-- **Linux:** un compilatore C (`gcc` o `cc`) e `curl`. Per l’audio servono anche gli header di ALSA, per esempio
-  `sudo apt install build-essential libasound2-dev` su Debian e Ubuntu. Senza di essi compila con
+- **Linux:** un compilatore C (`gcc` o `cc`), `curl` e `tar`. Per l’audio servono anche `pkg-config` e gli header di ALSA,
+  per esempio `sudo apt install build-essential pkg-config libasound2-dev` su Debian e Ubuntu. Senza di essi compila con
   `cargo build --release --no-default-features`, che esclude l’audio.
 
 La prima compilazione richiede qualche minuto.

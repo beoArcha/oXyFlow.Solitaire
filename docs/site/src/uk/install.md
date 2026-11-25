@@ -22,6 +22,35 @@
 
 Збирають гілку `release`: у ній останній коміт, що пройшов повну перевірку в Linux, Windows і macOS.
 
+### За допомогою скриптів встановлення (рекомендовано)
+
+Скрипти в теці `build/` спершу перевіряють усі потрібні залежності, і лише потім збирають та встановлюють `oxysol` у
+`~/.cargo/bin` (у Windows — `%USERPROFILE%\.cargo\bin`):
+
+- `--check` — зупиняється на першій відсутній залежності з ненульовим кодом виходу.
+- `--list` — перелічує всі відсутні залежності та команду встановлення для вашої системи.
+- `--install` — запитує дозвіл перед встановленням відсутніх залежностей через менеджер пакетів, перевіряє знову і
+  збирає лише тоді, коли друга перевірка пройшла.
+- `--no-audio` — пропускає в Linux перевірку ALSA та `pkg-config` і збирає з `--no-default-features`.
+
+Без прапорця режиму інтерактивний термінал запитує, який режим використати; неінтерактивний запуск поводиться як `--list`.
+
+**Linux і macOS** (`--check` і `--list` перевірено в CI; `--install` ще не перевірено):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (`--check` і `--list` перевірено у Windows; `--install` ще не перевірено):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Замініть `--list` на `--install`, щоб встановити відсутні залежності та зібрати програму.
+
+### Ручні кроки
+
 **Потрібен Rust.** Встановіть його за допомогою [rustup](https://rustup.rs). Точну версію інструментарію закріплено в
 `rust-toolchain.toml`; rustup сам її розпізнає та встановить під час першої збірки, тож інших налаштувань не потрібно.
 Збірка також компілює трохи коду на C (SQLite), тому потрібен інструментарій C:
@@ -29,8 +58,8 @@
 - **Windows:** Visual Studio Build Tools (або Visual Studio) з робочим навантаженням «Розробка класичних застосунків
   на C++» («Desktop development with C++»). rustup запропонує їх встановити.
 - **macOS:** інструменти командного рядка Xcode: `xcode-select --install`.
-- **Linux:** компілятор C (`gcc` або `cc`) і `curl`. Для звуку — ще й заголовки ALSA, наприклад
-  `sudo apt install build-essential libasound2-dev` у Debian та Ubuntu. Без них збирайте командою
+- **Linux:** компілятор C (`gcc` або `cc`), `curl` і `tar`. Для звуку — також `pkg-config` і заголовки ALSA, наприклад
+  `sudo apt install build-essential pkg-config libasound2-dev` у Debian та Ubuntu. Без них збирайте командою
   `cargo build --release --no-default-features`, тоді звуку не буде.
 
 Перша збірка триває кілька хвилин.

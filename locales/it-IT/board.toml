@@ -190,6 +190,8 @@ deal_row = "nuova riga"
 undo_redo = "annulla / ripeti"
 copy_seed = "copia seed"
 hint = "aiuto"
+new_game = "nuova partita"
+new_game_button = "[{key}: {label}]"
 rules = "come giocare"
 help = "tutti i tasti"
 
