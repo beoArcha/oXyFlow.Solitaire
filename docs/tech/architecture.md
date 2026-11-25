@@ -239,6 +239,7 @@ pub struct Deps {
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
     pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
     pub display: DisplayDeps,             // console (O-16, P3-16): `Box<dyn ConsoleDisplay>`, `DisplayFacts { owns_window, kind, flag }`, `Box<dyn ConsoleFont>`
+    pub zone: Zone,                       // statistics history (O-97): `Zone::Local { minutes }` = the system's offset from UTC, or `Zone::Utc` when it is unknown
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
@@ -608,15 +609,15 @@ pub struct NullClipboard;                                // every copy fails wit
   zero. The share is quick moves over manual plus quick moves, the finish excluded; a game is assisted when the share is above
   `ASSISTED_ABOVE_PERCENT` (80) with at least `ASSISTED_MIN_MOVES` (10) such moves. The counters are information only and never
   block a move. The game has no separate auto-move to the foundations, so only the quick move and the finish are counted.
-- **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `list.rs`
-  selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
+- **Statistics (P4-04):** `screens/stats.rs` (+ `stats/`: `summary.rs` pure statistics, `format.rs`, `time.rs`
+  the dates in `Deps::zone`, `list.rs` selection and scrolling, `view.rs`). The main-menu item "Statistics" opens it; `App` reads `Storage::history`
   when the screen opens (a failure is logged and the screen says so) and hands the rows to `StatsScreen::show`.
   A summary per variant and undo mode (games played, won, win rate, best winning time, fewest moves in a win,
   current and longest streak; once a game without undo has finished, a "No restart" column beside the wins counts the wins
 without a restart, `-` for the undo rows; only finished games count, an abandoned game ends a streak, wins without a move
-  count are skipped for "fewest moves") sits above the history list, newest first: UTC date and time (the
-  standard library cannot convert to local time and no dependency was added), game, seed, result, playing
-  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). The status line under the buttons shows the
+  count are skipped for "fewest moves") sits above the history list, newest first: date and time in `Deps::zone`
+  (O-97), game, seed, result, playing
+  time, moves, restarts (P4-05: the count for a game without undo, `-` with undo). The heading says "local time" when `Deps::zone` is `Zone::Local` and "times in UTC" when it is `Zone::Utc`, so the label is always true. The binary (`src/main.rs`) reads the system offset with the `time` crate (feature `local-offset`, the O-97 dependency) as the first step of `start`, before any thread exists, and falls back to `Zone::Utc` with one INFO log; the TUI never depends on `time`. The status line under the buttons shows the
   assist line of the selected game (P4-06; `stats/assist.rs`): the share of automatic moves, the failed quick moves, the longest
   run of quick moves, the auto-finish moves and the tag "assisted game"; the check keys show instead for a row without counted
   moves. The summary has an "Assisted" column (finished games above the threshold) from 110 columns. Enter replays the selected row (`Effect::Start` with its variant and seed), `c` copies the seed

@@ -26,7 +26,7 @@ mod accessibility_tests;
 #[cfg(test)]
 mod test_support;
 
-pub use app::{App, Deps, Modal, Screen, SearchCommand, SearchProgress};
+pub use app::{App, Deps, Modal, Screen, SearchCommand, SearchProgress, Zone};
 pub use audio::{Audio, AudioSettings, AudioStatus, NullAudio, SoundCue, StyleInfo};
 pub use clipboard::{Clipboard, ClipboardError, NullClipboard};
 pub use input::Input;

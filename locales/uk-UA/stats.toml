@@ -36,7 +36,8 @@ longest = "Рекорд"
 assisted = "Допом."
 
 [history]
-title = "Історія, спочатку нові, час UTC"
+title_utc = "Історія, спочатку нові, час UTC"
+title_local = "Історія, спочатку нові, місцевий час"
 date = "Дата"
 variant = "Гра"
 seed = "Зерно"

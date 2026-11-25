@@ -22,7 +22,9 @@ use oxysol_tui::app::{ConsoleFont, DisplayDeps, DisplayFacts, NullConsoleFont, P
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
 use oxysol_tui::i18n::{self, Locale};
 use oxysol_tui::settings::TerminalKind;
-use oxysol_tui::{Deps, NullSolver, Solver};
+use oxysol_tui::{Deps, NullSolver, Solver, Zone};
+use time::UtcOffset;
+use time::error::IndeterminateOffset;
 
 fn main() -> ExitCode {
     i18n::set_locale(locale_from_env());
@@ -77,6 +79,7 @@ fn start_logging(paths: &AppPaths, level: Option<&str>) -> Option<File> {
 }
 
 fn start(args: &Cli) -> Result<(), AppError> {
+    let local_offset = read_local_offset();
     let paths = AppPaths::detect()?;
     let level = std::env::var(logging::LEVEL_VARIABLE).ok();
     let diagnostics = start_logging(&paths, level.as_deref());
@@ -99,6 +102,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         );
     }
     panic_hook::panic_if_requested();
+    let zone = zone_of(local_offset);
     let storage = SqliteStorage::open(&paths).map_err(|error| {
         tracing::error!(target: "oxysol::critical", %error, "the database cannot be opened");
         AppError::from(error)
@@ -116,11 +120,32 @@ fn start(args: &Cli) -> Result<(), AppError> {
         solver: start_solver(Arc::clone(&native)),
         display: display_deps(args, native),
         version: env!("OXYSOL_VERSION"),
+        zone,
     };
     oxysol_tui::run(deps).map_err(|error| {
         tracing::error!(%error, "the terminal interface stopped");
         AppError::from(error)
     })
+}
+
+/// The system's offset from UTC. It is read first in `start`, before any thread exists, because the
+/// `time` crate refuses to read the local offset on some Unix systems once threads are running.
+fn read_local_offset() -> Result<UtcOffset, IndeterminateOffset> {
+    UtcOffset::current_local_offset()
+}
+
+/// The zone of the statistics history; without a known offset the history stays in UTC, and the
+/// heading says so.
+fn zone_of(offset: Result<UtcOffset, IndeterminateOffset>) -> Zone {
+    match offset {
+        Ok(offset) => Zone::Local {
+            minutes: i32::from(offset.whole_minutes()),
+        },
+        Err(error) => {
+            tracing::info!(%error, "the local UTC offset is unknown; the statistics stay in UTC");
+            Zone::Utc
+        }
+    }
 }
 
 fn display_deps(args: &Cli, native: Arc<dyn Native>) -> DisplayDeps {
@@ -251,6 +276,21 @@ mod tests {
         ] {
             assert_eq!(locale_for(Some(tag)), locale.or_source(), "{tag}");
         }
+    }
+
+    #[test]
+    fn a_known_offset_is_kept_in_whole_minutes_east_of_utc() {
+        let offset = |seconds| UtcOffset::from_whole_seconds(seconds).ok();
+        let half_hour = offset(5 * 3600 + 30 * 60).map(Ok);
+        let west = offset(-5 * 3600).map(Ok);
+        assert_eq!(
+            zone_of(half_hour.unwrap_or(Err(IndeterminateOffset))),
+            Zone::Local { minutes: 330 }
+        );
+        assert_eq!(
+            zone_of(west.unwrap_or(Err(IndeterminateOffset))),
+            Zone::Local { minutes: -300 }
+        );
     }
 
     #[test]

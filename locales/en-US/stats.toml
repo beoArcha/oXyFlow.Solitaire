@@ -36,7 +36,8 @@ longest = "Best streak"
 assisted = "Assisted"
 
 [history]
-title = "History, newest first, times in UTC"
+title_utc = "History, newest first, times in UTC"
+title_local = "History, newest first, local time"
 date = "Date"
 variant = "Game"
 seed = "Seed"

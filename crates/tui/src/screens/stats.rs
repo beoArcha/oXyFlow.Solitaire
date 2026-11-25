@@ -11,6 +11,7 @@ mod format;
 mod list;
 mod status;
 mod summary;
+mod time;
 mod view;
 
 pub use self::check::Target;
@@ -27,7 +28,7 @@ use self::summary::{Summary, has_several_modes, summarize};
 use super::Effect;
 use super::focus::{step, tab_forward};
 use crate::action::Action;
-use crate::app::Screen;
+use crate::app::{Screen, Zone};
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::storage::GameRecord;
 use crate::widgets::footer::FooterMap;
@@ -76,12 +77,17 @@ pub struct StatsScreen {
     footer: FooterMap,
     drag: Option<u16>,
     track: Rect,
+    zone: Zone,
 }
 
 impl StatsScreen {
-    /// An empty screen; `App` fills it with [`StatsScreen::show`] when it opens.
-    pub fn new() -> Self {
-        Self::default()
+    /// An empty screen showing its times in `zone`; `App` fills it with [`StatsScreen::show`] when
+    /// it opens.
+    pub fn new(zone: Zone) -> Self {
+        Self {
+            zone,
+            ..Self::default()
+        }
     }
 
     /// Replaces the history (in any order) and selects the newest game.

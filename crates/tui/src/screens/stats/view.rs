@@ -10,6 +10,7 @@ use super::format::{
     LONGEST_STREAK_MIN_WIDTH, RESULT_COLUMN, WINNABLE_TEXT_MIN_WIDTH, history_columns,
     history_header, legend_line, result_token, summary_lines,
 };
+use super::time;
 use super::{Button, StatsScreen, Stop};
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -187,6 +188,7 @@ impl StatsScreen {
 
     fn draw_history(&mut self, frame: &mut Frame, areas: [Rect; 3], ctx: &ViewCtx<'_>) {
         let [heading_area, header_area, list_area] = areas;
+        let zone = self.zone;
         let position = tf(
             "stats.position",
             &[
@@ -194,7 +196,7 @@ impl StatsScreen {
                 ("total", &self.records.len().to_string()),
             ],
         );
-        let heading = format!("{}   {position}", t("stats.history.title"));
+        let heading = format!("{}   {position}", t(time::heading_key(self.zone)));
         let accent = ctx.theme.style(Token::Accent, Token::Background);
         centered(frame, heading_area, heading, accent);
         let short = list_area.width < WINNABLE_TEXT_MIN_WIDTH;
@@ -232,7 +234,7 @@ impl StatsScreen {
                 )
             };
             let cell = Rect::new(x, list_area.y + row, row_width, 1);
-            let cells = history_columns(record, ctx.glyphs, short);
+            let cells = history_columns(record, ctx.glyphs, short, zone);
             let line = row_line(marker(ctx, focused), &cells, plain, result);
             frame.render_widget(Paragraph::new(line), cell);
             self.rows.push((index, cell));

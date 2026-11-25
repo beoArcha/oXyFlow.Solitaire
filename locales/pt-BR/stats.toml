@@ -36,7 +36,8 @@ longest = "Melhor série"
 assisted = "Assist."
 
 [history]
-title = "Histórico, mais recente primeiro, horários em UTC"
+title_utc = "Histórico, mais recente primeiro, horários em UTC"
+title_local = "Histórico, mais recente primeiro, horário local"
 date = "Data"
 variant = "Jogo"
 seed = "Semente"

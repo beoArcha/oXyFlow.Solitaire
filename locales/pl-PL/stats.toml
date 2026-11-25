@@ -36,7 +36,8 @@ longest = "Rekord"
 assisted = "Pomoc"
 
 [history]
-title = "Historia, od najnowszej, czas UTC"
+title_utc = "Historia, od najnowszej, czas UTC"
+title_local = "Historia, od najnowszej, czas lokalny"
 date = "Data"
 variant = "Gra"
 seed = "Ziarno"
