@@ -1,6 +1,5 @@
 //! The text of the generated files: the Rust table and the Markdown report.
 
-use std::fmt::Write;
 use std::time::Duration;
 
 use oxysol_core::Variant;
@@ -51,16 +50,15 @@ fn variant_expr(variant: Variant) -> String {
 pub fn table(scans: &[VariantScan]) -> String {
     let mut out = String::from(TABLE_HEAD);
     for scan in scans {
-        let _ = writeln!(
-            out,
-            "    (\n        {},\n        [",
-            variant_expr(scan.variant)
+        line(
+            &mut out,
+            format!("    (\n        {},\n        [", variant_expr(scan.variant)),
         );
         for level in 0..LEVELS {
             let seeds: Vec<String> = (0..PER_LEVEL)
                 .map(|slot| scan.pick(level, slot).candidate.seed.to_string())
                 .collect();
-            let _ = writeln!(out, "            [{}],", seeds.join(", "));
+            line(&mut out, format!("            [{}],", seeds.join(", ")));
         }
         out.push_str("        ],\n    ),\n");
     }
@@ -82,10 +80,12 @@ pub fn summary_line(scan: &VariantScan) -> String {
 pub fn report(scans: &[VariantScan], elapsed: Duration) -> String {
     let mut out = String::new();
     out.push_str(REPORT_INTRO);
-    let _ = writeln!(
-        out,
-        "- Run time of this generation: {}.\n",
-        run_time_text(elapsed)
+    line(
+        &mut out,
+        format!(
+            "- Run time of this generation: {}.\n",
+            run_time_text(elapsed)
+        ),
     );
     for scan in scans {
         variant_section(&mut out, scan);
@@ -94,26 +94,30 @@ pub fn report(scans: &[VariantScan], elapsed: Duration) -> String {
 }
 
 fn variant_section(out: &mut String, scan: &VariantScan) {
-    let _ = writeln!(out, "## {}\n", name(scan.variant));
-    let _ = writeln!(
+    line(out, format!("## {}\n", name(scan.variant)));
+    line(
         out,
-        "Pool: {} winnable seeds; scanned seeds 0 to {}.\n",
-        scan.sorted.len(),
-        scan.scanned_to
+        format!(
+            "Pool: {} winnable seeds; scanned seeds 0 to {}.\n",
+            scan.sorted.len(),
+            scan.scanned_to
+        ),
     );
     out.push_str("| Level | Seed | E | L | H | D |\n| --- | --- | --- | --- | --- | --- |\n");
     for (level, label) in LEVEL_NAMES.iter().enumerate() {
         for slot in 0..PER_LEVEL {
             let scored = scan.pick(level, slot);
             let candidate = &scored.candidate;
-            let _ = writeln!(
+            line(
                 out,
-                "| {label} | {} | {} | {} | {} | {:.4} |",
-                candidate.seed,
-                candidate.effort,
-                candidate.length,
-                u8::from(candidate.hint_win),
-                scored.difficulty
+                format!(
+                    "| {label} | {} | {} | {} | {} | {:.4} |",
+                    candidate.seed,
+                    candidate.effort,
+                    candidate.length,
+                    u8::from(candidate.hint_win),
+                    scored.difficulty
+                ),
             );
         }
     }
@@ -133,3 +137,8 @@ build: `cargo run --release -p xtask --features art -- curated-seeds`.
 - Levels: the pool sorted by D, cut into five equal quintiles (very easy first); in each, the three seeds
   nearest the quintile's median D.
 ";
+
+fn line(out: &mut String, text: String) {
+    out.push_str(&text);
+    out.push('\n');
+}

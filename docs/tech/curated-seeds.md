@@ -10,7 +10,7 @@ build: `cargo run --release -p xtask --features art -- curated-seeds`.
 - D = 0.6 · pct(E) + 0.4 · pct(L) − 0.3 · H, where pct is the rank percentile within the pool.
 - Levels: the pool sorted by D, cut into five equal quintiles (very easy first); in each, the three seeds
   nearest the quintile's median D.
-- Run time of this generation: 242 s.
+- Run time of this generation: 214 s.
 
 ## Klondike(One)
 
