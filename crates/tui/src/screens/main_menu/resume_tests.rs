@@ -51,7 +51,10 @@ const CORNER_ROWS: usize = 3;
 
 /// The first row of the list that carries the focus marker; the language selector sits above it.
 fn focus_row(lines: &[String]) -> Option<&String> {
-    lines.iter().skip(CORNER_ROWS).find(|line| line.contains('►'))
+    lines
+        .iter()
+        .skip(CORNER_ROWS)
+        .find(|line| line.contains('►'))
 }
 
 fn foreground_at(h: &mut Harness, column: u16, row: u16) -> Color {
