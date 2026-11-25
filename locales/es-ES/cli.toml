@@ -9,12 +9,12 @@ Uso: oxysol [opciones]
 
 Opciones:
   --version                    muestra la versión y licencia, y sale
-  --help                       muestra esta ayuda y sale
+  -h, --help                   muestra esta ayuda y sale
 
 Pantalla:
   --ascii                      dibuja cartas solo con caracteres ASCII
   --colors <16|256|truecolor>  profundidad de color del terminal
-  --fullscreen                 inicia en pantalla completa, según o no los ajustes
+  -fs, --fullscreen            inicia en pantalla completa, según o no los ajustes
   --no-fullscreen              inicia en ventana, según o no los ajustes
 
 Juego:

@@ -221,6 +221,7 @@ fn command_of(plan: &Plan) -> Command {
     #[cfg(windows)]
     if plan.new_console {
         std::os::windows::process::CommandExt::creation_flags(&mut command, CREATE_NEW_CONSOLE);
+        command.env_remove("WT_SESSION");
     }
     #[cfg(not(windows))]
     command

@@ -20,7 +20,7 @@ pub struct Cli {
     pub new_window: bool,
     pub colors: Option<ColorArg>,
     pub seed: Option<u64>,
-    /// `--fullscreen` (`Some(true)`) or `--no-fullscreen` (`Some(false)`); the last one given wins.
+    /// `--fullscreen` / `-fs` (`Some(true)`) or `--no-fullscreen` (`Some(false)`); the last one given wins.
     pub full_screen: Option<bool>,
     /// `--priority <level>`: the process priority for this run, whatever the setting says.
     pub priority: Option<ProcessPriority>,
@@ -64,10 +64,10 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
     while let Some(arg) = it.next() {
         match arg.as_str() {
             "--version" => cli.show_version = true,
-            "--help" => cli.show_help = true,
+            "--help" | "-h" => cli.show_help = true,
             "--ascii" => cli.ascii = true,
             "--new-window" | "-n" => cli.new_window = true,
-            "--fullscreen" => cli.full_screen = Some(true),
+            "--fullscreen" | "-fs" => cli.full_screen = Some(true),
             "--no-fullscreen" => cli.full_screen = Some(false),
             "--colors" => {
                 let val = it.next().ok_or(CliError::MissingValue("--colors"))?;
@@ -134,8 +134,10 @@ mod tests {
 
     #[test]
     fn test_help_flag() {
-        let parsed = parse(to_args(&["--help"])).unwrap();
-        assert!(parsed.show_help);
+        for flag in ["--help", "-h"] {
+            let parsed = parse(to_args(&[flag])).unwrap();
+            assert!(parsed.show_help, "{flag}");
+        }
     }
 
     #[test]
@@ -161,10 +163,13 @@ mod tests {
 
     #[test]
     fn test_full_screen_flags_force_the_setting_and_the_last_one_wins() {
-        assert_eq!(
-            parse(to_args(&["--fullscreen"])).unwrap().full_screen,
-            Some(true)
-        );
+        for flag in ["--fullscreen", "-fs"] {
+            assert_eq!(
+                parse(to_args(&[flag])).unwrap().full_screen,
+                Some(true),
+                "{flag}"
+            );
+        }
         assert_eq!(
             parse(to_args(&["--no-fullscreen"])).unwrap().full_screen,
             Some(false)
@@ -172,7 +177,29 @@ mod tests {
         let last = parse(to_args(&["--fullscreen", "--seed", "3", "--no-fullscreen"])).unwrap();
         assert_eq!(last.full_screen, Some(false));
         assert_eq!(last.seed, Some(3));
+        let last_short = parse(to_args(&["-fs", "--seed", "3", "--no-fullscreen"])).unwrap();
+        assert_eq!(last_short.full_screen, Some(false));
+        let short_wins = parse(to_args(&["--no-fullscreen", "-fs"])).unwrap();
+        assert_eq!(short_wins.full_screen, Some(true));
+        let long_wins = parse(to_args(&["--no-fullscreen", "--fullscreen"])).unwrap();
+        assert_eq!(long_wins.full_screen, Some(true));
         assert_eq!(parse(to_args(&["--ascii"])).unwrap().full_screen, None);
+    }
+
+    #[test]
+    fn test_combined_short_and_long_flags_in_any_order() {
+        let first = parse(to_args(&["-n", "-fs"])).unwrap();
+        assert!(first.new_window);
+        assert_eq!(first.full_screen, Some(true));
+
+        let second = parse(to_args(&["-fs", "-n", "--seed", "5"])).unwrap();
+        assert!(second.new_window);
+        assert_eq!(second.full_screen, Some(true));
+        assert_eq!(second.seed, Some(5));
+
+        let third = parse(to_args(&["-n", "-h"])).unwrap();
+        assert!(third.new_window);
+        assert!(third.show_help);
     }
 
     #[test]

@@ -177,3 +177,69 @@ fn a_setting_change_that_is_not_full_screen_never_touches_the_console() {
     h.app.apply_settings(louder);
     assert!(requests(&calls).is_empty());
 }
+
+fn open_full_screen_row(h: &mut Harness) {
+    let settings_label = crate::i18n::t("common.menu.settings");
+    let mark = format!("► {settings_label}");
+    for _ in 0..16 {
+        if h.lines().iter().any(|line| line.contains(&mark)) {
+            break;
+        }
+        h.press(KeyCode::Down);
+    }
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Settings);
+
+    let full_screen_label = crate::i18n::t("settings.row.full_screen");
+    let row_mark = format!("► {full_screen_label}");
+    for _ in 0..32 {
+        if h.lines().iter().any(|line| line.contains(&row_mark)) {
+            break;
+        }
+        h.press(KeyCode::Down);
+    }
+}
+
+#[test]
+fn settings_screen_enters_and_leaves_full_screen_on_the_classic_console() {
+    let (mut h, calls) = harness(
+        FullScreen::Auto,
+        facts(false, TerminalKind::ClassicConsole, None),
+        true,
+    );
+    assert!(requests(&calls).is_empty());
+    open_full_screen_row(&mut h);
+
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().full_screen, FullScreen::On);
+    assert_eq!(requests(&calls), [true]);
+
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().full_screen, FullScreen::Off);
+    assert_eq!(requests(&calls), [true, false]);
+}
+
+#[test]
+fn settings_screen_overrides_the_launch_flag_to_leave_or_enter_full_screen() {
+    let (mut forced_on, calls_on) = harness(
+        FullScreen::Off,
+        facts(false, TerminalKind::ClassicConsole, Some(true)),
+        true,
+    );
+    assert_eq!(requests(&calls_on), [true]);
+    open_full_screen_row(&mut forced_on);
+    forced_on.press(KeyCode::Right);
+    assert_eq!(forced_on.app.settings().full_screen, FullScreen::Auto);
+    assert_eq!(requests(&calls_on), [true, false]);
+
+    let (mut forced_off, calls_off) = harness(
+        FullScreen::Auto,
+        facts(true, TerminalKind::ClassicConsole, Some(false)),
+        true,
+    );
+    assert!(requests(&calls_off).is_empty());
+    open_full_screen_row(&mut forced_off);
+    forced_off.press(KeyCode::Right);
+    assert_eq!(forced_off.app.settings().full_screen, FullScreen::On);
+    assert_eq!(requests(&calls_off), [true]);
+}

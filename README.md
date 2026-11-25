@@ -190,9 +190,9 @@ Command-line options (`oxysol --help` lists them):
 | `--ascii` | Draw cards with ASCII characters only |
 | `--colors <16\|256\|truecolor>` | Set the color depth of the terminal |
 | `-n`, `--new-window` | Open the game in a new console window and return to the prompt |
-| `--fullscreen`, `--no-fullscreen` | Force full screen on or off for this run (the setting is `Auto` by default) |
+| `-fs`, `--fullscreen`, `--no-fullscreen` | Force full screen on or off for this run (the setting is `Auto` by default; the last one given wins) |
 | `--priority <level>` | Set the process priority for this run: `highest`, `high`, `normal`, `low` or `lowest` (beats the setting) |
-| `--version`, `--help` | Print the version, or the help, and exit |
+| `--version`, `-h`, `--help` | Print the version, or the help, and exit |
 
 **Where the files are.** Settings, the saved game and the history are in one SQLite file, `oxysol.db`, next to the log
 `oxysol.log`. The folder is:
