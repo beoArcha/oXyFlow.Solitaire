@@ -1,7 +1,7 @@
 <h1 align="center">oXySol</h1>
 
-<p align="center"><strong>Solitaire for your terminal.</strong><br>
-Klondike, Spider, FreeCell, Pyramid and the Yukon family in one small program.</p>
+<p align="center"><strong>Fourteen solitaire games in your terminal, playable by keyboard or mouse.</strong><br>
+Klondike, Spider, FreeCell, Pyramid, the Yukon family and Golf, in one small program.</p>
 
 <p align="center">
   <a href="https://github.com/beoArcha/oXyFlow.Solitaire/actions/workflows/main.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/beoArcha/oXyFlow.Solitaire/main.yml?branch=main&label=CI"></a>
@@ -9,48 +9,40 @@ Klondike, Spider, FreeCell, Pyramid and the Yukon family in one small program.</
   <a href="https://github.com/beoArcha/oXyFlow.Solitaire/releases"><img alt="Latest pre-release" src="https://img.shields.io/github/v/release/beoArcha/oXyFlow.Solitaire?include_prereleases&label=latest%20build"></a>
   <a href="https://www.rust-lang.org/"><img alt="Rust 1.99" src="https://img.shields.io/badge/Rust-1.99-orange?logo=rust"></a>
   <a href="https://ratatui.rs/"><img alt="TUI: Ratatui" src="https://img.shields.io/badge/TUI-Ratatui%200.30-blueviolet"></a>
-  <img alt="Languages" src="https://img.shields.io/badge/languages-9-green">
-  <a href="https://beoarcha.github.io/oXyFlow.Solitaire/"><img alt="Website" src="https://img.shields.io/badge/website-9%20languages-blue"></a>
+  <a href="https://beoarcha.github.io/oXyFlow.Solitaire/"><img alt="Website in 9 languages" src="https://img.shields.io/badge/website-9%20languages-blue"></a>
 </p>
 
 <p align="center">
   <img alt="Animation: the cursor picks up the ace of clubs and drops it on a foundation" src="docs/site/src/img/en/anim-move.svg" width="860">
 </p>
 
-## What it is
+oXySol is a solitaire collection for the terminal, shipped as a single program, `oxysol`, for Windows, Linux and
+macOS. It is a pre-release (0.5): every game plays from start to finish, and new games, card styles and polish are
+still arriving.
 
-oXySol is a terminal solitaire with **Klondike, Spider, FreeCell, Pyramid and the Yukon family** (Yukon, Russian
-Solitaire, Alaska, Moosehide and Australian Patience), shipped as the single binary `oxysol`. It is a pre-release
-(version 0.5; the plan ends at 0.9): it plays, and it is still in development.
+## Highlights
 
-- **Game menu.** The games are listed under family headings; popular ones carry a star, favourites have their own
-  list, and a search box finds a game by name.
-- **Keyboard and mouse.** Every action works with both: click, double-click, drag, right-click to put a card back.
-- **Help while you play.** A guide panel, a possible moves panel, hints, undo and redo, and auto-finish when the game
-  is certainly won.
-- **Seeds and winnable deals.** Every deal has a seed you can copy and replay, a game can start from any seed,
-  and a new game can search for a deal that is proven winnable (a solver covers every game, the Yukon family included).
-- **Statistics and history** of every game you play: wins without a restart, personal bests, a scroll bar, and a
-  mark for each deal that was checked as winnable or not.
-- **Restart from the beginning** in the pause menu (`Esc`) or with `Shift+R`, always confirmed; in a game without undo
-  restarts are counted.
-- **Card size you choose.** `]` and `[` make the cards bigger or smaller, `0` returns to the automatic size that fits
-  the window; Ctrl+wheel and the Card size setting do the same.
-- **Fits the Windows console.** Started by a double-click, the game opens full screen (Alt+Enter mode), or sizes its
-  owned window when windowed (Small 130 × 40 by default so the side panels fit, Medium 195 × 60 or Large 260 × 80 in
-  Settings). Started from an open console, it leaves the console alone. In the classic Windows console, Ctrl+Plus,
-  Ctrl+Minus and Ctrl+0 change the console font size.
-- **Card styles.** Settings has five front styles (International, French, German, Italian and Swiss) and two back styles
-  (Lattice and Ornament).
-- **Five themes:** Dark, Light, High contrast (for low vision), Monokai and Dracula. Color is never the only signal.
-  Color-vision modes are planned, not built yet.
-- **Nine languages.** English, Polish, German, French, Italian, Brazilian Portuguese, Ukrainian, Dutch and Spanish.
-  Switch the language with the flag selector in the top-left corner of the main menu, or in Settings. On first start
-  the game follows the system language.
+- **Fourteen games in six families.** Klondike (draw 1 and draw 3), Spider (1, 2 and 4 suits), FreeCell, Pyramid
+  (Relaxed and Classic), the Yukon family (Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience) and
+  Golf. The game menu groups them by family, stars the popular ones, keeps your favourites and finds a game as you
+  type its name.
+- **Deals you can trust.** Every deal has a seed you can copy and replay. A new game can wait for a deal that a solver
+  has proven winnable, and "New game from seed" offers three curated deals for each of five difficulty levels in every
+  game.
+- **Help when you want it.** Hints that never peek at face-down cards, a guide panel, a list of possible moves,
+  undo and redo, quick moves (`a` for the card under the cursor, `e` for the waste card) and auto-finish once the
+  win is certain.
+- **Built for every pair of eyes.** A low-vision mode with 7:1 contrast and larger, bolder cards; five themes,
+  including High contrast; colour-vision modes for protanopia, deuteranopia, tritanopia and monochrome; a four-colour
+  deck; and focus that is always marked by a symbol, never by colour alone.
+- **Cards your way.** Six front styles (International, French, German, Italian, Spanish and Swiss), two back styles,
+  table colours and textures, card face tints and four card sizes that follow the window.
+- **Statistics and history.** Wins, streaks, personal bests and every game you played, in your local time, with a mark
+  for each deal that was checked as winnable.
+- **Nine languages.** English, Polski, Deutsch, Español, Français, Italiano, Nederlands, Português (Brasil) and
+  Українська. On first start the game follows your system language.
 
 ## Screenshots
-
-Every image is generated from the real game by `cargo xtask-art screenshots`.
 
 <table>
   <tr>
@@ -67,200 +59,143 @@ Every image is generated from the real game by `cargo xtask-art screenshots`.
   </tr>
 </table>
 
-More screens, the animations and all five themes are on the [website](https://beoarcha.github.io/oXyFlow.Solitaire/gallery.html).
+Every image is rendered from the real game by `cargo xtask-art screenshots`. More screens, animations and all five
+themes are in the [gallery](https://beoarcha.github.io/oXyFlow.Solitaire/gallery.html).
 
 ## Install
 
-You need a terminal. Pick one way.
-
 ### Download a build
 
-Get the newest build from the [releases page](https://github.com/beoArcha/oXyFlow.Solitaire/releases). Every build so
-far is a pre-release, so look at the top of the list and not at "latest". Archives exist for Windows (x86-64), Linux
-(x86-64 and ARM64) and macOS (Apple silicon). Unpack one and run `oxysol` (`oxysol.exe` on Windows). The Linux builds
-have no sound. `SHA256SUMS` on the release lets you check a download.
+Take the newest build from the [releases page](https://github.com/beoArcha/oXyFlow.Solitaire/releases). Every build so
+far is a pre-release, so look at the top of the list rather than at "latest". Archives exist for Windows (x86-64),
+Linux (x86-64 and ARM64) and macOS (Apple silicon), each also as a `-portable` variant. Unpack one and run `oxysol`
+(`oxysol.exe` on Windows).
+
+- The Linux builds have no sound.
+- `SHA256SUMS` on the release checks a download, and every archive carries a build provenance attestation
+  (`gh attestation verify <archive> -R beoArcha/oXyFlow.Solitaire`).
+- Windows may warn about an unknown publisher the first time you run a downloaded `oxysol.exe`; the builds are not
+  code-signed yet.
 
 ### Build from source
 
-You build the `release` branch, the last commit that passed the full check on Linux, Windows and macOS.
-
-#### Using the install scripts (recommended)
-
-The scripts in [`build/`](build/README.md) check every required dependency (Rust, C toolchain, `curl`, `tar`, and on Linux `pkg-config` and ALSA headers) before building and installing `oxysol` into `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` on Windows).
-
-Modes: `--check` (stop on first missing dependency), `--list` (list missing dependencies and install commands), `--install` (ask, install missing dependencies, re-check, then build), and `--no-audio` (skip ALSA and build with `--no-default-features`). Without a mode flag, an interactive terminal asks which mode to use; a non-interactive run behaves like `--list`.
-
-**Linux and macOS** (`--check` and `--list` verified in CI; `--install` not verified yet):
+The install scripts check every dependency first, tell you what is missing and, if you agree, install it and build
+the `release` branch into `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` on Windows):
 
 ```sh
+# Linux and macOS
 curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
 ```
 
-**Windows (PowerShell)** (`--check` and `--list` verified on Windows; `--install` not verified yet):
-
 ```powershell
+# Windows (PowerShell)
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
 ```
 
-Replace `--list` with `--install` to install missing dependencies and build.
+`--list` only reports; run the script from a file with `--install` to install and build, or with `--no-audio` to build
+without sound. The modes are described in [`build/README.md`](build/README.md).
 
-#### Manual steps
-
-**Rust is required.** Install it with [rustup](https://rustup.rs). The toolchain version is pinned in
-[`rust-toolchain.toml`](rust-toolchain.toml); rustup picks it up by itself on the first build. The build also compiles
-a little C code (SQLite), so you need a C toolchain: on Windows the Visual Studio Build Tools with the "Desktop
-development with C++" workload, on macOS the Xcode command line tools (`xcode-select --install`), on Linux `gcc` and,
-for sound, `pkg-config` and the ALSA headers (`sudo apt install build-essential pkg-config libasound2-dev`; without them
-add `--no-default-features` to the build command).
-
-**Windows (PowerShell).** Verified on Windows 10 on 2026-11-19.
-
-```powershell
-curl.exe -L -o oxysol-source.zip https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.zip
-Expand-Archive oxysol-source.zip -DestinationPath oxysol-source
-cd oxysol-source\oXyFlow.Solitaire-release
-cargo build --release
-.\target\release\oxysol.exe
-```
-
-**Linux and macOS.** Not verified yet: written, not run.
-
-```sh
-curl -L -o oxysol-source.tar.gz https://github.com/beoArcha/oXyFlow.Solitaire/archive/refs/heads/release.tar.gz
-tar -xzf oxysol-source.tar.gz
-cd oXyFlow.Solitaire-release
-cargo build --release
-./target/release/oxysol
-```
-
-The program ends up in `target/release/` (`oxysol.exe` on Windows). Run it from there or copy it to a folder on your
-`PATH`. The first build takes a few minutes.
-
-**With `cargo install`.** One step instead of the download. Verified on Windows 10; not verified on Linux and macOS.
+If you already have the tools (Rust through [rustup](https://rustup.rs) and a C toolchain; on Linux also `pkg-config`
+and the ALSA headers for sound), one command is enough:
 
 ```sh
 cargo install --git https://github.com/beoArcha/oXyFlow.Solitaire --branch release --locked oxysol
 ```
 
-This puts `oxysol` in `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` on Windows), which rustup adds to your `PATH`.
+The [install page](https://beoarcha.github.io/oXyFlow.Solitaire/install.html) has the manual steps for every system.
 
-## Usage
+## Play
 
-Start the game in a terminal that is at least 100 columns by 30 rows (it says so when it is too small):
+Run `oxysol` in a terminal of at least 100 × 30 characters; at 130 columns or more the guide and the possible moves
+sit beside the board. Press `?` in the game for every key. The ones you will use most:
 
-```sh
-oxysol
-```
-
-The panels beside the board need 130 columns; on narrower terminals `g` and `v` open them in a window.
-The full key list is in the game: press `?`.
-
-| Key | What it does |
+| Key | Action |
 |---|---|
-| Arrows (or `k` and `j` for up and down) | Move the cursor |
-| `Tab` and `Shift+Tab` | Move the focus to the next or previous area |
-| `Enter` or `Space` | Pick up a card, then drop it on a target |
-| `Esc` | Put the card back, or go back |
+| Arrows | Move the cursor |
+| `Enter` or `Space` | Pick up cards, then drop them |
+| `Esc` | Put the cards back |
 | `s` | Turn or deal from the stock |
-| `a` | Quick move to a foundation |
-| `+` and `-` | Pick more or fewer cards of a run |
-| `]`, `[` and `0` | Bigger cards, smaller cards, automatic card size |
-| `u` (`Ctrl+Z`) and `r` (`Ctrl+Y`) | Undo and redo |
+| `a` / `e` | Quick move the card under the cursor / the waste card |
+| `u` / `r` | Undo / redo |
 | `h` | Hint |
-| `f` | Finish the game: play out the remaining moves once the win is certain |
-| `g` | Guide panel |
-| `v` | Possible moves panel |
-| `o` | Quick options for this game (hints, aura, panels, auto-finish) |
-| `Shift+R` | Restart this deal (asks first) |
-| `n` | New game |
-| `p` | Pause |
-| `m` | Main menu |
+| `g` / `v` / `o` | Guide / possible moves / quick options |
+| `]` / `[` / `0` | Bigger / smaller / automatic card size |
+| `n` / `p` / `m` | New game / pause / main menu |
 | `c` | Copy the seed of this deal |
-| `i` | How to play |
-| `?` or `F1` | Help: every key |
-| `q` | Quit (`Ctrl+C` quits at once) |
+| `i` / `?` | How to play / help |
+| `q` | Quit |
 
-In the classic Windows console, `Ctrl+Plus`, `Ctrl+Minus` and `Ctrl+0` change the console font size; other terminals
-zoom with their own keys (Cmd on a Mac).
+Everything also works by mouse: click to pick up and drop, double-click for a quick move, drag, and right-click to put
+cards back.
 
-Command-line options (`oxysol --help` lists them):
+### Command line
 
 | Option | What it does |
 |---|---|
 | `--seed <number>` | Choose a game for this seed at once |
+| `-n`, `--new-window` | Open the game in its own console window and return to the prompt |
+| `-fs`, `--fullscreen` / `--no-fullscreen` | Start in full screen or in a window, whatever the setting says |
 | `--ascii` | Draw cards with ASCII characters only |
-| `--colors <16\|256\|truecolor>` | Set the color depth of the terminal |
-| `-n`, `--new-window` | Open the game in a new console window and return to the prompt |
-| `-fs`, `--fullscreen`, `--no-fullscreen` | Force full screen on or off for this run (the setting is `Auto` by default; the last one given wins) |
-| `--priority <level>` | Set the process priority for this run: `highest`, `high`, `normal`, `low` or `lowest` (beats the setting) |
-| `--version`, `-h`, `--help` | Print the version, or the help, and exit |
+| `--colors <16\|256\|truecolor>` | Set the colour depth of the terminal |
+| `--priority <level>` | Process priority for this run: `highest`, `high`, `normal`, `low` or `lowest` |
+| `-h`, `--help` / `--version` | Print the help or the version, and exit |
 
-**Where the files are.** Settings, the saved game and the history are in one SQLite file, `oxysol.db`, next to the log
-`oxysol.log`. The folder is:
+On Windows, a game started by a double-click (or with `-n`) owns its console window: it opens full screen by default,
+and in a window you can choose its size in Settings (130 × 40, 195 × 60 or 260 × 80).
 
-- Windows: `%APPDATA%\oXyFlow\oXySol\data`
-- Linux: `~/.local/share/oxysol` (or under `$XDG_DATA_HOME`). Not verified.
-- macOS: `~/Library/Application Support/oXyFlow.oXySol`. Not verified.
+### Your files
 
-The environment variable `OXYSOL_HOME` points the game at another folder, and `OXYSOL_LOG` sets the log level
-(`error`, `warn`, `info`, `debug` or `trace`).
-
-**Portable copy.** Unpack a `-portable` archive anywhere: the game keeps its files in a `data` folder next to the
-program and writes nothing to system folders. Delete the `oxysol.portable` file next to the program to use the system
-folder again.
+Settings, the saved game and the history live in one file, `oxysol.db`, next to the log, `oxysol.log`, in
+`%APPDATA%\oXyFlow\oXySol\data` on Windows and in your system's application data folder on Linux and macOS.
+`OXYSOL_HOME` points the game at another folder. A `-portable` build keeps everything in a `data` folder next to the
+program and writes nothing anywhere else.
 
 ## Accessibility
 
-Accessibility is a requirement here, not polish.
+Accessibility is a requirement in oXySol, not a finishing touch.
 
 - Every action works by keyboard and by mouse.
-- The focus is visible without color: a `►` marks the focused item (`>` in ASCII mode), and the line under the
-  board says in words where the cursor is and what it can do.
-- Color is never the only signal: suits are drawn as signs (♠ ♥ ♦ ♣) next to the rank, and picked cards and drop
-  targets have their own marks.
-- The **High contrast** theme is for low vision: white text on black and a frame around the playing field. Text contrast
-  is tested against a ratio of 4.5:1 in every theme and 7:1 in High contrast.
+- Focus is marked by a symbol (`►`, or `>` in ASCII), and the line under the board says in words where the cursor is
+  and what you can do there.
+- Colour never carries meaning alone: suits are signs (♠ ♥ ♦ ♣) beside the rank, picked cards and targets have their
+  own marks, and events are announced with ✓ or ✗.
+- **Low vision**, offered on first start and in Settings, sets 7:1 contrast in any theme, the largest cards that fit,
+  a thick aura, bold rank and suit and, in the classic Windows console, a larger font. Turning it off restores your
+  previous settings.
+- **Colour vision** remaps colours for protanopia, deuteranopia, tritanopia or monochrome, and the four-colour deck
+  gives every suit its own colour.
 - `--ascii` and `--colors 16` serve limited terminals.
-- Color-vision modes for color-blind players are planned. They are not in the game yet.
 
 ## Development
 
-The project is a Rust workspace:
+oXySol is a Rust workspace:
 
 | Part | What it is |
 |---|---|
-| `crates/core` | `oxysol-core`: the engine and the games. No terminal, no files, no clock |
-| `crates/tui` | `oxysol-tui`: rendering, input, themes and localization. Changes the game only through the engine's session |
-| `src/` | `oxysol`: the binary that wires it together: storage, audio, logging, arguments |
-| `xtask/` | `cargo xtask`: quality gates, lint, release tooling and the screenshot generator |
-
-The toolchain is pinned in `rust-toolchain.toml`. From the repository root:
+| `crates/core` | `oxysol-core`: the engine, the games and the solver. No terminal, no files, no clock |
+| `crates/tui` | `oxysol-tui`: rendering, input, themes and localization |
+| `src/` | `oxysol`: the program that wires it together: storage, audio, logging, arguments |
+| `xtask/` | `cargo xtask`: quality gates, release tooling, the screenshot and curated-seed generators |
 
 ```sh
-cargo run                    # play from source
-cargo xtask check --quick    # fmt, Clippy, lint and the fast tests: run before a pull request
-cargo xtask check            # everything, as CI does on main
-cargo xtask-art screenshots      # regenerate the SVG screenshots and animations of the website
-cargo xtask fonts            # build the oXySol Mono card font (needs Python 3.11+, see below)
+cargo run                      # play from source
+cargo xtask check --quick      # format, Clippy, lint and the fast tests: run before a pull request
+cargo xtask check              # everything, as CI does on main
+cargo xtask-art screenshots    # regenerate the screenshots and animations of the website
 ```
 
-`cargo xtask fonts` builds `assets/fonts/oXySolMono-Regular.ttf` from the Cascadia Mono base and the card glyph SVGs,
-and writes a preview sheet to `target/fonts/preview.html`. It is the only command that uses Python: install the pinned
-packages with `pip install -r xtask/fonts/requirements.txt` (fontTools and skia-pathops). Players do not need it.
-
-Read [`AGENTS.md`](AGENTS.md) for the rules of the code, then [`docs/tech/`](docs/tech): the
-[architecture](docs/tech/architecture.md), the [workflow](docs/tech/workflow.md) (branches, checks, releases) and the
-[decisions](docs/tech/decisions.md). The rules of the games are in [`docs/wiki/rules/`](docs/wiki/rules).
-The website is built from [`docs/site`](docs/site) with mdBook and published with each release.
+Start with [`AGENTS.md`](AGENTS.md) for the rules of the code, then [`docs/tech/`](docs/tech): the
+[architecture](docs/tech/architecture.md), the [workflow](docs/tech/workflow.md) and the
+[decisions](docs/tech/decisions.md). The rules of every game are in [`docs/wiki/rules/`](docs/wiki/rules), and the
+website is built from [`docs/site`](docs/site) with mdBook.
 
 ## Links
 
-- Website: <https://beoarcha.github.io/oXyFlow.Solitaire/>, in nine languages: English, Polski, Deutsch, Español,
-  Français, Italiano, Nederlands, Português (Brasil) and Українська. The game interface is available in the same nine
-  languages; the screenshots show the English version.
-- Po polsku: pasjans w terminalu z Klondike, Pająkiem, FreeCellem, Piramidą i rodziną Yukon. Polska wersja strony:
-  <https://beoarcha.github.io/oXyFlow.Solitaire/pl/index.html>
+- Website, in nine languages: <https://beoarcha.github.io/oXyFlow.Solitaire/>
+- Releases: <https://github.com/beoArcha/oXyFlow.Solitaire/releases>
+- Issues and ideas: <https://github.com/beoArcha/oXyFlow.Solitaire/issues>
+- Po polsku: [polska wersja strony](https://beoarcha.github.io/oXyFlow.Solitaire/pl/index.html)
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Copyright (c) 2026 Marcin "beoArcha" Stefan, under the oXyFlow brand.
+MIT, see [LICENSE](LICENSE). Copyright (c) 2026 Marcin "beoArcha" Stefan, under the oXyFlow brand.
