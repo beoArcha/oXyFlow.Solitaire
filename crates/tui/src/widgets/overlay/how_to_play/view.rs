@@ -1,7 +1,7 @@
 //! Drawing and geometry of the "How to play" window: a row of game tabs with arrows, the scrolled
 //! text, a footer with the keys and the position, and a Close button. The chosen tab is framed by
-//! brackets and drawn bold and reversed, so it shows without color; arrows and tabs are plain
-//! WGL4 or ASCII characters.
+//! brackets and drawn bold and underlined in the accent color, so it shows without color and stays
+//! distinct from the focused button; arrows and tabs are plain WGL4 or ASCII characters.
 
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Margin, Rect};
@@ -117,10 +117,7 @@ fn draw_tabs(frame: &mut Frame, row: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     for (rules, rect) in placed.games {
         let name = t(rules.name_key());
         let (text, style) = if rules == state.rules {
-            (
-                format!("[{name}]"),
-                plain.add_modifier(Modifier::BOLD | Modifier::REVERSED),
-            )
+            (format!("[{name}]"), ctx.theme.active_tab())
         } else {
             (format!(" {name} "), plain)
         };

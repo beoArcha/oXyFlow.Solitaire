@@ -218,8 +218,14 @@ fn the_chosen_tab_and_the_close_button_show_focus_without_color() {
     h.type_char('i');
     let (column, row) = h.find("[FreeCell]").unwrap_or_default();
     let cell = &h.terminal.backend().buffer()[(column, row)];
-    assert!(cell.modifier.contains(Modifier::REVERSED));
+    assert!(cell.modifier.contains(Modifier::UNDERLINED));
     assert!(cell.modifier.contains(Modifier::BOLD));
+    assert!(!cell.modifier.contains(Modifier::REVERSED));
+    let (btn_col, btn_row) = h.find("► Close [Esc] ◄").unwrap_or_default();
+    let btn_cell = &h.terminal.backend().buffer()[(btn_col, btn_row)];
+    assert!(btn_cell.modifier.contains(Modifier::REVERSED));
+    assert!(btn_cell.modifier.contains(Modifier::BOLD));
+    assert!(!btn_cell.modifier.contains(Modifier::UNDERLINED));
     let text = h.text();
     assert!(text.contains("[FreeCell]"));
     assert!(!text.contains("[Klondike]"));

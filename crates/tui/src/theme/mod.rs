@@ -15,7 +15,7 @@ pub mod table_feel;
 pub mod vision;
 
 use oxysol_core::{Color as SuitColor, Suit};
-use ratatui::style::{Color, Style};
+use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, Serialize};
 
 pub use palette::{GRAPHIC_PAIRS, MARK_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
@@ -126,6 +126,18 @@ impl Theme {
     /// The focused list item.
     pub fn focus(&self) -> Style {
         self.style(Token::FocusFg, Token::FocusBg)
+    }
+
+    /// The active tab in an overlay window: bold, underlined accent text on the surface.
+    pub fn active_tab(&self) -> Style {
+        self.style(Token::Accent, Token::Surface)
+            .add_modifier(Modifier::BOLD | Modifier::UNDERLINED)
+    }
+
+    /// The focused action button in an overlay dialog: focus colors in bold reverse video.
+    pub fn focused_button(&self) -> Style {
+        self.style(Token::FocusBg, Token::FocusFg)
+            .add_modifier(Modifier::BOLD | Modifier::REVERSED)
     }
 
     /// This theme with its felt replaced by the felt of `colour` (or the shade of it that passes the

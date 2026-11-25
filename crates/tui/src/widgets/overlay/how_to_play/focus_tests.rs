@@ -46,8 +46,9 @@ fn the_selected_game_is_marked_without_color_in_unicode_and_ascii() {
     assert!(
         selected
             .modifier
-            .contains(Modifier::REVERSED | Modifier::BOLD)
+            .contains(Modifier::UNDERLINED | Modifier::BOLD)
     );
+    assert!(!selected.modifier.contains(Modifier::REVERSED));
 
     let mut ascii = opened(Locale::EnUs, PLAIN);
     let ascii_row = row_of(&mut ascii, "[Klondike]");

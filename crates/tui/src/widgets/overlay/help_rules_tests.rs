@@ -102,8 +102,9 @@ fn help_opens_on_keys_tab_with_uncolored_selection() {
 
     let (col, row) = h.find("[Keys]").expect("tab");
     let cell = &h.terminal.backend().buffer()[(col, row)];
-    assert!(cell.modifier.contains(Modifier::REVERSED));
+    assert!(cell.modifier.contains(Modifier::UNDERLINED));
     assert!(cell.modifier.contains(Modifier::BOLD));
+    assert!(!cell.modifier.contains(Modifier::REVERSED));
 }
 
 #[test]

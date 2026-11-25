@@ -361,3 +361,50 @@ fn four_color_suits_keep_contrast_and_distinctness_under_simulation() {
         }
     }
 }
+
+fn visual_colors(style: Style) -> (Option<Color>, Option<Color>) {
+    if style.add_modifier.contains(Modifier::REVERSED) {
+        (style.bg, style.fg)
+    } else {
+        (style.fg, style.bg)
+    }
+}
+
+#[test]
+fn active_tab_and_focused_button_differ_in_every_theme_depth_and_vision() {
+    use ratatui::style::Modifier;
+    for id in ThemeId::ALL {
+        for depth in [
+            ColorDepth::Ansi16,
+            ColorDepth::Ansi256,
+            ColorDepth::TrueColor,
+        ] {
+            for vision in ColorVision::ALL {
+                let theme = Theme::new(id, depth).with_color_vision(vision);
+                let tab = theme.active_tab();
+                let button = theme.focused_button();
+                let label = format!("{id:?} {depth:?} {vision:?}");
+                assert_ne!(tab, button, "{label}");
+                assert_ne!(tab, theme.surface(), "{label}");
+                assert_ne!(button, theme.surface(), "{label}");
+                assert!(
+                    tab.add_modifier
+                        .contains(Modifier::BOLD | Modifier::UNDERLINED),
+                    "{label}"
+                );
+                assert!(!tab.add_modifier.contains(Modifier::REVERSED), "{label}");
+                assert!(
+                    button
+                        .add_modifier
+                        .contains(Modifier::BOLD | Modifier::REVERSED),
+                    "{label}"
+                );
+                assert!(
+                    !button.add_modifier.contains(Modifier::UNDERLINED),
+                    "{label}"
+                );
+                assert_ne!(visual_colors(tab), visual_colors(button), "{label}");
+            }
+        }
+    }
+}
