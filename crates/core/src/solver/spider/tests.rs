@@ -111,3 +111,46 @@ fn only_the_same_suit_tail_moves_together() {
     let position = Position::from_piles(&piles).unwrap();
     assert_eq!(position.run_len(0), 2);
 }
+
+#[test]
+fn multi_suit_search_never_reports_exhausted() {
+    let piles = seven_runs_home(vec![
+        pile(PileRef::Tableau(0), "", "KS"),
+        pile(PileRef::Tableau(1), "", "KS QS"),
+        pile(PileRef::Tableau(2), "", "JS 10S"),
+        pile(PileRef::Tableau(3), "", "9S"),
+    ]);
+    let position = Position::from_piles(&piles).unwrap();
+    let searched = super::search_multi(&position, 10_000, &no_finish);
+    assert!(matches!(searched.outcome, Outcome::OutOfBudget));
+}
+
+#[test]
+fn multi_suit_search_wins_known_deals_and_tiny_budget_gives_unknown() {
+    use crate::solver::{SolveBudget, Verdict, replays_to_win, solve, solve_report};
+    for (suits, seed) in [(SuitCount::Two, 286), (SuitCount::Four, 45)] {
+        let variant = Variant::Spider(suits);
+        let report = solve_report(variant, seed, SolveBudget::default_for(variant));
+        let Verdict::Winnable { moves } = report.verdict else {
+            panic!("{variant:?} seed {seed} should be winnable");
+        };
+        assert!(replays_to_win(variant, seed, &moves));
+        assert_eq!(
+            solve(variant, seed, SolveBudget::nodes(20)),
+            Verdict::Unknown
+        );
+    }
+}
+
+#[test]
+fn position_with_stock_and_under_ten_tableau_cards_is_dead() {
+    let piles = vec![
+        pile(PileRef::Stock, "AS 2S 3S 4S 5S 6S 7S 8S 9S 10S", ""),
+        pile(PileRef::Tableau(0), "", "KS"),
+        pile(PileRef::Tableau(1), "", "QS"),
+    ];
+    let position = Position::from_piles(&piles).unwrap();
+    assert!(position.is_dead());
+    let searched = super::search_multi(&position, 10_000, &no_finish);
+    assert!(matches!(searched.outcome, Outcome::OutOfBudget));
+}
