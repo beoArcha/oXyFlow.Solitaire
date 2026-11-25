@@ -43,7 +43,7 @@ function Show-Usage {
     Write-Line 'a non-interactive run behaves like --list.'
 }
 
-function Set-InstallMode {
+function Select-InstallMode {
     param([string]$SelectedMode)
     if ($script:Mode -ne '' -and $script:Mode -ne $SelectedMode) {
         Write-Line "Conflicting mode flags: --$($script:Mode) and --$SelectedMode" -ErrorStream
@@ -52,16 +52,16 @@ function Set-InstallMode {
     $script:Mode = $SelectedMode
 }
 
-function Read-Arguments {
+function Read-CommandLine {
     param([string[]]$CliArgs)
     foreach ($arg in $CliArgs) {
         switch ($arg.ToLowerInvariant()) {
-            '--check' { Set-InstallMode 'check' }
-            '-check' { Set-InstallMode 'check' }
-            '--list' { Set-InstallMode 'list' }
-            '-list' { Set-InstallMode 'list' }
-            '--install' { Set-InstallMode 'install' }
-            '-install' { Set-InstallMode 'install' }
+            '--check' { Select-InstallMode 'check' }
+            '-check' { Select-InstallMode 'check' }
+            '--list' { Select-InstallMode 'list' }
+            '-list' { Select-InstallMode 'list' }
+            '--install' { Select-InstallMode 'install' }
+            '-install' { Select-InstallMode 'install' }
             '--no-audio' { $script:NoAudio = $true }
             '-noaudio' { $script:NoAudio = $true }
             '-h' { Show-Usage; exit 0 }
@@ -115,7 +115,7 @@ function Test-MsvcLink {
     return $false
 }
 
-function Test-Dependencies {
+function Test-Dependency {
     Add-CargoToPath
 
     $script:MissingCurl = $false
@@ -309,7 +309,7 @@ function Invoke-InstallMode {
         }
 
         Install-MissingWithWinget
-        Test-Dependencies
+        Test-Dependency
         if ($script:MissingCount -gt 0) {
             Write-Line 'Dependencies are still missing after installation:' -ErrorStream
             Invoke-ListMode
@@ -338,7 +338,7 @@ function Select-InteractiveMode {
     }
 }
 
-Read-Arguments -CliArgs $args
+Read-CommandLine -CliArgs $args
 
 if ($script:Mode -eq '') {
     if (Test-Interactive) {
@@ -348,7 +348,7 @@ if ($script:Mode -eq '') {
     }
 }
 
-Test-Dependencies
+Test-Dependency
 
 switch ($script:Mode) {
     'check' { Invoke-CheckMode }
