@@ -38,6 +38,31 @@ fn both_flags_are_removed_and_every_other_argument_keeps_its_place() {
         strings(&["--ascii", "--seed", "7", "--colors", "16"])
     );
     assert_eq!(forwarded(&strings(&["--new-window"])), Vec::<String>::new());
+    assert_eq!(
+        forwarded(&strings(&["-fs", "-n", "--seed", "5"])),
+        strings(&["-fs", "--seed", "5"])
+    );
+    assert_eq!(
+        forwarded(&strings(&["-n", "--fullscreen"])),
+        strings(&["--fullscreen"])
+    );
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_new_console_clears_inherited_windows_terminal_session() {
+    let plan = Plan {
+        program: OsString::from(r"C:\Games\oxysol.exe"),
+        args: os_strings(&["-fs"]),
+        new_console: true,
+    };
+    let command = command_of(&plan);
+    assert!(
+        command
+            .get_envs()
+            .any(|(name, value)| name == "WT_SESSION" && value.is_none()),
+        "new console must clear inherited WT_SESSION so it is not misidentified as Windows Terminal"
+    );
 }
 
 #[test]
