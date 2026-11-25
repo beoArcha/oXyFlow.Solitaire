@@ -2,7 +2,7 @@
 //! anything itself: a [`Solver`] runs queries off the UI thread (the binary wires a worker thread,
 //! tests a stub) and the application collects the [`Answer`]s on every input and tick.
 
-use oxysol_core::{PyramidRules, SuitCount, Variant, YukonRules};
+use oxysol_core::{PyramidRules, Variant, YukonRules};
 use serde::{Deserialize, Serialize};
 
 /// What is known about one deal.
@@ -100,7 +100,7 @@ pub const fn slow_to_prove(variant: Variant) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use oxysol_core::DrawCount;
+    use oxysol_core::{DrawCount, SuitCount};
 
     use super::*;
 
