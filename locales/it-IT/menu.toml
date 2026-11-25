@@ -79,3 +79,8 @@ clear = "Esc cancella"
 button = "[ {key} Solo distribuzioni risolvibili: {state} ]"
 on_hint = "Attivo: una nuova partita cerca una mano dimostrata risolvibile; un seed digitato viene distribuito così com'è"
 off_hint = "Disattivo: una nuova partita distribuisce qualsiasi mano, risolvibile o no"
+
+[low_vision]
+prompt = "Modalità ipovisione? (contrasto 7:1, carte grandi, grassetto)"
+yes = "Sì"
+not_now = "Non ora"

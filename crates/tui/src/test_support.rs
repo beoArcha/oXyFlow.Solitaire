@@ -20,7 +20,7 @@ use crate::audio::{Audio, AudioSettings, AudioStatus, SoundCue, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::clipboard::{Clipboard, ClipboardError};
 use crate::input::Input;
-use crate::settings::Settings;
+use crate::settings::{CardBack, Settings};
 use crate::solver::{Answer, Proof, Query, Solver};
 use crate::storage::memory::MemoryStorage;
 use crate::storage::{
@@ -237,6 +237,7 @@ impl Solver for StubSolver {
 pub struct Harness {
     pub app: App,
     pub terminal: Terminal<TestBackend>,
+    pub caps: TerminalCaps,
     pub storage: Rc<RefCell<MemoryStorage>>,
     pub audio: Rc<RefCell<AudioLog>>,
     pub clipboard: Rc<RefCell<ClipboardLog>>,
@@ -316,6 +317,7 @@ impl Harness {
             app,
             terminal: Terminal::new(TestBackend::new(width, height))
                 .unwrap_or_else(|never| match never {}),
+            caps,
             storage,
             audio,
             clipboard,
@@ -374,21 +376,35 @@ impl Harness {
     /// The lines of the screen with the preview pane of the settings screen blanked, so a test that
     /// looks for a focus marker or an arrow meets the list only.
     pub fn lines_without_pane(&mut self) -> Vec<String> {
-        let Harness { app, terminal, .. } = self;
+        let Harness {
+            app,
+            terminal,
+            caps,
+            ..
+        } = self;
         terminal
             .draw(|frame| app.draw(frame))
             .unwrap_or_else(|never| match never {});
-        let theme = Theme::new(app.settings().theme, ColorDepth::TrueColor);
+        let theme = Theme::new(app.settings().theme, app.settings().color_depth(caps))
+            .with_color_vision(app.settings().color_vision)
+            .with_low_vision(app.settings().low_vision);
         lines_without_pane(terminal.backend().buffer(), &theme)
     }
 
     /// The look of the preview pane of the settings screen, cell by cell.
     pub fn pane_cells(&mut self) -> Vec<String> {
-        let Harness { app, terminal, .. } = self;
+        let Harness {
+            app,
+            terminal,
+            caps,
+            ..
+        } = self;
         terminal
             .draw(|frame| app.draw(frame))
             .unwrap_or_else(|never| match never {});
-        let theme = Theme::new(app.settings().theme, ColorDepth::TrueColor);
+        let theme = Theme::new(app.settings().theme, app.settings().color_depth(caps))
+            .with_color_vision(app.settings().color_vision)
+            .with_low_vision(app.settings().low_vision);
         pane_cells(terminal.backend().buffer(), &theme)
     }
 
@@ -402,10 +418,58 @@ impl Harness {
     }
 }
 
+fn find_pane_title(buffer: &Buffer) -> Option<(u16, u16, u16)> {
+    let title = crate::i18n::t("settings.pane.title");
+    let width = u16::try_from(title.chars().count()).ok()?;
+    let area = buffer.area;
+    (area.top()..area.bottom()).find_map(|y| {
+        let row: String = (area.left()..area.right())
+            .map(|x| buffer[(x, y)].symbol())
+            .collect();
+        let byte = row.find(&*title)?;
+        let col = area.left() + u16::try_from(row[..byte].chars().count()).ok()?;
+        Some((col, y, width))
+    })
+}
+
+fn same_bg_pane_bounds(buffer: &Buffer, theme: &Theme) -> Option<Rect> {
+    let (title_x, title_y, title_w) = find_pane_title(buffer)?;
+    let back_bgs = [CardBack::Theme, CardBack::Monokai, CardBack::Dracula].map(|back| {
+        theme
+            .card_back_style(back, (Token::CardBackMark, Token::CardBack))
+            .bg
+    });
+    let area = buffer.area;
+    let back = ((title_y + 1)..area.bottom())
+        .flat_map(|y| (area.left()..area.right()).map(move |x| (x, y)))
+        .filter(|(x, y)| back_bgs.contains(&Some(buffer[(*x, *y)].bg)))
+        .fold(None, |bounds: Option<Rect>, (x, y)| {
+            let cell = Rect::new(x, y, 1, 1);
+            Some(bounds.map_or(cell, |bounds| bounds.union(cell)))
+        })?;
+    let rings = back.top().saturating_sub(title_y + 1);
+    let left = back.left().saturating_sub(rings + 1).min(title_x);
+    let right = (2 * title_x + title_w)
+        .saturating_sub(left)
+        .min(area.right())
+        .max(title_x + title_w);
+    let bottom = (back.bottom() + rings + 1).min(area.bottom());
+    Some(Rect::new(
+        left,
+        title_y,
+        right.saturating_sub(left),
+        bottom.saturating_sub(title_y),
+    ))
+}
+
 /// The bounding box of the cells on the table colour of `theme`: the preview pane of the settings
 /// screen, the only part of that screen on the table colour. `None` when no cell is.
 pub fn pane_bounds(buffer: &Buffer, theme: &Theme) -> Option<Rect> {
     let table = theme.style(Token::TableText, Token::Table).bg;
+    let background = theme.style(Token::Text, Token::Background).bg;
+    if table == background {
+        return same_bg_pane_bounds(buffer, theme);
+    }
     let area = buffer.area;
     let cells = (0..area.height)
         .flat_map(|y| (0..area.width).map(move |x| (x, y)))

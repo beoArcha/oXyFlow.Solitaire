@@ -79,3 +79,8 @@ clear = "Esc borra"
 button = "[ {key} Solo partidas ganables: {state} ]"
 on_hint = "Activado: una partida nueva busca una mano con victoria demostrada; una semilla escrita se reparte tal cual"
 off_hint = "Desactivado: una partida nueva reparte cualquier mano, ganable o no"
+
+[low_vision]
+prompt = "¿Modo baja visión? (contraste 7:1, cartas grandes, negrita)"
+yes = "Sí"
+not_now = "Ahora no"

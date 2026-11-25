@@ -80,3 +80,8 @@ clear = "Esc clears"
 button = "[ {key} Winnable deals only: {state} ]"
 on_hint = "On: a new game searches for a deal proven winnable; a typed seed is dealt as typed"
 off_hint = "Off: a new game deals any deal, winnable or not"
+
+[low_vision]
+prompt = "Low-vision mode? (7:1 contrast, larger cards, bold text)"
+yes = "Yes"
+not_now = "Not now"

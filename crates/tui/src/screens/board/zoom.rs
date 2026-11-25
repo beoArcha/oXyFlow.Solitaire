@@ -62,8 +62,14 @@ impl BoardScreen {
         let session = self.session.as_ref()?;
         let piles = session.game().piles();
         let body = self.chrome().body;
-        let shown = layout::compute_within(session.variant(), &piles, body, self.card_size.size());
-        let largest = layout::compute(session.variant(), &piles, body);
+        let shown = layout::compute_with(
+            session.variant(),
+            &piles,
+            body,
+            self.card_size.size(),
+            self.low_vision,
+        );
+        let largest = layout::compute_with(session.variant(), &piles, body, None, self.low_vision);
         Some((shown.card, largest.card))
     }
 

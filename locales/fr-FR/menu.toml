@@ -79,3 +79,8 @@ clear = "Échap efface"
 button = "[ {key} Donnes gagnables uniquement : {state} ]"
 on_hint = "Activé : une nouvelle partie cherche une donne garantie gagnable ; une graine saisie est distribuée telle quelle"
 off_hint = "Désactivé : une nouvelle partie distribue n'importe quelle donne, gagnable ou non"
+
+[low_vision]
+prompt = "Mode basse vision ? (contraste 7:1, grandes cartes, texte gras)"
+yes = "Oui"
+not_now = "Plus tard"

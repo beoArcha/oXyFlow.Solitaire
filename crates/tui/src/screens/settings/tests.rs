@@ -13,6 +13,7 @@ mod guide;
 mod hints;
 mod interface;
 mod language;
+mod low_vision;
 mod preview;
 mod screen;
 mod styles;
@@ -422,7 +423,7 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Enter);
     assert!(h.app.modal().is_none());
-    move_down(&mut h, 1);
+    focus_in_tab(&mut h, Tab::Popular, Field::Theme);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
     assert!(h.app.modal().is_none());

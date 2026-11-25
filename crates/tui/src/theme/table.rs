@@ -44,9 +44,9 @@ pub fn preset(colour: TableColour) -> Option<Swatch> {
     }
 }
 
-/// Whether a felt of `rgb` passes every contrast test of the table in `id`: the text drawn on the
-/// felt reaches the theme's contrast target, and the cards, slots and auras reach 3:1.
-pub fn passes(id: ThemeId, palette: &Palette, rgb: [u8; 3]) -> bool {
+/// Whether a felt of `rgb` passes every contrast test of the table for `text_target`: the text
+/// drawn on the felt reaches `text_target`, and the cards, slots and auras reach 3:1.
+pub fn passes_target(text_target: f32, palette: &Palette, rgb: [u8; 3]) -> bool {
     let probe = Palette {
         table: Swatch {
             rgb,
@@ -57,7 +57,7 @@ pub fn passes(id: ThemeId, palette: &Palette, rgb: [u8; 3]) -> bool {
     let text_ok = TEXT_PAIRS
         .iter()
         .filter(|(_, bg)| *bg == Token::Table)
-        .all(|(fg, _)| contrast_ratio(probe.swatch(*fg).rgb, rgb) >= id.contrast_target());
+        .all(|(fg, _)| contrast_ratio(probe.swatch(*fg).rgb, rgb) >= text_target);
     let graphic_ok = GRAPHIC_PAIRS
         .iter()
         .chain(MARK_PAIRS.iter())
@@ -66,16 +66,22 @@ pub fn passes(id: ThemeId, palette: &Palette, rgb: [u8; 3]) -> bool {
     text_ok && graphic_ok
 }
 
-/// The felt for `colour` in the theme `id`: the preset when it passes, else the nearest shade that
-/// passes, searched in steps toward white and toward black. The theme's own felt is never shifted.
-pub fn felt(id: ThemeId, palette: &Palette, colour: TableColour) -> Felt {
+/// Whether a felt of `rgb` passes every contrast test of the table in `id`.
+pub fn passes(id: ThemeId, palette: &Palette, rgb: [u8; 3]) -> bool {
+    passes_target(id.contrast_target(), palette, rgb)
+}
+
+/// The felt for `colour` with the given `text_target`: the preset when it passes, else the nearest
+/// shade that passes, searched in steps toward white and toward black. The theme's own felt is
+/// never shifted.
+pub fn felt_with_target(text_target: f32, palette: &Palette, colour: TableColour) -> Felt {
     let Some(requested) = preset(colour) else {
         return Felt {
             swatch: palette.table,
             shifted: false,
         };
     };
-    if passes(id, palette, requested.rgb) {
+    if passes_target(text_target, palette, requested.rgb) {
         return Felt {
             swatch: requested,
             shifted: false,
@@ -86,11 +92,17 @@ pub fn felt(id: ThemeId, palette: &Palette, colour: TableColour) -> Felt {
             let percent = step * SHADE_STEP_PERCENT;
             [WHITE, BLACK].map(|toward| mix(requested.rgb, toward, percent))
         })
-        .find(|rgb| passes(id, palette, *rgb));
+        .find(|rgb| passes_target(text_target, palette, *rgb));
     Felt {
         swatch: shade.map_or(palette.table, |rgb| Swatch { rgb, ..requested }),
         shifted: true,
     }
+}
+
+/// The felt for `colour` in the theme `id`: the preset when it passes, else the nearest shade that
+/// passes, searched in steps toward white and toward black. The theme's own felt is never shifted.
+pub fn felt(id: ThemeId, palette: &Palette, colour: TableColour) -> Felt {
+    felt_with_target(id.contrast_target(), palette, colour)
 }
 
 /// The felt for `colour` in the theme `id`, with the theme's own palette.

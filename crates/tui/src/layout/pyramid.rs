@@ -10,16 +10,17 @@ use super::{BoardGeometry, PileGeometry};
 
 const ROWS: u16 = 7;
 
-fn height_of(size: CardSize) -> u16 {
-    (ROWS - 1) * size.pyramid_step() + 2 * size.height + size.row_gap()
+fn height_of(size: CardSize, step: u16) -> u16 {
+    (ROWS - 1) * step + 2 * size.height + size.row_gap()
 }
 
-fn fits(size: CardSize, area: Rect) -> bool {
-    ROWS * size.width <= area.width && height_of(size) <= area.height
+fn fits(size: CardSize, area: Rect, step: u16) -> bool {
+    ROWS * size.width <= area.width && height_of(size, step) <= area.height
 }
 
 struct Table {
     size: CardSize,
+    step: u16,
     x0: u16,
     y0: u16,
     pitch: u16,
@@ -32,12 +33,12 @@ impl Table {
 
     fn pyramid_card(&self, row: u16, index: u16) -> Rect {
         let x = self.x0 + (ROWS - 1 - row + 2 * index) * self.pitch / 2;
-        self.card(x, self.y0 + row * self.size.pyramid_step())
+        self.card(x, self.y0 + row * self.step)
     }
 
     fn base_slot(&self, offset: u16) -> Rect {
         let width = self.size.width;
-        let y = self.y0 + (ROWS - 1) * self.size.pyramid_step() + self.size.height;
+        let y = self.y0 + (ROWS - 1) * self.step + self.size.height;
         let x = self.x0 + 2 * width - 1 + offset * (width + 1);
         self.card(x, y + self.size.row_gap())
     }
@@ -56,13 +57,21 @@ pub(super) fn compute(
     piles: &[PileSnapshot],
     area: Rect,
     limit: Option<CardSize>,
+    wider_fan: bool,
 ) -> BoardGeometry {
-    let size = CardSize::largest_fit_within(limit, |size| fits(size, area));
+    let size = CardSize::largest_fit_within(limit, |size| fits(size, area, size.pyramid_step()));
+    let wide = size.wide_pyramid_step();
+    let step = if wider_fan && fits(size, area, wide) {
+        wide
+    } else {
+        size.pyramid_step()
+    };
     let margin = area.width.saturating_sub(ROWS * size.width) / 2;
     let table = Table {
         size,
+        step,
         x0: area.x + margin,
-        y0: area.y + area.height.saturating_sub(height_of(size)) / 2,
+        y0: area.y + area.height.saturating_sub(height_of(size, step)) / 2,
         pitch: size.width,
     };
     let placed = piles
