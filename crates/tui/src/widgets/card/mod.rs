@@ -25,7 +25,7 @@ mod slot;
 #[cfg(test)]
 mod tests;
 
-use self::face::paint_center;
+use self::face::{Visibility, paint_center};
 use self::frame::{edges_for, paint_frame, paint_patterned_top, paint_target_corners};
 pub use self::mark::{Hint, Mark};
 use self::paint::{Painter, centered};
@@ -132,6 +132,30 @@ pub fn draw(
     badge: Option<usize>,
     ctx: &ViewCtx<'_>,
 ) {
+    draw_with(buf, area, face, mark, badge, None, ctx);
+}
+
+/// Draws a card covered from `visible_rows` down: only the header (rank and suit) is drawn unless
+/// the whole centre pip area fits inside `visible_rows`.
+pub fn draw_covered(
+    buf: &mut Buffer,
+    area: Rect,
+    visible_rows: u16,
+    (face, mark): (Face, Mark),
+    ctx: &ViewCtx<'_>,
+) {
+    draw_with(buf, area, face, mark, None, Some(visible_rows), ctx);
+}
+
+fn draw_with(
+    buf: &mut Buffer,
+    area: Rect,
+    face: Face,
+    mark: Mark,
+    badge: Option<usize>,
+    visible_rows: Option<u16>,
+    ctx: &ViewCtx<'_>,
+) {
     if area.width < 3 || area.height < 2 {
         return;
     }
@@ -152,7 +176,16 @@ pub fn draw(
     paint_top_row(&mut painter, area, (face, mark), ctx.glyphs, &look);
     paint_bottom_row(&mut painter, area, (face, badge), ctx.glyphs, &look);
     match face {
-        Face::Up(card) => paint_center(&mut painter, area, card, ctx.glyphs, look.fill),
+        Face::Up(card) => paint_center(
+            &mut painter,
+            area,
+            (card, ctx.glyphs),
+            look.fill,
+            Visibility {
+                rows: visible_rows,
+                blocked: mark.blocked,
+            },
+        ),
         Face::Slot(placeholder) => paint_slot(
             &mut painter,
             area,
