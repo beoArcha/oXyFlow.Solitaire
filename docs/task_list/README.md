@@ -1,7 +1,7 @@
 # oXySol task list (MVP)
 
 Started 2026-11-10. Revised 2026-11-20 for R-25: phases 4 to 9 are replanned, phases 0 to 3 are done.
-Statuses synced with `main` on 2026-11-20.
+Statuses synced with `main` on 2026-11-25.
 Contract behind the cards: `docs/tech/architecture.md`. Decisions: `docs/tech/decisions.md`.
 
 ## Phases
@@ -17,7 +17,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 2 | 0.2.x | Games | Klondike, Spider, FreeCell, Pyramid, stock counters and the solver | done | 9 | 0 |
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
-| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 18 | 40 |
+| 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | done | 59 | 0 |
 | 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 16 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
@@ -270,65 +270,65 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 
 | ID | Task | Owner | Depends on | Status |
 |---|---|---|---|---|
-| P3-32 | Table color and feel | Small | O-26, P3-29 | TODO |
-| P3-33 | Card face tint | Small | O-26, P3-29 | TODO |
-| P3-34 | Low-vision mode | Medium | O-26, P3-16, P3-29 | TODO |
-| P3-35 | Color-blind modes | Medium | O-26, P3-29 | TODO |
-| P5-03 | Card style: Spanish suits (Unicode) | Small | P4-08 | TODO |
-| P5-04 | Game: Golf | Medium | P4-10a | TODO |
-| P5-05 | Solver: Spider with 2 and 4 suits | Medium | P2-08 | TODO |
+| P3-32 | Table color and feel | Small | O-26, P3-29 | DONE |
+| P3-33 | Card face tint | Small | O-26, P3-29 | DONE |
+| P3-34 | Low-vision mode | Medium | O-26, P3-16, P3-29 | DONE |
+| P3-35 | Color-blind modes | Medium | O-26, P3-29 | DONE |
+| P5-03 | Card style: Spanish suits (Unicode) | Small | P4-08 | DONE |
+| P5-04 | Game: Golf | Medium | P4-10a | DONE |
+| P5-05 | Solver: Spider with 2 and 4 suits | Medium | P2-08 | DONE |
 | X-01 | Spike: card font in real terminals | Sonnet (prototype) + User (testing) | P0-01 | DONE |
 | F-02 | Checkpoint: graphics delivery | Opus (Fable only on escalation — R-14) | X-01 | DONE |
 | P5-01 | Font builder and preview sheet | Haiku | F-02 | DONE |
-| P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Medium | P4-09, P2-08 | TODO |
-| P5-07 | Better hints: a hint that leads toward a win | Medium | P4-10a | TODO |
+| P5-06 | New game from seed: game first, then a seed from played games, random replay, five difficulty levels | Medium | P4-09, P2-08 | DONE |
+| P5-07 | Better hints: a hint that leads toward a win | Medium | P4-10a | DONE |
 | O-68 | Help window: a mouse click on the Keys and Command line tabs switches to them | Haiku | — | DONE |
 | O-69 | Help window: one height for every tab; optional backdrop dimming | Haiku | — | DONE |
 | O-70 | Language tooltip disappears when a window opens | Haiku | — | DONE |
 | O-71 | Help window: a separator between the scrolling text and the footer | Haiku | — | DONE |
-| O-72 | Docked Help: a margin between the version label and the panel | Small | — | TODO |
+| O-72 | Docked Help: a margin between the version label and the panel | Small | — | DONE |
 | O-73 | Docked Help: dim the selection in the pane without focus | Haiku | — | DONE |
-| O-74 | Help window: one footer layout and scroll indicator on every tab | Medium | O-71 | TODO |
-| O-75 | Windows: the active tab and the focused button look different | Medium | — | TODO |
-| O-76 | Docking and pane focus keys shown where they apply | Small | — | TODO |
-| O-77 | Docked Help: key and description on one line | Medium | O-74 | TODO |
-| O-78 | Main menu: Resume set apart and balanced under the logo | Small | — | TODO |
-| O-79 | Bottom key bar: keys in an accent colour | Small | — | TODO |
-| O-80 | Language selector: quieter at rest, clearer when open | Small | O-70 | TODO |
-| O-81 | Window title by context, en-US spelling and wording | Small | — | TODO |
+| O-74 | Help window: one footer layout and scroll indicator on every tab | Medium | O-71 | DONE |
+| O-75 | Windows: the active tab and the focused button look different | Medium | — | DONE |
+| O-76 | Docking and pane focus keys shown where they apply | Small | — | DONE |
+| O-77 | Docked Help: key and description on one line | Medium | O-74 | DONE |
+| O-78 | Main menu: Resume set apart and balanced under the logo | Small | — | DONE |
+| O-79 | Bottom key bar: keys in an accent colour | Small | — | DONE |
+| O-80 | Language selector: quieter at rest, clearer when open | Small | O-70 | DONE |
+| O-81 | Window title by context, en-US spelling and wording | Small | — | DONE |
 | O-82 | Statistics footer: a space between `Copy seed` and `Esc Back` | Haiku | — | DONE |
 | O-83 | Board footer: the `Do:` prefix is clipped when a side panel is open | Haiku | — | DONE |
 | O-84 | Board footer and `Now:` row: no overflow into the status line; the source column kept | Sonnet | O-83 | DONE |
-| O-85 | `Turned over` counter: counts what its label says | Small | — | TODO |
+| O-85 | `Turned over` counter: counts what its label says | Small | — | DONE |
 | O-86 | Settings: `Font face` shows its own value | Haiku | — | DONE |
 | O-87 | Large cards: a spade with a clear stem | Haiku | — | DONE |
 | O-88 | Stock card back: no stray marks in the centre | Haiku | — | DONE |
-| O-89 | Keyboard focus skips face-down cards | Small | — | TODO |
-| O-90 | Quick options: the app's selection colour, one name for Aura, real buttons | Small | O-75 | TODO |
+| O-89 | Keyboard focus skips face-down cards | Small | — | DONE |
+| O-90 | Quick options: the app's selection colour, one name for Aura, real buttons | Small | O-75 | DONE |
 | O-91 | Possible moves: readable unavailable entries, active ones first | Haiku | — | DONE |
 | O-92 | Guide panel: `▶` means focus only | Haiku | — | DONE |
-| O-93 | Footer: the `v: moves` highlight clears | Small | — | TODO |
+| O-93 | Footer: the `v: moves` highlight clears | Small | — | DONE |
 | O-94 | Settings: unavailable rows dimmed; no reference to a missing screen | Haiku | — | DONE |
-| O-95 | Statistics: a plain summary line and footer hints for the action bar | Medium | O-82 | TODO |
-| O-96 | Settings: labelled Aura swatches, a Performance section, Left/Right in the footer | Small | — | TODO |
-| O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Small | O-95 | TODO |
+| O-95 | Statistics: a plain summary line and footer hints for the action bar | Medium | O-82 | DONE |
+| O-96 | Settings: labelled Aura swatches, a Performance section, Left/Right in the footer | Small | — | DONE |
+| O-97 | Statistics table: results by style, the legend's unchecked mark, local time | Small | O-95 | DONE |
 | O-98 | Choose a game: en-US spelling, spacing, a key and wording for Winnable deals, full footer | Haiku | — | DONE |
-| O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Small | O-87 | TODO |
-| O-100 | Spider and Pyramid: no `A` in slots that are not ace foundations | Small | — | TODO |
-| O-101 | Yukon footer: `Enter: pick up` and `a: quick move` when a card can move | Small | — | TODO |
-| O-102 | Settings: a live preview pane instead of the 4 × 1 swatch | Medium | — | TODO |
-| O-103 | Settings in three tabs: Audio & Visual, Popular (default), Gameplay | Medium | O-102 | TODO |
-| O-104 | FreeCell: a gap between the free cells and the foundations | Small | — | TODO |
-| O-105 | Pyramid: blocked cards look different from playable ones | Small | — | TODO |
-| O-106 | Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid) | Medium | O-87 | TODO |
-| O-107 | Yukon: column 7 never runs off the bottom | Medium | — | TODO |
-| O-108 | Install scripts that check dependencies first (Linux, macOS, Windows) | Medium | — | TODO |
-| O-109 | Full screen recovery and short CLI flags | Medium | — | TODO |
-| O-110 | Quick move from the exposed waste pile | Medium | — | TODO |
-| O-111 | Default console width and three window sizes | Medium | O-109 | TODO |
+| O-99 | Large cards: consider dropping the centred rank and suit line (optional) | Small | O-87 | DONE |
+| O-100 | Spider and Pyramid: no `A` in slots that are not ace foundations | Small | — | DONE |
+| O-101 | Yukon footer: `Enter: pick up` and `a: quick move` when a card can move | Small | — | DONE |
+| O-102 | Settings: a live preview pane instead of the 4 × 1 swatch | Medium | — | DONE |
+| O-103 | Settings in three tabs: Audio & Visual, Popular (default), Gameplay | Medium | O-102 | DONE |
+| O-104 | FreeCell: a gap between the free cells and the foundations | Small | — | DONE |
+| O-105 | Pyramid: blocked cards look different from playable ones | Small | — | DONE |
+| O-106 | Covered cards: no clipped big pips (FreeCell, Yukon, Pyramid) | Medium | O-87 | DONE |
+| O-107 | Yukon: column 7 never runs off the bottom | Medium | — | DONE |
+| O-108 | Install scripts that check dependencies first (Linux, macOS, Windows) | Medium | — | DONE |
+| O-109 | Full screen recovery and short CLI flags | Medium | — | DONE |
+| O-110 | Quick move from the exposed waste pile | Medium | — | DONE |
+| O-111 | Default console width and three window sizes | Medium | O-109 | DONE |
 | O-112 | Roles by model tier instead of model names (R-26) | Large | — | DONE |
-| O-113 | New game: described in the guide and a button on the board | Small | P3-35 | TODO |
-| O-114 | Quick move can be turned off (Quick options and Settings) | Small | P3-35 | TODO |
+| O-113 | New game: described in the guide and a button on the board | Small | P3-35 | DONE |
+| O-114 | Quick move can be turned off (Quick options and Settings) | Small | P3-35 | DONE |
 
 ### Phase 6 (0.6.x) — Themes as data, four-colour French, TriPeaks
 
