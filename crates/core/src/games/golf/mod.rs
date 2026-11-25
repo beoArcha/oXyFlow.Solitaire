@@ -19,6 +19,7 @@ mod tests;
 use crate::card::Card;
 use crate::deck;
 use crate::game::{Game, StockStatus};
+use crate::games::progress::{self, HintProfile};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot};
@@ -61,6 +62,9 @@ impl Golf {
     }
 }
 
+/// The hint profile of this game, chosen by the hints-only measurement of T-48.
+const HINT_PROFILE: HintProfile = HintProfile::Rules;
+
 impl Game for Golf {
     fn apply(&mut self, mv: Move) -> Result<(), MoveError> {
         if self.is_won() {
@@ -80,7 +84,9 @@ impl Game for Golf {
         if self.is_won() {
             return None;
         }
-        self.suggest()
+        progress::hint(self, HINT_PROFILE, progress::PLAY_KNOWLEDGE, || {
+            self.suggest()
+        })
     }
 
     fn is_won(&self) -> bool {

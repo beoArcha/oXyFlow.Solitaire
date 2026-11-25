@@ -70,6 +70,27 @@ fn no_hint_without_moves() {
 }
 
 #[test]
+fn an_empty_column_is_filled_so_that_the_stock_can_be_dealt() {
+    let mut game = table();
+    game.stock = cards(TEN_CARDS);
+    game.columns[0] = column("", "9C 4D");
+    fill_empty_columns(&mut game);
+    game.columns[1] = column("", "");
+    assert!(!game.legal_moves().contains(&Move::Stock));
+    assert_hint(&game, Some(transfer(tab(0), tab(1), 1)));
+}
+
+#[test]
+fn a_linked_card_is_not_moved_into_an_empty_column() {
+    let mut game = table();
+    game.stock = cards(TEN_CARDS);
+    game.columns[0] = column("", "5C 4D");
+    fill_empty_columns(&mut game);
+    game.columns[1] = column("", "");
+    assert_hint(&game, None);
+}
+
+#[test]
 fn a_sideways_move_is_not_suggested() {
     let mut game = table();
     game.columns[0] = column("", "7H 6S");

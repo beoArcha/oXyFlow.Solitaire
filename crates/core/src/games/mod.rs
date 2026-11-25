@@ -4,6 +4,7 @@ pub(crate) mod finish;
 pub(crate) mod freecell;
 pub(crate) mod golf;
 pub(crate) mod klondike;
+pub(crate) mod progress;
 pub(crate) mod pyramid;
 pub(crate) mod spider;
 pub(crate) mod yukon;

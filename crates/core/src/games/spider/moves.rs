@@ -11,11 +11,12 @@ use crate::rules;
 type HintRule = fn(&Spider, PileRef, PileRef, u8) -> bool;
 
 /// Hint priorities, best first. Only transfers are ranked; `Move::Stock` is the fallback.
-const HINT_RULES: [HintRule; 4] = [
+const HINT_RULES: [HintRule; 5] = [
     Spider::extends_run,
     Spider::flips_card,
     Spider::empties_column,
     Spider::builds_on_other_suit,
+    Spider::fills_empty_column,
 ];
 
 fn columns() -> impl Iterator<Item = PileRef> {
@@ -106,5 +107,19 @@ impl Spider {
             .zip(moved)
             .is_some_and(|(&under, &first)| rules::fits_any_suit(under, first));
         self.target_top(to).is_some() && beneath.is_some() && !already_linked
+    }
+
+    /// A whole run that does not build on the card beneath it, moved into an empty column: the
+    /// deal needs every column filled, and the run cannot be moved straight back.
+    fn fills_empty_column(&self, from: PileRef, to: PileRef, count: u8) -> bool {
+        let Some((column, start)) = self.whole_run(from, count) else {
+            return false;
+        };
+        let beneath = start.checked_sub(1).and_then(|i| column.up.get(i));
+        let linked = beneath
+            .zip(column.up.get(start))
+            .is_some_and(|(&under, &first)| rules::fits_any_suit(under, first));
+        let leaves_cards = start > 0 || !column.down.is_empty();
+        self.target_top(to).is_none() && self.column(to).is_some() && leaves_cards && !linked
     }
 }
