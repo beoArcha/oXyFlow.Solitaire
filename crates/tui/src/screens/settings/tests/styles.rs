@@ -1,8 +1,9 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{FIELDS, Field, Step, back_styles, front_styles};
+use super::super::options::{Field, Step, back_styles, front_styles};
+use super::super::tabs::Tab;
 use super::super::values::unavailable_reason_key;
-use super::{changed, move_down, open_settings, value};
+use super::{changed, focus_in_tab, open_settings, value};
 use crate::audio::{AudioSettings, AudioStatus};
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::Settings;
@@ -59,11 +60,7 @@ fn a_saved_sound_style_that_no_longer_exists_falls_back_to_default() {
 #[test]
 fn choosing_retro_in_settings_reaches_the_audio_output() {
     let mut h = open_settings();
-    let index = FIELDS
-        .iter()
-        .position(|field| *field == Field::SoundStyle)
-        .unwrap_or_default();
-    move_down(&mut h, index);
+    focus_in_tab(&mut h, Tab::AudioVisual, Field::SoundStyle);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.settings().sound_style, "retro");
     assert_eq!(configured_style(&h).as_deref(), Some("retro"));

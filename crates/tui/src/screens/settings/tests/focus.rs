@@ -1,12 +1,13 @@
-//! Tab and Shift+Tab on the settings screen: the rows, wrapping at both ends, and Space on a row.
+//! Row navigation with Down and Up (wrapping at both ends of the active tab), Space on a row,
+//! and the focus marker.
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::{index_of, settings_menu_index};
+use super::settings_menu_index;
 use crate::app::Screen;
-use crate::i18n::{t, tf};
-use crate::screens::focus::marked_text;
-use crate::screens::settings::options::{FIELDS, Field};
+use crate::i18n::t;
+use crate::screens::settings::options::Field;
+use crate::screens::settings::tabs::Tab;
 use crate::test_support::Harness;
 
 fn open() -> Harness {
@@ -20,65 +21,75 @@ fn open() -> Harness {
 }
 
 fn focused(h: &mut Harness) -> Option<String> {
-    marked_text(&h.lines_without_pane(), "►")
+    h.lines_without_pane().into_iter().find_map(|line| {
+        line.trim_start()
+            .strip_prefix('►')
+            .map(|after| after.trim().to_owned())
+    })
 }
 
-fn is_row(text: Option<String>, index: usize) -> bool {
-    let label = t(FIELDS[index].label_key()).into_owned();
+fn is_row(text: Option<String>, field: Field) -> bool {
+    let label = t(field.label_key()).into_owned();
     text.is_some_and(|text| text.starts_with(label.as_str()))
 }
 
 #[test]
-fn tab_moves_the_focus_down_the_rows_one_at_a_time() {
+fn down_moves_the_focus_through_the_active_tab_one_row_at_a_time() {
     let mut h = open();
-    assert!(is_row(focused(&mut h), 0));
-    h.press(KeyCode::Tab);
-    assert!(is_row(focused(&mut h), 1));
-    h.press(KeyCode::Tab);
-    assert!(is_row(focused(&mut h), 2));
+    let popular = Tab::Popular.fields();
+    assert!(is_row(focused(&mut h), popular[0]));
+    h.press(KeyCode::Down);
+    assert!(is_row(focused(&mut h), popular[1]));
+    h.press(KeyCode::Down);
+    assert!(is_row(focused(&mut h), popular[2]));
 }
 
 #[test]
-fn tab_from_the_last_row_wraps_to_the_first() {
+fn down_from_the_last_row_wraps_to_the_first() {
     let mut h = open();
-    for index in 0..FIELDS.len() {
-        assert!(is_row(focused(&mut h), index), "row {index}");
-        h.press(KeyCode::Tab);
+    let popular = Tab::Popular.fields();
+    for field in popular {
+        assert!(is_row(focused(&mut h), *field), "{field:?}");
+        h.press(KeyCode::Down);
     }
-    assert!(is_row(focused(&mut h), 0));
+    assert!(is_row(focused(&mut h), popular[0]));
 }
 
 #[test]
-fn shift_tab_from_the_first_row_wraps_to_the_last() {
+fn up_from_the_first_row_wraps_to_the_last() {
     let mut h = open();
-    h.press(KeyCode::BackTab);
-    assert!(is_row(focused(&mut h), FIELDS.len() - 1));
-    h.press(KeyCode::BackTab);
-    assert!(is_row(focused(&mut h), FIELDS.len() - 2));
+    let popular = Tab::Popular.fields();
+    h.press(KeyCode::Up);
+    assert!(is_row(focused(&mut h), popular[popular.len() - 1]));
+    h.press(KeyCode::Up);
+    assert!(is_row(focused(&mut h), popular[popular.len() - 2]));
 }
 
 #[test]
 fn space_changes_the_focused_row_forward_like_enter() {
     let mut h = open();
-    let theme = index_of(Field::Theme);
-    for _ in 0..theme {
-        h.press(KeyCode::Tab);
+    let theme_index = Tab::Popular
+        .fields()
+        .iter()
+        .position(|field| *field == Field::Theme)
+        .unwrap_or_default();
+    for _ in 0..theme_index {
+        h.press(KeyCode::Down);
     }
     let before = h.app.settings().theme;
     h.type_char(' ');
     assert_ne!(h.app.settings().theme, before);
-    assert!(is_row(focused(&mut h), theme));
+    assert!(is_row(focused(&mut h), Field::Theme));
 }
 
 #[test]
 fn the_marker_is_on_the_focused_row_only() {
-    let hint = tf("settings.footer.arrows", &[("arrows", "◄ ►")]);
     let mut h = open();
-    h.press(KeyCode::Tab);
+    h.press(KeyCode::Down);
     assert_eq!(
         h.lines_without_pane()
             .iter()
-            .filter(|line| line.contains('►') && !line.contains(&hint))
+            .filter(|line| line.trim_start().starts_with('►'))
             .count(),
         1
     );

@@ -1,18 +1,15 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{FIELDS, Field};
-use super::{bare, line_of, move_down, open_settings};
+use super::super::options::Field;
+use super::super::tabs::Tab;
+use super::{bare, focus_in_tab, line_of, open_settings};
 use crate::i18n::{Locale, set_locale};
 use crate::screens::Effect;
 use crate::settings::Settings;
 use crate::test_support::Harness;
 
 fn move_to_guide(h: &mut Harness) {
-    let index = FIELDS
-        .iter()
-        .position(|field| *field == Field::GuidePanel)
-        .unwrap_or_default();
-    move_down(h, index);
+    focus_in_tab(h, Tab::Gameplay, Field::GuidePanel);
 }
 
 #[test]

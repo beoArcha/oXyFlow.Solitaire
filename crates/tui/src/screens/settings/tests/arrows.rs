@@ -1,18 +1,21 @@
 use ratatui::crossterm::event::KeyCode;
 
-use super::{changed, index_of, move_down, open_settings, settings_menu_index, value};
+use super::super::options::{Field, Step};
+use super::super::tabs::Tab;
+use super::super::values::line;
+use super::{changed, focus_in_tab, open_settings, settings_menu_index, value};
 use crate::app::FontFacts;
-use crate::i18n::{Locale, set_locale, tf};
-use crate::screens::settings::options::{Field, Step};
-use crate::screens::settings::values::line;
+use crate::i18n::{Locale, set_locale};
 use crate::settings::Settings;
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, sound_styles};
 
-/// The cells of the two arrows of the focused row: the first `◄` and the last `►` on the screen.
+/// The cells of the two arrows of the focused row: the first `◄` and the last `►` on a row line.
 fn arrow_cells(h: &mut Harness) -> Option<((u16, u16), (u16, u16))> {
     let lines = h.lines();
-    let row = lines.iter().position(|line| line.contains('◄'))?;
+    let row = lines
+        .iter()
+        .position(|line| line.trim_start().starts_with('►') && line.contains('◄'))?;
     let chars: Vec<char> = lines.get(row)?.chars().collect();
     let left = chars.iter().position(|c| *c == '◄')?;
     let right = chars.iter().rposition(|c| *c == '►')?;
@@ -22,10 +25,12 @@ fn arrow_cells(h: &mut Harness) -> Option<((u16, u16), (u16, u16))> {
     ))
 }
 
-/// The `◄` arrows of the list: the footer's own `◄ ► Change` hint is not a row.
+/// The `◄` arrows in the rows list (excluding the tab bar and footer).
 fn arrows_in_list(h: &mut Harness) -> usize {
-    let hint = tf("settings.footer.arrows", &[("arrows", "◄ ►")]);
-    h.text().replace(&hint, "").matches('◄').count()
+    h.lines_without_pane()
+        .iter()
+        .filter(|line| line.trim_start().starts_with('►') && line.contains('◄'))
+        .count()
 }
 
 #[test]
@@ -35,7 +40,7 @@ fn only_the_focused_row_shows_its_value_between_arrows() {
     let language = format!("◄ {} ►", value(Field::Language, h.app.settings()));
     assert!(h.text().contains(&language), "{}", h.text());
     assert_eq!(arrows_in_list(&mut h), 1);
-    move_down(&mut h, index_of(Field::Theme));
+    focus_in_tab(&mut h, Tab::Popular, Field::Theme);
     let theme = format!("◄ {} ►", value(Field::Theme, h.app.settings()));
     assert!(h.text().contains(&theme), "{}", h.text());
     assert_eq!(arrows_in_list(&mut h), 1);
@@ -66,7 +71,7 @@ fn the_values_line_up_with_and_without_arrows() {
 fn a_click_on_the_left_arrow_steps_back_and_one_on_the_right_arrow_forward() {
     set_locale(Locale::EnUs);
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::Theme));
+    focus_in_tab(&mut h, Tab::Popular, Field::Theme);
 
     let before = h.app.settings().clone();
     let (left, _) = arrow_cells(&mut h).unwrap_or_default();
@@ -88,7 +93,9 @@ fn a_click_on_the_left_arrow_steps_back_and_one_on_the_right_arrow_forward() {
 #[test]
 fn ascii_arrows_are_angle_brackets() {
     let mut h = Harness::with(MemoryStorage::new(), PLAIN, 120, 40);
-    move_down(&mut h, settings_menu_index());
+    for _ in 0..settings_menu_index() {
+        h.press(KeyCode::Down);
+    }
     h.press(KeyCode::Enter);
     let text = h.text();
     assert!(text.is_ascii());

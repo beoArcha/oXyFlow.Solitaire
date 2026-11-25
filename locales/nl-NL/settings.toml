@@ -34,12 +34,10 @@ aura_size = "Auragrootte"
 priority = "Procesprioriteit"
 line = "{label} {value}"
 
-[group]
-display = "Beeld"
-interface = "Interface"
-sound = "Geluid"
-performance = "Prestaties"
-hints = "Hints en hulp"
+[tab]
+audio_visual = "Audio & Beeld"
+popular = "Populair"
+gameplay = "Spel"
 
 [style]
 international = "Internationaal"
@@ -161,6 +159,7 @@ style_failed = "Geluid niet beschikbaar: gekozen geluidstijl kan niet geladen wo
 [footer]
 change = "Wijzigen"
 arrows = "{arrows} Wijzigen"
+tabs = "{prev} / {next}: tab"
 
 [graphics]
 title = "Grafische controle"

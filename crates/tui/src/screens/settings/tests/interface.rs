@@ -1,9 +1,11 @@
-//! The Interface section (P3-29): its rows, the preview at once and the confirmation on leaving.
+//! Interface look rows: preview at once, confirmation on leaving, and keeping that behaviour on
+//! Popular aliases as well as in Audio & Visual.
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{FIELDS, Field, Group, Step};
-use super::{changed, index_of, is_console_font_row, move_down, open_settings, row, value};
+use super::super::options::{FIELDS, Field, Step};
+use super::super::tabs::Tab;
+use super::{changed, focus_in_tab, is_console_font_row, open_settings, row, switch_to_tab, value};
 use crate::app::{Modal, Screen};
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::{AuraColour, AuraSize, AuraStyle, CardBack, Settings};
@@ -13,7 +15,7 @@ use crate::theme::ThemeId;
 const AURA_ROWS: [Field; 3] = [Field::AuraColour, Field::AuraStyle, Field::AuraSize];
 
 fn focus(h: &mut Harness, field: Field) {
-    move_down(h, index_of(field));
+    focus_in_tab(h, super::canonical_tab(field), field);
 }
 
 fn saved(h: &Harness) -> Option<Settings> {
@@ -31,8 +33,8 @@ fn leave_and_answer(h: &mut Harness, keep: bool) {
 }
 
 #[test]
-fn the_interface_group_holds_the_look_rows_and_follows_the_display_group() {
-    assert_eq!(Group::ALL[1], Group::Interface);
+fn all_interface_rows_live_in_audio_and_visual_and_match_with_interface_of() {
+    let av = Tab::AudioVisual.fields();
     for field in [
         Field::Theme,
         Field::ColorVision,
@@ -45,22 +47,39 @@ fn the_interface_group_holds_the_look_rows_and_follows_the_display_group() {
         Field::BackStyle,
         Field::Glyphs,
         Field::ConsoleFont,
+        Field::FontFace,
+        Field::FontSize,
         Field::CardSize,
         Field::AuraColour,
         Field::AuraStyle,
         Field::AuraSize,
+        Field::Priority,
     ] {
-        assert_eq!(field.group(), Group::Interface, "{field:?}");
+        assert!(av.contains(&field), "{field:?}");
         assert!(field.is_interface(), "{field:?}");
     }
-    for field in [Field::Language, Field::Colors, Field::FullScreen] {
-        assert!(!field.is_interface(), "{field:?}");
+    let base = Settings::default();
+    for field in FIELDS {
+        if is_console_font_row(field) {
+            continue;
+        }
+        let stepped = changed(field, &base, Step::Next);
+        if stepped == base {
+            continue;
+        }
+        let restored = stepped.with_interface_of(&base);
+        if field.is_interface() {
+            assert_eq!(
+                restored, base,
+                "{field:?} should be restored by with_interface_of"
+            );
+        } else {
+            assert_ne!(
+                restored, base,
+                "{field:?} should not be in with_interface_of"
+            );
+        }
     }
-    let order: Vec<Group> = FIELDS.iter().map(|field| field.group()).collect();
-    assert!(order.windows(2).all(|pair| {
-        let position = |group| Group::ALL.iter().position(|g| *g == group);
-        position(pair[0]) <= position(pair[1])
-    }));
 }
 
 #[test]
@@ -124,16 +143,32 @@ fn the_aura_rows_name_their_values_in_english_and_polish() {
 
 #[test]
 fn every_interface_row_previews_at_once_without_saving() {
-    for (index, field) in FIELDS.iter().enumerate() {
+    for field in Tab::AudioVisual.fields() {
         if !field.is_interface() || is_console_font_row(*field) || *field == Field::Glyphs {
             continue;
         }
         let mut h = open_settings();
-        move_down(&mut h, index);
+        focus(&mut h, *field);
         let before = h.app.settings().clone();
         h.press(KeyCode::Right);
         assert_ne!(h.app.settings(), &before, "{field:?}");
         assert_eq!(saved(&h), None, "{field:?}");
+    }
+}
+
+#[test]
+fn popular_interface_aliases_keep_preview_and_confirm() {
+    for field in [Field::Theme, Field::CardSize, Field::CardBack] {
+        let mut h = open_settings();
+        focus_in_tab(&mut h, Tab::Popular, field);
+        let before = h.app.settings().clone();
+        h.press(KeyCode::Right);
+        assert_ne!(h.app.settings(), &before, "{field:?}");
+        assert_eq!(saved(&h), None, "{field:?} preview not saved yet");
+        assert!(h.text().contains(&*t("settings.preview.note")), "{field:?}");
+        leave_and_answer(&mut h, false);
+        assert_eq!(h.app.settings(), &before, "{field:?} restored");
+        assert!(saved(&h).is_none_or(|s| s == before), "{field:?}");
     }
 }
 
@@ -199,8 +234,7 @@ fn a_row_outside_the_section_saves_without_the_preview() {
     focus(&mut h, Field::CardBack);
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().card_back, CardBack::Monokai);
-    let to_cues = index_of(Field::Cues) - index_of(Field::CardBack);
-    move_down(&mut h, to_cues);
+    focus(&mut h, Field::Cues);
     h.press(KeyCode::Enter);
     let written = saved(&h);
     assert!(written.as_ref().is_some_and(|s| !s.cues));
@@ -224,6 +258,9 @@ fn a_click_on_the_arrow_of_an_interface_row_previews_too() {
     focus(&mut h, Field::AuraSize);
     let lines = h.lines_without_pane();
     let found = lines.iter().enumerate().find_map(|(row, line)| {
+        if !line.trim_start().starts_with('►') {
+            return None;
+        }
         let column = line.chars().position(|c| c == '►')?;
         Some((u16::try_from(column).ok()?, u16::try_from(row).ok()?))
     });
@@ -238,18 +275,20 @@ fn a_click_on_the_arrow_of_an_interface_row_previews_too() {
 fn every_row_stays_reachable_at_100_by_30_in_every_offered_language() {
     for locale in Locale::offered() {
         set_locale(locale);
-        let mut h = open_settings();
-        h.resize(100, 30);
-        for (index, field) in FIELDS.iter().enumerate() {
-            let marked = format!("► {}", t(field.label_key()));
-            let text = h.text();
-            assert!(
-                text.contains(&marked),
-                "{locale:?} row {index}:
-{text}"
-            );
-            assert!(text.lines().count() <= 30);
-            h.press(KeyCode::Down);
+        for tab in Tab::ALL {
+            let mut h = open_settings();
+            h.resize(100, 30);
+            switch_to_tab(&mut h, tab);
+            for (index, field) in tab.fields().iter().enumerate() {
+                let marked = format!("► {}", t(field.label_key()));
+                let text = h.text();
+                assert!(
+                    text.contains(&marked),
+                    "{locale:?} {tab:?} row {index}:\n{text}"
+                );
+                assert!(text.lines().count() <= 30);
+                h.press(KeyCode::Down);
+            }
         }
     }
     set_locale(Locale::EnUs);

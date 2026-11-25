@@ -34,12 +34,10 @@ aura_size = "Розмір ауры"
 priority = "Пріоритет процесу"
 line = "{label} {value}"
 
-[group]
-display = "Вигляд"
-interface = "Інтерфейс"
-sound = "Звук"
-performance = "Продуктивність"
-hints = "Підказки та допомога"
+[tab]
+audio_visual = "Звук і вигляд"
+popular = "Популярні"
+gameplay = "Ігролад"
 
 [style]
 international = "Міжнародний"
@@ -161,6 +159,7 @@ style_failed = "Звук недоступний: не вдалося заван�
 [footer]
 change = "Змінити"
 arrows = "{arrows} Змінити"
+tabs = "{prev} / {next}: вкладка"
 
 [graphics]
 title = "Перевірка графіки"

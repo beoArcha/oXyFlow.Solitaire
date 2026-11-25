@@ -19,6 +19,7 @@ use crate::i18n::{Locale, set_locale, t};
 use crate::input::{binding_for, primary_key};
 use crate::screens::focus::marked_text;
 use crate::screens::settings::options::FIELDS;
+use crate::screens::settings::tabs::Tab;
 use crate::settings::GlyphMode;
 use crate::test_support::Harness;
 use crate::theme::contrast::contrast_ratio;
@@ -57,6 +58,13 @@ const MENU_CORNER_ROWS: usize = 3;
 fn focused(h: &mut Harness) -> Option<String> {
     let glyphs = Glyphs::new(GlyphMode::Unicode);
     let lines = h.lines_without_pane();
+    if h.app.screen() == Screen::Settings {
+        return lines.into_iter().find_map(|line| {
+            line.trim_start()
+                .strip_prefix(glyphs.focus_left)
+                .map(|after| after.trim().to_owned())
+        });
+    }
     let skip = if h.app.screen() == Screen::MainMenu {
         MENU_CORNER_ROWS
     } else {
@@ -211,16 +219,42 @@ fn every_settings_row_is_reached_by_keyboard() {
     let mut h = menu_at(menu_index("common.menu.settings"));
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
-    let rows = rows(&mut h);
-    assert_eq!(rows.len(), FIELDS.len(), "{rows:?}");
+    let mut canonical_rows = 0;
+    for tab in [Tab::Popular, Tab::Gameplay, Tab::AudioVisual] {
+        let tab_rows = rows(&mut h);
+        assert_eq!(tab_rows.len(), tab.fields().len(), "{tab:?}: {tab_rows:?}");
+        if tab != Tab::Popular {
+            canonical_rows += tab_rows.len();
+        }
+        h.press(KeyCode::Tab);
+    }
+    assert_eq!(canonical_rows, FIELDS.len());
 }
 
 #[test]
-fn every_main_menu_item_and_settings_row_is_also_reached_by_tab() {
+fn every_main_menu_item_is_reached_by_tab_and_settings_tabs_switch_by_tab() {
     assert_eq!(rows_by_tab(&mut Harness::new()), rows(&mut Harness::new()));
     let mut h = menu_at(menu_index("common.menu.settings"));
     h.press(KeyCode::Enter);
-    assert_eq!(rows_by_tab(&mut h).len(), FIELDS.len());
+    assert!(
+        h.text()
+            .contains(&format!("[{}]", t(Tab::Popular.label_key())))
+    );
+    h.press(KeyCode::Tab);
+    assert!(
+        h.text()
+            .contains(&format!("[{}]", t(Tab::Gameplay.label_key())))
+    );
+    h.press(KeyCode::Tab);
+    assert!(
+        h.text()
+            .contains(&format!("[{}]", t(Tab::AudioVisual.label_key())))
+    );
+    h.press(KeyCode::Tab);
+    assert!(
+        h.text()
+            .contains(&format!("[{}]", t(Tab::Popular.label_key())))
+    );
 }
 
 #[test]

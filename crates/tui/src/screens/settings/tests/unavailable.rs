@@ -3,7 +3,8 @@
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::{index_of, line_of, move_down, open_settings};
+use super::super::tabs::Tab;
+use super::{focus_in_tab, line_of, open_settings};
 use crate::app::{CardFontState, FontFacts};
 use crate::caps::ColorDepth;
 use crate::i18n::{Locale, set_locale, t};
@@ -65,7 +66,7 @@ fn an_available_row_keeps_its_arrows() {
 fn an_unavailable_row_is_dimmed_and_has_no_arrows_on_screen() {
     let label = t(Field::ConsoleFont.label_key()).into_owned();
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::ConsoleFont));
+    focus_in_tab(&mut h, Tab::AudioVisual, Field::ConsoleFont);
     let focused = line_of(&mut h, &label);
     assert!(!focused.contains('◄'), "{focused}");
     assert_eq!(
@@ -93,7 +94,7 @@ fn an_unavailable_row_is_dimmed_and_has_no_arrows_on_screen() {
 fn a_focused_unavailable_row_keeps_the_focus_style() {
     let label = t(Field::ConsoleFont.label_key()).into_owned();
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::ConsoleFont));
+    focus_in_tab(&mut h, Tab::AudioVisual, Field::ConsoleFont);
     let theme = Theme::new(h.app.settings().theme, ColorDepth::TrueColor);
     let (column, row) = h.find(&label).unwrap_or_default();
     let cell = &h.terminal.backend().buffer()[(column, row)];

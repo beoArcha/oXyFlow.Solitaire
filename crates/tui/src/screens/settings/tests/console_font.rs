@@ -2,7 +2,8 @@
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::{index_of, move_down, open_settings, row};
+use super::super::tabs::Tab;
+use super::{focus_in_tab, index_of, open_settings, row};
 use crate::app::{CardFontState, FontFacts};
 use crate::screens::settings::options::{FIELDS, Field};
 use crate::screens::settings::values::line;
@@ -69,7 +70,7 @@ fn a_failure_is_not_shown_while_the_option_is_off() {
 #[test]
 fn a_terminal_without_the_console_font_ignores_the_row() {
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::ConsoleFont));
+    focus_in_tab(&mut h, Tab::AudioVisual, Field::ConsoleFont);
     let before = h.app.settings().clone();
     h.press(KeyCode::Enter);
     h.press(KeyCode::Right);

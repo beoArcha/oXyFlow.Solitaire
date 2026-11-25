@@ -34,12 +34,10 @@ aura_size = "Aura size"
 priority = "Process priority"
 line = "{label} {value}"
 
-[group]
-display = "Display"
-interface = "Interface"
-sound = "Sound"
-performance = "Performance"
-hints = "Hints and help"
+[tab]
+audio_visual = "Audio & Visual"
+popular = "Popular"
+gameplay = "Gameplay"
 
 [style]
 international = "International"
@@ -161,6 +159,7 @@ style_failed = "Sound is unavailable: the selected sound style cannot be loaded.
 [footer]
 change = "Change"
 arrows = "{arrows} Change"
+tabs = "{prev} / {next}: tab"
 
 [graphics]
 title = "Graphics check"

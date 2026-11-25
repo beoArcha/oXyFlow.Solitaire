@@ -17,9 +17,11 @@ mod preview;
 mod screen;
 mod styles;
 mod table;
+mod tabs;
 mod unavailable;
 
 use super::options::{FIELDS, Field, Step};
+use super::tabs::Tab;
 use super::values::{line, value_text};
 use crate::app::{FontFacts, Modal, Screen};
 use crate::i18n::{Locale, locale, set_locale, t};
@@ -48,7 +50,7 @@ fn value(field: Field, settings: &Settings) -> String {
 }
 
 pub(super) fn line_of(h: &mut Harness, label: &str) -> String {
-    h.lines()
+    h.lines_without_pane()
         .into_iter()
         .find(|line| line.contains(label))
         .map(|line| line.trim_end().to_owned())
@@ -79,15 +81,53 @@ fn settings_menu_index() -> usize {
         .unwrap_or_default()
 }
 
-/// Position of a row in the settings list, in the order of `FIELDS`.
-/// A window 130 columns wide and as high as the list needs with its chrome, so every row is drawn.
+/// A window 130 columns wide and as high as the tallest tab needs with its chrome, so every row
+/// of any tab is drawn.
 pub(super) fn fitting_size() -> (u16, u16) {
-    let lines = u16::try_from(super::list::entries().len()).unwrap_or(u16::MAX);
+    let rows = Tab::ALL
+        .into_iter()
+        .map(|tab| tab.fields().len())
+        .max()
+        .unwrap_or_default();
+    let lines = u16::try_from(rows).unwrap_or(u16::MAX);
     (130, lines + super::CHROME_ROWS)
 }
 
+pub(super) fn canonical_tab(field: Field) -> Tab {
+    if Tab::AudioVisual.fields().contains(&field) {
+        Tab::AudioVisual
+    } else {
+        Tab::Gameplay
+    }
+}
+
+pub(super) fn switch_to_tab(h: &mut Harness, target: Tab) {
+    let expected = format!("[{}]", t(target.label_key()));
+    for _ in 0..Tab::ALL.len() {
+        if h.text().contains(&expected) {
+            return;
+        }
+        h.press(KeyCode::Tab);
+    }
+}
+
+pub(super) fn focus_in_tab(h: &mut Harness, tab: Tab, field: Field) {
+    switch_to_tab(h, tab);
+    let label = format!("► {} .", t(field.label_key()));
+    for _ in 0..tab.fields().len() {
+        if h.lines_without_pane()
+            .iter()
+            .any(|line| line.trim_start().starts_with(&label))
+        {
+            return;
+        }
+        h.press(KeyCode::Down);
+    }
+}
+
 fn index_of(field: Field) -> usize {
-    FIELDS
+    canonical_tab(field)
+        .fields()
         .iter()
         .position(|row| *row == field)
         .unwrap_or_default()
@@ -213,7 +253,7 @@ fn the_full_screen_row_cycles_auto_on_off_in_the_display_group() {
     assert_eq!(value(Field::FullScreen, &base), "Auto");
     assert_eq!(value(Field::FullScreen, &on), "On");
     assert!(row(Field::FullScreen, &off, true).starts_with("Full screen"));
-    assert_eq!(Field::FullScreen.group(), super::options::Group::Display);
+    assert!(Tab::AudioVisual.fields().contains(&Field::FullScreen));
 }
 
 #[test]
@@ -269,22 +309,26 @@ fn unavailable_sound_rows_say_so_in_their_text() {
 
 #[test]
 fn every_row_changes_by_keyboard_and_reaches_storage() {
-    let console_independent = FIELDS
-        .iter()
-        .enumerate()
-        .filter(|(_, field)| !is_console_font_row(**field));
-    for (index, field) in console_independent {
-        let mut h = open_settings();
-        move_down(&mut h, index);
-        let before = h.app.settings().clone();
-        h.press(KeyCode::Enter);
-        let expected = changed(*field, &before, Step::Next);
-        assert_eq!(h.app.settings(), &expected, "{field:?}");
-        let saved = h.storage.borrow().settings.clone();
-        if field.is_interface() {
-            assert_eq!(saved, None, "{field:?} is saved only when it is kept");
-        } else {
-            assert_eq!(saved, Some(expected), "{field:?}");
+    for tab in [Tab::AudioVisual, Tab::Gameplay] {
+        for (index, field) in tab
+            .fields()
+            .iter()
+            .enumerate()
+            .filter(|(_, field)| !is_console_font_row(**field))
+        {
+            let mut h = open_settings();
+            switch_to_tab(&mut h, tab);
+            move_down(&mut h, index);
+            let before = h.app.settings().clone();
+            h.press(KeyCode::Enter);
+            let expected = changed(*field, &before, Step::Next);
+            assert_eq!(h.app.settings(), &expected, "{tab:?} {field:?}");
+            let saved = h.storage.borrow().settings.clone();
+            if field.is_interface() {
+                assert_eq!(saved, None, "{field:?} is saved only when it is kept");
+            } else {
+                assert_eq!(saved, Some(expected), "{tab:?} {field:?}");
+            }
         }
     }
 }
@@ -305,7 +349,7 @@ fn left_and_right_step_the_focused_row() {
 #[test]
 fn volume_is_adjusted_with_the_arrows_and_clamped() {
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::Volume));
+    focus_in_tab(&mut h, Tab::Popular, Field::Volume);
     for _ in 0..10 {
         h.press(KeyCode::Left);
     }
@@ -320,7 +364,7 @@ fn volume_is_adjusted_with_the_arrows_and_clamped() {
 #[test]
 fn a_theme_change_is_shown_at_once() {
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::Theme));
+    focus_in_tab(&mut h, Tab::Popular, Field::Theme);
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
     assert!(bare(&line_of(&mut h, "Theme")).ends_with("Light"));
@@ -376,7 +420,7 @@ fn a_storage_failure_alerts_and_the_setting_holds_for_the_session() {
     assert_eq!(h.app.screen(), Screen::Settings);
     h.press(KeyCode::Enter);
     assert!(h.app.modal().is_none());
-    move_down(&mut h, index_of(Field::Theme));
+    move_down(&mut h, 1);
     h.press(KeyCode::Enter);
     assert_eq!(h.app.settings().theme, ThemeId::Light);
     assert!(h.app.modal().is_none());
@@ -412,7 +456,7 @@ fn the_row_text_uses_the_line_format() {
 fn the_focused_row_is_explained_in_the_description_line() {
     let mut h = open_settings();
     assert!(h.text().contains(&*t("settings.desc.language")));
-    move_down(&mut h, index_of(Field::Theme));
+    focus_in_tab(&mut h, Tab::Popular, Field::Theme);
     assert!(h.text().contains(&*t("settings.desc.theme")));
     assert!(!h.text().contains(&*t("settings.desc.language")));
 }

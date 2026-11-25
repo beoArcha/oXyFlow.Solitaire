@@ -34,12 +34,10 @@ aura_size = "Tamaño del aura"
 priority = "Prioridad del proceso"
 line = "{label} {value}"
 
-[group]
-display = "Pantalla"
-interface = "Interfaz"
-sound = "Sonido"
-performance = "Rendimiento"
-hints = "Pistas y ayuda"
+[tab]
+audio_visual = "Audio y visual"
+popular = "Populares"
+gameplay = "Juego"
 
 [style]
 international = "Internacional"
@@ -161,6 +159,7 @@ style_failed = "Sonido no disponible: no se pudo cargar el estilo de sonido sele
 [footer]
 change = "Cambiar"
 arrows = "{arrows} Cambiar"
+tabs = "{prev} / {next}: pestaña"
 
 [graphics]
 title = "Comprobación gráfica"
