@@ -189,6 +189,8 @@ deal_row = "distribuir linha"
 undo_redo = "desfazer / refazer"
 copy_seed = "copiar semente"
 hint = "dica"
+new_game = "novo jogo"
+new_game_button = "[{key}: {label}]"
 rules = "como jogar"
 help = "todas as teclas"
 

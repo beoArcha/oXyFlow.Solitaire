@@ -414,7 +414,8 @@ pub struct NullClipboard;                                // every copy fails wit
   mouse sections, `legend.rs`). A framed panel (WGL4 light box `┌─┐│└─┘`, ASCII `+-+|`) with its title in the
   top border (`Guide (g: hide)`; a click on the top border toggles it), full height at the right of the board:
   30 columns at Standard, 40 at Wide. From the top: a `Game` compartment (heading plus the game facts, closed by a
-  rule `├──┤`), then `Goal`, `Keys` (usable ones carry the available mark `•`, `o` in ASCII, and bold type; the
+  rule `├──┤`; the heading row carries the `[n: new game]` button, right aligned, drawn and hit-tested from one
+  rectangle, `guide::new_game::button`, and hidden when it does not fit beside the heading, O-113), then `Goal`, `Keys` (usable ones carry the available mark `•`, `o` in ASCII, and bold type; the
   focus symbol `►` never marks a key), `Mouse` and `Legend` (`►` focus, `•` available, `●` picked, `+` target,
   `?→` hint, in the symbols of the glyph set). Blank rows between the sections
   appear only when every section still fits. It never repeats a fact of the controls strip. `Settings::guide_panel`
@@ -427,8 +428,8 @@ pub struct NullClipboard;                                // every copy fails wit
   beside it). Chrome rows: Compact has the header row plus the two strip rows; Standard and Wide have the two
   strip rows only, the facts moving into the `Game` compartment. When the panel is off (setting) the header row
   comes back, so the game information has exactly one place at all times. When the panel is shorter than its
-  sections, `widgets/guide` drops the `Mouse` section first and the `Legend` next (`fitted`), so a heading never
-  stands without its lines.
+  sections, `widgets/guide` drops the last `Keys` row (`n: new game`, O-113) first, then the `Mouse` section, then the
+  `Legend` (`fitted`), so a heading never stands without its lines.
   *Guide window (P3-18):* below 130 columns the setting stays on and its effect stays visible. `g`
   (`BoardScreen::panel_unavailable`, the class of the last drawn size) opens `Modal::Guide(GuideWindow)`
   (`widgets/overlay/guide_window.rs`, a `dialog::boxed` of 62 columns and 17 text rows) with the same content as

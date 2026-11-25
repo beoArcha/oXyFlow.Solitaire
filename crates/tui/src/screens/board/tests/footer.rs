@@ -105,7 +105,13 @@ fn a_narrow_do_row_drops_the_least_useful_entries_and_keeps_the_way_out() {
     assert_eq!(text(30), "Do: ?: keys | Esc: menu");
 }
 
-fn board_game(locale: Locale, variant: Variant, seed: u64, width: u16, height: u16) -> Harness {
+pub(super) fn board_game(
+    locale: Locale,
+    variant: Variant,
+    seed: u64,
+    width: u16,
+    height: u16,
+) -> Harness {
     let storage = MemoryStorage {
         settings: Some(Settings {
             locale,
