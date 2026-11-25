@@ -408,3 +408,67 @@ fn active_tab_and_focused_button_differ_in_every_theme_depth_and_vision() {
         }
     }
 }
+
+#[test]
+fn low_vision_reaches_seven_to_one_on_every_text_pair_for_every_theme_and_vision() {
+    for id in ThemeId::ALL {
+        for vision in ColorVision::ALL {
+            let theme = Theme::new(id, ColorDepth::TrueColor)
+                .with_color_vision(vision)
+                .with_low_vision(true);
+            let palette = theme.palette();
+            assert_eq!(palette.text_muted, palette.text, "{id:?} {vision:?}");
+            for (fg, bg) in TEXT_PAIRS {
+                let ratio = contrast_ratio(palette.swatch(fg).rgb, palette.swatch(bg).rgb);
+                assert!(
+                    ratio >= 7.0,
+                    "{id:?} {vision:?}: {fg:?} on {bg:?} is {ratio:.2} (< 7.0)"
+                );
+            }
+            for (fg, bg) in GRAPHIC_PAIRS
+                .into_iter()
+                .chain(MARK_PAIRS)
+                .chain([palette.field_edge_pair()])
+            {
+                let ratio = contrast_ratio(palette.swatch(fg).rgb, palette.swatch(bg).rgb);
+                assert!(
+                    ratio >= 3.0,
+                    "{id:?} {vision:?}: {fg:?} on {bg:?} is {ratio:.2} (< 3.0)"
+                );
+            }
+            let felt_contrast = contrast_ratio(palette.table.rgb, palette.background.rgb);
+            assert_eq!(palette.field_edge, felt_contrast < 3.0, "{id:?} {vision:?}");
+            assert_ne!(
+                palette.card_red.rgb, palette.card_black.rgb,
+                "{id:?} {vision:?}"
+            );
+            assert_ne!(
+                palette.focus_bg.rgb, palette.background.rgb,
+                "{id:?} {vision:?}"
+            );
+        }
+    }
+}
+
+#[test]
+fn low_vision_survives_theme_and_vision_changes_and_turns_off_cleanly() {
+    let base = Theme::new(ThemeId::Dark, ColorDepth::TrueColor);
+    let lv = base.with_low_vision(true);
+    assert_eq!(lv.with_low_vision(false), base);
+    let vis = lv.with_color_vision(ColorVision::Deuteranopia);
+    assert_eq!(vis.palette().text_muted, vis.palette().text);
+    for (fg, bg) in TEXT_PAIRS {
+        let ratio = contrast_ratio(vis.palette().swatch(fg).rgb, vis.palette().swatch(bg).rgb);
+        assert!(ratio >= 7.0, "{fg:?} on {bg:?} is {ratio:.2}");
+    }
+    let with_table = lv.with_table(crate::settings::TableColour::Green);
+    for (fg, bg) in TEXT_PAIRS {
+        if bg == Token::Table {
+            let ratio = contrast_ratio(
+                with_table.palette().swatch(fg).rgb,
+                with_table.palette().swatch(bg).rgb,
+            );
+            assert!(ratio >= 7.0, "table {fg:?} is {ratio:.2}");
+        }
+    }
+}

@@ -64,3 +64,8 @@ clear = "Esc löscht"
 button = "[ {key} Nur lösbare Spiele: {state} ]"
 on_hint = "An: Ein neues Spiel sucht eine nachweislich lösbare Verteilung; ein Seed wird direkt ausgeteilt"
 off_hint = "Aus: Ein neues Spiel teilt jede Verteilung aus, lösbar oder nicht"
+
+[low_vision]
+prompt = "Sehhilfemodus? (7:1-Kontrast, größere Karten, fetter Text)"
+yes = "Ja"
+not_now = "Nicht jetzt"

@@ -3,6 +3,7 @@
 //! "New game from seed" asks for a seed, then lists the games dealt from it; the menu keeps that
 //! flow to itself, so the seed travels in the `Effect::Start` it returns.
 
+mod banner;
 mod resume;
 mod seed;
 
@@ -12,6 +13,7 @@ use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
+use self::banner::{Banner, BannerButton};
 use self::seed::{SeedField, Step};
 use super::focus::tab_forward;
 use super::game_select::GameSelect;
@@ -114,6 +116,8 @@ pub struct MainMenu {
     stage: Stage,
     footer: FooterMap,
     picker: LanguagePicker,
+    banner: Banner,
+    banner_focus: Option<BannerButton>,
     selector_focus: bool,
     other_pane_focused: bool,
     version: &'static str,
@@ -143,6 +147,8 @@ impl MainMenu {
             },
             footer: FooterMap::default(),
             picker: LanguagePicker::new(),
+            banner: Banner::default(),
+            banner_focus: None,
             selector_focus: false,
             other_pane_focused: self.other_pane_focused,
         }
@@ -155,7 +161,7 @@ impl MainMenu {
     }
 
     fn highlight(&self) -> Highlight {
-        if self.selector_focus {
+        if self.selector_focus || self.banner_focus.is_some() {
             Highlight::Off
         } else if self.other_pane_focused {
             Highlight::Muted
@@ -168,6 +174,7 @@ impl MainMenu {
     pub fn window_opened(&mut self) {
         self.picker.forget_hover();
         self.selector_focus = false;
+        self.banner_focus = None;
     }
 
     /// Whether the seed field has the focus, so that typed characters are text.
@@ -245,8 +252,18 @@ impl MainMenu {
         if action == Action::Quit {
             return Effect::Quit;
         }
+        if ctx.settings.low_vision_offered {
+            self.banner_focus = None;
+        }
+        if let Some(effect) = banner::handle_action(&mut self.banner_focus, action, ctx) {
+            return effect;
+        }
         if self.selector_focus {
             return self.handle_selector(action, items.len(), ctx);
+        }
+        if !ctx.settings.low_vision_offered && matches!(action, Action::Left | Action::Right) {
+            self.banner_focus = Some(BannerButton::Yes);
+            return Effect::None;
         }
         if action == Action::Up && self.list.focus() == 0 {
             self.selector_focus = true;
@@ -303,18 +320,28 @@ impl MainMenu {
             Pointed::Handled => return Effect::None,
             Pointed::Focus => {
                 self.selector_focus = true;
+                self.banner_focus = None;
                 return Effect::None;
             }
             Pointed::Choose(locale) => {
                 self.selector_focus = true;
+                self.banner_focus = None;
                 return language_effect(Some(locale), ctx.settings);
             }
             Pointed::Ignored => {}
+        }
+        if !ctx.settings.low_vision_offered
+            && let Some(button) = self.banner.hit(event)
+        {
+            self.selector_focus = false;
+            self.banner_focus = None;
+            return banner::effect(button == BannerButton::Yes, ctx);
         }
         let items = items(ctx.saved.is_some());
         let clicked = self.list.on_mouse(event, items.len());
         if clicked.is_some() || wheel_action(event).is_some() {
             self.selector_focus = false;
+            self.banner_focus = None;
         }
         match clicked.and_then(|index| items.get(index).copied()) {
             Some(item) => self.activate(item),
@@ -373,16 +400,51 @@ impl MainMenu {
             })
             .collect();
         let logo_height = u16::try_from(rows.len()).unwrap_or(0);
-        let [_, logo_area, tagline_area, _, list_area, _, footer_row] = Layout::vertical([
-            Constraint::Fill(1),
-            Constraint::Length(logo_height),
-            Constraint::Length(1),
-            Constraint::Length(1),
-            Constraint::Length(MenuList::height(&list_rows)),
-            Constraint::Fill(2),
-            Constraint::Length(1),
-        ])
-        .areas(area);
+        let list_height = MenuList::height(&list_rows);
+        let (logo_area, tagline_area, list_area, banner_area, footer_row) =
+            if !ctx.settings.low_vision_offered {
+                let [
+                    _,
+                    logo_area,
+                    tagline_area,
+                    _,
+                    list_area,
+                    _,
+                    banner_area,
+                    _,
+                    footer_row,
+                ] = Layout::vertical([
+                    Constraint::Fill(1),
+                    Constraint::Length(logo_height),
+                    Constraint::Length(1),
+                    Constraint::Length(1),
+                    Constraint::Length(list_height),
+                    Constraint::Length(1),
+                    Constraint::Length(banner::HEIGHT),
+                    Constraint::Fill(1),
+                    Constraint::Length(1),
+                ])
+                .areas(area);
+                (
+                    logo_area,
+                    tagline_area,
+                    list_area,
+                    Some(banner_area),
+                    footer_row,
+                )
+            } else {
+                let [_, logo_area, tagline_area, _, list_area, _, footer_row] = Layout::vertical([
+                    Constraint::Fill(1),
+                    Constraint::Length(logo_height),
+                    Constraint::Length(1),
+                    Constraint::Length(1),
+                    Constraint::Length(list_height),
+                    Constraint::Fill(2),
+                    Constraint::Length(1),
+                ])
+                .areas(area);
+                (logo_area, tagline_area, list_area, None, footer_row)
+            };
         let footer_area = footer_row.inner(Margin::new(FOOTER_MARGIN, 0));
         let lines: Vec<Line> = rows
             .iter()
@@ -402,6 +464,11 @@ impl MainMenu {
         );
         self.list
             .draw(frame, list_area, &list_rows, ctx, self.highlight());
+        if let Some(banner_area) = banner_area {
+            self.banner.draw(frame, banner_area, self.banner_focus, ctx);
+        } else {
+            self.banner.clear();
+        }
         self.footer = footer::draw(
             frame,
             footer_area,
@@ -436,6 +503,8 @@ fn language_effect(locale: Option<Locale>, settings: &Settings) -> Effect {
     }
 }
 
+#[cfg(test)]
+mod banner_tests;
 #[cfg(test)]
 mod dock_focus_tests;
 #[cfg(test)]

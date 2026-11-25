@@ -41,16 +41,23 @@ fn text(placeholder: Placeholder, glyphs: &Glyphs) -> Option<String> {
     }
 }
 
-/// Draws the placeholder, or `+` when the slot is a drop target, in the middle of `area`.
+/// Draws the placeholder, or `+` (`+++` in low-vision mode when wide enough) when the slot is a
+/// drop target, in the middle of `area`.
 pub(super) fn paint_slot(
     painter: &mut Painter<'_>,
     area: Rect,
     (placeholder, target): (Placeholder, bool),
     glyphs: &Glyphs,
     (muted, marked): (Style, Style),
+    low_vision: bool,
 ) {
     let (shown, style) = if target {
-        (Some(glyphs.target.to_owned()), marked)
+        let mark = if low_vision && area.width >= 5 {
+            format!("{0}{0}{0}", glyphs.target)
+        } else {
+            glyphs.target.to_owned()
+        };
+        (Some(mark), marked)
     } else {
         (text(placeholder, glyphs), muted)
     };

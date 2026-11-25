@@ -91,16 +91,22 @@ pub(super) fn paint_frame(painter: &mut Painter<'_>, area: Rect, edges: &Edges, 
     painter.put(right, bottom, bottom_right, border);
 }
 
-/// Puts the target symbol in both top corners, over whatever border the card has, so a target
-/// that also has the focus still shows that it accepts the picked cards.
+/// Puts the target symbol in both top corners (and both bottom corners in low-vision mode), over
+/// whatever border the card has, so a target that also has the focus still shows that it accepts
+/// the picked cards.
 pub(super) fn paint_target_corners(
     painter: &mut Painter<'_>,
     area: Rect,
     glyphs: &Glyphs,
     style: Style,
+    low_vision: bool,
 ) {
     painter.put(area.left(), area.top(), glyphs.target, style);
     painter.put(area.right() - 1, area.top(), glyphs.target, style);
+    if low_vision {
+        painter.put(area.left(), area.bottom() - 1, glyphs.target, style);
+        painter.put(area.right() - 1, area.bottom() - 1, glyphs.target, style);
+    }
 }
 
 /// Paints only the top row of a card: `fill` between the corners of `edges`.

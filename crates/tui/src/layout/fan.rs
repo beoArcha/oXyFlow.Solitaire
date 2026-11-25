@@ -49,15 +49,29 @@ fn fits(ys: &[u16], height: u16, room: u16) -> bool {
     ys.last().is_none_or(|last| last + height <= room)
 }
 
-fn plans(size: CardSize, collapsible: bool) -> Vec<Plan> {
-    let (up, down) = (size.up_step(), size.down_step());
-    let shrink_down = (1..=down).rev().map(|down| Plan {
+fn plans(size: CardSize, collapsible: bool, wider: bool) -> Vec<Plan> {
+    let up = if wider {
+        size.wide_up_step()
+    } else {
+        size.up_step()
+    };
+    let down = if wider {
+        size.wide_down_step()
+    } else {
+        size.down_step()
+    };
+    let min_uncollapsed_down = if collapsible && size.down_step() == 1 {
+        2
+    } else {
+        1
+    };
+    let shrink_down = (min_uncollapsed_down..=down).rev().map(|down| Plan {
         down,
         up,
         collapse: false,
     });
     let shrink_up = (1..up).rev().map(|up| Plan {
-        down: 1,
+        down: min_uncollapsed_down,
         up,
         collapse: false,
     });
@@ -75,10 +89,13 @@ fn plans(size: CardSize, collapsible: bool) -> Vec<Plan> {
         }
         all
     };
-    let grown = all.first().map(|first| Plan {
-        up: first.up + 1,
-        ..*first
-    });
+    let grown = all
+        .first()
+        .filter(|first| first.up + 1 < size.height)
+        .map(|first| Plan {
+            up: first.up + 1,
+            ..*first
+        });
     all.splice(0..0, grown);
     all
 }
@@ -99,19 +116,20 @@ fn squeezed(count: usize, prefix: usize, collapse: bool, height: u16, room: u16)
 }
 
 /// Whether `cards` fits in `room` rows without stacking face-up cards on top of each other.
-pub(super) fn fits_cleanly(cards: &[TableCard], size: CardSize, room: u16) -> bool {
+pub(super) fn fits_cleanly(cards: &[TableCard], size: CardSize, room: u16, wider: bool) -> bool {
     let prefix = leading_face_down(cards);
     let collapsible = prefix >= 2 && prefix < cards.len();
-    plans(size, collapsible)
+    plans(size, collapsible, wider)
         .into_iter()
         .any(|plan| fits(&offsets(cards, plan, prefix), size.height, room))
 }
 
-/// Offsets for `cards` (bottom to top) in a column of `room` rows whose cards are `size` tall.
-pub fn fan(cards: &[TableCard], size: CardSize, room: u16) -> Fan {
+/// Offsets for `cards` (bottom to top) in a column of `room` rows whose cards are `size` tall,
+/// widening the natural step when `wider` is true and room permits.
+pub fn fan_with(cards: &[TableCard], size: CardSize, room: u16, wider: bool) -> Fan {
     let prefix = leading_face_down(cards);
     let collapsible = prefix >= 2 && prefix < cards.len();
-    for plan in plans(size, collapsible) {
+    for plan in plans(size, collapsible, wider) {
         let ys = offsets(cards, plan, prefix);
         if fits(&ys, size.height, room) {
             let collapsed = if plan.collapse { prefix } else { 0 };
@@ -123,6 +141,12 @@ pub fn fan(cards: &[TableCard], size: CardSize, room: u16) -> Fan {
         ys: squeezed(cards.len(), prefix, collapsible, size.height, room),
         collapsed,
     }
+}
+
+/// Offsets for `cards` (bottom to top) in a column of `room` rows whose cards are `size` tall.
+#[cfg(test)]
+pub fn fan(cards: &[TableCard], size: CardSize, room: u16) -> Fan {
+    fan_with(cards, size, room, false)
 }
 
 #[cfg(test)]

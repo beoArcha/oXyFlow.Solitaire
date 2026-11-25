@@ -109,6 +109,8 @@ impl Settings {
     /// the player keeps it.
     pub fn with_interface_of(&self, saved: &Settings) -> Settings {
         Settings {
+            low_vision: saved.low_vision,
+            low_vision_saved: saved.low_vision_saved,
             theme: saved.theme,
             color_vision: saved.color_vision,
             card_back: saved.card_back,

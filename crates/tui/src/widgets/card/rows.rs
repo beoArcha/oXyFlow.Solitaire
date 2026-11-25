@@ -25,6 +25,7 @@ pub(super) fn paint_top_row(
     (face, mark): (Face, Mark),
     glyphs: &Glyphs,
     look: &Look,
+    low_vision: bool,
 ) {
     let inner = area.width.saturating_sub(2);
     let label_width = match face {
@@ -35,7 +36,10 @@ pub(super) fn paint_top_row(
         }
         _ => 0,
     };
-    let shown = fitting(mark.symbols(glyphs), inner.saturating_sub(label_width));
+    let shown = fitting(
+        mark.symbols(glyphs, low_vision),
+        inner.saturating_sub(label_width),
+    );
     let x = area.right() - 1 - width_of(&shown);
     painter.text(x, area.y, &shown, look.border);
 }

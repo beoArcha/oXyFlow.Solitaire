@@ -6,7 +6,7 @@
 use oxysol_core::PileRef;
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Position, Rect};
-use ratatui::style::Style;
+use ratatui::style::{Modifier, Style};
 
 use super::pile::{CardPos, Marks};
 use crate::glyphs::Glyphs;
@@ -200,10 +200,18 @@ pub fn draw(
     let rings = settings.aura_size.rings();
     let framed = settings.aura_style == AuraStyle::Frame;
     let tint = settings.aura_colour.token();
-    let look = |symbol, token, frame: Option<&'static [&'static str; 6]>| Look {
-        symbol,
-        frame: frame.filter(|_| framed),
-        style: theme.style(tint.unwrap_or(token), Token::Table),
+    let look = |symbol, token, frame: Option<&'static [&'static str; 6]>| {
+        let base = theme.style(tint.unwrap_or(token), Token::Table);
+        let style = if settings.low_vision {
+            base.add_modifier(Modifier::BOLD)
+        } else {
+            base
+        };
+        Look {
+            symbol,
+            frame: frame.filter(|_| framed),
+            style,
+        }
     };
     let (focus_frame, carry_frame) = if glyphs.unicode {
         (&FOCUS_FRAME, &CARRY_FRAME)
