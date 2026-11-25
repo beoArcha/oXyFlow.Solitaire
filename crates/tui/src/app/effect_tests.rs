@@ -121,6 +121,26 @@ fn a_confirm_modal_applies_its_effect_only_after_yes() {
 }
 
 #[test]
+fn color_vision_applies_to_the_whole_app_theme() {
+    let mut h = Harness::new();
+    let settings = Settings {
+        color_vision: crate::settings::ColorVision::Monochrome,
+        ..Settings::default()
+    };
+    h.app.apply(Effect::Apply(settings.clone()));
+    let expected = crate::theme::Theme::new(settings.theme, settings.color_depth(&h.app.caps))
+        .with_color_vision(settings.color_vision);
+    assert_eq!(h.app.theme, expected);
+    h.app.apply(Effect::Apply(Settings::default()));
+    assert_eq!(
+        h.app
+            .theme
+            .with_color_vision(crate::settings::ColorVision::Normal),
+        h.app.theme
+    );
+}
+
+#[test]
 fn applying_settings_saves_them_and_reconfigures_theme_language_and_audio() {
     let mut h = Harness::new();
     let settings = Settings {

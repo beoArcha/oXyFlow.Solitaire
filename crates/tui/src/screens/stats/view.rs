@@ -43,15 +43,21 @@ fn block_x(area: Rect, width: u16) -> u16 {
     area.x + area.width.saturating_sub(width) / 2
 }
 
-/// The key line: the list keys as text, then the three keys that are buttons.
+/// The key line: the list keys, button focus, every action-bar button and Back.
 fn key_line() -> Vec<Segment> {
     vec![
         Segment::plain(t("stats.footer_list")),
-        Segment::plain("   "),
+        Segment::plain("  "),
+        Segment::button(Action::FocusNext, t("stats.footer_focus")),
+        Segment::plain("  "),
         Segment::button(Action::Select, t("stats.footer_replay")),
-        Segment::plain("   "),
+        Segment::plain("  "),
         Segment::button(Action::CopySeed, t("stats.footer_copy")),
-        Segment::plain("   "),
+        Segment::plain("  "),
+        Segment::plain(t("stats.footer_check")),
+        Segment::plain("  "),
+        Segment::plain(t("stats.footer_check_all")),
+        Segment::plain("  "),
         Segment::button(Action::Back, t("stats.footer_back")),
     ]
 }
