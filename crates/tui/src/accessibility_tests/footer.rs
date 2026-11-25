@@ -169,6 +169,7 @@ fn every_button_of_the_statistics_does_what_its_key_does() {
             h
         };
         let buttons = [
+            (Action::FocusNext, t("stats.footer_focus").into_owned()),
             (Action::Select, t("stats.footer_replay").into_owned()),
             (Action::CopySeed, t("stats.footer_copy").into_owned()),
             (Action::Back, t("stats.footer_back").into_owned()),
