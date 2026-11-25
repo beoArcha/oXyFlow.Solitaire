@@ -75,6 +75,10 @@ impl BoardScreen {
             if self.on_guide_title(cell) {
                 return toggle_guide(ctx);
             }
+            if self.on_new_game_button(cell) {
+                self.leave_panel();
+                return self.dispatch(Action::NewGame);
+            }
             if self.on_moves_title(cell) {
                 return toggle_moves(ctx);
             }
@@ -107,6 +111,13 @@ impl BoardScreen {
             (None, None) => return false,
         };
         seed.contains(Position::new(cell.0, cell.1))
+    }
+
+    fn on_new_game_button(&self, cell: (u16, u16)) -> bool {
+        self.chrome()
+            .guide
+            .and_then(guide::new_game::button)
+            .is_some_and(|rect| rect.contains(Position::new(cell.0, cell.1)))
     }
 
     fn on_guide_title(&self, cell: (u16, u16)) -> bool {
