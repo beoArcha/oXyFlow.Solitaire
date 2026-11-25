@@ -602,41 +602,6 @@ Owner visual review of 0.5.0 (2026-11-21; batch 1: O-69 to O-81, batch 2: O-82 t
   hints are hidden and the moves window gives the reason; on again restores them; the Quick options row and the Settings
   row change the same value; an old settings file loads with quick move on; every complete locale.
 
-### O-115 — Is it winnable? A check for the deal and for the current position
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-25.
-- **Depends on:** P5-05 (shares `crates/core/src/solver/mod.rs`)
-- **Decision:** T-47
-- **Files:** `crates/core/src/solver/mod.rs` and the per-game `Position::from_piles` paths it already uses (a new entry
-  point that solves the current position), `crates/tui/src/solver.rs`, `crates/tui/src/app/deals.rs` or a new
-  `crates/tui/src/app/winnable.rs`, `crates/tui/src/input/table.rs`, `crates/tui/src/widgets/guide/**`,
-  `crates/tui/src/screens/board/{guide_view,moves_panel}.rs`, `crates/tui/src/widgets/overlay/{guide_window,moves_window}.rs`,
-  `src/` (the worker that answers the new query), `docs/tech/architecture.md` (solver contract),
-  `docs/tech/decisions.md` (T-47), `locales/*/{board,help}.toml`, tests
-- **Shared files:** `crates/tui/src/input.rs` if the key table needs it, `locales/en-US/*.toml`, `docs/tech/decisions.md`
-- **Problem:** the player cannot ask whether the deal is winnable, nor whether the game can still be won from where they
-  are now.
-- **Fix:**
-  - One action **Check: winnable?** that answers two questions at once:
-    - **This deal:** the stored proof of the deal (T-30) when there is one, otherwise a fresh check from the start.
-    - **From here:** a check of the current position (core gets an entry point that solves from the current piles and
-      counters, with the same models, budgets and replay rule as T-29).
-  - Each answer is **winnable**, **not winnable** (only after an exhausted search) or **unknown** (budget reached), with a
-    sign as well as colour (`✓`, `✗`, `?` and ASCII forms).
-  - It runs in the background through the `Solver` trait and never blocks input; a move, undo or new game cancels the
-    check of the old position and clears the answer. A variant without a solver says the check is not available.
-  - Where: a button in the guide panel and window (`g`) and in the moves panel and window (`v`), and the key `w` on the
-    board. The button and the key are listed in the guide, the help keys and the footer hints where they fit.
-  - The text says that "winnable" means solvable with every card known (T-29), so it is not a promise for a player who
-    cannot see the face-down cards.
-- **Open question for the owner (before dispatch):** does using the check mark the game in statistics (like a hint), or
-  not at all?
-- **Acceptance:** core tests: the new entry point returns the same verdict as `solve` on a fresh deal, finds a won line
-  from a mid-game position and replays it on the engine, and returns unknown on a tiny budget; TUI tests: `w` and both
-  buttons start the check, the answer appears with its sign, a move clears it, an answer for an old position is ignored;
-  the input never waits for the solver; every complete locale.
-
 ### O-78 — Main menu: Resume set apart and balanced under the logo
 
 - **Owner:** Small
