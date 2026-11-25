@@ -29,7 +29,14 @@ yukon = "Qualquer carta aberta se move com as cartas sobre ela; não há monte."
 golf = "Jogue cartas das colunas no descarte quando forem um valor acima ou abaixo."
 
 [seed]
-title = "Novo jogo com semente"
+title_game = "Novo jogo com semente: {game}"
+choose_game = "Novo jogo com semente: escolha um jogo"
+options_prompt = "Escolha de onde vem a semente."
+type_seed = "Digitar uma semente"
+levels = "Níveis de dificuldade"
+levels_prompt = "Três partidas selecionadas por nível, de muito fácil a muito difícil."
+levels_none = "Este jogo ainda não tem partidas selecionadas."
+level_seed = "{level}: {seed}"
 prompt = "Digite uma semente: um número inteiro de 0 a 18446744073709551615."
 continue = "Continuar"
 back = "Voltar"
@@ -38,12 +45,20 @@ error_empty = "Digite uma semente primeiro."
 error_not_numeric = "Uma semente é um número inteiro: use apenas os dígitos de 0 a 9."
 error_out_of_range = "Esta semente é muito grande. A maior semente é 18446744073709551615."
 
+[seed.level]
+very_easy = "Muito fácil"
+easy = "Fácil"
+medium = "Médio"
+hard = "Difícil"
+very_hard = "Muito difícil"
+
 [how_to_play]
 label = "Como jogar"
 
 [footer]
 open = "Abrir"
 play = "Jogar"
+seed_options = "Opções de semente"
 language = "Idioma"
 favorite = "Favorito"
 winnable = "Jogos vencíveis"

@@ -29,7 +29,14 @@ yukon = "Ogni carta scoperta si sposta con tutte le carte sopra; non c'è mazzo.
 golf = "Gioca le carte delle colonne sugli scarti quando sono di un grado più alte o più basse."
 
 [seed]
-title = "Nuova partita da seed"
+title_game = "Nuova partita da seed: {game}"
+choose_game = "Nuova partita da seed: scegli un gioco"
+options_prompt = "Scegli da dove viene il seed."
+type_seed = "Digita un seed"
+levels = "Livelli di difficoltà"
+levels_prompt = "Tre partite selezionate per livello, da molto facile a molto difficile."
+levels_none = "Per questo gioco non ci sono ancora partite selezionate."
+level_seed = "{level}: {seed}"
 prompt = "Digita un seed: un numero intero da 0 a 18446744073709551615."
 continue = "Continua"
 back = "Indietro"
@@ -38,12 +45,20 @@ error_empty = "Digita prima un seed."
 error_not_numeric = "Un seed è un numero intero: usa solo le cifre da 0 a 9."
 error_out_of_range = "Questo seed è troppo grande. Il seed massimo è 18446744073709551615."
 
+[seed.level]
+very_easy = "Molto facile"
+easy = "Facile"
+medium = "Medio"
+hard = "Difficile"
+very_hard = "Molto difficile"
+
 [how_to_play]
 label = "Come giocare"
 
 [footer]
 open = "Apri"
 play = "Gioca"
+seed_options = "Opzioni seed"
 language = "Lingua"
 favorite = "Preferito"
 winnable = "Risolvibili"

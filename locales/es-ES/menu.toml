@@ -29,7 +29,14 @@ yukon = "Cualquier carta boca arriba se mueve con las que tiene encima; no hay m
 golf = "Juega cartas de las columnas al descarte cuando sean un rango mayores o menores."
 
 [seed]
-title = "Nueva partida con semilla"
+title_game = "Nueva partida con semilla: {game}"
+choose_game = "Nueva partida con semilla: elige un juego"
+options_prompt = "Elige de dónde sale la semilla."
+type_seed = "Escribir una semilla"
+levels = "Niveles de dificultad"
+levels_prompt = "Tres partidas seleccionadas por nivel, de muy fácil a muy difícil."
+levels_none = "Este juego todavía no tiene partidas seleccionadas."
+level_seed = "{level}: {seed}"
 prompt = "Introduce una semilla: un número entero de 0 a 18446744073709551615."
 continue = "Continuar"
 back = "Volver"
@@ -38,12 +45,20 @@ error_empty = "Introduce una semilla primero."
 error_not_numeric = "Una semilla es un número entero: usa solo los dígitos del 0 al 9."
 error_out_of_range = "Esta semilla es demasiado grande. La mayor semilla es 18446744073709551615."
 
+[seed.level]
+very_easy = "Muy fácil"
+easy = "Fácil"
+medium = "Medio"
+hard = "Difícil"
+very_hard = "Muy difícil"
+
 [how_to_play]
 label = "Cómo jugar"
 
 [footer]
 open = "Abrir"
 play = "Jugar"
+seed_options = "Opciones de semilla"
 language = "Idioma"
 favorite = "Favorito"
 winnable = "Partidas ganables"

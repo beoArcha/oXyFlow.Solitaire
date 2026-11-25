@@ -130,20 +130,47 @@ fn every_button_of_the_game_selection_does_what_its_key_does() {
 }
 
 #[test]
-fn every_button_of_the_games_of_a_seed_does_what_its_key_does() {
+fn every_button_of_the_game_list_of_a_new_game_from_seed_does_what_its_key_does() {
     each_locale(|locale| {
         let setup = |locale| {
             let mut h = harness(locale, Vec::new());
             h.press(KeyCode::Down);
             h.press(KeyCode::Enter);
-            for c in "42".chars() {
-                h.type_char(c);
-            }
+            h
+        };
+        let mut hints = SELECT_FOOTER;
+        hints[0] = (Action::Select, "menu.footer.seed_options");
+        let buttons = buttons_of(&hints);
+        assert_clicks_match_keys(locale, &setup, &buttons, "game list of a seed");
+    });
+}
+
+#[test]
+fn every_button_of_the_seed_screen_does_what_its_key_does() {
+    each_locale(|locale| {
+        let options = |locale| {
+            let mut h = harness(locale, Vec::new());
+            h.press(KeyCode::Down);
+            h.press(KeyCode::Enter);
             h.press(KeyCode::Enter);
             h
         };
-        let buttons = buttons_of(&SELECT_FOOTER);
-        assert_clicks_match_keys(locale, &setup, &buttons, "games of a seed");
+        let open = [
+            (Action::Select, "menu.footer.open"),
+            (Action::Back, "help.action.back"),
+        ];
+        assert_clicks_match_keys(locale, &options, &buttons_of(&open), "seed options");
+        let levels = |locale| {
+            let mut h = options(locale);
+            h.press(KeyCode::Down);
+            h.press(KeyCode::Enter);
+            h
+        };
+        let play = [
+            (Action::Select, "menu.footer.play"),
+            (Action::Back, "help.action.back"),
+        ];
+        assert_clicks_match_keys(locale, &levels, &buttons_of(&play), "difficulty levels");
     });
 }
 

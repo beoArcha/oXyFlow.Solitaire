@@ -53,11 +53,22 @@ const RING_LEN: usize = 3;
 /// toggles, two toggle hints and the footer.
 const CHROME_ROWS: u16 = 12;
 
+/// What Enter on a variant means: a game starts (`Play`), or the game is chosen before its seed
+/// (`BeforeSeed`, the first step of "New game from seed"). The caller takes the variant from the
+/// `Effect::Start` the list returns in that case.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum Purpose {
+    #[default]
+    Play,
+    BeforeSeed,
+}
+
 /// State of the game selection screen.
 #[derive(Debug, Default)]
 pub struct GameSelect {
     list: ListView,
     seed: Option<u64>,
+    purpose: Purpose,
     focus: usize,
     search: Option<String>,
     search_area: Rect,
@@ -89,6 +100,15 @@ impl GameSelect {
     pub fn for_seed(seed: u64) -> Self {
         Self {
             seed: Some(seed),
+            ..Self::default()
+        }
+    }
+
+    /// The list of "New game from seed": the game is chosen before its seed, and Enter names that
+    /// next step.
+    pub fn before_seed() -> Self {
+        Self {
+            purpose: Purpose::BeforeSeed,
             ..Self::default()
         }
     }

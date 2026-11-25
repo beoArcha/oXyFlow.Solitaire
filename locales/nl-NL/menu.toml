@@ -30,7 +30,14 @@ golf = "Speel kaarten van de kolommen op de aflegstapel als ze één rang hoger 
 
 
 [seed]
-title = "Nieuw spel met seed"
+title_game = "Nieuw spel met seed: {game}"
+choose_game = "Nieuw spel met seed: kies een spel"
+options_prompt = "Kies waar de seed vandaan komt."
+type_seed = "Seed invoeren"
+levels = "Moeilijkheidsniveaus"
+levels_prompt = "Drie geselecteerde spellen per niveau, van heel makkelijk tot heel moeilijk."
+levels_none = "Voor dit spel zijn nog geen geselecteerde spellen."
+level_seed = "{level}: {seed}"
 prompt = "Typ een seed: een geheel getal van 0 tot 18446744073709551615."
 continue = "Doorgaan"
 back = "Terug"
@@ -39,12 +46,20 @@ error_empty = "Typ eerst een seed."
 error_not_numeric = "Een seed is een geheel getal: gebruik alleen de cijfers 0 tot 9."
 error_out_of_range = "Deze seed is te groot. De grootste seed is 18446744073709551615."
 
+[seed.level]
+very_easy = "Heel makkelijk"
+easy = "Makkelijk"
+medium = "Gemiddeld"
+hard = "Moeilijk"
+very_hard = "Heel moeilijk"
+
 [how_to_play]
 label = "Spelregels"
 
 [footer]
 open = "Openen"
 play = "Spelen"
+seed_options = "Seedopties"
 language = "Taal"
 favorite = "Favoriet"
 winnable = "Winbare spellen"

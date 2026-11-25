@@ -29,7 +29,14 @@ yukon = "Przenoś dowolną odkrytą kartę razem z kartami na niej; nie ma talii
 golf = "Zagrywaj karty z kolumn na stos odrzuconych, gdy są o rangę wyższe lub niższe."
 
 [seed]
-title = "Nowa gra z ziarna"
+title_game = "Nowa gra z ziarna: {game}"
+choose_game = "Nowa gra z ziarna: wybierz grę"
+options_prompt = "Wybierz, skąd wziąć ziarno."
+type_seed = "Wpisz ziarno"
+levels = "Poziomy trudności"
+levels_prompt = "Po trzy sprawdzone rozdania na poziom, od bardzo łatwego do bardzo trudnego."
+levels_none = "Dla tej gry nie ma jeszcze sprawdzonych rozdań."
+level_seed = "{level}: {seed}"
 prompt = "Wpisz ziarno: liczbę całkowitą od 0 do 18446744073709551615."
 continue = "Dalej"
 back = "Wstecz"
@@ -38,12 +45,20 @@ error_empty = "Najpierw wpisz ziarno."
 error_not_numeric = "Ziarno jest liczbą całkowitą: używaj tylko cyfr od 0 do 9."
 error_out_of_range = "To ziarno jest za duże. Maksymalna wartość to 18446744073709551615."
 
+[seed.level]
+very_easy = "bardzo łatwy"
+easy = "łatwy"
+medium = "średni"
+hard = "trudny"
+very_hard = "bardzo trudny"
+
 [how_to_play]
 label = "Jak grać"
 
 [footer]
 open = "Otwórz"
 play = "Zagraj"
+seed_options = "Opcje ziarna"
 language = "Język"
 favorite = "Ulubione"
 winnable = "Gry do wygrania"

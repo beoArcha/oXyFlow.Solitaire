@@ -1,10 +1,14 @@
 //! The main menu: Resume (when a save exists), the new-game entries, Statistics, Settings, How to play, Help and Quit,
 //! and the language selector in the top-left corner (first in the Tab order, before the items).
-//! "New game from seed" asks for a seed, then lists the games dealt from it; the menu keeps that
-//! flow to itself, so the seed travels in the `Effect::Start` it returns.
+//! "New game from seed" chooses the game first, then its seed on the seed screen (typed, or one of the
+//! curated levels); the menu keeps that flow to itself and returns the chosen seed in `Effect::Start`.
+//! `--seed` opens the games dealt from that seed directly (`Stage::Variants`).
 
 mod resume;
 mod seed;
+mod seed_levels;
+mod seed_screen;
+mod stages;
 
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
@@ -12,7 +16,7 @@ use ratatui::layout::{Alignment, Constraint, Layout, Margin, Rect};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use self::seed::{SeedField, Step};
+use self::seed_screen::SeedScreen;
 use super::focus::tab_forward;
 use super::game_select::GameSelect;
 use super::{Effect, ViewCtx};
@@ -95,14 +99,15 @@ fn effect_of(item: Item) -> Effect {
     }
 }
 
-/// Where the menu is: its items, the seed field, or the games of a chosen seed.
+/// Where the menu is: its items, the game list of "New game from seed", the seed screen of the
+/// chosen game, or the games of a seed given on the command line.
 #[derive(Debug, Default)]
 enum Stage {
     #[default]
     Items,
-    Seed(SeedField),
+    Game(GameSelect),
+    Seed(SeedScreen),
     Variants {
-        seed: u64,
         picker: GameSelect,
     },
 }
@@ -138,7 +143,6 @@ impl MainMenu {
             version: self.version,
             list: MenuList::new(),
             stage: Stage::Variants {
-                seed,
                 picker: GameSelect::for_seed(seed),
             },
             footer: FooterMap::default(),
@@ -173,27 +177,31 @@ impl MainMenu {
     /// Whether the seed field has the focus, so that typed characters are text.
     pub fn captures_text(&self) -> bool {
         match &self.stage {
-            Stage::Seed(field) => field.captures_text(),
-            Stage::Variants { picker, .. } => picker.captures_text(),
+            Stage::Seed(screen) => screen.captures_text(),
+            Stage::Game(picker) | Stage::Variants { picker, .. } => picker.captures_text(),
             Stage::Items => false,
         }
     }
 
     fn searching_games(&self) -> bool {
-        matches!(&self.stage, Stage::Variants { picker, .. } if picker.searching())
+        matches!(&self.stage, Stage::Game(picker) | Stage::Variants { picker, .. } if picker.searching())
     }
 
     /// Handles a key press mapped to `action`.
     pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         let leaves = !matches!(self.stage, Stage::Items) && !self.searching_games();
         if action == Some(Action::Back) && leaves {
-            return self.back();
+            return self.back(ctx);
         }
         match &mut self.stage {
             Stage::Items => self.handle_items(action, ctx),
-            Stage::Seed(field) => {
-                let step = field.handle_key(key, action);
-                self.after_seed(step)
+            Stage::Game(picker) => {
+                let effect = picker.handle(key, action, ctx);
+                self.after_game(effect)
+            }
+            Stage::Seed(screen) => {
+                let outcome = screen.handle(key, action);
+                self.after_seed(outcome, ctx)
             }
             Stage::Variants { picker, .. } => {
                 let effect = picker.handle(key, action, ctx);
@@ -206,9 +214,13 @@ impl MainMenu {
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         match &mut self.stage {
             Stage::Items => self.handle_items_mouse(event, ctx),
-            Stage::Seed(field) => {
-                let step = field.handle_mouse(event);
-                self.after_seed(step)
+            Stage::Game(picker) => {
+                let effect = picker.handle_mouse(event, ctx);
+                self.after_game(effect)
+            }
+            Stage::Seed(screen) => {
+                let outcome = screen.handle_mouse(event);
+                self.after_seed(outcome, ctx)
             }
             Stage::Variants { picker, .. } => {
                 let effect = picker.handle_mouse(event, ctx);
@@ -217,20 +229,14 @@ impl MainMenu {
         }
     }
 
-    /// The footer button under `cell`: the menu's own key line, or the one of the games of a seed.
+    /// The footer button under `cell`: the menu's own key line, or the one of the current game or
+    /// seed screen.
     pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
         match &self.stage {
             Stage::Items => self.footer.action_at(cell),
-            Stage::Seed(_) => None,
-            Stage::Variants { picker, .. } => picker.footer_action_at(cell),
+            Stage::Game(picker) | Stage::Variants { picker, .. } => picker.footer_action_at(cell),
+            Stage::Seed(screen) => screen.footer_action_at(cell),
         }
-    }
-
-    fn leave_variants_on_start(&mut self, effect: Effect) -> Effect {
-        if matches!(effect, Effect::Start { .. }) {
-            self.stage = Stage::Items;
-        }
-        effect
     }
 
     fn handle_items(&mut self, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
@@ -324,41 +330,19 @@ impl MainMenu {
 
     fn activate(&mut self, item: Item) -> Effect {
         if item == Item::NewGameFromSeed {
-            self.stage = Stage::Seed(SeedField::default());
+            self.stage = Stage::Game(GameSelect::before_seed());
             return Effect::None;
         }
         effect_of(item)
     }
 
-    fn after_seed(&mut self, step: Step) -> Effect {
-        match step {
-            Step::Stay => {}
-            Step::Back => self.stage = Stage::Items,
-            Step::Submit(seed) => {
-                self.stage = Stage::Variants {
-                    seed,
-                    picker: GameSelect::for_seed(seed),
-                };
-            }
-        }
-        Effect::None
-    }
-
-    fn back(&mut self) -> Effect {
-        if let Stage::Variants { seed, .. } = self.stage {
-            self.stage = Stage::Seed(SeedField::with_seed(seed));
-        } else {
-            self.stage = Stage::Items;
-        }
-        Effect::None
-    }
-
-    /// Draws the current stage: the logo and items, the seed field, or the games of the seed.
+    /// Draws the current stage: the logo and items, the game list, the seed screen, or the games of
+    /// a command-line seed.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         match &mut self.stage {
             Stage::Items => self.draw_items(frame, area, ctx),
-            Stage::Seed(field) => field.draw(frame, area, ctx),
-            Stage::Variants { picker, .. } => picker.draw(frame, area, ctx),
+            Stage::Game(picker) | Stage::Variants { picker, .. } => picker.draw(frame, area, ctx),
+            Stage::Seed(screen) => screen.draw(frame, area, ctx),
         }
     }
 
@@ -446,5 +430,11 @@ mod footer_margin_tests;
 mod language_tests;
 #[cfg(test)]
 mod resume_tests;
+#[cfg(test)]
+mod seed_flow_tests;
+#[cfg(test)]
+mod seed_levels_tests;
+#[cfg(test)]
+mod seed_screen_tests;
 #[cfg(test)]
 mod tests;

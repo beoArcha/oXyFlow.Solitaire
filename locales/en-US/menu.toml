@@ -30,7 +30,14 @@ golf = "Play column cards onto the waste when they are one rank higher or lower.
 
 
 [seed]
-title = "New game from seed"
+title_game = "New game from seed: {game}"
+choose_game = "New game from seed: choose a game"
+options_prompt = "Choose where the seed comes from."
+type_seed = "Type a seed"
+levels = "Difficulty levels"
+levels_prompt = "Three curated deals for each level, from very easy to very hard."
+levels_none = "No curated deals for this game yet."
+level_seed = "{level}: {seed}"
 prompt = "Type a seed: a whole number from 0 to 18446744073709551615."
 continue = "Continue"
 back = "Back"
@@ -39,12 +46,20 @@ error_empty = "Type a seed first."
 error_not_numeric = "A seed is a whole number: use the digits 0 to 9 only."
 error_out_of_range = "This seed is too large. The largest seed is 18446744073709551615."
 
+[seed.level]
+very_easy = "Very easy"
+easy = "Easy"
+medium = "Medium"
+hard = "Hard"
+very_hard = "Very hard"
+
 [how_to_play]
 label = "How to play"
 
 [footer]
 open = "Open"
 play = "Play"
+seed_options = "Seed options"
 language = "Language"
 favorite = "Favorite"
 winnable = "Winnable deals"

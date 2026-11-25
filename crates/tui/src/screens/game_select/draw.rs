@@ -9,9 +9,10 @@ use ratatui::widgets::Paragraph;
 use super::list::Content;
 use super::rows::{self, Row, items};
 use super::{
-    CHROME_ROWS, FOOTER, GameSelect, LIST, TOGGLE, WINNABLE, WINNABLE_KEY, hints, label_of, search,
-    toggles,
+    CHROME_ROWS, FOOTER, GameSelect, LIST, Purpose, TOGGLE, WINNABLE, WINNABLE_KEY, hints,
+    label_of, search, toggles,
 };
+use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::KeySpec;
 use crate::screens::ViewCtx;
@@ -19,13 +20,17 @@ use crate::theme::Token;
 use crate::widgets::footer::{self, Segment};
 use oxysol_core::Variant;
 
-fn footer_segments() -> Vec<Segment> {
+fn footer_segments(purpose: Purpose) -> Vec<Segment> {
     let winnable = format!(
         "{} {}",
         KeySpec::ch(WINNABLE_KEY).display(),
         t("menu.footer.winnable")
     );
-    let mut segments = footer::key_segments(&FOOTER);
+    let mut hints = FOOTER;
+    if purpose == Purpose::BeforeSeed {
+        hints[0] = (Action::Select, "menu.footer.seed_options");
+    }
+    let mut segments = footer::key_segments(&hints);
     segments.push(Segment::plain("   "));
     segments.push(Segment::plain(format!("/ {}", t("menu.search.label"))));
     segments.push(Segment::plain("   "));
@@ -35,9 +40,10 @@ fn footer_segments() -> Vec<Segment> {
 
 impl GameSelect {
     fn title(&self) -> String {
-        match self.seed {
-            Some(seed) => tf("menu.select_seed", &[("seed", &seed.to_string())]),
-            None => t("common.select.title").into_owned(),
+        match (self.seed, self.purpose) {
+            (Some(seed), _) => tf("menu.select_seed", &[("seed", &seed.to_string())]),
+            (None, Purpose::BeforeSeed) => t("menu.seed.choose_game").into_owned(),
+            (None, Purpose::Play) => t("common.select.title").into_owned(),
         }
     }
 
@@ -124,7 +130,7 @@ impl GameSelect {
         self.footer = footer::draw(
             frame,
             footer_area,
-            &footer_segments(),
+            &footer_segments(self.purpose),
             Alignment::Center,
             footer::key_style(ctx),
             ctx,

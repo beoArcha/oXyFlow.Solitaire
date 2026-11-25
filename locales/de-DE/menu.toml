@@ -29,7 +29,14 @@ yukon = "Jede offene Karte bewegt sich mit allen Karten darauf; es gibt keinen T
 golf = "Spiele Spaltenkarten auf den Ablagestapel, wenn sie einen Rang höher oder niedriger sind."
 
 [seed]
-title = "Neues Spiel mit Seed"
+title_game = "Neues Spiel mit Seed: {game}"
+choose_game = "Neues Spiel mit Seed: Spiel wählen"
+options_prompt = "Wähle, woher der Seed kommt."
+type_seed = "Seed eingeben"
+levels = "Schwierigkeitsstufen"
+levels_prompt = "Je drei ausgewählte Partien pro Stufe, von sehr einfach bis sehr schwer."
+levels_none = "Für dieses Spiel gibt es noch keine ausgewählten Partien."
+level_seed = "{level}: {seed}"
 prompt = "Gib einen Seed ein: eine ganze Zahl von 0 bis 18446744073709551615."
 continue = "Weiter"
 back = "Zurück"
@@ -38,12 +45,20 @@ error_empty = "Gib zuerst einen Seed ein."
 error_not_numeric = "Ein Seed ist eine ganze Zahl: Nutze nur die Ziffern 0 bis 9."
 error_out_of_range = "Dieser Seed ist zu groß. Der größte Seed ist 18446744073709551615."
 
+[seed.level]
+very_easy = "Sehr einfach"
+easy = "Einfach"
+medium = "Mittel"
+hard = "Schwer"
+very_hard = "Sehr schwer"
+
 [how_to_play]
 label = "Spielanleitung"
 
 [footer]
 open = "Öffnen"
 play = "Spielen"
+seed_options = "Seed-Optionen"
 language = "Sprache"
 favorite = "Favorit"
 winnable = "Lösbare Spiele"
