@@ -5,6 +5,8 @@ mod art;
 mod check;
 mod check_capture;
 mod check_result;
+#[cfg(feature = "art")]
+mod curated_seeds;
 mod docs;
 mod error;
 mod fonts;
@@ -35,7 +37,7 @@ use check::Mode;
 use error::XtaskError;
 use version::Output;
 
-const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | docs | fonts | midi <style> | sync-metadata [--check] | worktrees [--remove [--force]] | preflight [--card <ID>] [--base <ref>] [--ci] | version [--base | --tag]> (cargo xtask-art: icon [--check] | locale-diff [<lang>] [--ref <git-ref>] | screenshots)";
+const USAGE: &str = "usage: cargo xtask <check [--quick | --pr <base>] | report | affected --base <ref> | lint | docs | fonts | midi <style> | sync-metadata [--check] | worktrees [--remove [--force]] | preflight [--card <ID>] [--base <ref>] [--ci] | version [--base | --tag]> (cargo xtask-art: icon [--check] | locale-diff [<lang>] [--ref <git-ref>] | screenshots | curated-seeds)";
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();

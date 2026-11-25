@@ -51,7 +51,7 @@ pub fn seeds(variant: Variant, level: Difficulty) -> &'static [u64] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::HashSet;
+    use std::collections::{BTreeMap, HashSet};
 
     #[test]
     fn the_levels_run_from_easiest_to_hardest() {
@@ -60,15 +60,12 @@ mod tests {
     }
 
     #[test]
-    fn a_variant_in_the_table_has_three_distinct_seeds_on_every_level() {
+    fn every_variant_has_three_distinct_seeds_on_every_level() {
         for variant in Variant::ALL {
             let all: Vec<u64> = Difficulty::ALL
                 .iter()
                 .flat_map(|&level| seeds(variant, level).iter().copied())
                 .collect();
-            if all.is_empty() {
-                continue;
-            }
             for level in Difficulty::ALL {
                 assert_eq!(
                     seeds(variant, level).len(),
@@ -78,6 +75,45 @@ mod tests {
             }
             let distinct: HashSet<u64> = all.iter().copied().collect();
             assert_eq!(distinct.len(), all.len(), "{variant:?}");
+        }
+    }
+
+    #[test]
+    fn the_mean_difficulty_rises_from_level_to_level_in_the_report() {
+        let report = include_str!("../../../../docs/tech/curated-seeds.md");
+        let mut by_variant: BTreeMap<&str, [Vec<f64>; 5]> = BTreeMap::new();
+        let mut variant = "";
+        for line in report.lines() {
+            if let Some(heading) = line.strip_prefix("## ") {
+                variant = heading;
+                continue;
+            }
+            let cells: Vec<&str> = line.split('|').map(str::trim).collect();
+            let level = Difficulty::ALL.iter().position(|level| {
+                let label = match level {
+                    Difficulty::VeryEasy => "very easy",
+                    Difficulty::Easy => "easy",
+                    Difficulty::Medium => "medium",
+                    Difficulty::Hard => "hard",
+                    Difficulty::VeryHard => "very hard",
+                };
+                cells.get(1) == Some(&label)
+            });
+            let difficulty = cells.get(6).and_then(|cell| cell.parse::<f64>().ok());
+            if let (Some(level), Some(difficulty)) = (level, difficulty) {
+                by_variant.entry(variant).or_default()[level].push(difficulty);
+            }
+        }
+        assert_eq!(by_variant.len(), Variant::ALL.len());
+        for (variant, levels) in &by_variant {
+            let means: Vec<f64> = levels
+                .iter()
+                .map(|values| values.iter().sum::<f64>() / values.len() as f64)
+                .collect();
+            assert!(
+                means.windows(2).all(|pair| pair[0] < pair[1]),
+                "{variant}: {means:?}"
+            );
         }
     }
 }

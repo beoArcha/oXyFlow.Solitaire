@@ -17,7 +17,7 @@ impl MainMenu {
     pub(super) fn after_game(&mut self, effect: Effect) -> Effect {
         match effect {
             Effect::Start { variant, .. } => {
-                self.stage = Stage::Seed(SeedScreen::new(variant));
+                self.stage = Stage::Seed(SeedScreen::new(variant, self.played.of_variant(variant)));
                 Effect::None
             }
             other => other,

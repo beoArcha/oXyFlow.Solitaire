@@ -162,7 +162,9 @@ fn every_button_of_the_seed_screen_does_what_its_key_does() {
         assert_clicks_match_keys(locale, &options, &buttons_of(&open), "seed options");
         let levels = |locale| {
             let mut h = options(locale);
-            h.press(KeyCode::Down);
+            for _ in 0..3 {
+                h.press(KeyCode::Down);
+            }
             h.press(KeyCode::Enter);
             h
         };

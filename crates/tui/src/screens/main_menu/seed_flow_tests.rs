@@ -178,6 +178,8 @@ fn levels_of_a_variant_without_curated_seeds_say_so_and_start_nothing() {
     }
     h.press(KeyCode::Enter);
     h.press(KeyCode::Down);
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Down);
     h.press(KeyCode::Enter);
     assert!(h.text().contains(&t("menu.seed.levels_none").into_owned()));
     h.press(KeyCode::Enter);
@@ -218,7 +220,9 @@ fn every_seed_page_fits_in_every_locale_at_100_by_30_and_100_by_60() {
                 text.contains(&t("menu.footer.open").into_owned()),
                 "{locale:?} {height}\n{text}"
             );
-            h.press(KeyCode::Down);
+            for _ in 0..3 {
+                h.press(KeyCode::Down);
+            }
             h.press(KeyCode::Enter);
             let text = h.text();
             assert!(

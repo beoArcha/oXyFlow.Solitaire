@@ -8,6 +8,7 @@ mod banner;
 mod resume;
 mod seed;
 mod seed_levels;
+mod seed_played;
 mod seed_screen;
 mod stages;
 
@@ -18,24 +19,27 @@ use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
 use self::banner::{Banner, BannerButton};
+use self::seed_played::Played;
 use self::seed_screen::SeedScreen;
 use super::focus::tab_forward;
 use super::game_select::GameSelect;
 use super::{Effect, ViewCtx};
 use crate::action::Action;
-use crate::app::{Modal, Screen};
+use crate::app::{Modal, Screen, Zone};
 use crate::i18n::{Locale, t, tf};
 use crate::mouse::wheel_action;
 use crate::settings::Settings;
+use crate::storage::{GameRecord, StorageError};
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, KeyHint};
+
+use crate::widgets::language_picker::{LanguagePicker, Pointed};
+use crate::widgets::logo::logo;
+use crate::widgets::menu_list::{Highlight, MenuList, Row};
 
 /// Empty columns kept on each side of the footer row, so that the version label and the key line
 /// do not touch a docked help window beside the menu.
 const FOOTER_MARGIN: u16 = 1;
-use crate::widgets::language_picker::{LanguagePicker, Pointed};
-use crate::widgets::logo::logo;
-use crate::widgets::menu_list::{Highlight, MenuList, Row};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Item {
@@ -123,6 +127,7 @@ pub struct MainMenu {
     picker: LanguagePicker,
     banner: Banner,
     banner_focus: Option<BannerButton>,
+    played: Played,
     selector_focus: bool,
     other_pane_focused: bool,
     version: &'static str,
@@ -153,9 +158,21 @@ impl MainMenu {
             picker: LanguagePicker::new(),
             banner: Banner::default(),
             banner_focus: None,
+            played: self.played,
             selector_focus: false,
             other_pane_focused: self.other_pane_focused,
         }
+    }
+
+    /// Hands the menu the game history and the pick source of the random replay. The seed screens of
+    /// "New game from seed" read it when they open, so the app calls this whenever the menu shows.
+    pub fn set_history(
+        &mut self,
+        history: Result<Vec<GameRecord>, StorageError>,
+        zone: Zone,
+        fresh_seed: u64,
+    ) {
+        self.played = Played::read(history, zone, fresh_seed);
     }
 
     /// Records whether the focus of the application is in another pane, such as a docked help
@@ -502,8 +519,14 @@ mod resume_tests;
 #[cfg(test)]
 mod seed_flow_tests;
 #[cfg(test)]
+mod seed_history_flow_tests;
+#[cfg(test)]
 mod seed_levels_tests;
 #[cfg(test)]
+mod seed_played_tests;
+#[cfg(test)]
 mod seed_screen_tests;
+#[cfg(test)]
+mod seed_winnable_tests;
 #[cfg(test)]
 mod tests;
