@@ -31,7 +31,7 @@ fn the_aid_rows_close_the_list_in_one_group_in_this_order() {
             .filter(|f| f.aid().is_none())
             .all(|f| f.group() != Group::Hints)
     );
-    assert_eq!(FIELDS.last(), Some(&Field::AutoFinish));
+    assert_eq!(FIELDS.last(), Some(&Field::QuickMove));
 }
 
 #[test]

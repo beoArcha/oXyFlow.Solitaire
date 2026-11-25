@@ -270,7 +270,7 @@ fn the_rows_sit_under_their_group_headings_and_the_aid_rows_close_the_list() {
         .map(|field| row_at(&lines, *field).1)
         .max()
         .unwrap_or_default();
-    assert_eq!(row_at(&lines, Field::AutoFinish).1, last);
+    assert_eq!(row_at(&lines, Field::QuickMove).1, last);
 }
 
 fn value_column(line: &str) -> Option<usize> {

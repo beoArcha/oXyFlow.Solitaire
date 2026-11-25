@@ -249,7 +249,7 @@ impl BoardScreen {
         }
         let piles = game.piles();
         Some(match &self.pick {
-            Some(pick) => carrying(&piles, pick),
+            Some(pick) => carrying(&piles, pick, self.quick_move),
             None => self.browsing(&piles, &legal, session),
         })
     }
@@ -289,7 +289,7 @@ impl BoardScreen {
             possible.push(part(Action::Select, stock_key(variant), priority::PRIMARY));
             usable.push(Action::Select);
         }
-        if let Some(best) = best {
+        if let Some(best) = best.filter(|_| self.quick_move) {
             possible.push(quick_part(best, priority::QUICK));
             usable.push(Action::QuickMove);
         }
@@ -328,7 +328,7 @@ impl BoardScreen {
     }
 }
 
-fn carrying(piles: &[PileSnapshot], pick: &Pick) -> Guidance {
+fn carrying(piles: &[PileSnapshot], pick: &Pick, quick_move: bool) -> Guidance {
     let targets = pick
         .choices
         .iter()
@@ -340,7 +340,7 @@ fn carrying(piles: &[PileSnapshot], pick: &Pick) -> Guidance {
         plain("board.action.choose_target", priority::CHOOSE_TARGET),
     ];
     let mut usable = vec![Action::Select, Action::Back];
-    if let Some(best) = quick(&pick.choices) {
+    if let Some(best) = quick(&pick.choices).filter(|_| quick_move) {
         possible.push(quick_part(best, priority::QUICK));
         usable.push(Action::QuickMove);
     }

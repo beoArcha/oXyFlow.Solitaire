@@ -27,6 +27,11 @@ impl BoardScreen {
     }
 
     pub(super) fn quick_move(&mut self) -> Effect {
+        if !self.quick_move {
+            self.status = Some(status::QUICK_OFF);
+            self.cue(SoundCue::Illegal);
+            return Effect::None;
+        }
         let found = match &self.pick {
             Some(pick) => Ok(pick.choices.clone()),
             None => self

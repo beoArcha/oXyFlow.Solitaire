@@ -462,7 +462,9 @@ pub struct NullClipboard;                                // every copy fails wit
   `settings/arrows.rs` records the arrows' cells when the screen draws: a click on `◄` steps the value back, a click on
   `►` forward, a click elsewhere on the row forward as before (`settings/values.rs::line`).
 - **Aids and quick options (P3-27):** the board aids are `Settings::aura`, `target_marks` (default `true`; an older
-  value without the field loads as `true`), `guide_panel`, `moves_panel` and `auto_finish`; `settings/aids.rs` holds them as
+  value without the field loads as `true`), `guide_panel`, `moves_panel`, `auto_finish` and `quick_move` (O-114, default `true`, an older value loads as
+  `true`; when off, `a` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
+  out quick move, and the moves window shows it unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
   `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
   `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings groups them under
   "Hints and help" (`Group::Hints`, replacing the old Board group), after Display and Sound; the moves panel and the
