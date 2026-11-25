@@ -132,6 +132,17 @@ fn the_moves_key_is_v_and_is_listed_with_the_board_moves() {
 }
 
 #[test]
+fn the_waste_quick_move_key_is_e_and_is_listed_with_the_board_moves() {
+    let key = press(KeyCode::Char('e'), KeyModifiers::NONE);
+    assert_eq!(action_for_key(&key), Some(Action::WasteQuickMove));
+    assert_eq!(primary_key(Action::WasteQuickMove).as_deref(), Some("e"));
+    assert_eq!(
+        binding_for(Action::WasteQuickMove).map(|binding| binding.group),
+        Some(HelpGroup::Board)
+    );
+}
+
+#[test]
 fn the_copy_seed_key_is_c_and_is_listed_with_the_game_keys() {
     assert_eq!(primary_key(Action::CopySeed).as_deref(), Some("c"));
     assert_eq!(

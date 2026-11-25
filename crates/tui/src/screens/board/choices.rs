@@ -62,6 +62,11 @@ pub(super) fn quick(choices: &[Choice]) -> Option<Choice> {
         .min_by_key(|choice| quick_rank(choice.target))
 }
 
+/// The quick move for the exposed top card of the waste pile, if one is legal.
+pub(super) fn waste_quick(legal: &[Move]) -> Option<Choice> {
+    quick(&choices(legal, PileRef::Waste, 1))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

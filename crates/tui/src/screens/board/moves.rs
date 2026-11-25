@@ -2,7 +2,7 @@
 
 use oxysol_core::{Move, MoveError, PileRef, PileSnapshot, Variant};
 
-use super::choices::{Choice, choices, quick};
+use super::choices::{Choice, choices, quick, waste_quick};
 use super::status::{self, error_key};
 use super::{BoardScreen, Pick};
 use crate::app::Modal;
@@ -28,9 +28,7 @@ impl BoardScreen {
 
     pub(super) fn quick_move(&mut self) -> Effect {
         if !self.quick_move {
-            self.status = Some(status::QUICK_OFF);
-            self.cue(SoundCue::Illegal);
-            return Effect::None;
+            return self.refuse_quick_off();
         }
         let found = match &self.pick {
             Some(pick) => Ok(pick.choices.clone()),
@@ -43,6 +41,31 @@ impl BoardScreen {
             Ok(None) => self.refuse_quick(Refusal::NoTargets),
             Err(refusal) => self.refuse_quick(refusal),
         }
+    }
+
+    /// Quick-moves the exposed top card of the waste pile without moving the cursor.
+    pub(super) fn waste_quick_move(&mut self) -> Effect {
+        if !self.quick_move {
+            return self.refuse_quick_off();
+        }
+        let Some(session) = self.session.as_ref() else {
+            return Effect::None;
+        };
+        if session.game().is_won() {
+            self.status = Some(status::SOLVED);
+            self.cue(SoundCue::Illegal);
+            return Effect::None;
+        }
+        match waste_quick(&session.game().legal_moves()) {
+            Some(choice) => self.play_from(choice.mv, MoveSource::Quick),
+            None => self.refuse_quick(Refusal::NoTargets),
+        }
+    }
+
+    fn refuse_quick_off(&mut self) -> Effect {
+        self.status = Some(status::QUICK_OFF);
+        self.cue(SoundCue::Illegal);
+        Effect::None
     }
 
     fn pick_up(&mut self) -> Effect {
