@@ -165,7 +165,7 @@ fn scroll(state: &mut DockState, modal: &Modal, rect: Rect, lines: i32) {
 
 fn show(state: &mut DockState, modal: &mut Modal, rules: Rules, tab: HelpTab) {
     let rules = rules_of(modal).unwrap_or(rules);
-    *modal = nav::modal_for(tab, rules, None);
+    *modal = nav::modal_for(tab, rules);
     state.scroll = 0;
 }
 

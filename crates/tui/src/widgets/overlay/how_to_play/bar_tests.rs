@@ -5,7 +5,6 @@ use ratatui::crossterm::event::{KeyCode, KeyModifiers, MouseButton, MouseEvent, 
 use ratatui::layout::Rect;
 
 use super::focus_tests::{AREA, opened, state};
-use super::state::Focus;
 use super::*;
 use crate::app::Modal;
 use crate::i18n::{self, Locale};
@@ -76,7 +75,6 @@ fn a_click_on_the_track_pages_and_a_drag_of_the_thumb_scrolls() {
     let max = state(&h).max_scroll();
     down(&mut h, track.x, track.y + 19);
     assert_eq!(state(&h).scroll, max.min(19));
-    assert_eq!(state(&h).focus, Focus::Text);
     down(&mut h, track.x, track.y);
     assert_eq!(state(&h).scroll, 0, "a click above the thumb pages up");
 

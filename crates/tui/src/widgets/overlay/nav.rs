@@ -1,5 +1,4 @@
-//! Moving between the top tabs of the help window: which key or click leads to which tab, and with
-//! what focus the Rules tab opens.
+//! Moving between the top tabs of the help window: which key or click leads to which tab.
 
 use std::borrow::Cow;
 
@@ -7,7 +6,7 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 use super::CommandLine;
-use super::how_to_play::{Focus, HowToPlay, Rules};
+use super::how_to_play::{HowToPlay, Rules};
 use super::tabs::{self, HelpTab};
 use crate::action::Action;
 use crate::app::Modal;
@@ -23,23 +22,11 @@ pub fn tab_of(modal: &Modal) -> Option<HelpTab> {
     }
 }
 
-fn rules_focus(modal: &Modal) -> Option<Focus> {
-    match modal {
-        Modal::HowToPlay(state) => Some(state.focus),
-        _ => None,
-    }
-}
-
-/// The window on `tab`. The Rules tab opens with the focus on the games unless `entry` says where
-/// the key that led there left it.
-pub fn modal_for(tab: HelpTab, rules: Rules, entry: Option<Focus>) -> Modal {
+/// The window on `tab`.
+pub fn modal_for(tab: HelpTab, rules: Rules) -> Modal {
     match tab {
         HelpTab::Keys => Modal::help(),
-        HelpTab::Rules => Modal::HowToPlay(
-            HowToPlay::new(rules)
-                .focused(entry.unwrap_or(Focus::Games))
-                .reached_from_help(),
-        ),
+        HelpTab::Rules => Modal::HowToPlay(HowToPlay::new(rules).reached_from_help()),
         HelpTab::CommandLine => Modal::CommandLine(CommandLine::new()),
     }
 }
@@ -53,30 +40,21 @@ pub fn window_title(modal: &Modal) -> Cow<'static, str> {
     }
 }
 
-/// The tab a key switches to, and the focus the Rules tab takes when that is where it goes. Tab
-/// and Shift+Tab walk the whole window in reading order: on the Rules tab through its tabs row,
-/// its games row and its text, and from either end on to the next or the previous top tab. Left
-/// and Right step the top tabs where the tabs row has the focus; the Help and Rules keys jump.
-pub fn target(
-    modal: &Modal,
-    key: &KeyEvent,
-    action: Option<Action>,
-) -> Option<(HelpTab, Option<Focus>)> {
+/// The tab a key switches to. Tab and Shift+Tab step between the main Help tabs from every tab;
+/// Left and Right step the top tabs on Keys and Command line (on Rules they switch the game). The
+/// Help and Rules keys jump.
+pub fn target(modal: &Modal, key: &KeyEvent, action: Option<Action>) -> Option<HelpTab> {
     let tab = tab_of(modal)?;
-    let focus = rules_focus(modal);
-    let on_tabs_row = focus.is_none_or(|focus| focus == Focus::Tabs);
     match key.code {
-        KeyCode::Tab if focus.is_none_or(|focus| focus == Focus::Text) => {
-            return Some((tab.next(), Some(Focus::Tabs)));
-        }
-        KeyCode::BackTab if on_tabs_row => return Some((tab.previous(), Some(Focus::Text))),
+        KeyCode::Tab => return Some(tab.next()),
+        KeyCode::BackTab => return Some(tab.previous()),
         _ => {}
     }
     match (tab, action?) {
-        (HelpTab::Rules | HelpTab::CommandLine, Action::Help) => Some((HelpTab::Keys, None)),
-        (HelpTab::Keys | HelpTab::CommandLine, Action::Rules) => Some((HelpTab::Rules, None)),
-        (_, Action::Right) if on_tabs_row => Some((tab.next(), Some(Focus::Tabs))),
-        (_, Action::Left) if on_tabs_row => Some((tab.previous(), Some(Focus::Tabs))),
+        (HelpTab::Rules | HelpTab::CommandLine, Action::Help) => Some(HelpTab::Keys),
+        (HelpTab::Keys | HelpTab::CommandLine, Action::Rules) => Some(HelpTab::Rules),
+        (HelpTab::Keys | HelpTab::CommandLine, Action::Right) => Some(tab.next()),
+        (HelpTab::Keys | HelpTab::CommandLine, Action::Left) => Some(tab.previous()),
         _ => None,
     }
 }
@@ -94,7 +72,7 @@ pub fn clicked_tab(modal: &Modal, body: Rect, event: &MouseEvent) -> Option<Help
     let cell = mouse::left_press(event)?;
     let row = tabs::top_row(body);
     let placed = tabs::top_tabs(row);
-    let arrows_shown = rules_focus(modal).is_none_or(|focus| focus == Focus::Tabs);
+    let arrows_shown = current != HelpTab::Rules;
     placed
         .tab_at(cell)
         .or_else(|| placed.arrow_target(current, cell).filter(|_| arrows_shown))

@@ -68,16 +68,12 @@ win_time = "Tijd: {time}"
 same_seed = "Zelfde seed"
 best_time = "Beste tijd voor {game}!"
 best_moves = "Minste zetten voor {game}!"
-close_or = " of "
-close_rest = " sluit dit venster."
 
 [rules]
 title = "Spelregels"
 title_from_help = "Help · Regels"
 close = "Sluiten [{key}]"
-footer_tabs = "{left}/{right}: tab   {down}: spellen"
-footer_games = "{left}/{right}: spel   {up}/{down}: focus verplaatsen"
-footer_text = "{up}/{down}/PgUp/PgDn: scrollen   {up} bovenaan: spellen"
+footer_game = "{left}/{right}: spel"
 footer_close = "{back}: sluiten"
 position = "{from}-{to} / {total}"
 
@@ -87,7 +83,7 @@ rules = "Regels"
 command_line = "Opdrachtregel"
 
 [command_line]
-footer_tab = "{key}: volgende tab"
+footer_tab = "{key}: tab"
 footer_move = "{up}/{down}/PgUp/PgDn: scrollen"
 footer_close = "{back}: sluiten"
 
