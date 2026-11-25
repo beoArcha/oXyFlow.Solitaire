@@ -14,7 +14,7 @@ Micro cards in this phase (micro.md): M-30, M-31 and M-33 (READY), M-32 (DRAFT u
 
 ### P7-02 — Player site and stable release procedure
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P0-04, P5-01, M-30…M-33
 - **Files:** `docs/site/**`, `.github/workflows/release.yml`, `docs/tech/workflow.md`
 - **Scope:** the build, tag and release pipeline already exists (P0-04). Grow `docs/site/` into the
@@ -27,7 +27,7 @@ Micro cards in this phase (micro.md): M-30, M-31 and M-33 (READY), M-32 (DRAFT u
 
 ### P7-03 — Technical documentation and README
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P3-09
 - **Files:** `docs/tech/**` (except `master_prompt.md` and `spikes/`), `README.md`
 - **Scope:** reconcile `architecture.md` with the code (signatures, layout). Add `conventions.md`
@@ -40,7 +40,7 @@ Micro cards in this phase (micro.md): M-30, M-31 and M-33 (READY), M-32 (DRAFT u
 
 ### P8-04 — Card style: Russian suits (Unicode)
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P7-04
 - **Files:** `assets/cards/fronts/russian/style.toml` (new), `locales/*/cards.toml` (the style name key)
 - **Shared files:** `locales/en-US/cards.toml`, `locales/pl-PL/cards.toml`
@@ -53,7 +53,7 @@ Micro cards in this phase (micro.md): M-30, M-31 and M-33 (READY), M-32 (DRAFT u
 
 ### P8-05 — Game: Canfield
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a public-domain rules source the owner names)
 - **Depends on:** P7-05
 - **Files:** `crates/core/src/games/mod.rs`, `crates/core/src/games/canfield/**`, `crates/core/src/solver/canfield*` (only if
@@ -81,7 +81,7 @@ the game binary never depends on it.
 
 ### P8-06 — Layout linter: frame trace and the six rules
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P6-09
 - **Files:**
   - `crates/tui/src/headless/lint/**` (new, feature `dev`);
@@ -118,7 +118,7 @@ the game binary never depends on it.
 
 ### P8-07 — Layout linter: `--dev-strict` gate
 
-- **Owner:** Haiku
+- **Owner:** Small
 - **Depends on:** P8-06, P7-08
 - **Files:**
   - `src/cli.rs`;
@@ -138,7 +138,7 @@ the game binary never depends on it.
 
 ### P8-08 — Thin MCP wrapper over `--dev-bridge`
 
-- **Owner:** Sonnet
+- **Owner:** Medium
 - **Depends on:** P8-06, P7-07
 - **Files:**
   - `dev/mcp-server/**` (new workspace package `oxysol-mcp`, `publish = false`);

@@ -8,9 +8,9 @@ with Klondike, Spider, FreeCell and Pyramid. Do not rename the product or binary
 
 ## What to read
 
-- **Micro task** (Antigravity instances Beo, Oxy, Son, Dad): this file and your card in
+- **Micro task** (a small or very small model): this file and your card in
   `docs/task_list/micro.md`. Nothing else unless the card names it.
-- **Phase task** (Claude Sonnet or Haiku, dispatched and reviewed by Opus): this file, `docs/tech/architecture.md`, and your card in
+- **Phase task** (a medium or small model, dispatched and reviewed by the orchestrator): this file, `docs/tech/architecture.md`, and your card in
   `docs/task_list/phase-N.md`.
 - If sources disagree: `docs/tech/decisions.md` overrides `docs/tech/master_prompt.md`.
 
