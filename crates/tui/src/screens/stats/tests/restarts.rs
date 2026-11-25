@@ -3,11 +3,12 @@
 
 use oxysol_core::{PyramidRules, Variant};
 
+use super::support::history_row;
 use super::support::{many_games, open_stats, row};
 use super::{KLONDIKE, record};
 use crate::glyphs::Glyphs;
 use crate::i18n::Locale;
-use crate::screens::stats::format::{history_header, history_row, summary_lines};
+use crate::screens::stats::format::{WINNABLE_TEXT_MIN_WIDTH, history_header, summary_lines};
 use crate::screens::stats::summary::summarize;
 use crate::settings::{GlyphMode, Settings};
 use crate::storage::Outcome::{Abandoned, Won};
@@ -187,8 +188,13 @@ fn a_row_with_restarts_stays_as_wide_as_the_header_in_both_locales() {
                 history_row(&worst, &glyphs, short).chars().count(),
                 history_header(&glyphs, short).chars().count()
             );
+            let widest = if short {
+                100
+            } else {
+                usize::from(WINNABLE_TEXT_MIN_WIDTH)
+            };
             assert!(
-                history_header(&glyphs, short).chars().count() <= 100,
+                history_header(&glyphs, short).chars().count() <= widest,
                 "{}",
                 history_header(&glyphs, short)
             );

@@ -593,8 +593,9 @@ pub struct NullClipboard;                                // every copy fails wit
   information (`Facts`, so the Compact header row and the `Game` compartment both show it): `Winnable: checking...`,
   `Winnable: yes`, `Winnable: unknown`, `Winnable: no`; a random game dealt without the option says nothing. Every
   proof of the running deal is written to its history row with `Storage::record_proof` (a failure is logged, not
-  alerted: the mark is advisory). The statistics history has a `Winnable` column (`yes`, `no`, `unknown`, `-` when
-  unchecked). Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
+  alerted: the mark is advisory). The statistics history has a `Winnable` column (`yes`, `no`, `unknown`, and the
+  legend's own `· not checked` when unchecked, O-97); its `Result` column is coloured through theme tokens (won
+  `Success`, abandoned `TextMuted`, in progress `Accent`) and keeps its words. Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
 - **Assist counters (P4-06):** `AssistCounters` (`storage/counters.rs`) counts per game the moves made by hand (`manual`), by
   the quick move key or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
   target (`failed`) and the longest run of quick moves (`longest_streak`; a manual move ends the run, the finish and a failed
