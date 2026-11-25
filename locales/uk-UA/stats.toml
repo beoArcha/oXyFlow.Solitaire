@@ -74,8 +74,8 @@ already = "Цю гру вже перевірено"
 nothing = "Усі ігри вже перевірено"
 
 [assist]
-share = "Швидкі: {auto} з {total} ходів ({share}%)"
+share = "Швидкі: {auto} з {total} ({share}%)"
 failed = "невдалі {failed}"
-run = "серія {run}"
-finish = "фініш {finish}"
+run = "макс. серія {run}"
+finish = "автофініш {finish}"
 tag = "з допомогою"

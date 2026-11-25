@@ -74,8 +74,8 @@ already = "This game is already checked"
 nothing = "Every game is already checked"
 
 [assist]
-share = "Quick moves: {auto} of {total} moves ({share}%)"
+share = "Quick moves: {auto} of {total} ({share}%)"
 failed = "missed {failed}"
-run = "streak {run}"
-finish = "finish {finish}"
+run = "best run {run}"
+finish = "auto-finish {finish}"
 tag = "assisted"

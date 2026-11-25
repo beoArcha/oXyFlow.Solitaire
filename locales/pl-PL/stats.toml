@@ -74,8 +74,8 @@ already = "Ta gra jest już sprawdzona"
 nothing = "Wszystkie gry są już sprawdzone"
 
 [assist]
-share = "Szybkie ruchy: {auto} z {total} ruchów ({share}%)"
-failed = "chybione {failed}"
-run = "seria {run}"
-finish = "koniec {finish}"
+share = "Szybkie ruchy: {auto} z {total} ({share}%)"
+failed = "pudła {failed}"
+run = "maks. seria {run}"
+finish = "autokoniec {finish}"
 tag = "z pomocą"

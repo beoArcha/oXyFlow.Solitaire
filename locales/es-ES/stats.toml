@@ -74,8 +74,8 @@ already = "Esta partida ya está comprobada"
 nothing = "Todas las partidas están comprobadas"
 
 [assist]
-share = "Rápidos: {auto} de {total} jugadas ({share}%)"
+share = "Rápidas: {auto} de {total} ({share}%)"
 failed = "fallos {failed}"
-run = "racha {run}"
-finish = "final {finish}"
+run = "racha máx. {run}"
+finish = "autofinal {finish}"
 tag = "asistida"

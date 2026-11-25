@@ -74,8 +74,8 @@ already = "Cette partie est déjà vérifiée"
 nothing = "Toutes les parties sont déjà vérifiées"
 
 [assist]
-share = "Rapides : {auto} sur {total} coups ({share}%)"
+share = "Rapides : {auto} sur {total} ({share}%)"
 failed = "échecs {failed}"
-run = "suite {run}"
-finish = "fin {finish}"
+run = "suite max {run}"
+finish = "fin auto {finish}"
 tag = "assistée"

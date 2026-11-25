@@ -76,6 +76,6 @@ nothing = "Tutte le partite sono già verificate"
 [assist]
 share = "Rapide: {auto} su {total} mosse ({share}%)"
 failed = "mancate {failed}"
-run = "serie {run}"
-finish = "fine {finish}"
+run = "serie max {run}"
+finish = "fine auto {finish}"
 tag = "assistita"

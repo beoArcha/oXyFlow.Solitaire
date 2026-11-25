@@ -74,8 +74,8 @@ already = "Dit spel is al gecontroleerd"
 nothing = "Alle spellen zijn al gecontroleerd"
 
 [assist]
-share = "Snelzetten: {auto} van {total} zetten ({share}%)"
+share = "Snelzetten: {auto} van {total} ({share}%)"
 failed = "mislukt {failed}"
-run = "reeks {run}"
-finish = "einde {finish}"
+run = "max. reeks {run}"
+finish = "auto-einde {finish}"
 tag = "geholpen"

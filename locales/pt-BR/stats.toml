@@ -74,8 +74,8 @@ already = "Este jogo já foi verificado"
 nothing = "Todos os jogos já foram verificados"
 
 [assist]
-share = "Rápidas: {auto} de {total} jogadas ({share}%)"
+share = "Rápidas: {auto} de {total} ({share}%)"
 failed = "falhas {failed}"
-run = "seguidas {run}"
-finish = "final {finish}"
+run = "maior seq. {run}"
+finish = "final auto {finish}"
 tag = "assistido"

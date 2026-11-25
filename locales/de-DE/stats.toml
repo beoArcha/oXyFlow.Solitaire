@@ -74,8 +74,8 @@ already = "Dieses Spiel ist bereits geprüft"
 nothing = "Alle Spiele sind bereits geprüft"
 
 [assist]
-share = "Schnellzüge: {auto} von {total} Zügen ({share}%)"
-failed = "Fehl {failed}"
-run = "Serie {run}"
-finish = "Ende {finish}"
-tag = "unterstützt"
+share = "Schnellzüge: {auto} von {total} ({share}%)"
+failed = "Fehler {failed}"
+run = "max. Serie {run}"
+finish = "Autoende {finish}"
+tag = "assistiert"
