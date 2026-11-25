@@ -18,7 +18,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
 | 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | in progress (now) | 18 | 40 |
-| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 9 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 16 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
 | 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
@@ -340,7 +340,14 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P6-08 | Dev bridge: `--dev-bridge` JSON-lines protocol | Medium | P6-07 | TODO |
 | P6-09 | Dev bridge: `--dev-log` structured log and determinism tests | Medium | P6-08 | TODO |
 | O-115 | Is it winnable? A check for the deal and for the current position | Medium | P5-05 (merged) | TODO |
-| P6-10 | Hint and in-play check knowledge: full, or the player's with a stock memory | Medium | P5-07, O-115 | TODO |
+| P6-10 | Hint and in-play check knowledge: full, or the player's with a stock memory | Medium | P5-07, O-115, P6-11 | TODO |
+| P6-11 | Hints off the redraw path, and no repeated positions | Medium | P5-07 | TODO |
+| P6-12 | Solver: no heap allocation per node | Medium | — | TODO |
+| P6-13 | Winnable deals: a small thread pool, same seed as one thread | Medium | — | TODO |
+| P6-14 | Klondike solver: best-first, a canonical draw-1 talon, safe cards stay home | Medium | P6-12 | TODO |
+| P6-15 | Yukon family and Pyramid Relaxed: best-first and complete pruning | Medium | P6-12, P6-14 | TODO |
+| P6-16 | Golf solver: a proof by rank groups, a packed key, a lower budget | Medium | P6-12 | TODO |
+| P6-17 | Spider 2 and 4 suits: a beam stratified by deals left | Medium | — | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |

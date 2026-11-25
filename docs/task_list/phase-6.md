@@ -109,6 +109,11 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
     cannot see the face-down cards.
 - **Open question for the owner (before dispatch):** does using the check mark the game in statistics (like a hint), or
   not at all?
+- **Plan (solver review 2026-11-25):** a core entry point `solve_from(variant, seed, played: &[Move], budget)`:
+  deal, replay `played`, build the model from `piles()` (plus `stock_status()` for the Pyramid recycles; nothing else is
+  missing: Klondike foundation slots and the talon order are in the piles), search, and verify by replaying `played`
+  and the line on a fresh deal; `solve` becomes `solve_from(.., &[], ..)`. This avoids cloning a `Box<dyn Game>`.
+  In-play queries use their own worker lane, so they never wait behind a winnable-deal batch.
 - **Acceptance:** core tests: the new entry point returns the same verdict as `solve` on a fresh deal, finds a won line
   from a mid-game position and replays it on the engine, and returns unknown on a tiny budget; TUI tests: `w` and both
   buttons start the check, the answer appears with its sign, a move clears it, an answer for an old position is ignored;
@@ -136,10 +141,128 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
     identity of at most that many stock cards the player has already seen, and nothing else hidden.
   - A stock with fewer cards than the memory, or no stock at all, is handled: the memory is capped by what was seen.
   - The setting is in Settings (Gameplay) and Quick options; an old settings file reads as the player's knowledge, 3.
+- **Plan (solver review 2026-11-25):** depends also on P6-11. `Full` (and any position with nothing unknown, such
+  as FreeCell) asks `solve_from` with a small budget in the background and offers its first move.
+  `Player { stock_memory }`: the session keeps a FIFO of the last N stock cards the player saw (empty without a stock,
+  capped by a short stock); the hint samples K completions of the unknown cards with a deterministic PRNG seeded only by
+  a hash of the visible state (never the deal seed), solves each, and votes on the first move. Target: FreeCell hints
+  win most deals, Spider 2/4 above 0 %.
 - **Acceptance:** core tests: with the player's knowledge no hint depends on a face-down card or an unseen stock card
   (two deals that differ only in hidden cards give the same hint); the memory of 1, 3 and N with a long, short and
   empty stock; full knowledge may differ. TUI tests: the setting changes the hint; every complete locale. The hints-only
   table of T-48 measured for both knowledge modes.
+
+### P6-11 — Hints off the redraw path, and no repeated positions
+
+- **Owner:** Medium
+- **Priority:** P2. Solver review 2026-11-25 (item 2).
+- **Depends on:** P5-07
+- **Files:** `crates/tui/src/screens/board/guidance.rs` (355 LOC, over the warning: split the hint part out),
+  `crates/tui/src/screens/board/{mod,commands}.rs`, `crates/core/src/session.rs` (205 LOC),
+  `crates/core/src/games/progress.rs` (270 LOC), tests
+- **Problem:** `Board::guidance()` runs on every redraw (`view.rs:119`) and calls `legal_moves()` and `hint()`
+  (`guidance.rs:246`, `:276`), so a hint must stay near a millisecond and can never use the solver. Following the hints
+  repeats positions (seeds 0-199: Klondike 103, FreeCell 113, Pyramid Relaxed 111 runs end in a repeat), mostly turning
+  the stock round with nothing to play.
+- **Fix:**
+  - The footer asks only whether a hint exists, cached per session revision (move count plus undo position); the hint
+    itself is computed when `h` is pressed or the revision changes, never per frame.
+  - `Session` keeps a short ring of recent position keys (the engine's `piles()` hashed), rolled back by undo;
+    `Game::hint` stays pure, and the session-level hint skips a move whose result is in the ring, falling back to the
+    next ranked move. A full stock cycle with no play in between counts as a repeat.
+- **Acceptance:** redraws call neither `hint()` nor `legal_moves()` more than once per revision (test with a counting
+  fake game); the hints-only benchmark (`crates/core/tests/hint_perf.rs`) shows repeats at most 5 of 200 per variant and
+  no variant wins fewer deals than in T-48; undo restores the ring.
+
+### P6-12 — Solver: no heap allocation per node
+
+- **Owner:** Medium
+- **Priority:** P2. Solver review 2026-11-25 (item 3).
+- **Depends on:** —
+- **Files:** `crates/core/src/solver/hash.rs` (119), `crates/core/src/solver/search/{depth_first,best_first}.rs`
+  (71, 91), the `key()` of `solver/{klondike,yukon,freecell}/position.rs` (231, 264, 148: each collects a `Vec<u64>`
+  before `feed_unordered`; `spider/position.rs` already uses a stack array), tests
+- **Problem:** every key builds a `Vec<u64>` (`klondike/position.rs:224`, `yukon/position.rs:257`,
+  `freecell/position.rs:139`), every DFS frame owns a `Vec<Step>`, and `Seen` grows from empty.
+- **Fix:** `feed_unordered(&mut PositionHash, &mut [u64])` sorting a stack array; one step arena for the DFS stack
+  (frames keep a start index and length); `Seen` pre-sized from the budget (capped). No change of search order, no
+  undo-instead-of-clone, no Zobrist hashing.
+- **Acceptance:** `solver/tests/api.rs` node counts unchanged (same order); every model test passes; the T-29, T-41
+  and T-45 tables re-measured (seeds 0-49, release): same verdicts, average time at least 20 % lower in Klondike, Yukon
+  and FreeCell, numbers recorded in T-29.
+
+### P6-13 — Winnable deals: a small thread pool, same seed as one thread
+
+- **Owner:** Medium
+- **Priority:** P2. Solver review 2026-11-25 (item 4).
+- **Depends on:** —
+- **Files:** `src/solver.rs` (225), `crates/tui/src/app/deals.rs` (221), `crates/tui/src/solver.rs` (144), tests
+- **Problem:** one worker solves up to 40 seeds (`SEED_CAP`) one after another for "winnable deals only".
+- **Fix:** `ThreadSolver` runs `min(available_parallelism - 1, 4)` workers (at least one) on `std::thread`, sharing the
+  generation counter; answers carry their query id; the TUI accepts the first `Winnable` **in submission order**,
+  waiting for earlier queries still running, so the chosen seed is exactly the one-thread result. No change in
+  `crates/core`.
+- **Acceptance:** a test with a stub solver that answers out of order picks the same seed as in order; cancel drops
+  every worker's pending jobs; time to a proven deal for Spider 4 suits, Yukon and Australian Patience (20 searches
+  each) measured before and after.
+
+### P6-14 — Klondike solver: best-first, a canonical draw-1 talon, safe cards stay home
+
+- **Owner:** Medium
+- **Priority:** P2. Solver review 2026-11-25 (item 6, Klondike part).
+- **Depends on:** P6-12
+- **Files:** `crates/core/src/solver/klondike/{mod,position,steps}.rs` (161, 231, 184; add `heuristic.rs` rather than
+  grow `position.rs`), `crates/core/src/solver/mod.rs` (strategy choice), `solver/tests/api.rs`,
+  `docs/tech/decisions.md` (T-29), tests
+- **Fix:**
+  - `score()` (work left: cards not home, face-down cards weighted by depth, buried next-foundation cards) and
+    `Strategy::BestFirst` for Klondike. An exhausted best-first search is still complete, so `Unwinnable` stays a proof.
+  - Draw 1 (unlimited passes): the talon key is the **set** of talon cards, not the stock/waste split, because every
+    talon card stays reachable and a play does not reorder the others. Draw 3 keeps the full order.
+  - No `Down` step for a card that `is_safe` (nothing can need it as a base).
+- **Acceptance:** seeds 0-199 draw 1 and draw 3: no verdict flips between `Winnable` and `Unwinnable`; Unknown falls
+  (target on seeds 0-49 at 100k: draw 1 below 15 %, draw 3 below 18 %); every `Winnable` replays; pinned node counts
+  updated knowingly; best-first memory at 100k nodes reported.
+
+### P6-15 — Yukon family and Pyramid Relaxed: best-first and complete pruning
+
+- **Owner:** Medium
+- **Priority:** P2. Solver review 2026-11-25 (item 6, Yukon and Pyramid part).
+- **Depends on:** P6-12, P6-14 (same approach)
+- **Files:** `crates/core/src/solver/yukon/{mod,position,steps}.rs` (153, 264, 180; new `heuristic.rs`),
+  `crates/core/src/solver/pyramid/{mod,steps}.rs` (99, 137), `crates/core/src/solver/mod.rs`, `solver/tests/api.rs`,
+  `docs/tech/decisions.md` (T-29, T-41), tests
+- **Fix:** `score()` and `BestFirst` where it lowers Unknown; drop the `Down` step in the same-suit-down variants
+  (Russian Solitaire, Australian Patience: a card moved back could only take the lower card of its suit, which is
+  already home); keep `Down` in Yukon, Alaska and Moosehide, where a group can build onto it.
+- **Acceptance:** seeds 0-199: no verdict flips; Unknown on seeds 0-49 lower for Yukon (32 %), Australian Patience
+  (34 %) and Pyramid Relaxed (22 %); T-29 and T-41 tables replaced.
+
+### P6-16 — Golf solver: a proof by rank groups, a packed key, a lower budget
+
+- **Owner:** Medium
+- **Priority:** P3. Solver review 2026-11-25 (item 7, Golf part).
+- **Depends on:** P6-12
+- **Files:** `crates/core/src/solver/golf/{mod,position,steps}.rs` (69, 117, 65), `crates/core/src/solver/mod.rs`
+  (`DEFAULT_GOLF_NODES`), `docs/tech/decisions.md` (T-45), tests
+- **Fix:** a position is dead when the remaining tableau ranks form more contiguous rank groups than chains can still
+  start (`groups > stock_len + 1`): a chain plays ranks one apart, so it stays inside one group, and each chain starts
+  from the waste or a stock card. Pack the key (seven heights, stock size, waste rank) into one `u64`.
+- **Acceptance:** the dead test checked against an exhaustive engine search on 50 small constructed positions; seeds
+  0-999 give the same verdicts as today with fewer nodes; the default budget lowered so seeds 0-49 stay at 0 % Unknown.
+
+### P6-17 — Spider 2 and 4 suits: a beam stratified by deals left
+
+- **Owner:** Medium
+- **Priority:** P3. Solver review 2026-11-25 (item 7, Spider part).
+- **Depends on:** —
+- **Files:** `crates/core/src/solver/spider/multi.rs` (306 LOC, already over the warning: move the beam into
+  `spider/beam.rs`), `crates/core/src/solver/spider/multi_moves.rs` (178), `solver/tests/api.rs`,
+  `docs/tech/decisions.md` (T-29), tests
+- **Fix:** the beam keeps its width per stratum of deals left (`stock_len / 10`), so positions that dealt early do not
+  crowd out ones that still hold the stock. Spider 2/4 still never answers `Unwinnable`.
+- **Acceptance:** seeds 0-49 at 150k: Spider 4 suits Winnable up from 80 % (target about 90 %), Spider 2 stays 100 %,
+  average time not higher than today; pinned node counts updated knowingly.
 
 ## Developer testing infrastructure: headless backend and JSON-lines dev bridge
 
