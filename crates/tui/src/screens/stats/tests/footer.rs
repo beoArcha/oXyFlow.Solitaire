@@ -3,10 +3,13 @@ use crate::app::Screen;
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::Settings;
 
-const FOOTER_KEYS: [&str; 4] = [
+const FOOTER_KEYS: [&str; 7] = [
     "stats.footer_list",
+    "stats.footer_focus",
     "stats.footer_replay",
     "stats.footer_copy",
+    "stats.footer_check",
+    "stats.footer_check_all",
     "stats.footer_back",
 ];
 
@@ -50,6 +53,7 @@ fn assert_spaced_footer(locale: Locale, width: u16, height: u16) {
 fn the_statistics_footer_puts_a_space_between_every_pair_of_entries() {
     for locale in Locale::offered() {
         assert_spaced_footer(locale, 100, 30);
+        assert_spaced_footer(locale, 100, 60);
         assert_spaced_footer(locale, 200, 60);
     }
 }
