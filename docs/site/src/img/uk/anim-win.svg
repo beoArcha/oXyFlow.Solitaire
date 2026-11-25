@@ -3,24 +3,25 @@
 <style>.d{visibility:hidden;animation-duration:3340ms;animation-iteration-count:infinite;animation-timing-function:step-end}@media (prefers-reduced-motion:reduce){.d{animation:none;visibility:visible}}</style>
 <rect width="1080" height="646" fill="#181c26"/>
 <g shape-rendering="crispEdges" font-family="'Cascadia Mono','DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="15">
-<text x="144 153 162 171 180 189 198 207 216" y="14" fill="#8cbeff">Klondike,</text>
-<text x="234" y="14" fill="#8cbeff">1</text>
-<text x="252 261 270 279 288" y="14" fill="#8cbeff">карта</text>
-<text x="306" y="14" fill="#8cbeff">|</text>
-<text x="324 333 342 351 360" y="14" fill="#8cbeff">зерно</text>
-<text x="378 387" y="14" fill="#8cbeff" text-decoration="underline">65</text>
-<text x="405" y="14" fill="#8cbeff">|</text>
-<text x="423 432 441" y="14" fill="#8cbeff">Час</text>
-<text x="459 468 477 486" y="14" fill="#8cbeff">0:46</text>
-<text x="504" y="14" fill="#8cbeff">|</text>
-<text x="522 531 540 549 558" y="14" fill="#8cbeff">Ходи:</text>
-<text x="576 585 594" y="14" fill="#8cbeff">146</text>
-<text x="612" y="14" fill="#8cbeff">|</text>
-<text x="630 639 648 657 666 675 684 693 702 711 720 729" y="14" fill="#8cbeff">Перекладено:</text>
-<text x="747" y="14" fill="#8cbeff">6</text>
-<text x="765" y="14" fill="#8cbeff">|</text>
-<text x="783 792 801 810 819 828 837 846 855" y="14" fill="#8cbeff">Виграшна:</text>
-<text x="873 882 891 900 909 918 927 936" y="14" fill="#8cbeff">невідомо</text>
+<text x="117 126 135 144 153 162 171 180 189" y="14" fill="#8cbeff">Klondike,</text>
+<text x="207" y="14" fill="#8cbeff">1</text>
+<text x="225 234 243 252 261" y="14" fill="#8cbeff">карта</text>
+<text x="279" y="14" fill="#8cbeff">|</text>
+<text x="297 306 315 324 333" y="14" fill="#8cbeff">зерно</text>
+<text x="351 360" y="14" fill="#8cbeff" text-decoration="underline">65</text>
+<text x="378" y="14" fill="#8cbeff">|</text>
+<text x="396 405 414" y="14" fill="#8cbeff">Час</text>
+<text x="432 441 450 459" y="14" fill="#8cbeff">0:46</text>
+<text x="477" y="14" fill="#8cbeff">|</text>
+<text x="495 504 513 522 531" y="14" fill="#8cbeff">Ходи:</text>
+<text x="549 558 567" y="14" fill="#8cbeff">146</text>
+<text x="585" y="14" fill="#8cbeff">|</text>
+<text x="603 612 621 630 639 648 657 666 675" y="14" fill="#8cbeff">Повернень</text>
+<text x="693 702 711 720 729 738 747" y="14" fill="#8cbeff">колоди:</text>
+<text x="765" y="14" fill="#8cbeff">6</text>
+<text x="783" y="14" fill="#8cbeff">|</text>
+<text x="801 810 819 828 837 846 855 864 873" y="14" fill="#8cbeff">Виграшна:</text>
+<text x="891 900 909 918 927 936 945 954" y="14" fill="#8cbeff">невідомо</text>
 <rect x="0" y="19" width="495" height="19" fill="#287850"/>
 <rect x="495" y="19" width="81" height="19" fill="#fafaf4"/>
 <rect x="576" y="19" width="27" height="19" fill="#287850"/>
@@ -213,11 +214,10 @@
 <rect x="819" y="228" width="81" height="19" fill="#fafaf4"/>
 <rect x="900" y="228" width="180" height="19" fill="#287850"/>
 <path fill="#101014" d="M283 237h1v10h-1zM283 237h5v1h-5zM315 237h5v1h-5zM319 237h5v1h-5zM324 237h5v1h-5zM328 237h5v1h-5zM333 237h5v1h-5zM337 237h5v1h-5zM342 237h5v1h-5zM346 237h5v1h-5zM355 237h1v10h-1zM351 237h5v1h-5zM499 228h1v10h-1zM499 237h1v10h-1zM522 237.5h9v9.5h-9zM531 228h9v19h-9zM540 237.5h9v9.5h-9zM571 228h1v10h-1zM571 237h1v10h-1zM607 228h1v10h-1zM607 237h1v10h-1zM630 237.5h9v9.5h-9zM639 228h9v19h-9zM648 237.5h9v9.5h-9zM679 228h1v10h-1zM679 237h1v10h-1zM715 237h1v10h-1zM715 237h5v1h-5zM738 237h5v1h-5zM742 237h5v1h-5zM747 237h5v1h-5zM751 237h5v1h-5zM756 237h5v1h-5zM760 237h5v1h-5zM765 237h5v1h-5zM769 237h5v1h-5zM774 237h5v1h-5zM778 237h5v1h-5zM787 237h1v10h-1zM783 237h5v1h-5z"/>
-<path fill="#a61414" d="M175 228h1v10h-1zM175 237h1v10h-1zM247 228h1v10h-1zM247 237h1v10h-1zM391 228h1v10h-1zM391 237h1v10h-1zM463 228h1v10h-1zM463 237h1v10h-1zM823 228h1v10h-1zM823 237h1v10h-1zM846 237.5h9v9.5h-9zM855 228h9v19h-9zM864 237.5h9v9.5h-9zM895 228h1v10h-1zM895 237h1v10h-1z"/>
+<path fill="#a61414" d="M175 228h1v10h-1zM175 237h1v10h-1zM247 228h1v10h-1zM247 237h1v10h-1zM391 228h1v10h-1zM391 237h1v10h-1zM463 228h1v10h-1zM463 237h1v10h-1zM823 228h1v10h-1zM823 237h1v10h-1zM895 228h1v10h-1zM895 237h1v10h-1z"/>
 <text x="198" y="242" fill="#a61414" font-weight="bold">Q</text>
 <text x="216" y="242" fill="#a61414" font-weight="bold">♦</text>
-<text x="288 297" y="242" fill="#101014">10</text>
-<text x="306" y="242" fill="#101014" font-weight="bold">♠</text>
+<text x="288 297 306" y="242" fill="#101014">10♠</text>
 <text x="414" y="242" fill="#a61414" font-weight="bold">Q</text>
 <text x="432" y="242" fill="#a61414" font-weight="bold">♥</text>
 <text x="720 729" y="242" fill="#101014">Q♠</text>
@@ -239,8 +239,7 @@
 <path fill="#101014" d="M175 256h1v10h-1zM175 256h5v1h-5zM198 256h5v1h-5zM202 256h5v1h-5zM207 256h5v1h-5zM211 256h5v1h-5zM216 256h5v1h-5zM220 256h5v1h-5zM225 256h5v1h-5zM229 256h5v1h-5zM234 256h5v1h-5zM238 256h5v1h-5zM247 256h1v10h-1zM243 256h5v1h-5zM391 256h1v10h-1zM391 256h5v1h-5zM414 256h5v1h-5zM418 256h5v1h-5zM423 256h5v1h-5zM427 256h5v1h-5zM432 256h5v1h-5zM436 256h5v1h-5zM441 256h5v1h-5zM445 256h5v1h-5zM450 256h5v1h-5zM454 256h5v1h-5zM463 256h1v10h-1zM459 256h5v1h-5zM499 247h1v10h-1zM499 256h1v10h-1zM513 247h9v9.5h-9zM522 247h9v9.5h-9zM531 247h9v19h-9zM540 247h9v9.5h-9zM549 247h9v9.5h-9zM571 247h1v10h-1zM571 256h1v10h-1zM607 247h1v10h-1zM607 256h1v10h-1zM621 247h9v9.5h-9zM630 247h9v9.5h-9zM639 247h9v19h-9zM648 247h9v9.5h-9zM657 247h9v9.5h-9zM679 247h1v10h-1zM679 256h1v10h-1zM715 247h1v10h-1zM715 256h1v10h-1zM787 247h1v10h-1zM787 256h1v10h-1zM823 256h1v10h-1zM823 256h5v1h-5zM846 256h5v1h-5zM850 256h5v1h-5zM855 256h5v1h-5zM859 256h5v1h-5zM864 256h5v1h-5zM868 256h5v1h-5zM873 256h5v1h-5zM877 256h5v1h-5zM882 256h5v1h-5zM886 256h5v1h-5zM895 256h1v10h-1zM891 256h5v1h-5z"/>
 <path fill="#a61414" d="M283 256h1v10h-1zM283 256h5v1h-5zM306 256h5v1h-5zM310 256h5v1h-5zM315 256h5v1h-5zM319 256h5v1h-5zM324 256h5v1h-5zM328 256h5v1h-5zM333 256h5v1h-5zM337 256h5v1h-5zM342 256h5v1h-5zM346 256h5v1h-5zM355 256h1v10h-1zM351 256h5v1h-5z"/>
 <text x="180 189" y="261" fill="#101014">J♣</text>
-<text x="288" y="261" fill="#a61414">9</text>
-<text x="297" y="261" fill="#a61414" font-weight="bold">♦</text>
+<text x="288 297" y="261" fill="#a61414">9♦</text>
 <text x="396 405" y="261" fill="#101014">J♠</text>
 <text x="738" y="261" fill="#101014" font-weight="bold">Q</text>
 <text x="756" y="261" fill="#101014" font-weight="bold">♠</text>
@@ -289,16 +288,16 @@
 <rect x="0" y="323" width="171" height="19" fill="#287850"/>
 <rect x="171" y="323" width="72" height="19" fill="#fafaf4"/>
 <rect x="243" y="323" width="261" height="19" fill="#242a3a"/>
-<rect x="504" y="323" width="54" height="19" fill="#e8ecf4"/>
+<rect x="504" y="323" width="54" height="19" fill="#ffd666"/>
 <rect x="558" y="323" width="270" height="19" fill="#242a3a"/>
 <rect x="828" y="323" width="72" height="19" fill="#fafaf4"/>
 <rect x="900" y="323" width="180" height="19" fill="#287850"/>
 <path fill="#101014" d="M175 332h1v10h-1zM175 332h5v1h-5zM198 332h5v1h-5zM202 332h5v1h-5zM207 332h5v1h-5zM211 332h5v1h-5zM216 332h5v1h-5zM220 332h5v1h-5zM225 332h5v1h-5zM229 332h5v1h-5zM234 332h5v1h-5zM238 332h5v1h-5zM837 323h9v9.5h-9zM846 323h9v9.5h-9zM855 323h9v19h-9zM864 323h9v9.5h-9zM873 323h9v9.5h-9zM895 323h1v10h-1zM895 332h1v10h-1z"/>
 <path fill="#ffd666" d="M246 323h1v11h-1zM248 323h1v11h-1zM246 331h1v11h-1zM248 331h1v11h-1zM822 323h1v11h-1zM824 323h1v11h-1zM822 331h1v11h-1zM824 331h1v11h-1z"/>
 <text x="180 189" y="337" fill="#101014">9♠</text>
-<text x="504" y="337" fill="#242a3a" font-weight="bold">►</text>
-<text x="522 531" y="337" fill="#242a3a" font-weight="bold">OK</text>
-<text x="549" y="337" fill="#242a3a" font-weight="bold">◄</text>
+<text x="504" y="337" fill="#141820" font-weight="bold">►</text>
+<text x="522 531" y="337" fill="#141820" font-weight="bold">OK</text>
+<text x="549" y="337" fill="#141820" font-weight="bold">◄</text>
 <rect x="0" y="342" width="171" height="19" fill="#287850"/>
 <rect x="171" y="342" width="72" height="19" fill="#fafaf4"/>
 <rect x="243" y="342" width="585" height="19" fill="#242a3a"/>
@@ -505,35 +504,36 @@
 <text x="144 153" y="622" fill="#e8ecf4">1:</text>
 <text x="171 180 189 198 207 216 225 234" y="622" fill="#e8ecf4">п'ятірка</text>
 <text x="252 261 270" y="622" fill="#e8ecf4">пік</text>
+<text x="783" y="622" fill="#96e6a0">✓</text>
 <text x="801 810 819 828 837 846 855" y="622" fill="#96e6a0">Пасьянс</text>
 <text x="873 882 891 900 909 918 927 936 945 954" y="622" fill="#96e6a0">розв'язано</text>
 <text x="972" y="622" fill="#96e6a0">—</text>
 <text x="990 999 1008 1017 1026 1035 1044 1053 1062 1071" y="622" fill="#96e6a0">завершення</text>
 <rect x="0" y="627" width="1080" height="19" fill="#242a3a"/>
 <text x="0 9 18 27" y="641" fill="#e8ecf4">Дії:</text>
-<text x="45 54" y="641" fill="#e8ecf4">h:</text>
+<text x="45 54" y="641" fill="#8cbeff">h:</text>
 <text x="72 81 90 99 108 117 126 135" y="641" fill="#e8ecf4">підказка</text>
 <text x="153" y="641" fill="#e8ecf4">|</text>
-<text x="171 180" y="641" fill="#e8ecf4">u:</text>
+<text x="171 180" y="641" fill="#8cbeff">u:</text>
 <text x="198 207 216 225 234 243 252 261 270" y="641" fill="#e8ecf4">скасувати</text>
 <text x="288" y="641" fill="#e8ecf4">|</text>
 <text x="306 315 324 333" y="641" fill="#e8ecf4">+/-:</text>
 <text x="351 360 369 378 387 396 405" y="641" fill="#e8ecf4">довжина</text>
 <text x="423 432 441 450" y="641" fill="#e8ecf4">ряду</text>
 <text x="468" y="641" fill="#e8ecf4">|</text>
-<text x="486 495 504 513 522 531 540 549" y="641" fill="#e8ecf4">Shift+R:</text>
+<text x="486 495 504 513 522 531 540 549" y="641" fill="#8cbeff">Shift+R:</text>
 <text x="567 576 585 594 603 612 621 630" y="641" fill="#e8ecf4">спочатку</text>
 <text x="648" y="641" fill="#e8ecf4">|</text>
-<text x="666 675" y="641" fill="#e8ecf4">o:</text>
+<text x="666 675" y="641" fill="#8cbeff">o:</text>
 <text x="693 702 711 720 729" y="641" fill="#e8ecf4">опції</text>
 <text x="747" y="641" fill="#e8ecf4">|</text>
-<text x="765 774" y="641" fill="#e8ecf4">p:</text>
+<text x="765 774" y="641" fill="#8cbeff">p:</text>
 <text x="792 801 810 819 828" y="641" fill="#e8ecf4">пауза</text>
 <text x="846" y="641" fill="#e8ecf4">|</text>
-<text x="864 873" y="641" fill="#e8ecf4">v:</text>
+<text x="864 873" y="641" fill="#8cbeff">v:</text>
 <text x="891 900 909 918" y="641" fill="#e8ecf4">ходи</text>
 <text x="936" y="641" fill="#e8ecf4">|</text>
-<text x="954 963 972 981" y="641" fill="#e8ecf4">Esc:</text>
+<text x="954 963 972 981" y="641" fill="#8cbeff">Esc:</text>
 <text x="999 1008 1017 1026" y="641" fill="#e8ecf4">меню</text>
 </g>
 </svg>
