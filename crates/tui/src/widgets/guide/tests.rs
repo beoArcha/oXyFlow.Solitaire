@@ -11,7 +11,7 @@ use crate::action::Action;
 use crate::app::FontFacts;
 use crate::audio::AudioStatus;
 use crate::glyphs::{Glyphs, is_wgl4};
-use crate::i18n::t;
+use crate::i18n::{Locale, set_locale, t};
 use crate::screens::ViewCtx;
 use crate::settings::{GlyphMode, Settings};
 use crate::test_support::TRUE_COLOR;
@@ -80,6 +80,37 @@ fn usable_keys_carry_the_available_mark_and_never_the_focus_symbol() {
             );
         });
     }
+}
+
+#[test]
+fn the_keys_section_lists_n_as_new_game_in_every_locale() {
+    for locale in Locale::offered() {
+        set_locale(locale);
+        for mode in MODES {
+            with_ctx(mode, |ctx| {
+                let usable = [Action::NewGame];
+                let game = [];
+                let lines: Vec<String> = keys::keys(&guide(&usable, &game), KEYS_WIDTH, ctx)
+                    .iter()
+                    .map(text)
+                    .collect();
+                let label = t("board.guide.new_game");
+                let expected: Vec<&str> = std::iter::once("n")
+                    .chain(label.split_whitespace())
+                    .collect();
+                let mark = available_mark(ctx);
+                let listed = lines.iter().any(|line| {
+                    let words: Vec<&str> = line.split_whitespace().collect();
+                    words.first() == Some(&mark) && words[1..] == expected[..]
+                });
+                assert!(
+                    listed,
+                    "{locale:?} {mode:?}: no `n` row for new game in {lines:?}"
+                );
+            });
+        }
+    }
+    set_locale(Locale::EnUs);
 }
 
 #[test]

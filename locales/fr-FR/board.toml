@@ -189,6 +189,8 @@ deal_row = "distribuer rangée"
 undo_redo = "annuler / rétablir"
 copy_seed = "copier graine"
 hint = "indice"
+new_game = "nouvelle partie"
+new_game_button = "[{key}: {label}]"
 rules = "comment jouer"
 help = "toutes les touches"
 

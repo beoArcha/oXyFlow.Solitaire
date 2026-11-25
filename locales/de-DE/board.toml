@@ -189,6 +189,8 @@ deal_row = "Reihe austeilen"
 undo_redo = "Rückgängig / Wiederholen"
 copy_seed = "Seed kopieren"
 hint = "Hinweis"
+new_game = "neues Spiel"
+new_game_button = "[{key}: {label}]"
 rules = "Spielanleitung"
 help = "Alle Tasten"
 
