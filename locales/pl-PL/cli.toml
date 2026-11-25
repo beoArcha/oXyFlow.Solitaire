@@ -9,12 +9,12 @@ Użycie: oxysol [opcje]
 
 Opcje:
   --version                    wypisz wersję i licencję oraz zakończ
-  --help                       wypisz tę pomoc i zakończ
+  -h, --help                   wypisz tę pomoc i zakończ
 
 Wygląd:
   --ascii                      rysuj karty wyłącznie znakami ASCII
   --colors <16|256|truecolor>  głębia kolorów terminala
-  --fullscreen                 start na pełnym ekranie, wbrew ustawieniu
+  -fs, --fullscreen            start na pełnym ekranie, wbrew ustawieniu
   --no-fullscreen              start w oknie, wbrew ustawieniu
 
 Gra:

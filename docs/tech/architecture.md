@@ -798,12 +798,12 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the app knows is `StorageError::Incompatible`; a file that is not a readable database is
   `StorageError::Corrupt` and is renamed to `*.corrupt`. A missing row is `Ok(None)`. The TUI decides
   how to react (alert, defaults) and logs there.
-- **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help`, `--ascii`, `--colors`, `--seed`,
-  `--fullscreen`, `--no-fullscreen`, `--priority <level>` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed only by the root `build.rs` with `xtask/src/version_scheme.rs`; the binary gives it to the TUI as `Deps::version` for the main menu label, so `oxysol-tui` has no build script and does not rebuild after a commit; it is also the Windows file version) and the
+- **Command line (T-10, T-28):** `src/cli.rs` parses `--version`, `--help` / `-h`, `--ascii`, `--colors`, `--seed`,
+  `--fullscreen` / `-fs`, `--no-fullscreen` (the last full-screen flag wins), `--priority <level>` and `--new-window` / `-n` by hand (`Cli::new_window`). `--version` prints two lines from `src/about.rs`: the effective version (`OXYSOL_VERSION`, T-21, R-23: the metadata version with the patch derived from git, `<version>+src` without git history; computed only by the root `build.rs` with `xtask/src/version_scheme.rs`; the binary gives it to the TUI as `Deps::version` for the main menu label, so `oxysol-tui` has no build script and does not rebuild after a commit; it is also the Windows file version) and the
   copyright with the license, built from `CARGO_PKG_AUTHORS` and `CARGO_PKG_LICENSE` through `cli.version_legal`. With `--new-window`, `main` starts only the log and calls
   `new_window::open`, which tries the plans of `new_window::plans(&Context)` in order and returns; the parent exits
   with 0, or with 2 (`AppError::NewWindow`) when no console could be started. `Context` holds the OS
-  (`HostOs`), executable, working directory, forwarded arguments (`forwarded` removes the flag), `OXYSOL_HOME` /
+  (`HostOs`), executable, working directory, forwarded arguments (`forwarded` removes the flag; a new Windows console is started without `WT_SESSION`, so the child is not taken for Windows Terminal, O-109), `OXYSOL_HOME` /
   `OXYSOL_LOG` and `$TERMINAL`; the plans are pure and unit-tested, only the spawn is not.
 - **Seeds (R-18):** the binary supplies fresh seeds through `Deps::seeds` (from
   `std::collections::hash_map::RandomState` mixed with the clock — no new dependency). `--seed <u64>`
