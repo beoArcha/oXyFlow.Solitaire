@@ -68,7 +68,7 @@ fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_keyboard() {
         h.press(KeyCode::Enter);
         assert_eq!(h.app.screen(), Screen::Settings, "{variant:?}");
         let before = h.app.settings().color_mode;
-        h.press(KeyCode::Down);
+        h.press(KeyCode::BackTab);
         h.press(KeyCode::Right);
         assert_ne!(h.app.settings().color_mode, before, "{variant:?}");
         assert!(h.storage.borrow().settings.is_some(), "{variant:?}");
@@ -106,8 +106,8 @@ fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_mouse() {
         click_text(&mut h, &t("common.menu.settings"));
         assert_eq!(h.app.screen(), Screen::Settings, "{variant:?}");
         let before = h.app.settings().color_mode;
-        h.press(KeyCode::Down);
-        click_text(&mut h, "►");
+        click_text(&mut h, &t("settings.tab.audio_visual"));
+        click_text(&mut h, &t("settings.row.colors"));
         assert_ne!(h.app.settings().color_mode, before, "{variant:?}");
         h.press(KeyCode::Esc);
         assert_eq!(h.app.screen(), Screen::MainMenu, "{variant:?}");
