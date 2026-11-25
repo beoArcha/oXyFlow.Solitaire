@@ -22,6 +22,35 @@ page lets you check a download.
 
 You build the `release` branch, which holds the last commit that passed the full check on Linux, Windows and macOS.
 
+### Using the install scripts (recommended)
+
+The scripts in `build/` check every required dependency before building and installing `oxysol` into `~/.cargo/bin`
+(`%USERPROFILE%\.cargo\bin` on Windows):
+
+- `--check` — stops at the first missing dependency with a non-zero exit code.
+- `--list` — lists every missing dependency and the install command for your system.
+- `--install` — asks before installing missing dependencies via your package manager, re-checks, and builds only if
+  the second check passes.
+- `--no-audio` — skips the ALSA/`pkg-config` check on Linux and builds with `--no-default-features`.
+
+Without a mode flag, an interactive terminal asks which mode to use; a non-interactive run behaves like `--list`.
+
+**Linux and macOS** (`--check` and `--list` verified in CI; `--install` not verified yet):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (`--check` and `--list` verified on Windows; `--install` not verified yet):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Replace `--list` with `--install` to install missing dependencies and build.
+
+### Manual steps
+
 **Rust is required.** Install it with [rustup](https://rustup.rs). The exact toolchain is pinned in
 `rust-toolchain.toml`; rustup picks it up by itself and installs it on the first build, so you need no other setup.
 The build also compiles a little C code (SQLite), so a C toolchain is needed:
@@ -29,8 +58,8 @@ The build also compiles a little C code (SQLite), so a C toolchain is needed:
 - **Windows:** the Visual Studio Build Tools (or Visual Studio) with the "Desktop development with C++" workload.
   rustup offers to install them.
 - **macOS:** the Xcode command line tools: `xcode-select --install`.
-- **Linux:** a C compiler (`gcc` or `cc`) and `curl`. For sound, the ALSA headers too, for example
-  `sudo apt install build-essential libasound2-dev` on Debian and Ubuntu. Without them, build with
+- **Linux:** a C compiler (`gcc` or `cc`), `curl` and `tar`. For sound, `pkg-config` and the ALSA headers too, for example
+  `sudo apt install build-essential pkg-config libasound2-dev` on Debian and Ubuntu. Without them, build with
   `cargo build --release --no-default-features`, which leaves the sound out.
 
 The first build takes a few minutes.

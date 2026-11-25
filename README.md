@@ -83,12 +83,34 @@ have no sound. `SHA256SUMS` on the release lets you check a download.
 
 You build the `release` branch, the last commit that passed the full check on Linux, Windows and macOS.
 
+#### Using the install scripts (recommended)
+
+The scripts in [`build/`](build/README.md) check every required dependency (Rust, C toolchain, `curl`, `tar`, and on Linux `pkg-config` and ALSA headers) before building and installing `oxysol` into `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` on Windows).
+
+Modes: `--check` (stop on first missing dependency), `--list` (list missing dependencies and install commands), `--install` (ask, install missing dependencies, re-check, then build), and `--no-audio` (skip ALSA and build with `--no-default-features`). Without a mode flag, an interactive terminal asks which mode to use; a non-interactive run behaves like `--list`.
+
+**Linux and macOS** (`--check` and `--list` verified in CI; `--install` not verified yet):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (`--check` and `--list` verified on Windows; `--install` not verified yet):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Replace `--list` with `--install` to install missing dependencies and build.
+
+#### Manual steps
+
 **Rust is required.** Install it with [rustup](https://rustup.rs). The toolchain version is pinned in
 [`rust-toolchain.toml`](rust-toolchain.toml); rustup picks it up by itself on the first build. The build also compiles
 a little C code (SQLite), so you need a C toolchain: on Windows the Visual Studio Build Tools with the "Desktop
 development with C++" workload, on macOS the Xcode command line tools (`xcode-select --install`), on Linux `gcc` and,
-for sound, the ALSA headers (`sudo apt install build-essential libasound2-dev`; without them add
-`--no-default-features` to the build command).
+for sound, `pkg-config` and the ALSA headers (`sudo apt install build-essential pkg-config libasound2-dev`; without them
+add `--no-default-features` to the build command).
 
 **Windows (PowerShell).** Verified on Windows 10 on 2026-11-19.
 

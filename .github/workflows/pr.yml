@@ -141,3 +141,53 @@ jobs:
             echo "Found $broken broken link(s)"
             exit 1
           fi
+
+  install-scripts-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Lint install.sh with ShellCheck
+        run: |
+          sh -n build/install.sh
+          shellcheck build/install.sh
+      - name: Lint install.ps1 with PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          Invoke-ScriptAnalyzer -Path build/install.ps1 -EnableExit
+      - name: Run --list on minimal Ubuntu container without ALSA headers
+        run: |
+          output="$(docker run --rm -v "$PWD:/work:ro" ubuntu:24.04 sh /work/build/install.sh --list)"
+          printf '%s\n' "$output"
+          printf '%s\n' "$output" | grep -q 'libasound2-dev'
+          printf '%s\n' "$output" | grep -q 'pkg-config'
+
+  install-scripts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Run install.sh --check and --list (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sh build/install.sh --check --no-audio
+          sh build/install.sh --list --no-audio
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libasound2-dev
+          sh build/install.sh --check
+          sh build/install.sh --list
+      - name: Run install.sh --check and --list (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          sh build/install.sh --check
+          sh build/install.sh --list
+      - name: Run install.ps1 --check and --list (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File build/install.ps1 --check
+          powershell -NoProfile -ExecutionPolicy Bypass -File build/install.ps1 --list
