@@ -2,7 +2,7 @@
 
 # Zrzuty ekranu i animacje
 
-Każdy obraz na tej stronie powstał z prawdziwej gry za pomocą `cargo xtask screenshots`, więc pokazuje to, co
+Każdy obraz na tej stronie powstał z prawdziwej gry za pomocą `cargo xtask-art screenshots`, więc pokazuje to, co
 rysuje program.
 
 ## Gry

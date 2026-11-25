@@ -2,7 +2,7 @@
 
 # Capturas de tela e animações
 
-Todas as imagens desta página são geradas a partir do jogo de verdade por `cargo xtask screenshots`, então mostram
+Todas as imagens desta página são geradas a partir do jogo de verdade por `cargo xtask-art screenshots`, então mostram
 o que o programa desenha.
 
 ## Jogos

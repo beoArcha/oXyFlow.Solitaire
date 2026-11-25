@@ -4,85 +4,87 @@
 
 ## Spiele
 
-- **Klondike**: eine oder drei Karten ziehen.
-- **Spider**: mit 1, 2 oder 4 Farben.
+Vierzehn Spiele in sechs Familien, ein Programm, ein Satz Tasten:
+
+- **Klondike**: 1 oder 3 Karten ziehen.
+- **Spider**: 1, 2 oder 4 Farben.
 - **FreeCell**.
-- **Pyramide**: locker oder klassisch.
-- **Yukon-Familie**: Yukon, Russisches Solitaire, Alaska, Moosehide und Australisch (mit Talon, ein Durchgang).
+- **Pyramide**: Entspannt oder Klassisch.
+- **Yukon-Familie**: Yukon, Russisches Solitaire, Alaska, Moosehide und Australisch.
+- **Golf**: Sieben Spalten nacheinander auf den Ablagestapel abräumen, jeweils einen Rang höher oder tiefer.
 
-Ein Programm, ein Menü, eine Tastenbelegung.
+Das Spielmenü ordnet die Spiele unter Familienüberschriften, markiert die beliebten mit einem Stern, hält deine Favoriten in einer eigenen Liste und findet ein Spiel, sobald du seinen Namen eintippst. Die Regeln jedes Spiels stehen im Hilfefenster (`i`, „Spielanleitung“).
 
-Das Spielmenü ordnet die Spiele unter Familienüberschriften, markiert beliebte mit einem Stern, führt Favoriten in einer eigenen Liste und hat ein Suchfeld.
+## Austeilungen: Seeds, lösbare Austeilungen und Schwierigkeit
 
-## Kartenstile
+Jede Austeilung hat einen **Seed**. Kopiere ihn mit `c`, um die Austeilung noch einmal zu spielen oder zu teilen.
 
-In den Einstellungen wählst du einen Vorderseitenstil (International, Französisch, Deutsch, Italienisch oder Schweizer) und einen Rückseitenstil (Gitter oder Ornament). Die Karten werden mit Vektor-Glyphen gezeichnet; die Farbe der Karte steht immer auch als Zeichen neben dem Wert.
+- **Nur lösbare Austeilungen.** Ein neues Spiel kann auf eine Austeilung warten, die der eingebaute Löser als lösbar nachgewiesen hat. Der Löser kennt jede Karte, „lösbar“ heißt also: Die Austeilung lässt sich gewinnen, nicht: sie ist leicht.
+- **Neues Spiel aus Seed.** Wähle zuerst das Spiel, dann die Herkunft des Seeds: einen Seed eintippen, eine der Austeilungen wählen, die du schon gespielt hast (die neueste zuerst, mit Ergebnis und Zeit), das Spiel eine davon zufällig wählen lassen oder eine der **ausgewählten Austeilungen** nehmen.
+- **Fünf Schwierigkeitsstufen.** Jedes Spiel bietet für jede Stufe drei ausgewählte Austeilungen an, von sehr einfach bis sehr schwer. Alle sind nachweislich lösbar. Die Stufen beruhen auf Messungen: wie viel Arbeit der Löser brauchte, wie lang die Gewinnlinie ist und ob allein das Befolgen der Hinweise die Austeilung gewinnt.
+
+## Hilfe während des Spiels
+
+- **Leitfaden-Leiste** (`g`): das Ziel des Spiels, die Tasten, die jetzt wirken, und was die markierte Karte tun kann. Ab 130 Spalten steht sie neben dem Spielfeld, mit einem Knopf **Neues Spiel** oben; auf schmaleren Terminals öffnet sie sich in einem Fenster.
+- **Züge-Leiste** (`v`): jeder Zug, den du jetzt machen kannst, mit seiner Taste, und der Grund, wenn ein Zug nicht möglich ist.
+- **Hinweise** (`h`): Das Spiel markiert einen Zug auf dem Spielfeld und benennt ihn. Hinweise verwenden nur, was du sehen kannst: Sie schauen nie in verdeckte Karten oder in den Talon.
+- **Schnelle Züge**: `a` schickt die Karten unter dem Cursor zu ihrem besten Ziel, `e` tut dasselbe für die oberste Karte des Ablagestapels, von überall auf dem Spielfeld, und ein Doppelklick wirkt wie `a`. Schnelle Züge lassen sich in den Einstellungen oder in den Schnelloptionen (`o`) abschalten, wenn du jede Karte selbst ablegen willst.
+- **Automatisches Beenden**: Sobald der Gewinn sicher ist, werden die restlichen Züge für dich gespielt. Es lässt sich abschalten.
+- **Rückgängig und Wiederholen** (`u`, `r`), mit einer Option, ohne Rückgängig zu spielen.
 
 ## Tastatur und Maus
 
-Alles funktioniert mit der Tastatur und mit der Maus. Klicke eine Karte an, um sie aufzunehmen, und klicke ein Ziel
-an, um sie abzulegen. Ein Doppelklick schickt eine Karte auf einen Ablagestapel, eine Karte lässt sich auf ihr Ziel
-ziehen, und ein Rechtsklick legt sie zurück. Die vollständige Tastenliste steht im Hilfefenster (`?`).
+Jede Aktion funktioniert mit der Tastatur und mit der Maus. Klicke eine Karte an, um sie aufzunehmen, und dann ein Ziel, um sie abzulegen, mache einen Doppelklick für einen schnellen Zug, ziehe eine Karte auf ihr Ziel oder klicke mit der rechten Taste, um sie zurückzulegen. Knöpfe in Fenstern und Leisten zeigen ihre Taste, und der aktive Reiter eines Fensters sieht nie wie der fokussierte Knopf aus. Das Hilfefenster (`?`) listet jede Taste auf; es kann auch seitlich am Bildschirm angedockt bleiben (`d`).
 
-## Kartengröße
+## Einstellungen
 
-Mit `]` werden die Karten größer, mit `[` kleiner; `0` kehrt zur automatischen Größe zurück, die sich dem Fenster
-anpasst. Strg+Mausrad und die Einstellung Kartengröße  tun dasselbe. Eine Größe, die nicht ins Fenster
-passt, wird von selbst verkleinert. In der klassischen Windows-Konsole ändern Strg+Plus, Strg+Minus und Strg+0 die
-Schriftgröße der Konsole.
+Die Einstellungen haben drei Reiter:
 
-## Hilfe beim Spielen
+- **Beliebt** öffnet sich zuerst und sammelt die Einstellungen, die am häufigsten geändert werden: Sprache, Sehhilfemodus, Design, Kartengröße, Kartenrücken, Lautstärke, Leuchten und Automatisches Beenden.
+- **Audio & Optik** enthält alles über Aussehen und Klang: Farben, Vollbild und Fenstergröße, Design, Farbsehen, Kartenstile und Kartenfarbe, den Tisch, das Leuchten, die Konsolenschrift, Klang und die Prozesspriorität.
+- **Spielablauf** enthält die Hilfen: Zielmarkierungen, die Leitfaden- und die Züge-Leiste, Automatisches Beenden und schnelle Züge.
 
-- **Hilfe-Panel** (`g`): das Ziel des Spiels, die Tasten und was die ausgewählte Karte tun kann. Es steht neben dem
-  Spielfeld, wenn das Terminal mindestens 130 Spalten breit ist, und öffnet sich bei schmaleren in einem Fenster.
-- **Panel der möglichen Züge** (`v`): jeder Zug, der jetzt möglich ist, jeweils mit seiner Taste.
-- **Tipps** (`h`): das Spiel markiert einen Zug auf dem Spielfeld und benennt ihn.
-- **Automatisches Beenden**: Steht der Sieg sicher fest, werden die restlichen Züge für dich gespielt. Das lässt sich
-  in den Einstellungen  abschalten.
-- **Rückgängig und Wiederholen** (`u`, `r`), auf Wunsch auch ein Spiel ganz ohne Rückgängig.
+Eine Vorschau neben der Liste zeigt eine Änderung, bevor du sie behältst.
 
-## Seeds, lösbare Spiele, Statistiken
+## Karten und Tisch
 
-Jedes Spiel hat einen **Seed** (Startwert). Kopiere ihn (`c`), um ein Spiel zu wiederholen oder weiterzugeben, oder
-starte mit „Neues Spiel aus Seed“  ein Spiel aus einem beliebigen Seed. Eine Option lässt ein
-neues Spiel nach einer Verteilung suchen, die nachweislich lösbar ist. Der Bildschirm **Statistiken** zeigt die
-Ergebnisse je Spiel und einen Verlauf aller Spiele, das neueste zuerst, und lässt dich einen Seed erneut spielen.
+- **Sechs Vorderseiten-Stile**: International, Französisch, Deutsch, Italienisch, Spanisch und Schweizer, jeweils mit eigenen Farbzeichen.
+- **Zwei Rückenstile** (Gitter und Ornament) und Rückenfarben aus dem Design, Monokai oder Dracula.
+- **Kartenfarbe**: die des Designs, Weiß, Elfenbein, Hellgrau oder Dunkel.
+- **Tisch**: die Farbe des Designs, Grünfilz, Blau, Rot, Grau, Braun oder Schwarz, und die Oberfläche schlicht, Filz oder liniert.
+- **Kartengröße**: Mit `]` werden die Karten größer und mit `[` kleiner; `0` stellt die automatische Größe wieder her, die in das Fenster passt. Lange Spalten rücken enger zusammen, damit ihre letzte Karte immer ganz sichtbar bleibt; die Karten werden nur kleiner, wenn das Zusammenrücken nicht reicht.
 
-## Farbschemata für Komfort und Barrierefreiheit
+## Designs und Barrierefreiheit
 
-Fünf Farbschemata, wählbar in den Einstellungen. Jedes ist hier mit derselben Spielsituation zu sehen.
+Fünf Designs: **Dunkel** und **Hell** für den Alltag, **Hoher Kontrast** für Sehschwächen, **Monokai** und **Dracula**. Jedes wird hier an derselben Position gezeigt.
 
-**Dark** (dunkel) und **Light** (hell) für jeden Tag.
+![Das Design Dunkel](img/de/theme-dark.svg)
 
-![Das Farbschema Dark](../img/de/theme-dark.svg)
+![Das Design Hell](img/de/theme-light.svg)
 
-![Das Farbschema Light](../img/de/theme-light.svg)
+![Das Design Hoher Kontrast](img/de/theme-high-contrast.svg)
 
-**High contrast** (hoher Kontrast) ist für Menschen mit Sehschwäche gemacht: weißer Text auf reinem Schwarz mit
-leuchtend gelben und türkisfarbenen Akzenten, ein Rahmen um das Spielfeld und ein Textkontrast von mindestens 7:1 (die
-anderen Farbschemata halten mindestens 4,5:1 ein; Tests prüfen beides).
+![Das Design Monokai](img/de/theme-monokai.svg)
 
-![Das Farbschema High contrast](../img/de/theme-high-contrast.svg)
+![Das Design Dracula](img/de/theme-dracula.svg)
 
-Außerdem gibt es **Monokai** und **Dracula**.
+- **Sehhilfemodus.** Ein Schalter, angeboten beim ersten Start und in den Einstellungen: Textkontrast von mindestens 7:1 in jedem Design, die größten Karten, die passen, ein dicker Leuchtrand, Rang und Farbzeichen in Fett, größere Fokus- und Zielmarkierungen und in der klassischen Windows-Konsole eine größere Schrift. Jeder Teil bleibt einstellbar, und wenn du den Modus ausschaltest, kehren deine früheren Einstellungen zurück.
+- **Farbsehen.** Die Modi für Protanopie, Deuteranopie, Tritanopie und Monochrom ändern die Farben, damit Dinge, die du unterscheiden musst, unterscheidbar bleiben. Das **Vierfarbige Deck** gibt jeder Farbe eine eigene Farbe: Pik schwarz, Herz rot, Karo blau und Kreuz grün.
+- **Farbe ist nie das einzige Signal.** Farbzeichen (♠ ♥ ♦ ♣) stehen neben dem Rang, die markierte Stelle trägt ein Symbol, aufgenommene Karten und Ziele haben eigene Markierungen, Ergebnisse tragen ✓ oder ✗, und eine Zeile unter dem Spielfeld sagt in Worten, wo der Cursor steht und was er tun kann.
 
-![Das Farbschema Monokai](../img/de/theme-monokai.svg)
+## Statistik
 
-![Das Farbschema Dracula](../img/de/theme-dracula.svg)
+Der Statistikbildschirm zeigt die Ergebnisse je Spiel (Siege, Serien, Bestzeit und wenigste Züge) und eine Historie jeder Austeilung, die neueste zuerst und in deiner Ortszeit. Aus der Historie kannst du einen Seed erneut spielen, ihn kopieren oder den Löser prüfen lassen, ob eine Austeilung lösbar war.
 
-**Farbe ist nie der einzige Träger einer Information.** Die Farben der Karten stehen als Zeichen (♠ ♥ ♦ ♣) neben dem
-Wert, das ausgewählte Element ist mit einem Symbol markiert, aufgenommene Karten und Ablageziele haben eigene
-Markierungen, und eine Zeile unter dem Spielfeld sagt in Worten, wo der Cursor steht und was er tun kann. So bleibt das
-Spiel auch bei Farbenblindheit gut spielbar. Eigene Modi für Farbsehschwächen sind geplant, aber noch nicht im Spiel.
+## Windows-Konsole
+
+Unter Windows besitzt ein Spiel, das per Doppelklick oder mit `oxysol -n` gestartet wird, sein eigenes Konsolenfenster. Es öffnet sich standardmäßig im Vollbild, und im Fenstermodus kannst du seine Größe in den Einstellungen wählen: 130 × 40, 195 × 60 oder 260 × 80. Ein Spiel, das in einer bereits geöffneten Konsole startet, lässt diese Konsole, wie sie ist. In der klassischen Windows-Konsole ändern Strg+Plus, Strg+Minus und Strg+0 die Schriftgröße; andere Terminals zoomen mit eigenen Tasten.
 
 ## Sprachen
 
-Die Oberfläche des Spiels gibt es in neun Sprachen: Englisch, Polnisch, Deutsch, Spanisch, Französisch, Italienisch, Niederländisch, brasilianisches Portugiesisch und Ukrainisch. Die Sprache wählst du mit dem
-Flaggen-Umschalter in der linken oberen Ecke des Hauptmenüs oder in den Einstellungen; sie gilt sofort.
+Das Spiel gibt es in neun Sprachen: Englisch, Polnisch, Deutsch, Spanisch, Französisch, Italienisch, Niederländisch, brasilianisches Portugiesisch und Ukrainisch. Wähle eine mit der Flaggenauswahl oben links im Hauptmenü oder in den Einstellungen; sie gilt sofort. Beim ersten Start folgt das Spiel der Systemsprache. Diese Website gibt es in denselben neun Sprachen.
 
-Diese Website gibt es in neun Sprachen: Die Links oben auf jeder Seite wechseln zwischen ihnen.
+## Was noch fehlt
 
-## Was es noch nicht ist
-
-oXySol ist eine Vorabversion. Rechne mit Ecken und Kanten und melde sie uns im
-[Issue-Tracker](https://github.com/beoArcha/oXyFlow.Solitaire/issues).
+oXySol ist eine Vorabversion. Rechne mit Ecken und Kanten und sag uns davon Bescheid in der
+[Fehlerliste](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

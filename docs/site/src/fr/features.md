@@ -4,87 +4,87 @@
 
 ## Jeux
 
-- **Klondike** : en tirant 1 ou 3 cartes.
-- **Spider** : à 1, 2 ou 4 couleurs.
+Quatorze jeux en six familles, un seul programme, un seul jeu de touches :
+
+- **Klondike** : tirer 1 ou tirer 3.
+- **Spider** : 1, 2 ou 4 couleurs.
 - **FreeCell**.
-- **Pyramide** : souple ou classique.
-- **Famille Yukon** : Yukon, Solitaire russe, Alaska, Moosehide et Australienne (avec une pioche, un seul passage).
+- **Pyramide** : détente ou classique.
+- **Famille Yukon** : Yukon, Solitaire russe, Alaska, Moosehide et Australienne.
+- **Golf** : vider sept colonnes vers la défausse, un rang plus haut ou plus bas à la fois.
 
-Un seul programme, un seul menu, les mêmes touches partout.
+Le menu des jeux range les jeux sous des titres de famille, met une étoile aux jeux populaires, garde vos favoris dans leur propre liste et trouve un jeu dès que vous tapez son nom. Les règles de chaque jeu sont dans la fenêtre d’aide (`i`, « Comment jouer »).
 
-Le menu des jeux regroupe les jeux par famille, marque les populaires d’une étoile, garde vos favoris dans une liste à part et offre une recherche.
+## Donnes : graines, donnes gagnables et difficulté
 
-## Styles de cartes
+Chaque donne a une **graine** (seed). Copiez-la avec `c` pour rejouer la donne ou la partager.
 
-Les Réglages proposent un style de faces (International, Français, Allemand, Italien ou Suisse) et un style de dos (Treillis ou Ornement). Les cartes sont dessinées avec des glyphes vectoriels, et la couleur de la carte est toujours aussi indiquée par un signe à côté de la valeur.
+- **Donnes gagnables uniquement.** Une nouvelle partie peut attendre une donne que le solveur intégré a prouvée gagnable. Le solveur connaît chaque carte : « gagnable » signifie donc que la donne peut être gagnée, pas qu’elle est facile.
+- **Nouvelle partie avec graine.** Choisissez d’abord le jeu, puis l’origine de la graine : saisir une graine, choisir une des donnes déjà jouées (la plus récente d’abord, avec le résultat et le temps), laisser le jeu en prendre une au hasard, ou choisir une des **donnes sélectionnées**.
+- **Cinq niveaux de difficulté.** Chaque jeu propose trois donnes sélectionnées par niveau, de très facile à très difficile. Toutes sont prouvées gagnables. Les niveaux viennent de mesures : le travail que le solveur a dû fournir, la longueur de la ligne gagnante et le fait que suivre seulement les indices suffise à gagner la donne.
+
+## Aide pendant la partie
+
+- **Panneau du guide** (`g`) : le but du jeu, les touches qui fonctionnent maintenant et ce que peut faire la carte en focus. À 130 colonnes ou plus, il se place à côté du plateau, avec un bouton **Nouvelle partie** en haut ; sur les terminaux plus étroits, il s’ouvre dans une fenêtre.
+- **Panneau des coups possibles** (`v`) : chaque coup que vous pouvez jouer maintenant, avec sa touche, et la raison lorsqu’un coup n’est pas possible.
+- **Indices** (`h`) : le jeu marque un coup sur le plateau et le nomme. Les indices n’utilisent que ce que vous voyez : ils ne regardent jamais les cartes face cachée ni dans la pioche.
+- **Coups rapides** : `a` envoie les cartes sous le curseur vers leur meilleure cible, `e` fait de même pour la carte du dessus de la défausse, depuis n’importe où sur le plateau, et un double-clic agit comme `a`. Les coups rapides peuvent être désactivés dans les paramètres ou dans les options rapides (`o`) si vous préférez placer chaque carte vous-même.
+- **Fin automatique** : dès que la victoire est certaine, les coups restants sont joués pour vous. Elle peut être désactivée.
+- **Annuler et rétablir** (`u`, `r`), avec une option pour jouer sans annulation.
 
 ## Clavier et souris
 
-Chaque action se fait au clavier comme à la souris. Cliquez sur une carte pour la prendre, puis sur une destination
-pour la poser. Un double-clic envoie une carte sur une fondation, une carte peut être glissée sur sa destination, et
-un clic droit la remet à sa place. La liste complète des touches se trouve dans la fenêtre d’aide (`?`).
+Chaque action fonctionne au clavier et à la souris. Cliquez une carte pour la prendre puis une cible pour la poser, faites un double-clic pour un coup rapide, glissez une carte sur sa cible et faites un clic droit pour la reposer. Les boutons des fenêtres et des panneaux affichent leur touche, et l’onglet actif d’une fenêtre ne ressemble jamais au bouton en focus. La fenêtre d’aide (`?`) liste chaque touche ; elle peut aussi rester ancrée sur le côté de l’écran (`d`).
 
-## Taille des cartes
+## Paramètres
 
-`]` agrandit les cartes et `[` les réduit; `0` revient à la taille automatique, ajustée à la fenêtre. Ctrl+molette et
-le réglage Taille des cartes  font de même. Une taille qui ne tient pas dans la fenêtre est réduite
-d’elle-même. Dans la console Windows classique, Ctrl+Plus, Ctrl+Moins et Ctrl+0 changent la taille de la police de la
-console.
+Les paramètres comportent trois onglets :
 
-## De l’aide pendant la partie
+- **Populaires** s’ouvre en premier et rassemble les réglages les plus souvent modifiés : langue, basse vision, thème, taille des cartes, dos de carte, volume, aura et fin automatique.
+- **Audio & visuel** regroupe tout ce qui touche à l’aspect et au son : couleurs, plein écran et taille de fenêtre, thème, vision des couleurs, styles et teintes des cartes, la table, l’aura, la police de la console, le son et la priorité du processus.
+- **Jouabilité** regroupe les aides : marques de cible, panneaux du guide et des coups possibles, fin automatique et coups rapides.
 
-- **Panneau du guide** (`g`) : le but du jeu, les touches et ce que peut faire la carte sélectionnée. Il s’affiche à
-  côté du plateau sur les terminaux d’au moins 130 colonnes et s’ouvre dans une fenêtre sur les plus étroits.
-- **Panneau des coups possibles** (`v`) : tous les coups jouables maintenant, chacun avec sa touche.
-- **Indices** (`h`) : le jeu signale un coup sur le plateau et le décrit.
-- **Fin automatique** : quand la partie est gagnée à coup sûr, les derniers coups se jouent tout seuls. On peut la
-  désactiver dans les Réglages.
-- **Annuler et rétablir** (`u`, `r`), avec une option pour jouer sans annulation.
+Un aperçu à côté de la liste montre une modification avant que vous la gardiez.
 
-## Graines, donnes gagnables, statistiques
+## Cartes et table
 
-Chaque donne a une **graine** (seed). Copiez-la (`c`) pour rejouer ou partager une donne, ou lancez une partie à partir
-de n’importe quelle graine avec « Nouvelle partie depuis une graine ». Une option permet à une
-nouvelle partie de chercher une donne dont on a prouvé qu’elle est gagnable. L’écran des **statistiques** affiche les
-résultats de chaque jeu et l’historique de toutes les donnes, de la plus récente à la plus ancienne, et permet de
-rejouer une graine.
+- **Six styles de faces** : International, Français, Allemand, Italien, Espagnol et Suisse, chacun avec ses propres symboles de couleur.
+- **Deux styles de dos** (Treillis et Ornement) et des couleurs de dos du thème, Monokai ou Dracula.
+- **Teinte du fond des cartes** : celle du thème, blanc, ivoire, gris clair ou sombre.
+- **Table** : la couleur du thème, feutre vert, bleu, rouge, gris, brun ou noir, en surface unie, feutre ou ligné.
+- **Taille des cartes** : agrandissez les cartes avec `]` et réduisez-les avec `[` ; `0` revient à la taille automatique qui tient dans la fenêtre. Les colonnes longues se resserrent pour que leur dernière carte reste toujours entièrement visible, et les cartes ne deviennent plus petites que lorsque le resserrement ne suffit pas.
 
-## Des thèmes pour le confort et l’accessibilité
+## Thèmes et accessibilité
 
-Cinq thèmes, à choisir dans les Réglages. Chacun est montré ici sur la même position.
+Cinq thèmes : **Sombre** et **Clair** pour le jeu de tous les jours, **Contraste élevé** pour la basse vision, **Monokai** et **Dracula**. Chacun est montré ici sur la même position.
 
-**Dark** (sombre) et **Light** (clair) pour jouer au quotidien.
+![Le thème Sombre](img/fr/theme-dark.svg)
 
-![Le thème Dark](../img/fr/theme-dark.svg)
+![Le thème Clair](img/fr/theme-light.svg)
 
-![Le thème Light](../img/fr/theme-light.svg)
+![Le thème Contraste élevé](img/fr/theme-high-contrast.svg)
 
-**High contrast** (contraste élevé) est conçu pour les personnes malvoyantes : du texte blanc sur un noir pur avec des
-touches de jaune vif et de cyan, un cadre autour de la zone de jeu et un contraste du texte d’au moins 7:1 (les autres
-thèmes respectent au moins 4,5:1; des tests vérifient les deux).
+![Le thème Monokai](img/fr/theme-monokai.svg)
 
-![Le thème High contrast](../img/fr/theme-high-contrast.svg)
+![Le thème Dracula](img/fr/theme-dracula.svg)
 
-**Monokai** et **Dracula** sont également disponibles.
+- **Basse vision.** Un seul interrupteur, proposé au premier démarrage et dans les paramètres : contraste du texte d’au moins 7:1 dans tous les thèmes, les plus grandes cartes qui tiennent, un aura épais, rang et couleur en gras, des marques de focus et de cible plus grandes et, dans la console Windows classique, une police plus grande. Chaque élément reste réglable, et désactiver le mode rétablit vos réglages précédents.
+- **Vision des couleurs.** Des modes pour la protanopie, la deutéranopie, la tritanopie et le monochrome modifient les couleurs pour que ce que vous devez distinguer reste distinct. Le **jeu à quatre couleurs** donne une couleur à chaque couleur de carte : piques noirs, cœurs rouges, carreaux bleus et trèfles verts.
+- **La couleur n’est jamais le seul signal.** Les couleurs sont des symboles (♠ ♥ ♦ ♣) à côté du rang, l’élément en focus porte une marque, les cartes prises et les cibles ont leurs propres marques, les résultats portent ✓ ou ✗, et une ligne sous le plateau indique en toutes lettres où se trouve le curseur et ce qu’il peut faire.
 
-![Le thème Monokai](../img/fr/theme-monokai.svg)
+## Statistiques
 
-![Le thème Dracula](../img/fr/theme-dracula.svg)
+L’écran des statistiques montre les résultats de chaque jeu (victoires, séries, meilleur temps et moins de coups) et un historique de chaque donne, la plus récente d’abord et à votre heure locale. Depuis l’historique, vous pouvez rejouer une graine, la copier, ou demander au solveur de vérifier si une donne était gagnable.
 
-**La couleur n’est jamais le seul porteur d’information.** Les enseignes sont dessinées sous forme de signes
-(♠ ♥ ♦ ♣) à côté de la valeur, l’élément sélectionné est marqué d’un symbole, les cartes prises et les destinations
-possibles ont leurs propres marques, et une ligne sous le plateau dit en toutes lettres où se trouve le curseur et ce
-qu’il peut faire. Le jeu reste utilisable par les personnes daltoniennes. Des modes dédiés aux troubles de la vision
-des couleurs sont prévus; ils ne sont pas encore dans le jeu.
+## Console Windows
+
+Sous Windows, un jeu lancé par un double-clic, ou avec `oxysol -n`, possède sa propre fenêtre de console. Elle s’ouvre en plein écran par défaut, et en mode fenêtré vous pouvez choisir sa taille dans les paramètres : 130 × 40, 195 × 60 ou 260 × 80. Un jeu lancé dans une console déjà ouverte laisse cette console telle quelle. Dans la console Windows classique, Ctrl+Plus, Ctrl+Moins et Ctrl+0 changent la taille de la police de la console ; les autres terminaux zooment avec leurs propres touches.
 
 ## Langues
 
-L’interface du jeu est disponible en neuf langues : anglais, polonais, allemand, espagnol, français, italien, néerlandais, portugais du Brésil et ukrainien. Choisissez la langue avec le
-sélecteur à drapeaux, en haut à gauche du menu principal, ou dans les Réglages; le changement est immédiat.
+Le jeu est disponible en neuf langues : anglais, polonais, allemand, espagnol, français, italien, néerlandais, portugais du Brésil et ukrainien. Choisissez-en une avec le sélecteur de drapeaux, en haut à gauche du menu principal, ou dans les paramètres ; elle s’applique tout de suite. Au premier démarrage, le jeu suit la langue de votre système. Ce site est disponible dans les mêmes neuf langues.
 
-Ce site est disponible en neuf langues : les liens en haut de chaque page permettent de passer de l’une à l’autre.
+## Ce qui n’est pas encore là
 
-## Ce qu’il n’est pas encore
-
-oXySol est une préversion. Attendez-vous à quelques imperfections, et signalez-les-nous dans le
+oXySol est une préversion. Attendez-vous à des aspérités, et signalez-les-nous dans le
 [suivi des tickets](https://github.com/beoArcha/oXyFlow.Solitaire/issues).

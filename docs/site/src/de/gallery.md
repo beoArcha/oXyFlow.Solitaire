@@ -2,7 +2,7 @@
 
 # Screenshots und Animationen
 
-Jedes Bild auf dieser Seite wird von `cargo xtask screenshots` aus dem echten Spiel erzeugt und zeigt also, was das
+Jedes Bild auf dieser Seite wird von `cargo xtask-art screenshots` aus dem echten Spiel erzeugt und zeigt also, was das
 Programm zeichnet.
 
 ## Spiele

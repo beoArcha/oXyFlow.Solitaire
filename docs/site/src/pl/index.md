@@ -2,7 +2,7 @@
 
 # oXySol
 
-Pasjans w terminalu: **Klondike, Pająk, FreeCell, Piramida i rodzina Yukon** w jednym programie — pojedynczym pliku `oxysol`.
+Czternaście gier pasjansa w terminalu: **Klondike, Pająk, FreeCell, Piramida, rodzina Yukon i Golf** w jednym programie, `oxysol`.
 Działa w każdym nowoczesnym terminalu, a grać można klawiaturą lub myszą.
 
 ![Klondike w oXySol: plansza, panel przewodnika i panel możliwych ruchów](../img/pl/klondike.svg)
@@ -15,7 +15,7 @@ Działa w każdym nowoczesnym terminalu, a grać można klawiaturą lub myszą.
 Wszystkie wersje są na [stronie wydań](https://github.com/beoArcha/oXyFlow.Solitaire/releases).
 
 - [Pobierz gotową wersję albo zbuduj program ze źródeł](install.md) w systemie Windows, Linux lub macOS.
-- [Funkcje](features.md): przewodnik, podpowiedzi, automatyczne kończenie, statystyki, motywy, języki.
+- [Funkcje](features.md): wyselekcjonowane rozdania według trudności, podpowiedzi, tryb słabowidzący i widzenie barw, style kart, statystyki i języki.
 - [Zrzuty ekranu i animacje](gallery.md) wszystkich gier i ekranów.
 
 Kod źródłowy i zgłoszenia: [beoArcha/oXyFlow.Solitaire](https://github.com/beoArcha/oXyFlow.Solitaire).

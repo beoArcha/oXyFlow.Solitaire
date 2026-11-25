@@ -2,7 +2,7 @@
 
 # Screenshot e animazioni
 
-Ogni immagine di questa pagina è generata dal gioco vero e proprio con `cargo xtask screenshots`, quindi mostra
+Ogni immagine di questa pagina è generata dal gioco vero e proprio con `cargo xtask-art screenshots`, quindi mostra
 quello che il programma disegna.
 
 ## Giochi

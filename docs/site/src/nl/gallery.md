@@ -2,7 +2,7 @@
 
 # Schermafbeeldingen en animaties
 
-Elke afbeelding op deze pagina wordt door `cargo xtask screenshots` uit het echte spel gemaakt en laat dus zien wat het
+Elke afbeelding op deze pagina wordt door `cargo xtask-art screenshots` uit het echte spel gemaakt en laat dus zien wat het
 programma tekent.
 
 ## Spellen
