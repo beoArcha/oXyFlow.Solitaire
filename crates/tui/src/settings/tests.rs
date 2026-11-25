@@ -344,3 +344,37 @@ fn the_table_is_previewed_with_the_rest_of_the_interface() {
     assert_eq!(kept.table_colour, TableColour::Theme);
     assert_eq!(kept.table_feel, TableFeel::Plain);
 }
+
+#[test]
+fn color_vision_and_four_color_deck_default_and_round_trip() {
+    assert_eq!(Settings::default().color_vision, ColorVision::Normal);
+    assert!(!Settings::default().four_color_deck);
+    let parsed = toml::from_str::<Settings>("volume = 10");
+    assert!(
+        matches!(parsed, Ok(ref s) if s.color_vision == ColorVision::Normal && !s.four_color_deck)
+    );
+
+    let settings = Settings {
+        color_vision: ColorVision::Deuteranopia,
+        four_color_deck: true,
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("color_vision = \"deuteranopia\""));
+    assert!(text.contains("four_color_deck = true"));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}
+
+#[test]
+fn color_vision_and_four_color_deck_are_previewed_with_interface() {
+    let saved = Settings::default();
+    let previewed = Settings {
+        color_vision: ColorVision::Tritanopia,
+        four_color_deck: true,
+        ..saved.clone()
+    };
+    let kept = previewed.with_interface_of(&saved);
+    assert_eq!(kept.color_vision, ColorVision::Normal);
+    assert!(!kept.four_color_deck);
+}

@@ -12,14 +12,16 @@ pub mod monokai;
 pub mod palette;
 pub mod table;
 pub mod table_feel;
+pub mod vision;
 
+use oxysol_core::{Color as SuitColor, Suit};
 use ratatui::style::{Color, Style};
 use serde::{Deserialize, Serialize};
 
 pub use palette::{GRAPHIC_PAIRS, MARK_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
 
 use crate::caps::ColorDepth;
-use crate::settings::{CardBack, CardFaceTint, TableColour};
+use crate::settings::{CardBack, CardFaceTint, ColorVision, TableColour};
 
 /// A built-in theme.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -67,6 +69,7 @@ impl ThemeId {
 pub struct Theme {
     id: ThemeId,
     depth: ColorDepth,
+    vision: ColorVision,
     palette: Palette,
 }
 
@@ -76,7 +79,17 @@ impl Theme {
         Self {
             id,
             depth,
+            vision: ColorVision::Normal,
             palette: id.palette(),
+        }
+    }
+
+    /// This theme with its meaning tokens adapted for `vision`.
+    pub fn with_color_vision(&self, vision: ColorVision) -> Self {
+        Self {
+            vision,
+            palette: vision::remap(self.id, self.palette, vision),
+            ..*self
         }
     }
 
@@ -139,6 +152,22 @@ impl Theme {
         };
         Style::new()
             .fg(ink.resolve(self.depth))
+            .bg(colors.face.resolve(self.depth))
+    }
+
+    /// The fill and suit style of a face-up card for `tint` and `suit`, supporting the four-color
+    /// deck (spades black, hearts red, diamonds blue, clubs green) adapted to `self.vision`.
+    pub fn card_suit_style(&self, tint: CardFaceTint, suit: Suit, four_color: bool) -> Style {
+        if !four_color {
+            let token = match suit.color() {
+                SuitColor::Red => Token::CardRed,
+                SuitColor::Black => Token::CardBlack,
+            };
+            return self.card_face_style(tint, token);
+        }
+        let colors = face::suit_colors(tint, &self.palette, self.vision);
+        Style::new()
+            .fg(colors.for_suit(suit).resolve(self.depth))
             .bg(colors.face.resolve(self.depth))
     }
 

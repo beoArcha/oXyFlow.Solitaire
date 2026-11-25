@@ -11,8 +11,8 @@ use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
 use crate::i18n::{Locale, t, tf};
 use crate::settings::{
-    CONSOLE_FONT_SIZES, CardBack, CardFaceTint, CardSizeSetting, ColorMode, ConsoleFace,
-    FullScreen, GlyphMode, ProcessPriority, Settings, TableColour, TableFeel,
+    CONSOLE_FONT_SIZES, CardBack, CardFaceTint, CardSizeSetting, ColorMode, ColorVision,
+    ConsoleFace, FullScreen, GlyphMode, ProcessPriority, Settings, TableColour, TableFeel,
 };
 use crate::theme::ThemeId;
 use crate::theme::table::felt_for;
@@ -142,8 +142,10 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
     match field {
         Field::Language => settings.locale.own_name().to_owned(),
         Field::Theme => t(theme_key(settings.theme)).into_owned(),
+        Field::ColorVision => t(settings.color_vision.label_key()).into_owned(),
         Field::CardBack => t(card_back_key(settings.card_back)).into_owned(),
         Field::CardFace => t(settings.card_face.label_key()).into_owned(),
+        Field::FourColorDeck => switch_text(settings.four_color_deck),
         Field::TableColour => table_colour_text(settings),
         Field::TableFeel => t(settings.table_feel.label_key()).into_owned(),
         Field::FrontStyle => front_style_name(&settings.front_style),
@@ -269,8 +271,12 @@ pub fn changed(
     match field {
         Field::Language => next.locale = cycle(&Locale::offered(), settings.locale, step),
         Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
+        Field::ColorVision => {
+            next.color_vision = cycle(&ColorVision::ALL, settings.color_vision, step);
+        }
         Field::CardBack => next.card_back = cycle(&CARD_BACKS, settings.card_back, step),
         Field::CardFace => next.card_face = cycle(&CardFaceTint::ALL, settings.card_face, step),
+        Field::FourColorDeck => next.four_color_deck = !settings.four_color_deck,
         Field::TableColour => {
             next.table_colour = cycle(&TableColour::ALL, settings.table_colour, step)
         }

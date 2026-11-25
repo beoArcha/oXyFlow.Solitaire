@@ -18,8 +18,8 @@ use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap};
 use crate::widgets::text::clip;
 
-/// Longest event text, in columns; shorter events never push `Now:` out of its row.
-const EVENT_WIDTH: usize = 40;
+/// Longest event text (including the 2-cell status sign), in columns.
+const EVENT_WIDTH: usize = 42;
 
 /// The buttons of the controls strip as drawn last: only the `Do:` row has any.
 #[derive(Debug, Default)]
@@ -41,6 +41,15 @@ fn event_token(tone: Tone) -> Token {
     }
 }
 
+fn event_sign(tone: Tone, unicode: bool) -> &'static str {
+    match (tone, unicode) {
+        (Tone::Success, true) => "✓ ",
+        (Tone::Success, false) => "+ ",
+        (Tone::Error, true) => "✗ ",
+        (Tone::Error, false) => "x ",
+    }
+}
+
 fn draw_now(
     frame: &mut Frame,
     area: Rect,
@@ -49,20 +58,23 @@ fn draw_now(
     ctx: &ViewCtx<'_>,
 ) {
     let width = usize::from(area.width);
-    let shown = event.map(|(text, tone)| (clip(text, EVENT_WIDTH.min(width / 2)), *tone));
+    let budget = EVENT_WIDTH.min(width / 2);
+    let shown = event.map(|(text, tone)| {
+        let sign = event_sign(*tone, ctx.glyphs.unicode);
+        let body = clip(text, budget.saturating_sub(sign.chars().count()));
+        (format!("{sign}{body}"), *tone)
+    });
     let event_width = shown
         .as_ref()
         .map_or(0, |(text, _)| text.chars().count() + 1);
     let now = guidance.now_line(width.saturating_sub(event_width));
+    let theme = ctx.theme.with_color_vision(ctx.settings.color_vision);
     frame.render_widget(
-        Paragraph::new(Line::styled(
-            now,
-            ctx.theme.style(Token::Text, Token::Surface),
-        )),
+        Paragraph::new(Line::styled(now, theme.style(Token::Text, Token::Surface))),
         area,
     );
     if let Some((text, tone)) = shown {
-        let style = ctx.theme.style(event_token(tone), Token::Surface);
+        let style = theme.style(event_token(tone), Token::Surface);
         frame.render_widget(
             Paragraph::new(Line::styled(text, style)).alignment(Alignment::Right),
             area,
@@ -97,4 +109,17 @@ pub(super) fn draw(
     draw_now(frame, now, guidance, event, ctx);
     let do_row = draw_do(frame.buffer_mut(), possible, guidance, ctx);
     Buttons { do_row }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn event_signs_are_present_in_unicode_and_ascii() {
+        assert_eq!(event_sign(Tone::Success, true), "✓ ");
+        assert_eq!(event_sign(Tone::Error, true), "✗ ");
+        assert_eq!(event_sign(Tone::Success, false), "+ ");
+        assert_eq!(event_sign(Tone::Error, false), "x ");
+    }
 }

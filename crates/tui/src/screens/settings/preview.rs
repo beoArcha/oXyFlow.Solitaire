@@ -152,28 +152,33 @@ fn draw_labels(
 
 /// Draws the pane into `area`: its title, the four cards with their auras, and a label under each.
 pub(super) fn draw(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
-    let table = ctx.theme.style(Token::TableText, Token::Table);
+    let vision = ctx.theme.with_color_vision(ctx.settings.color_vision);
+    let view = ViewCtx {
+        theme: &vision,
+        ..*ctx
+    };
+    let table = view.theme.style(Token::TableText, Token::Table);
     frame.render_widget(Block::new().style(table), area);
     let title = Line::styled(t("settings.pane.title").into_owned(), table);
     frame.render_widget(
         Paragraph::new(title).alignment(Alignment::Center),
         Rect::new(area.x, area.y, area.width, 1),
     );
-    let rings = ctx.settings.aura_size.rings();
-    let size = card_size(area, rings, ctx);
+    let rings = view.settings.aura_size.rings();
+    let size = card_size(area, rings, &view);
     let rects = card_rects(area, size, rings);
     for (slot, rect) in (0..CARDS).zip(rects) {
-        let (face, mark) = face_and_mark(u8::try_from(slot).unwrap_or(0), ctx);
-        card::draw(frame.buffer_mut(), rect, face, mark, None, ctx);
+        let (face, mark) = face_and_mark(u8::try_from(slot).unwrap_or(0), &view);
+        card::draw(frame.buffer_mut(), rect, face, mark, None, &view);
     }
     aura::draw(
         frame.buffer_mut(),
         area,
         &geometry(&rects, size),
         &marks(),
-        ctx,
+        &view,
     );
-    draw_labels(frame, (area, &rects), rings, ctx);
+    draw_labels(frame, (area, &rects), rings, &view);
 }
 
 /// Draws the note that the window is too small for the pane, when `pane` says it is not drawn.

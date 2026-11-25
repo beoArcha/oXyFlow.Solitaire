@@ -7,6 +7,7 @@ mod aids;
 mod card_back;
 mod card_face;
 mod card_size;
+mod color_vision;
 mod console_face;
 mod dock;
 mod full_screen;
@@ -17,6 +18,7 @@ pub use aids::{Aid, Aids};
 pub use card_back::CardBack;
 pub use card_face::CardFaceTint;
 pub use card_size::{CardSizeSetting, Zoom, Zoomed, step as zoom_step};
+pub use color_vision::ColorVision;
 pub use console_face::{CONSOLE_FONT_SIZES, ConsoleFace};
 pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
@@ -119,6 +121,12 @@ pub struct Settings {
     /// The color of face-up cards; the suit colors adapt to it. An older saved value without the
     /// field loads as `Theme`.
     pub card_face: CardFaceTint,
+    /// Color vision mode: adapts meaning tokens to a palette safe for that deficiency. An older
+    /// saved value without the field loads as `Normal`.
+    pub color_vision: ColorVision,
+    /// Whether face-up cards use four suit colors (spades black, hearts red, diamonds blue, clubs
+    /// green) in every color vision mode. An older saved value without the field loads as `false`.
+    pub four_color_deck: bool,
     /// The colour of the table the cards lie on. An older saved value without the field loads as
     /// `Theme`.
     pub table_colour: TableColour,
@@ -166,6 +174,8 @@ impl Default for Settings {
             full_screen: FullScreen::Auto,
             card_back: CardBack::Theme,
             card_face: CardFaceTint::Theme,
+            color_vision: ColorVision::Normal,
+            four_color_deck: false,
             table_colour: TableColour::Theme,
             table_feel: TableFeel::Plain,
             card_size: CardSizeSetting::Auto,

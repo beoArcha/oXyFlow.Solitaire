@@ -35,8 +35,10 @@ fn the_interface_group_holds_the_look_rows_and_follows_the_display_group() {
     assert_eq!(Group::ALL[1], Group::Interface);
     for field in [
         Field::Theme,
+        Field::ColorVision,
         Field::CardBack,
         Field::CardFace,
+        Field::FourColorDeck,
         Field::TableColour,
         Field::TableFeel,
         Field::FrontStyle,
