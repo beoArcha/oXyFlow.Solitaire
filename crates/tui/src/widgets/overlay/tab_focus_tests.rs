@@ -154,7 +154,12 @@ fn active_tab_and_focused_button_differ_without_color_in_every_theme_vision_and_
 fn keyboard_and_mouse_update_active_tab_while_focused_button_stays_distinct() {
     i18n::set_locale(Locale::EnUs);
     let btn = button_markers(true, "Close [Esc]");
-    let mut h = harness(ThemeId::HighContrast, ColorVision::Normal, ColorDepth::TrueColor, true);
+    let mut h = harness(
+        ThemeId::HighContrast,
+        ColorVision::Normal,
+        ColorDepth::TrueColor,
+        true,
+    );
     h.type_char('?');
     assert_tab_and_button_differ_without_color(&mut h, "[Keys]", &btn, "open keys");
 
@@ -202,7 +207,12 @@ fn quick_options_keyboard_and_mouse_focus_update_buttons_distinctly() {
     let save = t("board.options.save").into_owned();
     let close = tf("help.rules.close", &[("key", "Esc")]);
     for unicode in [true, false] {
-        let mut h = harness(ThemeId::Dark, ColorVision::Normal, ColorDepth::TrueColor, unicode);
+        let mut h = harness(
+            ThemeId::Dark,
+            ColorVision::Normal,
+            ColorDepth::TrueColor,
+            unicode,
+        );
         h.press(KeyCode::Enter);
         h.press(KeyCode::Enter);
         h.type_char('o');
@@ -230,9 +240,16 @@ fn settings_dialogs_and_confirmations_update_button_focus_by_keyboard_and_mouse(
     let yes = t("common.dialog.yes").into_owned();
     let no = t("common.dialog.no").into_owned();
 
-    let mut h = harness(ThemeId::Dark, ColorVision::Normal, ColorDepth::TrueColor, true);
-    h.app
-        .apply(Effect::Open(Modal::confirm("board.confirm.quit", Effect::Quit)));
+    let mut h = harness(
+        ThemeId::Dark,
+        ColorVision::Normal,
+        ColorDepth::TrueColor,
+        true,
+    );
+    h.app.apply(Effect::Open(Modal::confirm(
+        "board.confirm.quit",
+        Effect::Quit,
+    )));
     assert_focused_button(&mut h, true, &no, "confirm initial no");
     assert!(h.text().contains(&format!("  {yes}  ")));
 
@@ -244,8 +261,12 @@ fn settings_dialogs_and_confirmations_update_button_focus_by_keyboard_and_mouse(
     h.click(col, row);
     assert!(h.app.should_quit());
 
-    let mut settings_h =
-        harness(ThemeId::HighContrast, ColorVision::Monochrome, ColorDepth::Ansi16, false);
+    let mut settings_h = harness(
+        ThemeId::HighContrast,
+        ColorVision::Monochrome,
+        ColorDepth::Ansi16,
+        false,
+    );
     for _ in 0..3 {
         settings_h.press(KeyCode::Down);
     }
@@ -269,7 +290,12 @@ fn settings_dialogs_and_confirmations_update_button_focus_by_keyboard_and_mouse(
     settings_h.click(col, row);
     assert_eq!(settings_h.app.screen(), Screen::MainMenu);
 
-    let mut gfx_h = harness(ThemeId::Light, ColorVision::Tritanopia, ColorDepth::TrueColor, true);
+    let mut gfx_h = harness(
+        ThemeId::Light,
+        ColorVision::Tritanopia,
+        ColorDepth::TrueColor,
+        true,
+    );
     let check =
         crate::widgets::overlay::GraphicsCheck::new(&Settings::default(), false, Effect::None);
     gfx_h.app.apply(Effect::Open(Modal::GraphicsCheck(check)));
