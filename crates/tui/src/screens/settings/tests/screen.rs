@@ -6,14 +6,15 @@ use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 
-use super::{bare, changed, fitting_size, index_of};
+use super::{bare, changed, fitting_size};
 use crate::action::Action;
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::glyphs::Glyphs;
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::settings::SettingsScreen;
-use crate::screens::settings::options::{FIELDS, Field, Group, Step};
+use crate::screens::settings::options::{FIELDS, Field, Step};
+use crate::screens::settings::tabs::Tab;
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::Settings;
 use crate::test_support::{TRUE_COLOR, lines_without_pane, sound_styles};
@@ -71,8 +72,21 @@ fn act(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, action: Action) -> Effect
     screen.handle(&key(KeyCode::Null), Some(action), ctx)
 }
 
+fn switch_screen_tab(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, target: Tab) {
+    let needle = format!("[{}]", t(target.label_key()));
+    for _ in 0..Tab::ALL.len() {
+        if render(screen, ctx)
+            .iter()
+            .any(|line| line.contains(&needle))
+        {
+            return;
+        }
+        act(screen, ctx, Action::FocusNext);
+    }
+}
+
 /// Draws the screen in a window wide enough for the preview pane beside the list and high enough for
-/// the whole list, including the table settings.
+/// the tallest tab.
 fn render(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>) -> Vec<String> {
     let (width, height) = fitting_size();
     let mut terminal =
@@ -119,21 +133,26 @@ fn a_click_changes_the_clicked_row_forward() {
 fn every_row_changes_by_mouse() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let ctx = fixture.ctx(AudioStatus::Ready);
-    for field in FIELDS
-        .into_iter()
-        .filter(|field| !super::is_console_font_row(*field))
-    {
-        let mut screen = SettingsScreen::new();
-        let lines = render(&mut screen, &ctx);
-        let (column, row) = row_at(&lines, field);
-        let effect = screen.handle_mouse(&click(column, row), &ctx);
-        let next = changed(field, &fixture.settings, Step::Next);
-        let expected = if field.is_interface() {
-            Effect::Preview(next)
-        } else {
-            Effect::Apply(next)
-        };
-        assert_eq!(effect, expected, "{field:?}");
+    for tab in [Tab::AudioVisual, Tab::Gameplay] {
+        for field in tab
+            .fields()
+            .iter()
+            .copied()
+            .filter(|field| !super::is_console_font_row(*field))
+        {
+            let mut screen = SettingsScreen::new();
+            switch_screen_tab(&mut screen, &ctx, tab);
+            let lines = render(&mut screen, &ctx);
+            let (column, row) = row_at(&lines, field);
+            let effect = screen.handle_mouse(&click(column, row), &ctx);
+            let next = changed(field, &fixture.settings, Step::Next);
+            let expected = if field.is_interface() {
+                Effect::Preview(next)
+            } else {
+                Effect::Apply(next)
+            };
+            assert_eq!(effect, expected, "{tab:?} {field:?}");
+        }
     }
 }
 
@@ -142,6 +161,7 @@ fn sound_rows_do_nothing_without_audio() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let ctx = fixture.ctx(AudioStatus::NoDevice);
     let mut screen = SettingsScreen::new();
+    switch_screen_tab(&mut screen, &ctx, Tab::AudioVisual);
     let lines = render(&mut screen, &ctx);
     assert!(
         lines
@@ -149,21 +169,24 @@ fn sound_rows_do_nothing_without_audio() {
             .any(|text| text.contains("no working audio device"))
     );
     let mut clicked = SettingsScreen::new();
-    let lines = render(&mut clicked, &ctx);
-    let (column, row) = row_at(&lines, Field::Music);
+    switch_screen_tab(&mut clicked, &ctx, Tab::AudioVisual);
+    let click_lines = render(&mut clicked, &ctx);
+    let (column, row) = row_at(&click_lines, Field::Music);
     assert_eq!(
         clicked.handle_mouse(&click(column, row), &ctx),
         Effect::None
     );
-    let sound_style = index_of(Field::SoundStyle);
+    let sound_style = Tab::AudioVisual
+        .fields()
+        .iter()
+        .position(|field| *field == Field::SoundStyle)
+        .unwrap_or_default();
     for _ in 0..sound_style {
         act(&mut screen, &ctx, Action::Down);
     }
     assert_eq!(act(&mut screen, &ctx, Action::Select), Effect::None);
     assert_eq!(act(&mut screen, &ctx, Action::Right), Effect::None);
-    for _ in 0..sound_style {
-        act(&mut screen, &ctx, Action::Up);
-    }
+    switch_screen_tab(&mut screen, &ctx, Tab::Gameplay);
     assert_eq!(
         act(&mut screen, &ctx, Action::Select),
         Effect::Apply(changed(Field::Language, &fixture.settings, Step::Next))
@@ -203,12 +226,16 @@ fn the_reason_is_not_drawn_while_sound_is_available() {
 fn unavailable_rows_are_marked_in_their_text() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
     let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(AudioStatus::NoDevice));
+    let ctx = fixture.ctx(AudioStatus::NoDevice);
+    switch_screen_tab(&mut screen, &ctx, Tab::AudioVisual);
+    let lines = render(&mut screen, &ctx);
     assert!(
         lines
             .iter()
             .any(|text| { text.contains("Music") && bare(text).ends_with("Off (unavailable)") })
     );
+    switch_screen_tab(&mut screen, &ctx, Tab::Popular);
+    let lines = render(&mut screen, &ctx);
     assert!(
         lines
             .iter()
@@ -224,17 +251,25 @@ fn unavailable_rows_are_marked_in_their_text() {
 #[test]
 fn every_row_is_drawn_in_both_locales() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
-    let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
-    for field in FIELDS {
-        row_at(&lines, field);
+    let ctx = fixture.ctx(AudioStatus::Ready);
+    let mut seen = Vec::new();
+    for tab in [Tab::AudioVisual, Tab::Gameplay] {
+        let mut screen = SettingsScreen::new();
+        switch_screen_tab(&mut screen, &ctx, tab);
+        let lines = render(&mut screen, &ctx);
+        for field in tab.fields() {
+            row_at(&lines, *field);
+            seen.push(*field);
+        }
     }
+    assert_eq!(seen.len(), FIELDS.len());
     set_locale(Locale::PlPl);
     let polish = Settings {
         locale: Locale::PlPl,
         ..Settings::default()
     };
     let fixture = Fixture::new(polish, TRUE_COLOR);
+    let mut screen = SettingsScreen::new();
     let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
     let label = t("settings.row.language").into_owned();
     let value = Locale::PlPl.own_name();
@@ -246,32 +281,6 @@ fn every_row_is_drawn_in_both_locales() {
     set_locale(Locale::EnUs);
 }
 
-fn heading_y(lines: &[String], group: Group) -> u16 {
-    let found = position_of(lines, &t(group.label_key()));
-    found.map_or(0, |(_, y)| y)
-}
-
-#[test]
-fn the_rows_sit_under_their_group_headings_and_the_aid_rows_close_the_list() {
-    let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
-    let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
-    let display = heading_y(&lines, Group::Display);
-    let sound = heading_y(&lines, Group::Sound);
-    let hints = heading_y(&lines, Group::Hints);
-    assert!(display < row_at(&lines, Field::Language).1);
-    assert!(row_at(&lines, Field::Colors).1 < sound);
-    assert!(sound < row_at(&lines, Field::SoundStyle).1);
-    assert!(row_at(&lines, Field::Volume).1 < hints);
-    assert!(hints < row_at(&lines, Field::Aura).1);
-    let last = FIELDS
-        .iter()
-        .map(|field| row_at(&lines, *field).1)
-        .max()
-        .unwrap_or_default();
-    assert_eq!(row_at(&lines, Field::QuickMove).1, last);
-}
-
 fn value_column(line: &str) -> Option<usize> {
     let chars: Vec<char> = line.chars().collect();
     let dots = chars.iter().position(|c| *c == '.')?;
@@ -280,15 +289,23 @@ fn value_column(line: &str) -> Option<usize> {
 }
 
 #[test]
-fn the_values_start_in_one_column() {
+fn the_values_start_in_one_column_across_all_tabs() {
     let fixture = Fixture::new(Settings::default(), TRUE_COLOR);
-    let mut screen = SettingsScreen::new();
-    let lines = render(&mut screen, &fixture.ctx(AudioStatus::Ready));
-    let columns: Vec<Option<usize>> = FIELDS
-        .iter()
-        .map(|field| value_column(&lines[usize::from(row_at(&lines, *field).1)]))
-        .collect();
-    assert!(columns.iter().all(Option::is_some), "{columns:?}");
-    let first = columns.first().copied().flatten();
-    assert!(columns.iter().all(|column| *column == first), "{columns:?}");
+    let ctx = fixture.ctx(AudioStatus::Ready);
+    for tab in Tab::ALL {
+        let mut screen = SettingsScreen::new();
+        switch_screen_tab(&mut screen, &ctx, tab);
+        let lines = render(&mut screen, &ctx);
+        let columns: Vec<Option<usize>> = tab
+            .fields()
+            .iter()
+            .map(|field| value_column(&lines[usize::from(row_at(&lines, *field).1)]))
+            .collect();
+        assert!(columns.iter().all(Option::is_some), "{tab:?}: {columns:?}");
+        let first = columns.first().copied().flatten();
+        assert!(
+            columns.iter().all(|column| *column == first),
+            "{tab:?}: {columns:?}"
+        );
+    }
 }

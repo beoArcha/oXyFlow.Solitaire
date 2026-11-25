@@ -1,52 +1,43 @@
-//! The "Hints and help" group: the aids a new game starts with.
+//! The Gameplay tab: Language and the board aids a new game starts with.
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{FIELDS, Field, Group};
-use super::{bare, fitting_size, line_of, move_down, open_settings};
+use super::super::options::Field;
+use super::super::tabs::Tab;
+use super::{bare, fitting_size, focus_in_tab, line_of, open_settings, switch_to_tab};
 use crate::i18n::{Locale, set_locale, t};
 use crate::screens::Effect;
 use crate::settings::{Aid, Settings};
 
-fn index_of(aid: Aid) -> usize {
-    FIELDS
-        .iter()
-        .position(|field| field.aid() == Some(aid))
-        .unwrap_or_default()
-}
-
 #[test]
-fn the_aid_rows_close_the_list_in_one_group_in_this_order() {
-    let aids: Vec<Aid> = FIELDS.iter().filter_map(|field| field.aid()).collect();
+fn the_aid_rows_sit_in_the_gameplay_tab_in_this_order() {
+    let gameplay = Tab::Gameplay.fields();
+    let aids: Vec<Aid> = gameplay.iter().filter_map(|field| field.aid()).collect();
     assert_eq!(aids, Aid::ALL);
+    assert_eq!(gameplay.first(), Some(&Field::Language));
+    assert_eq!(gameplay.last(), Some(&Field::QuickMove));
     assert!(
-        FIELDS
+        Tab::AudioVisual
+            .fields()
             .iter()
-            .filter(|f| f.aid().is_some())
-            .all(|f| f.group() == Group::Hints)
+            .all(|field| field.aid().is_none())
     );
-    assert!(
-        FIELDS
-            .iter()
-            .filter(|f| f.aid().is_none())
-            .all(|f| f.group() != Group::Hints)
-    );
-    assert_eq!(FIELDS.last(), Some(&Field::QuickMove));
 }
 
 #[test]
-fn the_group_is_named_in_both_locales_and_the_old_board_heading_is_gone() {
+fn the_gameplay_tab_is_named_in_both_locales_and_the_old_board_heading_is_gone() {
     let mut h = open_settings();
     let (width, height) = fitting_size();
     h.resize(width, height);
+    switch_to_tab(&mut h, Tab::Gameplay);
     let text = h.text();
-    assert!(text.contains("Hints and help"), "{text}");
+    assert!(text.contains("[Gameplay]"), "{text}");
     assert!(!text.contains("Board"), "{text}");
     h.app.apply(Effect::Apply(Settings {
         locale: Locale::PlPl,
         ..Settings::default()
     }));
-    assert!(h.text().contains("Podpowiedzi i pomoc"), "{}", h.text());
+    assert!(h.text().contains("[Rozgrywka]"), "{}", h.text());
     set_locale(Locale::EnUs);
 }
 
@@ -56,7 +47,13 @@ fn every_aid_row_switches_by_key_and_by_click_and_is_saved() {
         let expected = aid.toggled(&Settings::default().aids());
         let mut h = open_settings();
         h.resize(140, 40);
-        move_down(&mut h, index_of(aid));
+        let field = Tab::Gameplay
+            .fields()
+            .iter()
+            .copied()
+            .find(|f| f.aid() == Some(aid))
+            .expect("aid in Gameplay tab");
+        focus_in_tab(&mut h, Tab::Gameplay, field);
         h.press(KeyCode::Enter);
         assert_eq!(h.app.settings().aids(), expected, "{aid:?} by key");
         let saved = h.storage.borrow().settings.clone();
@@ -78,7 +75,7 @@ fn every_aid_row_switches_by_key_and_by_click_and_is_saved() {
 }
 
 #[test]
-fn the_focused_aid_row_is_explained_in_both_locales() {
+fn the_focused_aid_row_is_explained_in_every_locale() {
     for locale in Locale::offered() {
         for aid in Aid::ALL {
             let mut h = open_settings();
@@ -86,7 +83,13 @@ fn the_focused_aid_row_is_explained_in_both_locales() {
                 locale,
                 ..Settings::default()
             }));
-            move_down(&mut h, index_of(aid));
+            let field = Tab::Gameplay
+                .fields()
+                .iter()
+                .copied()
+                .find(|f| f.aid() == Some(aid))
+                .expect("aid in Gameplay tab");
+            focus_in_tab(&mut h, Tab::Gameplay, field);
             let text = h.text();
             assert!(
                 text.contains(t(aid.description_key()).as_ref()),
@@ -101,9 +104,10 @@ fn the_focused_aid_row_is_explained_in_both_locales() {
 fn target_marks_and_the_moves_panel_have_their_own_rows() {
     let mut h = open_settings();
     h.resize(140, 46);
+    switch_to_tab(&mut h, Tab::Gameplay);
     assert!(bare(&line_of(&mut h, "Target marks")).ends_with("On"));
     assert!(bare(&line_of(&mut h, "Possible moves panel")).ends_with("On"));
-    move_down(&mut h, index_of(Aid::TargetMarks));
+    focus_in_tab(&mut h, Tab::Gameplay, Field::TargetMarks);
     h.press(KeyCode::Enter);
     assert!(!h.app.settings().target_marks);
     assert!(bare(&line_of(&mut h, "Target marks")).ends_with("Off"));

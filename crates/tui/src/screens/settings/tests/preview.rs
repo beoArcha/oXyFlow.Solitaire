@@ -3,8 +3,9 @@
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{FIELDS, Field};
-use super::{index_of, move_down, open_settings};
+use super::super::options::Field;
+use super::super::tabs::Tab;
+use super::{canonical_tab, focus_in_tab, open_settings, switch_to_tab};
 use crate::i18n::{Locale, set_locale, t};
 use crate::test_support::Harness;
 
@@ -37,7 +38,7 @@ fn side_by_side() -> Harness {
 }
 
 fn focus(h: &mut Harness, field: Field) {
-    move_down(h, index_of(field));
+    focus_in_tab(h, canonical_tab(field), field);
 }
 
 #[test]
@@ -103,60 +104,127 @@ fn the_preview_shows_the_cards_in_the_chosen_glyphs() {
 fn the_preview_stands_beside_the_list_in_a_wide_window_in_every_language() {
     for locale in Locale::offered() {
         set_locale(locale);
-        let mut h = side_by_side();
-        for (index, field) in FIELDS.iter().enumerate() {
-            let list = h.lines_without_pane();
-            let marked = format!("► {}", t(field.label_key()));
+        for tab in Tab::ALL {
+            let mut h = side_by_side();
+            switch_to_tab(&mut h, tab);
+            for (index, field) in tab.fields().iter().enumerate() {
+                let list = h.lines_without_pane();
+                let marked = format!("► {}", t(field.label_key()));
+                assert!(
+                    list.iter().any(|line| line.contains(&marked)),
+                    "{locale:?} {tab:?} row {index}"
+                );
+                h.press(KeyCode::Down);
+            }
+            let text = h.text();
             assert!(
-                list.iter().any(|line| line.contains(&marked)),
-                "{locale:?} row {index}"
+                text.contains(&*t("settings.pane.title")),
+                "{locale:?} {tab:?}"
             );
-            h.press(KeyCode::Down);
+            for key in LABELS {
+                assert!(text.contains(&*t(key)), "{locale:?} {tab:?} {key}");
+            }
+            assert!(
+                !text.contains(&*t("settings.pane.hidden")),
+                "{locale:?} {tab:?}"
+            );
         }
-        let text = h.text();
-        assert!(text.contains(&*t("settings.pane.title")), "{locale:?}");
-        for key in LABELS {
-            assert!(text.contains(&*t(key)), "{locale:?} {key}");
-        }
-        assert!(!text.contains(&*t("settings.pane.hidden")), "{locale:?}");
     }
     set_locale(Locale::EnUs);
 }
 
 #[test]
-fn a_window_100_by_30_keeps_the_whole_list_and_says_the_preview_is_hidden() {
+fn a_narrow_low_window_keeps_the_long_list_and_says_the_preview_is_hidden() {
+    use ratatui::Terminal;
+    use ratatui::backend::TestBackend;
+    use std::time::Instant;
+
+    use crate::action::Action;
+    use crate::audio::AudioStatus;
+    use crate::caps::ColorDepth;
+    use crate::glyphs::Glyphs;
+    use crate::screens::ViewCtx;
+    use crate::screens::settings::SettingsScreen;
+    use crate::settings::Settings;
+    use crate::test_support::{TRUE_COLOR, sound_styles};
+    use crate::theme::Theme;
+
     for locale in Locale::offered() {
         set_locale(locale);
-        let mut h = open_settings();
-        h.resize(100, 30);
-        let text = h.text();
+        let settings = Settings {
+            locale,
+            ..Settings::default()
+        };
+        let theme = Theme::new(settings.theme, ColorDepth::TrueColor);
+        let glyphs = Glyphs::new(settings.glyph_mode);
+        let sounds = sound_styles();
+        let ctx = ViewCtx {
+            theme: &theme,
+            glyphs: &glyphs,
+            settings: &settings,
+            caps: &TRUE_COLOR,
+            audio_status: AudioStatus::Ready,
+            sound_styles: &sounds,
+            saved: None,
+            pointer: None,
+            now: Instant::now(),
+            font: crate::app::FontFacts::default(),
+        };
+        let mut screen = SettingsScreen::new();
+        screen.handle(
+            &ratatui::crossterm::event::KeyEvent::new(
+                KeyCode::BackTab,
+                ratatui::crossterm::event::KeyModifiers::NONE,
+            ),
+            Some(Action::FocusPrevious),
+            &ctx,
+        );
+        let mut terminal =
+            Terminal::new(TestBackend::new(80, 30)).unwrap_or_else(|never| match never {});
+        terminal
+            .draw(|frame| screen.draw(frame, frame.area(), &ctx))
+            .unwrap_or_else(|never| match never {});
+        let buffer = terminal.backend().buffer();
+        let text: String = (0..30)
+            .map(|y| (0..80).map(|x| buffer[(x, y)].symbol()).collect::<String>())
+            .collect::<Vec<_>>()
+            .join("\n");
         assert!(text.contains(&*t("settings.pane.hidden")), "{locale:?}");
         let title = t("settings.pane.title");
         assert!(text.lines().all(|line| line.trim() != title), "{locale:?}");
-        assert!(text.lines().count() <= 30);
     }
     set_locale(Locale::EnUs);
 }
 
 #[test]
-fn a_narrow_high_window_puts_the_preview_under_the_list() {
+fn a_narrow_high_window_from_100_by_52_shows_the_preview_on_every_tab() {
     for locale in Locale::offered() {
         set_locale(locale);
-        let mut h = open_settings();
-        h.resize(100, 52);
-        focus(&mut h, Field::AutoFinish);
-        let lines = h.lines();
-        let title = lines
-            .iter()
-            .position(|line| line.contains(&*t("settings.pane.title")));
-        let last_row = lines
-            .iter()
-            .rposition(|line| line.contains(&*t(Field::AutoFinish.label_key())));
-        assert!(title.is_some() && last_row.is_some(), "{locale:?}");
-        assert!(title > last_row, "{locale:?}");
-        let text = lines.join("\n");
-        for key in LABELS {
-            assert!(text.contains(&*t(key)), "{locale:?} {key}");
+        for tab in Tab::ALL {
+            let mut h = open_settings();
+            h.resize(100, 52);
+            switch_to_tab(&mut h, tab);
+            let last_field = *tab.fields().last().expect("non-empty tab");
+            focus_in_tab(&mut h, tab, last_field);
+            let lines = h.lines();
+            let title = lines
+                .iter()
+                .position(|line| line.contains(&*t("settings.pane.title")));
+            let last_row = lines
+                .iter()
+                .rposition(|line| line.contains(&*t(last_field.label_key())));
+            assert!(title.is_some() && last_row.is_some(), "{locale:?} {tab:?}");
+            if tab == Tab::Gameplay {
+                assert!(title > last_row, "{locale:?} {tab:?}");
+            }
+            let text = lines.join("\n");
+            assert!(
+                !text.contains(&*t("settings.pane.hidden")),
+                "{locale:?} {tab:?}"
+            );
+            for key in LABELS {
+                assert!(text.contains(&*t(key)), "{locale:?} {tab:?} {key}");
+            }
         }
     }
     set_locale(Locale::EnUs);

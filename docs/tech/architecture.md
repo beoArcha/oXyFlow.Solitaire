@@ -315,7 +315,7 @@ pub struct NullClipboard;                                // every copy fails wit
   settings, caps, `audio_status`, `sound_styles`, `saved: Option<SavedSummary>` (variant, elapsed, moves of the saved game, for the Resume row), clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
-  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `◄ ►` Change as plain text, then `Enter` Change, O-96).
+  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `◄ ►` Change and `Shift+Tab / Tab: tab` as plain text, then `Enter` Change, O-96, O-103).
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
   character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.
@@ -326,7 +326,7 @@ pub struct NullClipboard;                                // every copy fails wit
   rows of `KEY_TABLE` (group Navigation), so the help window lists them. Every screen and dialog owns a focus
   ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
   Rings: main menu language selector, then its items (initial focus stays on the first item); seed entry field, Continue, Back; game selection list, then the undo toggle; settings
-  rows; statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
+  rows (by Up/Down within the active tab; Tab and Shift+Tab switch settings tabs, O-103); statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
   Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
   (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
   press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
@@ -471,9 +471,7 @@ pub struct NullClipboard;                                // every copy fails wit
   `true`; when off, `a`, `e` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
   out quick move and waste quick move, and the moves window shows quick move unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
   `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
-  `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings groups them under
-  "Hints and help" (`Group::Hints`, replacing the old Board group), after Display and Sound; the moves panel and the
-  target marks got rows there. They are the *defaults for a new game*. The running game has its own copy:
+  `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings places them in the `Gameplay` tab (`O-103`, after `Language`, replacing the old Board and Hints groups); the moves panel, target marks and quick move have rows there. They are the *defaults for a new game*. The running game has its own copy:
   `App::quick` (`App::aids()`), set from the defaults whenever a game is dealt or a saved game other than the one
   on the board is resumed (a restart and resuming the same game keep it, the choices are not saved with the game).
   The board and the modal layer draw with `App::running` (the settings with `quick` laid over their aids) while the
@@ -488,10 +486,7 @@ pub struct NullClipboard;                                // every copy fails wit
   "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
   closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
   are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
-- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound, Performance (O-96: process priority) and Hints. Interface
-  holds every row about look: theme, card back, front style, back style, symbols, console font, card size and the aura look
-  (`Settings::aura_colour` `AuraColour { Theme, Text, Selection, Hint }`, `aura_style` `AuraStyle { Halo, Frame, MarksOnly }`,
-  `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
+- **Settings tabs and preview (P3-29, O-103):** Settings has three tabs (`settings/tabs.rs`, `Tab`: `Audio & Visual`, `Popular` default in the middle, `Gameplay`), replacing the flat grouped list and the O-96 `Performance` heading. `◄ Audio & Visual │ [Popular] │ Gameplay ►` uses `Theme::active_tab` (`[Name]`, bold underlined accent on surface, O-75). `Tab` / `Shift+Tab` (and `[` / `]`, plus clicks on tabs or arrows) switch tabs; `Up` / `Down` and wheel move between rows of the active tab; `Left` / `Right` and `Enter` / `Space` change values (never tabs). `Popular` holds 7 aliases (`Language`, `Theme`, `Card size`, `Card back`, `Volume`, `Aura`, `Auto-finish`) over the same `Settings` fields as their canonical rows, so changes sync both ways. `Audio & Visual` holds Colors, Full screen, the interface look rows (theme, color vision, card back, card face, four-color deck, table colour, table feel, front style, back style, symbols, console font, font face, font size, card size, and the aura look `Settings::aura_colour` `AuraColour { Theme, Text, Selection, Hint }`, `aura_style` `AuraStyle { Halo, Frame, MarksOnly }`, `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
   colour is one theme token for all three halos (still told apart by symbol); `Frame` draws a line frame (`┌─┐` for the focus, `╔═╗`
   for the carried run, plain ASCII `+-|` and `#=H` in ASCII mode; a target keeps its dot), `Thick` is two rings of free cells instead of
   one. *Preview pane (O-102):* `settings/preview.rs` draws a face-down card and three face-up cards (the focused, the carried and a drop
@@ -518,7 +513,7 @@ pub struct NullClipboard;                                // every copy fails wit
   preview that returns to its start clears the baseline. Leaving the settings screen with a preview open (`leave_or_ask`) opens a
   `Modal::Confirm` built with `Modal::confirm_or(prompt, on_yes, on_no)`: Yes is `Effect::LeaveSettings { keep: true, to }`, No and Esc are
   `keep: false`, which restores the interface fields and saves. A note under the list says a preview is open. The list scrolls when
-  the screen is too low for all rows (`settings/list.rs::first_shown`); the title then shows the position of the focused row.
+  the screen is too low for all rows of the active tab (`settings/list.rs::first_shown`); the title then shows the position of the focused row.
 - **Zoom (P3-16, R-24):** `Settings::card_size` is `CardSizeSetting { Auto, Small, Medium, Large, Huge }` (`settings/card_size.rs`;
   default `Auto`, an older value without the field loads as `Auto`; Small 7 × 5 … Huge 13 × 11) and the Settings row `Card size` in
   the Interface group. `Auto` is the largest size that fits, a named size is the largest the player wants: a window too small for it falls
@@ -838,7 +833,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the size changed (the face, family, weight and index are kept; a step passes width 0, Reset restores the start width). A refusal is
   logged at `info` and the step reports no change. `main` builds it only for `TerminalKind::ClassicConsole` and when the font can be read.
 - **Process priority (P4-13):** `Settings::process_priority` (`ProcessPriority`: `Highest`, `High`, `Normal` default, `Low`,
-  `Lowest`; never real time) sits in the Performance group (O-96) but keeps the Interface path: a change is previewed and
+  `Lowest`; never real time) sits in the `Audio & Visual` tab (O-103, replacing the `Performance` group of O-96) and keeps the Interface path: a change is previewed and
   confirmed like the Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
   setting. `App` asks the `PriorityControl` trait (`DisplayDeps::priority`) at start and on every change of the level, once
   per level; the answer is a `PriorityOutcome` (`Applied`, `NeedsPrivileges`, `Failed`) that the row shows beside the value

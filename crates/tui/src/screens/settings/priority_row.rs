@@ -18,13 +18,14 @@ mod tests {
     use super::*;
     use crate::app::PriorityOutcome;
     use crate::i18n::{Locale, set_locale};
-    use crate::screens::settings::options::{Field, Group, Step};
+    use crate::screens::settings::options::{Field, Step};
+    use crate::screens::settings::tabs::Tab;
     use crate::screens::settings::values::{changed, line, value_text};
     use crate::settings::ProcessPriority;
 
     #[test]
-    fn the_row_is_in_the_interface_group_so_a_change_is_previewed() {
-        assert_eq!(Field::Priority.group(), Group::Performance);
+    fn the_row_is_in_audio_and_visual_and_keeps_preview_and_confirm() {
+        assert!(Tab::AudioVisual.fields().contains(&Field::Priority));
         assert!(Field::Priority.is_interface());
     }
 

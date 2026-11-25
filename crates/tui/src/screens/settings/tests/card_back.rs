@@ -1,7 +1,8 @@
 use ratatui::crossterm::event::KeyCode;
 
 use super::super::options::{Field, Step};
-use super::{bare, changed, index_of, line_of, move_down, open_settings, row, value};
+use super::super::tabs::Tab;
+use super::{bare, changed, focus_in_tab, line_of, open_settings, row, value};
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::{CardBack, Settings};
 
@@ -25,10 +26,7 @@ fn card_backs_cycle_both_ways() {
     assert!(value(Field::CardBack, &monokai) == "Monokai");
     assert!(value(Field::CardBack, &dracula) == "Dracula");
     assert!(row(Field::CardBack, &base, true).starts_with("Card back"));
-    assert_eq!(
-        Field::CardBack.group(),
-        super::super::options::Group::Interface
-    );
+    assert!(Tab::AudioVisual.fields().contains(&Field::CardBack));
 }
 
 #[test]
@@ -53,7 +51,7 @@ fn card_back_names_in_polish() {
 #[test]
 fn a_card_back_change_is_shown_at_once() {
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::CardBack));
+    focus_in_tab(&mut h, Tab::Popular, Field::CardBack);
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().card_back, CardBack::Monokai);
     assert!(bare(&line_of(&mut h, "Card back")).contains("Monokai"));

@@ -34,12 +34,10 @@ aura_size = "Tamanho da aura"
 priority = "Prioridade do processo"
 line = "{label} {value}"
 
-[group]
-display = "Vídeo"
-interface = "Interface"
-sound = "Áudio"
-performance = "Desempenho"
-hints = "Dicas e ajuda"
+[tab]
+audio_visual = "Áudio e visual"
+popular = "Populares"
+gameplay = "Jogabilidade"
 
 [style]
 international = "Internacional"
@@ -161,6 +159,7 @@ style_failed = "Áudio indisponível: o estilo sonoro selecionado não pôde ser
 [footer]
 change = "Mudar"
 arrows = "{arrows} Mudar"
+tabs = "{prev} / {next}: aba"
 
 [graphics]
 title = "Verificação gráfica"

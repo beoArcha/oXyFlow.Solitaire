@@ -6,8 +6,9 @@ use std::rc::Rc;
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{Field, Group};
-use super::{index_of, line_of, move_down, settings_menu_index};
+use super::super::options::Field;
+use super::super::tabs::Tab;
+use super::{focus_in_tab, line_of, settings_menu_index, switch_to_tab};
 use crate::app::{
     CardFontState, ConsoleFont, DisplayDeps, DisplayFacts, FontStep, Modal, NullConsoleDisplay,
     Screen,
@@ -95,14 +96,16 @@ fn classic() -> (Harness, Shared) {
 }
 
 fn open(mut h: Harness) -> Harness {
-    move_down(&mut h, settings_menu_index());
+    for _ in 0..settings_menu_index() {
+        h.press(KeyCode::Down);
+    }
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
     h
 }
 
 fn focus(h: &mut Harness, field: Field) {
-    move_down(h, index_of(field));
+    focus_in_tab(h, Tab::AudioVisual, field);
 }
 
 fn row_text(h: &mut Harness, field: Field) -> String {
@@ -110,11 +113,14 @@ fn row_text(h: &mut Harness, field: Field) -> String {
 }
 
 #[test]
-fn the_rows_follow_the_console_font_row_in_the_interface_group() {
-    assert_eq!(Field::FontFace.group(), Group::Interface);
-    assert_eq!(Field::FontSize.group(), Group::Interface);
-    assert_eq!(index_of(Field::FontFace), index_of(Field::ConsoleFont) + 1);
-    assert_eq!(index_of(Field::FontSize), index_of(Field::FontFace) + 1);
+fn the_rows_follow_the_console_font_row_in_audio_and_visual() {
+    let av = Tab::AudioVisual.fields();
+    let console = av.iter().position(|f| *f == Field::ConsoleFont);
+    let face = av.iter().position(|f| *f == Field::FontFace);
+    let size = av.iter().position(|f| *f == Field::FontSize);
+    assert!(console.is_some());
+    assert_eq!(face, console.map(|i| i + 1));
+    assert_eq!(size, face.map(|i| i + 1));
 }
 
 #[test]
@@ -310,6 +316,7 @@ fn each_font_row_shows_its_own_value_with_a_face_set_and_with_the_terminal_in_co
         Some(stored.clone()),
     );
     let mut h = open(h);
+    switch_to_tab(&mut h, Tab::AudioVisual);
     let face = row_text(&mut h, Field::FontFace);
     assert!(face.contains(&*t("settings.face.consolas")), "{face}");
     let size = row_text(&mut h, Field::FontSize);
@@ -322,6 +329,7 @@ fn each_font_row_shows_its_own_value_with_a_face_set_and_with_the_terminal_in_co
         Some(stored),
     );
     let mut h = open(h);
+    switch_to_tab(&mut h, Tab::AudioVisual);
     let face = row_text(&mut h, Field::FontFace);
     assert!(face.contains(&*t("settings.value.terminal_font")), "{face}");
     assert!(

@@ -2,7 +2,8 @@
 
 use super::{changed, row, value};
 use crate::i18n::{Locale, set_locale};
-use crate::screens::settings::options::{Field, Group, Step};
+use crate::screens::settings::options::{Field, Step};
+use crate::screens::settings::tabs::Tab;
 use crate::settings::{CardSizeSetting, Settings};
 
 #[test]
@@ -23,7 +24,7 @@ fn the_row_cycles_every_value_in_both_directions() {
         changed(Field::CardSize, &Settings::default(), Step::Previous).card_size,
         CardSizeSetting::Huge
     );
-    assert_eq!(Field::CardSize.group(), Group::Interface);
+    assert!(Tab::AudioVisual.fields().contains(&Field::CardSize));
 }
 
 #[test]

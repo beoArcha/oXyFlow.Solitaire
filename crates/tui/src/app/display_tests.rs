@@ -189,6 +189,7 @@ fn open_full_screen_row(h: &mut Harness) {
     }
     h.press(KeyCode::Enter);
     assert_eq!(h.app.screen(), Screen::Settings);
+    h.press(KeyCode::BackTab);
 
     let full_screen_label = crate::i18n::t("settings.row.full_screen");
     let row_mark = format!("► {full_screen_label}");

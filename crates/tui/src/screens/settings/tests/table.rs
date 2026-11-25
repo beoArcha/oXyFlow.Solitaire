@@ -1,7 +1,8 @@
 //! The Table colour and Table feel rows (P3-32): the presets and feels in order, their localized names,
 //! and the low-contrast marker on a colour that fails the table tests in its theme.
 
-use super::super::options::{Field, Group, Step};
+use super::super::options::{Field, Step};
+use super::super::tabs::Tab;
 use super::{changed, value};
 use crate::i18n::{t, tf};
 use crate::settings::{Settings, TableColour, TableFeel};
@@ -46,9 +47,9 @@ fn table_colours_and_feels_cycle_both_ways_in_order() {
 }
 
 #[test]
-fn both_rows_sit_in_the_interface_group() {
-    assert_eq!(Field::TableColour.group(), Group::Interface);
-    assert_eq!(Field::TableFeel.group(), Group::Interface);
+fn both_rows_sit_in_audio_and_visual() {
+    assert!(Tab::AudioVisual.fields().contains(&Field::TableColour));
+    assert!(Tab::AudioVisual.fields().contains(&Field::TableFeel));
 }
 
 #[test]

@@ -1,39 +1,38 @@
-//! The groups of the settings screen (O-96): Process priority sits under its own Performance heading,
-//! after Sound and before Hints and help.
+//! Process priority sits in Audio & Visual without a Performance heading and keeps preview-and-confirm.
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{FIELDS, Field, Group};
-use super::{index_of, move_down, open_settings};
-use crate::i18n::{Locale, set_locale, t};
+use super::super::options::Field;
+use super::super::tabs::Tab;
+use super::{focus_in_tab, open_settings};
+use crate::i18n::{Locale, set_locale};
 
 #[test]
-fn process_priority_is_the_only_row_of_the_performance_group_after_sound() {
-    let position = |group| Group::ALL.iter().position(|g| *g == group);
-    assert_eq!(Field::Priority.group(), Group::Performance);
-    assert!(position(Group::Sound) < position(Group::Performance));
-    assert!(position(Group::Performance) < position(Group::Hints));
-    let rows: Vec<Field> = FIELDS
-        .iter()
-        .copied()
-        .filter(|field| field.group() == Group::Performance)
-        .collect();
-    assert_eq!(rows, [Field::Priority]);
+fn process_priority_is_the_last_row_of_audio_and_visual() {
+    assert_eq!(Tab::AudioVisual.fields().last(), Some(&Field::Priority));
+    assert!(!Tab::Gameplay.fields().contains(&Field::Priority));
 }
 
 #[test]
-fn the_performance_heading_sits_directly_above_the_priority_row_in_every_locale() {
+fn the_performance_heading_is_gone_in_every_locale() {
     for locale in Locale::offered() {
         set_locale(locale);
         let mut h = open_settings();
         h.resize(100, 60);
+        focus_in_tab(&mut h, Tab::AudioVisual, Field::Priority);
         let lines = h.lines_without_pane();
-        let heading = t("settings.group.performance").into_owned();
-        let row = t(Field::Priority.label_key());
-        let at = lines.iter().position(|line| line.trim() == heading);
+        let row = crate::i18n::t(Field::Priority.label_key());
         let priority = lines.iter().position(|line| line.contains(&*row));
-        assert!(at.is_some(), "{locale:?}: no heading {heading:?}");
-        assert_eq!(priority, at.map(|at| at + 1), "{locale:?}");
+        assert!(priority.is_some(), "{locale:?}");
+        let prev_row = crate::i18n::t(Field::Volume.label_key());
+        assert_eq!(
+            priority,
+            lines
+                .iter()
+                .position(|line| line.contains(&*prev_row))
+                .map(|at| at + 1),
+            "{locale:?}"
+        );
     }
     set_locale(Locale::EnUs);
 }
@@ -41,7 +40,7 @@ fn the_performance_heading_sits_directly_above_the_priority_row_in_every_locale(
 #[test]
 fn process_priority_still_previews_and_waits_for_confirmation() {
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::Priority));
+    focus_in_tab(&mut h, Tab::AudioVisual, Field::Priority);
     let before = h.app.settings().process_priority;
     h.press(KeyCode::Right);
     assert_ne!(h.app.settings().process_priority, before);

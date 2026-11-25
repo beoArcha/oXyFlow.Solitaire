@@ -2,8 +2,9 @@
 
 use ratatui::crossterm::event::KeyCode;
 
-use super::super::options::{Field, Group, Step};
-use super::{bare, changed, index_of, line_of, move_down, open_settings, row, value};
+use super::super::options::{Field, Step};
+use super::super::tabs::Tab;
+use super::{bare, changed, focus_in_tab, line_of, open_settings, row, value};
 use crate::i18n::{Locale, set_locale, t};
 use crate::settings::{CardFaceTint, Settings};
 
@@ -23,7 +24,7 @@ fn card_faces_cycle_both_ways_through_every_tint() {
         changed(Field::CardFace, &base, Step::Previous).card_face,
         CardFaceTint::Dark
     );
-    assert_eq!(Field::CardFace.group(), Group::Interface);
+    assert!(Tab::AudioVisual.fields().contains(&Field::CardFace));
 }
 
 #[test]
@@ -57,7 +58,7 @@ fn card_face_names_follow_the_locale() {
 #[test]
 fn a_card_face_change_is_shown_at_once() {
     let mut h = open_settings();
-    move_down(&mut h, index_of(Field::CardFace));
+    focus_in_tab(&mut h, Tab::AudioVisual, Field::CardFace);
     h.press(KeyCode::Right);
     assert_eq!(h.app.settings().card_face, CardFaceTint::White);
     let label = t("settings.row.card_face").into_owned();

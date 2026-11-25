@@ -1,6 +1,7 @@
-//! The options of the settings screen: their order, the group each belongs to and the texts that name
-//! them. What a row shows and how one step changes [`Settings`] is in `values`. Front and back styles
-//! are the folders found under `assets/cards`; the sound styles are the list the application passes in.
+//! The options of the settings screen: their order and the texts that name them. What a row shows
+//! is in `values`, how one step changes [`Settings`] is in `change`, and which tab owns each row
+//! is in `tabs`. Front and back styles are the folders found under `assets/cards`; the sound styles
+//! are the list the application passes in.
 
 use crate::app::{CardFontState, FontFacts};
 use crate::card_style::CardStyles;
@@ -9,8 +10,8 @@ use crate::settings::{
     Aid, AuraColour, AuraSize, AuraStyle, CardBack, ColorMode, FullScreen, GlyphMode, TerminalKind,
 };
 
-/// One row of the settings screen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// One setting row.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Field {
     Language,
     Colors,
@@ -45,9 +46,8 @@ pub enum Field {
     QuickMove,
 }
 
-/// Every row, top to bottom.
+/// Every setting, in canonical order (Audio & Visual, then Gameplay).
 pub const FIELDS: [Field; 31] = [
-    Field::Language,
     Field::Colors,
     Field::FullScreen,
     Field::Theme,
@@ -72,6 +72,7 @@ pub const FIELDS: [Field; 31] = [
     Field::Music,
     Field::Volume,
     Field::Priority,
+    Field::Language,
     Field::Aura,
     Field::TargetMarks,
     Field::GuidePanel,
@@ -79,38 +80,6 @@ pub const FIELDS: [Field; 31] = [
     Field::AutoFinish,
     Field::QuickMove,
 ];
-
-/// A heading of the settings screen; the rows of a group follow its heading.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Group {
-    Display,
-    Interface,
-    Sound,
-    Performance,
-    Hints,
-}
-
-impl Group {
-    /// The groups, top to bottom.
-    pub const ALL: [Group; 5] = [
-        Group::Display,
-        Group::Interface,
-        Group::Sound,
-        Group::Performance,
-        Group::Hints,
-    ];
-
-    /// Localization key of the heading.
-    pub const fn label_key(self) -> &'static str {
-        match self {
-            Group::Display => "settings.group.display",
-            Group::Interface => "settings.group.interface",
-            Group::Sound => "settings.group.sound",
-            Group::Performance => "settings.group.performance",
-            Group::Hints => "settings.group.hints",
-        }
-    }
-}
 
 /// Which way a change moves through the options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -182,7 +151,7 @@ fn font_row_key(field: Field, facts: FontFacts) -> &'static str {
 }
 
 impl Field {
-    /// The aid a row switches, for the rows of the "Hints and help" group.
+    /// The aid a row switches, for the gameplay aids shared with the quick options dialog.
     pub const fn aid(self) -> Option<Aid> {
         match self {
             Field::Aura => Some(Aid::Aura),
@@ -195,11 +164,31 @@ impl Field {
         }
     }
 
-    /// Whether the row's changes show at once and are kept only after confirmation: the Interface
-    /// rows, and Process priority, which is saved with them (its saved value is part of the
-    /// interface baseline in `Settings::with_interface_of`).
+    /// Whether the row's changes show at once and are kept only after confirmation: the interface
+    /// look rows and Process priority, whose saved values belong to `Settings::with_interface_of`.
+    /// Holds whether the field is changed in its canonical tab or as a Popular alias.
     pub const fn is_interface(self) -> bool {
-        matches!(self, Field::Priority) || matches!(self.group(), Group::Interface)
+        matches!(
+            self,
+            Field::Theme
+                | Field::ColorVision
+                | Field::CardBack
+                | Field::CardFace
+                | Field::FourColorDeck
+                | Field::TableColour
+                | Field::TableFeel
+                | Field::FrontStyle
+                | Field::BackStyle
+                | Field::Glyphs
+                | Field::ConsoleFont
+                | Field::FontFace
+                | Field::FontSize
+                | Field::CardSize
+                | Field::AuraColour
+                | Field::AuraStyle
+                | Field::AuraSize
+                | Field::Priority
+        )
     }
 
     /// Whether the row needs the sound output.
@@ -241,38 +230,6 @@ impl Field {
             Field::Cues => "settings.row.cues",
             Field::Music => "settings.row.music",
             _ => "settings.row.volume",
-        }
-    }
-
-    /// The group whose heading the row follows.
-    pub const fn group(self) -> Group {
-        match self {
-            Field::Language | Field::Colors | Field::FullScreen => Group::Display,
-            Field::Theme
-            | Field::ColorVision
-            | Field::CardBack
-            | Field::CardFace
-            | Field::FourColorDeck
-            | Field::TableColour
-            | Field::TableFeel
-            | Field::FrontStyle
-            | Field::BackStyle
-            | Field::Glyphs
-            | Field::ConsoleFont
-            | Field::FontFace
-            | Field::FontSize
-            | Field::CardSize
-            | Field::AuraColour
-            | Field::AuraStyle
-            | Field::AuraSize => Group::Interface,
-            Field::Priority => Group::Performance,
-            Field::SoundStyle | Field::Cues | Field::Music | Field::Volume => Group::Sound,
-            Field::Aura
-            | Field::TargetMarks
-            | Field::GuidePanel
-            | Field::MovesPanel
-            | Field::AutoFinish
-            | Field::QuickMove => Group::Hints,
         }
     }
 

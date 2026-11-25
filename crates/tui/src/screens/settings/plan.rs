@@ -9,7 +9,7 @@ use crate::layout::{CardSize, SIZES};
 /// Columns between the list and a pane beside it.
 pub(super) const GAP: u16 = 2;
 
-/// The fewest list rows kept when the pane goes under the list.
+/// The fewest list rows kept when the pane goes under a long list.
 const MIN_LIST_ROWS: u16 = 12;
 
 /// Cards in the pane: a back, then the focused, the carried and the target card.
@@ -38,8 +38,8 @@ pub(super) const fn card_gap(rings: u16) -> u16 {
 /// Where the preview pane is drawn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Pane {
-    /// Right of the list, `width` columns wide, as high as the list.
-    Side { width: u16 },
+    /// Right of the list, `width` columns wide, `rows` rows high (at least the list height).
+    Side { width: u16, rows: u16 },
     /// Under the list, `rows` rows high.
     Below { rows: u16, width: u16 },
     /// Not drawn: the window is too small.
@@ -68,17 +68,19 @@ pub(super) fn plan(screen_width: u16, body_rows: u16, list_width: u16, entries: 
     let entries = u16::try_from(entries).unwrap_or(u16::MAX);
     let shown = entries.min(body_rows);
     let beside = screen_width.saturating_sub(list_width + GAP);
-    if beside >= min_width && shown >= min_rows {
+    if beside >= min_width && body_rows >= min_rows {
         return Plan {
             list_rows: shown,
             pane: Pane::Side {
                 width: beside.min(max_width),
+                rows: body_rows.min(max_rows),
             },
         };
     }
+    let min_list = MIN_LIST_ROWS.min(entries);
     let rows = body_rows.saturating_sub(entries).clamp(min_rows, max_rows);
     let list_rows = entries.min(body_rows.saturating_sub(rows));
-    if screen_width >= min_width && list_rows >= MIN_LIST_ROWS {
+    if screen_width >= min_width && list_rows > 0 && list_rows >= min_list {
         return Plan {
             list_rows,
             pane: Pane::Below {
@@ -103,17 +105,17 @@ impl Places {
     pub(super) fn new(pane: Pane, list_width: u16, (list_area, below_area): (Rect, Rect)) -> Self {
         let centred = |area: Rect, width: u16| area.x + area.width.saturating_sub(width) / 2;
         let beside = match pane {
-            Pane::Side { width } => GAP + width,
+            Pane::Side { width, .. } => GAP + width,
             Pane::Below { .. } | Pane::Hidden => 0,
         };
         let x = centred(list_area, list_width + beside);
         let list = Rect::new(x, list_area.y, list_width, list_area.height);
         let pane = match pane {
-            Pane::Side { width } => Some(Rect::new(
+            Pane::Side { width, rows } => Some(Rect::new(
                 x + list_width + GAP,
                 list_area.y,
                 width,
-                list_area.height,
+                list_area.height.max(rows),
             )),
             Pane::Below { width, .. } => Some(Rect::new(
                 centred(below_area, width),
@@ -133,39 +135,60 @@ mod tests {
 
     #[test]
     fn a_wide_window_puts_the_pane_beside_the_list() {
-        let plan = plan(130, 33, 49, 33);
-        assert_eq!(plan.list_rows, 33);
-        assert!(matches!(plan.pane, Pane::Side { width } if width <= 130 - 49 - GAP));
+        let plan = plan(130, 33, 49, 24);
+        assert_eq!(plan.list_rows, 24);
+        assert!(matches!(plan.pane, Pane::Side { width, .. } if width <= 130 - 49 - GAP));
+    }
+
+    #[test]
+    fn a_wide_window_also_puts_the_pane_beside_a_short_tab() {
+        let plan = plan(130, 30, 49, 7);
+        assert_eq!(plan.list_rows, 7);
+        assert!(matches!(plan.pane, Pane::Side { rows, .. } if rows >= 11));
     }
 
     #[test]
     fn a_narrow_high_window_puts_the_pane_under_the_list() {
-        let plan = plan(60, 50, 49, 33);
-        assert_eq!(plan.list_rows, 33);
+        let plan = plan(60, 50, 49, 24);
+        assert_eq!(plan.list_rows, 24);
+        assert!(matches!(plan.pane, Pane::Below { rows, .. } if rows >= 11));
+    }
+
+    #[test]
+    fn a_short_tab_shows_the_pane_below_when_height_allows() {
+        let plan = plan(100, 42, 60, 7);
+        assert_eq!(plan.list_rows, 7);
         assert!(matches!(plan.pane, Pane::Below { rows, .. } if rows >= 11));
     }
 
     #[test]
     fn a_narrow_low_window_hides_the_pane_and_keeps_the_whole_height_for_the_list() {
-        let plan = plan(60, 22, 49, 33);
-        assert_eq!(plan.list_rows, 22);
+        let plan = plan(60, 20, 49, 24);
+        assert_eq!(plan.list_rows, 20);
         assert_eq!(plan.pane, Pane::Hidden);
     }
 
     #[test]
     fn the_pane_never_takes_more_than_the_window_has() {
-        for width in 20..160 {
-            for rows in 5..60 {
-                let plan = plan(width, rows, 49, 33);
-                let pane_rows = match plan.pane {
-                    Pane::Below { rows, .. } => rows,
-                    Pane::Side { .. } | Pane::Hidden => 0,
-                };
-                assert!(plan.list_rows + pane_rows <= rows);
-                match plan.pane {
-                    Pane::Side { width: pane } => assert!(49 + GAP + pane <= width),
-                    Pane::Below { width: pane, .. } => assert!(pane <= width),
-                    Pane::Hidden => {}
+        for entries in [7, 24] {
+            for width in 20..160 {
+                for rows in 5..60 {
+                    let plan = plan(width, rows, 49, entries);
+                    let pane_rows = match plan.pane {
+                        Pane::Below { rows, .. } => rows,
+                        Pane::Side { rows, .. } => rows,
+                        Pane::Hidden => 0,
+                    };
+                    if let Pane::Below { .. } = plan.pane {
+                        assert!(plan.list_rows + pane_rows <= rows);
+                    } else {
+                        assert!(plan.list_rows.max(pane_rows) <= rows);
+                    }
+                    match plan.pane {
+                        Pane::Side { width: pane, .. } => assert!(49 + GAP + pane <= width),
+                        Pane::Below { width: pane, .. } => assert!(pane <= width),
+                        Pane::Hidden => {}
+                    }
                 }
             }
         }
