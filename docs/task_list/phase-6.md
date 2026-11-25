@@ -163,6 +163,53 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   empty stock; full knowledge may differ. TUI tests: the setting changes the hint; every complete locale. The hints-only
   table of T-48 measured for both knowledge modes.
 
+### O-116 — The `e` key in the possible moves and on the `Do:` row, after `a` and before `s`
+
+- **Owner:** Medium
+- **Priority:** P2. Owner report 2026-11-25 (follow-up of O-110).
+- **Depends on:** O-110
+- **Files:** `crates/tui/src/screens/board/{moves_panel,guidance,priority}.rs` (and the guidance part file split out by
+  O-110), `locales/*/board.toml` (only if a label is missing), tests
+- **Problem:** the waste quick move (`e`, `Action::WasteQuickMove`, O-110) works, but it is missing from the possible
+  moves panel and window (`v`), and in practice it does not appear on the `Do:` row: its drop order (`WASTE_QUICK = 11`)
+  comes after the stock (`STOCK = 10`), so it is the first of the three to go when the row is narrow.
+- **Fix:**
+  - The moves panel and window list the waste quick move whenever the waste card can move (with its key `e`), and show
+    it unavailable with the existing reasons otherwise (no waste card, no target, quick move off).
+  - On the `Do:` row the three keep this order and drop order: **1. `a`** (quick move), **2. `e`** (waste quick move),
+    **3. `s`** (stock). `e` is shown whenever the waste card can move, also when the cursor is not on the waste; when
+    the cursor is on the waste, `a` already covers it and `e` is not repeated.
+- **Acceptance:** tests for Klondike draw 1 and draw 3, Pyramid and Australian Patience: `e` in the moves panel and
+  window with its key, unavailable with the right reason; the `Do:` row at 100 × 30 and 130 × 40 shows `a`, `e`, `s` in
+  that order, and when the row narrows `s` drops before `e` and `e` before `a`; every offered locale fits; quick move off
+  hides `e` as it hides `a`.
+
+### O-117 — A setting for `e`: off, semi-automatic (to the focused pile) or automatic
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-25.
+- **Depends on:** O-116
+- **Files:** `crates/tui/src/settings.rs`, `crates/tui/src/settings/**` (the aids), `crates/tui/src/screens/settings/**`
+  (Gameplay tab), `crates/tui/src/widgets/overlay/quick_options.rs`, `crates/tui/src/screens/board/{moves,commands,choices}.rs`
+  and the guidance/moves panel files touched by O-116, `locales/*/{settings,board}.toml`, `docs/tech/architecture.md`,
+  tests
+- **Problem:** `e` always sends the waste card to the best target, like `a`. The owner also wants a way to take the waste
+  card and play it exactly where the player is pointing.
+- **Fix:** a setting **Waste key (`e`)** with three values, in the Gameplay tab and in Quick options (current game, with
+  "Save as default"):
+  - **Off**: `e` does nothing (refused with a status line, like quick move off), and its hints disappear.
+  - **Semi-automatic**: `e` takes the top card of the waste and drops it on the pile under the cursor (the focused
+    pile) when that move is legal; when it is not, nothing moves and the status line says why (no waste card, or the
+    focused pile does not accept it). The cursor does not move.
+  - **Automatic** (default, today's behaviour): `e` sends the waste card to its best target, like `a`.
+  - The labels in the `Do:` row, the guide, the moves panel/window and the help say what `e` does in the chosen mode
+    (for example `e: waste to here` in semi-automatic). The general **Quick move** setting off (O-114) still turns `e`
+    off whatever this setting says.
+- **Acceptance:** tests for each mode in Klondike draw 1 and draw 3, Pyramid and Australian Patience: Off refuses;
+  Semi-automatic plays onto a legal focused pile (column and foundation) and refuses an illegal one with the right
+  reason, without moving the cursor; Automatic equals today's result; the labels change with the mode; an old settings
+  file loads as Automatic; every offered locale fits at 100 × 30.
+
 ## Order of the solver and hint cards
 
 Each step makes the next one cheaper to measure and needs no rework later:

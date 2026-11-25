@@ -22,6 +22,9 @@
 <path fill="#6e7a96" d="M994 19h1v10h-1zM994 28h1v10h-1zM1255 19h1v10h-1zM1255 28h1v10h-1z"/>
 <path fill="#aadcbe" d="M211 19h1v10h-1zM211 28h1v10h-1zM283 19h1v10h-1zM283 28h1v10h-1zM310 19h1v10h-1zM310 28h1v10h-1zM382 19h1v10h-1zM382 28h1v10h-1zM409 19h1v10h-1zM409 28h1v10h-1zM481 19h1v10h-1zM481 28h1v10h-1zM508 19h1v10h-1zM508 28h1v10h-1zM580 19h1v10h-1zM580 28h1v10h-1zM607 19h1v10h-1zM607 28h1v10h-1zM679 19h1v10h-1zM679 28h1v10h-1zM706 19h1v10h-1zM706 28h1v10h-1zM778 19h1v10h-1zM778 28h1v10h-1zM805 19h1v10h-1zM805 28h1v10h-1zM877 19h1v10h-1zM877 28h1v10h-1zM904 19h1v10h-1zM904 28h1v10h-1zM976 19h1v10h-1zM976 28h1v10h-1z"/>
 <text x="1008 1017 1026 1035" y="33" fill="#8cbeff" font-weight="bold">Spel</text>
+<text x="1107 1116 1125" y="33" fill="#8cbeff">[n:</text>
+<text x="1143 1152 1161 1170 1179" y="33" fill="#e8ecf4">nieuw</text>
+<text x="1197 1206 1215 1224 1233" y="33" fill="#e8ecf4">spel]</text>
 <rect x="0" y="38" width="9" height="19" fill="#287850"/>
 <rect x="9" y="38" width="81" height="19" fill="#b8d0f8"/>
 <rect x="90" y="38" width="900" height="19" fill="#287850"/>
@@ -41,14 +44,14 @@
 <path fill="#647290" d="M18 57h9v19h-9zM27 57h9v19h-9zM36 57h9v19h-9zM45 57h9v19h-9zM54 57h9v19h-9zM63 57h9v19h-9zM72 57h9v19h-9z"/>
 <path fill="#6e7a96" d="M994 57h1v10h-1zM994 66h1v10h-1zM1255 57h1v10h-1zM1255 66h1v10h-1z"/>
 <path fill="#aadcbe" d="M211 57h1v10h-1zM211 66h1v10h-1zM283 57h1v10h-1zM283 66h1v10h-1zM310 57h1v10h-1zM310 66h1v10h-1zM382 57h1v10h-1zM382 66h1v10h-1zM409 57h1v10h-1zM409 66h1v10h-1zM481 57h1v10h-1zM481 66h1v10h-1zM508 57h1v10h-1zM508 66h1v10h-1zM580 57h1v10h-1zM580 66h1v10h-1zM607 57h1v10h-1zM607 66h1v10h-1zM679 57h1v10h-1zM679 66h1v10h-1zM706 57h1v10h-1zM706 66h1v10h-1zM778 57h1v10h-1zM778 66h1v10h-1zM805 57h1v10h-1zM805 66h1v10h-1zM877 57h1v10h-1zM877 66h1v10h-1zM904 57h1v10h-1zM904 66h1v10h-1zM976 57h1v10h-1zM976 66h1v10h-1z"/>
-<text x="243" y="71" fill="#aadcbe">A</text>
-<text x="342" y="71" fill="#aadcbe">A</text>
-<text x="441" y="71" fill="#aadcbe">A</text>
-<text x="540" y="71" fill="#aadcbe">A</text>
-<text x="639" y="71" fill="#aadcbe">A</text>
-<text x="738" y="71" fill="#aadcbe">A</text>
-<text x="837" y="71" fill="#aadcbe">A</text>
-<text x="936" y="71" fill="#aadcbe">A</text>
+<text x="243" y="71" fill="#aadcbe">K</text>
+<text x="342" y="71" fill="#aadcbe">K</text>
+<text x="441" y="71" fill="#aadcbe">K</text>
+<text x="540" y="71" fill="#aadcbe">K</text>
+<text x="639" y="71" fill="#aadcbe">K</text>
+<text x="738" y="71" fill="#aadcbe">K</text>
+<text x="837" y="71" fill="#aadcbe">K</text>
+<text x="936" y="71" fill="#aadcbe">K</text>
 <text x="1008 1017 1026 1035" y="71" fill="#e8ecf4">seed</text>
 <text x="1053" y="71" fill="#e8ecf4" text-decoration="underline">7</text>
 <rect x="0" y="76" width="9" height="19" fill="#287850"/>
@@ -279,7 +282,7 @@
 <path fill="#6e7a96" d="M994 228h1v10h-1zM994 237h1v10h-1zM1255 228h1v10h-1zM1255 237h1v10h-1z"/>
 <path fill="#a61414" d="M27 228h9v19h-9zM36 228h9v19h-9zM45 237.5h9v9.5h-9zM54 228h9v19h-9zM63 228h9v19h-9zM112 228h1v10h-1zM112 237h1v10h-1zM126 228h9v19h-9zM135 228h9v19h-9zM144 237.5h9v9.5h-9zM153 228h9v19h-9zM162 228h9v19h-9zM184 228h1v10h-1zM184 237h1v10h-1zM508 228h1v10h-1zM508 237h1v10h-1zM522 228h9v19h-9zM531 228h9v19h-9zM540 237.5h9v9.5h-9zM549 228h9v19h-9zM558 228h9v19h-9zM580 228h1v10h-1zM580 237h1v10h-1zM904 228h1v10h-1zM904 237h1v10h-1zM918 228h9v19h-9zM927 228h9v19h-9zM936 237.5h9v9.5h-9zM945 228h9v19h-9zM954 228h9v19h-9zM976 228h1v10h-1zM976 237h1v10h-1z"/>
 <path fill="#ffd666" d="M12 228h1v11h-1zM14 228h1v11h-1zM12 236h1v11h-1zM14 236h1v11h-1zM84 228h1v11h-1zM86 228h1v11h-1zM84 236h1v11h-1zM86 236h1v11h-1z"/>
-<text x="1008" y="242" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="242" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026 1035 1044 1053 1062 1071 1080 1089 1098 1107 1116 1125 1134 1143 1152" y="242" fill="#e8ecf4" font-weight="bold">Pijltjestoetsen</text>
 <text x="1179 1188 1197 1206 1215 1224 1233" y="242" fill="#e8ecf4" font-weight="bold">verp...</text>
 <rect x="0" y="247" width="9" height="19" fill="#287850"/>
@@ -399,7 +402,7 @@
 <rect x="0" y="342" width="990" height="19" fill="#287850"/>
 <rect x="990" y="342" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 342h1v10h-1zM994 351h1v10h-1zM1255 342h1v10h-1zM1255 351h1v10h-1z"/>
-<text x="1008" y="356" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="356" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="356" fill="#e8ecf4" font-weight="bold">s</text>
 <text x="1179 1188 1197" y="356" fill="#e8ecf4" font-weight="bold">rij</text>
 <text x="1215 1224 1233" y="356" fill="#e8ecf4" font-weight="bold">...</text>
@@ -411,7 +414,7 @@
 <rect x="0" y="380" width="990" height="19" fill="#287850"/>
 <rect x="990" y="380" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 380h1v10h-1zM994 389h1v10h-1zM1255 380h1v10h-1zM1255 389h1v10h-1z"/>
-<text x="1008" y="394" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="394" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="394" fill="#e8ecf4" font-weight="bold">h</text>
 <text x="1179 1188 1197 1206" y="394" fill="#e8ecf4" font-weight="bold">hint</text>
 <rect x="0" y="399" width="990" height="19" fill="#287850"/>
@@ -422,13 +425,13 @@
 <rect x="0" y="418" width="990" height="19" fill="#287850"/>
 <rect x="990" y="418" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 418h1v10h-1zM994 427h1v10h-1zM1255 418h1v10h-1zM1255 427h1v10h-1z"/>
-<text x="1008" y="432" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="432" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="432" fill="#e8ecf4" font-weight="bold">i</text>
 <text x="1179 1188 1197 1206 1215 1224 1233" y="432" fill="#e8ecf4" font-weight="bold">spel...</text>
 <rect x="0" y="437" width="990" height="19" fill="#287850"/>
 <rect x="990" y="437" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 437h1v10h-1zM994 446h1v10h-1zM1255 437h1v10h-1zM1255 446h1v10h-1z"/>
-<text x="1008" y="451" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="451" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="451" fill="#e8ecf4" font-weight="bold">?</text>
 <text x="1179 1188 1197 1206 1215 1224 1233" y="451" fill="#e8ecf4" font-weight="bold">alle...</text>
 <rect x="0" y="456" width="990" height="19" fill="#287850"/>
@@ -440,15 +443,17 @@
 <path fill="#6e7a96" d="M994 475h1v10h-1zM994 484h1v10h-1zM1255 475h1v10h-1zM1255 484h1v10h-1z"/>
 <text x="1008" y="489" fill="#e8ecf4">►</text>
 <text x="1026 1035 1044 1053 1062" y="489" fill="#e8ecf4">focus</text>
-<text x="1089" y="489" fill="#e8ecf4">●</text>
-<text x="1107 1116 1125 1134" y="489" fill="#e8ecf4">vast</text>
-<text x="1161" y="489" fill="#e8ecf4">+</text>
-<text x="1179 1188 1197 1206" y="489" fill="#e8ecf4">doel</text>
+<text x="1089" y="489" fill="#e8ecf4">•</text>
+<text x="1107 1116 1125 1134 1143 1152 1161 1170 1179 1188 1197" y="489" fill="#e8ecf4">beschikbaar</text>
 <rect x="0" y="494" width="990" height="19" fill="#287850"/>
 <rect x="990" y="494" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 494h1v10h-1zM994 503h1v10h-1zM1255 494h1v10h-1zM1255 503h1v10h-1z"/>
-<text x="1008 1017" y="508" fill="#e8ecf4">?→</text>
-<text x="1035 1044 1053 1062" y="508" fill="#e8ecf4">hint</text>
+<text x="1008" y="508" fill="#e8ecf4">●</text>
+<text x="1026 1035 1044 1053" y="508" fill="#e8ecf4">vast</text>
+<text x="1080" y="508" fill="#e8ecf4">+</text>
+<text x="1098 1107 1116 1125" y="508" fill="#e8ecf4">doel</text>
+<text x="1152 1161" y="508" fill="#e8ecf4">?→</text>
+<text x="1179 1188 1197 1206" y="508" fill="#e8ecf4">hint</text>
 <rect x="0" y="513" width="990" height="19" fill="#287850"/>
 <rect x="990" y="513" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 513h1v10h-1zM994 522h5v1h-5zM999 522h5v1h-5zM1003 522h5v1h-5zM1008 522h5v1h-5zM1012 522h5v1h-5zM1017 522h5v1h-5zM1021 522h5v1h-5zM1026 522h5v1h-5zM1030 522h5v1h-5zM1035 522h5v1h-5zM1039 522h5v1h-5zM1044 522h5v1h-5zM1048 522h5v1h-5zM1053 522h5v1h-5zM1057 522h5v1h-5zM1062 522h5v1h-5zM1066 522h5v1h-5zM1071 522h5v1h-5zM1075 522h5v1h-5zM1080 522h5v1h-5zM1084 522h5v1h-5zM1089 522h5v1h-5zM1093 522h5v1h-5zM1098 522h5v1h-5zM1102 522h5v1h-5zM1107 522h5v1h-5zM1111 522h5v1h-5zM1116 522h5v1h-5zM1120 522h5v1h-5zM1125 522h5v1h-5zM1129 522h5v1h-5zM1134 522h5v1h-5zM1138 522h5v1h-5zM1143 522h5v1h-5zM1147 522h5v1h-5zM1152 522h5v1h-5zM1156 522h5v1h-5zM1161 522h5v1h-5zM1165 522h5v1h-5zM1170 522h5v1h-5zM1174 522h5v1h-5zM1179 522h5v1h-5zM1183 522h5v1h-5zM1188 522h5v1h-5zM1192 522h5v1h-5zM1197 522h5v1h-5zM1201 522h5v1h-5zM1206 522h5v1h-5zM1210 522h5v1h-5zM1215 522h5v1h-5zM1219 522h5v1h-5zM1224 522h5v1h-5zM1228 522h5v1h-5zM1233 522h5v1h-5zM1237 522h5v1h-5zM1242 522h5v1h-5zM1246 522h5v1h-5zM1255 513h1v10h-1zM1251 522h5v1h-5z"/>
@@ -469,22 +474,22 @@
 <rect x="0" y="570" width="990" height="19" fill="#287850"/>
 <rect x="990" y="570" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 570h1v10h-1zM994 579h1v10h-1zM1255 570h1v10h-1zM1255 579h1v10h-1z"/>
-<text x="1017" y="584" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080" y="584" fill="#b8c2d6" fill-opacity="0.6">Pakken</text>
-<text x="1197 1206 1215 1224 1233" y="584" fill="#b8c2d6" fill-opacity="0.6">Enter</text>
+<text x="1017" y="584" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080" y="584" fill="#b8c2d6">Pakken</text>
+<text x="1197 1206 1215 1224 1233" y="584" fill="#b8c2d6">Enter</text>
 <rect x="0" y="589" width="990" height="19" fill="#287850"/>
 <rect x="990" y="589" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 589h1v10h-1zM994 598h1v10h-1zM1255 589h1v10h-1zM1255 598h1v10h-1z"/>
-<text x="1017" y="603" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080" y="603" fill="#b8c2d6" fill-opacity="0.6">Snelle</text>
-<text x="1098 1107 1116" y="603" fill="#b8c2d6" fill-opacity="0.6">zet</text>
-<text x="1233" y="603" fill="#b8c2d6" fill-opacity="0.6">a</text>
+<text x="1017" y="603" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080" y="603" fill="#b8c2d6">Snelle</text>
+<text x="1098 1107 1116" y="603" fill="#b8c2d6">zet</text>
+<text x="1233" y="603" fill="#b8c2d6">a</text>
 <rect x="0" y="608" width="990" height="19" fill="#287850"/>
 <rect x="990" y="608" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 608h1v10h-1zM994 617h1v10h-1zM1255 608h1v10h-1zM1255 617h1v10h-1z"/>
-<text x="1017" y="622" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080 1089 1098 1107 1116 1125" y="622" fill="#b8c2d6" fill-opacity="0.6">Terugleggen</text>
-<text x="1215 1224 1233" y="622" fill="#b8c2d6" fill-opacity="0.6">Esc</text>
+<text x="1017" y="622" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080 1089 1098 1107 1116 1125" y="622" fill="#b8c2d6">Terugleggen</text>
+<text x="1215 1224 1233" y="622" fill="#b8c2d6">Esc</text>
 <rect x="0" y="627" width="990" height="19" fill="#287850"/>
 <rect x="990" y="627" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 627h1v10h-1zM994 636h1v10h-1zM1255 627h1v10h-1zM1255 636h1v10h-1z"/>
@@ -494,23 +499,23 @@
 <rect x="0" y="646" width="990" height="19" fill="#287850"/>
 <rect x="990" y="646" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 646h1v10h-1zM994 655h1v10h-1zM1255 646h1v10h-1zM1255 655h1v10h-1z"/>
-<text x="1017" y="660" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080 1089 1098" y="660" fill="#b8c2d6" fill-opacity="0.6">Ongedaan</text>
-<text x="1116 1125 1134 1143 1152" y="660" fill="#b8c2d6" fill-opacity="0.6">maken</text>
-<text x="1233" y="660" fill="#b8c2d6" fill-opacity="0.6">u</text>
+<text x="1017" y="660" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080 1089 1098" y="660" fill="#b8c2d6">Ongedaan</text>
+<text x="1116 1125 1134 1143 1152" y="660" fill="#b8c2d6">maken</text>
+<text x="1233" y="660" fill="#b8c2d6">u</text>
 <rect x="0" y="665" width="990" height="19" fill="#287850"/>
 <rect x="990" y="665" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 665h1v10h-1zM994 674h1v10h-1zM1255 665h1v10h-1zM1255 674h1v10h-1z"/>
-<text x="1017" y="679" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080 1089" y="679" fill="#b8c2d6" fill-opacity="0.6">Opnieuw</text>
-<text x="1233" y="679" fill="#b8c2d6" fill-opacity="0.6">r</text>
+<text x="1017" y="679" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080 1089" y="679" fill="#b8c2d6">Opnieuw</text>
+<text x="1233" y="679" fill="#b8c2d6">r</text>
 <rect x="0" y="684" width="990" height="19" fill="#287850"/>
 <rect x="990" y="684" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 684h1v10h-1zM994 693h1v10h-1zM1255 684h1v10h-1zM1255 693h1v10h-1z"/>
-<text x="1017" y="698" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062" y="698" fill="#b8c2d6" fill-opacity="0.6">Spel</text>
-<text x="1080 1089 1098 1107 1116 1125 1134 1143" y="698" fill="#b8c2d6" fill-opacity="0.6">afronden</text>
-<text x="1233" y="698" fill="#b8c2d6" fill-opacity="0.6">f</text>
+<text x="1017" y="698" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062" y="698" fill="#b8c2d6">Spel</text>
+<text x="1080 1089 1098 1107 1116 1125 1134 1143" y="698" fill="#b8c2d6">afronden</text>
+<text x="1233" y="698" fill="#b8c2d6">f</text>
 <rect x="0" y="703" width="990" height="19" fill="#287850"/>
 <rect x="990" y="703" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 703h1v10h-1zM994 712h1v10h-1zM1255 703h1v10h-1zM1255 712h1v10h-1z"/>
@@ -532,29 +537,29 @@
 <rect x="0" y="741" width="1260" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 741h1v10h-1zM994 750h5v1h-5zM999 750h5v1h-5zM1003 750h5v1h-5zM1008 750h5v1h-5zM1012 750h5v1h-5zM1017 750h5v1h-5zM1021 750h5v1h-5zM1026 750h5v1h-5zM1030 750h5v1h-5zM1035 750h5v1h-5zM1039 750h5v1h-5zM1044 750h5v1h-5zM1048 750h5v1h-5zM1053 750h5v1h-5zM1057 750h5v1h-5zM1062 750h5v1h-5zM1066 750h5v1h-5zM1071 750h5v1h-5zM1075 750h5v1h-5zM1080 750h5v1h-5zM1084 750h5v1h-5zM1089 750h5v1h-5zM1093 750h5v1h-5zM1098 750h5v1h-5zM1102 750h5v1h-5zM1107 750h5v1h-5zM1111 750h5v1h-5zM1116 750h5v1h-5zM1120 750h5v1h-5zM1125 750h5v1h-5zM1129 750h5v1h-5zM1134 750h5v1h-5zM1138 750h5v1h-5zM1143 750h5v1h-5zM1147 750h5v1h-5zM1152 750h5v1h-5zM1156 750h5v1h-5zM1161 750h5v1h-5zM1165 750h5v1h-5zM1170 750h5v1h-5zM1174 750h5v1h-5zM1179 750h5v1h-5zM1183 750h5v1h-5zM1188 750h5v1h-5zM1192 750h5v1h-5zM1197 750h5v1h-5zM1201 750h5v1h-5zM1206 750h5v1h-5zM1210 750h5v1h-5zM1215 750h5v1h-5zM1219 750h5v1h-5zM1224 750h5v1h-5zM1228 750h5v1h-5zM1233 750h5v1h-5zM1237 750h5v1h-5zM1242 750h5v1h-5zM1246 750h5v1h-5zM1255 741h1v10h-1zM1251 750h5v1h-5z"/>
 <text x="0 9 18 27 36 45" y="755" fill="#e8ecf4">Actie:</text>
-<text x="63 72" y="755" fill="#e8ecf4">s:</text>
+<text x="63 72" y="755" fill="#8cbeff">s:</text>
 <text x="90 99 108 117" y="755" fill="#e8ecf4">deel</text>
 <text x="135 144 153" y="755" fill="#e8ecf4">rij</text>
 <text x="171" y="755" fill="#e8ecf4">|</text>
-<text x="189 198" y="755" fill="#e8ecf4">h:</text>
+<text x="189 198" y="755" fill="#8cbeff">h:</text>
 <text x="216 225 234 243" y="755" fill="#e8ecf4">hint</text>
 <text x="261" y="755" fill="#e8ecf4">|</text>
-<text x="279 288 297 306 315 324 333 342" y="755" fill="#e8ecf4">Shift+R:</text>
+<text x="279 288 297 306 315 324 333 342" y="755" fill="#8cbeff">Shift+R:</text>
 <text x="360 369 378 387 396 405 414" y="755" fill="#e8ecf4">opnieuw</text>
 <text x="432" y="755" fill="#e8ecf4">|</text>
-<text x="450 459" y="755" fill="#e8ecf4">o:</text>
+<text x="450 459" y="755" fill="#8cbeff">o:</text>
 <text x="477 486 495 504 513 522" y="755" fill="#e8ecf4">opties</text>
 <text x="540" y="755" fill="#e8ecf4">|</text>
-<text x="558 567" y="755" fill="#e8ecf4">p:</text>
+<text x="558 567" y="755" fill="#8cbeff">p:</text>
 <text x="585 594 603 612 621" y="755" fill="#e8ecf4">pauze</text>
 <text x="639" y="755" fill="#e8ecf4">|</text>
-<text x="657 666" y="755" fill="#e8ecf4">v:</text>
+<text x="657 666" y="755" fill="#8cbeff">v:</text>
 <text x="684 693 702 711 720 729" y="755" fill="#e8ecf4">zetten</text>
 <text x="747" y="755" fill="#e8ecf4">|</text>
-<text x="765 774" y="755" fill="#e8ecf4">?:</text>
+<text x="765 774" y="755" fill="#8cbeff">?:</text>
 <text x="792 801 810 819 828 837 846" y="755" fill="#e8ecf4">toetsen</text>
 <text x="864" y="755" fill="#e8ecf4">|</text>
-<text x="882 891 900 909" y="755" fill="#e8ecf4">Esc:</text>
+<text x="882 891 900 909" y="755" fill="#8cbeff">Esc:</text>
 <text x="927 936 945 954" y="755" fill="#e8ecf4">menu</text>
 </g>
 </svg>

@@ -13,13 +13,16 @@
 <rect x="990" y="19" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 19h1v10h-1zM994 28h1v10h-1zM1255 19h1v10h-1zM1255 28h1v10h-1z"/>
 <text x="1008 1017 1026 1035 1044" y="33" fill="#8cbeff" font-weight="bold">Gioco</text>
+<text x="1080 1089 1098" y="33" fill="#8cbeff">[n:</text>
+<text x="1116 1125 1134 1143 1152" y="33" fill="#e8ecf4">nuova</text>
+<text x="1170 1179 1188 1197 1206 1215 1224 1233" y="33" fill="#e8ecf4">partita]</text>
 <rect x="0" y="38" width="450" height="19" fill="#287850"/>
 <rect x="450" y="38" width="81" height="19" fill="#fafaf4"/>
 <rect x="531" y="38" width="459" height="19" fill="#287850"/>
 <rect x="990" y="38" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 38h1v10h-1zM994 47h1v10h-1zM1255 38h1v10h-1zM1255 47h1v10h-1z"/>
-<path fill="#a61414" d="M454 47h1v10h-1zM454 47h5v1h-5zM477 47h5v1h-5zM481 47h5v1h-5zM486 47h5v1h-5zM490 47h5v1h-5zM495 47h5v1h-5zM499 47h5v1h-5zM504 47h5v1h-5zM508 47h5v1h-5zM513 47h5v1h-5zM517 47h5v1h-5zM526 47h1v10h-1zM522 47h5v1h-5z"/>
-<text x="459 468" y="52" fill="#a61414">4♦</text>
+<path fill="#a61414" d="M454 47h1v10h-1zM454 47h5v1h-5zM526 47h1v10h-1zM522 47h5v1h-5z"/>
+<text x="459 468 477 486 495 504 513" y="52" fill="#a61414" fill-opacity="0.6">4♦·····</text>
 <text x="1008 1017 1026 1035 1044 1053 1062 1071 1080" y="52" fill="#e8ecf4">Piramide,</text>
 <text x="1098 1107 1116 1125 1134 1143 1152 1161 1170" y="52" fill="#e8ecf4">rilassata</text>
 <rect x="0" y="57" width="450" height="19" fill="#287850"/>
@@ -27,9 +30,10 @@
 <rect x="531" y="57" width="459" height="19" fill="#287850"/>
 <rect x="990" y="57" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 57h1v10h-1zM994 66h1v10h-1zM1255 57h1v10h-1zM1255 66h1v10h-1z"/>
-<path fill="#a61414" d="M454 57h1v10h-1zM454 66h1v10h-1zM526 57h1v10h-1zM526 66h1v10h-1z"/>
-<text x="477" y="71" fill="#a61414" font-weight="bold">4</text>
-<text x="495" y="71" fill="#a61414" font-weight="bold">♦</text>
+<text x="450" y="71" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="477" y="71" fill="#a61414" font-weight="bold" fill-opacity="0.6">4</text>
+<text x="495" y="71" fill="#a61414" font-weight="bold" fill-opacity="0.6">♦</text>
+<text x="522" y="71" fill="#a61414" fill-opacity="0.6">·</text>
 <text x="1008 1017 1026 1035" y="71" fill="#e8ecf4">seed</text>
 <text x="1053" y="71" fill="#e8ecf4" text-decoration="underline">7</text>
 <rect x="0" y="76" width="450" height="19" fill="#287850"/>
@@ -37,31 +41,34 @@
 <rect x="531" y="76" width="459" height="19" fill="#287850"/>
 <rect x="990" y="76" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 76h1v10h-1zM994 85h1v10h-1zM1255 76h1v10h-1zM1255 85h1v10h-1z"/>
-<path fill="#a61414" d="M454 76h1v10h-1zM454 85h1v10h-1zM526 76h1v10h-1zM526 85h1v10h-1z"/>
+<text x="450" y="90" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="522" y="90" fill="#a61414" fill-opacity="0.6">·</text>
 <text x="1008 1017 1026 1035 1044" y="90" fill="#e8ecf4">Tempo</text>
 <text x="1062 1071 1080 1089" y="90" fill="#e8ecf4">0:00</text>
 <rect x="0" y="95" width="405" height="19" fill="#287850"/>
 <rect x="405" y="95" width="162" height="19" fill="#fafaf4"/>
 <rect x="567" y="95" width="423" height="19" fill="#287850"/>
 <rect x="990" y="95" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M409 104h1v10h-1zM409 104h5v1h-5zM432 104h5v1h-5zM436 104h5v1h-5zM441 104h5v1h-5zM445 104h5v1h-5zM450 104h5v1h-5zM454 104h5v1h-5zM459 104h5v1h-5zM463 104h5v1h-5zM468 104h5v1h-5zM472 104h5v1h-5zM481 104h1v10h-1zM477 104h5v1h-5z"/>
+<path fill="#101014" d="M409 104h1v10h-1zM409 104h5v1h-5zM481 104h1v10h-1zM477 104h5v1h-5z"/>
 <path fill="#6e7a96" d="M994 95h1v10h-1zM994 104h1v10h-1zM1255 95h1v10h-1zM1255 104h1v10h-1z"/>
-<path fill="#a61414" d="M490 104h1v10h-1zM490 104h5v1h-5zM513 104h5v1h-5zM517 104h5v1h-5zM522 104h5v1h-5zM526 104h5v1h-5zM531 104h5v1h-5zM535 104h5v1h-5zM540 104h5v1h-5zM544 104h5v1h-5zM549 104h5v1h-5zM553 104h5v1h-5zM562 104h1v10h-1zM558 104h5v1h-5z"/>
-<text x="414 423" y="109" fill="#101014">5♣</text>
-<text x="495 504" y="109" fill="#a61414">J♥</text>
+<path fill="#a61414" d="M490 104h1v10h-1zM490 104h5v1h-5zM562 104h1v10h-1zM558 104h5v1h-5z"/>
+<text x="414 423 432 441 450 459 468" y="109" fill="#101014" fill-opacity="0.6">5♣·····</text>
+<text x="495 504 513 522 531 540 549" y="109" fill="#a61414" fill-opacity="0.6">J♥·····</text>
 <text x="1008 1017 1026 1035 1044 1053" y="109" fill="#e8ecf4">Mosse:</text>
 <text x="1071" y="109" fill="#e8ecf4">0</text>
 <rect x="0" y="114" width="405" height="19" fill="#287850"/>
 <rect x="405" y="114" width="162" height="19" fill="#fafaf4"/>
 <rect x="567" y="114" width="423" height="19" fill="#287850"/>
 <rect x="990" y="114" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M409 114h1v10h-1zM409 123h1v10h-1zM481 114h1v10h-1zM481 123h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 114h1v10h-1zM994 123h1v10h-1zM1255 114h1v10h-1zM1255 123h1v10h-1z"/>
-<path fill="#a61414" d="M490 114h1v10h-1zM490 123h1v10h-1zM562 114h1v10h-1zM562 123h1v10h-1z"/>
-<text x="432" y="128" fill="#101014" font-weight="bold">5</text>
-<text x="450" y="128" fill="#101014" font-weight="bold">♣</text>
-<text x="513" y="128" fill="#a61414" font-weight="bold">J</text>
-<text x="531" y="128" fill="#a61414" font-weight="bold">♥</text>
+<text x="405" y="128" fill="#101014" fill-opacity="0.6">·</text>
+<text x="432" y="128" fill="#101014" font-weight="bold" fill-opacity="0.6">5</text>
+<text x="450" y="128" fill="#101014" font-weight="bold" fill-opacity="0.6">♣</text>
+<text x="477" y="128" fill="#101014" fill-opacity="0.6">·</text>
+<text x="486" y="128" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="513" y="128" fill="#a61414" font-weight="bold" fill-opacity="0.6">J</text>
+<text x="531" y="128" fill="#a61414" font-weight="bold" fill-opacity="0.6">♥</text>
+<text x="558" y="128" fill="#a61414" fill-opacity="0.6">·</text>
 <text x="1008 1017 1026 1035" y="128" fill="#e8ecf4">Giro</text>
 <text x="1053" y="128" fill="#e8ecf4">1</text>
 <text x="1071 1080" y="128" fill="#e8ecf4">di</text>
@@ -70,33 +77,38 @@
 <rect x="405" y="133" width="162" height="19" fill="#fafaf4"/>
 <rect x="567" y="133" width="423" height="19" fill="#287850"/>
 <rect x="990" y="133" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M409 133h1v10h-1zM409 142h1v10h-1zM481 133h1v10h-1zM481 142h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 133h1v10h-1zM994 142h1v10h-1zM994 142h5v1h-5zM999 142h5v1h-5zM1003 142h5v1h-5zM1008 142h5v1h-5zM1012 142h5v1h-5zM1017 142h5v1h-5zM1021 142h5v1h-5zM1026 142h5v1h-5zM1030 142h5v1h-5zM1035 142h5v1h-5zM1039 142h5v1h-5zM1044 142h5v1h-5zM1048 142h5v1h-5zM1053 142h5v1h-5zM1057 142h5v1h-5zM1062 142h5v1h-5zM1066 142h5v1h-5zM1071 142h5v1h-5zM1075 142h5v1h-5zM1080 142h5v1h-5zM1084 142h5v1h-5zM1089 142h5v1h-5zM1093 142h5v1h-5zM1098 142h5v1h-5zM1102 142h5v1h-5zM1107 142h5v1h-5zM1111 142h5v1h-5zM1116 142h5v1h-5zM1120 142h5v1h-5zM1125 142h5v1h-5zM1129 142h5v1h-5zM1134 142h5v1h-5zM1138 142h5v1h-5zM1143 142h5v1h-5zM1147 142h5v1h-5zM1152 142h5v1h-5zM1156 142h5v1h-5zM1161 142h5v1h-5zM1165 142h5v1h-5zM1170 142h5v1h-5zM1174 142h5v1h-5zM1179 142h5v1h-5zM1183 142h5v1h-5zM1188 142h5v1h-5zM1192 142h5v1h-5zM1197 142h5v1h-5zM1201 142h5v1h-5zM1206 142h5v1h-5zM1210 142h5v1h-5zM1215 142h5v1h-5zM1219 142h5v1h-5zM1224 142h5v1h-5zM1228 142h5v1h-5zM1233 142h5v1h-5zM1237 142h5v1h-5zM1242 142h5v1h-5zM1246 142h5v1h-5zM1255 133h1v10h-1zM1255 142h1v10h-1zM1251 142h5v1h-5z"/>
-<path fill="#a61414" d="M490 133h1v10h-1zM490 142h1v10h-1zM562 133h1v10h-1zM562 142h1v10h-1z"/>
+<text x="405" y="147" fill="#101014" fill-opacity="0.6">·</text>
+<text x="477" y="147" fill="#101014" fill-opacity="0.6">·</text>
+<text x="486" y="147" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="558" y="147" fill="#a61414" fill-opacity="0.6">·</text>
 <rect x="0" y="152" width="369" height="19" fill="#287850"/>
 <rect x="369" y="152" width="243" height="19" fill="#fafaf4"/>
 <rect x="612" y="152" width="378" height="19" fill="#287850"/>
 <rect x="990" y="152" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M373 161h1v10h-1zM373 161h5v1h-5zM396 161h5v1h-5zM400 161h5v1h-5zM405 161h5v1h-5zM409 161h5v1h-5zM414 161h5v1h-5zM418 161h5v1h-5zM423 161h5v1h-5zM427 161h5v1h-5zM432 161h5v1h-5zM436 161h5v1h-5zM445 161h1v10h-1zM441 161h5v1h-5z"/>
+<path fill="#101014" d="M373 161h1v10h-1zM373 161h5v1h-5zM445 161h1v10h-1zM441 161h5v1h-5z"/>
 <path fill="#6e7a96" d="M994 152h1v10h-1zM994 161h1v10h-1zM1255 152h1v10h-1zM1255 161h1v10h-1z"/>
-<path fill="#a61414" d="M454 161h1v10h-1zM454 161h5v1h-5zM477 161h5v1h-5zM481 161h5v1h-5zM486 161h5v1h-5zM490 161h5v1h-5zM495 161h5v1h-5zM499 161h5v1h-5zM504 161h5v1h-5zM508 161h5v1h-5zM513 161h5v1h-5zM517 161h5v1h-5zM526 161h1v10h-1zM522 161h5v1h-5zM535 161h1v10h-1zM535 161h5v1h-5zM567 161h5v1h-5zM571 161h5v1h-5zM576 161h5v1h-5zM580 161h5v1h-5zM585 161h5v1h-5zM589 161h5v1h-5zM594 161h5v1h-5zM598 161h5v1h-5zM607 161h1v10h-1zM603 161h5v1h-5z"/>
-<text x="378 387" y="166" fill="#101014">3♠</text>
-<text x="459 468" y="166" fill="#a61414">4♥</text>
-<text x="540 549 558" y="166" fill="#a61414">10♥</text>
+<path fill="#a61414" d="M454 161h1v10h-1zM454 161h5v1h-5zM526 161h1v10h-1zM522 161h5v1h-5zM535 161h1v10h-1zM535 161h5v1h-5zM607 161h1v10h-1zM603 161h5v1h-5z"/>
+<text x="378 387 396 405 414 423 432" y="166" fill="#101014" fill-opacity="0.6">3♠·····</text>
+<text x="459 468 477 486 495 504 513" y="166" fill="#a61414" fill-opacity="0.6">4♥·····</text>
+<text x="540 549 558 567 576 585 594" y="166" fill="#a61414" fill-opacity="0.6">10♥····</text>
 <text x="1008 1017 1026 1035 1044" y="166" fill="#8cbeff" font-weight="bold">Scopo</text>
 <rect x="0" y="171" width="369" height="19" fill="#287850"/>
 <rect x="369" y="171" width="243" height="19" fill="#fafaf4"/>
 <rect x="612" y="171" width="378" height="19" fill="#287850"/>
 <rect x="990" y="171" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M373 171h1v10h-1zM373 180h1v10h-1zM445 171h1v10h-1zM445 180h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 171h1v10h-1zM994 180h1v10h-1zM1255 171h1v10h-1zM1255 180h1v10h-1z"/>
-<path fill="#a61414" d="M454 171h1v10h-1zM454 180h1v10h-1zM526 171h1v10h-1zM526 180h1v10h-1zM535 171h1v10h-1zM535 180h1v10h-1zM607 171h1v10h-1zM607 180h1v10h-1z"/>
-<text x="396" y="185" fill="#101014" font-weight="bold">3</text>
-<text x="414" y="185" fill="#101014" font-weight="bold">♠</text>
-<text x="477" y="185" fill="#a61414" font-weight="bold">4</text>
-<text x="495" y="185" fill="#a61414" font-weight="bold">♥</text>
-<text x="549 558" y="185" fill="#a61414" font-weight="bold">10</text>
-<text x="576" y="185" fill="#a61414" font-weight="bold">♥</text>
+<text x="369" y="185" fill="#101014" fill-opacity="0.6">·</text>
+<text x="396" y="185" fill="#101014" font-weight="bold" fill-opacity="0.6">3</text>
+<text x="414" y="185" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="441" y="185" fill="#101014" fill-opacity="0.6">·</text>
+<text x="450" y="185" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="477" y="185" fill="#a61414" font-weight="bold" fill-opacity="0.6">4</text>
+<text x="495" y="185" fill="#a61414" font-weight="bold" fill-opacity="0.6">♥</text>
+<text x="522 531" y="185" fill="#a61414" fill-opacity="0.6">··</text>
+<text x="549 558" y="185" fill="#a61414" font-weight="bold" fill-opacity="0.6">10</text>
+<text x="576" y="185" fill="#a61414" font-weight="bold" fill-opacity="0.6">♥</text>
+<text x="603" y="185" fill="#a61414" fill-opacity="0.6">·</text>
 <text x="1008 1017 1026 1035 1044 1053 1062" y="185" fill="#e8ecf4">Elimina</text>
 <text x="1080 1089 1098 1107 1116 1125" y="185" fill="#e8ecf4">coppie</text>
 <text x="1143 1152" y="185" fill="#e8ecf4">di</text>
@@ -105,9 +117,12 @@
 <rect x="369" y="190" width="243" height="19" fill="#fafaf4"/>
 <rect x="612" y="190" width="378" height="19" fill="#287850"/>
 <rect x="990" y="190" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M373 190h1v10h-1zM373 199h1v10h-1zM445 190h1v10h-1zM445 199h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 190h1v10h-1zM994 199h1v10h-1zM1255 190h1v10h-1zM1255 199h1v10h-1z"/>
-<path fill="#a61414" d="M454 190h1v10h-1zM454 199h1v10h-1zM526 190h1v10h-1zM526 199h1v10h-1zM535 190h1v10h-1zM535 199h1v10h-1zM607 190h1v10h-1zM607 199h1v10h-1z"/>
+<text x="369" y="204" fill="#101014" fill-opacity="0.6">·</text>
+<text x="441" y="204" fill="#101014" fill-opacity="0.6">·</text>
+<text x="450" y="204" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="522 531" y="204" fill="#a61414" fill-opacity="0.6">··</text>
+<text x="603" y="204" fill="#a61414" fill-opacity="0.6">·</text>
 <text x="1008 1017 1026 1035 1044 1053" y="204" fill="#e8ecf4">libere</text>
 <text x="1071 1080" y="204" fill="#e8ecf4">la</text>
 <text x="1098 1107 1116" y="204" fill="#e8ecf4">cui</text>
@@ -117,52 +132,64 @@
 <rect x="324" y="209" width="324" height="19" fill="#fafaf4"/>
 <rect x="648" y="209" width="342" height="19" fill="#287850"/>
 <rect x="990" y="209" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M328 218h1v10h-1zM328 218h5v1h-5zM351 218h5v1h-5zM355 218h5v1h-5zM360 218h5v1h-5zM364 218h5v1h-5zM369 218h5v1h-5zM373 218h5v1h-5zM378 218h5v1h-5zM382 218h5v1h-5zM387 218h5v1h-5zM391 218h5v1h-5zM400 218h1v10h-1zM396 218h5v1h-5zM490 218h1v10h-1zM490 218h5v1h-5zM513 218h5v1h-5zM517 218h5v1h-5zM522 218h5v1h-5zM526 218h5v1h-5zM531 218h5v1h-5zM535 218h5v1h-5zM540 218h5v1h-5zM544 218h5v1h-5zM549 218h5v1h-5zM553 218h5v1h-5zM562 218h1v10h-1zM558 218h5v1h-5z"/>
+<path fill="#101014" d="M328 218h1v10h-1zM328 218h5v1h-5zM400 218h1v10h-1zM396 218h5v1h-5zM490 218h1v10h-1zM490 218h5v1h-5zM562 218h1v10h-1zM558 218h5v1h-5z"/>
 <path fill="#6e7a96" d="M994 209h1v10h-1zM994 218h1v10h-1zM1255 209h1v10h-1zM1255 218h1v10h-1z"/>
-<path fill="#a61414" d="M409 218h1v10h-1zM409 218h5v1h-5zM432 218h5v1h-5zM436 218h5v1h-5zM441 218h5v1h-5zM445 218h5v1h-5zM450 218h5v1h-5zM454 218h5v1h-5zM459 218h5v1h-5zM463 218h5v1h-5zM468 218h5v1h-5zM472 218h5v1h-5zM481 218h1v10h-1zM477 218h5v1h-5zM571 218h1v10h-1zM571 218h5v1h-5zM594 218h5v1h-5zM598 218h5v1h-5zM603 218h5v1h-5zM607 218h5v1h-5zM612 218h5v1h-5zM616 218h5v1h-5zM621 218h5v1h-5zM625 218h5v1h-5zM630 218h5v1h-5zM634 218h5v1h-5zM643 218h1v10h-1zM639 218h5v1h-5z"/>
-<text x="333 342" y="223" fill="#101014">K♠</text>
-<text x="414 423" y="223" fill="#a61414">6♦</text>
-<text x="495 504" y="223" fill="#101014">4♠</text>
-<text x="576 585" y="223" fill="#a61414">7♥</text>
+<path fill="#a61414" d="M409 218h1v10h-1zM409 218h5v1h-5zM481 218h1v10h-1zM477 218h5v1h-5zM571 218h1v10h-1zM571 218h5v1h-5zM643 218h1v10h-1zM639 218h5v1h-5z"/>
+<text x="333 342 351 360 369 378 387" y="223" fill="#101014" fill-opacity="0.6">K♠·····</text>
+<text x="414 423 432 441 450 459 468" y="223" fill="#a61414" fill-opacity="0.6">6♦·····</text>
+<text x="495 504 513 522 531 540 549" y="223" fill="#101014" fill-opacity="0.6">4♠·····</text>
+<text x="576 585 594 603 612 621 630" y="223" fill="#a61414" fill-opacity="0.6">7♥·····</text>
 <text x="1008 1017 1026" y="223" fill="#e8ecf4">13.</text>
 <rect x="0" y="228" width="324" height="19" fill="#287850"/>
 <rect x="324" y="228" width="324" height="19" fill="#fafaf4"/>
 <rect x="648" y="228" width="342" height="19" fill="#287850"/>
 <rect x="990" y="228" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M328 228h1v10h-1zM328 237h1v10h-1zM400 228h1v10h-1zM400 237h1v10h-1zM490 228h1v10h-1zM490 237h1v10h-1zM562 228h1v10h-1zM562 237h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 228h1v10h-1zM994 237h1v10h-1zM1255 228h1v10h-1zM1255 237h1v10h-1z"/>
-<path fill="#a61414" d="M409 228h1v10h-1zM409 237h1v10h-1zM481 228h1v10h-1zM481 237h1v10h-1zM571 228h1v10h-1zM571 237h1v10h-1zM643 228h1v10h-1zM643 237h1v10h-1z"/>
-<text x="351" y="242" fill="#101014" font-weight="bold">K</text>
-<text x="369" y="242" fill="#101014" font-weight="bold">♠</text>
-<text x="432" y="242" fill="#a61414" font-weight="bold">6</text>
-<text x="450" y="242" fill="#a61414" font-weight="bold">♦</text>
-<text x="513" y="242" fill="#101014" font-weight="bold">4</text>
-<text x="531" y="242" fill="#101014" font-weight="bold">♠</text>
-<text x="594" y="242" fill="#a61414" font-weight="bold">7</text>
-<text x="612" y="242" fill="#a61414" font-weight="bold">♥</text>
+<text x="324" y="242" fill="#101014" fill-opacity="0.6">·</text>
+<text x="351" y="242" fill="#101014" font-weight="bold" fill-opacity="0.6">K</text>
+<text x="369" y="242" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="396" y="242" fill="#101014" fill-opacity="0.6">·</text>
+<text x="405" y="242" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="432" y="242" fill="#a61414" font-weight="bold" fill-opacity="0.6">6</text>
+<text x="450" y="242" fill="#a61414" font-weight="bold" fill-opacity="0.6">♦</text>
+<text x="477" y="242" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="486" y="242" fill="#101014" fill-opacity="0.6">·</text>
+<text x="513" y="242" fill="#101014" font-weight="bold" fill-opacity="0.6">4</text>
+<text x="531" y="242" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="558" y="242" fill="#101014" fill-opacity="0.6">·</text>
+<text x="567" y="242" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="594" y="242" fill="#a61414" font-weight="bold" fill-opacity="0.6">7</text>
+<text x="612" y="242" fill="#a61414" font-weight="bold" fill-opacity="0.6">♥</text>
+<text x="639" y="242" fill="#a61414" fill-opacity="0.6">·</text>
 <text x="1008 1017 1026 1035 1044" y="242" fill="#8cbeff" font-weight="bold">Tasti</text>
 <rect x="0" y="247" width="324" height="19" fill="#287850"/>
 <rect x="324" y="247" width="324" height="19" fill="#fafaf4"/>
 <rect x="648" y="247" width="342" height="19" fill="#287850"/>
 <rect x="990" y="247" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M328 247h1v10h-1zM328 256h1v10h-1zM400 247h1v10h-1zM400 256h1v10h-1zM490 247h1v10h-1zM490 256h1v10h-1zM562 247h1v10h-1zM562 256h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 247h1v10h-1zM994 256h1v10h-1zM1255 247h1v10h-1zM1255 256h1v10h-1z"/>
-<path fill="#a61414" d="M409 247h1v10h-1zM409 256h1v10h-1zM481 247h1v10h-1zM481 256h1v10h-1zM571 247h1v10h-1zM571 256h1v10h-1zM643 247h1v10h-1zM643 256h1v10h-1z"/>
-<text x="1008" y="261" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="324" y="261" fill="#101014" fill-opacity="0.6">·</text>
+<text x="396" y="261" fill="#101014" fill-opacity="0.6">·</text>
+<text x="405" y="261" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="477" y="261" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="486" y="261" fill="#101014" fill-opacity="0.6">·</text>
+<text x="558" y="261" fill="#101014" fill-opacity="0.6">·</text>
+<text x="567" y="261" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="639" y="261" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="1008" y="261" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026 1035 1044 1053 1062 1071" y="261" fill="#e8ecf4" font-weight="bold">Frecce</text>
 <text x="1098 1107 1116 1125 1134" y="261" fill="#e8ecf4" font-weight="bold">muovi</text>
 <rect x="0" y="266" width="288" height="19" fill="#287850"/>
 <rect x="288" y="266" width="405" height="19" fill="#fafaf4"/>
 <rect x="693" y="266" width="297" height="19" fill="#287850"/>
 <rect x="990" y="266" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M373 275h1v10h-1zM373 275h5v1h-5zM396 275h5v1h-5zM400 275h5v1h-5zM405 275h5v1h-5zM409 275h5v1h-5zM414 275h5v1h-5zM418 275h5v1h-5zM423 275h5v1h-5zM427 275h5v1h-5zM432 275h5v1h-5zM436 275h5v1h-5zM445 275h1v10h-1zM441 275h5v1h-5zM535 275h1v10h-1zM535 275h5v1h-5zM558 275h5v1h-5zM562 275h5v1h-5zM567 275h5v1h-5zM571 275h5v1h-5zM576 275h5v1h-5zM580 275h5v1h-5zM585 275h5v1h-5zM589 275h5v1h-5zM594 275h5v1h-5zM598 275h5v1h-5zM607 275h1v10h-1zM603 275h5v1h-5zM616 275h1v10h-1zM616 275h5v1h-5zM648 275h5v1h-5zM652 275h5v1h-5zM657 275h5v1h-5zM661 275h5v1h-5zM666 275h5v1h-5zM670 275h5v1h-5zM675 275h5v1h-5zM679 275h5v1h-5zM688 275h1v10h-1zM684 275h5v1h-5z"/>
+<path fill="#101014" d="M373 275h1v10h-1zM373 275h5v1h-5zM445 275h1v10h-1zM441 275h5v1h-5zM535 275h1v10h-1zM535 275h5v1h-5zM607 275h1v10h-1zM603 275h5v1h-5zM616 275h1v10h-1zM616 275h5v1h-5zM688 275h1v10h-1zM684 275h5v1h-5z"/>
 <path fill="#6e7a96" d="M994 266h1v10h-1zM994 275h1v10h-1zM1255 266h1v10h-1zM1255 275h1v10h-1z"/>
-<path fill="#a61414" d="M292 275h1v10h-1zM292 275h5v1h-5zM315 275h5v1h-5zM319 275h5v1h-5zM324 275h5v1h-5zM328 275h5v1h-5zM333 275h5v1h-5zM337 275h5v1h-5zM342 275h5v1h-5zM346 275h5v1h-5zM351 275h5v1h-5zM355 275h5v1h-5zM364 275h1v10h-1zM360 275h5v1h-5zM454 275h1v10h-1zM454 275h5v1h-5zM477 275h5v1h-5zM481 275h5v1h-5zM486 275h5v1h-5zM490 275h5v1h-5zM495 275h5v1h-5zM499 275h5v1h-5zM504 275h5v1h-5zM508 275h5v1h-5zM513 275h5v1h-5zM517 275h5v1h-5zM526 275h1v10h-1zM522 275h5v1h-5z"/>
-<text x="297 306" y="280" fill="#a61414">9♦</text>
-<text x="378 387" y="280" fill="#101014">2♣</text>
-<text x="459 468" y="280" fill="#a61414">K♦</text>
-<text x="540 549" y="280" fill="#101014">J♠</text>
-<text x="621 630 639" y="280" fill="#101014">10♣</text>
+<path fill="#a61414" d="M292 275h1v10h-1zM292 275h5v1h-5zM364 275h1v10h-1zM360 275h5v1h-5zM454 275h1v10h-1zM454 275h5v1h-5zM526 275h1v10h-1zM522 275h5v1h-5z"/>
+<text x="297 306 315 324 333 342 351" y="280" fill="#a61414" fill-opacity="0.6">9♦·····</text>
+<text x="378 387 396 405 414 423 432" y="280" fill="#101014" fill-opacity="0.6">2♣·····</text>
+<text x="459 468 477 486 495 504 513" y="280" fill="#a61414" fill-opacity="0.6">K♦·····</text>
+<text x="540 549 558 567 576 585 594" y="280" fill="#101014" fill-opacity="0.6">J♠·····</text>
+<text x="621 630 639 648 657 666 675" y="280" fill="#101014" fill-opacity="0.6">10♣····</text>
 <text x="1026 1035 1044 1053 1062" y="280" fill="#b8c2d6">Enter</text>
 <text x="1098 1107 1116 1125 1134 1143" y="280" fill="#b8c2d6">scegli</text>
 <text x="1161" y="280" fill="#b8c2d6">/</text>
@@ -171,44 +198,59 @@
 <rect x="288" y="285" width="405" height="19" fill="#fafaf4"/>
 <rect x="693" y="285" width="297" height="19" fill="#287850"/>
 <rect x="990" y="285" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M373 285h1v10h-1zM373 294h1v10h-1zM445 285h1v10h-1zM445 294h1v10h-1zM535 285h1v10h-1zM535 294h1v10h-1zM607 285h1v10h-1zM607 294h1v10h-1zM616 285h1v10h-1zM616 294h1v10h-1zM688 285h1v10h-1zM688 294h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 285h1v10h-1zM994 294h1v10h-1zM1255 285h1v10h-1zM1255 294h1v10h-1z"/>
-<path fill="#a61414" d="M292 285h1v10h-1zM292 294h1v10h-1zM364 285h1v10h-1zM364 294h1v10h-1zM454 285h1v10h-1zM454 294h1v10h-1zM526 285h1v10h-1zM526 294h1v10h-1z"/>
-<text x="315" y="299" fill="#a61414" font-weight="bold">9</text>
-<text x="333" y="299" fill="#a61414" font-weight="bold">♦</text>
-<text x="396" y="299" fill="#101014" font-weight="bold">2</text>
-<text x="414" y="299" fill="#101014" font-weight="bold">♣</text>
-<text x="477" y="299" fill="#a61414" font-weight="bold">K</text>
-<text x="495" y="299" fill="#a61414" font-weight="bold">♦</text>
-<text x="558" y="299" fill="#101014" font-weight="bold">J</text>
-<text x="576" y="299" fill="#101014" font-weight="bold">♠</text>
-<text x="630 639" y="299" fill="#101014" font-weight="bold">10</text>
-<text x="657" y="299" fill="#101014" font-weight="bold">♣</text>
+<text x="288" y="299" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="315" y="299" fill="#a61414" font-weight="bold" fill-opacity="0.6">9</text>
+<text x="333" y="299" fill="#a61414" font-weight="bold" fill-opacity="0.6">♦</text>
+<text x="360" y="299" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="369" y="299" fill="#101014" fill-opacity="0.6">·</text>
+<text x="396" y="299" fill="#101014" font-weight="bold" fill-opacity="0.6">2</text>
+<text x="414" y="299" fill="#101014" font-weight="bold" fill-opacity="0.6">♣</text>
+<text x="441" y="299" fill="#101014" fill-opacity="0.6">·</text>
+<text x="450" y="299" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="477" y="299" fill="#a61414" font-weight="bold" fill-opacity="0.6">K</text>
+<text x="495" y="299" fill="#a61414" font-weight="bold" fill-opacity="0.6">♦</text>
+<text x="522" y="299" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="531" y="299" fill="#101014" fill-opacity="0.6">·</text>
+<text x="558" y="299" fill="#101014" font-weight="bold" fill-opacity="0.6">J</text>
+<text x="576" y="299" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="603 612" y="299" fill="#101014" fill-opacity="0.6">··</text>
+<text x="630 639" y="299" fill="#101014" font-weight="bold" fill-opacity="0.6">10</text>
+<text x="657" y="299" fill="#101014" font-weight="bold" fill-opacity="0.6">♣</text>
+<text x="684" y="299" fill="#101014" fill-opacity="0.6">·</text>
 <text x="1026 1035 1044" y="299" fill="#b8c2d6">Esc</text>
 <text x="1098 1107 1116 1125 1134 1143 1152" y="299" fill="#b8c2d6">rimetti</text>
 <rect x="0" y="304" width="288" height="19" fill="#287850"/>
 <rect x="288" y="304" width="405" height="19" fill="#fafaf4"/>
 <rect x="693" y="304" width="297" height="19" fill="#287850"/>
 <rect x="990" y="304" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M373 304h1v10h-1zM373 313h1v10h-1zM445 304h1v10h-1zM445 313h1v10h-1zM535 304h1v10h-1zM535 313h1v10h-1zM607 304h1v10h-1zM607 313h1v10h-1zM616 304h1v10h-1zM616 313h1v10h-1zM688 304h1v10h-1zM688 313h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 304h1v10h-1zM994 313h1v10h-1zM1255 304h1v10h-1zM1255 313h1v10h-1z"/>
-<path fill="#a61414" d="M292 304h1v10h-1zM292 313h1v10h-1zM364 304h1v10h-1zM364 313h1v10h-1zM454 304h1v10h-1zM454 313h1v10h-1zM526 304h1v10h-1zM526 313h1v10h-1z"/>
-<text x="1026" y="318" fill="#b8c2d6">a</text>
-<text x="1098 1107 1116 1125 1134" y="318" fill="#b8c2d6">mossa</text>
-<text x="1152 1161 1170 1179 1188 1197" y="318" fill="#b8c2d6">rapida</text>
+<text x="288" y="318" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="360" y="318" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="369" y="318" fill="#101014" fill-opacity="0.6">·</text>
+<text x="441" y="318" fill="#101014" fill-opacity="0.6">·</text>
+<text x="450" y="318" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="522" y="318" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="531" y="318" fill="#101014" fill-opacity="0.6">·</text>
+<text x="603 612" y="318" fill="#101014" fill-opacity="0.6">··</text>
+<text x="684" y="318" fill="#101014" fill-opacity="0.6">·</text>
+<text x="1026 1035 1044" y="318" fill="#b8c2d6">a/e</text>
+<text x="1098 1107 1116 1125 1134 1143" y="318" fill="#b8c2d6">rapida</text>
+<text x="1161" y="318" fill="#b8c2d6">/</text>
+<text x="1179 1188 1197 1206 1215 1224" y="318" fill="#b8c2d6">scarti</text>
 <rect x="0" y="323" width="243" height="19" fill="#287850"/>
 <rect x="243" y="323" width="486" height="19" fill="#fafaf4"/>
 <rect x="729" y="323" width="261" height="19" fill="#287850"/>
 <rect x="990" y="323" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M328 332h1v10h-1zM328 332h5v1h-5zM351 332h5v1h-5zM355 332h5v1h-5zM360 332h5v1h-5zM364 332h5v1h-5zM369 332h5v1h-5zM373 332h5v1h-5zM378 332h5v1h-5zM382 332h5v1h-5zM387 332h5v1h-5zM391 332h5v1h-5zM400 332h1v10h-1zM396 332h5v1h-5zM409 332h1v10h-1zM409 332h5v1h-5zM432 332h5v1h-5zM436 332h5v1h-5zM441 332h5v1h-5zM445 332h5v1h-5zM450 332h5v1h-5zM454 332h5v1h-5zM459 332h5v1h-5zM463 332h5v1h-5zM468 332h5v1h-5zM472 332h5v1h-5zM481 332h1v10h-1zM477 332h5v1h-5zM490 332h1v10h-1zM490 332h5v1h-5zM513 332h5v1h-5zM517 332h5v1h-5zM522 332h5v1h-5zM526 332h5v1h-5zM531 332h5v1h-5zM535 332h5v1h-5zM540 332h5v1h-5zM544 332h5v1h-5zM549 332h5v1h-5zM553 332h5v1h-5zM562 332h1v10h-1zM558 332h5v1h-5zM571 332h1v10h-1zM571 332h5v1h-5zM594 332h5v1h-5zM598 332h5v1h-5zM603 332h5v1h-5zM607 332h5v1h-5zM612 332h5v1h-5zM616 332h5v1h-5zM621 332h5v1h-5zM625 332h5v1h-5zM630 332h5v1h-5zM634 332h5v1h-5zM643 332h1v10h-1zM639 332h5v1h-5zM652 332h1v10h-1zM652 332h5v1h-5zM684 332h5v1h-5zM688 332h5v1h-5zM693 332h5v1h-5zM697 332h5v1h-5zM702 332h5v1h-5zM706 332h5v1h-5zM711 332h5v1h-5zM715 332h5v1h-5zM724 332h1v10h-1zM720 332h5v1h-5z"/>
+<path fill="#101014" d="M328 332h1v10h-1zM328 332h5v1h-5zM400 332h1v10h-1zM396 332h5v1h-5zM409 332h1v10h-1zM409 332h5v1h-5zM481 332h1v10h-1zM477 332h5v1h-5zM490 332h1v10h-1zM490 332h5v1h-5zM562 332h1v10h-1zM558 332h5v1h-5zM571 332h1v10h-1zM571 332h5v1h-5zM643 332h1v10h-1zM639 332h5v1h-5zM652 332h1v10h-1zM652 332h5v1h-5zM724 332h1v10h-1zM720 332h5v1h-5z"/>
 <path fill="#6e7a96" d="M994 323h1v10h-1zM994 332h1v10h-1zM1255 323h1v10h-1zM1255 332h1v10h-1z"/>
-<path fill="#a61414" d="M247 332h1v10h-1zM247 332h5v1h-5zM270 332h5v1h-5zM274 332h5v1h-5zM279 332h5v1h-5zM283 332h5v1h-5zM288 332h5v1h-5zM292 332h5v1h-5zM297 332h5v1h-5zM301 332h5v1h-5zM306 332h5v1h-5zM310 332h5v1h-5zM319 332h1v10h-1zM315 332h5v1h-5z"/>
-<text x="252 261" y="337" fill="#a61414">2♥</text>
-<text x="333 342" y="337" fill="#101014">7♣</text>
-<text x="414 423" y="337" fill="#101014">4♣</text>
-<text x="495 504" y="337" fill="#101014">7♠</text>
-<text x="576 585" y="337" fill="#101014">2♠</text>
-<text x="657 666 675" y="337" fill="#101014">10♠</text>
+<path fill="#a61414" d="M247 332h1v10h-1zM247 332h5v1h-5zM319 332h1v10h-1zM315 332h5v1h-5z"/>
+<text x="252 261 270 279 288 297 306" y="337" fill="#a61414" fill-opacity="0.6">2♥·····</text>
+<text x="333 342 351 360 369 378 387" y="337" fill="#101014" fill-opacity="0.6">7♣·····</text>
+<text x="414 423 432 441 450 459 468" y="337" fill="#101014" fill-opacity="0.6">4♣·····</text>
+<text x="495 504 513 522 531 540 549" y="337" fill="#101014" fill-opacity="0.6">7♠·····</text>
+<text x="576 585 594 603 612 621 630" y="337" fill="#101014" fill-opacity="0.6">2♠·····</text>
+<text x="657 666 675 684 693 702 711" y="337" fill="#101014" fill-opacity="0.6">10♠····</text>
 <text x="1026 1035 1044 1053 1062" y="337" fill="#b8c2d6">]/[/0</text>
 <text x="1098 1107 1116 1125 1134 1143" y="337" fill="#b8c2d6">misura</text>
 <text x="1161 1170 1179 1188 1197" y="337" fill="#b8c2d6">carte</text>
@@ -216,22 +258,28 @@
 <rect x="243" y="342" width="486" height="19" fill="#fafaf4"/>
 <rect x="729" y="342" width="261" height="19" fill="#287850"/>
 <rect x="990" y="342" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M328 342h1v10h-1zM328 351h1v10h-1zM400 342h1v10h-1zM400 351h1v10h-1zM409 342h1v10h-1zM409 351h1v10h-1zM481 342h1v10h-1zM481 351h1v10h-1zM490 342h1v10h-1zM490 351h1v10h-1zM562 342h1v10h-1zM562 351h1v10h-1zM571 342h1v10h-1zM571 351h1v10h-1zM643 342h1v10h-1zM643 351h1v10h-1zM652 342h1v10h-1zM652 351h1v10h-1zM724 342h1v10h-1zM724 351h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 342h1v10h-1zM994 351h1v10h-1zM1255 342h1v10h-1zM1255 351h1v10h-1z"/>
-<path fill="#a61414" d="M247 342h1v10h-1zM247 351h1v10h-1zM319 342h1v10h-1zM319 351h1v10h-1z"/>
-<text x="270" y="356" fill="#a61414" font-weight="bold">2</text>
-<text x="288" y="356" fill="#a61414" font-weight="bold">♥</text>
-<text x="351" y="356" fill="#101014" font-weight="bold">7</text>
-<text x="369" y="356" fill="#101014" font-weight="bold">♣</text>
-<text x="432" y="356" fill="#101014" font-weight="bold">4</text>
-<text x="450" y="356" fill="#101014" font-weight="bold">♣</text>
-<text x="513" y="356" fill="#101014" font-weight="bold">7</text>
-<text x="531" y="356" fill="#101014" font-weight="bold">♠</text>
-<text x="594" y="356" fill="#101014" font-weight="bold">2</text>
-<text x="612" y="356" fill="#101014" font-weight="bold">♠</text>
-<text x="666 675" y="356" fill="#101014" font-weight="bold">10</text>
-<text x="693" y="356" fill="#101014" font-weight="bold">♠</text>
-<text x="1008" y="356" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="243" y="356" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="270" y="356" fill="#a61414" font-weight="bold" fill-opacity="0.6">2</text>
+<text x="288" y="356" fill="#a61414" font-weight="bold" fill-opacity="0.6">♥</text>
+<text x="315" y="356" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="324" y="356" fill="#101014" fill-opacity="0.6">·</text>
+<text x="351" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">7</text>
+<text x="369" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">♣</text>
+<text x="396 405" y="356" fill="#101014" fill-opacity="0.6">··</text>
+<text x="432" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">4</text>
+<text x="450" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">♣</text>
+<text x="477 486" y="356" fill="#101014" fill-opacity="0.6">··</text>
+<text x="513" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">7</text>
+<text x="531" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="558 567" y="356" fill="#101014" fill-opacity="0.6">··</text>
+<text x="594" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">2</text>
+<text x="612" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="639 648" y="356" fill="#101014" fill-opacity="0.6">··</text>
+<text x="666 675" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">10</text>
+<text x="693" y="356" fill="#101014" font-weight="bold" fill-opacity="0.6">♠</text>
+<text x="720" y="356" fill="#101014" fill-opacity="0.6">·</text>
+<text x="1008" y="356" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="356" fill="#e8ecf4" font-weight="bold">s</text>
 <text x="1098 1107 1116 1125" y="356" fill="#e8ecf4" font-weight="bold">gira</text>
 <text x="1143 1152 1161 1170 1179" y="356" fill="#e8ecf4" font-weight="bold">mazzo</text>
@@ -239,10 +287,16 @@
 <rect x="243" y="361" width="486" height="19" fill="#fafaf4"/>
 <rect x="729" y="361" width="261" height="19" fill="#287850"/>
 <rect x="990" y="361" width="270" height="19" fill="#242a3a"/>
-<path fill="#101014" d="M328 361h1v10h-1zM328 370h1v10h-1zM400 361h1v10h-1zM400 370h1v10h-1zM409 361h1v10h-1zM409 370h1v10h-1zM481 361h1v10h-1zM481 370h1v10h-1zM490 361h1v10h-1zM490 370h1v10h-1zM562 361h1v10h-1zM562 370h1v10h-1zM571 361h1v10h-1zM571 370h1v10h-1zM643 361h1v10h-1zM643 370h1v10h-1zM652 361h1v10h-1zM652 370h1v10h-1zM724 361h1v10h-1zM724 370h1v10h-1z"/>
 <path fill="#5d976a" d="M198 361h9v19h-9zM207 361h9v19h-9zM216 361h9v19h-9zM225 361h9v19h-9zM234 361h9v19h-9z"/>
 <path fill="#6e7a96" d="M994 361h1v10h-1zM994 370h1v10h-1zM1255 361h1v10h-1zM1255 370h1v10h-1z"/>
-<path fill="#a61414" d="M247 361h1v10h-1zM247 370h1v10h-1zM319 361h1v10h-1zM319 370h1v10h-1z"/>
+<text x="243" y="375" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="315" y="375" fill="#a61414" fill-opacity="0.6">·</text>
+<text x="324" y="375" fill="#101014" fill-opacity="0.6">·</text>
+<text x="396 405" y="375" fill="#101014" fill-opacity="0.6">··</text>
+<text x="477 486" y="375" fill="#101014" fill-opacity="0.6">··</text>
+<text x="558 567" y="375" fill="#101014" fill-opacity="0.6">··</text>
+<text x="639 648" y="375" fill="#101014" fill-opacity="0.6">··</text>
+<text x="720" y="375" fill="#101014" fill-opacity="0.6">·</text>
 <text x="1026 1035 1044" y="375" fill="#b8c2d6">u/r</text>
 <text x="1098 1107 1116 1125 1134 1143 1152" y="375" fill="#b8c2d6">annulla</text>
 <text x="1170" y="375" fill="#b8c2d6">/</text>
@@ -267,7 +321,7 @@
 <text x="540 549" y="394" fill="#a61414">8♦</text>
 <text x="621 630" y="394" fill="#101014">6♠</text>
 <text x="702 711" y="394" fill="#101014">A♣</text>
-<text x="1008" y="394" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="394" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="394" fill="#e8ecf4" font-weight="bold">h</text>
 <text x="1098 1107 1116 1125 1134" y="394" fill="#e8ecf4" font-weight="bold">aiuto</text>
 <rect x="0" y="399" width="207" height="19" fill="#287850"/>
@@ -311,7 +365,7 @@
 <path fill="#6e7a96" d="M994 418h1v10h-1zM994 427h1v10h-1zM1255 418h1v10h-1zM1255 427h1v10h-1z"/>
 <path fill="#a61414" d="M373 418h1v10h-1zM373 427h1v10h-1zM445 418h1v10h-1zM445 427h1v10h-1zM454 418h1v10h-1zM454 427h1v10h-1zM526 418h1v10h-1zM526 427h1v10h-1zM535 418h1v10h-1zM535 427h1v10h-1zM607 418h1v10h-1zM607 427h1v10h-1z"/>
 <path fill="#ffd666" d="M210 418h1v11h-1zM212 418h1v11h-1zM210 426h1v11h-1zM212 426h1v11h-1zM282 418h1v11h-1zM284 418h1v11h-1zM282 426h1v11h-1zM284 426h1v11h-1z"/>
-<text x="1008" y="432" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="432" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="432" fill="#e8ecf4" font-weight="bold">i</text>
 <text x="1098 1107 1116 1125" y="432" fill="#e8ecf4" font-weight="bold">come</text>
 <text x="1143 1152 1161 1170 1179 1188 1197" y="432" fill="#e8ecf4" font-weight="bold">giocare</text>
@@ -327,7 +381,7 @@
 <path fill="#6e7a96" d="M994 437h1v10h-1zM994 446h1v10h-1zM1255 437h1v10h-1zM1255 446h1v10h-1z"/>
 <path fill="#a61414" d="M373 437h1v10h-1zM373 446h1v10h-1zM387 437h9v19h-9zM396 437h9v19h-9zM405 446.5h9v9.5h-9zM414 437h9v19h-9zM423 437h9v19h-9zM445 437h1v10h-1zM445 446h1v10h-1zM454 437h1v10h-1zM454 446h1v10h-1zM477 446.5h9v9.5h-9zM486 437h9v19h-9zM495 446.5h9v9.5h-9zM526 437h1v10h-1zM526 446h1v10h-1zM535 437h1v10h-1zM535 446h1v10h-1zM558 446.5h9v9.5h-9zM567 437h9v19h-9zM576 446.5h9v9.5h-9zM607 437h1v10h-1zM607 446h1v10h-1z"/>
 <path fill="#ffd666" d="M210 437h1v11h-1zM212 437h1v11h-1zM210 445h1v11h-1zM212 445h1v11h-1zM282 437h1v11h-1zM284 437h1v11h-1zM282 445h1v11h-1zM284 445h1v11h-1z"/>
-<text x="1008" y="451" fill="#e8ecf4" font-weight="bold">►</text>
+<text x="1008" y="451" fill="#e8ecf4" font-weight="bold">•</text>
 <text x="1026" y="451" fill="#e8ecf4" font-weight="bold">?</text>
 <text x="1098 1107 1116 1125 1134" y="451" fill="#e8ecf4" font-weight="bold">tutti</text>
 <text x="1152" y="451" fill="#e8ecf4" font-weight="bold">i</text>
@@ -359,10 +413,8 @@
 <path fill="#ffd666" d="M210 475h1v11h-1zM212 475h1v11h-1zM210 483h1v11h-1zM212 483h1v11h-1zM282 475h1v11h-1zM284 475h1v11h-1zM282 483h1v11h-1zM284 483h1v11h-1z"/>
 <text x="1008" y="489" fill="#e8ecf4">►</text>
 <text x="1026 1035 1044 1053 1062 1071 1080" y="489" fill="#e8ecf4">cursore</text>
-<text x="1107" y="489" fill="#e8ecf4">●</text>
-<text x="1125 1134 1143 1152 1161" y="489" fill="#e8ecf4">presa</text>
-<text x="1188" y="489" fill="#e8ecf4">+</text>
-<text x="1206 1215 1224 1233" y="489" fill="#e8ecf4">meta</text>
+<text x="1107" y="489" fill="#e8ecf4">•</text>
+<text x="1125 1134 1143 1152 1161 1170 1179 1188 1197 1206 1215" y="489" fill="#e8ecf4">disponibile</text>
 <rect x="0" y="494" width="207" height="19" fill="#287850"/>
 <rect x="207" y="494" width="54" height="19" fill="#242a3a"/>
 <rect x="261" y="494" width="18" height="19" fill="#fafaf4"/>
@@ -382,8 +434,12 @@
 <text x="585 594" y="508" fill="#a61414">8♦</text>
 <text x="666 675" y="508" fill="#101014">6♠</text>
 <text x="747 756" y="508" fill="#101014">A♣</text>
-<text x="1008 1017" y="508" fill="#e8ecf4">?→</text>
-<text x="1035 1044 1053 1062 1071" y="508" fill="#e8ecf4">aiuto</text>
+<text x="1008" y="508" fill="#e8ecf4">●</text>
+<text x="1026 1035 1044 1053 1062" y="508" fill="#e8ecf4">presa</text>
+<text x="1089" y="508" fill="#e8ecf4">+</text>
+<text x="1107 1116 1125 1134" y="508" fill="#e8ecf4">meta</text>
+<text x="1161 1170" y="508" fill="#e8ecf4">?→</text>
+<text x="1188 1197 1206 1215 1224" y="508" fill="#e8ecf4">aiuto</text>
 <rect x="0" y="513" width="990" height="19" fill="#287850"/>
 <rect x="990" y="513" width="270" height="19" fill="#242a3a"/>
 <path fill="#5d976a" d="M198 513h9v19h-9zM207 513h9v19h-9zM216 513h9v19h-9zM225 513h9v19h-9zM234 513h9v19h-9zM243 513h9v19h-9zM252 513h9v19h-9zM261 513h9v19h-9zM270 513h9v19h-9zM279 513h9v19h-9zM288 513h9v19h-9z"/>
@@ -420,9 +476,9 @@
 <path fill="#101014" d="M364 570h1v10h-1zM364 579h1v10h-1zM436 570h1v10h-1zM436 579h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 570h1v10h-1zM994 579h1v10h-1zM1255 570h1v10h-1zM1255 579h1v10h-1z"/>
 <path fill="#aadcbe" d="M454 570h1v10h-1zM454 579h1v10h-1zM526 570h1v10h-1zM526 579h1v10h-1zM544 570h1v10h-1zM544 579h1v10h-1zM616 570h1v10h-1zM616 579h1v10h-1z"/>
-<text x="1017" y="584" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080" y="584" fill="#b8c2d6" fill-opacity="0.6">Prendi</text>
-<text x="1197 1206 1215 1224 1233" y="584" fill="#b8c2d6" fill-opacity="0.6">Enter</text>
+<text x="1017" y="584" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080" y="584" fill="#b8c2d6">Prendi</text>
+<text x="1197 1206 1215 1224 1233" y="584" fill="#b8c2d6">Enter</text>
 <rect x="0" y="589" width="360" height="19" fill="#287850"/>
 <rect x="360" y="589" width="81" height="19" fill="#fafaf4"/>
 <rect x="441" y="589" width="549" height="19" fill="#287850"/>
@@ -430,11 +486,11 @@
 <path fill="#101014" d="M364 589h1v10h-1zM364 598h1v10h-1zM387 598.5h9v9.5h-9zM396 589h9v19h-9zM405 598.5h9v9.5h-9zM436 589h1v10h-1zM436 598h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 589h1v10h-1zM994 598h1v10h-1zM1255 589h1v10h-1zM1255 598h1v10h-1z"/>
 <path fill="#aadcbe" d="M454 589h1v10h-1zM454 598h1v10h-1zM526 589h1v10h-1zM526 598h1v10h-1zM544 589h1v10h-1zM544 598h1v10h-1zM616 589h1v10h-1zM616 598h1v10h-1z"/>
-<text x="576" y="603" fill="#aadcbe">A</text>
-<text x="1017" y="603" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071" y="603" fill="#b8c2d6" fill-opacity="0.6">Mossa</text>
-<text x="1089 1098 1107 1116 1125 1134" y="603" fill="#b8c2d6" fill-opacity="0.6">rapida</text>
-<text x="1233" y="603" fill="#b8c2d6" fill-opacity="0.6">a</text>
+<text x="567 576" y="603" fill="#aadcbe">13</text>
+<text x="1017" y="603" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071" y="603" fill="#b8c2d6">Mossa</text>
+<text x="1089 1098 1107 1116 1125 1134" y="603" fill="#b8c2d6">rapida</text>
+<text x="1233" y="603" fill="#b8c2d6">a</text>
 <rect x="0" y="608" width="360" height="19" fill="#287850"/>
 <rect x="360" y="608" width="81" height="19" fill="#fafaf4"/>
 <rect x="441" y="608" width="549" height="19" fill="#287850"/>
@@ -442,9 +498,9 @@
 <path fill="#101014" d="M364 608h1v10h-1zM364 617h1v10h-1zM378 617.5h9v9.5h-9zM387 608h9v19h-9zM396 608h9v9.5h-9zM405 608h9v19h-9zM414 617.5h9v9.5h-9zM436 608h1v10h-1zM436 617h1v10h-1z"/>
 <path fill="#6e7a96" d="M994 608h1v10h-1zM994 617h1v10h-1zM1255 608h1v10h-1zM1255 617h1v10h-1z"/>
 <path fill="#aadcbe" d="M454 608h1v10h-1zM454 617h1v10h-1zM526 608h1v10h-1zM526 617h1v10h-1zM544 608h1v10h-1zM544 617h1v10h-1zM616 608h1v10h-1zM616 617h1v10h-1z"/>
-<text x="1017" y="622" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080 1089" y="622" fill="#b8c2d6" fill-opacity="0.6">Rimetti</text>
-<text x="1215 1224 1233" y="622" fill="#b8c2d6" fill-opacity="0.6">Esc</text>
+<text x="1017" y="622" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080 1089" y="622" fill="#b8c2d6">Rimetti</text>
+<text x="1215 1224 1233" y="622" fill="#b8c2d6">Esc</text>
 <rect x="0" y="627" width="360" height="19" fill="#287850"/>
 <rect x="360" y="627" width="81" height="19" fill="#fafaf4"/>
 <rect x="441" y="627" width="549" height="19" fill="#287850"/>
@@ -463,22 +519,22 @@
 <path fill="#6e7a96" d="M994 646h1v10h-1zM994 655h1v10h-1zM1255 646h1v10h-1zM1255 655h1v10h-1z"/>
 <path fill="#aadcbe" d="M454 646h1v10h-1zM454 655h5v1h-5zM459 655h5v1h-5zM463 655h5v1h-5zM468 655h5v1h-5zM472 655h5v1h-5zM477 655h5v1h-5zM481 655h5v1h-5zM486 655h5v1h-5zM490 655h5v1h-5zM495 655h5v1h-5zM499 655h5v1h-5zM504 655h5v1h-5zM508 655h5v1h-5zM513 655h5v1h-5zM517 655h5v1h-5zM526 646h1v10h-1zM522 655h5v1h-5zM544 646h1v10h-1zM544 655h5v1h-5zM549 655h5v1h-5zM553 655h5v1h-5zM558 655h5v1h-5zM562 655h5v1h-5zM567 655h5v1h-5zM571 655h5v1h-5zM576 655h5v1h-5zM580 655h5v1h-5zM585 655h5v1h-5zM589 655h5v1h-5zM594 655h5v1h-5zM598 655h5v1h-5zM603 655h5v1h-5zM607 655h5v1h-5zM616 646h1v10h-1zM612 655h5v1h-5z"/>
 <text x="405 414 423" y="660" fill="#101014">x24</text>
-<text x="1017" y="660" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080 1089" y="660" fill="#b8c2d6" fill-opacity="0.6">Annulla</text>
-<text x="1233" y="660" fill="#b8c2d6" fill-opacity="0.6">u</text>
+<text x="1017" y="660" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080 1089" y="660" fill="#b8c2d6">Annulla</text>
+<text x="1233" y="660" fill="#b8c2d6">u</text>
 <rect x="0" y="665" width="990" height="19" fill="#287850"/>
 <rect x="990" y="665" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 665h1v10h-1zM994 674h1v10h-1zM1255 665h1v10h-1zM1255 674h1v10h-1z"/>
-<text x="1017" y="679" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080" y="679" fill="#b8c2d6" fill-opacity="0.6">Ripeti</text>
-<text x="1233" y="679" fill="#b8c2d6" fill-opacity="0.6">r</text>
+<text x="1017" y="679" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080" y="679" fill="#b8c2d6">Ripeti</text>
+<text x="1233" y="679" fill="#b8c2d6">r</text>
 <rect x="0" y="684" width="990" height="19" fill="#287850"/>
 <rect x="990" y="684" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 684h1v10h-1zM994 693h1v10h-1zM1255 684h1v10h-1zM1255 693h1v10h-1z"/>
-<text x="1017" y="698" fill="#b8c2d6" fill-opacity="0.6">×</text>
-<text x="1035 1044 1053 1062 1071 1080 1089 1098" y="698" fill="#b8c2d6" fill-opacity="0.6">Completa</text>
-<text x="1116 1125 1134 1143 1152 1161 1170" y="698" fill="#b8c2d6" fill-opacity="0.6">partita</text>
-<text x="1233" y="698" fill="#b8c2d6" fill-opacity="0.6">f</text>
+<text x="1017" y="698" fill="#b8c2d6">×</text>
+<text x="1035 1044 1053 1062 1071 1080 1089 1098" y="698" fill="#b8c2d6">Completa</text>
+<text x="1116 1125 1134 1143 1152 1161 1170" y="698" fill="#b8c2d6">partita</text>
+<text x="1233" y="698" fill="#b8c2d6">f</text>
 <rect x="0" y="703" width="990" height="19" fill="#287850"/>
 <rect x="990" y="703" width="270" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 703h1v10h-1zM994 712h1v10h-1zM1255 703h1v10h-1zM1255 712h1v10h-1z"/>
@@ -502,29 +558,29 @@
 <rect x="0" y="741" width="1260" height="19" fill="#242a3a"/>
 <path fill="#6e7a96" d="M994 741h1v10h-1zM994 750h5v1h-5zM999 750h5v1h-5zM1003 750h5v1h-5zM1008 750h5v1h-5zM1012 750h5v1h-5zM1017 750h5v1h-5zM1021 750h5v1h-5zM1026 750h5v1h-5zM1030 750h5v1h-5zM1035 750h5v1h-5zM1039 750h5v1h-5zM1044 750h5v1h-5zM1048 750h5v1h-5zM1053 750h5v1h-5zM1057 750h5v1h-5zM1062 750h5v1h-5zM1066 750h5v1h-5zM1071 750h5v1h-5zM1075 750h5v1h-5zM1080 750h5v1h-5zM1084 750h5v1h-5zM1089 750h5v1h-5zM1093 750h5v1h-5zM1098 750h5v1h-5zM1102 750h5v1h-5zM1107 750h5v1h-5zM1111 750h5v1h-5zM1116 750h5v1h-5zM1120 750h5v1h-5zM1125 750h5v1h-5zM1129 750h5v1h-5zM1134 750h5v1h-5zM1138 750h5v1h-5zM1143 750h5v1h-5zM1147 750h5v1h-5zM1152 750h5v1h-5zM1156 750h5v1h-5zM1161 750h5v1h-5zM1165 750h5v1h-5zM1170 750h5v1h-5zM1174 750h5v1h-5zM1179 750h5v1h-5zM1183 750h5v1h-5zM1188 750h5v1h-5zM1192 750h5v1h-5zM1197 750h5v1h-5zM1201 750h5v1h-5zM1206 750h5v1h-5zM1210 750h5v1h-5zM1215 750h5v1h-5zM1219 750h5v1h-5zM1224 750h5v1h-5zM1228 750h5v1h-5zM1233 750h5v1h-5zM1237 750h5v1h-5zM1242 750h5v1h-5zM1246 750h5v1h-5zM1255 741h1v10h-1zM1251 750h5v1h-5z"/>
 <text x="0 9 18 27" y="755" fill="#e8ecf4">Fai:</text>
-<text x="45 54" y="755" fill="#e8ecf4">s:</text>
+<text x="45 54" y="755" fill="#8cbeff">s:</text>
 <text x="72 81 90 99" y="755" fill="#e8ecf4">gira</text>
 <text x="117 126 135 144 153" y="755" fill="#e8ecf4">mazzo</text>
 <text x="171" y="755" fill="#e8ecf4">|</text>
-<text x="189 198" y="755" fill="#e8ecf4">h:</text>
+<text x="189 198" y="755" fill="#8cbeff">h:</text>
 <text x="216 225 234 243 252" y="755" fill="#e8ecf4">aiuto</text>
 <text x="270" y="755" fill="#e8ecf4">|</text>
-<text x="288 297 306 315 324 333 342 351" y="755" fill="#e8ecf4">Shift+R:</text>
+<text x="288 297 306 315 324 333 342 351" y="755" fill="#8cbeff">Shift+R:</text>
 <text x="369 378 387 396 405 414 423" y="755" fill="#e8ecf4">riavvia</text>
 <text x="441" y="755" fill="#e8ecf4">|</text>
-<text x="459 468" y="755" fill="#e8ecf4">o:</text>
+<text x="459 468" y="755" fill="#8cbeff">o:</text>
 <text x="486 495 504 513 522 531 540" y="755" fill="#e8ecf4">opzioni</text>
 <text x="558" y="755" fill="#e8ecf4">|</text>
-<text x="576 585" y="755" fill="#e8ecf4">p:</text>
+<text x="576 585" y="755" fill="#8cbeff">p:</text>
 <text x="603 612 621 630 639" y="755" fill="#e8ecf4">pausa</text>
 <text x="657" y="755" fill="#e8ecf4">|</text>
-<text x="675 684" y="755" fill="#e8ecf4">v:</text>
+<text x="675 684" y="755" fill="#8cbeff">v:</text>
 <text x="702 711 720 729 738" y="755" fill="#e8ecf4">mosse</text>
 <text x="756" y="755" fill="#e8ecf4">|</text>
-<text x="774 783" y="755" fill="#e8ecf4">?:</text>
+<text x="774 783" y="755" fill="#8cbeff">?:</text>
 <text x="801 810 819 828 837" y="755" fill="#e8ecf4">tasti</text>
 <text x="855" y="755" fill="#e8ecf4">|</text>
-<text x="873 882 891 900" y="755" fill="#e8ecf4">Esc:</text>
+<text x="873 882 891 900" y="755" fill="#8cbeff">Esc:</text>
 <text x="918 927 936 945" y="755" fill="#e8ecf4">menu</text>
 </g>
 </svg>
