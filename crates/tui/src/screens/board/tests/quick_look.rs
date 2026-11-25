@@ -114,6 +114,30 @@ fn the_focused_button_is_framed_and_drawn_in_the_focused_button_style() {
 }
 
 #[test]
+fn the_dialog_buttons_are_pressed_by_keyboard_and_by_mouse() {
+    let mut h = game_with(Settings::default(), WIDE);
+    open(&mut h);
+    for _ in 0..SAVE {
+        h.press(KeyCode::Tab);
+    }
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none(), "{}", h.text());
+
+    open(&mut h);
+    for _ in 0..=SAVE {
+        h.press(KeyCode::Tab);
+    }
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none(), "{}", h.text());
+
+    open(&mut h);
+    let close = tf("help.rules.close", &[("key", "Esc")]);
+    let (column, row) = h.find(&close).expect("the close button is drawn");
+    h.click(column, row);
+    assert!(h.app.modal().is_none(), "{}", h.text());
+}
+
+#[test]
 fn every_complete_locale_keeps_the_dialog_text_at_100_by_30_and_100_by_60() {
     for locale in Locale::offered() {
         for size in [(100, 30), (100, 60)] {
