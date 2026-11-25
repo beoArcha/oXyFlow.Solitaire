@@ -57,7 +57,6 @@ unchecked = "sin comprobar"
 yes = "sí"
 no = "no"
 unknown = "incierta"
-unchecked = "-"
 
 [button]
 replay = "Volver a jugar esta semilla"

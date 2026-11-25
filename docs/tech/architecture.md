@@ -593,8 +593,9 @@ pub struct NullClipboard;                                // every copy fails wit
   information (`Facts`, so the Compact header row and the `Game` compartment both show it): `Winnable: checking...`,
   `Winnable: yes`, `Winnable: unknown`, `Winnable: no`; a random game dealt without the option says nothing. Every
   proof of the running deal is written to its history row with `Storage::record_proof` (a failure is logged, not
-  alerted: the mark is advisory). The statistics history has a `Winnable` column (`yes`, `no`, `unknown`, `-` when
-  unchecked). Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
+  alerted: the mark is advisory). The statistics history has a `Winnable` column (`yes`, `no`, `unknown`, and the
+  legend's own `· not checked` when unchecked, O-97); its `Result` column is coloured through theme tokens (won
+  `Success`, abandoned `TextMuted`, in progress `Accent`) and keeps its words. Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
 - **Assist counters (P4-06):** `AssistCounters` (`storage/counters.rs`) counts per game the moves made by hand (`manual`), by
   the quick move key or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
   target (`failed`) and the longest run of quick moves (`longest_streak`; a manual move ends the run, the finish and a failed
@@ -719,9 +720,10 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the card is not blocked, otherwise only its rank and suit, O-106); `frame.rs` borders;
   `mark.rs` `Mark` and `Hint`; `rows.rs` corner labels, marker symbols and the stock badge; `slot.rs` placeholders;
   `paint.rs` clipped painting; `face.rs` centre layout; `art.rs` suit pictograms). The rank is text, never a
-  picture: a face-up card of 9x7, 11x9 or 13x11 draws one bold row `K ♣` (the localized corner label, one space,
-  the suit symbol; two spaces at 13x11) in the suit color at the top of its interior, with the suit pictogram
-  below it (5x2 at 9x7, 5x3 at 11x9, 7x4 at 13x11); 7x5 keeps the single suit symbol. The corner labels stay in
+  picture: a face-up card of 9x7 draws one bold row `K ♣` (the localized corner label, one space, the suit symbol)
+  in the suit color at the top of its interior, with the 5x2 suit pictogram below it; 11x9 and 13x11 draw no such
+  row (O-99, owner decision): the corner labels carry rank and suit and the 7x4 pictogram takes the interior,
+  centred at 13x11; a covered card of these sizes shows its corner label only; 7x5 keeps the single suit symbol. The corner labels stay in
   the top-left and bottom-right corners. Unicode art uses only WGL4 characters, ASCII art only printable ASCII;
   the ASCII suits are lowercase `c d h s`, so the Polish queen of diamonds is `Dd`, not `DD`. No two ranks render
   the same at any size, in both locales and both glyph modes (tested).

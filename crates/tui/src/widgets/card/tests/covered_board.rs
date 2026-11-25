@@ -42,8 +42,8 @@ pub(super) fn settings_for(mode: GlyphMode, card_size: CardSizeSetting) -> Setti
 
 fn pip_bounds(size: CardSize) -> (u16, u16) {
     match (size.width, size.height) {
-        (13, 11) => (4, 8),
-        (11, 9) => (3, 6),
+        (13, 11) => (3, 7),
+        (11, 9) => (2, 6),
         (9, 7) => (3, 5),
         _ => (2, 3),
     }
@@ -109,7 +109,7 @@ fn assert_card_header(
         after_corner.starts_with(&corner),
         "{what}: corner {corner:?} missing in {top:?}"
     );
-    if visible >= 2 && rect.width >= 9 {
+    if visible >= 2 && rect.width >= 9 && rect.height < 9 {
         let header = row_slice(buf, rect, rect.y + 1);
         let rank = rank_in(card.rank, glyphs);
         let suit = glyphs.suit(card.suit);

@@ -9,9 +9,12 @@ use crate::i18n::t;
 use crate::screens::variant_label_key;
 use crate::solver::Proof;
 use crate::storage::{GameRecord, Outcome};
+use crate::theme::Token;
 use oxysol_core::Variant;
 
 const NONE: &str = "-";
+/// The first column that is right-aligned: the counts and times, not the texts.
+const FIRST_RIGHT_COLUMN: usize = 5;
 const MILLIS_PER_DAY: i64 = 86_400_000;
 const MILLIS_PER_MINUTE: i64 = 60_000;
 const COLUMN_GAP: &str = " ";
@@ -64,7 +67,7 @@ fn winnable_label(proof: Option<Proof>) -> &'static str {
         Some(Proof::Winnable) => "stats.winnable.yes",
         Some(Proof::Unwinnable) => "stats.winnable.no",
         Some(Proof::Unknown) => "stats.winnable.unknown",
-        None => "stats.winnable.unchecked",
+        None => "stats.legend.unchecked",
     }
 }
 
@@ -100,7 +103,7 @@ fn char_width(text: &str) -> usize {
     text.chars().count()
 }
 
-fn pad_row(cells: &[String], widths: &[usize], right_from: usize) -> String {
+fn pad_cells(cells: &[String], widths: &[usize], right_from: usize) -> Vec<String> {
     cells
         .iter()
         .zip(widths)
@@ -112,8 +115,11 @@ fn pad_row(cells: &[String], widths: &[usize], right_from: usize) -> String {
                 format!("{cell:<width$}")
             }
         })
-        .collect::<Vec<_>>()
-        .join(COLUMN_GAP)
+        .collect()
+}
+
+fn pad_row(cells: &[String], widths: &[usize], right_from: usize) -> String {
+    pad_cells(cells, widths, right_from).join(COLUMN_GAP)
 }
 
 /// Pads every column to its widest cell; columns from `right_from` on are right-aligned.
@@ -275,13 +281,19 @@ fn restarts_cell(record: &GameRecord) -> String {
     }
 }
 
-fn history_line(cells: &[String], glyphs: &Glyphs, short: bool) -> String {
-    let widths: Vec<usize> = history_floor(glyphs, short)
+/// The index of the result column in the history list.
+pub const RESULT_COLUMN: usize = 4;
+
+fn history_widths(glyphs: &Glyphs, short: bool) -> Vec<usize> {
+    history_floor(glyphs, short)
         .iter()
         .zip(history_header_cells(short))
         .map(|(floor, header)| char_width(floor).max(char_width(&header)))
-        .collect();
-    pad_row(cells, &widths, 5)
+        .collect()
+}
+
+fn history_line(cells: &[String], glyphs: &Glyphs, short: bool) -> String {
+    pad_row(cells, &history_widths(glyphs, short), FIRST_RIGHT_COLUMN)
 }
 
 /// The column header of the history list, without the focus marker columns.
@@ -289,7 +301,22 @@ pub fn history_header(glyphs: &Glyphs, short: bool) -> String {
     history_line(&history_header_cells(short), glyphs, short)
 }
 
-/// One history row, without the focus marker columns.
-pub fn history_row(record: &GameRecord, glyphs: &Glyphs, short: bool) -> String {
-    history_line(&history_cells(record, glyphs, short), glyphs, short)
+/// The cells of one history row, each padded to its column, without the focus marker columns. The
+/// screen styles the [`RESULT_COLUMN`] cell by the result.
+pub fn history_columns(record: &GameRecord, glyphs: &Glyphs, short: bool) -> Vec<String> {
+    pad_cells(
+        &history_cells(record, glyphs, short),
+        &history_widths(glyphs, short),
+        FIRST_RIGHT_COLUMN,
+    )
+}
+
+/// The colour token of a result: won reads as success, abandoned as muted, a game in progress as
+/// the accent. The result word itself carries the meaning too.
+pub const fn result_token(outcome: Option<Outcome>) -> Token {
+    match outcome {
+        Some(Outcome::Won) => Token::Success,
+        Some(Outcome::Abandoned) => Token::TextMuted,
+        None => Token::Accent,
+    }
 }

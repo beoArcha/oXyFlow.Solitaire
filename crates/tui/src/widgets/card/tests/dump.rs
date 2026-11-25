@@ -60,3 +60,78 @@ fn print_klondike_and_spider_boards() {
     }
     set_locale(Locale::EnUs);
 }
+
+const SNAPSHOT_FRONTS: [&str; 6] = [
+    "french",
+    "german",
+    "international",
+    "italian",
+    "spanish",
+    "swiss",
+];
+const SNAPSHOT_SIZES: [(u16, u16); 2] = [(11, 9), (13, 11)];
+
+fn snapshot_row(
+    fixture: &Fixture,
+    size: (u16, u16),
+    cards: &[Card],
+    covered: Option<u16>,
+) -> Vec<String> {
+    let renders: Vec<Vec<String>> = cards
+        .iter()
+        .map(|card| {
+            let area = Rect::new(0, 0, size.0, size.1);
+            let mut buf = Buffer::empty(area);
+            match covered {
+                Some(visible) => draw_covered(
+                    &mut buf,
+                    area,
+                    visible,
+                    (Face::Up(*card), Mark::default()),
+                    &fixture.ctx(),
+                ),
+                None => draw(
+                    &mut buf,
+                    area,
+                    Face::Up(*card),
+                    Mark::default(),
+                    None,
+                    &fixture.ctx(),
+                ),
+            }
+            rows(&buf, area)
+        })
+        .collect();
+    (0..usize::from(size.1))
+        .map(|row| {
+            renders
+                .iter()
+                .map(|lines| lines[row].as_str())
+                .collect::<Vec<_>>()
+                .join(" ")
+        })
+        .collect()
+}
+
+#[test]
+fn print_large_face_snapshots() {
+    let cards = [
+        card(Rank::King, Suit::Hearts),
+        card(Rank::Seven, Suit::Hearts),
+        card(Rank::King, Suit::Spades),
+        card(Rank::Seven, Suit::Spades),
+    ];
+    for front in SNAPSHOT_FRONTS {
+        let fixture = Fixture::styled(GlyphMode::Unicode, front, "lattice");
+        for size in SNAPSHOT_SIZES {
+            println!("== {front} {}x{} uncovered K♥ 7♥ K♠ 7♠", size.0, size.1);
+            for line in snapshot_row(&fixture, size, &cards, None) {
+                println!("{line}");
+            }
+            println!("== {front} {}x{} covered (4 rows visible)", size.0, size.1);
+            for line in snapshot_row(&fixture, size, &cards, Some(4)) {
+                println!("{line}");
+            }
+        }
+    }
+}

@@ -1,7 +1,9 @@
 //! The centre of a face-up card: one row of bold text with the rank and the suit symbol, above a
 //! suit pictogram when the card is big enough. The text is the same label as the corner, so no rank
-//! looks like another. The smallest card keeps a single suit symbol. In `Font` mode the pictogram
-//! is one glyph of the oXySol font: the court emblem of a court card, else the suit.
+//! looks like another. The smallest card keeps a single suit symbol. From an interior of seven rows
+//! (11 × 9 and 13 × 11) the text row is dropped and the pictogram takes its rows: the rank and the
+//! suit stay in the corners. In `Font` mode the pictogram is one glyph of the oXySol font: the court
+//! emblem of a court card, else the suit.
 
 use oxysol_core::Card;
 use ratatui::layout::Rect;
@@ -15,6 +17,8 @@ use crate::glyphs::Glyphs;
 /// Rows the text and the air around it take above the pictogram of the smallest card that has one.
 const TEXT_BAND: u16 = 3;
 const WIDE_INTERIOR: u16 = 11;
+/// The interior height from which the centred text row is dropped.
+const BIG_INTERIOR: u16 = 7;
 
 /// How much of a card's height is uncovered from below when drawing its centre.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -23,15 +27,19 @@ pub(super) struct Visibility {
     pub(super) blocked: bool,
 }
 
+fn has_text(interior: Rect) -> bool {
+    interior.height < BIG_INTERIOR
+}
+
 /// The scale that fits `interior`, the card area inside the border, or `None` for the compact face.
 pub(super) fn scale_for(interior: Rect) -> Option<Scale> {
-    let big = |scale: Scale, gap: u16| {
-        interior.height >= TEXT_BAND + gap + scale.suit_height()
-            && interior.width >= scale.suit_width()
-    };
+    let text = has_text(interior);
     [(Scale::Large, 1), (Scale::Medium, 1), (Scale::Small, 0)]
         .into_iter()
-        .find(|(scale, gap)| big(*scale, *gap))
+        .find(|(scale, gap)| {
+            let band = if text { TEXT_BAND + *gap } else { 0 };
+            interior.height >= band + scale.suit_height() && interior.width >= scale.suit_width()
+        })
         .map(|(scale, _)| scale)
 }
 
@@ -57,8 +65,12 @@ fn font_glyph(card: Card, glyphs: &Glyphs) -> Option<&'static str> {
 }
 
 fn art_offset(interior: Rect, scale: Scale) -> u16 {
-    let spare = interior.height.saturating_sub(1 + scale.suit_height());
-    1 + (spare / 2).max(1)
+    let spare = interior.height.saturating_sub(scale.suit_height());
+    if has_text(interior) {
+        1 + (spare.saturating_sub(1) / 2).max(1)
+    } else {
+        spare / 2
+    }
 }
 
 fn paint_large(
@@ -110,7 +122,7 @@ pub(super) fn paint_center(
         None => area.height / 2 + 1,
     };
     let show_pip = !visible.blocked && visible.rows.is_none_or(|rows| rows >= pip_bottom);
-    let show_text = visible.rows.is_none_or(|rows| rows >= 2);
+    let show_text = has_text(interior) && visible.rows.is_none_or(|rows| rows >= 2);
     match scale {
         Some(scale) => paint_large(
             painter,

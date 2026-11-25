@@ -1,6 +1,6 @@
 //! The card widget: a front with rank and suit in the corners, the same rank and suit as bold
-//! text in the centre above a suit pictogram (in `Font` mode a glyph of the oXySol font), a back,
-//! and an empty slot. The suit symbols, court labels and the back tile come from the card styles
+//! text in the centre above a suit pictogram on the smaller sizes (the two largest sizes show the
+//! pictogram alone, O-99; in `Font` mode a glyph of the oXySol font), a back, and an empty slot. The suit symbols, court labels and the back tile come from the card styles
 //! of the settings through `Glyphs` (P5-02).
 //!
 //! The rank and suit sit in the top border row, so a card overlapped by the next card of its
@@ -135,8 +135,8 @@ pub fn draw(
     draw_with(buf, area, face, mark, badge, None, ctx);
 }
 
-/// Draws a card covered from `visible_rows` down: only the header (rank and suit) is drawn unless
-/// the whole centre pip area fits inside `visible_rows`.
+/// Draws a card covered from `visible_rows` down: only the header (the corner label with rank and
+/// suit) is drawn unless the whole centre pip area fits inside `visible_rows`.
 pub fn draw_covered(
     buf: &mut Buffer,
     area: Rect,
