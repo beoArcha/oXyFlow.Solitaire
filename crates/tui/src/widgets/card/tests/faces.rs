@@ -154,11 +154,13 @@ fn the_corners_and_the_centre_carry_the_rank_and_the_suit_as_text() {
             assert!(after_corner.starts_with(&corner), "{case}: {}", lines[0]);
             assert!(lines[lines.len() - 1].contains(&corner), "{case}");
             let suit = glyphs.suit(face.suit);
-            if size.0 >= 9 {
+            if size.0 < 9 {
+                assert!(lines[2].contains(suit), "{case}");
+            } else if size.1 < 9 {
                 let centre = centre_text(size, &rank_text(face.rank), suit);
                 assert_eq!(lines[1].trim_matches([' ', '│', '|']), centre, "{case}");
             } else {
-                assert!(lines[2].contains(suit), "{case}");
+                assert!(is_blank(&lines[1]), "{case}: {}", lines[1]);
             }
         }
     });
@@ -179,7 +181,7 @@ fn no_two_cards_render_the_same_at_any_size() {
                     let corners: HashSet<_> = by_rank.iter().map(|lines| &lines[0]).collect();
                     let centres: HashSet<_> = by_rank.iter().map(|lines| &lines[1]).collect();
                     assert_eq!(corners.len(), 13, "{locale:?} {mode:?} {size:?} corners");
-                    if size.0 >= 9 {
+                    if size.0 >= 9 && size.1 < 9 {
                         assert_eq!(centres.len(), 13, "{locale:?} {mode:?} {size:?} centres");
                     }
                 }
@@ -203,13 +205,17 @@ fn is_blank(line: &str) -> bool {
 
 #[test]
 fn the_text_row_is_followed_by_air_and_the_pictogram_without_a_pixel_rank() {
-    let layouts = [((9, 7), 3, 2), ((11, 9), 3, 3), ((13, 11), 4, 4)];
+    let layouts = [
+        ((9, 7), Some(1), 3, 2),
+        ((11, 9), None, 2, 4),
+        ((13, 11), None, 3, 4),
+    ];
     for mode in MODES {
-        for (size, art_top, art_height) in layouts {
+        for (size, text_row, art_top, art_height) in layouts {
             let lines = render(mode, size, card(Rank::King, Suit::Spades));
             let art_end = art_top + art_height;
             for (row, line) in lines.iter().enumerate().take(lines.len() - 1).skip(1) {
-                let expected_blank = row != 1 && !(art_top..art_end).contains(&row);
+                let expected_blank = text_row != Some(row) && !(art_top..art_end).contains(&row);
                 assert_eq!(is_blank(line), expected_blank, "{size:?} row {row}: {line}");
             }
         }
@@ -225,7 +231,7 @@ fn the_compact_size_keeps_one_suit_symbol_and_no_art() {
 }
 
 #[test]
-fn the_pictogram_uses_the_suit_color_token_and_the_text_is_bold() {
+fn the_pictogram_uses_the_suit_color_token() {
     let fixture = Fixture::new(GlyphMode::Unicode);
     for (suit, token) in [
         (Suit::Hearts, Token::CardRed),
@@ -241,6 +247,18 @@ fn the_pictogram_uses_the_suit_color_token_and_the_text_is_bold() {
         for (x, y) in painted {
             assert_eq!(buf[(x, y)].fg, expected.fg.unwrap_or_default());
         }
+    }
+}
+
+#[test]
+fn the_centre_text_of_a_small_card_is_bold_and_takes_the_suit_color() {
+    let fixture = Fixture::new(GlyphMode::Unicode);
+    for (suit, token) in [
+        (Suit::Hearts, Token::CardRed),
+        (Suit::Spades, Token::CardBlack),
+    ] {
+        let (buf, area) = padded(GlyphMode::Unicode, (9, 7), card(Rank::Ace, suit));
+        let expected = fixture.theme.style(token, Token::CardFace);
         let text_row = area.top() + 1;
         let letter = (area.left() + 1..area.right())
             .find(|x| buf[(*x, text_row)].symbol() == "A")
