@@ -7,8 +7,8 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
 use super::format::{
-    LONGEST_STREAK_MIN_WIDTH, WINNABLE_TEXT_MIN_WIDTH, history_header, history_row, legend_line,
-    summary_lines,
+    LONGEST_STREAK_MIN_WIDTH, RESULT_COLUMN, WINNABLE_TEXT_MIN_WIDTH, history_columns,
+    history_header, legend_line, result_token, summary_lines,
 };
 use super::{Button, StatsScreen, Stop};
 use crate::action::Action;
@@ -41,6 +41,23 @@ fn text_width(text: &str) -> u16 {
 
 fn block_x(area: Rect, width: u16) -> u16 {
     area.x + area.width.saturating_sub(width) / 2
+}
+
+/// One history row: the focus marker, then the cells; the result cell takes its own style.
+fn row_line(marker_text: &str, cells: &[String], plain: Style, result: Style) -> Line<'static> {
+    let mut spans = vec![Span::styled(format!("{marker_text} "), plain)];
+    for (column, cell) in cells.iter().enumerate() {
+        if column > 0 {
+            spans.push(Span::styled(" ", plain));
+        }
+        let style = if column == RESULT_COLUMN {
+            result
+        } else {
+            plain
+        };
+        spans.push(Span::styled(cell.clone(), style));
+    }
+    Line::from(spans)
 }
 
 /// The key line: the list keys, button focus, every action-bar button and Back.
@@ -205,18 +222,19 @@ impl StatsScreen {
                 break;
             };
             let focused = list_focused && index == self.list.selected();
-            let style = if focused {
-                ctx.theme.focus()
+            let (plain, result) = if focused {
+                (ctx.theme.focus(), ctx.theme.focus())
             } else {
-                ctx.theme.base()
+                (
+                    ctx.theme.base(),
+                    ctx.theme
+                        .style(result_token(record.outcome), Token::Background),
+                )
             };
             let cell = Rect::new(x, list_area.y + row, row_width, 1);
-            let text = format!(
-                "{} {}",
-                marker(ctx, focused),
-                history_row(record, ctx.glyphs, short)
-            );
-            frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
+            let cells = history_columns(record, ctx.glyphs, short);
+            let line = row_line(marker(ctx, focused), &cells, plain, result);
+            frame.render_widget(Paragraph::new(line), cell);
             self.rows.push((index, cell));
         }
         let metrics = Metrics {

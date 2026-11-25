@@ -57,7 +57,6 @@ unchecked = "ungeprüft"
 yes = "ja"
 no = "nein"
 unknown = "unklar"
-unchecked = "-"
 
 [button]
 replay = "Diesen Seed erneut spielen"
