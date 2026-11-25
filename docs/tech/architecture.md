@@ -339,7 +339,9 @@ pub struct NullClipboard;                                // every copy fails wit
   height, `overlay::dock::split`: its width is the room beyond the board's minimum width (`BOARD_MIN_WIDTH`),
   between 30 and 60 columns, and the rest of the screen (the board) draws beside it. Below 130 columns it stays
   centred and a note says so. Its text is word-wrapped and scrolls by wrapped lines (`dock/dock_view.rs`);
-  Keys is one column. Keys: while it is open the board keeps the keys (its clock runs) until F6 gives the
+  Keys is one column of topics whose shortcut rows have two columns (O-77): a 12-column key column and the
+  description beside it, wrapping under itself; a key longer than 10 characters, or a description word wider than its
+  column, puts the key on its own line and the description indented below. Keys: while it is open the board keeps the keys (its clock runs) until F6 gives the
   window the focus (F6 again returns it); the window then takes Tab, Left/Right, Up/Down, PgUp/PgDn, Home/End,
   Esc and Enter (close); `?` closes it from the board. The wheel and clicks over the window go to it; the arrows
   of its tab and game rows and its Close button are clickable. Focus shows without colour: the title carries
