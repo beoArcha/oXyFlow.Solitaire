@@ -23,6 +23,36 @@ naam bewaren de bestanden van het spel in een map `data` naast het programma. De
 Je bouwt de branch `release`, met de laatste commit die de volledige controle op Linux, Windows en macOS heeft
 doorstaan.
 
+### Met de installatiescripts (aanbevolen)
+
+De scripts in de map `build/` controleren eerst alle vereiste afhankelijkheden en bouwen en installeren `oxysol` daarna
+in `~/.cargo/bin` (`%USERPROFILE%\.cargo\bin` op Windows):
+
+- `--check` — stopt bij de eerste ontbrekende afhankelijkheid, met een exitcode ongelijk aan nul.
+- `--list` — somt alle ontbrekende afhankelijkheden op, met het installatiecommando voor jouw systeem.
+- `--install` — vraagt om toestemming voordat ontbrekende afhankelijkheden via je pakketbeheerder worden geïnstalleerd,
+  controleert opnieuw en bouwt alleen als de tweede controle slaagt.
+- `--no-audio` — slaat op Linux de ALSA/`pkg-config`-controle over en bouwt met `--no-default-features`.
+
+Zonder modusvlag vraagt een interactieve terminal welke modus je wilt; een niet-interactieve run gedraagt zich als
+`--list`.
+
+**Linux en macOS** (`--check` en `--list` gecontroleerd in CI; `--install` nog niet gecontroleerd):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.sh | sh -s -- --list
+```
+
+**Windows (PowerShell)** (`--check` en `--list` gecontroleerd op Windows; `--install` nog niet gecontroleerd):
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/beoArcha/oXyFlow.Solitaire/main/build/install.ps1))) --list
+```
+
+Vervang `--list` door `--install` om ontbrekende afhankelijkheden te installeren en te bouwen.
+
+### Handmatige stappen
+
 **Rust is nodig.** Installeer het met [rustup](https://rustup.rs). De exacte toolchain staat vast in
 `rust-toolchain.toml`; rustup herkent die vanzelf en installeert hem bij de eerste build, dus verder hoef je niets in te
 stellen. De build compileert ook een beetje C-code (SQLite), dus je hebt een C-toolchain nodig:
@@ -30,8 +60,8 @@ stellen. De build compileert ook een beetje C-code (SQLite), dus je hebt een C-t
 - **Windows:** de Visual Studio Build Tools (of Visual Studio) met de workload ‘Desktopontwikkeling met C++’
   (‘Desktop development with C++’). rustup biedt aan ze te installeren.
 - **macOS:** de Xcode-opdrachtregeltools: `xcode-select --install`.
-- **Linux:** een C-compiler (`gcc` of `cc`) en `curl`. Voor geluid ook de ALSA-headers, bijvoorbeeld
-  `sudo apt install build-essential libasound2-dev` op Debian en Ubuntu. Zonder die headers bouw je met
+- **Linux:** een C-compiler (`gcc` of `cc`), `curl` en `tar`. Voor geluid ook `pkg-config` en de ALSA-headers,
+  bijvoorbeeld `sudo apt install build-essential pkg-config libasound2-dev` op Debian en Ubuntu. Zonder die headers bouw je met
   `cargo build --release --no-default-features`, dan zonder geluid.
 
 De eerste build duurt een paar minuten.
