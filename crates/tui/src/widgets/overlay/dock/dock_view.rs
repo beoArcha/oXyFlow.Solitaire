@@ -1,11 +1,12 @@
 //! Drawing of the docked help window and the text of its three tabs. The text is word-wrapped to
-//! the window's width, with the same content as the centred window: the keys in one column, the
-//! rules and the command line wrapped. It scrolls line by line, the scroll bar counts wrapped lines.
+//! the window's width, with the same content as the centred window: the keys in two columns when
+//! they fit (wrapping long combinations), the rules and the command line wrapped. It scrolls line
+//! by line, the scroll bar counts wrapped lines.
 
 use ratatui::Frame;
 use ratatui::layout::{Margin, Rect};
 use ratatui::style::Modifier;
-use ratatui::text::Line;
+use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Clear, Paragraph};
 
 use super::super::command_line;
@@ -28,6 +29,8 @@ use crate::widgets::scrollbar::{self, Metrics};
 use crate::widgets::text::wrap;
 
 const DETAIL_INDENT: &str = "  ";
+const KEY_COLUMN: usize = 12;
+const KEY_GAP: usize = 2;
 
 /// The wrapped lines of the active tab of `modal` for a text area `width` columns wide.
 pub fn body(modal: &Modal, width: u16) -> Vec<Row> {
@@ -64,6 +67,51 @@ fn push(rows: &mut Vec<Row>, text: &str, width: usize, lead: &str, kind: Kind) {
     }
 }
 
+fn push_key_only(rows: &mut Vec<Row>, keys: &str, width: usize) {
+    for line in wrap(keys, width.max(1)) {
+        rows.push(Row {
+            lead: line,
+            text: String::new(),
+            kind: Kind::Key,
+        });
+    }
+}
+
+fn push_key_row(rows: &mut Vec<Row>, keys: &str, text: &str, width: usize) {
+    let desc_width = width.saturating_sub(KEY_COLUMN);
+    let fits_beside = keys.chars().count() + KEY_GAP <= KEY_COLUMN
+        && desc_width > 0
+        && text
+            .split_whitespace()
+            .all(|word| word.chars().count() <= desc_width);
+    if !fits_beside {
+        push_key_only(rows, keys, width);
+        push(rows, text, width, DETAIL_INDENT, Kind::Body);
+        return;
+    }
+    let lines = wrap(text, desc_width);
+    if lines.is_empty() {
+        rows.push(Row {
+            lead: format!("{keys:<KEY_COLUMN$}"),
+            text: String::new(),
+            kind: Kind::Key,
+        });
+        return;
+    }
+    for (index, line) in lines.into_iter().enumerate() {
+        let (lead, kind) = if index == 0 {
+            (format!("{keys:<KEY_COLUMN$}"), Kind::Key)
+        } else {
+            (" ".repeat(KEY_COLUMN), Kind::Body)
+        };
+        rows.push(Row {
+            lead,
+            text: line,
+            kind,
+        });
+    }
+}
+
 fn keys_body(width: usize) -> Vec<Row> {
     let mut rows = Vec::new();
     for (index, section) in help::sections().iter().enumerate() {
@@ -72,8 +120,7 @@ fn keys_body(width: usize) -> Vec<Row> {
         }
         push(&mut rows, &section.title, width, "", Kind::Heading);
         for row in &section.rows {
-            push(&mut rows, &row.keys, width, "", Kind::Key);
-            push(&mut rows, &row.text, width, DETAIL_INDENT, Kind::Body);
+            push_key_row(&mut rows, &row.keys, &row.text, width);
         }
     }
     rows
@@ -87,7 +134,7 @@ fn rules_body(rules: Rules, width: usize) -> Vec<Row> {
         match row.kind {
             Kind::Key if !blank_lead => {
                 detail = true;
-                push(&mut rows, row.lead.trim_end(), width, "", Kind::Key);
+                push_key_only(&mut rows, row.lead.trim_end(), width);
                 push(&mut rows, &row.text, width, DETAIL_INDENT, Kind::Body);
             }
             Kind::Body if detail && blank_lead => {
@@ -120,11 +167,19 @@ fn command_body(width: usize) -> Vec<Row> {
 
 fn line_of(row: &Row, ctx: &ViewCtx<'_>) -> Line<'static> {
     let plain = ctx.theme.surface();
-    let text = format!("{}{}", row.lead, row.text);
     match row.kind {
-        Kind::Heading => Line::styled(text, plain.add_modifier(Modifier::BOLD)),
-        Kind::Key => Line::styled(text, ctx.theme.style(Token::Accent, Token::Surface)),
-        Kind::Body => Line::styled(text, plain),
+        Kind::Heading => Line::styled(
+            format!("{}{}", row.lead, row.text),
+            plain.add_modifier(Modifier::BOLD),
+        ),
+        Kind::Key => Line::from(vec![
+            Span::styled(
+                row.lead.clone(),
+                ctx.theme.style(Token::Accent, Token::Surface),
+            ),
+            Span::styled(row.text.clone(), plain),
+        ]),
+        Kind::Body => Line::styled(format!("{}{}", row.lead, row.text), plain),
     }
 }
 
