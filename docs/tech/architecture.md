@@ -404,6 +404,10 @@ pub struct NullClipboard;                                // every copy fails wit
   is wider than the board, but a fixed tail always stays: `?: keys` and `Esc: menu` (while cards are carried Esc
   puts them back, so the tail is `?: keys` only). `screens/board/guidance.rs` builds both rows from the
   controller state and `Session` (`legal_moves`, `hint`, `can_undo`/`can_redo`); no rule is decided in the TUI.
+  `Action::WasteQuickMove` (key `e`, help group Board) quick-moves the exposed waste card from anywhere on the
+  board with the same destination order as `a` (`choices::quick`) without moving the cursor, and shows in `Do:`
+  only while the waste card can move (and in the guide for games where cards can leave the waste: Klondike,
+  Pyramid and Australian Patience).
   The `Do:` row carries `p: pause` and `v: moves` in its tail (O-37, drop order 4); when it has no room for them the `Now:` row
   ends with the same buttons (`controls::Buttons`), so both stay clickable at every width.
   The strip is drawn on `Surface`, so `Text`, `Success` and `Error` use pairs that `TEXT_PAIRS` tests. The `Now:`
@@ -463,8 +467,8 @@ pub struct NullClipboard;                                // every copy fails wit
   `►` forward, a click elsewhere on the row forward as before (`settings/values.rs::line`).
 - **Aids and quick options (P3-27):** the board aids are `Settings::aura`, `target_marks` (default `true`; an older
   value without the field loads as `true`), `guide_panel`, `moves_panel`, `auto_finish` and `quick_move` (O-114, default `true`, an older value loads as
-  `true`; when off, `a` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
-  out quick move, and the moves window shows it unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
+  `true`; when off, `a`, `e` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
+  out quick move and waste quick move, and the moves window shows quick move unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
   `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
   `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings groups them under
   "Hints and help" (`Group::Hints`, replacing the old Board group), after Display and Sound; the moves panel and the
@@ -597,7 +601,7 @@ pub struct NullClipboard;                                // every copy fails wit
   legend's own `· not checked` when unchecked, O-97); its `Result` column is coloured through theme tokens (won
   `Success`, abandoned `TextMuted`, in progress `Accent`) and keeps its words. Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
 - **Assist counters (P4-06):** `AssistCounters` (`storage/counters.rs`) counts per game the moves made by hand (`manual`), by
-  the quick move key or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
+  the quick move keys (`a`, `e`) or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
   target (`failed`) and the longest run of quick moves (`longest_streak`; a manual move ends the run, the finish and a failed
   attempt do not). `BoardScreen` tallies them in `play_from` (`board/assist.rs`); `App::save_board` writes them with the saved
   game through `Storage::record_assist`, a resume reads them back and starts a new run, a restart or a new game starts from

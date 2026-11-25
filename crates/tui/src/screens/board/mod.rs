@@ -10,6 +10,7 @@ mod counters;
 mod cursor;
 mod finish;
 mod guidance;
+mod guidance_parts;
 mod guide_view;
 mod header;
 mod marks;
