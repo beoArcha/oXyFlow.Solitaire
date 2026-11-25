@@ -23,7 +23,7 @@ use crate::settings::{Aid, Aids};
 use crate::theme::Token;
 
 const BOX_WIDTH: u16 = 66;
-const AID_ROWS: u16 = 5;
+const AID_ROWS: u16 = Aid::ALL.len() as u16;
 const DESCRIPTION_ROWS: u16 = 2;
 const BODY_ROWS: u16 = 1 + 1 + AID_ROWS + 1 + DESCRIPTION_ROWS + 1;
 const SAVE: usize = Aid::ALL.len();

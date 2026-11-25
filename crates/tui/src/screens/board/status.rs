@@ -32,6 +32,7 @@ pub(super) const NOTHING_TO_UNDO: &str = "board.status.nothing_to_undo";
 pub(super) const NOTHING_TO_REDO: &str = "board.status.nothing_to_redo";
 pub(super) const NO_HINT: &str = "board.status.no_hint";
 pub(super) const UNDO_OFF: &str = "board.status.undo_off";
+pub(super) const QUICK_OFF: &str = "board.status.quick_off";
 pub(super) const SOLVED: &str = "board.status.solved";
 pub(super) const MOVED: &str = "board.status.moved";
 pub(super) const DEALT: &str = "board.status.dealt";
@@ -74,12 +75,13 @@ pub(super) enum Tone {
     Error,
 }
 
-const REFUSALS: [&str; 7] = [
+const REFUSALS: [&str; 8] = [
     NO_TARGETS,
     NOTHING_TO_UNDO,
     NOTHING_TO_REDO,
     NO_HINT,
     UNDO_OFF,
+    QUICK_OFF,
     ZOOM_LARGEST,
     ZOOM_SMALLEST,
 ];

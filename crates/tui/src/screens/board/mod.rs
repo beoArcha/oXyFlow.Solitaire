@@ -91,6 +91,7 @@ pub struct BoardScreen {
     field_edge: bool,
     card_size: CardSizeSetting,
     auto_finish: bool,
+    quick_move: bool,
     forced: Option<Vec<Move>>,
     finishing: Option<Finishing>,
     declined: bool,
@@ -137,6 +138,7 @@ impl Default for BoardScreen {
             field_edge: false,
             card_size: CardSizeSetting::Auto,
             auto_finish: true,
+            quick_move: true,
             forced: None,
             finishing: None,
             declined: false,
@@ -333,6 +335,7 @@ impl BoardScreen {
         self.field_edge = ctx.theme.field_edge();
         self.card_size = ctx.settings.card_size;
         self.auto_finish = ctx.settings.auto_finish;
+        self.quick_move = ctx.settings.quick_move;
     }
 
     /// Handles a key press mapped to `action`; the effect is for the application to apply.

@@ -53,6 +53,7 @@ const fn reason_key(name: Reason) -> &'static str {
         Reason::NoUndo => "board.moves.reason.no_undo",
         Reason::NoRedo => "board.moves.reason.no_redo",
         Reason::UndoOff => "board.moves.reason.undo_off",
+        Reason::QuickOff => "board.moves.reason.quick_off",
         Reason::NoFinish => "board.moves.reason.no_finish",
     }
 }
@@ -72,6 +73,7 @@ enum Reason {
     NoUndo,
     NoRedo,
     UndoOff,
+    QuickOff,
     NoFinish,
 }
 
@@ -127,7 +129,9 @@ impl BoardScreen {
             Action::Select if self.pick.is_some() => "board.moves.label.drop",
             Action::Select if self.cursor.pile == PileRef::Stock => stock_label(session),
             Action::Select => "board.moves.label.pick_up",
-            Action::QuickMove if self.quick_to_foundation() => "board.moves.label.foundation",
+            Action::QuickMove if self.quick_move && self.quick_to_foundation() => {
+                "board.moves.label.foundation"
+            }
             Action::QuickMove => "board.moves.label.quick",
             Action::Back => "board.moves.label.put_back",
             Action::Hint => "board.moves.label.hint",
@@ -160,6 +164,7 @@ impl BoardScreen {
             Action::Stock if carrying => Reason::Carrying,
             Action::Stock => stock_reason(session),
             Action::Select => Reason::NothingHere,
+            Action::QuickMove if !self.quick_move => Reason::QuickOff,
             Action::QuickMove => Reason::NoQuick,
             Action::Back => Reason::NotCarrying,
             Action::Hint if carrying => Reason::Carrying,

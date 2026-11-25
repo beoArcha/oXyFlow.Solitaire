@@ -22,6 +22,7 @@ mod now_row;
 mod persist;
 mod pyramid;
 mod quick;
+mod quick_off;
 mod recycle;
 mod restarts;
 mod run_wrap;
