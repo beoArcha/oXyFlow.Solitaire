@@ -2,6 +2,7 @@
 
 mod back;
 mod board;
+mod color_vision;
 mod dump;
 mod face_tint;
 mod faces;

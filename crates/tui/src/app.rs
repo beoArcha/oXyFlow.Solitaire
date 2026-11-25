@@ -143,7 +143,8 @@ impl App {
             next_query: 0,
             caps,
             sound_styles,
-            theme: Theme::new(settings.theme, settings.color_depth(&caps)),
+            theme: Theme::new(settings.theme, settings.color_depth(&caps))
+                .with_color_vision(settings.color_vision),
             glyphs: Glyphs::styled(
                 settings.drawn_glyph_mode(false),
                 &settings.front_style,
@@ -235,7 +236,8 @@ impl App {
     }
 
     fn refresh_view(&mut self) {
-        self.theme = Theme::new(self.settings.theme, self.settings.color_depth(&self.caps));
+        self.theme = Theme::new(self.settings.theme, self.settings.color_depth(&self.caps))
+            .with_color_vision(self.settings.color_vision);
         self.glyphs = Glyphs::styled(
             self.settings
                 .drawn_glyph_mode(self.console_shows_card_font()),

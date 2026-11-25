@@ -1,6 +1,7 @@
 use super::contrast::contrast_ratio;
+use super::vision::{delta_e, remap, simulate};
 use super::*;
-use crate::settings::CardFaceTint;
+use crate::settings::{CardFaceTint, ColorVision};
 
 fn rgb(theme: ThemeId, token: Token) -> [u8; 3] {
     theme.palette().swatch(token).rgb
@@ -248,4 +249,115 @@ fn the_card_face_style_is_the_theme_face_for_the_theme_tint_and_the_tint_colors_
     let style = theme.card_face_style(CardFaceTint::Dark, Token::CardBlack);
     assert_eq!(style.bg, Some(colors.face.resolve(ColorDepth::TrueColor)));
     assert_eq!(style.fg, Some(colors.black.resolve(ColorDepth::TrueColor)));
+}
+
+#[test]
+fn every_color_vision_mode_keeps_contrast_targets() {
+    for id in ThemeId::ALL {
+        for vision in ColorVision::ALL {
+            let palette = remap(id, id.palette(), vision);
+            for (fg, bg) in TEXT_PAIRS {
+                let ratio = contrast_ratio(palette.swatch(fg).rgb, palette.swatch(bg).rgb);
+                assert!(
+                    ratio >= id.contrast_target(),
+                    "{id:?} {vision:?}: {fg:?} on {bg:?} is {ratio}"
+                );
+            }
+            for (fg, bg) in GRAPHIC_PAIRS.into_iter().chain(MARK_PAIRS) {
+                let ratio = contrast_ratio(palette.swatch(fg).rgb, palette.swatch(bg).rgb);
+                assert!(
+                    ratio >= 3.0,
+                    "{id:?} {vision:?}: {fg:?} on {bg:?} is {ratio}"
+                );
+            }
+        }
+    }
+}
+
+fn assert_simulated_pair(
+    id: ThemeId,
+    vision: ColorVision,
+    (a, b): (Token, Token),
+    palette: &Palette,
+) {
+    let min_delta = if vision == ColorVision::Monochrome {
+        match (a, b) {
+            (Token::AuraFocus, Token::AuraCarry) => 1.5,
+            (Token::Selection, Token::Target) => 8.0,
+            _ => 10.0,
+        }
+    } else {
+        12.0
+    };
+    let sim_a = simulate(palette.swatch(a).rgb, vision);
+    let sim_b = simulate(palette.swatch(b).rgb, vision);
+    let diff = delta_e(sim_a, sim_b);
+    assert!(
+        diff >= min_delta,
+        "{id:?} {vision:?}: {a:?} vs {b:?} simulated delta_e = {diff}"
+    );
+}
+
+#[test]
+fn simulated_meaning_tokens_maintain_minimum_color_difference() {
+    let pairs = [
+        (Token::Success, Token::Error),
+        (Token::Target, Token::Hint),
+        (Token::Selection, Token::Target),
+        (Token::AuraFocus, Token::AuraCarry),
+        (Token::CardRed, Token::CardBlack),
+    ];
+    for id in ThemeId::ALL {
+        for vision in ColorVision::ALL {
+            let palette = remap(id, id.palette(), vision);
+            for pair in pairs {
+                assert_simulated_pair(id, vision, pair, &palette);
+            }
+        }
+    }
+}
+
+fn assert_four_color_tint(id: ThemeId, vision: ColorVision, tint: CardFaceTint, palette: &Palette) {
+    let suits = [Suit::Spades, Suit::Hearts, Suit::Diamonds, Suit::Clubs];
+    let min_delta = if vision == ColorVision::Monochrome {
+        7.0
+    } else {
+        12.0
+    };
+    let colors = face::suit_colors(tint, palette, vision);
+    let target = if tint == CardFaceTint::Theme {
+        id.contrast_target()
+    } else {
+        7.0
+    };
+    for suit in suits {
+        let ratio = contrast_ratio(colors.for_suit(suit).rgb, colors.face.rgb);
+        assert!(
+            ratio >= target,
+            "{id:?} {vision:?} {tint:?} {suit:?}: contrast = {ratio}"
+        );
+    }
+    for (i, &a) in suits.iter().enumerate() {
+        for &b in &suits[i + 1..] {
+            let sim_a = simulate(colors.for_suit(a).rgb, vision);
+            let sim_b = simulate(colors.for_suit(b).rgb, vision);
+            let diff = delta_e(sim_a, sim_b);
+            assert!(
+                diff >= min_delta,
+                "{id:?} {vision:?} {tint:?}: {a:?} vs {b:?} delta_e = {diff}"
+            );
+        }
+    }
+}
+
+#[test]
+fn four_color_suits_keep_contrast_and_distinctness_under_simulation() {
+    for id in ThemeId::ALL {
+        for vision in ColorVision::ALL {
+            let palette = remap(id, id.palette(), vision);
+            for tint in CardFaceTint::ALL {
+                assert_four_color_tint(id, vision, tint, &palette);
+            }
+        }
+    }
 }

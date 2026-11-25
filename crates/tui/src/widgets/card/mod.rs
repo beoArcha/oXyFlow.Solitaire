@@ -88,7 +88,11 @@ fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
     let blocked = mark.blocked && matches!(face, Face::Up(_));
     let fill = match face {
         Face::Up(card) => {
-            theme.card_face_style(ctx.settings.card_face, ctx.glyphs.suit_token(card.suit))
+            if ctx.settings.four_color_deck {
+                theme.card_suit_style(ctx.settings.card_face, card.suit, true)
+            } else {
+                theme.card_face_style(ctx.settings.card_face, ctx.glyphs.suit_token(card.suit))
+            }
         }
         Face::Down => back::style(ctx),
         Face::Slot(_) => theme.style(Token::Slot, Token::Table),
@@ -140,7 +144,8 @@ pub fn draw(
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);
-    let target = shaded(ctx.theme.style(Token::Target, Token::Table), false);
+    let theme = ctx.theme;
+    let target = shaded(theme.style(Token::Target, Token::Table), false);
     if mark.target {
         paint_target_corners(&mut painter, area, ctx.glyphs, target);
     }
@@ -153,7 +158,7 @@ pub fn draw(
             area,
             (placeholder, mark.target),
             ctx.glyphs,
-            (ctx.theme.style(Token::Slot, Token::Table), target),
+            (theme.style(Token::Slot, Token::Table), target),
         ),
         Face::Down => {}
     }

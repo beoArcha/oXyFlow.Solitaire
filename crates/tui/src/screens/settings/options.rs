@@ -16,8 +16,10 @@ pub enum Field {
     Colors,
     FullScreen,
     Theme,
+    ColorVision,
     CardBack,
     CardFace,
+    FourColorDeck,
     TableColour,
     TableFeel,
     FrontStyle,
@@ -43,13 +45,15 @@ pub enum Field {
 }
 
 /// Every row, top to bottom.
-pub const FIELDS: [Field; 28] = [
+pub const FIELDS: [Field; 30] = [
     Field::Language,
     Field::Colors,
     Field::FullScreen,
     Field::Theme,
+    Field::ColorVision,
     Field::CardBack,
     Field::CardFace,
+    Field::FourColorDeck,
     Field::TableColour,
     Field::TableFeel,
     Field::FrontStyle,
@@ -202,8 +206,10 @@ impl Field {
         match self {
             Field::Language => "settings.row.language",
             Field::Theme => "settings.row.theme",
+            Field::ColorVision => "settings.row.color_vision",
             Field::CardBack => "settings.row.card_back",
             Field::CardFace => "settings.row.card_face",
+            Field::FourColorDeck => "settings.row.four_color_deck",
             Field::TableColour => "settings.row.table_colour",
             Field::TableFeel => "settings.row.table_feel",
             Field::FrontStyle => "settings.row.front_style",
@@ -231,8 +237,10 @@ impl Field {
         match self {
             Field::Language | Field::Colors | Field::FullScreen => Group::Display,
             Field::Theme
+            | Field::ColorVision
             | Field::CardBack
             | Field::CardFace
+            | Field::FourColorDeck
             | Field::TableColour
             | Field::TableFeel
             | Field::FrontStyle
@@ -273,8 +281,10 @@ impl Field {
         match self {
             Field::Language => "settings.desc.language",
             Field::Theme => "settings.desc.theme",
+            Field::ColorVision => "settings.desc.color_vision",
             Field::CardBack => "settings.desc.card_back",
             Field::CardFace => "settings.desc.card_face",
+            Field::FourColorDeck => "settings.desc.four_color_deck",
             Field::TableColour => "settings.desc.table_colour",
             Field::TableFeel => "settings.desc.table_feel",
             Field::FrontStyle => "settings.desc.front_style",
