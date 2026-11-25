@@ -91,13 +91,8 @@ fn the_variants_that_are_rarely_proven_say_the_search_can_take_long() {
     h.press(KeyCode::Enter);
     let lines = h.lines();
     let noted: Vec<&String> = lines.iter().filter(|line| line.contains(SLOW)).collect();
-    assert_eq!(noted.len(), 4, "{lines:#?}");
-    let names = [
-        "Spider, 2 suits",
-        "Spider, 4 suits",
-        "Pyramid, Classic",
-        "Russian Solitaire",
-    ];
+    assert_eq!(noted.len(), 2, "{lines:#?}");
+    let names = ["Pyramid, Classic", "Russian Solitaire"];
     for name in names {
         assert!(noted.iter().any(|line| line.contains(name)), "{name}");
     }

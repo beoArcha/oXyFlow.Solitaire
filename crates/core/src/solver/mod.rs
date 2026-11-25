@@ -24,7 +24,7 @@ mod spider;
 mod tests;
 mod yukon;
 
-use crate::game::{Variant, YukonRules, deal};
+use crate::game::{SuitCount, Variant, YukonRules, deal};
 use crate::moves::Move;
 use search::{Outcome, Searched, Strategy};
 
@@ -55,7 +55,8 @@ impl SolveBudget {
         Self::nodes(match variant {
             Variant::Klondike(_) => DEFAULT_KLONDIKE_NODES,
             Variant::FreeCell => DEFAULT_FREECELL_NODES,
-            Variant::Spider(_) => DEFAULT_SPIDER_NODES,
+            Variant::Spider(SuitCount::One) => DEFAULT_SPIDER_NODES,
+            Variant::Spider(SuitCount::Two | SuitCount::Four) => DEFAULT_SPIDER_MULTI_NODES,
             Variant::Pyramid(_) => DEFAULT_PYRAMID_NODES,
             Variant::Yukon(YukonRules::Australian) => DEFAULT_AUSTRALIAN_NODES,
             Variant::Yukon(_) => DEFAULT_YUKON_NODES,
@@ -80,6 +81,7 @@ pub const fn has_model(variant: Variant) -> bool {
 pub const DEFAULT_KLONDIKE_NODES: u64 = 100_000;
 pub const DEFAULT_FREECELL_NODES: u64 = 100_000;
 pub const DEFAULT_SPIDER_NODES: u64 = 60_000;
+pub const DEFAULT_SPIDER_MULTI_NODES: u64 = 150_000;
 pub const DEFAULT_PYRAMID_NODES: u64 = 500_000;
 pub const DEFAULT_YUKON_NODES: u64 = 100_000;
 pub const DEFAULT_AUSTRALIAN_NODES: u64 = 300_000;
@@ -131,10 +133,16 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
             Some(start) => search::run(Strategy::BestFirst, &start, budget.nodes, &finish),
             None => unknown(),
         },
-        Variant::Spider(_) => match spider::Position::from_piles(&piles) {
+        Variant::Spider(SuitCount::One) => match spider::Position::from_piles(&piles) {
             Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
             None => unknown(),
         },
+        Variant::Spider(SuitCount::Two | SuitCount::Four) => {
+            match spider::Position::from_piles(&piles) {
+                Some(start) => spider::search_multi(&start, budget.nodes, &finish),
+                None => unknown(),
+            }
+        }
         Variant::Pyramid(rules) => {
             let recycles = game.stock_status().and_then(|status| status.recycles_left);
             match pyramid::Position::from_piles(rules, &piles, recycles.unwrap_or(0)) {
