@@ -88,7 +88,7 @@ impl Theme {
     pub fn with_color_vision(&self, vision: ColorVision) -> Self {
         Self {
             vision,
-            palette: vision::remap(self.id, self.palette, vision),
+            palette: vision::remap(self.id, self.id.palette(), vision),
             ..*self
         }
     }

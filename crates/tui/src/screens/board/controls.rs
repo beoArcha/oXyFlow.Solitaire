@@ -68,7 +68,7 @@ fn draw_now(
         .as_ref()
         .map_or(0, |(text, _)| text.chars().count() + 1);
     let now = guidance.now_line(width.saturating_sub(event_width));
-    let theme = ctx.theme.with_color_vision(ctx.settings.color_vision);
+    let theme = ctx.theme;
     frame.render_widget(
         Paragraph::new(Line::styled(now, theme.style(Token::Text, Token::Surface))),
         area,

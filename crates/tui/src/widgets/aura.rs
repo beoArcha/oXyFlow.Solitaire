@@ -195,7 +195,7 @@ pub fn draw(
     if settings.aura_style == AuraStyle::MarksOnly {
         return;
     }
-    let theme = ctx.theme.with_color_vision(ctx.settings.color_vision);
+    let theme = ctx.theme;
     let glyphs = ctx.glyphs;
     let rings = settings.aura_size.rings();
     let framed = settings.aura_style == AuraStyle::Frame;

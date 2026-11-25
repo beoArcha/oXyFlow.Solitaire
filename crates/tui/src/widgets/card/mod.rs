@@ -84,7 +84,7 @@ struct Look {
 }
 
 fn look(face: Face, mark: Mark, ctx: &ViewCtx<'_>) -> Look {
-    let theme = ctx.theme.with_color_vision(ctx.settings.color_vision);
+    let theme = ctx.theme;
     let blocked = mark.blocked && matches!(face, Face::Up(_));
     let fill = match face {
         Face::Up(card) => {
@@ -144,7 +144,7 @@ pub fn draw(
         Face::Slot(_) => painter.fill(interior, " ", look.border),
     }
     paint_frame(&mut painter, area, edges_for(ctx.glyphs, mark), look.border);
-    let theme = ctx.theme.with_color_vision(ctx.settings.color_vision);
+    let theme = ctx.theme;
     let target = shaded(theme.style(Token::Target, Token::Table), false);
     if mark.target {
         paint_target_corners(&mut painter, area, ctx.glyphs, target);
