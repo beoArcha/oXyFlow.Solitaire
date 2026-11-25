@@ -18,6 +18,7 @@ font_size = "Schriftgröße"
 colors = "Farben"
 card_size = "Kartengröße"
 full_screen = "Vollbild"
+window_size = "Fenstergröße"
 sound_style = "Klangstil"
 cues = "Soundeffekte"
 music = "Musik"
@@ -75,6 +76,10 @@ font_terminal_other = "Dieses Terminal zeichnet seine eigene Schrift; das Spiel 
 colors = "Wie viele Farben das Terminal anzeigen soll. Auto erkennt es automatisch."
 card_size = "Auto passt sich ans Fenster an; passt eine Größe nicht, wird sie reduziert. Tasten ] [ 0 oder Ctrl+Mausrad."
 full_screen = "Auto: Vollbild nur in Fenstern, die das Spiel selbst geöffnet hat. In der Konsole: Alt+Enter oder F11."
+window_size = "Größe eines eigenen Konsolenfensters im Fenstermodus: Klein 130x40, Mittel 195x60, Groß 260x80."
+window_size_full_screen = "Vollbild ist aktiv; diese Größe wird beim Verlassen des Vollbilds angewendet."
+window_size_not_owned = "Vorhandene Konsolenfenster behalten ihre Größe. Mit --new-window oder Doppelklick zum Ändern starten."
+window_size_terminal = "Dieses Terminal behält seine eigene Fenstergröße; das Spiel kann sie nicht ändern."
 sound_style = "Der Klang der Effekte und der Musik."
 cues = "Kurze Töne bei Zügen und beim Gewinn."
 music = "Hintergrundmusik bei geöffnetem Spiel."
@@ -108,6 +113,11 @@ needs_columns = "{value} (benötigt {needed} Spalten, aktuell {now})"
 needs_privileges = "braucht Rechte"
 [full_screen]
 auto = "Auto"
+
+[window_size]
+small = "Klein (130x40)"
+medium = "Mittel (195x60)"
+large = "Groß (260x80)"
 
 [card_size]
 auto = "Auto"

@@ -18,6 +18,7 @@ font_size = "Tamanho da fonte"
 colors = "Cores"
 card_size = "Tamanho das cartas"
 full_screen = "Tela cheia"
+window_size = "Tamanho da janela"
 sound_style = "Estilo de som"
 cues = "Efeitos sonoros"
 music = "Música"
@@ -75,6 +76,10 @@ font_terminal_other = "Este terminal desenha a própria fonte e o jogo não pode
 colors = "Quantas cores o terminal deve exibir. Automático detecta."
 card_size = "Automático ajusta à janela; tamanho incompatível recua. Teclas ] [ 0 ou Ctrl+roda."
 full_screen = "Automático: tela cheia só em janela própria. No console: Alt+Enter ou F11."
+window_size = "Tamanho da janela de console própria em modo janela: Pequeno 130x40, Médio 195x60, Grande 260x80."
+window_size_full_screen = "A tela cheia está ativa; este tamanho será aplicado ao sair da tela cheia."
+window_size_not_owned = "Janelas de console existentes mantêm seu tamanho. Inicie com --new-window ou clique duplo para redimensionar."
+window_size_terminal = "Este terminal mantém seu próprio tamanho de janela e o jogo não pode alterá-lo."
 sound_style = "O som dos efeitos e da música."
 cues = "Sons curtos para jogadas e para a vitória."
 music = "Música de fundo enquanto um jogo estiver aberto."
@@ -108,6 +113,11 @@ needs_columns = "{value} (precisa de {needed} colunas, agora {now})"
 needs_privileges = "exige privilégios"
 [full_screen]
 auto = "Automático"
+
+[window_size]
+small = "Pequeno (130x40)"
+medium = "Médio (195x60)"
+large = "Grande (260x80)"
 
 [card_size]
 auto = "Automático"

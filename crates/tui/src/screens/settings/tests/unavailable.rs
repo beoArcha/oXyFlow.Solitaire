@@ -118,3 +118,40 @@ fn the_console_font_notes_name_only_what_the_screen_offers_in_every_locale() {
     }
     set_locale(Locale::EnUs);
 }
+
+#[test]
+fn window_size_is_unavailable_unless_owned_classic_console() {
+    let unavailable = t("settings.value.unavailable").into_owned();
+    for facts in [
+        FontFacts::default(),
+        FontFacts {
+            terminal: TerminalKind::ClassicConsole,
+            owns_window: false,
+            ..FontFacts::default()
+        },
+        FontFacts {
+            terminal: TerminalKind::WindowsTerminal,
+            owns_window: true,
+            ..FontFacts::default()
+        },
+    ] {
+        let text = text_of(Field::WindowSize, true, facts);
+        assert!(text.ends_with(&unavailable), "{facts:?}: {text}");
+        assert!(!text.contains('◄') && !text.contains('►'), "{text}");
+    }
+
+    let available = text_of(
+        Field::WindowSize,
+        true,
+        FontFacts {
+            terminal: TerminalKind::ClassicConsole,
+            owns_window: true,
+            ..FontFacts::default()
+        },
+    );
+    assert!(
+        available.contains('◄') && available.contains('►'),
+        "{available}"
+    );
+    assert!(available.contains("130x40"), "{available}");
+}

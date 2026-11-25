@@ -243,6 +243,7 @@ impl App {
     /// is saved.
     pub(super) fn show_settings(&mut self, mut settings: Settings) {
         let full_screen_changed = self.settings.full_screen != settings.full_screen;
+        let window_size_changed = self.settings.window_size != settings.window_size;
         let console_font_changed = self.settings.console_font != settings.console_font
             || self.settings.console_face != settings.console_face
             || self.settings.console_font_size != settings.console_font_size;
@@ -251,9 +252,14 @@ impl App {
         if check {
             settings.glyph_mode = self.settings.glyph_mode;
         }
+        let was_full_screen = self.full_screen.active;
         self.settings = settings;
         if full_screen_changed {
             self.full_screen_setting_changed();
+        }
+        let left_full_screen = was_full_screen && !self.full_screen.active;
+        if window_size_changed || left_full_screen {
+            self.sync_window_size();
         }
         if console_font_changed {
             self.console_font_setting_changed();

@@ -18,6 +18,7 @@ font_size = "Dimensione carattere"
 colors = "Colori"
 card_size = "Dimensione carte"
 full_screen = "Schermo intero"
+window_size = "Dimensione finestra"
 sound_style = "Stile sonoro"
 cues = "Effetti sonori"
 music = "Musica"
@@ -75,6 +76,10 @@ font_terminal_other = "Questo terminale disegna il proprio carattere e il gioco 
 colors = "Quanti colori richiedere al terminale. Auto lo rileva."
 card_size = "Auto adatta alla finestra; dimensioni non adatte scalano. Tasti ] [ 0 o Ctrl+rotellina."
 full_screen = "Auto: attivo solo nella finestra aperta dal gioco. In console: Alt+Enter o F11."
+window_size = "Dimensione della finestra console aperta dal gioco: Piccola 130x40, Media 195x60, Grande 260x80."
+window_size_full_screen = "Lo schermo intero è attivo; questa dimensione si applica uscendo dallo schermo intero."
+window_size_not_owned = "Le finestre console esistenti mantengono la loro dimensione. Avvia con --new-window o doppio clic per cambiarla."
+window_size_terminal = "Questo terminale mantiene la propria dimensione finestra e il gioco non può cambiarla."
 sound_style = "Il suono degli effetti e della musica."
 cues = "Brevi suoni per le mosse e per la vittoria."
 music = "Musica di sottofondo durante la partita."
@@ -108,6 +113,11 @@ needs_columns = "{value} (richiede {needed} colonne, ora {now})"
 needs_privileges = "richiede privilegi"
 [full_screen]
 auto = "Auto"
+
+[window_size]
+small = "Piccola (130x40)"
+medium = "Media (195x60)"
+large = "Grande (260x80)"
 
 [card_size]
 auto = "Auto"

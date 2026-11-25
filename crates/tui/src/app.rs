@@ -178,6 +178,7 @@ impl App {
         app.fit_card_styles();
         app.sync_console_look();
         app.sync_full_screen();
+        app.sync_window_size();
         app.sync_priority();
         app.reset_quick();
         app.refresh_view();

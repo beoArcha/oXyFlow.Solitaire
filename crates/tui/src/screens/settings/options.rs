@@ -8,6 +8,7 @@ use crate::card_style::CardStyles;
 use crate::i18n::t;
 use crate::settings::{
     Aid, AuraColour, AuraSize, AuraStyle, CardBack, ColorMode, FullScreen, GlyphMode, TerminalKind,
+    WindowSize,
 };
 
 /// One setting row.
@@ -16,6 +17,7 @@ pub enum Field {
     Language,
     Colors,
     FullScreen,
+    WindowSize,
     Theme,
     ColorVision,
     CardBack,
@@ -47,9 +49,10 @@ pub enum Field {
 }
 
 /// Every setting, in canonical order (Audio & Visual, then Gameplay).
-pub const FIELDS: [Field; 31] = [
+pub const FIELDS: [Field; 32] = [
     Field::Colors,
     Field::FullScreen,
+    Field::WindowSize,
     Field::Theme,
     Field::ColorVision,
     Field::CardBack,
@@ -123,6 +126,19 @@ pub(super) const COLOR_MODES: [ColorMode; 4] = [
 ];
 pub(super) const FULL_SCREEN_MODES: [FullScreen; 3] =
     [FullScreen::Auto, FullScreen::On, FullScreen::Off];
+pub(super) const WINDOW_SIZES: [WindowSize; 3] = WindowSize::ALL;
+
+fn window_size_key(facts: FontFacts) -> &'static str {
+    if facts.terminal != TerminalKind::ClassicConsole {
+        "settings.desc.window_size_terminal"
+    } else if !facts.owns_window {
+        "settings.desc.window_size_not_owned"
+    } else if facts.full_screen_active {
+        "settings.desc.window_size_full_screen"
+    } else {
+        "settings.desc.window_size"
+    }
+}
 
 /// The sentence for the console font row: what to do in Windows Terminal, in another terminal and
 /// when the font is missing or refused.
@@ -226,6 +242,7 @@ impl Field {
             Field::AuraSize => "settings.row.aura_size",
             Field::Priority => "settings.row.priority",
             Field::FullScreen => "settings.row.full_screen",
+            Field::WindowSize => "settings.row.window_size",
             Field::SoundStyle => "settings.row.sound_style",
             Field::Cues => "settings.row.cues",
             Field::Music => "settings.row.music",
@@ -239,6 +256,7 @@ impl Field {
         match self {
             Field::ConsoleFont => t(console_font_key(facts)).into_owned(),
             Field::FontFace | Field::FontSize => t(font_row_key(self, facts)).into_owned(),
+            Field::WindowSize => t(window_size_key(facts)).into_owned(),
             _ => t(self.description_key()).into_owned(),
         }
     }
@@ -270,6 +288,7 @@ impl Field {
             Field::AuraSize => "settings.desc.aura_size",
             Field::Priority => "settings.desc.priority",
             Field::FullScreen => "settings.desc.full_screen",
+            Field::WindowSize => "settings.desc.window_size",
             Field::SoundStyle => "settings.desc.sound_style",
             Field::Cues => "settings.desc.cues",
             Field::Music => "settings.desc.music",

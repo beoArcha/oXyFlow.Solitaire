@@ -19,6 +19,7 @@ mod styles;
 mod table;
 mod tabs;
 mod unavailable;
+mod window_size;
 
 use super::options::{FIELDS, Field, Step};
 use super::tabs::Tab;
@@ -147,11 +148,12 @@ fn move_down(h: &mut Harness, rows: usize) {
     }
 }
 
-/// The rows that only the classic Windows console lets the game change; the test terminal is not one.
+/// The rows that only an owned classic Windows console lets the game change; the default test
+/// terminal is not one.
 pub(super) fn is_console_font_row(field: Field) -> bool {
     matches!(
         field,
-        Field::ConsoleFont | Field::FontFace | Field::FontSize
+        Field::ConsoleFont | Field::FontFace | Field::FontSize | Field::WindowSize
     )
 }
 

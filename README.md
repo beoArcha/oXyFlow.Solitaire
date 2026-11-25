@@ -36,9 +36,10 @@ Solitaire, Alaska, Moosehide and Australian Patience), shipped as the single bin
   restarts are counted.
 - **Card size you choose.** `]` and `[` make the cards bigger or smaller, `0` returns to the automatic size that fits
   the window; Ctrl+wheel and the Card size setting do the same.
-- **Fits the Windows console.** Started by a double-click, the game opens full screen (Alt+Enter mode), or widens its
-  window to 130 columns so the side panels fit. Started from an open console, it leaves the console alone. In the
-  classic Windows console, Ctrl+Plus, Ctrl+Minus and Ctrl+0 change the console font size.
+- **Fits the Windows console.** Started by a double-click, the game opens full screen (Alt+Enter mode), or sizes its
+  owned window when windowed (Small 130 × 40 by default so the side panels fit, Medium 195 × 60 or Large 260 × 80 in
+  Settings). Started from an open console, it leaves the console alone. In the classic Windows console, Ctrl+Plus,
+  Ctrl+Minus and Ctrl+0 change the console font size.
 - **Card styles.** Settings has five front styles (International, French, German, Italian and Swiss) and two back styles
   (Lattice and Ornament).
 - **Five themes:** Dark, Light, High contrast (for low vision), Monokai and Dracula. Color is never the only signal.

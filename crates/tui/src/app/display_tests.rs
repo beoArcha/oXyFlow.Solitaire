@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::*;
-use crate::settings::{FullScreen, Settings, TerminalKind};
+use crate::settings::{FullScreen, Settings, TerminalKind, WindowSize};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::Harness;
 use ratatui::crossterm::event::KeyCode;
@@ -10,6 +10,7 @@ use ratatui::crossterm::event::KeyCode;
 #[derive(Default)]
 struct Calls {
     requests: Vec<bool>,
+    sizes: Vec<(u16, u16)>,
 }
 
 struct Recording {
@@ -22,15 +23,32 @@ impl ConsoleDisplay for Recording {
         self.calls.borrow_mut().requests.push(on);
         self.obeys
     }
+
+    fn set_window_size(&mut self, columns: u16, rows: u16) -> bool {
+        self.calls.borrow_mut().sizes.push((columns, rows));
+        self.obeys
+    }
 }
 
 fn harness(setting: FullScreen, facts: DisplayFacts, obeys: bool) -> (Harness, Rc<RefCell<Calls>>) {
-    let calls = Rc::new(RefCell::new(Calls::default()));
-    let storage = MemoryStorage {
-        settings: Some(Settings {
+    harness_with(
+        Settings {
             full_screen: setting,
             ..Settings::default()
-        }),
+        },
+        facts,
+        obeys,
+    )
+}
+
+fn harness_with(
+    settings: Settings,
+    facts: DisplayFacts,
+    obeys: bool,
+) -> (Harness, Rc<RefCell<Calls>>) {
+    let calls = Rc::new(RefCell::new(Calls::default()));
+    let storage = MemoryStorage {
+        settings: Some(settings),
         ..MemoryStorage::default()
     };
     let display = DisplayDeps {
@@ -60,6 +78,10 @@ fn start_game(h: &mut Harness) {
 
 fn requests(calls: &Rc<RefCell<Calls>>) -> Vec<bool> {
     calls.borrow().requests.clone()
+}
+
+fn sizes(calls: &Rc<RefCell<Calls>>) -> Vec<(u16, u16)> {
+    calls.borrow().sizes.clone()
 }
 
 #[test]
@@ -243,4 +265,121 @@ fn settings_screen_overrides_the_launch_flag_to_leave_or_enter_full_screen() {
     forced_off.press(KeyCode::Right);
     assert_eq!(forced_off.app.settings().full_screen, FullScreen::On);
     assert_eq!(requests(&calls_off), [true]);
+}
+
+fn open_window_size_row(h: &mut Harness) {
+    open_full_screen_row(h);
+    h.press(KeyCode::Down);
+}
+
+#[test]
+fn each_window_size_requests_its_dimensions_on_start_when_windowed() {
+    for (size, expected) in [
+        (WindowSize::Small, (130, 40)),
+        (WindowSize::Medium, (195, 60)),
+        (WindowSize::Large, (260, 80)),
+    ] {
+        let (_h, calls) = harness_with(
+            Settings {
+                full_screen: FullScreen::Off,
+                window_size: size,
+                ..Settings::default()
+            },
+            facts(true, TerminalKind::ClassicConsole, None),
+            true,
+        );
+        assert!(requests(&calls).is_empty(), "{size:?}");
+        assert_eq!(sizes(&calls), [expected], "{size:?}");
+    }
+
+    let (_h, calls) = harness_with(
+        Settings {
+            full_screen: FullScreen::Auto,
+            window_size: WindowSize::Medium,
+            ..Settings::default()
+        },
+        facts(true, TerminalKind::ClassicConsole, Some(false)),
+        true,
+    );
+    assert_eq!(sizes(&calls), [(195, 60)]);
+}
+
+#[test]
+fn window_size_is_not_requested_while_full_screen_and_applies_on_leaving_full_screen() {
+    let (mut h, calls) = harness_with(
+        Settings {
+            full_screen: FullScreen::Auto,
+            window_size: WindowSize::Small,
+            ..Settings::default()
+        },
+        facts(true, TerminalKind::ClassicConsole, None),
+        true,
+    );
+    assert_eq!(requests(&calls), [true]);
+    assert!(sizes(&calls).is_empty());
+
+    open_window_size_row(&mut h);
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().window_size, WindowSize::Medium);
+    assert!(sizes(&calls).is_empty());
+
+    h.press(KeyCode::Up);
+    h.press(KeyCode::Right);
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().full_screen, FullScreen::Off);
+    assert_eq!(requests(&calls), [true, false]);
+    assert_eq!(sizes(&calls), [(195, 60)]);
+}
+
+#[test]
+fn changing_window_size_in_settings_requests_each_size_when_windowed() {
+    let (mut h, calls) = harness_with(
+        Settings {
+            full_screen: FullScreen::Off,
+            window_size: WindowSize::Small,
+            ..Settings::default()
+        },
+        facts(true, TerminalKind::ClassicConsole, None),
+        true,
+    );
+    assert_eq!(sizes(&calls), [(130, 40)]);
+
+    open_window_size_row(&mut h);
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().window_size, WindowSize::Medium);
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().window_size, WindowSize::Large);
+    h.press(KeyCode::Right);
+    assert_eq!(h.app.settings().window_size, WindowSize::Small);
+    assert_eq!(sizes(&calls), [(130, 40), (195, 60), (260, 80), (130, 40)]);
+}
+
+#[test]
+fn window_size_is_never_requested_for_unowned_or_non_resizable_consoles() {
+    for (owns, kind) in [
+        (false, TerminalKind::ClassicConsole),
+        (true, TerminalKind::WindowsTerminal),
+        (false, TerminalKind::WindowsTerminal),
+        (true, TerminalKind::Linux),
+        (false, TerminalKind::Linux),
+        (true, TerminalKind::MacOs),
+        (false, TerminalKind::MacOs),
+    ] {
+        let (mut h, calls) = harness_with(
+            Settings {
+                full_screen: FullScreen::Off,
+                window_size: WindowSize::Medium,
+                ..Settings::default()
+            },
+            facts(owns, kind, None),
+            true,
+        );
+        assert!(sizes(&calls).is_empty(), "owns={owns} {kind:?}");
+        let next = Settings {
+            window_size: WindowSize::Large,
+            ..h.app.settings().clone()
+        };
+        h.app.apply_settings(next);
+        assert!(sizes(&calls).is_empty(), "owns={owns} {kind:?}");
+    }
 }

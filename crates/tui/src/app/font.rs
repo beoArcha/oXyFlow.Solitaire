@@ -50,6 +50,10 @@ pub struct FontFacts {
     /// What the system answered when the process priority was last asked for; the Settings row of
     /// the priority shows a refusal.
     pub priority: PriorityOutcome,
+    /// Whether the game owns its console window (a double-click or `--new-window`).
+    pub owns_window: bool,
+    /// Whether full screen is currently active in the console.
+    pub full_screen_active: bool,
 }
 
 impl Default for FontFacts {
@@ -60,6 +64,8 @@ impl Default for FontFacts {
             card_font: CardFontState::Unavailable,
             face: CardFontState::Unavailable,
             cell_px: None,
+            owns_window: false,
+            full_screen_active: false,
         }
     }
 }
