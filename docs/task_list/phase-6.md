@@ -114,6 +114,10 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   missing: Klondike foundation slots and the talon order are in the piles), search, and verify by replaying `played`
   and the line on a fresh deal; `solve` becomes `solve_from(.., &[], ..)`. This avoids cloning a `Box<dyn Game>`.
   In-play queries use their own worker lane, so they never wait behind a winnable-deal batch.
+- **Shared core for P6-10 (review 2026-11-25):** split an internal search over a model built from `Piles`
+  (`search_from_piles(variant, &piles, stock_status, budget)`, which can also return the best first move found when a
+  best-first search runs out of budget) from the public `solve_from(...)`, which adds the replay of `played` and the final
+  verification on a fresh deal. P6-10 needs the internal one for synthetic (sampled) worlds that match no real seed.
 - **Acceptance:** core tests: the new entry point returns the same verdict as `solve` on a fresh deal, finds a won line
   from a mid-game position and replays it on the engine, and returns unknown on a tiny budget; TUI tests: `w` and both
   buttons start the check, the answer appears with its sign, a move clears it, an answer for an old position is ignored;
@@ -147,10 +151,26 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   capped by a short stock); the hint samples K completions of the unknown cards with a deterministic PRNG seeded only by
   a hash of the visible state (never the deal seed), solves each, and votes on the first move. Target: FreeCell hints
   win most deals, Spider 2/4 above 0 %.
+- **Sampled worlds and stock memory (review 2026-11-25):**
+  - Each sampled world is searched with `search_from_piles` of O-115 on the determinised `Piles`; the voted first move is
+    checked against `game.legal_moves()` of the real game before it is offered.
+  - The session's `StockMemory` records, for each of the last N stock cards seen, its identity **and its position in the
+    talon**, so Klondike draw 3 keeps the phase of its triples when the unknown cards are sampled.
+  - Undo also rolls back `StockMemory` (a snapshot per move beside the position history), so undoing a stock draw never
+    leaves a card "from the future" in the memory; the no-leak test covers undo.
 - **Acceptance:** core tests: with the player's knowledge no hint depends on a face-down card or an unseen stock card
   (two deals that differ only in hidden cards give the same hint); the memory of 1, 3 and N with a long, short and
   empty stock; full knowledge may differ. TUI tests: the setting changes the hint; every complete locale. The hints-only
   table of T-48 measured for both knowledge modes.
+
+## Order of the solver and hint cards
+
+Each step makes the next one cheaper to measure and needs no rework later:
+
+1. P6-12 → P6-13: speed without any change of behaviour; `solver/tests/api.rs` stays as it is.
+2. P6-14 → P6-15 → P6-16 → P6-17: the solver improvements, with one round of new baseline measurements.
+3. P6-11 → O-115: `guidance()` off the redraw path, the in-play worker lane, `search_from_piles` split from `solve_from`.
+4. P6-10: solver-backed hints in the background, `Full` / `Player` knowledge with a stock memory of 1..N.
 
 ### P6-11 — Hints off the redraw path, and no repeated positions
 
@@ -170,8 +190,12 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   - `Session` keeps a short ring of recent position keys (the engine's `piles()` hashed), rolled back by undo;
     `Game::hint` stays pure, and the session-level hint skips a move whose result is in the ring, falling back to the
     next ranked move. A full stock cycle with no play in between counts as a repeat.
+- **Interface between `Game` and `Session` (review 2026-11-25):** `Game` stays stateless, but a single
+  `Option<Move>` is not enough: if `Session` rejects a looping move the player would get no hint although a second good
+  move exists. `Game` therefore offers its ranked candidates (`hint_candidates()`, best first; `hint()` is the first of
+  them), and `Session` takes the first candidate whose result is not in its ring of recent positions.
 - **Acceptance:** redraws call neither `hint()` nor `legal_moves()` more than once per revision (test with a counting
-  fake game); the hints-only benchmark (`crates/core/tests/hint_perf.rs`) shows repeats at most 5 of 200 per variant and
+  fake game); the hints-only benchmark (`crates/core/tests/hint_perf.rs`), driven through the `Session` hint with its filter (not `Game::hint` alone), shows repeats at most 5 of 200 per variant and
   no variant wins fewer deals than in T-48; undo restores the ring.
 
 ### P6-12 — Solver: no heap allocation per node
@@ -202,6 +226,8 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   generation counter; answers carry their query id; the TUI accepts the first `Winnable` **in submission order**,
   waiting for earlier queries still running, so the chosen seed is exactly the one-thread result. No change in
   `crates/core`.
+- **Memory check (review 2026-11-25):** once P6-15 has made Australian Patience best-first, measure the peak memory
+  of four workers each running best-first at 300k positions; record it here and cap the pool if it is too high.
 - **Acceptance:** a test with a stub solver that answers out of order picks the same seed as in order; cancel drops
   every worker's pending jobs; time to a proven deal for Spider 4 suits, Yukon and Australian Patience (20 searches
   each) measured before and after.
@@ -220,6 +246,9 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   - Draw 1 (unlimited passes): the talon key is the **set** of talon cards, not the stock/waste split, because every
     talon card stays reachable and a play does not reorder the others. Draw 3 keeps the full order.
   - No `Down` step for a card that `is_safe` (nothing can need it as a base).
+- **Check while implementing (review 2026-11-25):** confirm that Klondike draw 1 has no hidden limit on passes
+  through the stock (today `stock_status().recycles_left` is `None`, so unlimited); the talon key as a set of cards is
+  only correct under that condition.
 - **Acceptance:** seeds 0-199 draw 1 and draw 3: no verdict flips between `Winnable` and `Unwinnable`; Unknown falls
   (target on seeds 0-49 at 100k: draw 1 below 15 %, draw 3 below 18 %); every `Winnable` replays; pinned node counts
   updated knowingly; best-first memory at 100k nodes reported.
@@ -246,8 +275,10 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
 - **Files:** `crates/core/src/solver/golf/{mod,position,steps}.rs` (69, 117, 65), `crates/core/src/solver/mod.rs`
   (`DEFAULT_GOLF_NODES`), `docs/tech/decisions.md` (T-45), tests
 - **Fix:** a position is dead when the remaining tableau ranks form more contiguous rank groups than chains can still
-  start (`groups > stock_len + 1`): a chain plays ranks one apart, so it stays inside one group, and each chain starts
-  from the waste or a stock card. Pack the key (seven heights, stock size, waste rank) into one `u64`.
+  start (`groups > stock_len + can_start_now`, where `can_start_now` is 1 when the current waste rank is adjacent to some
+  rank still on the table, else 0): a chain plays ranks one apart, so it stays inside one group, and each chain starts
+  from the waste or a stock card. Rank groups follow the engine's `games::golf::ranks_adjacent`: in oXySol a king and an
+  ace are **not** adjacent (T-45), so groups do not wrap from king to ace. Pack the key (seven heights, stock size, waste rank) into one `u64`.
 - **Acceptance:** the dead test checked against an exhaustive engine search on 50 small constructed positions; seeds
   0-999 give the same verdicts as today with fewer nodes; the default budget lowered so seeds 0-49 stay at 0 % Unknown.
 

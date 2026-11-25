@@ -89,6 +89,8 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
    (Medium) in parallel. **Milestone: 0.5.**
 6. Phase 6 (0.6): P3-36 (Medium) → P6-04 (Small) and P6-05 (Medium); P6-06 after the orchestrator finalizes its scope; the dev bridge
    P6-07 → P6-08 → P6-09 (Medium) in parallel, one PR at the end. **Milestone: 0.6.**
+   Solver and hint cards, in this order (phase-6.md, "Order of the solver and hint cards"): P6-12 → P6-13; P6-14 → P6-15 →
+   P6-16 → P6-17; P6-11 → O-115; P6-10.
 7. Phase 7 (0.7): P7-04 (Small) → P7-05 (Medium, after its DRAFT is final); the dev screenshots P7-06 → P7-07 →
    P7-08 → P7-09 (Medium). **Milestone: 0.7.**
 8. Phase 8 (0.8): P7-02 and P7-03 (Small) with the micro cards M-30…M-33 alongside; P8-04 (Small) → P8-05 (Medium, after its DRAFT is
