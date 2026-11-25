@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Anzeige"
 interface = "Oberfläche"
 sound = "Ton"
+performance = "Leistung"
 hints = "Hinweise und Hilfe"
 
 [style]
@@ -81,7 +82,7 @@ cues = "Kurze Töne bei Zügen und beim Gewinn."
 music = "Hintergrundmusik bei geöffnetem Spiel."
 volume = "Die Lautstärke von Ton und Musik, in Schritten von 10%."
 auto_finish = "Führt die letzten Züge automatisch aus, sobald der Sieg sicher ist."
-quick_move = "Aus: a und Doppelklick tun nichts; das Zugfenster (v) nennt den Grund."
+quick_move = "Aus: a, e und Doppelklick tun nichts; das Zugfenster (v) nennt den Grund."
 aura = "Leuchten: Voll markiert Fokus, gehaltene Karten und Ziele; Nur Fokus nur den Fokus."
 aura_colour = "Die Farbe des Leuchtens um den Fokus, einen getragenen Stapel und Ziele. Design nimmt die Farben des Designs."
 aura_style = "Hof schattiert die Felder um Karten; Rahmen zeichnet eine Linie darum; Nur Marken zeichnet kein Leuchten."
@@ -159,6 +160,7 @@ style_failed = "Ton nicht verfügbar: Der gewählte Klangstil kann nicht geladen
 
 [footer]
 change = "Ändern"
+arrows = "{arrows} Ändern"
 
 [graphics]
 title = "Grafikprüfung"
@@ -198,7 +200,7 @@ note = "Vorschau. Beim Verlassen dieses Bildschirms wird gefragt, ob die Änderu
 position = "Zeile {row} von {total}"
 
 [confirm]
-keep_interface = "Die geänderten Oberflächen-Einstellungen behalten?"
+keep_interface = "Die geänderten Einstellungen behalten?"
 
 [face]
 consolas = "Consolas"

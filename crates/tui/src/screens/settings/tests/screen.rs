@@ -6,7 +6,7 @@ use ratatui::crossterm::event::{
     KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind,
 };
 
-use super::{bare, changed, index_of};
+use super::{bare, changed, fitting_size, index_of};
 use crate::action::Action;
 use crate::audio::{AudioStatus, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
@@ -71,13 +71,12 @@ fn act(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>, action: Action) -> Effect
     screen.handle(&key(KeyCode::Null), Some(action), ctx)
 }
 
-/// The window is wide enough for the preview pane beside the list and high enough for the whole
-/// list, including the table settings.
-const SCREEN_SIZE: (u16, u16) = (130, 46);
-
+/// Draws the screen in a window wide enough for the preview pane beside the list and high enough for
+/// the whole list, including the table settings.
 fn render(screen: &mut SettingsScreen, ctx: &ViewCtx<'_>) -> Vec<String> {
-    let mut terminal = Terminal::new(TestBackend::new(SCREEN_SIZE.0, SCREEN_SIZE.1))
-        .unwrap_or_else(|never| match never {});
+    let (width, height) = fitting_size();
+    let mut terminal =
+        Terminal::new(TestBackend::new(width, height)).unwrap_or_else(|never| match never {});
     terminal
         .draw(|frame| screen.draw(frame, frame.area(), ctx))
         .unwrap_or_else(|never| match never {});

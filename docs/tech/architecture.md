@@ -315,7 +315,7 @@ pub struct NullClipboard;                                // every copy fails wit
   settings, caps, `audio_status`, `sound_styles`, `saved: Option<SavedSummary>` (variant, elapsed, moves of the saved game, for the Resume row), clock instant) and never change shared state or call `Storage` themselves.
   The key table `KEY_TABLE` in `input.rs` is the single source for mapping, the help overlay and the footer;
   each screen with a key line owns a `FOOTER` table of `(Action, label key)` pairs (O-29): it lists only the keys that work on
-  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `Enter` Change).
+  that screen, and each is labelled in that screen's words (main menu: `Enter` Open, no `Esc`; settings: `◄ ►` Change as plain text, then `Enter` Change, O-96).
   `Action::ForceQuit` (Ctrl+C) is handled by `App` on every screen, a key release maps to nothing.
   A screen that types text reports it through `captures_text` (the main-menu seed field): then a typed
   character is text and not a global shortcut (`?` Help, `i` Rules), while F1 and Ctrl+C still work.
@@ -405,6 +405,10 @@ pub struct NullClipboard;                                // every copy fails wit
   is wider than the board, but a fixed tail always stays: `?: keys` and `Esc: menu` (while cards are carried Esc
   puts them back, so the tail is `?: keys` only). `screens/board/guidance.rs` builds both rows from the
   controller state and `Session` (`legal_moves`, `hint`, `can_undo`/`can_redo`); no rule is decided in the TUI.
+  `Action::WasteQuickMove` (key `e`, help group Board) quick-moves the exposed waste card from anywhere on the
+  board with the same destination order as `a` (`choices::quick`) without moving the cursor, and shows in `Do:`
+  only while the waste card can move (and in the guide for games where cards can leave the waste: Klondike,
+  Pyramid and Australian Patience).
   The `Do:` row carries `p: pause` and `v: moves` in its tail (O-37, drop order 4); when it has no room for them the `Now:` row
   ends with the same buttons (`controls::Buttons`), so both stay clickable at every width.
   The strip is drawn on `Surface`, so `Text`, `Success` and `Error` use pairs that `TEXT_PAIRS` tests. The `Now:`
@@ -464,8 +468,8 @@ pub struct NullClipboard;                                // every copy fails wit
   `►` forward, a click elsewhere on the row forward as before (`settings/values.rs::line`).
 - **Aids and quick options (P3-27):** the board aids are `Settings::aura`, `target_marks` (default `true`; an older
   value without the field loads as `true`), `guide_panel`, `moves_panel`, `auto_finish` and `quick_move` (O-114, default `true`, an older value loads as
-  `true`; when off, `a` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
-  out quick move, and the moves window shows it unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
+  `true`; when off, `a`, `e` and a double-click are refused with `board.status.quick_off`, the `Do:` row and the guide leave
+  out quick move and waste quick move, and the moves window shows quick move unavailable with `board.moves.reason.quick_off`); `settings/aids.rs` holds them as
   `Aids` (a `Copy` value; `Settings::aids()` and `with_aids()`) and `Aid` (one row: label, description and value keys,
   `toggled`, `value_for`), shared by the Settings screen and the quick options dialog. Settings groups them under
   "Hints and help" (`Group::Hints`, replacing the old Board group), after Display and Sound; the moves panel and the
@@ -484,7 +488,7 @@ pub struct NullClipboard;                                // every copy fails wit
   "Save as default" returns `Effect::SaveAids`: `quick` becomes the settings' defaults, they are saved, the dialog
   closes and the `Now:` row says `board.status.defaults_saved`. `g` and `v` on the board (and the title clicks)
   are quick choices too (`Effect::Quick`): they do not save; "Save as default" is the only way to persist them.
-- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound and Hints. Interface
+- **Interface section (P3-29):** Settings has the groups Display (language, colors, full screen), Interface, Sound, Performance (O-96: process priority) and Hints. Interface
   holds every row about look: theme, card back, front style, back style, symbols, console font, card size and the aura look
   (`Settings::aura_colour` `AuraColour { Theme, Text, Selection, Hint }`, `aura_style` `AuraStyle { Halo, Frame, MarksOnly }`,
   `aura_size` `AuraSize { Thin, Thick }`, in `settings/interface.rs`; older values without the fields load as Theme, Halo, Thin). The aura
@@ -598,7 +602,7 @@ pub struct NullClipboard;                                // every copy fails wit
   legend's own `· not checked` when unchecked, O-97); its `Result` column is coloured through theme tokens (won
   `Success`, abandoned `TextMuted`, in progress `Accent`) and keeps its words. Schema v3 adds `games.proof TEXT` (NULL, `winnable`, `unwinnable`, `unknown`) by forward migration.
 - **Assist counters (P4-06):** `AssistCounters` (`storage/counters.rs`) counts per game the moves made by hand (`manual`), by
-  the quick move key or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
+  the quick move keys (`a`, `e`) or a double click (`quick`), by the auto-finish (`finish`, counted apart), the quick moves that found no
   target (`failed`) and the longest run of quick moves (`longest_streak`; a manual move ends the run, the finish and a failed
   attempt do not). `BoardScreen` tallies them in `play_from` (`board/assist.rs`); `App::save_board` writes them with the saved
   game through `Storage::record_assist`, a resume reads them back and starts a new run, a restart or a new game starts from
@@ -834,8 +838,8 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   the size changed (the face, family, weight and index are kept; a step passes width 0, Reset restores the start width). A refusal is
   logged at `info` and the step reports no change. `main` builds it only for `TerminalKind::ClassicConsole` and when the font can be read.
 - **Process priority (P4-13):** `Settings::process_priority` (`ProcessPriority`: `Highest`, `High`, `Normal` default, `Low`,
-  `Lowest`; never real time) is a row of the Interface group, so a change is previewed and confirmed like the other
-  Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
+  `Lowest`; never real time) sits in the Performance group (O-96) but keeps the Interface path: a change is previewed and
+  confirmed like the Interface rows. `--priority <level>` (`Cli::priority`, `DisplayDeps::priority.flag`) wins until the player changes the
   setting. `App` asks the `PriorityControl` trait (`DisplayDeps::priority`) at start and on every change of the level, once
   per level; the answer is a `PriorityOutcome` (`Applied`, `NeedsPrivileges`, `Failed`) that the row shows beside the value
   (`FontFacts::priority`), never an error log per frame. `src/priority.rs` holds the pure `native_value(Flavour, level)` and

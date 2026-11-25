@@ -2,7 +2,7 @@
 //! the key table, the mouse gestures and the goal of the game. Keys usable at this moment are
 //! marked with a symbol and drawn bold, so they stand out without color.
 
-use oxysol_core::Variant;
+use oxysol_core::{Variant, YukonRules};
 use ratatui::crossterm::event::KeyCode;
 use ratatui::style::Modifier;
 use ratatui::text::Line;
@@ -31,6 +31,13 @@ const fn entry(actions: &'static [Action], label: &'static str) -> Entry {
     Entry { actions, label }
 }
 
+const fn has_waste_moves(variant: Variant) -> bool {
+    matches!(
+        variant,
+        Variant::Klondike(_) | Variant::Pyramid(_) | Variant::Yukon(YukonRules::Australian)
+    )
+}
+
 fn entries(variant: Variant, undo_allowed: bool, quick_move: bool) -> Vec<Entry> {
     let pyramid = matches!(variant, Variant::Pyramid(_));
     let mut rows = vec![
@@ -49,7 +56,14 @@ fn entries(variant: Variant, undo_allowed: bool, quick_move: bool) -> Vec<Entry>
         entry(&[Action::Back], "board.guide.back"),
     ];
     if quick_move {
-        rows.push(entry(&[Action::QuickMove], "board.guide.quick"));
+        if has_waste_moves(variant) {
+            rows.push(entry(
+                &[Action::QuickMove, Action::WasteQuickMove],
+                "board.guide.quick_waste",
+            ));
+        } else {
+            rows.push(entry(&[Action::QuickMove], "board.guide.quick"));
+        }
     }
     if !pyramid {
         rows.push(entry(

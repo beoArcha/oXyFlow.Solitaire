@@ -83,7 +83,7 @@ const fn bind(action: Action, group: HelpGroup, keys: &'static [KeySpec]) -> Bin
 }
 
 /// Every key binding of the application. Order is the order of the help overlay.
-pub const KEY_TABLE: [Binding; 33] = [
+pub const KEY_TABLE: [Binding; 34] = [
     bind(
         Action::Up,
         HelpGroup::Navigation,
@@ -126,6 +126,11 @@ pub const KEY_TABLE: [Binding; 33] = [
     ),
     bind(Action::Stock, HelpGroup::Board, &[KeySpec::ch('s')]),
     bind(Action::QuickMove, HelpGroup::Board, &[KeySpec::ch('a')]),
+    bind(
+        Action::WasteQuickMove,
+        HelpGroup::Board,
+        &[KeySpec::ch('e')],
+    ),
     bind(Action::RunMore, HelpGroup::Board, &[KeySpec::ch('+')]),
     bind(Action::RunLess, HelpGroup::Board, &[KeySpec::ch('-')]),
     bind(Action::ZoomIn, HelpGroup::Display, &[KeySpec::ch(']')]),

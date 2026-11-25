@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Vídeo"
 interface = "Interface"
 sound = "Áudio"
+performance = "Desempenho"
 hints = "Dicas e ajuda"
 
 [style]
@@ -81,7 +82,7 @@ cues = "Sons curtos para jogadas e para a vitória."
 music = "Música de fundo enquanto um jogo estiver aberto."
 volume = "O volume do som e da música, em passos de 10%."
 auto_finish = "Joga as últimas cartas sozinho quando a vitória é certa."
-quick_move = "Desligada: a e o clique duplo não fazem nada; a janela de jogadas (v) mostra o motivo."
+quick_move = "Desligada: a, e e o clique duplo não fazem nada; a janela de jogadas (v) mostra o motivo."
 aura = "Brilho: Completa marca foco, cartas e destinos; Só foco marca o foco."
 aura_colour = "A cor do brilho ao redor do foco, de uma sequência carregada e dos destinos. Tema usa as cores do tema."
 aura_style = "Halo sombreia as células ao redor das cartas; Moldura desenha uma linha; Só marcas não desenha brilho."
@@ -159,6 +160,7 @@ style_failed = "Áudio indisponível: o estilo sonoro selecionado não pôde ser
 
 [footer]
 change = "Mudar"
+arrows = "{arrows} Mudar"
 
 [graphics]
 title = "Verificação gráfica"
@@ -198,7 +200,7 @@ note = "Pré-visualização. Ao sair desta tela, pergunta-se se as alterações 
 position = "linha {row} de {total}"
 
 [confirm]
-keep_interface = "Manter as configurações de interface alteradas?"
+keep_interface = "Manter as configurações alteradas?"
 
 [face]
 consolas = "Consolas"

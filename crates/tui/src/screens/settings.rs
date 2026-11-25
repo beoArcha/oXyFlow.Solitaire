@@ -32,7 +32,7 @@ use crate::i18n::{t, tf};
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::theme::Token;
 use crate::theme::table::{felt_for, hex};
-use crate::widgets::footer::{self, FooterMap, KeyHint};
+use crate::widgets::footer::{self, FooterMap, KeyHint, Segment};
 
 pub(crate) const FOOTER: [KeyHint; 3] = [
     (Action::Select, "settings.footer.change"),
@@ -108,6 +108,19 @@ fn table_note(focus: Option<Field>, ctx: &ViewCtx<'_>) -> Option<String> {
     let felt = felt_for(ctx.settings.theme, ctx.settings.table_colour);
     felt.shifted
         .then(|| tf("settings.table.reason", &[("shade", &hex(felt.swatch.rgb))]))
+}
+
+/// The footer: the arrows that change the focused row (a text hint, since one button holds one key),
+/// then the buttons of [`FOOTER`].
+fn footer_segments(ctx: &ViewCtx<'_>) -> Vec<Segment> {
+    let (left, right) = glyphs(ctx);
+    let arrows = tf(
+        "settings.footer.arrows",
+        &[("arrows", &format!("{left} {right}"))],
+    );
+    let mut segments = vec![Segment::plain(arrows), Segment::plain("   ")];
+    segments.extend(footer::key_segments(&FOOTER));
+    segments
 }
 
 fn text_width(text: &str) -> u16 {
@@ -264,7 +277,7 @@ impl SettingsScreen {
         self.footer = footer::draw(
             frame,
             footer_area,
-            &footer::key_segments(&FOOTER),
+            &footer_segments(ctx),
             Alignment::Center,
             footer::key_style(ctx),
             ctx,

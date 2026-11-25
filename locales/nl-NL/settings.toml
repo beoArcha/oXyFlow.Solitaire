@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Beeld"
 interface = "Interface"
 sound = "Geluid"
+performance = "Prestaties"
 hints = "Hints en hulp"
 
 [style]
@@ -81,7 +82,7 @@ cues = "Korte geluiden bij zetten en winst."
 music = "Achtergrondmuziek tijdens het spelen."
 volume = "De geluidssterkte van effecten en muziek, in stappen van 10%."
 auto_finish = "Voert de laatste zetten zelf uit zodra de winst zeker is."
-quick_move = "Uit: a en dubbelklik doen niets; het zettenvenster (v) zegt waarom."
+quick_move = "Uit: a, e en dubbelklik doen niets; het zettenvenster (v) zegt waarom."
 aura = "Gloed: Volledig markeert focus, vastgehouden kaarten en doelen; Alleen focus markeert focus."
 aura_colour = "De kleur van de gloed rond de focus, een opgepakte reeks en de doelen. Thema gebruikt de kleuren van het thema."
 aura_style = "Halo arceert de cellen rond kaarten; Kader trekt een lijn eromheen; Alleen markeringen tekent geen gloed."
@@ -159,6 +160,7 @@ style_failed = "Geluid niet beschikbaar: gekozen geluidstijl kan niet geladen wo
 
 [footer]
 change = "Wijzigen"
+arrows = "{arrows} Wijzigen"
 
 [graphics]
 title = "Grafische controle"
@@ -198,7 +200,7 @@ note = "Voorbeeld. Bij het verlaten van dit scherm wordt gevraagd of de wijzigin
 position = "rij {row} van {total}"
 
 [confirm]
-keep_interface = "De gewijzigde interface-instellingen bewaren?"
+keep_interface = "De gewijzigde instellingen bewaren?"
 
 [face]
 consolas = "Consolas"

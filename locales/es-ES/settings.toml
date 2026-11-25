@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Pantalla"
 interface = "Interfaz"
 sound = "Sonido"
+performance = "Rendimiento"
 hints = "Pistas y ayuda"
 
 [style]
@@ -81,7 +82,7 @@ cues = "Sonidos breves para jugadas y victoria."
 music = "Música de fondo mientras juegas."
 volume = "Volumen del sonido y de la música, en pasos del 10%."
 auto_finish = "Juega los últimos movimientos cuando la victoria es segura."
-quick_move = "Desactivada: a y el doble clic no hacen nada; la ventana de jugadas (v) indica el motivo."
+quick_move = "Desactivada: a, e y el doble clic no hacen nada; la ventana de jugadas (v) indica el motivo."
 aura = "Brillo: Completa resalta foco, cartas y destinos; Solo foco, el foco."
 aura_colour = "El color del brillo alrededor del foco, una serie llevada y los destinos. Tema usa los colores del tema."
 aura_style = "Halo sombrea las celdas alrededor de las cartas; Marco dibuja una línea; Solo marcas no dibuja brillo."
@@ -159,6 +160,7 @@ style_failed = "Sonido no disponible: no se pudo cargar el estilo de sonido sele
 
 [footer]
 change = "Cambiar"
+arrows = "{arrows} Cambiar"
 
 [graphics]
 title = "Comprobación gráfica"
@@ -198,7 +200,7 @@ note = "Vista previa. Al salir de esta pantalla se pregunta si se conservan los 
 position = "fila {row} de {total}"
 
 [confirm]
-keep_interface = "¿Conservar los ajustes de interfaz cambiados?"
+keep_interface = "¿Conservar los ajustes cambiados?"
 
 [face]
 consolas = "Consolas"

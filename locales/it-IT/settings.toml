@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Visualizzazione"
 interface = "Interfaccia"
 sound = "Suono"
+performance = "Prestazioni"
 hints = "Suggerimenti e aiuto"
 
 [style]
@@ -81,7 +82,7 @@ cues = "Brevi suoni per le mosse e per la vittoria."
 music = "Musica di sottofondo durante la partita."
 volume = "Il volume di suoni e musica, a passi del 10%."
 auto_finish = "Gioca da solo le ultime mosse quando la vittoria è certa."
-quick_move = "Disattivata: a e il doppio clic non fanno nulla; la finestra delle mosse (v) ne dice il motivo."
+quick_move = "Disattivata: a, e e il doppio clic non fanno nulla; la finestra delle mosse (v) ne dice il motivo."
 aura = "Bagliore: Completa evidenzia cursore, carte e mete; Solo cursore, il cursore."
 aura_colour = "Il colore dell'alone attorno al fuoco, a una sequenza portata e alle destinazioni. Tema usa i colori del tema."
 aura_style = "Alone sfuma le celle attorno alle carte; Cornice disegna una linea; Solo segni non disegna alcun alone."
@@ -159,6 +160,7 @@ style_failed = "Audio non disponibile: impossibile caricare lo stile sonoro scel
 
 [footer]
 change = "Cambia"
+arrows = "{arrows} Cambia"
 
 [graphics]
 title = "Controllo grafico"
@@ -198,7 +200,7 @@ note = "Anteprima. Uscendo da questa schermata si chiede se tenere le modifiche.
 position = "riga {row} di {total}"
 
 [confirm]
-keep_interface = "Mantenere le impostazioni dell'interfaccia modificate?"
+keep_interface = "Mantenere le impostazioni modificate?"
 
 [face]
 consolas = "Consolas"

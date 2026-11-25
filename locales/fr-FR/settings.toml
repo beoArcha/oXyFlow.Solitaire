@@ -38,6 +38,7 @@ line = "{label} {value}"
 display = "Affichage"
 interface = "Interface"
 sound = "Son"
+performance = "Performances"
 hints = "Indices et aide"
 
 [style]
@@ -81,7 +82,7 @@ cues = "Courts sons pour les coups et la victoire."
 music = "Musique d'ambiance pendant une partie."
 volume = "Volume des sons et de la musique, par paliers de 10 %."
 auto_finish = "Joue automatiquement les derniers coups une fois la victoire certaine."
-quick_move = "Désactivé : a et le double-clic ne font rien ; la fenêtre des coups (v) indique pourquoi."
+quick_move = "Désactivé : a, e et le double-clic ne font rien ; la fenêtre des coups (v) indique pourquoi."
 aura = "Lueur : Complète sur focus, cartes portées et cibles ; Focus seul, sur le focus."
 aura_colour = "La couleur de la lueur autour du focus, d'une suite portée et des cibles. Thème reprend les couleurs du thème."
 aura_style = "Halo ombre les cases autour des cartes ; Cadre trace une ligne autour ; Repères seuls ne trace aucune lueur."
@@ -159,6 +160,7 @@ style_failed = "Son indisponible : impossible de charger le style sonore sélect
 
 [footer]
 change = "Modifier"
+arrows = "{arrows} Modifier"
 
 [graphics]
 title = "Contrôle graphique"
@@ -198,7 +200,7 @@ note = "Aperçu. En quittant cet écran, on demande si les changements sont cons
 position = "ligne {row} sur {total}"
 
 [confirm]
-keep_interface = "Conserver les réglages d'interface modifiés ?"
+keep_interface = "Conserver les réglages modifiés ?"
 
 [face]
 consolas = "Consolas"
