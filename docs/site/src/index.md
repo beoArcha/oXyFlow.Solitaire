@@ -8,7 +8,7 @@
 <li><a href="es/index.html" hreflang="es" lang="es" data-code="es"><img src="img/flags/es.svg" alt="" width="60" height="40"><span class="lp-word">Solitario</span><span class="lp-name">Español</span></a></li>
 </ul>
 <div class="lp-centre" id="lp-centre">
-<p class="lp-desc" lang="en">A terminal solitaire: Klondike, Spider, FreeCell, Pyramid and the Yukon family in one program, the single binary oxysol. It runs in any modern terminal and is played with the keyboard or the mouse.</p>
+<p class="lp-desc" lang="en">Fourteen solitaire games for the terminal: Klondike, Spider, FreeCell, Pyramid, the Yukon family and Golf, in one program, oxysol. It runs in any modern terminal and is played with the keyboard or the mouse.</p>
 <ul class="lp-links">
 <li><a href="en/index.html">Introduction</a></li>
 <li><a href="features.html">Features</a></li>

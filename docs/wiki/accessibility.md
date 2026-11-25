@@ -2,6 +2,21 @@
 
 oXySol is designed to work completely with either keyboard or mouse, without relying on color alone to convey game state.
 
+## Keyboard, mouse and focus
+
+- Every action has a key and a mouse action; buttons show their key, and `?` lists every key.
+- The focused item is marked by a symbol (`►`, or `>` in ASCII). In windows, the active tab is shown in brackets,
+  bold and underlined, and the focused button is framed by `▶ ◄` in reverse video, so the two never look alike.
+- The line under the board says in words where the cursor is and what it can do there.
+
+## Color vision
+
+- **Color vision** (Settings, Audio & Visual): Normal, Protanopia, Deuteranopia, Tritanopia or Monochrome. Each mode
+  replaces the colors that carry meaning (focus, target, hint, success, error) with colors that stay distinct for that
+  kind of vision; tests simulate each one.
+- **Four-color deck**: black spades, red hearts, blue diamonds and green clubs, in every mode and card size.
+- Results carry a sign as well as a color: `✓` or `✗` (`+` or `x` in ASCII).
+
 ## Low-vision mode
 
 **Low vision** is a single switch that configures a readable visual preset while leaving every individual option adjustable afterwards:

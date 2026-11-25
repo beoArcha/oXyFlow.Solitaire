@@ -54,6 +54,10 @@ const QUICK_MOVE: Control = Control {
     actions: &[Action::QuickMove],
     text: "rules.control.quick_move",
 };
+const WASTE_QUICK_MOVE: Control = Control {
+    actions: &[Action::WasteQuickMove],
+    text: "rules.control.waste_quick_move",
+};
 const UNDO: Control = Control {
     actions: &[Action::Undo],
     text: "rules.control.undo",
@@ -77,7 +81,17 @@ const KLONDIKE: Page = Page {
         "rules.klondike.moves_4",
         "rules.klondike.moves_5",
     ],
-    controls: &[NAVIGATE, SELECT, BACK, STOCK, RUN, QUICK_MOVE, UNDO, HINT],
+    controls: &[
+        NAVIGATE,
+        SELECT,
+        BACK,
+        STOCK,
+        RUN,
+        QUICK_MOVE,
+        WASTE_QUICK_MOVE,
+        UNDO,
+        HINT,
+    ],
     controls_note: "rules.control.mouse",
     tips: &[
         "rules.klondike.tips_1",
@@ -145,7 +159,16 @@ const PYRAMID: Page = Page {
         "rules.pyramid.moves_3",
         "rules.pyramid.moves_4",
     ],
-    controls: &[NAVIGATE, SELECT_PAIR, BACK, STOCK, QUICK_MOVE, UNDO, HINT],
+    controls: &[
+        NAVIGATE,
+        SELECT_PAIR,
+        BACK,
+        STOCK,
+        QUICK_MOVE,
+        WASTE_QUICK_MOVE,
+        UNDO,
+        HINT,
+    ],
     controls_note: "rules.control.mouse",
     tips: &[
         "rules.pyramid.tips_1",
