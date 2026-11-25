@@ -5,7 +5,7 @@ use oxysol_core::Variant;
 
 use super::support::{many_games, open_stats, row};
 use super::{KLONDIKE, record};
-use crate::i18n::{Locale, set_locale};
+use crate::i18n::{Locale, set_locale, t, tf};
 use crate::screens::stats::assist::assist_line;
 use crate::screens::stats::format::summary_lines;
 use crate::screens::stats::summary::summarize;
@@ -74,29 +74,48 @@ fn the_assisted_column_is_shown_from_110_columns_in_every_offered_locale() {
 
 #[test]
 fn the_line_names_the_share_the_failures_the_run_and_the_finish() {
+    for locale in Locale::offered() {
+        set_locale(locale);
+        let line = assist_line(&AssistCounters {
+            manual: 4,
+            quick: 6,
+            finish: 12,
+            failed: 3,
+            longest_streak: 5,
+        });
+        let expected = [
+            tf(
+                "stats.assist.share",
+                &[("share", "60"), ("auto", "6"), ("total", "10")],
+            ),
+            tf("stats.assist.failed", &[("failed", "3")]),
+            tf("stats.assist.run", &[("run", "5")]),
+            tf("stats.assist.finish", &[("finish", "12")]),
+        ]
+        .join(" · ");
+        assert_eq!(line.as_deref(), Some(expected.as_str()), "{locale:?}");
+        assert_eq!(assist_line(&AssistCounters::default()), None);
+    }
     set_locale(Locale::EnUs);
-    let line = assist_line(&AssistCounters {
-        manual: 4,
-        quick: 6,
-        finish: 12,
-        failed: 3,
-        longest_streak: 5,
-    });
-    assert_eq!(
-        line.as_deref(),
-        Some("Automatic 60% (6 of 10) · failed 3 · run 5 · finish 12")
-    );
-    assert_eq!(assist_line(&AssistCounters::default()), None);
 }
 
 #[test]
 fn the_assisted_tag_appears_only_above_the_threshold() {
+    for locale in Locale::offered() {
+        set_locale(locale);
+        let total = 10 * ASSISTED_MIN_MOVES;
+        let at = total * ASSISTED_ABOVE_PERCENT / 100;
+        let tag = t("stats.assist.tag");
+        assert!(
+            !assist_line(&share_of(at, total)).is_some_and(|line| line.contains(tag.as_ref())),
+            "{locale:?}"
+        );
+        assert!(
+            assist_line(&share_of(at + 1, total)).is_some_and(|line| line.contains(tag.as_ref())),
+            "{locale:?}"
+        );
+    }
     set_locale(Locale::EnUs);
-    let total = 10 * ASSISTED_MIN_MOVES;
-    let at = total * ASSISTED_ABOVE_PERCENT / 100;
-    let tag = "assisted game";
-    assert!(!assist_line(&share_of(at, total)).is_some_and(|line| line.contains(tag)));
-    assert!(assist_line(&share_of(at + 1, total)).is_some_and(|line| line.contains(tag)));
 }
 
 #[test]
@@ -124,17 +143,24 @@ fn assisted_row(id: i64) -> HistoryRow {
 
 #[test]
 fn the_selected_game_shows_its_line_and_a_game_without_counters_shows_the_check_keys() {
+    set_locale(Locale::EnUs);
+    let expected_share = tf(
+        "stats.assist.share",
+        &[("share", "100"), ("auto", "99999"), ("total", "100000")],
+    );
+    let expected_tag = t("stats.assist.tag").into_owned();
+    let expected_hint = t("stats.check.hint").into_owned();
     let mut storage = many_games(2);
     storage.history.push(assisted_row(9));
-    let mut h = open_stats(storage, 100, 30);
+    let mut h = open_stats(storage, 100, 60);
     let text = h.text();
-    assert!(text.contains("Automatic 100% (99999 of 100000)"), "{text}");
-    assert!(text.contains("assisted game"), "{text}");
-    assert!(!text.contains("w: check this game"), "{text}");
+    assert!(text.contains(&expected_share), "{text}");
+    assert!(text.contains(&expected_tag), "{text}");
+    assert!(!text.contains(&expected_hint), "{text}");
     h.press(ratatui::crossterm::event::KeyCode::Down);
     let text = h.text();
-    assert!(text.contains("w: check this game"), "{text}");
-    assert!(!text.contains("Automatic"), "{text}");
+    assert!(text.contains(&expected_hint), "{text}");
+    assert!(!text.contains(&expected_share), "{text}");
 }
 
 #[test]
