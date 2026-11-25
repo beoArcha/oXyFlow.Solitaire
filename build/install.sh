@@ -396,8 +396,12 @@ install_macos_packages() {
     fi
     if [ "$MISSING_CURL" -eq 1 ] || [ "$MISSING_TAR" -eq 1 ]; then
         if [ "$PKG_MGR" = "brew" ]; then
-            [ "$MISSING_CURL" -eq 1 ] && brew install curl
-            [ "$MISSING_TAR" -eq 1 ] && brew install gnu-tar
+            if [ "$MISSING_CURL" -eq 1 ]; then
+                brew install curl
+            fi
+            if [ "$MISSING_TAR" -eq 1 ]; then
+                brew install gnu-tar
+            fi
         else
             printf 'Missing curl or tar and Homebrew is not installed.\n' >&2
             exit 1
