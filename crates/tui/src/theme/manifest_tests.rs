@@ -264,3 +264,22 @@ fn invalid_ansi16_in_user_theme_is_rejected() {
         Err(ThemeError::Parse(_))
     ));
 }
+
+#[test]
+fn a_light_custom_theme_keeps_its_contrast_in_every_colour_vision_mode() {
+    let light = ThemeId::Light.palette();
+    for vision in [
+        ColorVision::Normal,
+        ColorVision::Protanopia,
+        ColorVision::Deuteranopia,
+        ColorVision::Tritanopia,
+        ColorVision::Monochrome,
+    ] {
+        let theme = Theme::for_settings(ThemeId::Custom, Some(light), ColorDepth::TrueColor)
+            .with_color_vision(vision);
+        assert!(
+            validate_contrast(theme.palette(), 4.5).is_ok(),
+            "{vision:?} breaks the contrast of a light custom theme"
+        );
+    }
+}

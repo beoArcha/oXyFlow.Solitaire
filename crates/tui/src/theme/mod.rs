@@ -83,8 +83,18 @@ pub struct Theme {
     custom: Option<Palette>,
 }
 
-fn palette_for(id: ThemeId, base: Palette, vision: ColorVision, low_vision: bool) -> Palette {
+/// The colour-vision palette of `id`. The remap of a custom theme is made for dark themes, so a
+/// custom theme keeps its own colours when the remap would break its contrast.
+fn vision_palette(id: ThemeId, base: Palette, vision: ColorVision) -> Palette {
     let remapped = vision::remap(id, base, vision);
+    if id == ThemeId::Custom && validate_contrast(&remapped, id.contrast_target()).is_err() {
+        return base;
+    }
+    remapped
+}
+
+fn palette_for(id: ThemeId, base: Palette, vision: ColorVision, low_vision: bool) -> Palette {
+    let remapped = vision_palette(id, base, vision);
     if low_vision {
         low_vision::remap(remapped)
     } else {

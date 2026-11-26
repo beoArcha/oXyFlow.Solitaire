@@ -29,7 +29,7 @@ pub fn load_user_theme_from(path: &Path) -> UserTheme {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oxysol_tui::theme::{ThemeId, Token};
+    use oxysol_tui::theme::ThemeId;
 
     fn valid_toml() -> String {
         [
@@ -92,6 +92,5 @@ mod tests {
             loaded,
             UserTheme::Unreadable { ref path, .. } if path.ends_with("theme.toml")
         ));
-        let _ = Token::Background;
     }
 }
