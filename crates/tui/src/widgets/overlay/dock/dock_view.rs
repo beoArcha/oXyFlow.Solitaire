@@ -3,6 +3,7 @@
 //! they fit (wrapping long combinations), the rules and the command line wrapped. It scrolls line
 //! by line, the scroll bar counts wrapped lines.
 
+use oxysol_core::GameOptions;
 use ratatui::Frame;
 use ratatui::layout::{Margin, Rect};
 use ratatui::style::Modifier;
@@ -37,7 +38,7 @@ const KEY_GAP: usize = 2;
 pub fn body(modal: &Modal, width: u16) -> Vec<Row> {
     let width = usize::from(width).max(1);
     match modal {
-        Modal::HowToPlay(state) => rules_body(state.rules, width),
+        Modal::HowToPlay(state) => rules_body(state.rules, state.options, width),
         Modal::CommandLine(_) => command_body(width),
         _ => keys_body(width),
     }
@@ -127,10 +128,10 @@ fn keys_body(width: usize) -> Vec<Row> {
     rows
 }
 
-fn rules_body(rules: Rules, width: usize) -> Vec<Row> {
+fn rules_body(rules: Rules, options: GameOptions, width: usize) -> Vec<Row> {
     let mut rows = Vec::new();
     let mut detail = false;
-    for row in content::rows(rules) {
+    for row in content::rows_with_options(rules, options) {
         let blank_lead = row.lead.trim().is_empty();
         match row.kind {
             Kind::Key if !blank_lead => {

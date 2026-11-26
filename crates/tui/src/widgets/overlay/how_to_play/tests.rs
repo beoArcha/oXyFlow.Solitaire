@@ -1,7 +1,7 @@
 //! Unit tests of the window's state, text and key handling. Drawing, the entry points and the
 //! mouse are tested through the application in `render_tests.rs`.
 
-use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant};
+use oxysol_core::{DrawCount, GameOptions, PyramidRules, SuitCount, Variant};
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::layout::Rect;
 
@@ -25,7 +25,10 @@ fn every_variant_maps_to_the_page_of_its_game() {
         (Variant::Pyramid(PyramidRules::Classic), Rules::Pyramid),
     ];
     for (variant, rules) in cases {
-        assert_eq!(HowToPlay::for_variant(variant), HowToPlay::new(rules));
+        assert_eq!(
+            HowToPlay::for_variant(variant, GameOptions::DEFAULT),
+            HowToPlay::new(rules)
+        );
     }
     for variant in Variant::ALL {
         assert!(Rules::ALL.contains(&Rules::of(variant)), "{variant:?}");

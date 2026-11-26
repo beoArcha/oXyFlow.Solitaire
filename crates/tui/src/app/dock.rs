@@ -121,7 +121,7 @@ impl App {
         if !self.dock.focused {
             self.focus_dock(true);
         }
-        let rules = overlay::rules_of(&self.board);
+        let rules = overlay::rules_context(&self.board, self.settings.game_options);
         let outcome = match self.modal.as_mut() {
             Some(modal) => overlay::dock::handle_mouse(&mut self.dock, modal, rect, rules, event),
             None => None,
@@ -154,7 +154,7 @@ impl App {
     /// Handles a key while a modal takes the keys: a docked window gets the keys of its own
     /// handler, a centred modal those of the overlay.
     pub(super) fn on_modal_key(&mut self, key: &KeyEvent, action: Option<Action>) -> Effect {
-        let rules = overlay::rules_of(&self.board);
+        let rules = overlay::rules_context(&self.board, self.settings.game_options);
         let docked = self.dock_split().map(|(rect, _)| rect);
         let area = self.screen_rect();
         let outcome = match (self.modal.as_mut(), docked) {

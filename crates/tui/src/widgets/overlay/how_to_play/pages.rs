@@ -1,6 +1,8 @@
 //! What each game's page is made of: the localization keys of its text and the controls it lists.
 //! The words live in `locales/*/rules.toml`; the keys come from the key table at draw time.
 
+use oxysol_core::{GameOptions, StockPasses};
+
 use super::state::Rules;
 use crate::action::Action;
 
@@ -250,5 +252,52 @@ pub const fn page(rules: Rules) -> Page {
         Rules::Yukon => YUKON,
         Rules::Golf => GOLF,
         Rules::TriPeaks => TRIPEAKS,
+    }
+}
+
+/// Resolves a template key of `rules` under `options`, returning `None` when a default-only line
+/// does not apply to the active rules.
+pub fn resolve_key(rules: Rules, options: GameOptions, key: &'static str) -> Option<&'static str> {
+    match rules {
+        Rules::Klondike => resolve_klondike(options, key),
+        Rules::Spider => resolve_spider(options, key),
+        Rules::Golf => resolve_golf(options, key),
+        Rules::FreeCell | Rules::Pyramid | Rules::Yukon | Rules::TriPeaks => Some(key),
+    }
+}
+
+fn resolve_klondike(options: GameOptions, key: &'static str) -> Option<&'static str> {
+    match key {
+        "rules.klondike.moves_2" if options.klondike_any_empty => {
+            Some("rules.klondike.moves_2_any_empty")
+        }
+        "rules.klondike.moves_5" => match options.klondike_passes {
+            StockPasses::Unlimited => Some(key),
+            StockPasses::Three => Some("rules.klondike.moves_5_passes_3"),
+            StockPasses::One => Some("rules.klondike.moves_5_passes_1"),
+        },
+        "rules.klondike.tips_3" if options.klondike_any_empty => None,
+        _ => Some(key),
+    }
+}
+
+fn resolve_spider(options: GameOptions, key: &'static str) -> Option<&'static str> {
+    match key {
+        "rules.spider.moves_5" if options.spider_deal_empty => {
+            Some("rules.spider.moves_5_deal_empty")
+        }
+        _ => Some(key),
+    }
+}
+
+fn resolve_golf(options: GameOptions, key: &'static str) -> Option<&'static str> {
+    match key {
+        "rules.golf.moves_2" => Some(match (options.golf_wrap, options.golf_king_stops) {
+            (false, false) => key,
+            (true, false) => "rules.golf.moves_2_wrap",
+            (false, true) => "rules.golf.moves_2_king_stops",
+            (true, true) => "rules.golf.moves_2_wrap_king_stops",
+        }),
+        _ => Some(key),
     }
 }
