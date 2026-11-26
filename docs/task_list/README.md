@@ -370,6 +370,9 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 |---|---|---|---|---|
 | P7-04 | Card style: Hungarian suits (Unicode) | Small | P6-04 | TODO |
 | P7-05 | Game: Scorpion | Medium | P6-05 | DRAFT |
+| P7-10 | FreeCell family: Baker's Game and a choice of 1 to 4 cells | Medium | P6-05, P6-12 | DRAFT |
+| P7-11 | FreeCell family: Eight Off and Seahaven Towers | Medium | P7-10 | DRAFT |
+| P7-12 | TriPeaks family: no K–A wrap, and Four Peaks | Medium | P6-05 | DRAFT |
 | P7-06 | Screenshots: one SVG renderer for the dev bridge and the player site | Medium | P6-07 | TODO |
 | P7-07 | Screenshots: deterministic PNG and image paths in the bridge `snapshot` | Medium | P7-06, P6-08 | TODO |
 | P7-08 | Batch runner: `--dev-script` and `--dev-out` | Medium | P7-07, P6-09 | TODO |
