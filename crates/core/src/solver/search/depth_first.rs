@@ -3,21 +3,42 @@
 
 use super::{Finisher, Model, Outcome, Searched, solution};
 use crate::moves::Move;
-use crate::solver::hash::Seen;
+use crate::solver::hash::seen_with_budget;
 
+/// One level of the search: its children are `arena[start..start + len]`.
 struct Frame<M: Model> {
     state: M,
-    steps: Vec<M::Step>,
+    start: usize,
+    len: usize,
     next: usize,
 }
 
-fn frame<M: Model>(state: M) -> Frame<M> {
-    let mut steps = Vec::new();
-    state.steps(&mut steps);
-    Frame {
-        state,
-        steps,
-        next: 0,
+/// The children of every open frame, in stack order; one buffer for the whole search.
+struct Arena<M: Model> {
+    steps: Vec<M::Step>,
+    scratch: Vec<M::Step>,
+}
+
+impl<M: Model> Arena<M> {
+    fn frame(&mut self, state: M) -> Frame<M> {
+        self.scratch.clear();
+        state.steps(&mut self.scratch);
+        let start = self.steps.len();
+        self.steps.extend_from_slice(&self.scratch);
+        Frame {
+            state,
+            start,
+            len: self.scratch.len(),
+            next: 0,
+        }
+    }
+
+    fn step(&self, frame: &Frame<M>) -> Option<M::Step> {
+        if frame.next < frame.len {
+            self.steps.get(frame.start + frame.next).copied()
+        } else {
+            None
+        }
     }
 }
 
@@ -27,10 +48,14 @@ pub(super) fn search<M: Model>(
     budget: u64,
     finish: Finisher,
 ) -> Searched {
-    let mut seen = Seen::default();
+    let mut seen = seen_with_budget(budget);
     seen.insert(root.key());
     let mut nodes = 1u64;
-    let mut stack = vec![frame(root.clone())];
+    let mut arena = Arena {
+        steps: Vec::new(),
+        scratch: Vec::new(),
+    };
+    let mut stack = vec![arena.frame(root.clone())];
     let mut path: Vec<M::Step> = Vec::new();
     let mut sink = Vec::new();
     loop {
@@ -40,7 +65,8 @@ pub(super) fn search<M: Model>(
                 nodes,
             };
         };
-        let Some(&step) = top.steps.get(top.next) else {
+        let Some(step) = arena.step(top) else {
+            arena.steps.truncate(top.start);
             stack.pop();
             path.pop();
             continue;
@@ -66,6 +92,6 @@ pub(super) fn search<M: Model>(
                 nodes,
             };
         }
-        stack.push(frame(child));
+        stack.push(arena.frame(child));
     }
 }

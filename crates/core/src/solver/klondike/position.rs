@@ -214,16 +214,14 @@ impl Position {
     }
 
     pub(super) fn key(&self) -> u128 {
-        let columns = (0..COLUMNS)
-            .map(|i| {
-                column_hash(
-                    u8::try_from(self.hidden[i]).unwrap_or(0),
-                    &self.cols[i][..self.len[i]],
-                )
-            })
-            .collect();
+        let mut columns: [u64; COLUMNS] = std::array::from_fn(|i| {
+            column_hash(
+                u8::try_from(self.hidden[i]).unwrap_or(0),
+                &self.cols[i][..self.len[i]],
+            )
+        });
         let mut hash = PositionHash::new();
-        feed_unordered(&mut hash, columns);
+        feed_unordered(&mut hash, &mut columns);
         hash.feed_bytes(&self.found);
         self.talon.feed(&mut hash);
         hash.key()

@@ -63,9 +63,9 @@ pub(super) fn column_hash(hidden: u8, cards: &[u8]) -> u64 {
 }
 
 /// Feeds `hashes` in sorted order, so that columns that differ only in position hash alike.
-pub(super) fn feed_unordered(hash: &mut PositionHash, mut hashes: Vec<u64>) {
+pub(super) fn feed_unordered(hash: &mut PositionHash, hashes: &mut [u64]) {
     hashes.sort_unstable();
-    for value in hashes {
+    for &value in hashes.iter() {
         hash.feed(value);
     }
 }
@@ -95,6 +95,15 @@ impl Hasher for KeyHasher {
 /// The set of positions already generated.
 pub(super) type Seen = HashSet<u128, BuildHasherDefault<KeyHasher>>;
 
+/// The most keys a search reserves room for up front; a larger search grows the set as before.
+const SEEN_RESERVE_CAP: u64 = 1 << 18;
+
+/// An empty visited set with room for `budget` keys, at most [`SEEN_RESERVE_CAP`].
+pub(super) fn seen_with_budget(budget: u64) -> Seen {
+    let reserve = usize::try_from(budget.min(SEEN_RESERVE_CAP)).unwrap_or(0);
+    Seen::with_capacity_and_hasher(reserve, BuildHasherDefault::default())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -103,7 +112,8 @@ mod tests {
     fn order_of_columns_does_not_change_the_key() {
         let key = |columns: Vec<u64>| {
             let mut hash = PositionHash::new();
-            feed_unordered(&mut hash, columns);
+            let mut columns = columns;
+            feed_unordered(&mut hash, &mut columns);
             hash.key()
         };
         assert_eq!(key(vec![3, 1, 2]), key(vec![2, 3, 1]));

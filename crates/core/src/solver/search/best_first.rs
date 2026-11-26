@@ -4,7 +4,7 @@
 
 use super::{Finisher, Model, Outcome, Searched, solution};
 use crate::moves::Move;
-use crate::solver::hash::Seen;
+use crate::solver::hash::seen_with_budget;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 
@@ -36,7 +36,7 @@ pub(super) fn search<M: Model>(
     budget: u64,
     finish: Finisher,
 ) -> Searched {
-    let mut seen = Seen::default();
+    let mut seen = seen_with_budget(budget);
     seen.insert(root.key());
     let mut nodes = vec![Node {
         state: root.clone(),
