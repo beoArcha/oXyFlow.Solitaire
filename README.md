@@ -17,7 +17,7 @@ Klondike, Spider, FreeCell, Pyramid, the Yukon family and Golf, in one small pro
 </p>
 
 oXySol is a solitaire collection for the terminal, shipped as a single program, `oxysol`, for Windows, Linux and
-macOS. It is a pre-release (0.5): every game plays from start to finish, and new games, card styles and polish are
+macOS. It is a pre-release (0.6): every game plays from start to finish, and new games, card styles and polish are
 still arriving.
 
 ## Highlights
