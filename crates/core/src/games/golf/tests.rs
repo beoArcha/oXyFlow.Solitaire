@@ -34,6 +34,8 @@ fn cards(codes: &str) -> Vec<Card> {
 /// A table with the given waste (bottom to top) and stock (top last) and no column cards.
 fn table(waste: &str, stock: &str) -> Golf {
     Golf {
+        wrap: false,
+        king_stops: false,
         stock: cards(stock),
         waste: cards(waste),
         columns: Default::default(),

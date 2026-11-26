@@ -1,21 +1,27 @@
 //! A game in progress with history. Undo, redo, restart and restore all rebuild the game by
 //! replaying the move log from the seed (decision T-03); no move is ever inverted.
 
-use crate::game::{Game, Variant, deal};
+use crate::game::{Game, GameOptions, Variant, deal_with};
 use crate::moves::{Move, MoveError};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-type Dealer = fn(Variant, u64) -> Box<dyn Game>;
+type Dealer = fn(Variant, u64, GameOptions) -> Box<dyn Game>;
 
-/// Everything needed to rebuild a session: the deal, the move log and the history cursor.
+/// Everything needed to rebuild a session: the deal, its options, the move log and the history cursor.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SessionRecord {
     pub variant: Variant,
     pub seed: u64,
+    #[serde(default, skip_serializing_if = "is_default_options")]
+    pub options: GameOptions,
     pub moves: Vec<Move>,
     /// Number of moves currently applied; moves after it can be redone.
     pub cursor: usize,
+}
+
+fn is_default_options(options: &GameOptions) -> bool {
+    options.is_default()
 }
 
 /// Why a [`SessionRecord`] cannot be restored.
@@ -35,6 +41,7 @@ pub enum RestoreError {
 pub struct Session {
     variant: Variant,
     seed: u64,
+    options: GameOptions,
     dealer: Dealer,
     game: Box<dyn Game>,
     moves: Vec<Move>,
@@ -45,9 +52,10 @@ fn replay(
     dealer: Dealer,
     variant: Variant,
     seed: u64,
+    options: GameOptions,
     moves: &[Move],
 ) -> Result<Box<dyn Game>, RestoreError> {
-    let mut game = dealer(variant, seed);
+    let mut game = dealer(variant, seed, options);
     for (index, &mv) in moves.iter().enumerate() {
         game.apply(mv)
             .map_err(|source| RestoreError::MoveRejected { index, source })?;
@@ -56,17 +64,29 @@ fn replay(
 }
 
 impl Session {
-    /// Starts a fresh deal of `variant` from `seed`.
+    /// Starts a fresh deal of `variant` from `seed` with default options.
     pub fn new(variant: Variant, seed: u64) -> Self {
-        Self::with_dealer(variant, seed, deal)
+        Self::with_options(variant, seed, GameOptions::DEFAULT)
     }
 
-    pub(crate) fn with_dealer(variant: Variant, seed: u64, dealer: Dealer) -> Self {
+    /// Starts a fresh deal of `variant` from `seed` with `options` (normalized to `variant`).
+    pub fn with_options(variant: Variant, seed: u64, options: GameOptions) -> Self {
+        Self::with_dealer(variant, seed, options.for_variant(variant), deal_with)
+    }
+
+    pub(crate) fn with_dealer(
+        variant: Variant,
+        seed: u64,
+        options: GameOptions,
+        dealer: Dealer,
+    ) -> Self {
+        let options = options.for_variant(variant);
         Self {
             variant,
             seed,
+            options,
             dealer,
-            game: dealer(variant, seed),
+            game: dealer(variant, seed, options),
             moves: Vec::new(),
             cursor: 0,
         }
@@ -75,7 +95,7 @@ impl Session {
     /// Rebuilds a session by replaying `record`. The whole log is validated, including the
     /// part after the cursor that can still be redone.
     pub fn restore(record: SessionRecord) -> Result<Self, RestoreError> {
-        Self::restore_with(record, deal)
+        Self::restore_with(record, deal_with)
     }
 
     pub(crate) fn restore_with(
@@ -85,9 +105,11 @@ impl Session {
         let SessionRecord {
             variant,
             seed,
+            options,
             moves,
             cursor,
         } = record;
+        let options = options.for_variant(variant);
         if cursor > moves.len() {
             return Err(RestoreError::CursorBeyondMoves {
                 cursor,
@@ -95,13 +117,14 @@ impl Session {
             });
         }
         let applied = moves.get(..cursor).unwrap_or_default();
-        let game = replay(dealer, variant, seed, applied)?;
+        let game = replay(dealer, variant, seed, options, applied)?;
         if cursor < moves.len() {
-            replay(dealer, variant, seed, &moves)?;
+            replay(dealer, variant, seed, options, &moves)?;
         }
         Ok(Self {
             variant,
             seed,
+            options,
             dealer,
             game,
             moves,
@@ -114,6 +137,7 @@ impl Session {
         SessionRecord {
             variant: self.variant,
             seed: self.seed,
+            options: self.options,
             moves: self.moves.clone(),
             cursor: self.cursor,
         }
@@ -135,7 +159,7 @@ impl Session {
             return false;
         };
         let applied = self.moves.get(..target).unwrap_or_default();
-        let Ok(game) = replay(self.dealer, self.variant, self.seed, applied) else {
+        let Ok(game) = replay(self.dealer, self.variant, self.seed, self.options, applied) else {
             return false;
         };
         self.game = game;
@@ -173,7 +197,7 @@ impl Session {
 
     /// Back to the dealt position of the same seed with an empty history.
     pub fn restart(&mut self) {
-        self.game = (self.dealer)(self.variant, self.seed);
+        self.game = (self.dealer)(self.variant, self.seed, self.options);
         self.moves.clear();
         self.cursor = 0;
     }
@@ -198,6 +222,11 @@ impl Session {
     /// The seed of the deal.
     pub fn seed(&self) -> u64 {
         self.seed
+    }
+
+    /// The options of the deal (normalized to the variant).
+    pub fn options(&self) -> GameOptions {
+        self.options
     }
 }
 

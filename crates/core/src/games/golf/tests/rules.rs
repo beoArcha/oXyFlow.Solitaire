@@ -208,3 +208,31 @@ fn every_dealt_game_keeps_its_cards_through_random_play() {
         assert!(game.columns.len() == COLUMNS);
     }
 }
+
+#[test]
+fn king_ace_wrap_allows_king_on_ace_and_ace_on_king_when_enabled() {
+    let mut game = with_column("AS", "KH");
+    game.wrap = true;
+    assert_accepted(&mut game, play(0));
+
+    let mut game = with_column("KS", "AH");
+    game.wrap = true;
+    assert_accepted(&mut game, play(0));
+}
+
+#[test]
+fn king_ends_waste_refuses_queen_and_wrapped_ace_on_king() {
+    let mut game = with_column("KS", "QH");
+    game.king_stops = true;
+    assert_rejected(&game, play(0), MoveError::TargetRejects);
+
+    let mut wrapped = with_column("KS", "AH");
+    wrapped.wrap = true;
+    wrapped.king_stops = true;
+    assert_rejected(&wrapped, play(0), MoveError::TargetRejects);
+
+    let mut onto_ace = with_column("AS", "KH");
+    onto_ace.wrap = true;
+    onto_ace.king_stops = true;
+    assert_accepted(&mut onto_ace, play(0));
+}

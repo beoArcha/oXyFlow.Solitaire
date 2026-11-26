@@ -36,6 +36,9 @@ impl Klondike {
             if self.waste.is_empty() {
                 return Err(MoveError::StockEmpty);
             }
+            if !self.recycle_allowed() {
+                return Err(MoveError::PassesExhausted);
+            }
             self.stock = std::mem::take(&mut self.waste);
             self.stock.reverse();
             self.recycles = self.recycles.saturating_add(1);
@@ -132,7 +135,7 @@ impl Klondike {
                 .column(to)
                 .is_some_and(|column| match column.up.last() {
                     Some(&top) => rules::fits_alternating(top, first),
-                    None => first.rank == Rank::King,
+                    None => self.any_empty || first.rank == Rank::King,
                 }),
             _ => false,
         };

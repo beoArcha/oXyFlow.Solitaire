@@ -1,8 +1,8 @@
 //! Validation and execution of Golf moves: the stock turn and the play of a column card onto the
 //! waste.
 
-use super::{COLUMNS, Golf, ranks_adjacent};
-use crate::card::Card;
+use super::{COLUMNS, Golf, ranks_adjacent_with};
+use crate::card::{Card, Rank};
 use crate::moves::{Move, MoveError};
 use crate::pile::PileRef;
 
@@ -38,11 +38,15 @@ impl Golf {
     }
 
     /// The top card of the column `from` when it may be played onto the waste: the waste top is
-    /// one rank above or below it.
+    /// one rank above or below it (wrapping king and ace when `wrap` is enabled, and refusing any
+    /// play on a king when `king_stops` is enabled).
     fn playable(&self, from: PileRef) -> Option<Card> {
         let card = self.column(from)?.last().copied()?;
         let waste = self.waste.last()?;
-        ranks_adjacent(card.rank.index(), waste.rank.index()).then_some(card)
+        if self.king_stops && waste.rank == Rank::King {
+            return None;
+        }
+        ranks_adjacent_with(card.rank.index(), waste.rank.index(), self.wrap).then_some(card)
     }
 
     pub(super) fn can_play(&self, from: PileRef) -> bool {

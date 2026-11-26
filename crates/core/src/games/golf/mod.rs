@@ -18,7 +18,7 @@ mod tests;
 
 use crate::card::Card;
 use crate::deck;
-use crate::game::{Game, StockStatus};
+use crate::game::{Game, GameOptions, StockStatus};
 use crate::games::progress::{self, HintProfile};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
@@ -31,30 +31,45 @@ const RANKS: u8 = 13;
 /// Whether a king and an ace count as adjacent ranks. Traditional Golf: they do not.
 pub(crate) const KING_ACE_ADJACENT: bool = false;
 
-/// Whether two ranks, given by [`crate::Rank::index`], are one apart under the Golf rule.
-pub(crate) fn ranks_adjacent(a: u8, b: u8) -> bool {
+/// Whether two ranks, given by [`crate::Rank::index`], are one apart under `wrap`.
+pub(crate) fn ranks_adjacent_with(a: u8, b: u8, wrap: bool) -> bool {
     let apart = a.abs_diff(b);
-    apart == 1 || (KING_ACE_ADJACENT && apart == RANKS - 1)
+    apart == 1 || (wrap && apart == RANKS - 1)
+}
+
+/// Whether two ranks, given by [`crate::Rank::index`], are one apart under the default Golf rule.
+pub(crate) fn ranks_adjacent(a: u8, b: u8) -> bool {
+    ranks_adjacent_with(a, b, KING_ACE_ADJACENT)
 }
 
 /// A Golf game. The top card of every pile is the last element of its vector.
 #[derive(Debug, Clone)]
 pub(crate) struct Golf {
+    wrap: bool,
+    king_stops: bool,
     stock: Vec<Card>,
     waste: Vec<Card>,
     columns: [Vec<Card>; COLUMNS],
 }
 
 impl Golf {
+    /// Deals a shuffled deck from `seed` with default options.
+    #[cfg(test)]
+    pub(crate) fn deal(seed: u64) -> Self {
+        Self::deal_with(seed, GameOptions::DEFAULT)
+    }
+
     /// Deals a shuffled deck from `seed`: five cards to each column in turn, the first card of the
     /// rest to the waste and the other 16 to the stock.
-    pub(crate) fn deal(seed: u64) -> Self {
+    pub(crate) fn deal_with(seed: u64, options: GameOptions) -> Self {
         let mut cards = deck::standard();
         deck::shuffle_with_seed(&mut cards, seed);
         let mut rest = cards.into_iter();
         let columns = std::array::from_fn(|_| rest.by_ref().take(COLUMN_CARDS).collect());
         let waste = rest.by_ref().take(1).collect();
         Self {
+            wrap: options.golf_wrap,
+            king_stops: options.golf_king_stops,
             stock: rest.collect(),
             waste,
             columns,

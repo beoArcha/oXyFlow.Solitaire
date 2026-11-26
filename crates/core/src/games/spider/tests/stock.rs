@@ -39,3 +39,23 @@ fn a_rejected_row_deal_is_not_counted() {
     assert_eq!(game.apply(Move::Stock), Err(MoveError::StockEmpty));
     assert_eq!(game.stock_status(), before);
 }
+
+#[test]
+fn deal_with_empty_column_is_refused_by_default_and_accepted_when_enabled() {
+    let mut blocked = table();
+    blocked.stock = cards("AS 2S 3S 4S 5S 6S 7S 8S 9S 10S");
+    blocked.columns[0] = column("", "KC");
+    assert_rejected(&blocked, Move::Stock, MoveError::EmptyColumnBlocksDeal);
+
+    let options = crate::game::GameOptions {
+        spider_deal_empty: true,
+        ..Default::default()
+    };
+    let mut allowed = Spider::empty_with(options);
+    allowed.stock = cards("AS 2S 3S 4S 5S 6S 7S 8S 9S 10S");
+    allowed.columns[0] = column("", "KC");
+    assert_accepted(&mut allowed, Move::Stock);
+    assert!(allowed.stock.is_empty());
+    assert_eq!(cards_of(&allowed, tab(0)), cards("KC 10S"));
+    assert_eq!(cards_of(&allowed, tab(1)), cards("9S"));
+}

@@ -11,7 +11,7 @@ mod tests;
 
 use crate::card::{Card, Suit};
 use crate::deck;
-use crate::game::{Game, StockStatus, SuitCount};
+use crate::game::{Game, GameOptions, StockStatus, SuitCount};
 use crate::games::progress::{self, HintProfile};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
@@ -38,30 +38,43 @@ struct Column {
 /// one complete run, king first.
 #[derive(Debug, Clone)]
 pub(crate) struct Spider {
+    deal_empty: bool,
     stock: Vec<Card>,
     foundations: [Vec<Card>; FOUNDATIONS],
     columns: [Column; COLUMNS],
 }
 
 impl Spider {
+    #[cfg(test)]
     fn empty() -> Self {
+        Self::empty_with(GameOptions::DEFAULT)
+    }
+
+    fn empty_with(options: GameOptions) -> Self {
         Self {
+            deal_empty: options.spider_deal_empty,
             stock: Vec::new(),
             foundations: Default::default(),
             columns: Default::default(),
         }
     }
 
+    /// Deals a shuffled double deck of `suits` from `seed` with default options.
+    #[cfg(test)]
+    pub(crate) fn deal(suits: SuitCount, seed: u64) -> Self {
+        Self::deal_with(suits, seed, GameOptions::DEFAULT)
+    }
+
     /// Deals a shuffled double deck of `suits` from `seed`: the first four columns get six cards,
     /// the other six get five, the last card of each is face up, the remaining 50 form the stock.
-    pub(crate) fn deal(suits: SuitCount, seed: u64) -> Self {
+    pub(crate) fn deal_with(suits: SuitCount, seed: u64, options: GameOptions) -> Self {
         let mut cards = match suits {
             SuitCount::One => deck::build(&[Suit::Spades], 8),
             SuitCount::Two => deck::build(&[Suit::Spades, Suit::Hearts], 4),
             SuitCount::Four => deck::build(&Suit::ALL, 2),
         };
         deck::shuffle_with_seed(&mut cards, seed);
-        let mut game = Self::empty();
+        let mut game = Self::empty_with(options);
         let mut rest = cards.into_iter();
         for (index, column) in game.columns.iter_mut().enumerate() {
             let size = if index < TALL_COLUMNS {
