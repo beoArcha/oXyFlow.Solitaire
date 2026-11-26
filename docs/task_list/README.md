@@ -18,7 +18,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
 | 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | done | 59 | 0 |
-| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 4 | 18 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 5 | 18 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
 | 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
@@ -87,7 +87,7 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
    DRAFT is finalized by the orchestrator). **Milestone: 0.4 closed** (workflow closed, card style and game menu in place, Yukon).
 5. Phase 5 (0.5): P3-32 and P3-33 (Small) → P3-34 and P3-35 (Medium) → P5-03 (Small); P5-04 Golf (Medium) and P5-05 Spider solver
    (Medium) in parallel. **Milestone: 0.5.**
-6. Phase 6 (0.6, now): P3-36 (Medium) → P6-04 (Small) and P6-05 (Medium); P6-06 after the orchestrator finalizes its scope; the dev bridge
+6. Phase 6 (0.6, now): P3-36 (Medium) → P6-18 (Medium) and P6-05 (Medium); P6-04 is covered by P3-35; P6-06 after the orchestrator finalizes its scope; the dev bridge
    P6-07 → P6-08 → P6-09 (Medium) in parallel, one PR at the end. **Milestone: 0.6.**
    Solver and hint cards, in this order (phase-6.md, "Order of the solver and hint cards"): P6-12 → P6-13; P6-14 → P6-15 →
    P6-16 → P6-17; P6-11 → O-115; P6-10.
@@ -335,7 +335,8 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | ID | Task | Owner | Depends on | Status |
 |---|---|---|---|---|
 | P3-36 | Themes as data and the interface size scale | Medium | P3-29, P3-30 | TODO |
-| P6-04 | Card style: four-colour French | Small | P5-03, P3-35 | TODO |
+| P6-18 | The interface size scale S / M / L / XL | Medium | P3-36 | TODO |
+| P6-04 | Card style: four-colour French | Small | P5-03, P3-35 | DONE |
 | P6-05 | Game: TriPeaks | Medium | P5-04 | TODO |
 | P6-06 | More game options | Large (finalizes the scope), then Small | P4-09, P3-27 | DRAFT |
 | P6-07 | Dev bridge: headless driver, virtual clock and UI state snapshot | Medium | T-12, T-14 | TODO |
