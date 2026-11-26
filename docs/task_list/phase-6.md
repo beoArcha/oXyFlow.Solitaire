@@ -359,6 +359,33 @@ its card).
   once and survives a restart of the app; the screen lists earned and not earned with signs; the corner shows the latest
   and is dropped first at 100 × 30; every offered locale fits.
 
+### O-122 — No moves left: a dialog that the game cannot be won
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-26 (seen in TriPeaks; applies to every game).
+- **Depends on:** —
+- **Files:** `crates/tui/src/app/modal.rs`, `crates/tui/src/widgets/overlay/{mod,no_moves}.rs` (`no_moves.rs` new, on
+  the pattern of `win.rs`), `crates/tui/src/screens/board/moves.rs` (where the win screen opens), `locales/*/board.toml`,
+  `docs/tech/ui-inventory.md`, tests
+- **Problem:** when no legal move is left and the game is not won (TriPeaks and Golf with an empty stock and no card
+  that fits, Pyramid, FreeCell or Yukon with a blocked board, …), only the bottom bar says "No legal moves". The player
+  has to find out alone that the game is over.
+- **Fix:**
+  - The moment a move leaves the game **not won and without a legal move** (`legal_moves()` is empty), a dialog
+    **No moves left** opens, once per such position, in the same way the win screen opens after a winning move. Its text
+    says that no move is possible and that this game can no longer be won.
+  - Buttons, left to right: **Undo** (only when undo is allowed and possible; it undoes the last move and closes the
+    dialog), **Restart** (same deal), **New game** (the game choice, as on the win screen) and **Menu**. Esc closes the
+    dialog and leaves the board as it is; the bottom bar keeps its "No legal moves" part with Undo and New game, so the
+    dialog can be dismissed without losing a way on. Keyboard and mouse, focus visible without colour.
+  - A game whose rules never run out of moves (for example Klondike with an unlimited redeal) never shows it; the
+    dialog follows `legal_moves()` only and adds no rule of its own. Records and statistics are not changed: the game
+    is recorded as today when the player leaves it.
+- **Acceptance:** tests for TriPeaks, Golf and one tableau game (a constructed blocked position): the dialog opens after
+  the last move, not before and not on a won game; Undo appears only when it can act and closes the dialog; Restart,
+  New game and Menu do what they say; Esc keeps the board and the bar part; it does not open again for the same
+  position after Esc; every offered locale fits at 100 × 30.
+
 ## Order of the solver and hint cards
 
 Each step makes the next one cheaper to measure and needs no rework later:
