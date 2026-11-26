@@ -12,7 +12,7 @@ Order of work: the theme data first (P3-36, then P6-18), then the game, then the
 its card).
 
 Phase 6 review (2026-11-26): the exit criteria are met. Before the gate: O-125, O-126 and O-124, which close the gaps
-P6-06 and O-123 left. The other open cards of this phase (the solver and hint cards O-115, P6-10, P6-11, P6-13 to P6-17,
+P6-06 and O-123 left, and O-127 (owner request 2026-11-27). The other open cards of this phase (the solver and hint cards O-115, P6-10, P6-11, P6-13 to P6-17,
 and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 
 ### P3-36 — Themes as data and the interface size scale
@@ -231,12 +231,20 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 - **Owner:** Small
 - **Priority:** P3. Found in the review of O-123 (2026-11-26).
 - **Depends on:** O-123
-- **Files:** `crates/tui/src/input/table.rs` (`KEY_TABLE`), `locales/*/help.toml` (only if a label is missing), tests
+- **Files:** `crates/tui/src/widgets/overlay/help.rs` (`sections()`), `locales/*/help.toml`, tests
 - **Problem:** the Keys tab of Help does not list the keys that act only in the game menu: Page Up / Page Down,
   Home / End, `/` (search), `w` (winnable deals) and Left / Right (fold a family).
-- **Fix:** add them to `KEY_TABLE` in the game-menu group, with the labels the game menu footer already uses; no change
-  to key handling.
-- **Acceptance:** a test that every key the game menu handles appears in the Keys tab; every offered locale fits.
+- **Revised 2026-11-27 (the first attempt stopped correctly):** these keys cannot go into `KEY_TABLE`: a row there needs
+  an `Action`, Page Up / Page Down / Home / End / `/` / `w` have none (the game menu reads them itself), and Left / Right
+  are already bound to `Action::Left` / `Action::Right`, so a second row breaks `no_key_is_bound_twice`. No change to
+  `action.rs`, `input/table.rs` or key handling.
+- **Fix:** a **Game menu** section in the Keys tab, built like the Mouse section (`GESTURES`): a constant list of
+  (keys text key, description key) pairs in `help.rs`, pushed by `sections()` before the Mouse section. Rows: Page Up /
+  Page Down (a page of rows), Home / End (first / last game), `/` (search), `w` (winnable deals on or off), Left / Right
+  and Enter / Space on a family heading (fold or unfold the family). The descriptions say what the game menu really does
+  (read `crates/tui/src/screens/game_select.rs` and its submodules); new `help.*` keys in every locale under `locales/`.
+- **Acceptance:** a test that each key the game menu handles itself (the page keys, `/`, `w`, and the fold keys) has a
+  row in the Game menu section; the two-column Keys tab still fits at 100 × 30 in every offered locale.
 
 ### O-125 — How to play: the rules tab follows the game's options
 
@@ -245,8 +253,12 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
   `locales/*/rules.toml` for "one line per option in the rules tab".
 - **Depends on:** P6-06
 - **Decision:** T-53
-- **Files:** `crates/tui/src/widgets/overlay/how_to_play/{content,pages,state,mod}.rs`, `crates/tui/src/app/effects.rs`
-  (`open_how_to_play` only), `locales/*/rules.toml`, tests (`how_to_play/tests.rs`, `how_to_play/render_tests.rs`)
+- **Files:** `crates/tui/src/widgets/overlay/how_to_play/{content,pages,state,mod,view}.rs`, `crates/tui/src/app/effects.rs`
+  (`open_how_to_play` only), `locales/*/rules.toml`, tests (`how_to_play/tests.rs`, `how_to_play/render_tests.rs`).
+  Added 2026-11-27 (the implementer stopped correctly: the options must follow the rules wherever `Rules` travels):
+  `crates/tui/src/widgets/overlay/dock/dock_view.rs` (docked Rules tab), `crates/tui/src/widgets/overlay/{nav,mod,dock}.rs`
+  (switching to Rules from Help and the command line, centred and docked), `crates/tui/src/app/{dock,event}.rs` (the
+  calls only). Carry the options next to `Rules` (one small value, not a parameter per call site).
 - **Shared files:** `locales/en-US/rules.toml`, `locales/pl-PL/rules.toml`
 - **Problem:** the rules tab is built from the variant only (`effects.rs:155`, `HowToPlay::for_variant`). With a
   non-default option it states rules that are false for the game on the board:
@@ -294,6 +306,38 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 - **Acceptance:** tests: levels available with default options, dimmed with the reason line with any non-default option
   of the variant, and an option of another game does not dim them; a played seed recorded with options replays with
   those options while the settings hold others; every offered locale fits at 100 × 30.
+
+### O-127 — A scroll bar on the game menu and the Settings list
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-27 (screenshots of the game menu and of Settings, Audio & Visual tab).
+- **Depends on:** O-123
+- **Files:** `crates/tui/src/screens/game_select/{list,draw}.rs`, `crates/tui/src/screens/game_select.rs` (mouse
+  routing only), `crates/tui/src/screens/settings/{view,plan,list}.rs`, `crates/tui/src/screens/settings.rs` (mouse
+  routing only), `crates/tui/src/widgets/scrollbar/mod.rs` (only if a small helper is missing), `docs/tech/ui-inventory.md`,
+  tests (`game_select/fold_scroll_tests.rs`, `settings/tests.rs` or a new test file beside them)
+- **Problem:**
+  - The game menu shows only a muted `↑` / `↓` (`^` / `v`) mark at the edges of the list (O-123). It is easy to miss
+    and does not say how long the list is or where the view is.
+  - The Settings list scrolls with no mark at all; only the title says "row 21 of 27", so the hidden rows below the
+    last visible one are not visible as such.
+  - Statistics, Help and How to play already have the shared scroll bar `widgets/scrollbar` (a one-column track with a
+    thumb, WGL4 blocks or `#` / `:` in ASCII, click on the track pages, drag the thumb).
+- **Fix:**
+  - The game menu list and the Settings list draw the shared scroll bar at the right edge of the list whenever the list
+    is longer than its view (`Metrics::scrolls`); no bar when everything fits.
+  - Game menu: the bar replaces the `↑` / `↓` edge marks (their click becomes a click on the track, which pages); the
+    wheel, Page Up / Page Down and Home / End keep working as in O-123, and dragging the thumb scrolls the list; the
+    focus stays on a visible row as O-123 requires.
+  - Settings: the bar follows the scroll of the rows of the active tab; a click on the track pages and dragging the
+    thumb scrolls, with the focus moved to the nearest visible row; the title "row N of M" stays.
+  - The bar must not cover a label, value or the `◄ ►` arrows of a row, nor the preview pane: the list gives up one
+    column for it, and the layout still fits at 100 × 30 at every interface size and in every locale.
+  - No new colour: the bar reads without colour, as the shared widget already does.
+- **Acceptance:** tests: the bar appears in the game menu and in Settings only when the list scrolls, at 100 × 30 and a
+  tall window; its thumb moves with the keys and the wheel; a click on the track pages and a drag scrolls, in Unicode
+  and ASCII; the old edge-mark tests are replaced by bar tests; no row text is cut by the bar in any offered locale;
+  `docs/tech/ui-inventory.md` describes the bar instead of the edge marks.
 
 ### P6-12 — Solver: no heap allocation per node
 

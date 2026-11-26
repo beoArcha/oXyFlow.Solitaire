@@ -171,7 +171,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     let parts = parts(geometry.body);
     draw_top_tabs(frame, parts.top_tabs, HelpTab::Rules, false, ctx);
     draw_tabs(frame, parts.game_tabs, state, &scale.how_to_play, ctx);
-    let rows = content::rows_for(state.rules, scale.how_to_play.text_width);
+    let rows = content::rows_for_options(state.rules, state.options, scale.how_to_play.text_width);
     let first = usize::from(state.scroll);
     let lines: Vec<Line> = rows
         .iter()

@@ -1,7 +1,9 @@
 //! The text of a page as display rows: section headings, word-wrapped paragraphs and bullets, and
 //! the controls with their keys read from the key table, so a rebound key shows up here too.
 
-use super::pages::{Control, page};
+use oxysol_core::GameOptions;
+
+use super::pages::{Control, page, resolve_key};
 use super::state::Rules;
 use crate::action::Action;
 use crate::i18n::{t, tf};
@@ -104,13 +106,18 @@ fn push_heading(rows: &mut Vec<Row>, key: &str) {
 
 fn push_paragraphs(
     rows: &mut Vec<Row>,
-    keys: &[&str],
+    rules: Rules,
+    options: GameOptions,
+    keys: &[&'static str],
     bullets: bool,
     params: &[(&str, &str)],
     text_width: usize,
 ) {
     let lead = if bullets { BULLET } else { "" };
-    for key in keys {
+    for key in keys
+        .iter()
+        .filter_map(|key| resolve_key(rules, options, key))
+    {
         push_led(rows, lead, Kind::Body, &tf(key, params), text_width);
     }
 }
@@ -145,14 +152,25 @@ fn push_controls(
     push_led(rows, "", Kind::Body, &tf(note, params), text_width);
 }
 
-/// Every row of the page of `rules` at the default interface scale: goal, layout, moves, controls
-/// and tips.
+/// Every row of the page of `rules` at the default interface scale with default options.
+#[cfg(test)]
 pub fn rows(rules: Rules) -> Vec<Row> {
     rows_for(rules, TEXT_WIDTH)
 }
 
-/// Every row of the page of `rules`, word-wrapped to `text_width` columns.
+/// Every row of the page of `rules` under `options` at the default interface scale.
+pub fn rows_with_options(rules: Rules, options: GameOptions) -> Vec<Row> {
+    rows_for_options(rules, options, TEXT_WIDTH)
+}
+
+/// Every row of the page of `rules` with default options, word-wrapped to `text_width` columns.
+#[cfg(test)]
 pub fn rows_for(rules: Rules, text_width: usize) -> Vec<Row> {
+    rows_for_options(rules, GameOptions::DEFAULT, text_width)
+}
+
+/// Every row of the page of `rules` under `options`, word-wrapped to `text_width` columns.
+pub fn rows_for_options(rules: Rules, options: GameOptions, text_width: usize) -> Vec<Row> {
     let page = page(rules);
     let owned = placeholders();
     let params: Vec<(&str, &str)> = owned
@@ -161,11 +179,23 @@ pub fn rows_for(rules: Rules, text_width: usize) -> Vec<Row> {
         .collect();
     let mut rows = Vec::new();
     push_heading(&mut rows, "rules.section.goal");
-    push_paragraphs(&mut rows, page.goal, false, &params, text_width);
+    push_paragraphs(
+        &mut rows, rules, options, page.goal, false, &params, text_width,
+    );
     push_heading(&mut rows, "rules.section.layout");
-    push_paragraphs(&mut rows, page.layout, true, &params, text_width);
+    push_paragraphs(
+        &mut rows,
+        rules,
+        options,
+        page.layout,
+        true,
+        &params,
+        text_width,
+    );
     push_heading(&mut rows, "rules.section.moves");
-    push_paragraphs(&mut rows, page.moves, true, &params, text_width);
+    push_paragraphs(
+        &mut rows, rules, options, page.moves, true, &params, text_width,
+    );
     push_heading(&mut rows, "rules.section.controls");
     push_controls(
         &mut rows,
@@ -175,6 +205,8 @@ pub fn rows_for(rules: Rules, text_width: usize) -> Vec<Row> {
         text_width,
     );
     push_heading(&mut rows, "rules.section.tips");
-    push_paragraphs(&mut rows, page.tips, true, &params, text_width);
+    push_paragraphs(
+        &mut rows, rules, options, page.tips, true, &params, text_width,
+    );
     rows
 }

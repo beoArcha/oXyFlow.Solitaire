@@ -6,7 +6,7 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::{Constraint, Layout, Rect};
 
-use super::how_to_play::Rules;
+use super::how_to_play::RulesContext;
 use super::tabs::HelpTab;
 use super::{help, nav};
 use crate::action::Action;
@@ -157,9 +157,9 @@ pub fn close_rect(rect: Rect) -> Rect {
     Rect::new(footer.right().saturating_sub(width), footer.y, width, 1)
 }
 
-fn rules_of(modal: &Modal) -> Option<Rules> {
+fn rules_of(modal: &Modal) -> Option<RulesContext> {
     match modal {
-        Modal::HowToPlay(state) => Some(state.rules),
+        Modal::HowToPlay(state) => Some(state.context()),
         _ => None,
     }
 }
@@ -177,13 +177,13 @@ fn scroll(state: &mut DockState, modal: &Modal, rect: Rect, lines: i32) {
     state.scroll = u16::try_from(target).unwrap_or(0);
 }
 
-fn show(state: &mut DockState, modal: &mut Modal, rules: Rules, tab: HelpTab) {
+fn show(state: &mut DockState, modal: &mut Modal, rules: RulesContext, tab: HelpTab) {
     let rules = rules_of(modal).unwrap_or(rules);
     *modal = nav::modal_for(tab, rules);
     state.scroll = 0;
 }
 
-fn switch_tab(state: &mut DockState, modal: &mut Modal, rules: Rules, forward: bool) {
+fn switch_tab(state: &mut DockState, modal: &mut Modal, rules: RulesContext, forward: bool) {
     let Some(current) = nav::tab_of(modal) else {
         return;
     };
@@ -195,14 +195,14 @@ fn switch_tab(state: &mut DockState, modal: &mut Modal, rules: Rules, forward: b
     show(state, modal, rules, tab);
 }
 
-fn go_to(state: &mut DockState, modal: &mut Modal, rules: Rules, tab: HelpTab) {
+fn go_to(state: &mut DockState, modal: &mut Modal, rules: RulesContext, tab: HelpTab) {
     if nav::tab_of(modal) != Some(tab) {
         show(state, modal, rules, tab);
     }
 }
 
 /// Left or Right: the next or previous game on the Rules tab, the next or previous tab otherwise.
-fn step(state: &mut DockState, modal: &mut Modal, rules: Rules, forward: bool) {
+fn step(state: &mut DockState, modal: &mut Modal, rules: RulesContext, forward: bool) {
     if let Modal::HowToPlay(game) = modal {
         game.switch(forward);
         state.scroll = 0;
@@ -218,10 +218,11 @@ pub fn handle_key(
     state: &mut DockState,
     modal: &mut Modal,
     rect: Rect,
-    rules: Rules,
+    rules: impl Into<RulesContext>,
     key: &KeyEvent,
     action: Option<Action>,
 ) -> Option<Effect> {
+    let rules = rules.into();
     let page = i32::from(parts(rect).text.height.max(2)) - 1;
     match key.code {
         KeyCode::PageUp => scroll(state, modal, rect, -page),
@@ -278,9 +279,10 @@ pub fn handle_mouse(
     state: &mut DockState,
     modal: &mut Modal,
     rect: Rect,
-    rules: Rules,
+    rules: impl Into<RulesContext>,
     event: &MouseEvent,
 ) -> Option<Effect> {
+    let rules = rules.into();
     let cell = (event.column, event.row);
     if !mouse::contains(rect, cell) {
         return None;
@@ -301,7 +303,7 @@ pub fn handle_mouse(
         switch_tab(state, modal, rules, forward);
     }
     if let Some(game) = rules_of(modal)
-        && let Some(forward) = arrow_at(places.games, &t(game.name_key()), press)
+        && let Some(forward) = arrow_at(places.games, &t(game.rules.name_key()), press)
     {
         step(state, modal, rules, forward);
     }

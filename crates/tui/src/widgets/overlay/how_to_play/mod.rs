@@ -9,6 +9,8 @@ mod bar_tests;
 pub(super) mod content;
 #[cfg(test)]
 mod focus_tests;
+#[cfg(test)]
+mod options_tests;
 mod pages;
 #[cfg(test)]
 mod render_tests;
@@ -20,7 +22,7 @@ mod view;
 use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
-pub use self::state::{HowToPlay, Rules};
+pub use self::state::{HowToPlay, Rules, RulesContext};
 #[cfg(test)]
 pub use self::view::geometry;
 pub use self::view::{draw, geometry_for};
