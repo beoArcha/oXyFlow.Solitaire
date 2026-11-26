@@ -49,11 +49,19 @@ fn no_curated(_: Variant, _: oxysol_core::curated::Difficulty) -> &'static [u64]
 }
 
 fn press(screen: &mut SeedScreen, action: Action) -> Outcome {
-    screen.handle(&KeyEvent::from(KeyCode::Null), Some(action))
+    screen.handle(
+        &KeyEvent::from(KeyCode::Null),
+        Some(action),
+        oxysol_core::GameOptions::DEFAULT,
+    )
 }
 
 fn enter(screen: &mut SeedScreen) -> Outcome {
-    screen.handle(&KeyEvent::from(KeyCode::Enter), Some(Action::Select))
+    screen.handle(
+        &KeyEvent::from(KeyCode::Enter),
+        Some(Action::Select),
+        oxysol_core::GameOptions::DEFAULT,
+    )
 }
 
 /// The options page with the played seeds chosen: one step down, then Enter.

@@ -7,7 +7,7 @@ use ratatui::style::Style;
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use super::{CHOICES, LIST_FOOTER, OPTIONS_FOOTER, Page, SeedScreen};
+use super::{CHOICES, Choice, LIST_FOOTER, OPTIONS_FOOTER, Page, SeedScreen, levels_offered};
 use crate::i18n::{t, tf};
 use crate::screens::main_menu::seed_levels;
 use crate::screens::{ViewCtx, variant_label_key};
@@ -22,6 +22,17 @@ struct Heading<'a> {
     notice: &'a str,
 }
 
+/// The row of one entry of the options. The levels, when they are not offered, are drawn as the
+/// muted detail of an empty row: the list draws a detail muted unless the row has the focus, as the
+/// unavailable rows of the settings screen are drawn.
+fn choice_row(choice: Choice, offered: bool) -> Row {
+    let label = t(choice.label_key()).into_owned();
+    match (choice, offered) {
+        (Choice::Levels, false) => Row::new("").with_detail(label),
+        _ => Row::new(label),
+    }
+}
+
 impl SeedScreen {
     fn title(&self) -> String {
         let game = t(variant_label_key(self.variant));
@@ -31,6 +42,7 @@ impl SeedScreen {
     /// Draws the current page.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let title = self.title();
+        let options = ctx.settings.game_options;
         let notice = self
             .notice
             .map(|key| t(key).into_owned())
@@ -38,15 +50,17 @@ impl SeedScreen {
         match &mut self.page {
             Page::Typing(field) => field.draw(frame, area, ctx, &title),
             Page::Options => {
+                let offered = levels_offered(self.variant, options);
                 let rows: Vec<Row> = CHOICES
                     .iter()
-                    .map(|choice| Row::new(t(choice.label_key()).into_owned()))
+                    .map(|choice| choice_row(*choice, offered))
                     .collect();
                 let prompt = t("menu.seed.options_prompt").into_owned();
+                let reason = self.options_notice(options);
                 let heading = Heading {
                     title: &title,
                     prompt: &prompt,
-                    notice: &notice,
+                    notice: &reason,
                 };
                 self.draw_list(frame, area, ctx, &heading, &rows, &OPTIONS_FOOTER);
             }

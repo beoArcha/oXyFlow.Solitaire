@@ -7,7 +7,21 @@ use super::seed_played::Played;
 use super::seed_screen::{Outcome, SeedScreen};
 use crate::action::Action;
 use oxysol_core::curated::Difficulty;
-use oxysol_core::{DrawCount, Variant};
+use oxysol_core::{DrawCount, GameOptions, StockPasses, Variant};
+
+const DEFAULT: GameOptions = GameOptions::DEFAULT;
+
+/// Golf with the wrap rule, which changes the rules of Golf only.
+const GOLF_WRAP: GameOptions = GameOptions {
+    golf_wrap: true,
+    ..GameOptions::DEFAULT
+};
+
+/// Klondike with one stock pass, which leaves Golf at the standard rules.
+const KLONDIKE_ONE_PASS: GameOptions = GameOptions {
+    klondike_passes: StockPasses::One,
+    ..GameOptions::DEFAULT
+};
 
 fn fake(variant: Variant, level: Difficulty) -> &'static [u64] {
     match (variant, level) {
@@ -17,26 +31,59 @@ fn fake(variant: Variant, level: Difficulty) -> &'static [u64] {
     }
 }
 
+fn press_with(screen: &mut SeedScreen, action: Action, options: GameOptions) -> Outcome {
+    screen.handle(&KeyEvent::from(KeyCode::Null), Some(action), options)
+}
+
 fn press(screen: &mut SeedScreen, action: Action) -> Outcome {
-    screen.handle(&KeyEvent::from(KeyCode::Null), Some(action))
+    press_with(screen, action, DEFAULT)
 }
 
 fn type_digits(screen: &mut SeedScreen, digits: &str) {
     for c in digits.chars() {
-        screen.handle(&KeyEvent::from(KeyCode::Char(c)), None);
+        screen.handle(&KeyEvent::from(KeyCode::Char(c)), None, DEFAULT);
     }
+}
+
+fn enter_with(screen: &mut SeedScreen, options: GameOptions) -> Outcome {
+    let key = KeyEvent::from(KeyCode::Enter);
+    screen.handle(&key, Some(Action::Select), options)
 }
 
 fn enter(screen: &mut SeedScreen) -> Outcome {
-    let key = KeyEvent::from(KeyCode::Enter);
-    screen.handle(&key, Some(Action::Select))
+    enter_with(screen, DEFAULT)
+}
+
+fn choose_levels_with(screen: &mut SeedScreen, options: GameOptions) {
+    for _ in 0..3 {
+        press_with(screen, Action::Down, options);
+    }
+    enter_with(screen, options);
 }
 
 fn choose_levels(screen: &mut SeedScreen) {
-    for _ in 0..3 {
-        press(screen, Action::Down);
-    }
-    enter(screen);
+    choose_levels_with(screen, DEFAULT);
+}
+
+#[test]
+fn the_levels_do_not_open_under_options_changed_for_the_variant() {
+    let mut screen = SeedScreen::with_lookup(Variant::Golf, fake, Played::default());
+    choose_levels_with(&mut screen, GOLF_WRAP);
+    assert_eq!(enter_with(&mut screen, GOLF_WRAP), Outcome::Stay);
+    assert_eq!(screen.back(), Outcome::Leave);
+}
+
+#[test]
+fn the_levels_stay_offered_under_options_of_another_game() {
+    let mut screen = SeedScreen::with_lookup(Variant::Golf, fake, Played::default());
+    choose_levels_with(&mut screen, KLONDIKE_ONE_PASS);
+    assert_eq!(
+        enter_with(&mut screen, KLONDIKE_ONE_PASS),
+        Outcome::Start {
+            variant: Variant::Golf,
+            seed: 1,
+        }
+    );
 }
 
 #[test]

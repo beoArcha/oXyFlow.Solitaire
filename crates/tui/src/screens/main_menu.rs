@@ -223,7 +223,7 @@ impl MainMenu {
                 self.after_game(effect)
             }
             Stage::Seed(screen) => {
-                let outcome = screen.handle(key, action);
+                let outcome = screen.handle(key, action, ctx.settings.game_options);
                 self.after_seed(outcome, ctx)
             }
             Stage::Variants { picker, .. } => {
@@ -242,7 +242,7 @@ impl MainMenu {
                 self.after_game(effect)
             }
             Stage::Seed(screen) => {
-                let outcome = screen.handle_mouse(event);
+                let outcome = screen.handle_mouse(event, ctx.settings.game_options);
                 self.after_seed(outcome, ctx)
             }
             Stage::Variants { picker, .. } => {
