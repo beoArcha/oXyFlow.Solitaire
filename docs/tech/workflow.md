@@ -17,10 +17,10 @@ R-17, T-19, T-21, T-22, T-23). Gates: `architecture.md`, section "Quality gates"
 
 | Command | What it runs | CI |
 |---|---|---|
-| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, lint (including conflict markers in every tracked file), every test target in one cargo call | run before opening a PR |
-| `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages; a documentation-only change runs `cargo xtask docs` instead | `pr.yml` |
+| `cargo xtask check --quick` | fmt check, Clippy `-D warnings`, lint (including conflict markers in every tracked file), every default test target, plus `oxysol` and `oxysol-tui` tests with `--features oxysol/dev-bridge` | run before opening a PR |
+| `cargo xtask check --pr origin/main` | fmt, Clippy, lint, `architecture` and `e2e`, then unit and integration tests of the affected packages (including `--features oxysol/dev-bridge` when `oxysol` or `oxysol-tui` is affected); a documentation-only change runs `cargo xtask docs` instead | `pr.yml` |
 | `cargo xtask docs` | conflict-marker and decision-ID lints and a relative-link check over `docs/**/*.md`, `README.md` and `AGENTS.md` (anchors are not checked) | docs-only PRs, local |
-| `cargo xtask check` | everything: all test targets, then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS (`check-macos`, not gating `promote`) |
+| `cargo xtask check` | everything: all default test targets, `--features oxysol/dev-bridge` build and tests (`oxysol` and `oxysol-tui`), then `sync-metadata --check` | `main.yml` on Linux, Windows, macOS (`check-macos`, not gating `promote`) |
 | `cargo xtask affected --base origin/main` | prints the affected packages (`*` means all) | used by `check --pr` |
 | `cargo xtask report` | prints the last check result as Markdown; paste it into the PR's "Check result" section | run after `check` |
 | `cargo xtask-art locale-diff [<lang>]` | missing, extra and placeholder-mismatched keys against `en-US` | translations |

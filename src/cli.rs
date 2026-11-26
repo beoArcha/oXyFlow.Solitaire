@@ -1,5 +1,8 @@
 //! Command-line argument parsing.
 
+#[cfg(feature = "dev-bridge")]
+use std::path::PathBuf;
+
 use oxysol_tui::settings::ProcessPriority;
 use thiserror::Error;
 
@@ -26,6 +29,8 @@ pub struct Cli {
     pub priority: Option<ProcessPriority>,
     #[cfg(feature = "dev-bridge")]
     pub dev_bridge: bool,
+    #[cfg(feature = "dev-bridge")]
+    pub dev_log: Option<PathBuf>,
 }
 
 /// Command-line parsing error.
@@ -37,6 +42,12 @@ pub enum CliError {
     MissingValue(&'static str),
     #[error("invalid value `{value}` for flag `{flag}`")]
     InvalidValue { flag: &'static str, value: String },
+    #[cfg(feature = "dev-bridge")]
+    #[error("flag `{flag}` requires `{required}`")]
+    Requires {
+        flag: &'static str,
+        required: &'static str,
+    },
 }
 
 fn parse_colors(val: &str) -> Option<ColorArg> {
@@ -63,6 +74,8 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
         priority: None,
         #[cfg(feature = "dev-bridge")]
         dev_bridge: false,
+        #[cfg(feature = "dev-bridge")]
+        dev_log: None,
     };
     let mut it = args.into_iter();
     while let Some(arg) = it.next() {
@@ -75,6 +88,17 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
             "--no-fullscreen" => cli.full_screen = Some(false),
             #[cfg(feature = "dev-bridge")]
             "--dev-bridge" => cli.dev_bridge = true,
+            #[cfg(feature = "dev-bridge")]
+            "--dev-log" => {
+                let val = it.next().ok_or(CliError::MissingValue("--dev-log"))?;
+                if val.is_empty() {
+                    return Err(CliError::InvalidValue {
+                        flag: "--dev-log",
+                        value: val,
+                    });
+                }
+                cli.dev_log = Some(PathBuf::from(val));
+            }
             "--colors" => {
                 let val = it.next().ok_or(CliError::MissingValue("--colors"))?;
                 let color = parse_colors(&val).ok_or(CliError::InvalidValue {
@@ -103,6 +127,13 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
             _ => return Err(CliError::UnknownArgument(arg)),
         }
     }
+    #[cfg(feature = "dev-bridge")]
+    if cli.dev_log.is_some() && !cli.dev_bridge {
+        return Err(CliError::Requires {
+            flag: "--dev-log",
+            required: "--dev-bridge",
+        });
+    }
     Ok(cli)
 }
 
@@ -130,6 +161,8 @@ mod tests {
                 priority: None,
                 #[cfg(feature = "dev-bridge")]
                 dev_bridge: false,
+                #[cfg(feature = "dev-bridge")]
+                dev_log: None,
             }
         );
     }
@@ -143,6 +176,36 @@ mod tests {
         assert_eq!(
             result.unwrap_err(),
             CliError::UnknownArgument("--dev-bridge".to_owned())
+        );
+    }
+
+    #[test]
+    fn test_dev_log_flag_follows_feature_and_requires_dev_bridge() {
+        let with_bridge = parse(to_args(&["--dev-bridge", "--dev-log", "bridge.jsonl"]));
+        #[cfg(feature = "dev-bridge")]
+        assert_eq!(
+            with_bridge.unwrap().dev_log,
+            Some(PathBuf::from("bridge.jsonl"))
+        );
+        #[cfg(not(feature = "dev-bridge"))]
+        assert_eq!(
+            with_bridge.unwrap_err(),
+            CliError::UnknownArgument("--dev-bridge".to_owned())
+        );
+
+        let log_only = parse(to_args(&["--dev-log", "bridge.jsonl"]));
+        #[cfg(feature = "dev-bridge")]
+        assert_eq!(
+            log_only.unwrap_err(),
+            CliError::Requires {
+                flag: "--dev-log",
+                required: "--dev-bridge",
+            }
+        );
+        #[cfg(not(feature = "dev-bridge"))]
+        assert_eq!(
+            log_only.unwrap_err(),
+            CliError::UnknownArgument("--dev-log".to_owned())
         );
     }
 

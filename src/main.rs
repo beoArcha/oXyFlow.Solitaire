@@ -30,9 +30,19 @@ use time::error::IndeterminateOffset;
 fn main() -> ExitCode {
     i18n::set_locale(locale_from_env());
     let raw: Vec<String> = std::env::args().skip(1).collect();
-    let outcome = cli::parse(raw.iter().cloned())
-        .map_err(AppError::from)
-        .and_then(|args| launch(&args, &raw));
+    match cli::parse(raw.iter().cloned()) {
+        Ok(args) => {
+            #[cfg(feature = "dev-bridge")]
+            if !args.show_help && !args.show_version && args.dev_bridge {
+                return run_dev_bridge(&args);
+            }
+            finish(launch(&args, &raw))
+        }
+        Err(error) => finish(Err(AppError::from(error))),
+    }
+}
+
+fn finish(outcome: Result<(), AppError>) -> ExitCode {
     match outcome {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
@@ -45,16 +55,29 @@ fn main() -> ExitCode {
     }
 }
 
+#[cfg(feature = "dev-bridge")]
+fn run_dev_bridge(args: &Cli) -> ExitCode {
+    use std::error::Error as _;
+
+    match oxysol::dev_bridge::run(args.seed, args.dev_log.as_deref()) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            let message = match error.source() {
+                Some(source) => format!("{error}: {source}"),
+                None => error.to_string(),
+            };
+            write_stderr(&message);
+            ExitCode::FAILURE
+        }
+    }
+}
+
 fn launch(args: &Cli, raw: &[String]) -> Result<(), AppError> {
     if args.show_help {
         return print_stdout(&i18n::t("cli.help"));
     }
     if args.show_version {
         return print_stdout(&about::version_text());
-    }
-    #[cfg(feature = "dev-bridge")]
-    if args.dev_bridge {
-        return oxysol::dev_bridge::run().map_err(AppError::from);
     }
     if args.new_window {
         return relaunch(raw);

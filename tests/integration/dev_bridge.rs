@@ -1,16 +1,16 @@
 use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::{Command, Output, Stdio};
 
 use serde_json::Value;
 
-fn run_bridge_process(lines: &[&str]) -> Result<(i32, Vec<Value>), String> {
+fn spawn_bridge(extra_args: &[&str], lines: &[&str]) -> Result<Output, String> {
     let mut child = Command::new(env!("CARGO_BIN_EXE_oxysol"))
-        .arg("--dev-bridge")
+        .args(extra_args)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .map_err(|err| format!("spawn --dev-bridge: {err}"))?;
+        .map_err(|err| format!("spawn oxysol: {err}"))?;
 
     if let Some(mut stdin) = child.stdin.take() {
         for line in lines {
@@ -20,12 +20,20 @@ fn run_bridge_process(lines: &[&str]) -> Result<(i32, Vec<Value>), String> {
         return Err("stdin not piped".to_owned());
     }
 
-    let output = child
+    child
         .wait_with_output()
-        .map_err(|err| format!("wait child: {err}"))?;
+        .map_err(|err| format!("wait child: {err}"))
+}
+
+fn run_bridge_with_args(
+    extra_args: &[&str],
+    lines: &[&str],
+) -> Result<(i32, Vec<u8>, Vec<Value>), String> {
+    let output = spawn_bridge(extra_args, lines)?;
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.is_empty(), "unexpected stderr: {stderr}");
-    let stdout = String::from_utf8(output.stdout).map_err(|err| format!("utf8 stdout: {err}"))?;
+    let stdout =
+        String::from_utf8(output.stdout.clone()).map_err(|err| format!("utf8 stdout: {err}"))?;
     let parsed = stdout
         .lines()
         .map(|line| {
@@ -33,7 +41,12 @@ fn run_bridge_process(lines: &[&str]) -> Result<(i32, Vec<Value>), String> {
                 .map_err(|err| format!("invalid JSON line {line:?}: {err}"))
         })
         .collect::<Result<Vec<_>, _>>()?;
-    Ok((output.status.code().unwrap_or(-1), parsed))
+    Ok((output.status.code().unwrap_or(-1), output.stdout, parsed))
+}
+
+fn run_bridge_process(lines: &[&str]) -> Result<(i32, Vec<Value>), String> {
+    let (code, _, parsed) = run_bridge_with_args(&["--dev-bridge"], lines)?;
+    Ok((code, parsed))
 }
 
 fn find_cell(text_frame: &str, needle: &str) -> Option<(u16, u16)> {
@@ -78,7 +91,6 @@ fn dev_bridge_drives_menus_seeded_klondike_keyboard_mouse_resize_and_quit() -> R
     assert_eq!(code, 0);
     assert_eq!(responses.len(), 20);
     assert!(responses.iter().all(|r| r["ok"] == true));
-
     assert_eq!(responses[0]["frame_id"], 0);
     assert_eq!(responses[0]["state"]["screen"], "main_menu");
     assert_eq!(responses[1]["state"]["active_overlay"], "help");
@@ -154,5 +166,77 @@ fn dev_bridge_handles_malformed_json_unknown_commands_and_illegal_move_events() 
     assert!(responses[4]["state"]["last_error"].is_string());
     assert!(has_event(&responses[4], "move_rejected"));
     assert_eq!(responses[5]["ok"], true);
+    Ok(())
+}
+
+#[test]
+fn dev_bridge_is_byte_identical_across_runs_with_same_seed_and_script() -> Result<(), String> {
+    let script = [
+        r#"{"cmd":"start","cols":120,"rows":40,"game":"klondike","include_text":true,"include_state":true}"#,
+        r#"{"cmd":"key","key":"s","include_text":true}"#,
+        r#"{"cmd":"key","key":"Right","include_text":true}"#,
+        r#"{"cmd":"key","key":"u","include_text":true}"#,
+        r#"{"cmd":"tick","ms":500,"include_text":true}"#,
+        r#"{"cmd":"resize","cols":100,"rows":30,"include_text":true}"#,
+        r#"{"cmd":"snapshot","include_text":true,"include_state":true}"#,
+        r#"{"cmd":"quit"}"#,
+    ];
+    let args = ["--dev-bridge", "--seed", "4242"];
+    let (code1, raw1, resp1) = run_bridge_with_args(&args, &script)?;
+    let (code2, raw2, resp2) = run_bridge_with_args(&args, &script)?;
+
+    assert_eq!(code1, 0);
+    assert_eq!(code2, 0);
+    assert_eq!(raw1, raw2, "bridge stdout must be byte-identical");
+    assert_eq!(resp1.len(), script.len());
+    assert_eq!(resp1[0]["state"]["game_stats"]["seed"], 4242);
+    for (first, second) in resp1.iter().zip(resp2.iter()) {
+        assert_eq!(first["frame_id"], second["frame_id"]);
+        assert_eq!(first["text_frame"], second["text_frame"]);
+        assert_eq!(first["state"], second["state"]);
+    }
+    Ok(())
+}
+
+#[test]
+fn dev_log_records_all_events_and_fails_cleanly_on_unwritable_path() -> Result<(), String> {
+    let temp = tempfile::tempdir().map_err(|err| format!("tempdir: {err}"))?;
+    let log_path = temp.path().join("trace.jsonl");
+    let log_arg = log_path.to_string_lossy().into_owned();
+    let script = [
+        r#"{"cmd":"start","cols":120,"rows":40,"game":"klondike"}"#,
+        r#"{"cmd":"key","key":"u"}"#,
+        r#"{"cmd":"key","key":"?"}"#,
+        r#"{"cmd":"key","key":"Esc"}"#,
+        r#"{"cmd":"key","key":"s"}"#,
+        r#"{"cmd":"key","key":"Right"}"#,
+        r#"{"cmd":"quit"}"#,
+    ];
+    let args = ["--dev-bridge", "--seed", "99", "--dev-log", &log_arg];
+    let (code, _, _) = run_bridge_with_args(&args, &script)?;
+    assert_eq!(code, 0);
+
+    let text = std::fs::read_to_string(&log_path).map_err(|err| format!("read log: {err}"))?;
+    let entries: Vec<Value> = text
+        .lines()
+        .map(|line| serde_json::from_str(line).map_err(|err| format!("parse log line: {err}")))
+        .collect::<Result<Vec<_>, _>>()?;
+    for kind in ["command", "transition", "focus", "move", "error"] {
+        assert!(
+            entries.iter().any(|entry| entry["kind"] == kind),
+            "missing `{kind}` entry in log:\n{text}"
+        );
+    }
+    assert!(entries.iter().all(|entry| entry.get("frame_id").is_some()));
+
+    let bad_log = temp.path().join("no_such_dir").join("trace.jsonl");
+    let bad_arg = bad_log.to_string_lossy().into_owned();
+    let bad_out = spawn_bridge(&["--dev-bridge", "--dev-log", &bad_arg], &[])?;
+    assert_eq!(bad_out.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&bad_out.stderr);
+    assert!(stderr.contains("cannot open dev log"), "stderr: {stderr}");
+
+    let log_only = spawn_bridge(&["--dev-log", &log_arg], &[])?;
+    assert_eq!(log_only.status.code(), Some(2));
     Ok(())
 }

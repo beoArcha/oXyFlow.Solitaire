@@ -2,26 +2,35 @@
 //! Reads one JSON command per line from `stdin` and writes one JSON response per line to `stdout`.
 
 mod input_map;
+pub mod log;
 pub mod protocol;
 #[cfg(test)]
 mod tests;
 
 use std::io::{self, BufRead, BufReader, BufWriter, Write};
+use std::path::Path;
 
 use oxysol_tui::{Headless, Input, UiSnapshot};
 use thiserror::Error;
 
 use self::input_map::{StartTarget, build_start_config, parse_key_event, parse_mouse_inputs};
+use self::log::DevLog;
 use self::protocol::{
     BridgeEvent, Command, KeyArgs, MouseArgs, ResizeArgs, Response, SnapshotArgs, StartArgs,
     TickArgs, diff_events,
 };
 
-/// Fatal I/O error on the bridge stream.
+/// Fatal I/O or start-up error on the bridge stream or dev log.
 #[derive(Debug, Error)]
 pub enum BridgeError {
     #[error("dev bridge stream I/O failed")]
     Io(#[from] io::Error),
+    #[error("cannot open dev log `{path}`")]
+    LogOpen {
+        path: String,
+        #[source]
+        source: io::Error,
+    },
 }
 
 /// Recoverable protocol or command error returned as `ok: false` in the JSON response.
@@ -53,31 +62,52 @@ pub enum ProtocolError {
     HeadlessIo(#[from] io::Error),
 }
 
-/// Runs the dev bridge synchronously over `stdin` and `stdout`.
-pub fn run() -> io::Result<()> {
+/// Runs the dev bridge synchronously over `stdin` and `stdout`, optionally opening `--dev-log`.
+pub fn run(default_seed: Option<u64>, dev_log_path: Option<&Path>) -> Result<(), BridgeError> {
+    let mut dev_log = dev_log_path.map(DevLog::open).transpose()?;
     let stdin = io::stdin();
     let stdout = io::stdout();
-    run_streams(stdin.lock(), stdout.lock()).map_err(|BridgeError::Io(err)| err)
+    run_with_options(stdin.lock(), stdout.lock(), default_seed, dev_log.as_mut())
 }
 
 /// Runs the dev bridge loop over arbitrary buffered `reader` and `writer` streams.
 pub fn run_streams<R: BufRead, W: Write>(reader: R, writer: W) -> Result<(), BridgeError> {
+    run_with_options(reader, writer, None, None)
+}
+
+/// Runs the dev bridge loop with an optional default seed and structured dev log.
+pub fn run_with_options<R: BufRead, W: Write>(
+    reader: R,
+    writer: W,
+    default_seed: Option<u64>,
+    mut dev_log: Option<&mut DevLog>,
+) -> Result<(), BridgeError> {
     let mut reader = BufReader::new(reader);
     let mut writer = BufWriter::new(writer);
-    let mut session = BridgeSession::default();
+    let mut session = BridgeSession::new(default_seed);
     let mut line = String::new();
 
     loop {
         line.clear();
-        let bytes = reader.read_line(&mut line)?;
-        if bytes == 0 {
+        if reader.read_line(&mut line)? == 0 {
             break;
         }
         let trimmed = line.trim();
         if trimmed.is_empty() {
             continue;
         }
-        let (response, stop) = session.process_line(trimmed);
+        let was_started = session.headless.is_some();
+        let (response, cmd_name, stop) = session.process_line(trimmed);
+        if let Some(log) = dev_log.as_deref_mut() {
+            let after = session.snapshot();
+            log.record_step(
+                trimmed,
+                cmd_name.as_deref(),
+                was_started,
+                after.as_ref(),
+                &response,
+            )?;
+        }
         let json = serde_json::to_string(&response).map_err(io::Error::other)?;
         writeln!(writer, "{json}")?;
         writer.flush()?;
@@ -88,27 +118,53 @@ pub fn run_streams<R: BufRead, W: Write>(reader: R, writer: W) -> Result<(), Bri
     Ok(())
 }
 
-#[derive(Default)]
 struct BridgeSession {
+    default_seed: Option<u64>,
     headless: Option<Headless>,
 }
 
 impl BridgeSession {
+    fn new(default_seed: Option<u64>) -> Self {
+        Self {
+            default_seed,
+            headless: None,
+        }
+    }
+
     fn frame_id(&self) -> Option<u64> {
         self.headless.as_ref().map(Headless::frame_id)
     }
 
-    fn process_line(&mut self, line: &str) -> (Response, bool) {
+    fn snapshot(&self) -> Option<UiSnapshot> {
+        self.headless.as_ref().map(Headless::snapshot)
+    }
+
+    fn process_line(&mut self, line: &str) -> (Response, Option<String>, bool) {
         let cmd = match parse_command(line) {
             Ok(cmd) => cmd,
-            Err(err) => return (Response::error(self.frame_id(), err.to_string()), false),
+            Err(err) => {
+                let cmd_name = match &err {
+                    ProtocolError::UnknownCommand(name) => Some(name.clone()),
+                    _ => None,
+                };
+                return (
+                    Response::error(self.frame_id(), err.to_string()),
+                    cmd_name,
+                    false,
+                );
+            }
         };
+        let cmd_name = Some(command_name(&cmd).to_owned());
         if matches!(cmd, Command::Quit) {
-            return (self.handle_quit(), true);
+            return (self.handle_quit(), cmd_name, true);
         }
         match self.execute(cmd) {
-            Ok(response) => (response, false),
-            Err(err) => (Response::error(self.frame_id(), err.to_string()), false),
+            Ok(response) => (response, cmd_name, false),
+            Err(err) => (
+                Response::error(self.frame_id(), err.to_string()),
+                cmd_name,
+                false,
+            ),
         }
     }
 
@@ -127,10 +183,10 @@ impl BridgeSession {
     fn handle_start(&mut self, args: StartArgs) -> Result<Response, ProtocolError> {
         let include_text = args.include_text;
         let include_state = args.include_state;
-        let (config, target) = build_start_config(&args)?;
+        let (config, target) = build_start_config(&args, self.default_seed)?;
         let mut headless = Headless::new(config)?;
         if let StartTarget::Game(variant) = target {
-            headless.start_game(variant, args.seed, true);
+            headless.start_game(variant, args.seed.or(self.default_seed), true);
         }
         let response = response_of(&headless, Vec::new(), include_text, include_state);
         self.headless = Some(headless);
@@ -267,6 +323,18 @@ fn response_of(
         state: include_state.then(|| headless.snapshot()),
         text_frame: include_text.then(|| headless.text_frame()),
         events,
+    }
+}
+
+fn command_name(cmd: &Command) -> &'static str {
+    match cmd {
+        Command::Start(_) => "start",
+        Command::Key(_) => "key",
+        Command::Mouse(_) => "mouse",
+        Command::Resize(_) => "resize",
+        Command::Tick(_) => "tick",
+        Command::Snapshot(_) => "snapshot",
+        Command::Quit => "quit",
     }
 }
 

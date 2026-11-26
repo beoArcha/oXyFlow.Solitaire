@@ -23,6 +23,7 @@ pub enum StartTarget {
 /// Builds a [`HeadlessConfig`] and [`StartTarget`] from validated `start` arguments.
 pub fn build_start_config(
     args: &StartArgs,
+    default_seed: Option<u64>,
 ) -> Result<(HeadlessConfig, StartTarget), ProtocolError> {
     if args.cols == 0 || args.rows == 0 {
         return Err(ProtocolError::InvalidDimensions {
@@ -53,7 +54,7 @@ pub fn build_start_config(
         rows: args.rows,
         caps,
         settings: Some(settings),
-        seed_start: args.seed.unwrap_or(1),
+        seed_start: args.seed.or(default_seed).unwrap_or(1),
         ..HeadlessConfig::default()
     };
     Ok((config, target))

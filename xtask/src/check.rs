@@ -86,6 +86,7 @@ impl Runner<'_> {
             Mode::Full => {
                 self.static_gates()?;
                 self.run_cargo("test", &["test", "--workspace", "--features", ART])?;
+                self.dev_bridge_check(false)?;
                 self.in_process("sync-metadata", || {
                     println!("==> sync-metadata --check");
                     Ok(sync_metadata::run(true)?)
@@ -93,7 +94,8 @@ impl Runner<'_> {
             }
             Mode::Quick => {
                 self.static_gates()?;
-                self.quick_tests()
+                self.quick_tests()?;
+                self.dev_bridge_check(true)
             }
         }
     }
@@ -151,18 +153,39 @@ impl Runner<'_> {
         )
     }
 
+    fn dev_bridge_check(&mut self, tests_only: bool) -> Result<(), XtaskError> {
+        let mut args = vec![
+            "test",
+            "-p",
+            ROOT,
+            "-p",
+            affected::TUI,
+            "--features",
+            "oxysol/dev-bridge",
+        ];
+        if tests_only {
+            args.push("--tests");
+        }
+        self.run_cargo("dev-bridge", &args)
+    }
+
     fn pr_tests(&mut self, base: &str, affected: Affected) -> Result<(), XtaskError> {
         match affected {
             Affected::DocsOnly => self.docs(),
             Affected::All => {
                 println!("==> every package is affected by changes since {base}");
-                self.quick_tests()
+                self.quick_tests()?;
+                self.dev_bridge_check(true)
             }
             Affected::Packages(packages) => {
                 println!("==> affected packages since {base}: {packages:?}");
                 self.ci_only_tests()?;
+                let check_bridge = packages.contains(ROOT) || packages.contains(affected::TUI);
                 for package in packages {
                     self.package_tests(package)?;
+                }
+                if check_bridge {
+                    self.dev_bridge_check(true)?;
                 }
                 Ok(())
             }

@@ -4,7 +4,8 @@ use oxysol_tui::crossterm::event::{KeyCode, KeyModifiers};
 use oxysol_tui::{Input, OverlayKind, ScreenKind};
 
 use super::input_map::{parse_key_event, parse_mouse_inputs};
-use super::run_streams;
+use super::log::DevLog;
+use super::{BridgeError, run_streams, run_with_options};
 
 fn drive(lines: &[&str]) -> Vec<serde_json::Value> {
     let input = lines.join("\n");
@@ -81,4 +82,50 @@ fn eof_ends_the_loop_cleanly() {
     let responses = drive(&[r#"{"cmd":"start"}"#]);
     assert_eq!(responses.len(), 1);
     assert_eq!(responses[0]["ok"], true);
+}
+
+#[test]
+fn dev_log_appends_structured_entries_and_errors_on_missing_parent() {
+    let dir = tempfile::tempdir().unwrap();
+    let bad_path = dir.path().join("missing").join("log.jsonl");
+    assert!(matches!(
+        DevLog::open(&bad_path),
+        Err(BridgeError::LogOpen { .. })
+    ));
+
+    let log_path = dir.path().join("bridge.jsonl");
+    let script = [
+        r#"{"cmd":"start","game":"klondike","include_state":false}"#,
+        r#"{"cmd":"key","key":"u"}"#,
+        r#"{"cmd":"key","key":"s"}"#,
+        r#"{"cmd":"key","key":"Down"}"#,
+        r#"{"cmd":"bogus"}"#,
+        r#"{"cmd":"quit"}"#,
+    ]
+    .join("\n");
+
+    for _ in 0..2 {
+        let mut log = DevLog::open(&log_path).unwrap();
+        let mut out = Vec::new();
+        run_with_options(
+            Cursor::new(script.as_bytes()),
+            &mut out,
+            Some(777),
+            Some(&mut log),
+        )
+        .unwrap();
+    }
+
+    let content = std::fs::read_to_string(&log_path).unwrap();
+    let entries: Vec<serde_json::Value> = content
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    let count_kind = |kind: &str| entries.iter().filter(|e| e["kind"] == kind).count();
+    assert!(count_kind("command") >= 12);
+    assert!(count_kind("transition") >= 4);
+    assert!(count_kind("focus") >= 2);
+    assert!(count_kind("move") >= 4);
+    assert!(count_kind("error") >= 4);
+    assert!(entries.iter().all(|e| e.get("frame_id").is_some()));
 }
