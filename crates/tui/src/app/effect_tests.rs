@@ -40,12 +40,10 @@ fn starting_a_game_uses_the_injected_seed_and_records_it() {
 
 #[test]
 fn every_variant_can_be_started_from_the_list() {
-    for (index, variant) in Variant::ALL.into_iter().enumerate() {
+    for variant in Variant::ALL {
         let mut h = Harness::new();
         h.press(KeyCode::Enter);
-        for _ in 0..index {
-            h.press(KeyCode::Down);
-        }
+        h.focus_game_variant(variant);
         h.press(KeyCode::Enter);
         let session = h.app.board().session();
         assert!(

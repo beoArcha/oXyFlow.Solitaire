@@ -2,6 +2,7 @@
 //! games carry the popularity star. A new game is placed by adding its family (or a variant to an
 //! existing one) here; the compiler points at every `match` that has to learn it.
 
+use crate::settings::GameGroup;
 use oxysol_core::Variant;
 
 /// A group of related games. The order of [`Family::ALL`] is the order of the menu.
@@ -48,6 +49,18 @@ impl Family {
             Family::Yukon => "menu.family.yukon",
             Family::Golf => "menu.family.golf",
             Family::TriPeaks => "menu.family.tri_peaks",
+        }
+    }
+
+    pub(super) const fn group(self) -> GameGroup {
+        match self {
+            Family::Klondike => GameGroup::Klondike,
+            Family::Spider => GameGroup::Spider,
+            Family::FreeCell => GameGroup::FreeCell,
+            Family::Pyramid => GameGroup::Pyramid,
+            Family::Yukon => GameGroup::Yukon,
+            Family::Golf => GameGroup::Golf,
+            Family::TriPeaks => GameGroup::TriPeaks,
         }
     }
 }

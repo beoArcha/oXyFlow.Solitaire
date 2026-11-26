@@ -463,9 +463,12 @@ changes with ←/→ or Enter; audio rows are locked when sound is unavailable (
 | Auto-finish | on / off | on | a forced win plays out | `settings.rs:77` | own setting (gameplay) |
 | Guide panel | on / off | on | beside the board when wide enough | `settings.rs:74` | own setting (guide panel) |
 
-Saved in `Settings` but not on this screen: `undo_allowed` (default on, `settings.rs:75`) and
-`winnable_only` (default off, `settings.rs:76`); the comments say they are offered in the game selection
-(`settings.rs:50-55`).
+Saved in `Settings` but not on this screen: `undo_allowed` (default on, `settings.rs:75`),
+`winnable_only` (default off, `settings.rs:76`), and `folded_families` (default empty — every
+family open, `settings.rs`); they are offered in the game selection, where group headings carry
+`[-]` (open) or `[+]` (folded, with game count) in both Unicode and ASCII modes, and the list
+scrolls by mouse wheel (3 rows), `PageUp`/`PageDown`, `Home`/`End`, and clickable `↑`/`↓`
+(`^`/`v` in ASCII) edge marks.
 
 **Not configurable (no setting or code path found):** card size (automatic, section 3.1), spacing and
 margins, fan steps, per-token colors in the UI (a user `theme.toml` in `AppPaths::data_dir()` supplies a Custom theme, section 1.1), the

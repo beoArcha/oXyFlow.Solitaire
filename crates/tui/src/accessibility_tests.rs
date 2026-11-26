@@ -185,18 +185,20 @@ fn every_main_menu_item_is_reached_and_runs_by_keyboard() {
 fn every_variant_is_reached_and_dealt_by_keyboard() {
     let mut h = Harness::new();
     h.press(KeyCode::Enter);
-    assert_eq!(rows(&mut h).len(), Variant::ALL.len());
-    for (index, variant) in Variant::ALL.into_iter().enumerate() {
+    let variant_rows: Vec<String> = rows(&mut h)
+        .into_iter()
+        .filter(|row| !row.starts_with("[-]") && !row.starts_with("[+]"))
+        .collect();
+    assert_eq!(variant_rows.len(), Variant::ALL.len());
+    for variant in Variant::ALL {
         let mut h = Harness::new();
         h.press(KeyCode::Enter);
-        for _ in 0..index {
-            h.press(KeyCode::Down);
-        }
+        h.focus_game_variant(variant);
         h.press(KeyCode::Enter);
         assert_eq!(
             h.app.board().session().map(|s| s.variant()),
             Some(variant),
-            "row {index}"
+            "{variant:?}"
         );
     }
 }

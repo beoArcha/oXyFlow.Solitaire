@@ -421,9 +421,7 @@ impl Harness {
         self.lines().join("\n")
     }
 
-    /// The lines of the screen with the preview pane of the settings screen blanked, so a test that
-    /// looks for a focus marker or an arrow meets the list only.
-    pub fn lines_without_pane(&mut self) -> Vec<String> {
+    fn draw_and_theme(&mut self) -> Theme {
         let Harness {
             app,
             terminal,
@@ -433,35 +431,23 @@ impl Harness {
         terminal
             .draw(|frame| app.draw(frame))
             .unwrap_or_else(|never| match never {});
-        let theme = Theme::for_settings(
-            app.settings().theme,
-            app.user_theme_palette(),
-            app.settings().color_depth(caps),
-        )
-        .with_color_vision(app.settings().color_vision)
-        .with_low_vision(app.settings().low_vision);
-        lines_without_pane(terminal.backend().buffer(), &theme)
+        let s = app.settings();
+        Theme::for_settings(s.theme, app.user_theme_palette(), s.color_depth(caps))
+            .with_color_vision(s.color_vision)
+            .with_low_vision(s.low_vision)
+    }
+
+    /// The lines of the screen with the preview pane of the settings screen blanked, so a test that
+    /// looks for a focus marker or an arrow meets the list only.
+    pub fn lines_without_pane(&mut self) -> Vec<String> {
+        let theme = self.draw_and_theme();
+        lines_without_pane(self.terminal.backend().buffer(), &theme)
     }
 
     /// The look of the preview pane of the settings screen, cell by cell.
     pub fn pane_cells(&mut self) -> Vec<String> {
-        let Harness {
-            app,
-            terminal,
-            caps,
-            ..
-        } = self;
-        terminal
-            .draw(|frame| app.draw(frame))
-            .unwrap_or_else(|never| match never {});
-        let theme = Theme::for_settings(
-            app.settings().theme,
-            app.user_theme_palette(),
-            app.settings().color_depth(caps),
-        )
-        .with_color_vision(app.settings().color_vision)
-        .with_low_vision(app.settings().low_vision);
-        pane_cells(terminal.backend().buffer(), &theme)
+        let theme = self.draw_and_theme();
+        pane_cells(self.terminal.backend().buffer(), &theme)
     }
 
     pub fn find(&mut self, needle: &str) -> Option<(u16, u16)> {
@@ -472,6 +458,36 @@ impl Harness {
             Some((u16::try_from(column).ok()?, u16::try_from(row).ok()?))
         })
     }
+
+    /// Steps `Down` in the game selection list until `variant` has the focus.
+    pub fn focus_game_variant(&mut self, variant: Variant) {
+        let label = crate::i18n::t(crate::screens::variant_label_key(variant)).into_owned();
+        let max_steps = Variant::ALL.len() + 16;
+        for _ in 0..max_steps {
+            if self
+                .lines()
+                .iter()
+                .any(|l| is_focused_variant_line(l, &label))
+            {
+                return;
+            }
+            self.press(KeyCode::Down);
+        }
+        panic!("variant {label:?} was not focused within {max_steps} steps");
+    }
+}
+
+fn is_focused_variant_line(line: &str, label: &str) -> bool {
+    let Some(at) = line.find('►').or_else(|| line.find('>')) else {
+        return false;
+    };
+    let rest = line[at..].trim_start_matches(['►', '>', ' ']);
+    !rest.starts_with('[')
+        && rest
+            .splitn(3, ' ')
+            .nth(2)
+            .map(str::trim)
+            .is_some_and(|n| n == label || n.starts_with(&format!("{label}  ")))
 }
 
 fn find_pane_title(buffer: &Buffer) -> Option<(u16, u16, u16)> {

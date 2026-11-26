@@ -46,15 +46,13 @@ fn board_variant(h: &Harness) -> Option<Variant> {
 
 #[test]
 fn every_game_goes_from_the_menu_through_the_settings_to_quit_by_keyboard() {
-    for (index, variant) in Variant::ALL.into_iter().enumerate() {
+    for variant in Variant::ALL {
         let mut h = Harness::new();
         assert_eq!(h.app.screen(), Screen::MainMenu);
 
         h.press(KeyCode::Enter);
         assert_eq!(h.app.screen(), Screen::GameSelect, "{variant:?}");
-        for _ in 0..index {
-            h.press(KeyCode::Down);
-        }
+        h.focus_game_variant(variant);
         h.press(KeyCode::Enter);
         assert_eq!(h.app.screen(), Screen::Board, "{variant:?}");
         assert_eq!(board_variant(&h), Some(variant));
