@@ -1,7 +1,7 @@
 <h1 align="center">oXySol</h1>
 
-<p align="center"><strong>Fourteen solitaire games in your terminal, playable by keyboard or mouse.</strong><br>
-Klondike, Spider, FreeCell, Pyramid, the Yukon family and Golf, in one small program.</p>
+<p align="center"><strong>Fifteen solitaire games in your terminal, playable by keyboard or mouse.</strong><br>
+Klondike, Spider, FreeCell, Pyramid, the Yukon family, Golf and TriPeaks, in one small program.</p>
 
 <p align="center">
   <a href="https://github.com/beoArcha/oXyFlow.Solitaire/actions/workflows/main.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/beoArcha/oXyFlow.Solitaire/main.yml?branch=main&label=CI"></a>
@@ -22,10 +22,10 @@ still arriving.
 
 ## Highlights
 
-- **Fourteen games in six families.** Klondike (draw 1 and draw 3), Spider (1, 2 and 4 suits), FreeCell, Pyramid
-  (Relaxed and Classic), the Yukon family (Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience) and
-  Golf. The game menu groups them by family, stars the popular ones, keeps your favorites and finds a game as you
-  type its name.
+- **Fifteen games in seven families.** Klondike (draw 1 and draw 3), Spider (1, 2 and 4 suits), FreeCell, Pyramid
+  (Relaxed and Classic), the Yukon family (Yukon, Russian Solitaire, Alaska, Moosehide and Australian Patience), Golf
+  and TriPeaks. The game menu groups them by family, stars the popular ones, keeps your favorites and finds a game as
+  you type its name.
 - **Deals you can trust.** Every deal has a seed you can copy and replay. A new game can wait for a deal that a solver
   has proven winnable, and "New game from seed" offers three curated deals for each of five difficulty levels in every
   game.
@@ -33,10 +33,11 @@ still arriving.
   undo and redo, quick moves (`a` for the card under the cursor, `e` for the waste card) and auto-finish once the
   win is certain.
 - **Built for every pair of eyes.** A low-vision mode with 7:1 contrast and larger, bolder cards; five themes,
-  including High contrast; color-vision modes for protanopia, deuteranopia, tritanopia and monochrome; a four-color
-  deck; and focus that is always marked by a symbol, never by color alone.
+  including High contrast, and your own colors in a `theme.toml`; color-vision modes for protanopia, deuteranopia,
+  tritanopia and monochrome; a four-color deck; and focus that is always marked by a symbol, never by color alone.
 - **Cards your way.** Six front styles (International, French, German, Italian, Spanish and Swiss), two back styles,
-  table colors and textures, card face tints and four card sizes that follow the window.
+  table colors and textures, card face tints, four card sizes that follow the window, and an interface size (S, M, L,
+  XL) that scales cards, spacing, panels and windows together.
 - **Statistics and history.** Wins, streaks, personal bests and every game you played, in your local time, with a mark
   for each deal that was checked as winnable.
 - **Nine languages.** English, Polski, Deutsch, Español, Français, Italiano, Nederlands, Português (Brasil) and
