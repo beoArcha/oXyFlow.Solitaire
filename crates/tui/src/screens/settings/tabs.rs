@@ -25,7 +25,7 @@ pub enum Tab {
     Gameplay,
 }
 
-const AUDIO_VISUAL_FIELDS: [Field; 26] = [
+const AUDIO_VISUAL_FIELDS: [Field; 27] = [
     Field::Colors,
     Field::FullScreen,
     Field::WindowSize,
@@ -44,6 +44,7 @@ const AUDIO_VISUAL_FIELDS: [Field; 26] = [
     Field::FontFace,
     Field::FontSize,
     Field::CardSize,
+    Field::InterfaceSize,
     Field::AuraColour,
     Field::AuraStyle,
     Field::AuraSize,

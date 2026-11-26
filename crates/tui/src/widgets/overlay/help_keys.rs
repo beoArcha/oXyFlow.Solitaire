@@ -5,9 +5,10 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 use super::dialog;
-use super::help::{self, Columns, Section, VIEW_ROWS, geometry, parts};
+use super::help::{Columns, Section, VIEW_ROWS, geometry_for, parts, view_rows_for};
 use super::nav;
 use crate::action::Action;
+use crate::layout::InterfaceSize;
 use crate::mouse;
 use crate::screens::Effect;
 use crate::widgets::scrollbar::{self, Metrics};
@@ -83,13 +84,14 @@ impl HelpKeys {
 
 /// Handles a key while the Keys tab is open: Up, Down, PageUp, PageDown, Home and End scroll; Esc,
 /// Enter and the close key close the window (`Some`). Tab and the other keys are the tab keys.
-pub fn handle_key(
+pub fn handle_key_for(
     state: &mut HelpKeys,
     key: &KeyEvent,
     action: Option<Action>,
     area: Rect,
+    size: InterfaceSize,
 ) -> Option<Effect> {
-    state.set_view(help::view_rows(area));
+    state.set_view(view_rows_for(area, size));
     match key.code {
         KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
@@ -105,8 +107,13 @@ pub fn handle_key(
 }
 
 /// Handles a mouse event: the wheel and the scroll bar scroll, a click on Close closes the window.
-pub fn handle_mouse(state: &mut HelpKeys, area: Rect, event: &MouseEvent) -> Option<Effect> {
-    let geometry = geometry(area);
+pub fn handle_mouse_for(
+    state: &mut HelpKeys,
+    area: Rect,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
+    let geometry = geometry_for(area, size);
     let (_, text, _, _) = parts(geometry.body);
     state.set_view(text.height);
     match mouse::wheel_action(event) {

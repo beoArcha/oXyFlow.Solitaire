@@ -16,6 +16,10 @@ mod hit_tests;
 mod pyramid;
 #[cfg(test)]
 mod render_tests;
+mod scale;
+mod scale_table;
+#[cfg(test)]
+mod scale_tests;
 mod size;
 #[cfg(test)]
 mod tests;
@@ -28,8 +32,14 @@ use ratatui::layout::{Position, Rect};
 
 pub use chrome::{
     BOARD_MIN_WIDTH, Chrome, Class, FRAME_INSET, GUIDE_WIDTH, GUIDE_WIDTH_WIDE, MOVES_ROWS,
-    MOVES_ROWS_TALL, STANDARD_MIN_WIDTH, WIDE_MIN_WIDTH, chrome, chrome_panels, chrome_with,
+    MOVES_ROWS_TALL, STANDARD_MIN_WIDTH, WIDE_MIN_WIDTH, chrome, chrome_panels, chrome_panels_for,
+    chrome_with,
 };
+pub use scale::{
+    ChromeScale, DialogScale, DockScale, FanScale, GapsScale, GuideWindowScale, HelpScale,
+    HowToPlayScale, InterfaceSize, MovesWindowScale, QuickOptionsScale, Scale,
+};
+pub use scale_table::SCALES;
 pub use size::{CardSize, FAN_BUDGET, SIZES};
 
 /// The place of one pile.
@@ -129,10 +139,30 @@ pub fn compute_with(
     limit: Option<CardSize>,
     wider_fan: bool,
 ) -> BoardGeometry {
+    compute_for_scale(
+        variant,
+        piles,
+        area,
+        limit,
+        wider_fan,
+        InterfaceSize::default(),
+    )
+}
+
+/// Like [`compute_with`], applying the requested `interface_size` scale (falling back to the
+/// largest step that fits `area`).
+pub fn compute_for_scale(
+    variant: Variant,
+    piles: &[PileSnapshot],
+    area: Rect,
+    limit: Option<CardSize>,
+    wider_fan: bool,
+    interface_size: InterfaceSize,
+) -> BoardGeometry {
     let mut geometry = match variant {
-        Variant::Pyramid(_) => pyramid::compute(piles, area, limit, wider_fan),
-        Variant::TriPeaks => tripeaks::compute(piles, area, limit, wider_fan),
-        _ => columns::compute(variant, piles, area, limit, wider_fan),
+        Variant::Pyramid(_) => pyramid::compute(piles, area, limit, wider_fan, interface_size),
+        Variant::TriPeaks => tripeaks::compute(piles, area, limit, wider_fan, interface_size),
+        _ => columns::compute(variant, piles, area, limit, wider_fan, interface_size),
     };
     geometry.clamp(area);
     geometry

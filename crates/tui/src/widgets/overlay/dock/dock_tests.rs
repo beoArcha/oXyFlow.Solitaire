@@ -243,3 +243,44 @@ fn a_click_on_close_closes_the_window() {
     );
     assert_eq!(outcome, Some(Effect::None));
 }
+
+#[test]
+fn dock_split_and_button_hit_follow_non_default_interface_size() {
+    use crate::layout::InterfaceSize;
+
+    assert_eq!(
+        dock::split_for(Rect::new(0, 0, 126, 40), DockSide::Right, InterfaceSize::S),
+        Some((Rect::new(100, 0, 26, 40), Rect::new(0, 0, 100, 40)))
+    );
+    assert_eq!(
+        dock::split_for(SCREEN_130, DockSide::Right, InterfaceSize::XL),
+        None
+    );
+    assert_eq!(
+        dock::split_for(SCREEN_200, DockSide::Right, InterfaceSize::S).map(|(r, _)| r.width),
+        Some(52)
+    );
+    assert_eq!(
+        dock::split_for(SCREEN_200, DockSide::Right, InterfaceSize::XL).map(|(r, _)| r.width),
+        Some(76)
+    );
+
+    let modal = Modal::help();
+    let centred_xl = dock_view::centred_frame_for(&modal, SCREEN_130, InterfaceSize::XL)
+        .expect("centred frame for help at XL");
+    let button = dock::button_rect(centred_xl, DockSide::Centre);
+    assert!(dock::button_hit(
+        centred_xl,
+        DockSide::Centre,
+        (button.x, button.y)
+    ));
+    let docked_xl = dock::split_for(SCREEN_200, DockSide::Right, InterfaceSize::XL)
+        .expect("docked at 200")
+        .0;
+    let docked_button = dock::button_rect(docked_xl, DockSide::Right);
+    assert!(dock::button_hit(
+        docked_xl,
+        DockSide::Right,
+        (docked_button.x, docked_button.y)
+    ));
+}

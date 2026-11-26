@@ -1,5 +1,7 @@
 //! Card sizes and the spacing rules that grow with the window.
 
+use super::scale::InterfaceSize;
+
 /// The size of one card in terminal cells.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CardSize {
@@ -19,7 +21,13 @@ pub const SIZES: [CardSize; 4] = [
 /// of the board is chosen so that a column of this length fits (a king-to-ace run plus a margin).
 pub const FAN_BUDGET: u16 = 14;
 
-const MAX_GAP: u16 = 3;
+/// Constrains `limit` so cards never exceed `cap`.
+pub(super) fn cap_limit(limit: Option<CardSize>, cap: CardSize) -> Option<CardSize> {
+    Some(match limit {
+        Some(limit) if limit.width < cap.width => limit,
+        _ => cap,
+    })
+}
 
 impl CardSize {
     pub const fn new(width: u16, height: u16) -> Self {
@@ -49,63 +57,65 @@ impl CardSize {
 
     /// Empty rows between the top row and the tableau.
     pub const fn row_gap(self) -> u16 {
-        if self.height >= 9 { 2 } else { 1 }
+        InterfaceSize::M.scale().fan.row_gap(self)
     }
 
     /// Natural distance between two face-up cards of a column.
     pub const fn up_step(self) -> u16 {
-        let half = self.height / 2;
-        if half < 2 { 2 } else { half }
+        InterfaceSize::M.scale().fan.up_step(self)
     }
 
     /// Natural distance between two face-down cards of a column.
     pub const fn down_step(self) -> u16 {
-        let half = self.up_step() / 2;
-        if half < 1 { 1 } else { half }
+        InterfaceSize::M.scale().fan.down_step(self)
     }
 
     /// Distance between two overlapping rows of the pyramid.
     pub const fn pyramid_step(self) -> u16 {
-        self.up_step()
+        InterfaceSize::M.scale().fan.pyramid_step(self)
     }
 
     /// Horizontal distance between cards of a fanned waste. Wide enough to keep the rank and the
     /// suit of the covered cards readable.
     pub const fn waste_step(self) -> u16 {
-        self.width.div_ceil(2)
+        InterfaceSize::M.scale().fan.waste_step(self)
     }
 
     /// Wider face-up step used in low-vision mode when room permits.
     pub const fn wide_up_step(self) -> u16 {
-        let max = self.height.saturating_sub(1);
-        let next = self.up_step() + 1;
-        if next < max { next } else { max }
+        InterfaceSize::M.scale().fan.wide_up_step(self)
     }
 
     /// Wider face-down step used in low-vision mode when room permits.
     pub const fn wide_down_step(self) -> u16 {
-        self.down_step() + 1
+        InterfaceSize::M.scale().fan.wide_down_step(self)
     }
 
     /// Wider pyramid row step used in low-vision mode when height permits.
     pub const fn wide_pyramid_step(self) -> u16 {
-        self.wide_up_step()
+        InterfaceSize::M.scale().fan.wide_pyramid_step(self)
     }
 
     /// Wider waste fan step used in low-vision mode when width permits.
     pub const fn wide_waste_step(self) -> u16 {
-        let max = self.width.saturating_sub(1);
-        let next = self.waste_step() + 1;
-        if next < max { next } else { max }
+        InterfaceSize::M.scale().fan.wide_waste_step(self)
     }
 }
 
 /// The gap between `count` cards in a row of width `available` and the left margin that centers
-/// the row. The gap is at least 1 and grows with the window up to 3.
-pub fn spacing(available: u16, count: u16, card_width: u16) -> (u16, u16) {
+/// the row. The gap is between `min_gap` and `max_gap`.
+pub(super) fn spacing_with(
+    available: u16,
+    count: u16,
+    card_width: u16,
+    min_gap: u16,
+    max_gap: u16,
+) -> (u16, u16) {
+    let min_gap = min_gap.max(1);
+    let max_gap = max_gap.max(min_gap);
     let gap = match count {
-        0 | 1 => 1,
-        _ => (available.saturating_sub(count * card_width) / (count - 1)).clamp(1, MAX_GAP),
+        0 | 1 => min_gap,
+        _ => (available.saturating_sub(count * card_width) / (count - 1)).clamp(min_gap, max_gap),
     };
     let content = (count * card_width + count.saturating_sub(1) * gap).min(available);
     (gap, (available - content) / 2)

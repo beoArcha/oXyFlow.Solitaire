@@ -18,6 +18,7 @@ font_face = "Schriftart"
 font_size = "Schriftgröße"
 colors = "Farben"
 card_size = "Kartengröße"
+interface_size = "Oberflächengröße"
 full_screen = "Vollbild"
 window_size = "Fenstergröße"
 sound_style = "Klangstil"
@@ -79,6 +80,7 @@ font_terminal_wt = "Windows Terminal zeichnet seine eigene Schrift; das Spiel ka
 font_terminal_other = "Dieses Terminal zeichnet seine eigene Schrift; das Spiel kann sie nicht ändern. Zoomen mit dem gezeigten Kürzel."
 colors = "Wie viele Farben das Terminal anzeigen soll. Auto erkennt es automatisch."
 card_size = "Auto passt sich ans Fenster an; passt eine Größe nicht, wird sie reduziert. Tasten ] [ 0 oder Ctrl+Mausrad."
+interface_size = "Skalierung von Karten, Abständen, Leisten und Fenstern (S, M, L, XL). Zu große Stufen weichen zurück."
 full_screen = "Auto: Vollbild nur in Fenstern, die das Spiel selbst geöffnet hat. In der Konsole: Alt+Enter oder F11."
 window_size = "Größe eines eigenen Konsolenfensters im Fenstermodus: Klein 130x40, Mittel 195x60, Groß 260x80."
 window_size_full_screen = "Vollbild ist aktiv; diese Größe wird beim Verlassen des Vollbilds angewendet."
@@ -129,6 +131,12 @@ small = "Klein"
 medium = "Mittel"
 large = "Groß"
 huge = "Riesig"
+
+[interface_size]
+s = "S"
+m = "M"
+l = "L"
+xl = "XL"
 
 [aura]
 full = "Voll"

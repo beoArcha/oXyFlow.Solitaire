@@ -43,7 +43,7 @@ use crate::action::Action;
 use crate::app::Modal;
 use crate::audio::SoundCue;
 use crate::clock::GameClock;
-use crate::settings::{Aid, CardSizeSetting};
+use crate::settings::{Aid, CardSizeSetting, InterfaceSize};
 use crate::solver::DealCheck;
 use crate::storage::GameId;
 
@@ -92,6 +92,7 @@ pub struct BoardScreen {
     field_edge: bool,
     low_vision: bool,
     card_size: CardSizeSetting,
+    interface_size: InterfaceSize,
     auto_finish: bool,
     quick_move: bool,
     forced: Option<Vec<Move>>,
@@ -140,6 +141,7 @@ impl Default for BoardScreen {
             field_edge: false,
             low_vision: false,
             card_size: CardSizeSetting::Auto,
+            interface_size: InterfaceSize::M,
             auto_finish: true,
             quick_move: true,
             forced: None,
@@ -338,6 +340,7 @@ impl BoardScreen {
         self.field_edge = ctx.theme.field_edge();
         self.low_vision = ctx.settings.low_vision;
         self.card_size = ctx.settings.card_size;
+        self.interface_size = ctx.settings.interface_size;
         self.auto_finish = ctx.settings.auto_finish;
         self.quick_move = ctx.settings.quick_move;
     }

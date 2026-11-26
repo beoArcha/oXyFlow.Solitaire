@@ -349,9 +349,10 @@ pub struct NullClipboard;                                // every copy fails wit
   tabs) docks; the Guide window and the confirm, pause, win and alert dialogs stay centred. `d` cycles the
   placement centre → right → left, also by a click on the placement button on the top border (`Dock: <side>`);
   the choice is `Settings::help_dock` (serde default Centre), saved at once. A docked window is a column at full
-  height, `overlay::dock::split`: its width is the room beyond the board's minimum width (`BOARD_MIN_WIDTH`),
-  between 30 and 60 columns, and the rest of the screen (the board) draws beside it. Below 130 columns it stays
-  centred and a note says so. Its text is word-wrapped and scrolls by wrapped lines (`dock/dock_view.rs`);
+  height, `overlay::dock::split_for`: its width is the room beyond the board's minimum width (`BOARD_MIN_WIDTH`),
+  between the active `DockScale`'s `min_width` and `max_width` (30 and 60 columns at the default `M` step), and
+  the rest of the screen (the board) draws beside it. Below the active step's `standard_min_width` (130 columns at
+  `M`) it stays centred and a note says so. Its text is word-wrapped and scrolls by wrapped lines (`dock/dock_view.rs`);
   Keys is one column of topics whose shortcut rows have two columns (O-77): a 12-column key column and the
   description beside it, wrapping under itself; a key longer than 10 characters, or a description word wider than its
   column, puts the key on its own line and the description indented below. Keys: while it is open the board keeps the keys (its clock runs) until F6 gives the
@@ -457,8 +458,10 @@ pub struct NullClipboard;                                // every copy fails wit
   appear only when every section still fits. It never repeats a fact of the controls strip. `Settings::guide_panel`
   (default `true`; an older saved value without the field loads as `true`) switches it; `Action::Guide`, key `g`,
   and the title click toggle it through `Effect::Apply`.
-  *Size classes:* `layout::Class::of(area)` is decided at every draw from the width alone (P3-18 dropped the
-  height limit): Compact below 130 columns, Standard from 130 columns, Wide from 180 columns. The panel exists in
+  *Size classes:* `layout::Class::of_for(area, &scale.chrome)` is decided at every draw from the width alone
+  (P3-18 dropped the height limit) using the active `InterfaceSize`'s thresholds (at `M`: Compact below 130
+  columns, Standard from 130 columns, Wide from 180 columns; `S`: 126/174 with 26/34 panels, `L`: 134/186 with
+  34/46 panels, `XL`: 138/192 with 38/52 panels). The panel exists in
   Standard and Wide only, and only when the setting is on, whatever the height (a short wide screen, 130 × 30,
   has it; the terminal is never smaller than 100 × 30, so the board keeps its 100 columns and at least 28 rows
   beside it). Chrome rows: Compact has the header row plus the two strip rows; Standard and Wide have the two
@@ -466,15 +469,17 @@ pub struct NullClipboard;                                // every copy fails wit
   comes back, so the game information has exactly one place at all times. When the panel is shorter than its
   sections, `widgets/guide` drops the last `Keys` row (`n: new game`, O-113) first, then the `Mouse` section, then the
   `Legend` (`fitted`), so a heading never stands without its lines.
-  *Guide window (P3-18):* below 130 columns the setting stays on and its effect stays visible. `g`
+  *Guide window (P3-18):* below the active `standard_min_width` the setting stays on and its effect stays visible. `g`
   (`BoardScreen::panel_unavailable`, the class of the last drawn size) opens `Modal::Guide(GuideWindow)`
-  (`widgets/overlay/guide_window.rs`, a `dialog::boxed` of 62 columns and 17 text rows) with the same content as
+  (`widgets/overlay/guide_window.rs`, a `dialog::boxed_for` sized from `GuideWindowScale` in `layout::SCALES`; 62
+  columns and 17 text rows at `M`, falling back when narrower) with the same content as
   the panel, laid out by `guide::window_lines` (`Game`, `Goal`, `Keys` with the usable ones marked, `Mouse`,
   `Legend`, a blank row between them). It scrolls with Up, Down, PgUp, PgDn, Home, End and the wheel, shows its
   position in the footer, and closes with `g`, Esc, Enter or Close; the clock stops while it is open and no key
   reaches the board. The `Do:` row of a Compact screen carries `g: guide` in its fixed tail (before `?: keys`),
-  and the settings row reads `Guide panel: On (needs 130 columns, now 100)` (`settings.value.needs_columns`;
-  `options::line` takes the screen width). From 130 columns `g` hides and shows the side panel as before.
+  and the settings row reads `Guide panel: On (needs <needed> columns, now <now>)` (`settings.value.needs_columns`;
+  `Aid::value_for_size` uses `standard_min_width` of the active `InterfaceSize`). From `standard_min_width` `g`
+  hides and shows the side panel as before.
 - **Possible moves panel (P3-26):** `widgets/moves.rs` (the framed list, `MoveEntry`, `PanelMap`),
   `screens/board/moves_panel.rs` (entries, focus, clicks) and `widgets/overlay/moves_window.rs`. Every board
   action (stock draw, deal or recycle, pick up or drop, quick move or send to foundation, put back, hint, undo,
@@ -483,12 +488,13 @@ pub struct NullClipboard;                                // every copy fails wit
   listed, dimmed and marked `×` (ASCII `x`; active `•`, ASCII `o`: `Glyphs::entry_on/entry_off`), and carries a
   short reason (`board.moves.reason.*`) that is drawn under it when every reason fits in the panel. Key `v`
   (`Action::Moves`, help group Moves) and a click on the title toggle `Settings::moves_panel` (default `true`; an
-  older value without the field loads as `true`) through `Effect::Apply`. *Layout:* `layout::chrome_panels(area,
-  guide, moves, frame)` (`chrome_with(area, guide, frame)` is the guide-only form) puts the panels in the one side column of the size class
-  (30 or 40 columns): alone either takes the full height (without the guide the header row is back); together the
-  guide is above and the moves panel below it with 12 rows (22 from a column height of 56, where the reasons fit),
-  at most half the column. `Chrome::moves` is the new rectangle; the board width never changes. Below 130
-  columns `v` opens `Modal::Moves(MovesWindow)` with the same entries; Up, Down and Tab choose one, Enter or a
+  older value without the field loads as `true`) through `Effect::Apply`. *Layout:* `layout::chrome_panels_for(area,
+  guide, moves, frame, interface_size)` (`chrome_panels` / `chrome_with` use `M`) puts the panels in the one side
+  column of the size class: alone either takes the full height (without the guide the header row is back); together
+  the guide is above and the moves panel below it with `ChromeScale::moves_rows` rows (`12` at `M`, `moves_rows_tall`
+  from column height `moves_reasons_from`, where the reasons fit), at most half the column. `Chrome::moves` is the
+  new rectangle; the board width never changes. On Compact screens `v` opens `Modal::Moves(MovesWindow)` with the
+  same entries (`MovesWindowScale::box_width` from `layout::SCALES`); Up, Down and Tab choose one, Enter or a
   click runs an active one through `Effect::Board(Action)` (the application runs the action as its key would,
   after the window closed), an inactive one does nothing. *Focus:* while the panel is drawn it is the last stop of
   the board's Tab ring (piles, then the entries, then round); Up and Down choose an entry, Enter and Space run it
@@ -723,19 +729,24 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `board.status.finishing`. Any key or mouse press calls `interrupt_finish`, which leaves the position to the
   player until it changes; the `f` key (`Action::Finish`) restarts the paced finish. With the setting off, `f`
   plays all moves at once; the action line offers `f: finish game` when a forced win is not played out by itself.
-- **Geometry:** `layout::compute(variant, &piles, body) -> BoardGeometry` returns rectangles for piles
-  and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome(area)` splits the screen into
+- **Geometry:** `layout::compute_for_scale(variant, &piles, body, limit, wider_fan, interface_size) -> BoardGeometry`
+  (`compute`, `compute_within` and `compute_with` use `InterfaceSize::M`) returns rectangles for piles
+  and cards (`BoardGeometry::hit(col, row)` for the mouse); `layout::chrome_panels_for` splits the screen into
   an optional header row, the `field` (the playing area), its `body` (the area to pass to `compute`) and the two
   rows of the controls strip; `chrome_with(area, guide, frame)` also reserves the full-height guide panel at the
   right and drops the header row when the panel is there (see Board guidance), and insets `body` by `FRAME_INSET`
   (one cell) when `frame` is set, which is `Theme::field_edge()`: only a theme whose felt has no edge of its own
   (High Contrast, `Table` = `Background` = black, or a dark felt in low-vision mode) draws the one-cell `Border` field frame (`widgets/edge.rs`,
   `┌─┐│└┘`, ASCII `+-|`) on the ring of `field`; in every other theme `body == field` and no frame is drawn.
-  `BoardScreen` takes the flag with the settings at every draw, key and mouse event (`follow`), so drawing,
-  mouse hit-testing and `commands.rs` share one `chrome()` (`chrome_panels` with the guide, moves and frame flags).
+  `BoardScreen` takes `interface_size` and the flags with the settings at every draw, key and mouse event (`follow`), so drawing,
+  mouse hit-testing and `commands.rs` share one `chrome()` (`chrome_panels_for` with `guide`, `moves`, `frame`, `interface_size`).
   `Chrome { class, header: Option<Rect>, field, body, guide: Option<Rect>, moves: Option<Rect>, now, possible }`. The same result drives rendering and hit-testing. Two layouts:
-  columns (Klondike, Spider, FreeCell, Yukon, Golf) and pyramid. Card size is the largest of 13×11, 11×9, 9×7, 7×5
-  that fits the window and is not above `Settings::card_size` (`layout::compute_within`; `layout::compute_with` also accepts `wider_fan` for low-vision mode, widening tableau, waste and pyramid steps when room permits without breaking O-107; `compute` has no limit; a column of a king-to-ace run plus a margin must fit); a column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
+  columns (Klondike, Spider, FreeCell, Yukon, Golf) and pyramid/TriPeaks. Card size is the largest of 13×11, 11×9, 9×7, 7×5
+  that fits the window and is not above `min(Settings::card_size, scale.card_cap)`; a step in `layout::SCALES`
+  (`Settings::interface_size`: `S`, `M` default, `L`, `XL`; older saves without `interface_size` load as `M`, and
+  it belongs to `Settings::with_interface_of` for Settings preview) jointly sets `card_cap`, gaps, fan steps,
+  screen class thresholds/panel widths and overlay modal widths, falling back to the largest step that fits the
+  viewport (`InterfaceSize::fit`). A column first tries a face-up step one larger than natural when it has spare rows (P3-15), then compresses
   face-down steps, then face-up steps, then collapses its face-down cards into one row with a counter. When even that
   would stack face-up cards of a tableau column, the next smaller card size is taken (O-107), so the last card of the
   longest column always stays fully drawn above the status rows.

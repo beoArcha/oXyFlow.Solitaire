@@ -4,19 +4,19 @@
 use oxysol_core::{PileRef, PileSnapshot};
 use ratatui::layout::Rect;
 
-use super::size::CardSize;
+use super::scale::{FanScale, InterfaceSize};
+use super::size::{CardSize, cap_limit};
 use super::{BoardGeometry, PileGeometry};
 
 const ROWS: u16 = 4;
 const BASE_CARDS: u16 = 10;
-const BASE_GAP: u16 = 2;
 
-fn height_of(size: CardSize, step: u16) -> u16 {
-    (ROWS - 1) * step + 2 * size.height + size.row_gap()
+fn height_of(size: CardSize, step: u16, fan: FanScale) -> u16 {
+    (ROWS - 1) * step + 2 * size.height + fan.row_gap(size)
 }
 
-fn fits(size: CardSize, area: Rect, step: u16) -> bool {
-    BASE_CARDS * size.width <= area.width && height_of(size, step) <= area.height
+fn fits(size: CardSize, area: Rect, step: u16, fan: FanScale) -> bool {
+    BASE_CARDS * size.width <= area.width && height_of(size, step, fan) <= area.height
 }
 
 const fn half_units(row: u16, index: u16) -> u16 {
@@ -31,6 +31,8 @@ const fn half_units(row: u16, index: u16) -> u16 {
 struct Table {
     size: CardSize,
     step: u16,
+    base_gap: u16,
+    row_gap: u16,
     x0: u16,
     y0: u16,
 }
@@ -47,10 +49,10 @@ impl Table {
 
     fn base_slot(&self, offset: u16) -> Rect {
         let width = self.size.width;
-        let span = 2 * width + BASE_GAP;
+        let span = 2 * width + self.base_gap;
         let start = self.x0 + (BASE_CARDS * width).saturating_sub(span) / 2;
-        let y = self.y0 + (ROWS - 1) * self.step + self.size.height + self.size.row_gap();
-        self.card(start + offset * (width + BASE_GAP), y)
+        let y = self.y0 + (ROWS - 1) * self.step + self.size.height + self.row_gap;
+        self.card(start + offset * (width + self.base_gap), y)
     }
 
     fn slot_for(&self, pile: PileRef) -> Rect {
@@ -67,20 +69,32 @@ pub(super) fn compute(
     area: Rect,
     limit: Option<CardSize>,
     wider_fan: bool,
+    interface_size: InterfaceSize,
 ) -> BoardGeometry {
-    let size = CardSize::largest_fit_within(limit, |size| fits(size, area, size.pyramid_step()));
-    let wide = size.wide_pyramid_step();
-    let step = if wider_fan && fits(size, area, wide) {
+    let scale = interface_size
+        .fit(|scale| {
+            let small = CardSize::smallest();
+            fits(small, area, scale.fan.pyramid_step(small), scale.fan)
+        })
+        .scale();
+    let fan = scale.fan;
+    let limit = cap_limit(limit, scale.card_cap);
+    let size =
+        CardSize::largest_fit_within(limit, |size| fits(size, area, fan.pyramid_step(size), fan));
+    let wide = fan.wide_pyramid_step(size);
+    let step = if wider_fan && fits(size, area, wide, fan) {
         wide
     } else {
-        size.pyramid_step()
+        fan.pyramid_step(size)
     };
     let margin = area.width.saturating_sub(BASE_CARDS * size.width) / 2;
     let table = Table {
         size,
         step,
+        base_gap: scale.gaps.tripeaks_base_gap,
+        row_gap: fan.row_gap(size),
         x0: area.x + margin,
-        y0: area.y + area.height.saturating_sub(height_of(size, step)) / 2,
+        y0: area.y + area.height.saturating_sub(height_of(size, step, fan)) / 2,
     };
     let placed = piles
         .iter()

@@ -19,7 +19,11 @@ impl App {
         if !overlay::dock::dock_view::is_dockable(modal) {
             return None;
         }
-        overlay::dock::split(self.screen_rect(), self.settings.help_dock)
+        overlay::dock::split_for(
+            self.screen_rect(),
+            self.settings.help_dock,
+            self.settings.interface_size,
+        )
     }
 
     /// Whether the open modal takes the keys: a centred modal always does, a docked one only
@@ -100,7 +104,11 @@ impl App {
         };
         let frame = match self.dock_split() {
             Some((rect, _)) => Some(rect),
-            None => overlay::dock::dock_view::centred_frame(modal, self.screen_rect()),
+            None => overlay::dock::dock_view::centred_frame_for(
+                modal,
+                self.screen_rect(),
+                self.settings.interface_size,
+            ),
         };
         frame.is_some_and(|frame| overlay::dock::button_hit(frame, self.settings.help_dock, cell))
     }
@@ -153,7 +161,14 @@ impl App {
             (Some(modal), Some(rect)) => {
                 overlay::dock::handle_key(&mut self.dock, modal, rect, rules, key, action)
             }
-            (Some(modal), None) => overlay::handle_for(modal, key, action, rules, area),
+            (Some(modal), None) => overlay::handle_for_size(
+                modal,
+                key,
+                action,
+                rules,
+                area,
+                self.settings.interface_size,
+            ),
             (None, _) => None,
         };
         self.sync_quick();

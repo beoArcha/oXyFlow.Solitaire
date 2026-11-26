@@ -18,6 +18,7 @@ font_face = "Font face"
 font_size = "Font size"
 colors = "Colors"
 card_size = "Card size"
+interface_size = "Interface size"
 full_screen = "Full screen"
 window_size = "Window size"
 sound_style = "Sound style"
@@ -79,6 +80,7 @@ font_terminal_wt = "Windows Terminal draws its own font and the game cannot chan
 font_terminal_other = "This terminal draws its own font and the game cannot change it. Zoom with the shortcut shown."
 colors = "How many colors the terminal is asked to show. Auto detects it."
 card_size = "Auto fits the window; a size that does not fit falls back. Keys ] [ 0 or Ctrl+wheel."
+interface_size = "Scale of cards, spacing, panels and windows (S, M, L, XL). Steps larger than the window fall back."
 full_screen = "Auto: on only in the window the game opened itself. In a console: Alt+Enter or F11."
 window_size = "Size of an owned console window when windowed: Small 130x40, Medium 195x60, Large 260x80."
 window_size_full_screen = "Full screen is active; this size applies when the window leaves full screen."
@@ -129,6 +131,12 @@ small = "Small"
 medium = "Medium"
 large = "Large"
 huge = "Huge"
+
+[interface_size]
+s = "S"
+m = "M"
+l = "L"
+xl = "XL"
 
 [aura]
 full = "Full"

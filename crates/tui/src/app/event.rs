@@ -136,10 +136,16 @@ impl App {
 
     pub(super) fn on_modal_mouse(&mut self, event: &MouseEvent) -> Effect {
         let area = self.screen_rect();
-        let outcome = self
-            .modal
-            .as_mut()
-            .and_then(|modal| overlay::handle_mouse(modal, area, &self.board, self.now, event));
+        let outcome = self.modal.as_mut().and_then(|modal| {
+            overlay::handle_mouse_for(
+                modal,
+                area,
+                &self.board,
+                self.now,
+                event,
+                self.settings.interface_size,
+            )
+        });
         self.sync_quick();
         self.finish_modal(outcome)
     }

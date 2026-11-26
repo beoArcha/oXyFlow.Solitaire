@@ -472,3 +472,26 @@ fn low_vision_round_trips_and_previews_with_interface() {
     let kept = on.with_interface_of(&base);
     assert_eq!(kept, base);
 }
+
+#[test]
+fn interface_size_defaults_to_m_for_old_saves_and_round_trips() {
+    let old = "locale = \"en-US\"\n";
+    let loaded = toml::from_str::<Settings>(old);
+    assert!(matches!(loaded, Ok(ref s) if s.interface_size == crate::layout::InterfaceSize::M));
+
+    for step in crate::layout::InterfaceSize::ALL {
+        let settings = Settings {
+            interface_size: step,
+            ..Settings::default()
+        };
+        let encoded = toml::to_string(&settings).unwrap_or_default();
+        let decoded = toml::from_str::<Settings>(&encoded);
+        assert!(matches!(decoded, Ok(ref s) if s.interface_size == step));
+        assert_eq!(
+            settings
+                .with_interface_of(&Settings::default())
+                .interface_size,
+            crate::layout::InterfaceSize::M
+        );
+    }
+}

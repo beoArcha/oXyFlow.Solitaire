@@ -8,8 +8,8 @@ use crate::app::FontFacts;
 use crate::audio::StyleInfo;
 use crate::i18n::Locale;
 use crate::settings::{
-    CONSOLE_FONT_SIZES, CardFaceTint, CardSizeSetting, ColorVision, ConsoleFace, ProcessPriority,
-    Settings, TableColour, TableFeel, TerminalKind,
+    CONSOLE_FONT_SIZES, CardFaceTint, CardSizeSetting, ColorVision, ConsoleFace, InterfaceSize,
+    ProcessPriority, Settings, TableColour, TableFeel, TerminalKind,
 };
 
 const VOLUME_STEP: u8 = 10;
@@ -120,6 +120,9 @@ pub fn changed_for_facts(
         Field::Colors => next.color_mode = cycle(&COLOR_MODES, settings.color_mode, step),
         Field::CardSize => {
             next.card_size = cycle(&CardSizeSetting::ALL, settings.card_size, step);
+        }
+        Field::InterfaceSize => {
+            next.interface_size = cycle(&InterfaceSize::ALL, settings.interface_size, step);
         }
         Field::FontFace => {
             next.console_face = cycle(&ConsoleFace::ALL, settings.console_face, step)

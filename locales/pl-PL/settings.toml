@@ -18,6 +18,7 @@ font_face = "Czcionka"
 font_size = "Rozmiar czcionki"
 colors = "Kolory"
 card_size = "Rozmiar kart"
+interface_size = "Rozmiar interfejsu"
 full_screen = "Pełny ekran"
 window_size = "Rozmiar okna"
 sound_style = "Styl dźwięku"
@@ -79,6 +80,7 @@ font_terminal_wt = "Windows Terminal rysuje własną czcionkę i gra nie może j
 font_terminal_other = "Ten terminal rysuje własną czcionkę i gra nie może jej zmienić. Powiększaj skrótem pokazanym w wierszu."
 colors = "Ile kolorów pokazuje terminal. Automatycznie: wykrywane samo."
 card_size = "Auto dopasowuje do okna; rozmiar, który się nie mieści, zmniejsza się sam. Klawisze ] [ 0 lub Ctrl+kółko."
+interface_size = "Skala kart, odstępów, paneli i okien (S, M, L, XL). Kroki większe od okna zmniejszają się same."
 full_screen = "Auto: tylko w oknie, które gra otworzyła sama. W konsoli: Alt+Enter lub F11."
 window_size = "Rozmiar okna konsoli otwartego przez grę w trybie okienkowym: Małe 130x40, Średnie 195x60, Duże 260x80."
 window_size_full_screen = "Pełny ekran jest włączony; ten rozmiar zostanie użyty po wyjściu z pełnego ekranu."
@@ -129,6 +131,12 @@ small = "Małe"
 medium = "Średnie"
 large = "Duże"
 huge = "Ogromne"
+
+[interface_size]
+s = "S"
+m = "M"
+l = "L"
+xl = "XL"
 
 [aura]
 full = "Pełna"

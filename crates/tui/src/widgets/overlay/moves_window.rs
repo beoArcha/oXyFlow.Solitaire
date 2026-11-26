@@ -14,14 +14,13 @@ use super::help;
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
+use crate::layout::InterfaceSize;
 use crate::mouse::{self, contains};
 use crate::screens::focus::{step, tab_forward};
 use crate::screens::{Effect, ViewCtx};
 use crate::theme::Token;
 use crate::widgets::footer::{self, FooterMap, Segment};
 use crate::widgets::moves::{MoveEntry, available_first, entry_style, row_text};
-
-const BOX_WIDTH: u16 = 54;
 
 /// The open window: the entries as they were when it opened, available ones first, and the one
 /// that has the focus.
@@ -54,9 +53,16 @@ impl MovesWindow {
     }
 }
 
-/// The box of the window, centered in `area`; it is as tall as the list.
-pub fn geometry(area: Rect, state: &MovesWindow) -> Geometry {
-    dialog::boxed(area, BOX_WIDTH, state.rows(), &help::buttons())
+/// The box of the window, centered in `area` at `size`; it is as tall as the list.
+pub fn geometry_for(area: Rect, state: &MovesWindow, size: InterfaceSize) -> Geometry {
+    let resolved = size.fit(|scale| scale.moves_window.box_width <= area.width);
+    dialog::boxed_for(
+        area,
+        resolved.scale().moves_window.box_width,
+        state.rows(),
+        &help::buttons(),
+        resolved,
+    )
 }
 
 fn split(body: Rect) -> (Rect, Rect) {
@@ -64,8 +70,10 @@ fn split(body: Rect) -> (Rect, Rect) {
     (text, footer)
 }
 
-fn entry_rows(area: Rect, state: &MovesWindow) -> Vec<Rect> {
-    let text = split(geometry(area, state).body).0.inner(Margin::new(1, 0));
+fn entry_rows(area: Rect, state: &MovesWindow, size: InterfaceSize) -> Vec<Rect> {
+    let text = split(geometry_for(area, state, size).body)
+        .0
+        .inner(Margin::new(1, 0));
     (0..state.entries.len())
         .map(|index| {
             let y = text
@@ -93,14 +101,15 @@ fn key_name(action: Action) -> String {
 
 /// Draws the window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &MovesWindow, ctx: &ViewCtx<'_>) -> FooterMap {
-    let geometry = geometry(area, state);
+    let size = ctx.settings.interface_size;
+    let geometry = geometry_for(area, state, size);
     dialog::draw_box(frame, &geometry, &t("board.moves.window_title"), ctx);
     let (_, footer_row) = split(geometry.body);
     for ((index, entry), row) in state
         .entries
         .iter()
         .enumerate()
-        .zip(entry_rows(area, state))
+        .zip(entry_rows(area, state, size))
     {
         let focused = index == state.focus;
         let text = row_text(&with_reason(entry), focused, usize::from(row.width), ctx);
@@ -163,16 +172,21 @@ pub fn handle(state: &mut MovesWindow, _key: &KeyEvent, action: Option<Action>) 
 
 /// Handles a mouse event: a click on an active entry runs it, a click on an inactive one only
 /// focuses it, a click on Close closes the window.
-pub fn handle_mouse(state: &mut MovesWindow, area: Rect, event: &MouseEvent) -> Option<Effect> {
+pub fn handle_mouse_for(
+    state: &mut MovesWindow,
+    area: Rect,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
     let cell = mouse::left_press(event)?;
-    let hit = entry_rows(area, state)
+    let hit = entry_rows(area, state, size)
         .iter()
         .position(|row| contains(*row, cell));
     if let Some(index) = hit {
         state.focus = index;
         return state.run_focused();
     }
-    dialog::button_at(&geometry(area, state), cell).map(|_| Effect::None)
+    dialog::button_at(&geometry_for(area, state, size), cell).map(|_| Effect::None)
 }
 
 #[cfg(test)]

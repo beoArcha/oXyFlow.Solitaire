@@ -9,6 +9,7 @@
 
 use oxysol_core::TableCard;
 
+use super::scale::FanScale;
 use super::size::CardSize;
 
 /// Vertical offsets of the cards of one column, from the first card downwards.
@@ -49,18 +50,18 @@ fn fits(ys: &[u16], height: u16, room: u16) -> bool {
     ys.last().is_none_or(|last| last + height <= room)
 }
 
-fn plans(size: CardSize, collapsible: bool, wider: bool) -> Vec<Plan> {
+fn plans(size: CardSize, collapsible: bool, wider: bool, scale: FanScale) -> Vec<Plan> {
     let up = if wider {
-        size.wide_up_step()
+        scale.wide_up_step(size)
     } else {
-        size.up_step()
+        scale.up_step(size)
     };
     let down = if wider {
-        size.wide_down_step()
+        scale.wide_down_step(size)
     } else {
-        size.down_step()
+        scale.down_step(size)
     };
-    let min_uncollapsed_down = if collapsible && size.down_step() == 1 {
+    let min_uncollapsed_down = if collapsible && scale.down_step(size) == 1 {
         2
     } else {
         1
@@ -116,20 +117,44 @@ fn squeezed(count: usize, prefix: usize, collapse: bool, height: u16, room: u16)
 }
 
 /// Whether `cards` fits in `room` rows without stacking face-up cards on top of each other.
-pub(super) fn fits_cleanly(cards: &[TableCard], size: CardSize, room: u16, wider: bool) -> bool {
+pub(super) fn fits_cleanly(
+    cards: &[TableCard],
+    size: CardSize,
+    room: u16,
+    wider: bool,
+    scale: FanScale,
+) -> bool {
     let prefix = leading_face_down(cards);
     let collapsible = prefix >= 2 && prefix < cards.len();
-    plans(size, collapsible, wider)
+    plans(size, collapsible, wider, scale)
         .into_iter()
         .any(|plan| fits(&offsets(cards, plan, prefix), size.height, room))
 }
 
 /// Offsets for `cards` (bottom to top) in a column of `room` rows whose cards are `size` tall,
 /// widening the natural step when `wider` is true and room permits.
+#[cfg(test)]
 pub fn fan_with(cards: &[TableCard], size: CardSize, room: u16, wider: bool) -> Fan {
+    fan_for(
+        cards,
+        size,
+        room,
+        wider,
+        super::scale::InterfaceSize::default().scale().fan,
+    )
+}
+
+/// Like [`fan_with`], using `scale`'s fan steps.
+pub(super) fn fan_for(
+    cards: &[TableCard],
+    size: CardSize,
+    room: u16,
+    wider: bool,
+    scale: FanScale,
+) -> Fan {
     let prefix = leading_face_down(cards);
     let collapsible = prefix >= 2 && prefix < cards.len();
-    for plan in plans(size, collapsible, wider) {
+    for plan in plans(size, collapsible, wider, scale) {
         let ys = offsets(cards, plan, prefix);
         if fits(&ys, size.height, room) {
             let collapsed = if plan.collapse { prefix } else { 0 };

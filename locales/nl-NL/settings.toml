@@ -18,6 +18,7 @@ font_face = "Lettertype"
 font_size = "Lettergrootte"
 colors = "Kleuren"
 card_size = "Kaartgrootte"
+interface_size = "Interfacegrootte"
 full_screen = "Volledig scherm"
 window_size = "Venstergrootte"
 sound_style = "Geluidstijl"
@@ -79,6 +80,7 @@ font_terminal_wt = "Windows Terminal tekent zijn eigen lettertype en het spel ka
 font_terminal_other = "Deze terminal tekent zijn eigen lettertype en het spel kan dat niet wijzigen. Zoom met de getoonde sneltoets."
 colors = "Hoeveel kleuren de terminal moet tonen. Auto detecteert dit."
 card_size = "Auto past zich aan het venster aan; toetsen ] [ 0 of Ctrl+muiswiel."
+interface_size = "Schaal van kaarten, tussenruimte, panelen en vensters (S, M, L, XL). Wat niet past schaalt terug."
 full_screen = "Auto: alleen schermvullend in vensters geopend door het spel. In console: Alt+Enter of F11."
 window_size = "Grootte van een eigen consolevenster in venstermodus: Klein 130x40, Gemiddeld 195x60, Groot 260x80."
 window_size_full_screen = "Volledig scherm is actief; deze grootte wordt toegepast bij het verlaten ervan."
@@ -129,6 +131,12 @@ small = "Klein"
 medium = "Gemiddeld"
 large = "Groot"
 huge = "Enorm"
+
+[interface_size]
+s = "S"
+m = "M"
+l = "L"
+xl = "XL"
 
 [aura]
 full = "Volledig"

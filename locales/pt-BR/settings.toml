@@ -18,6 +18,7 @@ font_face = "Fonte"
 font_size = "Tamanho da fonte"
 colors = "Cores"
 card_size = "Tamanho das cartas"
+interface_size = "Tamanho da interface"
 full_screen = "Tela cheia"
 window_size = "Tamanho da janela"
 sound_style = "Estilo de som"
@@ -79,6 +80,7 @@ font_terminal_wt = "O Windows Terminal desenha a própria fonte e o jogo não po
 font_terminal_other = "Este terminal desenha a própria fonte e o jogo não pode mudá-la. Use o atalho mostrado para o zoom."
 colors = "Quantas cores o terminal deve exibir. Automático detecta."
 card_size = "Automático ajusta à janela; tamanho incompatível recua. Teclas ] [ 0 ou Ctrl+roda."
+interface_size = "Escala de cartas, espaços, painéis e janelas (S, M, L, XL). Tamanhos maiores que a janela recuam."
 full_screen = "Automático: tela cheia só em janela própria. No console: Alt+Enter ou F11."
 window_size = "Tamanho da janela de console própria em modo janela: Pequeno 130x40, Médio 195x60, Grande 260x80."
 window_size_full_screen = "A tela cheia está ativa; este tamanho será aplicado ao sair da tela cheia."
@@ -129,6 +131,12 @@ small = "Pequeno"
 medium = "Médio"
 large = "Grande"
 huge = "Gigante"
+
+[interface_size]
+s = "S"
+m = "M"
+l = "L"
+xl = "XL"
 
 [aura]
 full = "Completa"

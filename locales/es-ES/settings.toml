@@ -18,6 +18,7 @@ font_face = "Fuente"
 font_size = "Tamaño de fuente"
 colors = "Colores"
 card_size = "Tamaño de cartas"
+interface_size = "Tamaño de interfaz"
 full_screen = "Pantalla completa"
 window_size = "Tamaño de ventana"
 sound_style = "Estilo de sonido"
@@ -79,6 +80,7 @@ font_terminal_wt = "Windows Terminal dibuja su propia fuente y el juego no puede
 font_terminal_other = "Este terminal dibuja su propia fuente y el juego no puede cambiarla. Usa el atajo mostrado para el zoom."
 colors = "Cuántos colores mostrar en el terminal. Auto lo detecta."
 card_size = "Auto se ajusta a la ventana; si no cabe, se reduce. Teclas ] [ 0 o Ctrl+rueda."
+interface_size = "Escala de cartas, espacios, paneles y ventanas (S, M, L, XL). Los pasos que no caben se reducen."
 full_screen = "Auto: pantalla completa solo si la abre el juego. En consola: Alt+Enter o F11."
 window_size = "Tamaño de una ventana de consola propia en modo ventana: Pequeño 130x40, Mediano 195x60, Grande 260x80."
 window_size_full_screen = "La pantalla completa está activa; este tamaño se aplicará al salir de ella."
@@ -129,6 +131,12 @@ small = "Pequeño"
 medium = "Medio"
 large = "Grande"
 huge = "Enorme"
+
+[interface_size]
+s = "S"
+m = "M"
+l = "L"
+xl = "XL"
 
 [aura]
 full = "Completa"

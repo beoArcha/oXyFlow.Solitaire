@@ -14,17 +14,17 @@ use super::tabs::draw_footer_buttons;
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
+use crate::layout::{GuideWindowScale, InterfaceSize};
 use crate::mouse;
 use crate::screens::board::BoardScreen;
 use crate::screens::{Effect, ViewCtx};
 use crate::widgets::footer::{FooterMap, Segment};
 use crate::widgets::scrollbar::{self, Metrics};
 
-/// Text rows of the window, below which it scrolls.
-pub const TEXT_ROWS: usize = 17;
-/// Columns the window text is laid out in.
-pub const TEXT_WIDTH: usize = 58;
-const BOX_WIDTH: u16 = 62;
+/// Text rows of the window at the default scale, below which it scrolls.
+pub const TEXT_ROWS: usize = InterfaceSize::M.scale().guide_window.text_rows;
+/// Columns the window text is laid out in at the default scale.
+pub const TEXT_WIDTH: usize = InterfaceSize::M.scale().guide_window.text_width;
 const PAGE_LINES: i32 = 15;
 const WHEEL_LINES: i32 = 3;
 
@@ -34,6 +34,7 @@ pub struct GuideWindow {
     pub scroll: u16,
     pub total: u16,
     drag: Option<u16>,
+    view: u16,
 }
 
 impl GuideWindow {
@@ -43,12 +44,17 @@ impl GuideWindow {
             scroll: 0,
             total: u16::try_from(total).unwrap_or(u16::MAX),
             drag: None,
+            view: u16::try_from(TEXT_ROWS).unwrap_or(u16::MAX),
         }
     }
 
+    /// Takes the number of text rows the box shows at the current scale and window size.
+    pub fn set_view(&mut self, rows: u16) {
+        self.view = rows;
+    }
+
     fn max_scroll(&self) -> u16 {
-        self.total
-            .saturating_sub(u16::try_from(TEXT_ROWS).unwrap_or(u16::MAX))
+        self.total.saturating_sub(self.view)
     }
 
     fn scroll_by(&mut self, lines: i32) {
@@ -75,10 +81,31 @@ impl GuideWindow {
     }
 }
 
-/// The box of the window, centered in `area`. Its size does not depend on the content.
+fn scale_in(area: Rect, size: InterfaceSize) -> (InterfaceSize, &'static GuideWindowScale) {
+    let resolved = size.fit(|scale| scale.guide_window.box_width <= area.width);
+    (resolved, &resolved.scale().guide_window)
+}
+
+/// Columns the guide window wraps text to at `size` in `area`.
+pub fn text_width_in(area: Rect, size: InterfaceSize) -> usize {
+    scale_in(area, size).1.text_width
+}
+
+/// Rows the guide window displays at `size` in `area`.
+pub fn text_rows_in(area: Rect, size: InterfaceSize) -> u16 {
+    u16::try_from(scale_in(area, size).1.text_rows).unwrap_or(u16::MAX)
+}
+
+/// The box of the window, centered in `area` at the default interface scale.
 pub fn geometry(area: Rect) -> Geometry {
-    let rows = u16::try_from(TEXT_ROWS + 1).unwrap_or(u16::MAX);
-    dialog::boxed(area, BOX_WIDTH, rows, &help::buttons())
+    geometry_for(area, InterfaceSize::default())
+}
+
+/// The box of the window, centered in `area` at `size`. Its size does not depend on the content.
+pub fn geometry_for(area: Rect, size: InterfaceSize) -> Geometry {
+    let (resolved, scale) = scale_in(area, size);
+    let rows = u16::try_from(scale.text_rows + 1).unwrap_or(u16::MAX);
+    dialog::boxed_for(area, scale.box_width, rows, &help::buttons(), resolved)
 }
 
 fn split(body: Rect) -> (Rect, Rect) {
@@ -98,10 +125,11 @@ pub fn draw(
     board: &BoardScreen,
     ctx: &ViewCtx<'_>,
 ) -> FooterMap {
-    let geometry = geometry(area);
+    let size = ctx.settings.interface_size;
+    let geometry = geometry_for(area, size);
     dialog::draw_box(frame, &geometry, &t("board.guide.window_title"), ctx);
     let (text, footer) = split(geometry.body);
-    let all = board.guide_lines(TEXT_WIDTH, ctx);
+    let all = board.guide_lines(text_width_in(area, size), ctx);
     let first = usize::from(state.scroll);
     let lines: Vec<Line> = all
         .iter()
@@ -168,15 +196,28 @@ pub fn handle(state: &mut GuideWindow, key: &KeyEvent, action: Option<Action>) -
     None
 }
 
-/// Handles a mouse event: the wheel scrolls, a click on Close closes the window (`Some`).
+/// Handles a mouse event at the default scale.
+#[cfg(test)]
 pub fn handle_mouse(state: &mut GuideWindow, area: Rect, event: &MouseEvent) -> Option<Effect> {
+    handle_mouse_for(state, area, event, InterfaceSize::default())
+}
+
+/// Handles a mouse event: the wheel scrolls, a click on Close closes the window (`Some`).
+pub fn handle_mouse_for(
+    state: &mut GuideWindow,
+    area: Rect,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
+    let geometry = geometry_for(area, size);
+    let text = split(geometry.body).0;
+    state.set_view(text.height);
     match mouse::wheel_action(event) {
         Some(Action::Up) => state.scroll_by(-WHEEL_LINES),
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
-    let geometry = geometry(area);
-    let track = scrollbar::track_of(split(geometry.body).0);
+    let track = scrollbar::track_of(text);
     let metrics = state.metrics(track.height);
     if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
         state.scroll_to_line(line);

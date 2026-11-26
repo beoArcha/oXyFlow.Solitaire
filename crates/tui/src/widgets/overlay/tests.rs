@@ -223,3 +223,53 @@ fn help_switches_to_rules_on_tab_or_right_and_round_the_three_tabs_on_tab() {
     assert_eq!(handle(&mut modal, &key(), Some(Action::Right)), None);
     assert_eq!(modal, Modal::HowToPlay(rules.reached_from_help()));
 }
+
+#[test]
+fn clicking_close_at_non_default_scale_hits_scaled_button_across_every_overlay() {
+    use crate::layout::InterfaceSize;
+    use crate::settings::Aids;
+    use crate::widgets::moves::MoveEntry;
+
+    let area = Rect::new(0, 0, 130, 40);
+    let board = BoardScreen::new();
+    let now = Instant::now();
+    let entry = MoveEntry {
+        action: Action::Undo,
+        label: "Undo".to_owned(),
+        key: "u".to_owned(),
+        active: true,
+        reason: None,
+    };
+    let aids = Aids {
+        aura: crate::settings::AuraMode::Full,
+        target_marks: true,
+        guide_panel: true,
+        moves_panel: true,
+        auto_finish: true,
+        quick_move: true,
+    };
+
+    for step in [InterfaceSize::S, InterfaceSize::XL] {
+        let mut modals = vec![
+            Modal::confirm("common.dialog.win_body", Effect::Quit),
+            Modal::help(),
+            Modal::HowToPlay(HowToPlay::new(Rules::Klondike)),
+            Modal::CommandLine(CommandLine::new()),
+            Modal::Guide(GuideWindow::new(40)),
+            Modal::Moves(MovesWindow::new(vec![entry.clone()])),
+            Modal::Quick(QuickOptions::new(aids)),
+        ];
+        for modal in &mut modals {
+            let geom = geometry_for(area, modal, &board, now, step);
+            let close = geom.buttons.last().copied().unwrap_or_default();
+            assert_ne!(close.width, 0, "missing button for {step:?}");
+            let outcome =
+                handle_mouse_for(modal, area, &board, now, &click(close.x, close.y), step);
+            assert_eq!(outcome, Some(Effect::None), "close failed for {step:?}");
+        }
+    }
+
+    let help_narrow = Rect::new(0, 0, 84, 30);
+    let xl_geo = geometry_for(help_narrow, &Modal::help(), &board, now, InterfaceSize::XL);
+    assert!(xl_geo.frame.width <= help_narrow.width);
+}

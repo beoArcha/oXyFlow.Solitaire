@@ -4,6 +4,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::Settings;
+pub use crate::layout::InterfaceSize;
 use crate::theme::Token;
 
 /// The colour of the aura: the theme's own colours, or one theme colour for every halo (the halos
@@ -125,6 +126,7 @@ impl Settings {
             console_face: saved.console_face,
             console_font_size: saved.console_font_size,
             card_size: saved.card_size,
+            interface_size: saved.interface_size,
             aura_colour: saved.aura_colour,
             aura_style: saved.aura_style,
             aura_size: saved.aura_size,
