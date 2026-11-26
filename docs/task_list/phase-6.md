@@ -231,12 +231,20 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 - **Owner:** Small
 - **Priority:** P3. Found in the review of O-123 (2026-11-26).
 - **Depends on:** O-123
-- **Files:** `crates/tui/src/input/table.rs` (`KEY_TABLE`), `locales/*/help.toml` (only if a label is missing), tests
+- **Files:** `crates/tui/src/widgets/overlay/help.rs` (`sections()`), `locales/*/help.toml`, tests
 - **Problem:** the Keys tab of Help does not list the keys that act only in the game menu: Page Up / Page Down,
   Home / End, `/` (search), `w` (winnable deals) and Left / Right (fold a family).
-- **Fix:** add them to `KEY_TABLE` in the game-menu group, with the labels the game menu footer already uses; no change
-  to key handling.
-- **Acceptance:** a test that every key the game menu handles appears in the Keys tab; every offered locale fits.
+- **Revised 2026-11-27 (the first attempt stopped correctly):** these keys cannot go into `KEY_TABLE`: a row there needs
+  an `Action`, Page Up / Page Down / Home / End / `/` / `w` have none (the game menu reads them itself), and Left / Right
+  are already bound to `Action::Left` / `Action::Right`, so a second row breaks `no_key_is_bound_twice`. No change to
+  `action.rs`, `input/table.rs` or key handling.
+- **Fix:** a **Game menu** section in the Keys tab, built like the Mouse section (`GESTURES`): a constant list of
+  (keys text key, description key) pairs in `help.rs`, pushed by `sections()` before the Mouse section. Rows: Page Up /
+  Page Down (a page of rows), Home / End (first / last game), `/` (search), `w` (winnable deals on or off), Left / Right
+  and Enter / Space on a family heading (fold or unfold the family). The descriptions say what the game menu really does
+  (read `crates/tui/src/screens/game_select.rs` and its submodules); new `help.*` keys in every locale under `locales/`.
+- **Acceptance:** a test that each key the game menu handles itself (the page keys, `/`, `w`, and the fold keys) has a
+  row in the Game menu section; the two-column Keys tab still fits at 100 × 30 in every offered locale.
 
 ### O-125 — How to play: the rules tab follows the game's options
 
