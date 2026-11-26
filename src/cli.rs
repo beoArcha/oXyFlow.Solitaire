@@ -24,6 +24,8 @@ pub struct Cli {
     pub full_screen: Option<bool>,
     /// `--priority <level>`: the process priority for this run, whatever the setting says.
     pub priority: Option<ProcessPriority>,
+    #[cfg(feature = "dev-bridge")]
+    pub dev_bridge: bool,
 }
 
 /// Command-line parsing error.
@@ -59,6 +61,8 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
         seed: None,
         full_screen: None,
         priority: None,
+        #[cfg(feature = "dev-bridge")]
+        dev_bridge: false,
     };
     let mut it = args.into_iter();
     while let Some(arg) = it.next() {
@@ -69,6 +73,8 @@ pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Cli, CliError> {
             "--new-window" | "-n" => cli.new_window = true,
             "--fullscreen" | "-fs" => cli.full_screen = Some(true),
             "--no-fullscreen" => cli.full_screen = Some(false),
+            #[cfg(feature = "dev-bridge")]
+            "--dev-bridge" => cli.dev_bridge = true,
             "--colors" => {
                 let val = it.next().ok_or(CliError::MissingValue("--colors"))?;
                 let color = parse_colors(&val).ok_or(CliError::InvalidValue {
@@ -122,7 +128,21 @@ mod tests {
                 seed: None,
                 full_screen: None,
                 priority: None,
+                #[cfg(feature = "dev-bridge")]
+                dev_bridge: false,
             }
+        );
+    }
+
+    #[test]
+    fn test_dev_bridge_flag_follows_feature() {
+        let result = parse(to_args(&["--dev-bridge"]));
+        #[cfg(feature = "dev-bridge")]
+        assert!(result.unwrap().dev_bridge);
+        #[cfg(not(feature = "dev-bridge"))]
+        assert_eq!(
+            result.unwrap_err(),
+            CliError::UnknownArgument("--dev-bridge".to_owned())
         );
     }
 

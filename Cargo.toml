@@ -18,6 +18,7 @@ path = "src/main.rs"
 [features]
 default = ["audio"]
 audio = ["dep:cpal"]
+dev-bridge = ["oxysol-tui/dev"]
 
 [dependencies]
 oxysol-core.workspace = true

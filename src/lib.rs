@@ -6,6 +6,8 @@ pub mod audio;
 pub mod cli;
 pub mod clipboard;
 pub mod console;
+#[cfg(feature = "dev-bridge")]
+pub mod dev_bridge;
 pub mod error;
 pub mod logging;
 pub mod new_window;

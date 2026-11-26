@@ -22,7 +22,7 @@ use crate::app::{App, Deps, DisplayDeps, Zone};
 use crate::audio::{AudioStatus, NullAudio, StyleInfo};
 use crate::caps::{ColorDepth, TerminalCaps};
 use crate::clipboard::{Clipboard, ClipboardError};
-use crate::clock::VirtualClock;
+use crate::clock::{Clock, VirtualClock};
 use crate::input::Input;
 use crate::settings::Settings;
 use crate::solver::{Proof, SyncSolver};
@@ -190,6 +190,7 @@ impl Headless {
         });
         let mut terminal = Terminal::new(TestBackend::new(config.cols, config.rows))
             .unwrap_or_else(|never| match never {});
+        app.handle(Input::Tick, clock.now());
         terminal
             .draw(|frame| app.draw(frame))
             .unwrap_or_else(|never| match never {});
@@ -201,6 +202,20 @@ impl Headless {
             storage,
             clipboard,
         })
+    }
+
+    /// Starts `variant` at `seed` (or the next counter seed) and redraws frame `frame_id`.
+    pub fn start_game(&mut self, variant: Variant, seed: Option<u64>, undo_allowed: bool) {
+        self.app.handle(Input::Tick, self.clock.now());
+        self.app.apply(crate::screens::Effect::Start {
+            variant,
+            seed,
+            undo_allowed,
+        });
+        let Self { app, terminal, .. } = self;
+        terminal
+            .draw(|frame| app.draw(frame))
+            .unwrap_or_else(|never| match never {});
     }
 
     /// Runs one synchronous step via the shared terminal step function and increments `frame_id`.

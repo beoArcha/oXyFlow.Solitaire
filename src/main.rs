@@ -52,6 +52,10 @@ fn launch(args: &Cli, raw: &[String]) -> Result<(), AppError> {
     if args.show_version {
         return print_stdout(&about::version_text());
     }
+    #[cfg(feature = "dev-bridge")]
+    if args.dev_bridge {
+        return oxysol::dev_bridge::run().map_err(AppError::from);
+    }
     if args.new_window {
         return relaunch(raw);
     }
