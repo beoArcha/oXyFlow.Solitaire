@@ -190,7 +190,7 @@ The version is `major.minor.patch`.
   `main` since the commit that last changed the `version` line of `metadata.toml`. Squash merges give one
   commit per merge, so every merge to `main` raises the patch by 1. Nobody edits it and no bot commits.
 - **Minor: raised by hand when a plan phase closes.** The minor counts completed phases: completing phase N
-  gives minor N+1 (phases 0–4 done: 0.5.x; phase 5 is worked on now; the plan ends at 0.9 with phase 9, see R-25; 1.0.0 is a later owner decision).
+  gives minor N+1 (phases 0–5 done: 0.6.x; phase 6 is worked on now; the plan ends at 0.9 with phase 9, see R-25; 1.0.0 is a later owner decision).
   One PR does it: set `version = "0.<N+1>.0"` in `metadata.toml`, run `cargo xtask sync-metadata` (it updates
   `[workspace.package]` in `Cargo.toml`), run `cargo build` so `Cargo.lock` follows, and change nothing else.
   Once that PR is merged the patch counts again from 0.
@@ -198,7 +198,7 @@ The version is `major.minor.patch`.
   one in `metadata.toml`, `--tag` the release tag). `build.rs` computes the same value through the same code
   (`xtask/src/version_scheme.rs`) and exports it as `OXYSOL_VERSION`: `--version`, the main menu label and
   the Windows file version use it. `Cargo.toml` and `Cargo.lock` keep `major.minor.0`. On a build that
-  cannot read git history (a source archive, a shallow clone, no `git`) the version is `0.5.0+src`; the
+  cannot read git history (a source archive, a shallow clone, no `git`) the version is `0.6.0+src`; the
   release workflow always checks out the full history.
 - **Release.** Each `release.yml` run publishes the tag `v<effective version>` as a pre-release; with
   `stable: true` it publishes the same tag as a full release (or promotes the pre-release of the same
