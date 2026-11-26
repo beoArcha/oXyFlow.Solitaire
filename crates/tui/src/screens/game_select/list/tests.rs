@@ -32,10 +32,16 @@ fn the_focused_row_is_always_inside_the_visible_rows() {
     let rows = long_rows(5, 3);
     let height = 6;
     let focusable_count = rows.iter().filter(|row| row.is_focusable()).count();
-    let mut view = ListView::default();
+    let mut view = ListView {
+        view_height: height,
+        ..ListView::default()
+    };
     for _ in 0..focusable_count {
         let pos = view.focused_row(&rows, &[]).unwrap_or(0);
-        assert!(pos >= view.scroll && pos < view.scroll + height, "pos {pos}");
+        assert!(
+            pos >= view.scroll && pos < view.scroll + height,
+            "pos {pos}"
+        );
         view.step_action(Action::Down, &rows, &[]);
         view.keep_resolved_in_view(&rows, &[]);
     }
@@ -43,7 +49,10 @@ fn the_focused_row_is_always_inside_the_visible_rows() {
         view.step_action(Action::Up, &rows, &[]);
         view.keep_resolved_in_view(&rows, &[]);
         let pos = view.focused_row(&rows, &[]).unwrap_or(0);
-        assert!(pos >= view.scroll && pos < view.scroll + height, "pos {pos}");
+        assert!(
+            pos >= view.scroll && pos < view.scroll + height,
+            "pos {pos}"
+        );
     }
 }
 
@@ -55,7 +64,7 @@ fn the_heading_stays_in_view_when_its_first_variant_is_focused() {
     view.set_focus_item(FocusItem::Variant(target));
     let pos = view.focused_row(&rows, &[]).unwrap_or(0);
     view.keep_position_in_view(&rows, pos, 6);
-    assert!(view.scroll <= pos - 1);
+    assert!(view.scroll < pos);
 }
 
 #[test]
@@ -71,8 +80,10 @@ fn a_list_that_fits_does_not_scroll() {
 #[test]
 fn wheel_scrolling_keeps_visible_focus_and_moves_when_focus_leaves_view() {
     let rows = long_rows(5, 2);
-    let mut view = ListView::default();
-    view.view_height = 6;
+    let mut view = ListView {
+        view_height: 6,
+        ..ListView::default()
+    };
     let start_pos = view.focused_row(&rows, &[]).unwrap_or(0);
     assert_eq!(start_pos, 1);
 
@@ -90,8 +101,10 @@ fn wheel_scrolling_keeps_visible_focus_and_moves_when_focus_leaves_view() {
 #[test]
 fn page_keys_and_home_end_move_within_bounds() {
     let rows = long_rows(5, 2);
-    let mut view = ListView::default();
-    view.view_height = 5;
+    let mut view = ListView {
+        view_height: 5,
+        ..ListView::default()
+    };
     view.page_by(false, &rows, &[]);
     assert_eq!(view.focused_row(&rows, &[]), Some(6));
     view.end(&rows);

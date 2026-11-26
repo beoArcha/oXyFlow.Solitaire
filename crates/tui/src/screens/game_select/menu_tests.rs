@@ -232,7 +232,7 @@ fn the_menu_fits_at_100_by_30_in_every_offered_locale() {
                 "{context}"
             );
             let mut seen = text.clone();
-            for _ in 0..Variant::ALL.len() {
+            for _ in 0..(Variant::ALL.len() + Family::ALL.len() + 1) {
                 h.press(KeyCode::Down);
                 seen.push_str(&h.text());
             }

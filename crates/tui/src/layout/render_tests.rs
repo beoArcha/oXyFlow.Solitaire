@@ -20,10 +20,7 @@ use crate::widgets::pile::{self, CardPos, Marks};
 fn started(variant: Variant, caps: TerminalCaps, width: u16, height: u16) -> Harness {
     let mut h = Harness::with(MemoryStorage::new(), caps, width, height);
     h.press(KeyCode::Enter);
-    let index = Variant::ALL.iter().position(|v| *v == variant).unwrap_or(0);
-    for _ in 0..index {
-        h.press(KeyCode::Down);
-    }
+    h.focus_game_variant(variant);
     h.press(KeyCode::Enter);
     h
 }

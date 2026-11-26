@@ -85,13 +85,15 @@ impl GameSelect {
         }
     }
 
-    fn hint_line(&self, rows: &[Row], filtering: bool, ctx: &ViewCtx<'_>) -> String {
+    fn hint_line(&self, rows: &[Row], ctx: &ViewCtx<'_>) -> String {
         if self.focus != LIST {
             return String::new();
         }
         match self.list.focused_item(rows, &ctx.settings.favourites) {
             Some(FocusItem::Variant(variant)) => hints::hint_text(variant),
-            Some(FocusItem::Heading(_)) if !filtering => t("menu.heading_hint").into_owned(),
+            Some(FocusItem::Heading(_)) if !self.captures_text() => {
+                t("menu.heading_hint").into_owned()
+            }
             _ => String::new(),
         }
     }
@@ -99,7 +101,8 @@ impl GameSelect {
     fn footer_segments(&self, rows: &[Row], filtering: bool, ctx: &ViewCtx<'_>) -> Vec<Segment> {
         let focused = self.list.focused_item(rows, &ctx.settings.favourites);
         let mut segments = Vec::new();
-        if let Some(label_key) = select_label_key(self.purpose, self.focus, rows, focused, filtering)
+        if let Some(label_key) =
+            select_label_key(self.purpose, self.focus, rows, focused, filtering)
             && let Some(button) = key_button(Action::Select, label_key)
         {
             push_segment(&mut segments, button);
@@ -219,7 +222,7 @@ impl GameSelect {
         search::draw_legend(frame, legend_area, ctx);
         self.draw_list(frame, list_area, &rows, ctx);
         let hint = Line::styled(
-            self.hint_line(&rows, filtering, ctx),
+            self.hint_line(&rows, ctx),
             ctx.theme.style(Token::TextMuted, Token::Background),
         );
         frame.render_widget(Paragraph::new(hint).alignment(Alignment::Center), hint_area);

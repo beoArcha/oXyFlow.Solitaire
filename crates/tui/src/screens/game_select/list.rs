@@ -99,7 +99,11 @@ fn draw_heading(
             .style(Token::Accent, Token::Background)
             .add_modifier(Modifier::BOLD)
     };
-    let text = format!("{} {}", marker(ctx, focused), heading_text(heading, folded, count));
+    let text = format!(
+        "{} {}",
+        marker(ctx, focused),
+        heading_text(heading, folded, count)
+    );
     frame.render_widget(Paragraph::new(Line::styled(text, style)), line);
 }
 
@@ -162,7 +166,12 @@ fn page_target(rows: &[Row], pos: usize, page: usize, up: bool) -> Option<usize>
         rows[..raw]
             .iter()
             .rposition(|row| row.is_focusable())
-            .or_else(|| rows[raw..].iter().position(|row| row.is_focusable()).map(|d| raw + d))
+            .or_else(|| {
+                rows[raw..]
+                    .iter()
+                    .position(|row| row.is_focusable())
+                    .map(|d| raw + d)
+            })
     } else {
         rows[raw..]
             .iter()
@@ -220,14 +229,14 @@ impl ListView {
     pub(super) fn focus_first(&mut self, rows: &[Row]) {
         if let Some(pos) = rows.iter().position(|row| row.is_focusable()) {
             self.focused = rows[pos].focus_item();
-            self.keep_position_in_view(rows, pos, self.page_size());
+            self.keep_position_in_view(rows, pos, self.view_height);
         }
     }
 
     pub(super) fn focus_last(&mut self, rows: &[Row]) {
         if let Some(pos) = rows.iter().rposition(|row| row.is_focusable()) {
             self.focused = rows[pos].focus_item();
-            self.keep_position_in_view(rows, pos, self.page_size());
+            self.keep_position_in_view(rows, pos, self.view_height);
         }
     }
 
@@ -242,7 +251,7 @@ impl ListView {
         };
         if let Some(next) = step_focus(rows, pos, forward) {
             self.focused = rows[next].focus_item();
-            self.keep_position_in_view(rows, next, self.page_size());
+            self.keep_position_in_view(rows, next, self.view_height);
         }
     }
 
@@ -253,14 +262,14 @@ impl ListView {
         let page = self.page_size();
         if let Some(next) = page_target(rows, pos, page, up) {
             self.focused = rows[next].focus_item();
-            self.keep_position_in_view(rows, next, page);
+            self.keep_position_in_view(rows, next, self.view_height);
         }
     }
 
     pub(super) fn home(&mut self, rows: &[Row]) {
         if let Some(pos) = default_position(rows) {
             self.focused = rows[pos].focus_item();
-            self.keep_position_in_view(rows, pos, self.page_size());
+            self.keep_position_in_view(rows, pos, self.view_height);
         }
     }
 
@@ -271,7 +280,7 @@ impl ListView {
             .or_else(|| rows.iter().rposition(|row| row.is_focusable()));
         if let Some(pos) = target {
             self.focused = rows[pos].focus_item();
-            self.keep_position_in_view(rows, pos, self.page_size());
+            self.keep_position_in_view(rows, pos, self.view_height);
         }
     }
 
@@ -287,9 +296,8 @@ impl ListView {
     }
 
     pub(super) fn keep_resolved_in_view(&mut self, rows: &[Row], favourites: &[Variant]) {
-        let height = self.page_size();
         if let Some(pos) = self.focused_row(rows, favourites) {
-            self.keep_position_in_view(rows, pos, height);
+            self.keep_position_in_view(rows, pos, self.view_height);
         } else {
             self.scroll = 0;
         }
@@ -342,6 +350,9 @@ impl ListView {
     }
 
     fn keep_position_in_view(&mut self, rows: &[Row], position: usize, height: usize) {
+        if height == 0 {
+            return;
+        }
         let top = if position > 0 && matches!(rows.get(position - 1), Some(Row::Heading { .. })) {
             position - 1
         } else {
@@ -429,7 +440,14 @@ impl ListView {
         self.draw_edges(frame, area, rows.len(), x + width.saturating_sub(1), ctx);
     }
 
-    fn draw_edges(&mut self, frame: &mut Frame, area: Rect, total: usize, x: u16, ctx: &ViewCtx<'_>) {
+    fn draw_edges(
+        &mut self,
+        frame: &mut Frame,
+        area: Rect,
+        total: usize,
+        x: u16,
+        ctx: &ViewCtx<'_>,
+    ) {
         let (up, down) = if ctx.glyphs.unicode {
             ("↑", "↓")
         } else {

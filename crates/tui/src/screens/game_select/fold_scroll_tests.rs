@@ -11,7 +11,12 @@ use crate::settings::{GameGroup, Settings};
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN, TRUE_COLOR};
 
-fn select_with(settings: Settings, caps: crate::caps::TerminalCaps, width: u16, height: u16) -> Harness {
+fn select_with(
+    settings: Settings,
+    caps: crate::caps::TerminalCaps,
+    width: u16,
+    height: u16,
+) -> Harness {
     let storage = MemoryStorage {
         settings: Some(settings),
         ..MemoryStorage::new()
@@ -64,9 +69,14 @@ fn mouse_wheel_scrolls_three_rows_and_keeps_focus_visible() {
     assert!(text.contains("↑"), "{text}");
     let focused = focused_line(&mut h);
     assert!(text.contains(&focused));
-    assert!(!focused.starts_with('['), "expected variant focus: {focused}");
+    assert!(
+        !focused.starts_with('['),
+        "expected variant focus: {focused}"
+    );
 
-    let spider_one = t(variant_label_key(Variant::Spider(oxysol_core::SuitCount::One)));
+    let spider_one = t(variant_label_key(Variant::Spider(
+        oxysol_core::SuitCount::One,
+    )));
     h.focus_game_variant(Variant::Spider(oxysol_core::SuitCount::One));
     let (col, row) = list_row_of(&mut h, &spider_one);
     wheel(&mut h, MouseEventKind::ScrollUp, col, row);
@@ -98,11 +108,27 @@ fn page_up_page_down_home_and_end_move_focus_and_scroll() {
     assert!(focused_line(&mut h).contains(&first));
 }
 
+fn edge_mark_cell(h: &mut Harness, mark: &str) -> (u16, u16) {
+    h.lines()
+        .iter()
+        .enumerate()
+        .find_map(|(row, line)| {
+            let trimmed = line.trim_end();
+            let prefix = trimmed.strip_suffix(mark)?;
+            if !prefix.ends_with("  ") {
+                return None;
+            }
+            let col = trimmed.chars().count().checked_sub(1)?;
+            Some((u16::try_from(col).ok()?, u16::try_from(row).ok()?))
+        })
+        .unwrap_or_default()
+}
+
 #[test]
 fn clicking_the_edge_marks_scrolls_by_one_page_in_unicode_and_ascii() {
     for (caps, up_mark, down_mark) in [(TRUE_COLOR, "↑", "↓"), (PLAIN, "^", "v")] {
         let mut h = select_with(Settings::for_caps(&caps), caps, 100, 30);
-        let (col, row) = h.find(down_mark).unwrap_or_default();
+        let (col, row) = edge_mark_cell(&mut h, down_mark);
         assert!(row > 0, "down mark {down_mark} missing");
         h.click(col, row);
         let text = h.text();
@@ -111,7 +137,7 @@ fn clicking_the_edge_marks_scrolls_by_one_page_in_unicode_and_ascii() {
             text.contains(t(variant_label_key(Variant::TriPeaks)).as_ref()),
             "{text}"
         );
-        let (col, row) = h.find(up_mark).unwrap_or_default();
+        let (col, row) = edge_mark_cell(&mut h, up_mark);
         h.click(col, row);
         assert!(
             h.text()
@@ -169,12 +195,7 @@ fn favourites_group_folds_like_a_family_and_folded_set_survives_restart() {
     assert!(h.text().contains("[+] Favorites (1)"));
     assert!(!h.text().contains("FreeCell\n"));
 
-    let saved = h
-        .storage
-        .borrow()
-        .settings
-        .clone()
-        .unwrap_or_default();
+    let saved = h.storage.borrow().settings.clone().unwrap_or_default();
     assert_eq!(saved.folded_families, vec![GameGroup::Favourites]);
 
     let mut restarted = select_with(saved, TRUE_COLOR, 100, 30);
@@ -206,7 +227,10 @@ fn search_opens_matching_folded_families_and_restores_folding_when_cleared() {
 
     h.press(KeyCode::Esc);
     let after_clear = h.text();
-    assert!(after_clear.contains("[+] Yukon family (5)"), "{after_clear}");
+    assert!(
+        after_clear.contains("[+] Yukon family (5)"),
+        "{after_clear}"
+    );
     assert!(!after_clear.contains("Alaska"), "{after_clear}");
     assert_eq!(h.app.settings().folded_families, vec![GameGroup::Yukon]);
 }
@@ -249,7 +273,10 @@ fn footer_and_hints_match_what_acts_in_every_focus_state() {
     assert!(text.contains("Enter Fold"), "{text}");
     assert!(!text.contains("Enter Play"), "{text}");
     assert!(!text.contains("f Favorite"), "{text}");
-    assert!(text.contains(&t("menu.heading_hint").into_owned()), "{text}");
+    assert!(
+        text.contains(&t("menu.heading_hint").into_owned()),
+        "{text}"
+    );
     let (col, row) = h.find("Enter Fold").unwrap_or_default();
     h.click(col + 1, row);
     let text = h.text();
@@ -268,12 +295,17 @@ fn footer_and_hints_match_what_acts_in_every_focus_state() {
 
     h.type_char('/');
     let text = h.text();
-    assert!(text.contains("Esc Clear"), "{text}");
-    assert!(text.contains("F1 Help"), "{text}");
-    assert!(!text.contains("Esc Back"), "{text}");
-    assert!(!text.contains("f Favorite"), "{text}");
-    assert!(!text.contains("u Undo"), "{text}");
-    assert!(!text.contains("w Winnable deals"), "{text}");
+    let footer = h.lines().last().cloned().unwrap_or_default();
+    assert!(footer.contains("Esc Clear"), "{footer}");
+    assert!(footer.contains("F1 Help"), "{footer}");
+    assert!(!footer.contains("Esc Back"), "{footer}");
+    assert!(!footer.contains("f Favorite"), "{footer}");
+    assert!(!footer.contains("u Undo"), "{footer}");
+    assert!(!footer.contains("w Winnable deals"), "{footer}");
+    assert!(
+        !text.contains(&t("menu.heading_hint").into_owned()),
+        "{text}"
+    );
 
     for ch in "zzzz".chars() {
         h.type_char(ch);
@@ -305,7 +337,10 @@ fn folded_and_heading_states_fit_at_100_by_30_in_every_offered_locale() {
             30,
         );
         let klondike = t("menu.family.klondike").into_owned();
-        let folded = tf("menu.family_folded", &[("title", &klondike), ("count", "2")]);
+        let folded = tf(
+            "menu.family_folded",
+            &[("title", &klondike), ("count", "2")],
+        );
         assert!(h.text().contains(&format!("[+] {folded}")), "{locale:?}");
         h.press(KeyCode::Up);
         h.press(KeyCode::Up);

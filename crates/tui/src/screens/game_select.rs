@@ -20,7 +20,9 @@ use crate::i18n::{t, tf};
 use crate::mouse::{contains, left_press};
 use crate::settings::{GameGroup, Settings};
 use crate::solver::slow_to_prove;
-use crate::widgets::footer::{FooterMap, KeyHint};
+use crate::widgets::footer::FooterMap;
+#[cfg(test)]
+use crate::widgets::footer::KeyHint;
 use oxysol_core::Variant;
 
 mod catalog;
@@ -34,6 +36,7 @@ mod toggles;
 use list::{ListView, MouseOutcome};
 use rows::{FocusItem, Heading, Row, items};
 
+#[cfg(test)]
 pub(crate) const FOOTER: [KeyHint; 5] = [
     (Action::Select, "menu.footer.play"),
     (Action::Back, "help.action.back"),
@@ -206,7 +209,8 @@ impl GameSelect {
         if items(&rows).contains(&variant) {
             self.list.set_focus_item(FocusItem::Variant(variant));
         } else {
-            self.list.set_focus_item(FocusItem::Heading(Heading::Favourites));
+            self.list
+                .set_focus_item(FocusItem::Heading(Heading::Favourites));
         }
         self.list.keep_resolved_in_view(&rows, &favourites);
         Effect::Apply(Settings {
@@ -380,7 +384,9 @@ impl GameSelect {
     fn activate_current(&mut self, rows: &[Row], ctx: &ViewCtx<'_>) -> Effect {
         match self.list.focused_item(rows, &ctx.settings.favourites) {
             Some(FocusItem::Variant(variant)) => self.start(variant, ctx),
-            Some(FocusItem::Heading(heading)) if !self.filtering() => self.toggle_fold(heading, ctx),
+            Some(FocusItem::Heading(heading)) if !self.filtering() => {
+                self.toggle_fold(heading, ctx)
+            }
             _ => Effect::None,
         }
     }
