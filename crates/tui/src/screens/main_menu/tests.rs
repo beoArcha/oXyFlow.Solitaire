@@ -320,3 +320,72 @@ fn the_menu_shows_its_tagline_and_version_in_both_locales() {
         crate::i18n::set_locale(Locale::EnUs);
     }
 }
+
+fn asks_to_quit(h: &Harness) -> bool {
+    matches!(
+        h.app.modal(),
+        Some(Modal::Confirm {
+            prompt: "board.confirm.quit",
+            ..
+        })
+    )
+}
+
+#[test]
+fn escape_on_the_item_list_asks_and_yes_quits() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Esc);
+    assert!(asks_to_quit(&h));
+    assert!(!h.app.should_quit());
+    h.press(KeyCode::Tab);
+    h.press(KeyCode::Enter);
+    assert!(h.app.should_quit());
+}
+
+#[test]
+fn no_closes_the_quit_question_and_keeps_the_focus() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Esc);
+    h.press(KeyCode::Enter);
+    assert!(h.app.modal().is_none());
+    assert!(!h.app.should_quit());
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Stats);
+}
+
+#[test]
+fn a_second_escape_closes_the_quit_question_and_keeps_the_focus() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Down);
+    h.press(KeyCode::Esc);
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    assert!(!h.app.should_quit());
+    h.press(KeyCode::Enter);
+    assert_eq!(h.app.screen(), Screen::Stats);
+}
+
+#[test]
+fn q_on_the_item_list_still_quits_at_once() {
+    let mut h = Harness::new();
+    h.press(KeyCode::Char('q'));
+    assert!(h.app.modal().is_none());
+    assert!(h.app.should_quit());
+}
+
+#[test]
+fn escape_in_the_seed_pages_goes_back_without_asking() {
+    let mut h = Harness::new();
+    open_typing(&mut h);
+    h.press(KeyCode::Esc);
+    h.press(KeyCode::Esc);
+    h.press(KeyCode::Esc);
+    assert!(h.app.modal().is_none());
+    assert_eq!(h.app.screen(), Screen::MainMenu);
+    h.press(KeyCode::Esc);
+    assert!(asks_to_quit(&h));
+}
