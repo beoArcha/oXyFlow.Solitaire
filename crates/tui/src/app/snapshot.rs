@@ -127,6 +127,7 @@ pub enum OverlayKind {
     Alert,
     Search,
     Win,
+    NoMoves,
 }
 
 impl OverlayKind {
@@ -144,6 +145,7 @@ impl OverlayKind {
             Modal::Alert { .. } => Self::Alert,
             Modal::Search(_) => Self::Search,
             Modal::Win { .. } => Self::Win,
+            Modal::NoMoves { .. } => Self::NoMoves,
         }
     }
 }

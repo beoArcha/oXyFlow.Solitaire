@@ -263,5 +263,6 @@ fn overlay_name(overlay: OverlayKind) -> &'static str {
         OverlayKind::Alert => "alert",
         OverlayKind::Search => "search",
         OverlayKind::Win => "win",
+        OverlayKind::NoMoves => "no_moves",
     }
 }

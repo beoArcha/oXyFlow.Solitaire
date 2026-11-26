@@ -44,6 +44,9 @@ pub enum Modal {
     /// The win screen; `focus` is the index of the focused button and `best` the personal bests
     /// the game set (filled in when the dialog opens).
     Win { focus: usize, best: PersonalBest },
+    /// The no-moves-left dialog; `can_undo` includes the Undo button when undo is allowed and
+    /// possible, and `focus` is the index of the focused button.
+    NoMoves { can_undo: bool, focus: usize },
 }
 
 impl Modal {
@@ -71,6 +74,11 @@ impl Modal {
             focus: 0,
             best: PersonalBest::default(),
         }
+    }
+
+    /// The no-moves-left dialog, with focus on its first button.
+    pub fn no_moves(can_undo: bool) -> Self {
+        Modal::NoMoves { can_undo, focus: 0 }
     }
 
     /// A question showing the text of the localization key `prompt`.
