@@ -153,12 +153,10 @@ impl App {
     }
 
     fn open_how_to_play(&mut self) {
-        let rules = self
-            .board
-            .session()
-            .map_or(HowToPlay::new(Rules::Klondike), |session| {
-                HowToPlay::for_variant(session.variant())
-            });
+        let rules = match self.board.session() {
+            Some(session) => HowToPlay::for_variant(session.variant(), session.options()),
+            None => HowToPlay::with_options(Rules::Klondike, self.settings.game_options),
+        };
         self.open_modal(Modal::HowToPlay(rules));
     }
 

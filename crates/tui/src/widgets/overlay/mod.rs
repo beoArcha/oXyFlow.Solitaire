@@ -45,6 +45,7 @@ mod win;
 
 use std::time::Instant;
 
+use oxysol_core::GameOptions;
 use ratatui::Frame;
 use ratatui::crossterm::event::{KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
@@ -55,7 +56,7 @@ use self::dialog::{Button, Geometry, Text};
 pub use self::graphics_check::GraphicsCheck;
 pub use self::guide_window::GuideWindow;
 pub use self::help_keys::HelpKeys;
-pub use self::how_to_play::{HowToPlay, Rules};
+pub use self::how_to_play::{HowToPlay, Rules, RulesContext};
 pub use self::moves_window::MovesWindow;
 pub use self::quick_options::QuickOptions;
 pub use self::tabs::{HelpTab, TopTabs};
@@ -250,11 +251,13 @@ fn click_help_button(area: Rect, event: &MouseEvent, size: InterfaceSize) -> Opt
     dialog::button_at(&help::geometry_for(area, size), cell).map(|_| Effect::None)
 }
 
-/// The game the Rules tab opens on: the one on the board, Klondike without a game.
-pub fn rules_of(board: &BoardScreen) -> Rules {
-    board
-        .session()
-        .map_or(Rules::Klondike, |session| Rules::of(session.variant()))
+/// The game and rule options the Rules tab opens on: the running game on the board, or Klondike
+/// with `settings` when no game is open.
+pub fn rules_context(board: &BoardScreen, settings: GameOptions) -> RulesContext {
+    match board.session() {
+        Some(session) => RulesContext::for_variant(session.variant(), session.options()),
+        None => RulesContext::new(Rules::Klondike, settings),
+    }
 }
 
 /// Handles a key while `modal` is open at the 100 by 30 size, with Klondike as the game of the
@@ -283,17 +286,18 @@ pub fn handle_for(
 }
 
 /// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
-/// then applies `effect` (`Effect::None` just closes). `rules` is the game the Rules tab opens on
-/// and `area` is the whole screen, the same area [`draw`] received: the Help tabs scroll by the
-/// text rows that the box shows at this size and scale.
+/// then applies `effect` (`Effect::None` just closes). `rules` is the game and options the Rules
+/// tab opens on and `area` is the whole screen, the same area [`draw`] received: the Help tabs
+/// scroll by the text rows that the box shows at this size and scale.
 pub fn handle_for_size(
     modal: &mut Modal,
     key: &KeyEvent,
     action: Option<Action>,
-    rules: Rules,
+    rules: impl Into<RulesContext>,
     area: Rect,
     size: InterfaceSize,
 ) -> Option<Effect> {
+    let rules = rules.into();
     if let Modal::Guide(state) = modal {
         return guide_window::handle(state, key, action);
     }
@@ -352,10 +356,25 @@ pub fn handle_mouse(
 
 /// Handles a mouse event while `modal` is open: a click on a button presses it, any other event
 /// keeps the modal open. `area` is the whole screen, the same area [`draw`] received.
+#[cfg(test)]
 pub fn handle_mouse_for(
     modal: &mut Modal,
     area: Rect,
     board: &BoardScreen,
+    now: Instant,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
+    handle_mouse_with_options(modal, area, board, GameOptions::DEFAULT, now, event, size)
+}
+
+/// Handles a mouse event while `modal` is open, using `settings` for Rules options when no game
+/// is on the board.
+pub fn handle_mouse_with_options(
+    modal: &mut Modal,
+    area: Rect,
+    board: &BoardScreen,
+    settings: GameOptions,
     now: Instant,
     event: &MouseEvent,
     size: InterfaceSize,
@@ -372,7 +391,7 @@ pub fn handle_mouse_for(
     if nav::tab_of(modal).is_some() {
         let body = geometry_for(area, modal, board, now, size).body;
         if let Some(target) = nav::clicked_tab(modal, body, event) {
-            *modal = nav::modal_for(target, rules_of(board));
+            *modal = nav::modal_for(target, rules_context(board, settings));
             return None;
         }
         return match modal {

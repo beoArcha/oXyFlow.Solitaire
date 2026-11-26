@@ -6,7 +6,7 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 use super::CommandLine;
-use super::how_to_play::{HowToPlay, Rules};
+use super::how_to_play::{HowToPlay, RulesContext};
 use super::tabs::{self, HelpTab};
 use crate::action::Action;
 use crate::app::Modal;
@@ -23,10 +23,13 @@ pub fn tab_of(modal: &Modal) -> Option<HelpTab> {
 }
 
 /// The window on `tab`.
-pub fn modal_for(tab: HelpTab, rules: Rules) -> Modal {
+pub fn modal_for(tab: HelpTab, rules: impl Into<RulesContext>) -> Modal {
+    let context = rules.into();
     match tab {
         HelpTab::Keys => Modal::help(),
-        HelpTab::Rules => Modal::HowToPlay(HowToPlay::new(rules).reached_from_help()),
+        HelpTab::Rules => Modal::HowToPlay(
+            HowToPlay::with_options(context.rules, context.options).reached_from_help(),
+        ),
         HelpTab::CommandLine => Modal::CommandLine(CommandLine::new()),
     }
 }

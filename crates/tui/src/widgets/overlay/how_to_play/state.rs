@@ -1,9 +1,34 @@
 //! State of the "How to play" window: which game it explains and how far it is scrolled.
 
-use oxysol_core::Variant;
+use oxysol_core::{GameOptions, Variant};
 
 use super::content;
 use crate::widgets::scrollbar::Metrics;
+
+/// A game's rules page paired with the rule options in force for it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RulesContext {
+    pub rules: Rules,
+    pub options: GameOptions,
+}
+
+impl RulesContext {
+    /// Pairs `rules` with `options`.
+    pub const fn new(rules: Rules, options: GameOptions) -> Self {
+        Self { rules, options }
+    }
+
+    /// The page and `options` of `variant`.
+    pub const fn for_variant(variant: Variant, options: GameOptions) -> Self {
+        Self::new(Rules::of(variant), options)
+    }
+}
+
+impl From<Rules> for RulesContext {
+    fn from(rules: Rules) -> Self {
+        Self::new(rules, GameOptions::DEFAULT)
+    }
+}
 
 /// The games the window explains. Variants of one game share a page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,6 +92,7 @@ impl Rules {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HowToPlay {
     pub rules: Rules,
+    pub options: GameOptions,
     pub scroll: u16,
     pub from_help: bool,
     pub(super) drag: Option<u16>,
@@ -75,16 +101,27 @@ pub struct HowToPlay {
 }
 
 impl HowToPlay {
-    /// The window opened on `rules`, at the top.
+    /// The window opened on `rules`, at the top, with the default game options.
     pub const fn new(rules: Rules) -> Self {
+        Self::with_options(rules, GameOptions::DEFAULT)
+    }
+
+    /// The window opened on `rules` under `options`, at the top.
+    pub const fn with_options(rules: Rules, options: GameOptions) -> Self {
         Self {
             rules,
+            options,
             scroll: 0,
             from_help: false,
             drag: None,
             view: content::VIEW_ROWS as u16,
             text_width: content::TEXT_WIDTH,
         }
+    }
+
+    /// The window's active game and rule options.
+    pub const fn context(self) -> RulesContext {
+        RulesContext::new(self.rules, self.options)
     }
 
     /// The same window, reached from the Help window through its tabs.
@@ -115,9 +152,9 @@ impl HowToPlay {
         self.view = rows;
     }
 
-    /// The window opened on the game of `variant`.
-    pub const fn for_variant(variant: Variant) -> Self {
-        Self::new(Rules::of(variant))
+    /// The window opened on the game of `variant` under `options`.
+    pub const fn for_variant(variant: Variant, options: GameOptions) -> Self {
+        Self::with_options(Rules::of(variant), options)
     }
 
     /// Shows the next game (`forward`) or the previous one, wrapping around, from the top.
@@ -132,12 +169,13 @@ impl HowToPlay {
         self.show(Rules::ALL[next]);
     }
 
-    /// Shows `rules` from the top.
+    /// Shows `rules` from the top, keeping the active options and window layout.
     pub fn show(&mut self, rules: Rules) {
         let from_help = self.from_help;
         let view = self.view;
         let text_width = self.text_width;
-        *self = Self::new(rules);
+        let options = self.options;
+        *self = Self::with_options(rules, options);
         self.from_help = from_help;
         self.view = view;
         self.text_width = text_width;
@@ -145,7 +183,7 @@ impl HowToPlay {
 
     /// The largest value of `scroll` for the current game: the last line sits on the last row.
     pub fn max_scroll(&self) -> u16 {
-        let lines = content::rows_for(self.rules, self.text_width).len();
+        let lines = content::rows_for_options(self.rules, self.options, self.text_width).len();
         u16::try_from(lines.saturating_sub(usize::from(self.view))).unwrap_or(u16::MAX)
     }
 
@@ -170,7 +208,7 @@ impl HowToPlay {
     /// The scroll bar's view of the text wrapped to `text_width` columns.
     pub fn metrics_for(&self, view: u16, text_width: usize) -> Metrics {
         Metrics {
-            total: content::rows_for(self.rules, text_width).len(),
+            total: content::rows_for_options(self.rules, self.options, text_width).len(),
             view: usize::from(view),
             offset: usize::from(self.scroll),
         }
