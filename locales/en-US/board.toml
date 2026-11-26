@@ -258,3 +258,11 @@ no_finish = "No certain win yet"
 [no_moves]
 title = "No moves left"
 body = "No move is possible. This game can no longer be won."
+
+[header.option]
+passes_three = "3 stock passes"
+passes_one = "1 stock pass"
+any_empty = "Any card on empty"
+spider_deal = "Deal with empty column"
+golf_wrap = "King–Ace adjacent"
+golf_king_stops = "Nothing on a King"

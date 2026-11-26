@@ -258,3 +258,11 @@ no_finish = "Vitória não garantida ainda"
 [no_moves]
 title = "Sem jogadas restantes"
 body = "Nenhuma jogada é possível. Este jogo não pode mais ser vencido."
+
+[header.option]
+passes_three = "3 passagens"
+passes_one = "1 passagem"
+any_empty = "Qualquer carta na vazia"
+spider_deal = "Distribuir com coluna vazia"
+golf_wrap = "Rei–Ás vizinhos"
+golf_king_stops = "Nada sobre Rei"

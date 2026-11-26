@@ -282,3 +282,22 @@ fn the_check_labels_and_keys_are_shown_in_every_offered_locale() {
         );
     }
 }
+
+#[test]
+fn a_check_of_every_game_skips_the_games_played_with_changed_rules() {
+    let mut storage = three_games();
+    if let Some(row) = storage.history.get_mut(0) {
+        row.options = oxysol_core::GameOptions {
+            klondike_passes: oxysol_core::StockPasses::One,
+            ..oxysol_core::GameOptions::DEFAULT
+        };
+    }
+    let mut h = open_stats(storage, WIDTH, HEIGHT);
+    h.solver.borrow_mut().held = true;
+    h.type_char('W');
+    assert!(
+        status_of(&mut h).contains("Checking winnable: 0 of 2"),
+        "{}",
+        h.text()
+    );
+}

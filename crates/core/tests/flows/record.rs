@@ -1,7 +1,9 @@
 //! The JSON of a `SessionRecord` is the save format (R-18, T-03). These tests pin its exact text:
 //! a change breaks every saved game and must be a deliberate, versioned decision.
 
-use oxysol_core::{DrawCount, GameOptions, Move, PileRef, Session, SessionRecord, StockPasses, Variant};
+use oxysol_core::{
+    DrawCount, GameOptions, Move, PileRef, Session, SessionRecord, StockPasses, Variant,
+};
 
 const SMALL_RECORD: &str = r#"{"variant":{"klondike":"three"},"seed":42,"moves":["stock",{"transfer":{"from":{"tableau":2},"to":{"foundation":0},"count":1}},"stock"],"cursor":2}"#;
 const LARGEST_SEED: &str =

@@ -19,6 +19,7 @@ fn game(id: i64, variant: Variant, seed: u64) -> GameRecord {
         id: GameId(id),
         variant,
         seed,
+        options: oxysol_core::GameOptions::DEFAULT,
         started_at_ms: id * 60_000,
         finished_at_ms: None,
         outcome: Some(GameOutcome::Won),

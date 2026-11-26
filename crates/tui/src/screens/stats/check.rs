@@ -54,8 +54,8 @@ impl Run {
 
 impl StatsScreen {
     /// The effect of `w` (`all` false) or `W` (`all` true): the games to check, which are the
-    /// selected game or every game, without the ones already checked. Nothing starts while a check
-    /// runs.
+    /// selected game or every game, without the ones already checked and the ones played with rule
+    /// options the solver does not model (T-53). Nothing starts while a check runs.
     pub(super) fn check(&mut self, all: bool) -> Effect {
         if self.run.is_some() || self.records.is_empty() {
             return Effect::None;
@@ -67,7 +67,9 @@ impl StatsScreen {
         };
         let targets: Vec<Target> = picked
             .into_iter()
-            .filter(|record| record.proof.is_none())
+            .filter(|record| {
+                record.proof.is_none() && record.options.is_default_for(record.variant)
+            })
             .map(Target::of)
             .collect();
         if targets.is_empty() {

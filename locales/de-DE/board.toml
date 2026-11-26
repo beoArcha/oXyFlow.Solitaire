@@ -258,3 +258,11 @@ no_finish = "Gewinn noch nicht sicher"
 [no_moves]
 title = "Keine Züge mehr"
 body = "Es ist kein Zug mehr möglich. Dieses Spiel ist nicht mehr zu gewinnen."
+
+[header.option]
+passes_three = "3 Durchgänge"
+passes_one = "1 Durchgang"
+any_empty = "Jede Karte auf leer"
+spider_deal = "Austeilen mit leerer Spalte"
+golf_wrap = "König–Ass benachbart"
+golf_king_stops = "Nichts auf König"

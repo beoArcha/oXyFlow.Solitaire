@@ -120,7 +120,8 @@ its card).
   - **Klondike, empty column:** King only (default), or any card.
   - **Spider, deal with an empty column:** not allowed (default), or allowed.
   - **Golf, King to Ace:** a King and an Ace are not adjacent (default), or they are (wrap).
-  - **Golf, play on a King:** a King ends the waste (default), or a Queen may be played on it.
+  - **Golf, play on a King:** a Queen may be played on a King (default, the rule before P6-06), or a King ends the
+    waste (harder). Corrected by the orchestrator during P6-06: the engine already let a Queen follow a King.
 - **Design:**
   - One `GameOptions` value in `oxysol-core` (`Serialize`, `Deserialize`, `Default` = every rule as today, missing
     fields default), passed to `deal(variant, seed, options)`; the games read only their own fields. No per-option

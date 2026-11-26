@@ -9,6 +9,7 @@ mod custom_theme;
 mod focus;
 mod font_rows;
 mod footer;
+mod game_options;
 mod groups;
 mod guide;
 mod hints;

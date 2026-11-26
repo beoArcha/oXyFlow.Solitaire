@@ -1,7 +1,7 @@
 //! The persistence contract. The application (`oxysol`) implements it over SQLite; the TUI only
 //! calls it and decides how to react to a failure (alert, defaults) and logs it there.
 
-use oxysol_core::{SessionRecord, Variant};
+use oxysol_core::{GameOptions, SessionRecord, Variant};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -45,6 +45,8 @@ pub struct GameRecord {
     pub id: GameId,
     pub variant: Variant,
     pub seed: u64,
+    /// The rule options of the game (P6-06); rows from before them read as the defaults.
+    pub options: GameOptions,
     /// UTC, Unix milliseconds.
     pub started_at_ms: i64,
     /// UTC, Unix milliseconds; `None` while the game is open.
@@ -102,12 +104,14 @@ pub trait Storage {
     fn save_game(&mut self, game: &SavedGame) -> Result<(), StorageError>;
     /// Removes the stored game.
     fn clear_game(&mut self) -> Result<(), StorageError>;
-    /// Records a new deal in the history and returns its id. `undo_allowed` is the undo mode of
+    /// Records a new deal in the history and returns its id. `options` are the rule options of the
+    /// game (normalized to `variant`) and `undo_allowed` is the undo mode of
     /// the game.
     fn start_game(
         &mut self,
         variant: Variant,
         seed: u64,
+        options: GameOptions,
         undo_allowed: bool,
     ) -> Result<GameId, StorageError>;
     /// Closes a history row with its outcome, playing time and move count.

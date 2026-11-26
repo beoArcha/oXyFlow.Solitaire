@@ -4,6 +4,7 @@ pub use super::change::changed_for_facts;
 #[cfg(test)]
 pub use super::change::{changed, changed_with_custom};
 use super::font_rows;
+use super::game_option_rows;
 use super::options::{FIELDS, Field};
 use super::priority_row;
 use crate::app::{CardFontState, FontFacts};
@@ -176,6 +177,11 @@ fn value_text_with(
         | Field::MovesPanel
         | Field::AutoFinish
         | Field::QuickMove => aid_text(field, settings),
+        Field::KlondikePasses
+        | Field::KlondikeEmptyColumn
+        | Field::SpiderDeal
+        | Field::GolfWrap
+        | Field::GolfKingStops => game_option_rows::value(field, settings.game_options),
     }
 }
 

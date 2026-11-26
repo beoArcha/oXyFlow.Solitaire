@@ -259,3 +259,11 @@ no_finish = "Wygrana jeszcze nie pewna"
 [no_moves]
 title = "Nie ma już ruchów"
 body = "Żaden ruch nie jest możliwy. Tej gry nie można już wygrać."
+
+[header.option]
+passes_three = "3 przejścia talii"
+passes_one = "1 przejście talii"
+any_empty = "Dowolna karta na pustą"
+spider_deal = "Rozdanie przy pustej kolumnie"
+golf_wrap = "Król–As sąsiadują"
+golf_king_stops = "Nic na Króla"

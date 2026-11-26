@@ -91,7 +91,7 @@ fn a_migrated_database_is_stamped_with_the_current_version_and_records_new_games
     let (_dir, paths) = version_one_database();
     {
         let mut storage = open(&paths);
-        let id = storage.start_game(KLONDIKE, 10, false);
+        let id = storage.start_game(KLONDIKE, 10, oxysol_core::GameOptions::DEFAULT, false);
         assert!(id.is_ok());
         let Ok(id) = id else {
             return;
@@ -116,7 +116,7 @@ fn a_migrated_database_is_stamped_with_the_current_version_and_records_new_games
     };
     let version: Result<u32, _> = conn.pragma_query_value(None, "user_version", |row| row.get(0));
     assert!(matches!(version, Ok(v) if v == SqliteStorage::supported_schema_version()));
-    assert_eq!(SqliteStorage::supported_schema_version(), 5);
+    assert_eq!(SqliteStorage::supported_schema_version(), 6);
     assert!(rows.iter().all(|row| row.counters.restarts == 0));
     assert!(rows.iter().all(|row| row.proof.is_none()));
 }
@@ -156,7 +156,7 @@ fn a_recorded_proof_survives_a_reopen() {
     let (_dir, paths) = version_two_database();
     {
         let mut storage = open(&paths);
-        let id = storage.start_game(KLONDIKE, 11, true);
+        let id = storage.start_game(KLONDIKE, 11, oxysol_core::GameOptions::DEFAULT, true);
         let Ok(id) = id else {
             std::process::abort();
         };
@@ -307,4 +307,62 @@ fn assist_counters_written_after_the_migration_survive_a_reopen() {
             .all(|row| row.counters.assist == AssistCounters::default())
     );
     assert_eq!(rows[3].counters.restarts, 2);
+}
+
+fn version_five_database() -> (TempDir, AppPaths) {
+    let (dir, paths) = version_four_database();
+    let conn = Connection::open(paths.database_file());
+    let Ok(conn) = conn else {
+        std::process::abort();
+    };
+    assert!(
+        conn.execute_batch(
+            "ALTER TABLE games ADD COLUMN manual_moves INTEGER NOT NULL DEFAULT 0;
+             ALTER TABLE games ADD COLUMN quick_moves INTEGER NOT NULL DEFAULT 0;
+             ALTER TABLE games ADD COLUMN finish_moves INTEGER NOT NULL DEFAULT 0;
+             ALTER TABLE games ADD COLUMN failed_quick INTEGER NOT NULL DEFAULT 0;
+             ALTER TABLE games ADD COLUMN quick_streak INTEGER NOT NULL DEFAULT 0;"
+        )
+        .is_ok()
+    );
+    assert!(conn.pragma_update(None, "user_version", 5).is_ok());
+    (dir, paths)
+}
+
+#[test]
+fn a_version_five_database_reads_its_old_rows_with_the_default_rules() {
+    let (_dir, paths) = version_five_database();
+    let storage = open(&paths);
+    let Ok(rows) = storage.history() else {
+        std::process::abort();
+    };
+    assert!(!rows.is_empty());
+    assert!(
+        rows.iter()
+            .all(|row| row.options == oxysol_core::GameOptions::DEFAULT)
+    );
+}
+
+#[test]
+fn the_options_of_a_game_survive_a_reopen_and_only_its_own_are_kept() {
+    let (_dir, paths) = version_five_database();
+    let chosen = oxysol_core::GameOptions {
+        klondike_passes: oxysol_core::StockPasses::Three,
+        golf_wrap: true,
+        ..oxysol_core::GameOptions::DEFAULT
+    };
+    {
+        let mut storage = open(&paths);
+        assert!(storage.start_game(KLONDIKE, 12, chosen, true).is_ok());
+    }
+    let storage = open(&paths);
+    let Ok(rows) = storage.history() else {
+        std::process::abort();
+    };
+    let Some(last) = rows.last() else {
+        std::process::abort();
+    };
+    assert_eq!(last.seed, 12);
+    assert_eq!(last.options, chosen.for_variant(KLONDIKE));
+    assert!(!last.options.golf_wrap);
 }

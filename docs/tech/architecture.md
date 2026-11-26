@@ -101,7 +101,14 @@ pub trait Game {
     fn forced_finish(&self) -> Option<Vec<Move>>;        // moves that finish a certain win, else None
     fn is_covered(&self, pile: PileRef) -> bool;         // default false; Pyramid: a card under a card still on the table
 }
-pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game>;    // the only place that knows all games
+pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game>;    // the only place that knows all games; default options
+pub fn deal_with(variant: Variant, seed: u64, options: GameOptions) -> Box<dyn Game>;  // each game reads its own fields
+pub enum StockPasses { Unlimited, Three, One }            // Klondike passes through the stock (default Unlimited)
+pub struct GameOptions {                                   // P6-06, T-53; Default = every rule as before, serde(default)
+    pub klondike_passes: StockPasses, pub klondike_any_empty: bool, pub spider_deal_empty: bool,
+    pub golf_wrap: bool, pub golf_king_stops: bool,
+}
+impl GameOptions { pub const DEFAULT: Self; pub const fn for_variant(self, variant: Variant) -> Self; pub fn is_default_for(self, variant: Variant) -> bool; }
 ```
 
 Rules of the `Game` contract:
@@ -207,14 +214,15 @@ Rules of the `Game` contract:
 The session implements history by replaying the move log from the seed (decision T-03):
 
 ```rust
-pub struct SessionRecord { pub variant: Variant, pub seed: u64, pub moves: Vec<Move>, pub cursor: usize }
+pub struct SessionRecord { pub variant: Variant, pub seed: u64, pub options: GameOptions, pub moves: Vec<Move>, pub cursor: usize }  // options: serde default, omitted when default
 pub enum RestoreError {
     CursorBeyondMoves { cursor: usize, len: usize },
     MoveRejected { index: usize, source: MoveError },        // replay of the log failed at `index`
 }
 
 impl Session {
-    pub fn new(variant: Variant, seed: u64) -> Self;
+    pub fn new(variant: Variant, seed: u64) -> Self;                          // default options
+    pub fn with_options(variant: Variant, seed: u64, options: GameOptions) -> Self;  // normalized to the variant; undo, restart and restore keep them
     pub fn restore(record: SessionRecord) -> Result<Self, RestoreError>;
     pub fn record(&self) -> SessionRecord;
     pub fn apply(&mut self, mv: Move) -> Result<(), MoveError>;   // truncates the redo tail
@@ -277,7 +285,7 @@ pub trait Storage {
     fn load_game(&self) -> Result<Option<SavedGame>, StorageError>;
     fn save_game(&mut self, game: &SavedGame) -> Result<(), StorageError>;
     fn clear_game(&mut self) -> Result<(), StorageError>;
-    fn start_game(&mut self, variant: Variant, seed: u64, undo_allowed: bool) -> Result<GameId, StorageError>;  // history row
+    fn start_game(&mut self, variant: Variant, seed: u64, options: GameOptions, undo_allowed: bool) -> Result<GameId, StorageError>;  // history row; `GameRecord::options`, SQLite `games.options` JSON (default '{}')
     fn finish_game(&mut self, id: GameId, outcome: Outcome, elapsed_ms: u64, moves: u32) -> Result<(), StorageError>;
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError>;   // +1 restart of a game without undo (P4-05)
     fn record_assist(&mut self, id: GameId, assist: AssistCounters) -> Result<(), StorageError>;   // replaces the assist counters (P4-06)

@@ -73,7 +73,7 @@ fn settings_round_trip_and_replace() {
 fn game_round_trip_replace_and_clear() {
     let (_dir, paths) = temp_paths();
     let mut storage = open(&paths);
-    let id = storage.start_game(KLONDIKE, 7, true);
+    let id = storage.start_game(KLONDIKE, 7, oxysol_core::GameOptions::DEFAULT, true);
     assert!(id.is_ok());
     let Ok(id) = id else {
         return;
@@ -97,7 +97,7 @@ fn a_saved_game_keeps_the_undo_mode_of_its_game() {
     let (_dir, paths) = temp_paths();
     let mut storage = open(&paths);
     for undo_allowed in [false, true] {
-        let id = storage.start_game(KLONDIKE, 7, undo_allowed);
+        let id = storage.start_game(KLONDIKE, 7, oxysol_core::GameOptions::DEFAULT, undo_allowed);
         assert!(id.is_ok());
         let Ok(id) = id else {
             return;
@@ -124,13 +124,22 @@ fn history_keeps_exact_seeds_variants_and_outcomes() {
     let seeds = [0, 1, u64::from(u32::MAX), 1 << 63, u64::MAX];
     let mut ids = Vec::new();
     for seed in seeds {
-        let id = storage.start_game(KLONDIKE, seed, true);
+        let id = storage.start_game(KLONDIKE, seed, oxysol_core::GameOptions::DEFAULT, true);
         assert!(id.is_ok());
         if let Ok(id) = id {
             ids.push(id);
         }
     }
-    assert!(storage.start_game(Variant::FreeCell, 99, true).is_ok());
+    assert!(
+        storage
+            .start_game(
+                Variant::FreeCell,
+                99,
+                oxysol_core::GameOptions::DEFAULT,
+                true
+            )
+            .is_ok()
+    );
     assert!(
         storage
             .finish_game(ids[4], Outcome::Won, 61_000, 87)
@@ -177,7 +186,7 @@ fn reopening_keeps_everything() {
     {
         let mut storage = open(&paths);
         assert!(storage.save_settings(&settings).is_ok());
-        let id = storage.start_game(KLONDIKE, u64::MAX, true);
+        let id = storage.start_game(KLONDIKE, u64::MAX, oxysol_core::GameOptions::DEFAULT, true);
         assert!(id.is_ok());
         let Ok(id) = id else {
             return;
@@ -288,7 +297,7 @@ fn a_damaged_saved_game_is_corrupt_without_losing_the_rest() {
     let mut storage = open(&paths);
     let settings = Settings::default();
     assert!(storage.save_settings(&settings).is_ok());
-    let id = storage.start_game(KLONDIKE, 5, true);
+    let id = storage.start_game(KLONDIKE, 5, oxysol_core::GameOptions::DEFAULT, true);
     assert!(id.is_ok());
     drop(storage);
     {

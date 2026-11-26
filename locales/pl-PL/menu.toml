@@ -87,6 +87,7 @@ clear = "Esc czyści"
 button = "[ {key} Tylko do wygrania: {state} ]"
 on_hint = "Włączone: nowa gra szuka rozdania możliwego do wygrania; wpisane ziarno zostaje bez zmian"
 off_hint = "Wyłączone: nowa gra rozdaje dowolne rozdanie, do wygrania lub nie"
+options_hint = "Włączone: nowa gra szuka rozdania do wygrania, poza grami ze zmienionymi zasadami (Ustawienia)"
 
 [low_vision]
 prompt = "Tryb słabowidzący? (kontrast 7:1, większe karty, gruby tekst)"

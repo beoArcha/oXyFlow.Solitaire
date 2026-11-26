@@ -495,3 +495,30 @@ fn interface_size_defaults_to_m_for_old_saves_and_round_trips() {
         );
     }
 }
+
+#[test]
+fn the_game_options_default_to_the_old_rules_and_an_old_file_loads_them() {
+    assert_eq!(
+        Settings::default().game_options,
+        oxysol_core::GameOptions::DEFAULT
+    );
+    let old = toml::from_str::<Settings>("volume = 10");
+    assert_eq!(
+        old.map(|settings| settings.game_options).ok(),
+        Some(oxysol_core::GameOptions::DEFAULT)
+    );
+    let changed = toml::from_str::<Settings>(
+        "[game_options]
+klondike_passes = \"one\"
+golf_wrap = true",
+    );
+    let Ok(changed) = changed else {
+        panic!("the game options parse");
+    };
+    assert_eq!(
+        changed.game_options.klondike_passes,
+        oxysol_core::StockPasses::One
+    );
+    assert!(changed.game_options.golf_wrap);
+    assert!(!changed.game_options.spider_deal_empty);
+}

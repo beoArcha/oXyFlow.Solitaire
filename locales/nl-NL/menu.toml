@@ -88,6 +88,7 @@ clear = "Esc wist"
 button = "[ {key} Alleen winbare spellen: {state} ]"
 on_hint = "Aan: een nieuw spel zoekt naar een bewijsbaar winbaar spel; een getypte seed wordt direct gedeeld"
 off_hint = "Uit: een nieuw spel deelt elke deal uit, winbaar of niet"
+options_hint = "Aan: een nieuw spel zoekt een winbaar spel, behalve spellen met gewijzigde regels (Instellingen)"
 
 [low_vision]
 prompt = "Slechtziendheidsmodus? (7:1-contrast, grote kaarten, vet)"

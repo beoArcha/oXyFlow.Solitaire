@@ -12,7 +12,7 @@ pub mod stats;
 
 use std::time::{Duration, Instant};
 
-use oxysol_core::{DrawCount, PyramidRules, SuitCount, Variant, YukonRules};
+use oxysol_core::{DrawCount, GameOptions, PyramidRules, SuitCount, Variant, YukonRules};
 
 use crate::action::Action;
 use crate::app::{FontFacts, Modal, Screen, SearchCommand};
@@ -57,6 +57,14 @@ pub enum Effect {
     Start {
         variant: Variant,
         seed: Option<u64>,
+        undo_allowed: bool,
+    },
+    /// Deal `variant` from `seed` with the rule options it was played with (a replay from the
+    /// history), whatever the settings say for the next game.
+    Replay {
+        variant: Variant,
+        seed: u64,
+        options: GameOptions,
         undo_allowed: bool,
     },
     /// A button of the search dialog for a winnable deal.

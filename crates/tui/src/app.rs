@@ -398,6 +398,9 @@ mod chosen_deal_tests;
 mod deals_tests;
 
 #[cfg(test)]
+mod options_tests;
+
+#[cfg(test)]
 mod effect_tests;
 
 #[cfg(test)]

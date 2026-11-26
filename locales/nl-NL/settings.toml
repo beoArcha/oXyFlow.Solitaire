@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike: doorgangen stapel"
+klondike_empty_column = "Klondike: lege kolom"
+spider_deal = "Spider: deelregel"
+golf_wrap = "Golf: Heer en Aas"
+golf_king_stops = "Golf: op een Heer"
 language = "Taal"
 low_vision = "Slechtziendheid"
 theme = "Thema"
@@ -52,6 +57,11 @@ swiss = "Zwitsers"
 italian = "Italiaans"
 
 [desc]
+klondike_passes = "Hoe vaak de stapel doorlopen mag worden. Geldt voor het volgende Klondike-spel; alleen Onbeperkt heeft het zoeken naar winbare spellen."
+klondike_empty_column = "Wat op een lege kolom mag. Geldt voor het volgende Klondike-spel; alleen Alleen Heer heeft het zoeken naar winbare spellen."
+spider_deal = "Of een rij gedeeld mag worden terwijl een kolom leeg is. Geldt voor het volgende Spider-spel; alleen de standaard heeft het zoeken."
+golf_wrap = "Of Heer en Aas als buren tellen. Geldt voor het volgende Golf-spel; alleen de standaard heeft het zoeken naar winbare spellen."
+golf_king_stops = "Of een Vrouw op een Heer op de aflegstapel mag. Geldt voor het volgende Golf-spel; alleen de standaard heeft het zoeken."
 language = "De taal van alle tekst. Verandert direct."
 low_vision_console = "Hoog contrast (7:1), grootste kaarten, dikke gloed, vette tekst, bredere waaiers, consoleletter 24+ px."
 low_vision_wt = "Hoog contrast (7:1), grootste kaarten, dikke gloed, vette tekst, bredere waaiers. Letter vergroten: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopie"
 deuteranopia = "Deuteranopie"
 tritanopia = "Tritanopie"
 monochrome = "Monochroom"
+
+[game_option]
+passes_unlimited = "Onbeperkt"
+passes_three = "3"
+passes_one = "1"
+king_only = "Alleen Heer"
+any_card = "Elke kaart"
+columns_filled = "Eerst kolommen vullen"
+any_time = "Ook met lege kolom"
+not_adjacent = "Geen buren"
+adjacent = "Buren"
+queen_follows = "Vrouw toegestaan"
+nothing_follows = "Niets (moeilijker)"

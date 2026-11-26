@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike: passaggi del mazzo"
+klondike_empty_column = "Klondike: colonna vuota"
+spider_deal = "Spider: regola di distribuzione"
+golf_wrap = "Golf: Re e Asso"
+golf_king_stops = "Golf: su un Re"
 language = "Lingua"
 low_vision = "Ipovisione"
 theme = "Tema"
@@ -52,6 +57,11 @@ swiss = "Svizzero"
 italian = "Italiano"
 
 [desc]
+klondike_passes = "Quante volte si può scorrere il mazzo. Vale per la prossima partita di Klondike; solo Illimitati ha la ricerca di smazzate vincibili."
+klondike_empty_column = "Cosa può andare su una colonna vuota. Vale per la prossima partita di Klondike; solo Solo Re ha la ricerca di smazzate vincibili."
+spider_deal = "Se si può distribuire una fila con una colonna vuota. Vale per la prossima partita di Spider; solo il predefinito ha la ricerca."
+golf_wrap = "Se Re e Asso contano come vicini. Vale per la prossima partita di Golf; solo il predefinito ha la ricerca di smazzate vincibili."
+golf_king_stops = "Se si può giocare una Donna su un Re dello scarto. Vale per la prossima partita di Golf; solo il predefinito ha la ricerca."
 language = "La lingua di tutti i testi. Cambia subito."
 low_vision_console = "Alto contrasto (7:1), carte massime, aura spessa, testo in grassetto, ventagli ampi, carattere console 24+ px."
 low_vision_wt = "Alto contrasto (7:1), carte massime, aura spessa, testo in grassetto, ventagli ampi. Ingrandisci: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopia"
 deuteranopia = "Deuteranopia"
 tritanopia = "Tritanopia"
 monochrome = "Monocromatico"
+
+[game_option]
+passes_unlimited = "Illimitati"
+passes_three = "3"
+passes_one = "1"
+king_only = "Solo Re"
+any_card = "Qualsiasi carta"
+columns_filled = "Prima riempi le colonne"
+any_time = "Anche con colonna vuota"
+not_adjacent = "Non vicini"
+adjacent = "Vicini"
+queen_follows = "Donna ammessa"
+nothing_follows = "Niente (più difficile)"

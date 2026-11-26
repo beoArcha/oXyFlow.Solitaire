@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike stock passes"
+klondike_empty_column = "Klondike empty column"
+spider_deal = "Spider deal rule"
+golf_wrap = "Golf King and Ace"
+golf_king_stops = "Golf on a King"
 language = "Language"
 low_vision = "Low vision"
 theme = "Theme"
@@ -52,6 +57,11 @@ swiss = "Swiss"
 italian = "Italian"
 
 [desc]
+klondike_passes = "How many times the stock may be gone through. Applies to the next Klondike game; only Unlimited has the winnable search."
+klondike_empty_column = "What may go on an empty column. Applies to the next Klondike game; only King only has the winnable search."
+spider_deal = "Whether a row may be dealt while a column is empty. Applies to the next Spider game; the default has the winnable search."
+golf_wrap = "Whether a King and an Ace count as one rank apart. Applies to the next Golf game; the default has the winnable search."
+golf_king_stops = "Whether a Queen may be played on a King on the waste. Applies to the next Golf game; the default has the winnable search."
 language = "The language of all text. Changes at once."
 low_vision_console = "High contrast (7:1), largest cards, thick aura, bold text, wider fans, 24+ px console font."
 low_vision_wt = "High contrast (7:1), largest cards, thick aura, bold text, wider fans. Enlarge font: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopia"
 deuteranopia = "Deuteranopia"
 tritanopia = "Tritanopia"
 monochrome = "Monochrome"
+
+[game_option]
+passes_unlimited = "Unlimited"
+passes_three = "3"
+passes_one = "1"
+king_only = "King only"
+any_card = "Any card"
+columns_filled = "Columns filled first"
+any_time = "Even with an empty column"
+not_adjacent = "Not adjacent"
+adjacent = "Adjacent"
+queen_follows = "Queen may follow"
+nothing_follows = "Nothing (harder)"

@@ -1,13 +1,13 @@
 //! The game information of the board, in the one place the screen shows it: variant, seed, playing
 //! time, moves, the stock counter, in a game without undo the "No undo" badge and, once it has been
-//! restarted, the restart count and, for a deal the solver
-//! was asked about, whether it is winnable. A Compact
+//! restarted, the restart count, every rule option that differs from the default and, for a deal
+//! the solver was asked about, whether it is winnable. A Compact
 //! screen draws the facts in one header row, a Standard or Wide screen in the `Game` box of the
 //! side panel. The seed is a click target that copies it, so it is underlined in both places.
 
 use std::time::Duration;
 
-use oxysol_core::Session;
+use oxysol_core::{GameOptions, Session, StockPasses};
 use ratatui::layout::Rect;
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
@@ -45,6 +45,34 @@ fn span_of(text: &str, from: usize, to: usize) -> String {
     text.chars().skip(from).take(to - from).collect()
 }
 
+/// One fact for every rule option of the game that differs from the default, as words.
+fn option_facts(options: GameOptions) -> Vec<String> {
+    let passes = match options.klondike_passes {
+        StockPasses::Unlimited => None,
+        StockPasses::Three => Some("board.header.option.passes_three"),
+        StockPasses::One => Some("board.header.option.passes_one"),
+    };
+    let switches = [
+        (options.klondike_any_empty, "board.header.option.any_empty"),
+        (options.spider_deal_empty, "board.header.option.spider_deal"),
+        (options.golf_wrap, "board.header.option.golf_wrap"),
+        (
+            options.golf_king_stops,
+            "board.header.option.golf_king_stops",
+        ),
+    ];
+    passes
+        .into_iter()
+        .chain(
+            switches
+                .into_iter()
+                .filter(|(on, _)| *on)
+                .map(|(_, key)| key),
+        )
+        .map(|key| t(key).into_owned())
+        .collect()
+}
+
 impl Facts {
     pub(super) fn new(
         session: &Session,
@@ -79,6 +107,7 @@ impl Facts {
                 facts.push(tf("board.header.restarts", &[("count", &count)]));
             }
         }
+        facts.extend(option_facts(session.options()));
         if let Some(key) = deal.label_key() {
             droppable.push(facts.len());
             facts.push(t(key).into_owned());

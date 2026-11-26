@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike: passagens do monte"
+klondike_empty_column = "Klondike: coluna vazia"
+spider_deal = "Spider: regra de distribuição"
+golf_wrap = "Golf: Rei e Ás"
+golf_king_stops = "Golf: sobre um Rei"
 language = "Idioma"
 low_vision = "Baixa visão"
 theme = "Tema"
@@ -52,6 +57,11 @@ swiss = "Suíço"
 italian = "Italiano"
 
 [desc]
+klondike_passes = "Quantas vezes o monte pode ser percorrido. Vale para o próximo jogo de Klondike; só Sem limite tem a busca de distribuições vencíveis."
+klondike_empty_column = "O que pode ir para uma coluna vazia. Vale para o próximo jogo de Klondike; só Só Rei tem a busca de distribuições vencíveis."
+spider_deal = "Se uma fileira pode ser distribuída com uma coluna vazia. Vale para o próximo jogo de Spider; só o padrão tem a busca."
+golf_wrap = "Se Rei e Ás contam como vizinhos. Vale para o próximo jogo de Golf; só o padrão tem a busca de distribuições vencíveis."
+golf_king_stops = "Se uma Dama pode ir sobre um Rei do descarte. Vale para o próximo jogo de Golf; só o padrão tem a busca."
 language = "O idioma de todo o texto. Muda imediatamente."
 low_vision_console = "Alto contraste (7:1), maiores cartas, aura grossa, texto em negrito, leques largos, fonte do console 24+ px."
 low_vision_wt = "Alto contraste (7:1), maiores cartas, aura grossa, texto em negrito, leques largos. Aumentar fonte: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopia"
 deuteranopia = "Deuteranopia"
 tritanopia = "Tritanopia"
 monochrome = "Monocromático"
+
+[game_option]
+passes_unlimited = "Sem limite"
+passes_three = "3"
+passes_one = "1"
+king_only = "Só Rei"
+any_card = "Qualquer carta"
+columns_filled = "Primeiro encher colunas"
+any_time = "Mesmo com coluna vazia"
+not_adjacent = "Não vizinhos"
+adjacent = "Vizinhos"
+queen_follows = "Dama permitida"
+nothing_follows = "Nada (mais difícil)"

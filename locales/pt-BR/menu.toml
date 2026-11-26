@@ -87,6 +87,7 @@ clear = "Esc limpa"
 button = "[ {key} Apenas jogos vencíveis: {state} ]"
 on_hint = "Ativo: um novo jogo busca uma partida com vitória comprovada; sementes digitadas são usadas diretamente"
 off_hint = "Desativado: um novo jogo sorteia qualquer partida, vencível ou não"
+options_hint = "Ligado: um jogo novo busca uma distribuição vencível, exceto jogos com regras alteradas (Configurações)"
 
 [low_vision]
 prompt = "Modo baixa visão? (contraste 7:1, cartas maiores, negrito)"

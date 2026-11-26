@@ -3,7 +3,7 @@
 use std::time::Duration;
 
 use oxysol_core::solver::has_model;
-use oxysol_core::{Session, Variant};
+use oxysol_core::{GameOptions, Session, Variant};
 
 use super::deals::Origin;
 use super::{App, Modal, Screen};
@@ -16,6 +16,11 @@ use crate::solver::{DealCheck, Proof};
 use crate::widgets::overlay::dock::DockState;
 use crate::widgets::overlay::{HowToPlay, Rules};
 
+/// Whether the solver models `variant` under `options`: only the default rules (T-53).
+pub(super) fn solver_covers(variant: Variant, options: GameOptions) -> bool {
+    has_model(variant) && options.is_default_for(variant)
+}
+
 impl App {
     pub(crate) fn apply(&mut self, effect: Effect) {
         match effect {
@@ -25,7 +30,16 @@ impl App {
                 variant,
                 seed,
                 undo_allowed,
-            } => self.start_game(variant, seed, undo_allowed),
+            } => {
+                let options = self.settings.game_options.for_variant(variant);
+                self.start_game(variant, seed, options, undo_allowed);
+            }
+            Effect::Replay {
+                variant,
+                seed,
+                options,
+                undo_allowed,
+            } => self.start_game(variant, Some(seed), options, undo_allowed),
             Effect::SearchStep(command) => self.search_step(command),
             Effect::Resume => self.resume_game(),
             Effect::SameSeed => self.same_seed(),
@@ -133,9 +147,9 @@ impl App {
         let Some(session) = self.board.session() else {
             return;
         };
-        let (variant, seed) = (session.variant(), session.seed());
+        let (variant, seed, options) = (session.variant(), session.seed(), session.options());
         let undo_allowed = self.board.undo_allowed();
-        self.start_game(variant, Some(seed), undo_allowed);
+        self.start_game(variant, Some(seed), options, undo_allowed);
     }
 
     fn open_how_to_play(&mut self) {
@@ -157,15 +171,24 @@ impl App {
         }
     }
 
-    fn start_game(&mut self, variant: Variant, seed: Option<u64>, undo_allowed: bool) {
+    /// Deals `variant` under `options`. The winnable search runs only for the default options,
+    /// which are the only rules the solver models (T-53).
+    fn start_game(
+        &mut self,
+        variant: Variant,
+        seed: Option<u64>,
+        options: GameOptions,
+        undo_allowed: bool,
+    ) {
+        let solvable = solver_covers(variant, options);
         match seed {
-            Some(seed) => self.begin_game(variant, seed, undo_allowed, Origin::Chosen),
-            None if self.settings.winnable_only && has_model(variant) => {
+            Some(seed) => self.begin_game(variant, seed, options, undo_allowed, Origin::Chosen),
+            None if self.settings.winnable_only && solvable => {
                 self.begin_search(variant, undo_allowed);
             }
             None => {
                 let seed = (self.seeds)();
-                self.begin_game(variant, seed, undo_allowed, Origin::Fresh);
+                self.begin_game(variant, seed, options, undo_allowed, Origin::Fresh);
             }
         }
     }
@@ -174,14 +197,18 @@ impl App {
         &mut self,
         variant: Variant,
         seed: u64,
+        options: GameOptions,
         undo_allowed: bool,
         origin: Origin,
     ) {
+        let options = options.for_variant(variant);
         self.abandon_saved();
         self.solver.cancel();
         self.check = None;
-        tracing::info!(?variant, seed, ?origin, "new game dealt");
-        let recorded = self.storage.start_game(variant, seed, undo_allowed);
+        tracing::info!(?variant, seed, ?options, ?origin, "new game dealt");
+        let recorded = self
+            .storage
+            .start_game(variant, seed, options, undo_allowed);
         let id = recorded.as_ref().ok().copied();
         let start = Start {
             id,
@@ -189,13 +216,16 @@ impl App {
             undo_allowed,
         };
         self.reset_quick();
-        self.board
-            .begin(Session::new(variant, seed), start, self.now);
+        self.board.begin(
+            Session::with_options(variant, seed, options),
+            start,
+            self.now,
+        );
         self.enter_board();
         self.note_write(recorded.map(drop), "the new game could not be recorded");
         match origin {
             Origin::Fresh => {}
-            Origin::Chosen if !has_model(variant) => {}
+            Origin::Chosen if !solver_covers(variant, options) => {}
             Origin::Searched(proof) => {
                 self.board.set_deal(DealCheck::Known(proof));
                 if proof == Proof::Winnable {
@@ -222,6 +252,7 @@ impl App {
                     undo_allowed,
                 };
                 let (variant, seed) = (session.variant(), session.seed());
+                let solvable = solver_covers(variant, session.options());
                 if self.board.game_id() != Some(id) {
                     self.reset_quick();
                 }
@@ -233,7 +264,9 @@ impl App {
                 }
                 self.enter_board();
                 self.solver.cancel();
-                self.start_check(variant, seed);
+                if solvable {
+                    self.start_check(variant, seed);
+                }
             }
             Err(error) => {
                 tracing::warn!(%error, "the saved game could not be restored; removing it");

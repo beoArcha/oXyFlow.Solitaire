@@ -2,7 +2,7 @@
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use oxysol_core::Variant;
+use oxysol_core::{GameOptions, Variant};
 use oxysol_tui::{Outcome, Proof};
 
 use super::error::Fault;
@@ -47,6 +47,15 @@ pub(super) fn variant_to_column(variant: Variant) -> Result<String, Fault> {
 }
 
 pub(super) fn variant_from_column(text: &str) -> Result<Variant, Fault> {
+    Ok(serde_json::from_str(text)?)
+}
+
+pub(super) fn options_to_column(options: GameOptions) -> Result<String, Fault> {
+    Ok(serde_json::to_string(&options)?)
+}
+
+/// Missing fields read as the default rules, so `{}` (every row before P6-06) is the default.
+pub(super) fn options_from_column(text: &str) -> Result<GameOptions, Fault> {
     Ok(serde_json::from_str(text)?)
 }
 
