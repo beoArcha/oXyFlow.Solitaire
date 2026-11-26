@@ -18,7 +18,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
 | 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | done | 59 | 0 |
-| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 16 | 3 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 16 | 4 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner; the solver, hint and interface cards moved from phase 6 | planned | 1 | 23 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
 | 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
@@ -88,7 +88,7 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
 5. Phase 5 (0.5): P3-32 and P3-33 (Small) → P3-34 and P3-35 (Medium) → P5-03 (Small); P5-04 Golf (Medium) and P5-05 Spider solver
    (Medium) in parallel. **Milestone: 0.5.**
 6. Phase 6 (0.6, now): done except the review follow-ups O-125 (Medium), O-126 (Small) and O-124 (Small), in
-   parallel (no shared files), then the gate. **Milestone: 0.6.** The other open phase 6 cards moved to phase 7
+   parallel (no shared files), and O-127 (Medium, after O-125: one Medium at a time), then the gate. **Milestone: 0.6.** The other open phase 6 cards moved to phase 7
    (review 2026-11-26).
 7. Phase 7 (0.7): P7-04 (Small) → P7-05 (Medium, after its DRAFT is final); the dev screenshots P7-06 → P7-07 →
    P7-08 → P7-09 (Medium). **Milestone: 0.7.** Alongside, the cards moved from phase 6, in this order (phase-7.md,
@@ -350,6 +350,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-124 | Help, Keys tab: the keys of the game menu | Small | O-123 | TODO |
 | O-125 | How to play: the rules tab follows the game's options | Medium | P6-06 | TODO |
 | O-126 | Seed screen: difficulty levels and played seeds under game options | Small | P6-06 | TODO |
+| O-127 | A scroll bar on the game menu and the Settings list | Medium | O-123 | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |

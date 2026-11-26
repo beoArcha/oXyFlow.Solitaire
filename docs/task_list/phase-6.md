@@ -12,7 +12,7 @@ Order of work: the theme data first (P3-36, then P6-18), then the game, then the
 its card).
 
 Phase 6 review (2026-11-26): the exit criteria are met. Before the gate: O-125, O-126 and O-124, which close the gaps
-P6-06 and O-123 left. The other open cards of this phase (the solver and hint cards O-115, P6-10, P6-11, P6-13 to P6-17,
+P6-06 and O-123 left, and O-127 (owner request 2026-11-27). The other open cards of this phase (the solver and hint cards O-115, P6-10, P6-11, P6-13 to P6-17,
 and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 
 ### P3-36 — Themes as data and the interface size scale
@@ -294,6 +294,38 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 - **Acceptance:** tests: levels available with default options, dimmed with the reason line with any non-default option
   of the variant, and an option of another game does not dim them; a played seed recorded with options replays with
   those options while the settings hold others; every offered locale fits at 100 × 30.
+
+### O-127 — A scroll bar on the game menu and the Settings list
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-27 (screenshots of the game menu and of Settings, Audio & Visual tab).
+- **Depends on:** O-123
+- **Files:** `crates/tui/src/screens/game_select/{list,draw}.rs`, `crates/tui/src/screens/game_select.rs` (mouse
+  routing only), `crates/tui/src/screens/settings/{view,plan,list}.rs`, `crates/tui/src/screens/settings.rs` (mouse
+  routing only), `crates/tui/src/widgets/scrollbar/mod.rs` (only if a small helper is missing), `docs/tech/ui-inventory.md`,
+  tests (`game_select/fold_scroll_tests.rs`, `settings/tests.rs` or a new test file beside them)
+- **Problem:**
+  - The game menu shows only a muted `↑` / `↓` (`^` / `v`) mark at the edges of the list (O-123). It is easy to miss
+    and does not say how long the list is or where the view is.
+  - The Settings list scrolls with no mark at all; only the title says "row 21 of 27", so the hidden rows below the
+    last visible one are not visible as such.
+  - Statistics, Help and How to play already have the shared scroll bar `widgets/scrollbar` (a one-column track with a
+    thumb, WGL4 blocks or `#` / `:` in ASCII, click on the track pages, drag the thumb).
+- **Fix:**
+  - The game menu list and the Settings list draw the shared scroll bar at the right edge of the list whenever the list
+    is longer than its view (`Metrics::scrolls`); no bar when everything fits.
+  - Game menu: the bar replaces the `↑` / `↓` edge marks (their click becomes a click on the track, which pages); the
+    wheel, Page Up / Page Down and Home / End keep working as in O-123, and dragging the thumb scrolls the list; the
+    focus stays on a visible row as O-123 requires.
+  - Settings: the bar follows the scroll of the rows of the active tab; a click on the track pages and dragging the
+    thumb scrolls, with the focus moved to the nearest visible row; the title "row N of M" stays.
+  - The bar must not cover a label, value or the `◄ ►` arrows of a row, nor the preview pane: the list gives up one
+    column for it, and the layout still fits at 100 × 30 at every interface size and in every locale.
+  - No new colour: the bar reads without colour, as the shared widget already does.
+- **Acceptance:** tests: the bar appears in the game menu and in Settings only when the list scrolls, at 100 × 30 and a
+  tall window; its thumb moves with the keys and the wheel; a click on the track pages and a drag scrolls, in Unicode
+  and ASCII; the old edge-mark tests are replaced by bar tests; no row text is cut by the bar in any offered locale;
+  `docs/tech/ui-inventory.md` describes the bar instead of the edge marks.
 
 ### P6-12 — Solver: no heap allocation per node
 
