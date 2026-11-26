@@ -163,26 +163,34 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   empty stock; full knowledge may differ. TUI tests: the setting changes the hint; every complete locale. The hints-only
   table of T-48 measured for both knowledge modes.
 
-### O-116 — The `e` key in the possible moves and on the `Do:` row, after `a` and before `s`
+### O-116 — The bottom bar: `a`, `e` and `s` by preference, only the ones that are available
 
 - **Owner:** Medium
-- **Priority:** P2. Owner report 2026-11-25 (follow-up of O-110).
+- **Priority:** P2. Owner report 2026-11-25 (follow-up of O-110); scope clarified by the owner 2026-11-26.
 - **Depends on:** O-110
-- **Files:** `crates/tui/src/screens/board/{moves_panel,guidance,priority}.rs` (and the guidance part file split out by
-  O-110), `locales/*/board.toml` (only if a label is missing), tests
-- **Problem:** the waste quick move (`e`, `Action::WasteQuickMove`, O-110) works, but it is missing from the possible
-  moves panel and window (`v`), and in practice it does not appear on the `Do:` row: its drop order (`WASTE_QUICK = 11`)
-  comes after the stock (`STOCK = 10`), so it is the first of the three to go when the row is narrow.
+- **Files:** `crates/tui/src/screens/board/{moves_panel,guidance,guidance_parts,priority}.rs`, `locales/*/board.toml`
+  (only if a label is missing), tests
+- **Problem:** the `Do:` row has little room, and the quick move (`a`), the waste quick move (`e`, O-110) and the stock
+  (`s`) are three keys for the same kind of thing: "play the obvious move" in different situations. Today they compete
+  for the room by a fixed drop order (`QUICK = 9`, `STOCK = 10`, `WASTE_QUICK = 11`), so `e` is the first to go, and the
+  row can spend its room on a key that does nothing at the moment.
 - **Fix:**
-  - The moves panel and window list the waste quick move whenever the waste card can move (with its key `e`), and show
-    it unavailable with the existing reasons otherwise (no waste card, no target, quick move off).
-  - On the `Do:` row the three keep this order and drop order: **1. `a`** (quick move), **2. `e`** (waste quick move),
-    **3. `s`** (stock). `e` is shown whenever the waste card can move, also when the cursor is not on the waste; when
-    the cursor is on the waste, `a` already covers it and `e` is not repeated.
-- **Acceptance:** tests for Klondike draw 1 and draw 3, Pyramid and Australian Patience: `e` in the moves panel and
-  window with its key, unavailable with the right reason; the `Do:` row at 100 × 30 and 130 × 40 shows `a`, `e`, `s` in
-  that order, and when the row narrows `s` drops before `e` and `e` before `a`; every offered locale fits; quick move off
-  hides `e` as it hides `a`.
+  - The `Do:` row does not reserve room for all three. It offers **only the ones that are available now**, in the order
+    of preference **`a` → `e` → `s`**, as many as fit after the other parts. A key that cannot do anything (no movable
+    card under the cursor for `a`, no waste card with a target for `e`, a stock that cannot be dealt or turned for `s`)
+    is not shown at all and leaves its room to the next one.
+  - Two keys that would make the same move are shown once, by the first in the preference: when the cursor is on the
+    waste, `a` already plays the waste card, so `e` is not shown.
+  - The drop order follows the preference: `QUICK`, then `WASTE_QUICK`, then `STOCK` (`s` goes first when the row is
+    narrow, then `e`, then `a`). The other numbers in `priority.rs` keep their relative order.
+  - Quick move off (O-114) hides `a` and `e`; `s` then stands alone.
+  - The possible moves panel and window (`v`) list the waste quick move with its key `e` when the waste card can move,
+    and show it unavailable with the existing reasons otherwise (no waste card, no target, quick move off).
+- **Acceptance:** tests for Klondike draw 1 and draw 3, Pyramid and Australian Patience: only available keys are shown;
+  with all three available the row at 130 × 40 shows `a`, `e`, `s` in that order; at 100 × 30 and narrower `s` drops
+  before `e` and `e` before `a`; with `a` not available, `e` and `s` take its room; with the cursor on the waste `e` is
+  not shown; a stock that cannot be dealt or turned hides `s`; quick move off hides `a` and `e`; the moves panel and
+  window list `e`; every offered locale fits.
 
 ### O-117 — A setting for `e`: off, semi-automatic (to the focused pile) or automatic
 
@@ -209,6 +217,109 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   Semi-automatic plays onto a legal focused pile (column and foundation) and refuses an illegal one with the right
   reason, without moving the cursor; Automatic equals today's result; the labels change with the mode; an old settings
   file loads as Automatic; every offered locale fits at 100 × 30.
+
+### O-118 — Esc on the main menu asks whether to quit
+
+- **Owner:** Small
+- **Priority:** P2. Owner request 2026-11-26.
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/main_menu.rs`, `crates/tui/src/screens/main_menu/tests.rs`, `locales/*/menu.toml`
+  (only if the text of the board quit question cannot be reused), tests
+- **Problem:** on the start screen (the item list of the main menu) Esc does nothing (`main_menu.rs:73`), so a player
+  who presses Esc to leave gets no answer.
+- **Fix:** Esc on the item list opens the same confirmation modal as `q` on the board (`board.confirm.quit`, two
+  buttons, keyboard and mouse); confirm quits, cancel or a second Esc returns to the list with the focus where it was.
+  Esc keeps its current meaning in the seed entry, the game picker and the game search (one step back there). The key
+  line of the list shows Esc with the quit label; `q` keeps quitting at once as today.
+- **Acceptance:** tests: Esc on the list opens the modal; confirm quits; cancel and Esc close it and keep the focus;
+  Esc in the seed entry, the picker and the search still goes back; the key line fits at 100 × 30 in every offered
+  locale.
+
+### O-119 — Quick options always offer New game, Restart and the winnable check
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-26.
+- **Depends on:** O-115 (the check), O-117 (it edits the same dialog first)
+- **Files:** `crates/tui/src/widgets/overlay/quick_options.rs` (237 LOC; split the buttons out if it passes 300),
+  `crates/tui/src/widgets/overlay/{dialog,render_tests,focus_tests}.rs`, `crates/tui/src/screens/board/commands.rs`,
+  `locales/*/board.toml`, tests
+- **Problem:** the `Do:` row drops Restart and New game when it is narrow, and the quick options dialog (`o`) offers
+  only the aids, "Save as default" and Close, so there is no one place where these are always reachable.
+- **Fix:** the quick options dialog always has, above "Save as default" and Close, a row of three action buttons:
+  - **New game (`n`)**: the same confirmation as `n` on the board.
+  - **Restart (`r`)**: the same confirmation as `r` on the board.
+  - **Winnable? (`w`)**: the check of O-115, both questions at once: **this deal** (can the seed be won) and **from
+    here** (can the current position still be won). The answers appear in the dialog with their signs (`✓`, `✗`, `?` and
+    the ASCII forms) and the wording of O-115; a variant without a solver says the check is not available. The check
+    runs in the background and the dialog stays responsive; closing the dialog does not cancel it, a move does.
+  - The buttons join the focus ring (Tab, arrows) and have mouse targets; the keys `n`, `r` and `w` work while the
+    dialog is open.
+- **Acceptance:** tests: the three buttons are always present, at 100 × 30 too, in every variant; each starts the same
+  effect as its board key; the winnable answers appear for the deal and for the position with their signs; a variant
+  without a solver shows "not available"; focus order and mouse targets; every offered locale fits.
+
+### O-120 — Settings: clear game history and statistics (soft delete)
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-26.
+- **Depends on:** —
+- **Files:** `src/storage/{schema,sqlite,history}.rs`, the storage trait in `crates/tui` it implements,
+  `crates/tui/src/screens/settings/**` (a row and its confirmation), `crates/tui/src/screens/stats.rs` (it reads only
+  rows that are not deleted), `locales/*/settings.toml`, `tests/integration/migration.rs`, tests
+- **Problem:** the player cannot clear the memory of played games and the statistics.
+- **Fix:**
+  - A **soft delete**, owner rule: no data migration. The `games` table gets one column
+    `is_deleted INTEGER NOT NULL DEFAULT 0`, added by a single `ALTER TABLE ... ADD COLUMN` appended to `MIGRATIONS`
+    (that list is the only way this schema adds a column). No row is rewritten, copied or removed, and nothing else in
+    the schema changes.
+  - **Clear history and statistics** sets `is_deleted = 1` on every game row in one statement. Every read of history,
+    statistics, the played-seed marks and the stored proofs ignores deleted rows; new games are written as before.
+  - The saved game in progress is not touched (Resume still works).
+  - In Settings (Gameplay tab) a row **Clear history and statistics** opens a confirmation modal that says what is
+    cleared and that the game cannot undo it; keyboard and mouse.
+- **Acceptance:** tests: an old database opens and gets the column with every row not deleted; clearing marks every
+  row; statistics, history, played-seed marks and proofs are empty afterwards and fill again with new games; the saved
+  game survives; the confirmation can be cancelled; every offered locale fits at 100 × 30.
+
+### O-121 — Achievements: a menu entry and the latest one in the top right corner
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-26.
+- **Depends on:** O-120 (deleted games do not count)
+- **Decision:** T-50 (the implementer completes the row with the trait, the storage and the list)
+- **Files:** `crates/core/src/achievements/**` (new: the rules, pure, no clock or files), `src/storage/{schema,sqlite}.rs`
+  (a new table), `crates/tui/src/screens/achievements.rs` (new), `crates/tui/src/screens/{mod,main_menu}.rs` (the menu
+  entry), `crates/tui/src/screens/board/header.rs` and `crates/tui/src/screens/main_menu.rs` (the latest one in the top
+  right corner), `locales/*/achievements.toml` (new), `docs/tech/architecture.md`, `docs/tech/decisions.md` (T-50), tests
+- **Problem:** the game has no achievements.
+- **Fix:**
+  - **Design (SOLID):** one small trait per rule, for example
+    `trait Achievement { fn id(&self) -> AchievementId; fn earned(&self, event: &GameEvent, history: &HistoryView) -> bool; }`,
+    each achievement in its own type, and a registry that is a list of them. Adding an achievement means adding one type
+    and one entry in the list, without touching the other rules or the checker (single responsibility, open/closed). The
+    checker gets the events (game started, game won, game restarted, …) and a read-only view of the history; it knows
+    nothing of the terminal or the database (the application passes the storage in behind a trait).
+  - When a rule is met for the first time, the achievement is **stored** with its time in a new table
+    `achievements (id TEXT PRIMARY KEY, earned_at INTEGER NOT NULL)` and is never earned twice. Clearing the history
+    (O-120) does not remove earned achievements.
+  - **First list:**
+    - **First game:** the first game started.
+    - **First win:** the first game won.
+    - **Every game of a group won:** one achievement per game family (Klondike, Spider, FreeCell, Pyramid, the Yukon
+      family, Golf, …) for winning each of its variants at least once.
+    - **Every game started:** every variant started at least once.
+    - **Restart:** the first restarted game.
+  - **Menu:** an **Achievements** entry in the main menu opens a screen with every achievement: earned ones with the
+    date, the others with what is needed. Earned and not earned differ by a sign as well as colour.
+  - **Top right corner:** the latest earned achievement (sign and name) stands in the top right corner of the main menu
+    and the board header when there is room, and is the first thing dropped when there is not. A new one is also
+    announced once on the status line.
+- **Open questions for the owner (before dispatch):** the rest of the list (the last item of the request was left
+  blank); whether a game won with hints, the winnable check or undo counts as a win; whether clearing the history should
+  also clear achievements.
+- **Acceptance:** core tests per rule; adding a rule in a test needs no change to the checker; an achievement is stored
+  once and survives a restart of the app; the screen lists earned and not earned with signs; the corner shows the latest
+  and is dropped first at 100 × 30; every offered locale fits.
 
 ## Order of the solver and hint cards
 
