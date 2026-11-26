@@ -13,6 +13,7 @@ use super::seed_levels::{self, LevelSeed, Lookup};
 use super::seed_played::Played;
 use crate::action::Action;
 use crate::i18n::t;
+use crate::storage::GameRecord;
 use crate::widgets::footer::{FooterMap, KeyHint};
 use crate::widgets::menu_list::MenuList;
 use oxysol_core::curated;
@@ -28,6 +29,13 @@ pub enum Outcome {
     Start {
         variant: Variant,
         seed: u64,
+    },
+    /// Deal a played game again, with the options and the undo mode it was played with.
+    Replay {
+        variant: Variant,
+        seed: u64,
+        options: GameOptions,
+        undo_allowed: bool,
     },
 }
 
@@ -54,6 +62,16 @@ const LIST_FOOTER: [KeyHint; 2] = [
 const NO_PLAYED_KEY: &str = "menu.seed.played_none";
 const LEVELS_STANDARD_KEY: &str = "menu.seed.levels_standard_only";
 const UNREADABLE_KEY: &str = "menu.seed.history_unreadable";
+
+/// The replay of a played game, as the statistics replay deals it.
+const fn replay_of(game: &GameRecord) -> Outcome {
+    Outcome::Replay {
+        variant: game.variant,
+        seed: game.seed,
+        options: game.options,
+        undo_allowed: game.undo_allowed,
+    }
+}
 
 /// Whether the curated levels, rated for the standard rules, apply to `variant` under `options`.
 pub(super) fn levels_offered(variant: Variant, options: GameOptions) -> bool {
@@ -294,11 +312,8 @@ impl SeedScreen {
     }
 
     fn random_replay(&mut self) -> Outcome {
-        match self.played.random_seed() {
-            Some(seed) => Outcome::Start {
-                variant: self.variant,
-                seed,
-            },
+        match self.played.random_game() {
+            Some(game) => replay_of(game),
             None => {
                 self.notice = Some(self.empty_notice());
                 Outcome::Stay
@@ -307,12 +322,7 @@ impl SeedScreen {
     }
 
     fn start_played(&self, index: usize) -> Outcome {
-        self.played
-            .seed_at(index)
-            .map_or(Outcome::Stay, |seed| Outcome::Start {
-                variant: self.variant,
-                seed,
-            })
+        self.played.game_at(index).map_or(Outcome::Stay, replay_of)
     }
 
     fn start_level(&self, index: usize) -> Outcome {

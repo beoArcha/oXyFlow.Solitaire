@@ -75,16 +75,16 @@ impl Played {
         self.games.is_empty()
     }
 
-    /// The seed of the game at `index`, newest first.
-    pub fn seed_at(&self, index: usize) -> Option<u64> {
-        self.games.get(index).map(|game| game.seed)
+    /// The game at `index`, newest first.
+    pub fn game_at(&self, index: usize) -> Option<&GameRecord> {
+        self.games.get(index)
     }
 
-    /// The seed of one played game, picked from the fresh seed; `None` when no game was played.
-    pub fn random_seed(&self) -> Option<u64> {
+    /// One played game, picked from the fresh seed; `None` when no game was played.
+    pub fn random_game(&self) -> Option<&GameRecord> {
         let count = u64::try_from(self.games.len()).ok()?;
         let index = usize::try_from(SplitMix64::new(self.fresh_seed).below(count)).ok()?;
-        self.seed_at(index)
+        self.game_at(index)
     }
 
     /// One row per game: `2026-11-20 18:04 · Won · seed 1234`.

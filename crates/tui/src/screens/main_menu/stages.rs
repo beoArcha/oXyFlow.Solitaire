@@ -40,6 +40,20 @@ impl MainMenu {
                     undo_allowed: ctx.settings.undo_allowed,
                 }
             }
+            Outcome::Replay {
+                variant,
+                seed,
+                options,
+                undo_allowed,
+            } => {
+                self.stage = Stage::Items;
+                Effect::Replay {
+                    variant,
+                    seed,
+                    options,
+                    undo_allowed,
+                }
+            }
         }
     }
 
