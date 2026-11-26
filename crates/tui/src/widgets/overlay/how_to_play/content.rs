@@ -6,12 +6,13 @@ use super::state::Rules;
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::{binding_for, primary_key};
+use crate::layout::InterfaceSize;
 pub use crate::widgets::text::wrap;
 
 /// Rows of text visible at once at 100 by 30, the smallest window: the first value before any event.
 pub const VIEW_ROWS: usize = 20;
-/// Columns of text per row.
-pub const TEXT_WIDTH: usize = 76;
+/// Columns of text per row at the default interface scale (`M`).
+pub const TEXT_WIDTH: usize = InterfaceSize::M.scale().how_to_play.text_width;
 
 const BULLET: &str = "- ";
 const KEY_GAP: usize = 2;
@@ -69,9 +70,9 @@ pub fn keys_of(actions: &[Action]) -> String {
     }
 }
 
-fn push_led(rows: &mut Vec<Row>, lead: &str, kind: Kind, text: &str) {
+fn push_led(rows: &mut Vec<Row>, lead: &str, kind: Kind, text: &str, text_width: usize) {
     let lead_width = lead.chars().count();
-    let lines = wrap(text, TEXT_WIDTH.saturating_sub(lead_width));
+    let lines = wrap(text, text_width.saturating_sub(lead_width).max(1));
     for (index, line) in lines.into_iter().enumerate() {
         let first = index == 0;
         rows.push(Row {
@@ -101,14 +102,26 @@ fn push_heading(rows: &mut Vec<Row>, key: &str) {
     });
 }
 
-fn push_paragraphs(rows: &mut Vec<Row>, keys: &[&str], bullets: bool, params: &[(&str, &str)]) {
+fn push_paragraphs(
+    rows: &mut Vec<Row>,
+    keys: &[&str],
+    bullets: bool,
+    params: &[(&str, &str)],
+    text_width: usize,
+) {
     let lead = if bullets { BULLET } else { "" };
     for key in keys {
-        push_led(rows, lead, Kind::Body, &tf(key, params));
+        push_led(rows, lead, Kind::Body, &tf(key, params), text_width);
     }
 }
 
-fn push_controls(rows: &mut Vec<Row>, list: &[Control], note: &str, params: &[(&str, &str)]) {
+fn push_controls(
+    rows: &mut Vec<Row>,
+    list: &[Control],
+    note: &str,
+    params: &[(&str, &str)],
+    text_width: usize,
+) {
     let keys: Vec<String> = list
         .iter()
         .map(|control| keys_of(control.actions))
@@ -121,13 +134,25 @@ fn push_controls(rows: &mut Vec<Row>, list: &[Control], note: &str, params: &[(&
         + KEY_GAP;
     for (control, keys) in list.iter().zip(&keys) {
         let lead = format!("{keys:<key_width$}");
-        push_led(rows, &lead, Kind::Key, &tf(control.text, params));
+        push_led(
+            rows,
+            &lead,
+            Kind::Key,
+            &tf(control.text, params),
+            text_width,
+        );
     }
-    push_led(rows, "", Kind::Body, &tf(note, params));
+    push_led(rows, "", Kind::Body, &tf(note, params), text_width);
 }
 
-/// Every row of the page of `rules`: goal, layout, moves, controls and tips.
+/// Every row of the page of `rules` at the default interface scale: goal, layout, moves, controls
+/// and tips.
 pub fn rows(rules: Rules) -> Vec<Row> {
+    rows_for(rules, TEXT_WIDTH)
+}
+
+/// Every row of the page of `rules`, word-wrapped to `text_width` columns.
+pub fn rows_for(rules: Rules, text_width: usize) -> Vec<Row> {
     let page = page(rules);
     let owned = placeholders();
     let params: Vec<(&str, &str)> = owned
@@ -136,14 +161,20 @@ pub fn rows(rules: Rules) -> Vec<Row> {
         .collect();
     let mut rows = Vec::new();
     push_heading(&mut rows, "rules.section.goal");
-    push_paragraphs(&mut rows, page.goal, false, &params);
+    push_paragraphs(&mut rows, page.goal, false, &params, text_width);
     push_heading(&mut rows, "rules.section.layout");
-    push_paragraphs(&mut rows, page.layout, true, &params);
+    push_paragraphs(&mut rows, page.layout, true, &params, text_width);
     push_heading(&mut rows, "rules.section.moves");
-    push_paragraphs(&mut rows, page.moves, true, &params);
+    push_paragraphs(&mut rows, page.moves, true, &params, text_width);
     push_heading(&mut rows, "rules.section.controls");
-    push_controls(&mut rows, page.controls, page.controls_note, &params);
+    push_controls(
+        &mut rows,
+        page.controls,
+        page.controls_note,
+        &params,
+        text_width,
+    );
     push_heading(&mut rows, "rules.section.tips");
-    push_paragraphs(&mut rows, page.tips, true, &params);
+    push_paragraphs(&mut rows, page.tips, true, &params, text_width);
     rows
 }

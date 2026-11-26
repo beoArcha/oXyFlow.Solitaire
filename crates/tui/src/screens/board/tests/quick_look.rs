@@ -203,3 +203,53 @@ fn the_aura_row_has_the_settings_name_in_every_complete_locale() {
     }
     set_locale(Locale::EnUs);
 }
+
+#[test]
+fn needs_columns_in_quick_options_and_settings_follows_the_chosen_step() {
+    use crate::layout::InterfaceSize;
+    use crate::settings::Aid;
+
+    let aids = Settings::default().aids();
+    assert!(
+        !Aid::GuidePanel
+            .value_for_size(&aids, 126, InterfaceSize::S)
+            .contains("126")
+    );
+    assert!(
+        Aid::GuidePanel
+            .value_for_size(&aids, 125, InterfaceSize::S)
+            .contains("126")
+    );
+    assert!(
+        Aid::GuidePanel
+            .value_for_size(&aids, 129, InterfaceSize::M)
+            .contains("130")
+    );
+    assert!(
+        Aid::GuidePanel
+            .value_for_size(&aids, 130, InterfaceSize::L)
+            .contains("134")
+    );
+    assert!(
+        Aid::GuidePanel
+            .value_for_size(&aids, 130, InterfaceSize::XL)
+            .contains("138")
+    );
+
+    for step in [InterfaceSize::L, InterfaceSize::XL] {
+        let mut h = game_with(
+            Settings {
+                interface_size: step,
+                ..Settings::default()
+            },
+            (130, 40),
+        );
+        open(&mut h);
+        let needed = step.scale().chrome.standard_min_width.to_string();
+        assert!(
+            h.text().contains(&needed),
+            "expected {needed} columns notice at 130 cols for {step:?}\n{}",
+            h.text()
+        );
+    }
+}

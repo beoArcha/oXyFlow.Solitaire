@@ -9,6 +9,7 @@ use ratatui::symbols::border;
 use ratatui::text::Line;
 use ratatui::widgets::{Block, Clear, Paragraph, Wrap};
 
+use crate::layout::{DialogScale, InterfaceSize};
 use crate::mouse::contains;
 use crate::screens::ViewCtx;
 use crate::theme::Token;
@@ -37,12 +38,7 @@ pub struct Text {
 }
 
 const BORDER_ROWS: u16 = 2;
-const CHROME_COLUMNS: u16 = 4;
 const BUTTON_ROWS: u16 = 2;
-const BUTTON_GAP: u16 = 2;
-const MARKER_COLUMNS: u16 = 4;
-const MAX_TEXT_COLUMNS: u16 = 64;
-const MIN_COLUMNS: u16 = 24;
 
 const ASCII_BORDER: border::Set<'static> = border::Set {
     top_left: "+",
@@ -59,13 +55,17 @@ fn columns_of(text: &str) -> u16 {
     u16::try_from(text.chars().count()).unwrap_or(u16::MAX)
 }
 
-fn button_width(button: &Button) -> u16 {
-    columns_of(&button.label).saturating_add(MARKER_COLUMNS)
+fn button_width(button: &Button, scale: DialogScale) -> u16 {
+    columns_of(&button.label).saturating_add(scale.marker_columns)
 }
 
-fn buttons_width(buttons: &[Button]) -> u16 {
-    let labels: u16 = buttons.iter().map(button_width).sum();
-    labels.saturating_add(BUTTON_GAP * u16::try_from(buttons.len().saturating_sub(1)).unwrap_or(0))
+fn buttons_width(buttons: &[Button], scale: DialogScale) -> u16 {
+    let labels: u16 = buttons
+        .iter()
+        .map(|button| button_width(button, scale))
+        .sum();
+    let gaps = u16::try_from(buttons.len().saturating_sub(1)).unwrap_or(0);
+    labels.saturating_add(scale.button_gap * gaps)
 }
 
 /// A rectangle of the given size centered in `area` (clamped to `area`).
@@ -99,27 +99,40 @@ pub fn wrapped_rows(text: &str, width: u16) -> u16 {
     rows
 }
 
-fn button_rects(inner: Rect, buttons: &[Button]) -> Vec<Rect> {
+fn button_rects(inner: Rect, buttons: &[Button], scale: DialogScale) -> Vec<Rect> {
     if buttons.is_empty() || inner.height < BUTTON_ROWS {
         return Vec::new();
     }
     let y = inner.bottom() - 1;
-    let spare = inner.width.saturating_sub(buttons_width(buttons));
+    let spare = inner.width.saturating_sub(buttons_width(buttons, scale));
     let mut x = inner.x.saturating_add(spare / 2);
     buttons
         .iter()
         .map(|button| {
-            let width = button_width(button);
+            let width = button_width(button, scale);
             let rect = Rect::new(x, y, width, 1).intersection(inner);
-            x = x.saturating_add(width).saturating_add(BUTTON_GAP);
+            x = x.saturating_add(width).saturating_add(scale.button_gap);
             rect
         })
         .collect()
 }
 
 /// A box of `width` columns and `body_rows` text rows, plus the buttons' row when there are
-/// buttons, centered in `area`. The text area is the box without its border and button row.
+/// buttons, centered in `area`, at the default interface scale (`M`).
+#[cfg(test)]
 pub fn boxed(area: Rect, width: u16, body_rows: u16, buttons: &[Button]) -> Geometry {
+    boxed_for(area, width, body_rows, buttons, InterfaceSize::default())
+}
+
+/// Like [`boxed`], using `size`'s button gap and button marker geometry.
+pub fn boxed_for(
+    area: Rect,
+    width: u16,
+    body_rows: u16,
+    buttons: &[Button],
+    size: InterfaceSize,
+) -> Geometry {
+    let scale = size.scale().dialog;
     let button_rows = if buttons.is_empty() { 0 } else { BUTTON_ROWS };
     let frame = centered(area, width, body_rows + BORDER_ROWS + button_rows);
     let inner = Rect::new(
@@ -137,32 +150,39 @@ pub fn boxed(area: Rect, width: u16, body_rows: u16, buttons: &[Button]) -> Geom
     Geometry {
         frame,
         body,
-        buttons: button_rects(inner, buttons),
+        buttons: button_rects(inner, buttons, scale),
     }
 }
 
 impl Text {
-    /// The box that fits the text and the buttons, centered in `area`.
-    pub fn geometry(&self, area: Rect) -> Geometry {
+    fn wanted_width(&self, scale: DialogScale) -> u16 {
         let widest = self
             .lines
             .iter()
             .map(|line| columns_of(line))
             .max()
             .unwrap_or(0)
-            .min(MAX_TEXT_COLUMNS);
-        let wanted = widest
-            .max(buttons_width(&self.buttons))
+            .min(scale.max_text_columns);
+        widest
+            .max(buttons_width(&self.buttons, scale))
             .max(columns_of(&self.title).saturating_add(2))
-            .max(MIN_COLUMNS)
-            .saturating_add(CHROME_COLUMNS);
-        let text_width = wanted.saturating_sub(CHROME_COLUMNS);
+            .max(scale.min_columns)
+            .saturating_add(scale.chrome_columns)
+    }
+
+    /// The box that fits the text and the buttons, centered in `area` at `size` (falling back
+    /// to smaller steps when `area` is narrower than requested).
+    pub fn geometry_for(&self, area: Rect, size: InterfaceSize) -> Geometry {
+        let resolved = size.fit(|scale| self.wanted_width(scale.dialog) <= area.width);
+        let scale = resolved.scale().dialog;
+        let wanted = self.wanted_width(scale);
+        let text_width = wanted.saturating_sub(scale.chrome_columns);
         let rows: u16 = self
             .lines
             .iter()
             .map(|line| wrapped_rows(line, text_width))
             .sum();
-        boxed(area, wanted, rows, &self.buttons)
+        boxed_for(area, wanted, rows, &self.buttons, resolved)
     }
 
     /// Draws the box, the text and the buttons.

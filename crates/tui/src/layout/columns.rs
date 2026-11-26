@@ -4,14 +4,11 @@
 use oxysol_core::{DrawCount, PileRef, PileSnapshot, Rank, Variant};
 use ratatui::layout::Rect;
 
-use super::fan::{fan_with, fits_cleanly};
-use super::size::{CardSize, FAN_BUDGET, spacing};
+use super::fan::{fan_for, fits_cleanly};
+use super::scale::{FanScale, InterfaceSize, Scale};
+use super::size::{CardSize, FAN_BUDGET, cap_limit, spacing_with};
 use super::{BoardGeometry, PileGeometry};
 
-const MIN_GAP: u16 = 1;
-/// Extra width between the group of cells and the group of foundations on the top row, so the two
-/// zones read apart. It is added to the fit check and to every column from the first foundation on.
-const GROUP_GAP: u16 = 2;
 const FAN_CARDS: u16 = 3;
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -64,17 +61,35 @@ fn columns_for(counts: Counts, size: CardSize, (waste_step, gap): (u16, u16), fa
     counts.tableau.max(left + counts.foundations)
 }
 
-/// The extra width of the board: [`GROUP_GAP`] when the top row has both cells and foundations.
-fn group_gap(counts: Counts) -> u16 {
+/// The extra width of the board: `gap` when the top row has both cells and foundations.
+fn group_gap(counts: Counts, gap: u16) -> u16 {
     if counts.cells > 0 && counts.foundations > 0 {
-        GROUP_GAP
+        gap
     } else {
         0
     }
 }
 
-fn row_width(columns: u16, size: CardSize, gap: u16, counts: Counts) -> u16 {
-    columns * size.width + columns.saturating_sub(1) * gap + group_gap(counts)
+fn row_width(columns: u16, size: CardSize, gap: u16, counts: Counts, group: u16) -> u16 {
+    columns * size.width + columns.saturating_sub(1) * gap + group_gap(counts, group)
+}
+
+fn fits_bounds(counts: Counts, fanned: bool, size: CardSize, area: Rect, scale: &Scale) -> bool {
+    let columns = columns_for(
+        counts,
+        size,
+        (scale.fan.waste_step(size), scale.gaps.min_gap),
+        fanned,
+    );
+    let width = row_width(
+        columns,
+        size,
+        scale.gaps.min_gap,
+        counts,
+        scale.gaps.group_gap,
+    );
+    let height = 2 * size.height + scale.fan.row_gap(size) + FAN_BUDGET;
+    width <= area.width && height <= area.height
 }
 
 fn fits(
@@ -84,18 +99,18 @@ fn fits(
     size: CardSize,
     area: Rect,
     wider_fan: bool,
+    scale: &Scale,
 ) -> bool {
-    let columns = columns_for(counts, size, (size.waste_step(), MIN_GAP), fanned);
-    let width = row_width(columns, size, MIN_GAP, counts);
-    let height = 2 * size.height + size.row_gap() + FAN_BUDGET;
-    if width > area.width || height > area.height {
+    if !fits_bounds(counts, fanned, size, area, scale) {
         return false;
     }
-    let room = area.height.saturating_sub(size.height + size.row_gap());
+    let room = area
+        .height
+        .saturating_sub(size.height + scale.fan.row_gap(size));
     piles
         .iter()
         .filter(|pile| matches!(pile.pile, PileRef::Tableau(_)))
-        .all(|pile| fits_cleanly(&pile.cards, size, room, wider_fan))
+        .all(|pile| fits_cleanly(&pile.cards, size, room, wider_fan, scale.fan))
 }
 
 struct Grid {
@@ -106,6 +121,7 @@ struct Grid {
     waste_step: u16,
     fanned: bool,
     wider_fan: bool,
+    fan_scale: FanScale,
     top_y: u16,
     tableau: Rect,
     group_gap: u16,
@@ -120,21 +136,40 @@ impl Grid {
         area: Rect,
         limit: Option<CardSize>,
         wider_fan: bool,
+        interface_size: InterfaceSize,
     ) -> Self {
+        let scale = interface_size
+            .fit(|scale| fits_bounds(counts, fanned, CardSize::smallest(), area, scale))
+            .scale();
+        let limit = cap_limit(limit, scale.card_cap);
         let size = CardSize::largest_fit_within(limit, |size| {
-            fits(counts, fanned, piles, size, area, wider_fan)
+            fits(counts, fanned, piles, size, area, wider_fan, scale)
         });
-        let group_gap = group_gap(counts);
-        let wide_step = size.wide_waste_step();
-        let wide_cols = columns_for(counts, size, (wide_step, MIN_GAP), fanned);
-        let waste_step = if wider_fan && row_width(wide_cols, size, MIN_GAP, counts) <= area.width {
+        let group_gap = group_gap(counts, scale.gaps.group_gap);
+        let wide_step = scale.fan.wide_waste_step(size);
+        let wide_cols = columns_for(counts, size, (wide_step, scale.gaps.min_gap), fanned);
+        let waste_step = if wider_fan
+            && row_width(
+                wide_cols,
+                size,
+                scale.gaps.min_gap,
+                counts,
+                scale.gaps.group_gap,
+            ) <= area.width
+        {
             wide_step
         } else {
-            size.waste_step()
+            scale.fan.waste_step(size)
         };
-        let columns = columns_for(counts, size, (waste_step, MIN_GAP), fanned);
-        let (gap, margin) = spacing(area.width.saturating_sub(group_gap), columns, size.width);
-        let tableau_y = (area.y + size.height + size.row_gap()).min(area.bottom());
+        let columns = columns_for(counts, size, (waste_step, scale.gaps.min_gap), fanned);
+        let (gap, margin) = spacing_with(
+            area.width.saturating_sub(group_gap),
+            columns,
+            size.width,
+            scale.gaps.min_gap,
+            scale.gaps.max_gap,
+        );
+        let tableau_y = (area.y + size.height + scale.fan.row_gap(size)).min(area.bottom());
         let columns = columns_for(counts, size, (waste_step, gap), fanned);
         Self {
             size,
@@ -144,6 +179,7 @@ impl Grid {
             waste_step,
             fanned,
             wider_fan,
+            fan_scale: scale.fan,
             top_y: area.y,
             tableau: Rect::new(area.x, tableau_y, area.width, area.bottom() - tableau_y),
             group_gap,
@@ -203,7 +239,13 @@ impl Grid {
     fn column(&self, pile: &PileSnapshot, column: u16) -> PileGeometry {
         let x = self.column_x(column);
         let y = self.tableau.y;
-        let fan = fan_with(&pile.cards, self.size, self.tableau.height, self.wider_fan);
+        let fan = fan_for(
+            &pile.cards,
+            self.size,
+            self.tableau.height,
+            self.wider_fan,
+            self.fan_scale,
+        );
         let cards = fan
             .ys
             .iter()
@@ -233,10 +275,19 @@ pub(super) fn compute(
     area: Rect,
     limit: Option<CardSize>,
     wider_fan: bool,
+    interface_size: InterfaceSize,
 ) -> BoardGeometry {
     let counts = Counts::of(piles);
     let fanned = variant == Variant::Klondike(DrawCount::Three);
-    let grid = Grid::new(counts, fanned, piles, area, limit, wider_fan);
+    let grid = Grid::new(
+        counts,
+        fanned,
+        piles,
+        area,
+        limit,
+        wider_fan,
+        interface_size,
+    );
     let waste_column = u16::from(counts.stock);
     let cells_column = waste_column + if counts.waste { grid.waste_columns } else { 0 };
     let placed = piles

@@ -21,9 +21,12 @@ use ratatui::crossterm::event::{KeyCode, KeyEvent, MouseEvent};
 use ratatui::layout::Rect;
 
 pub use self::state::{HowToPlay, Rules};
-pub use self::view::{draw, geometry};
+#[cfg(test)]
+pub use self::view::geometry;
+pub use self::view::{draw, geometry_for};
 use super::dialog;
 use crate::action::Action;
+use crate::layout::InterfaceSize;
 use crate::mouse;
 use crate::screens::Effect;
 use crate::widgets::scrollbar;
@@ -31,14 +34,30 @@ use crate::widgets::scrollbar;
 const PAGE_LINES: i32 = 19;
 const WHEEL_LINES: i32 = 3;
 
-/// Handles a key while the window is open. `None` keeps it open; `Some(effect)` closes it.
+/// Handles a key while the window is open at the default scale.
+#[cfg(test)]
 pub fn handle(
     state: &mut HowToPlay,
     key: &KeyEvent,
     action: Option<Action>,
     area: Rect,
 ) -> Option<Effect> {
-    state.set_view(view::text_rows(area));
+    handle_for(state, key, action, area, InterfaceSize::default())
+}
+
+/// Handles a key while the window is open. `None` keeps it open; `Some(effect)` closes it.
+pub fn handle_for(
+    state: &mut HowToPlay,
+    key: &KeyEvent,
+    action: Option<Action>,
+    area: Rect,
+    size: InterfaceSize,
+) -> Option<Effect> {
+    let scale = view::scale_in(area, size);
+    state.set_layout(
+        view::text_rows_for(area, size),
+        scale.how_to_play.text_width,
+    );
     match key.code {
         KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
@@ -58,17 +77,24 @@ pub fn handle(
 
 /// Handles a mouse event: the wheel scrolls, a click on an arrow or a tab switches the game, a
 /// click on Close closes the window (`Some`). `area` is the whole screen.
-pub fn handle_mouse(state: &mut HowToPlay, area: Rect, event: &MouseEvent) -> Option<Effect> {
-    let geometry = geometry(area);
+pub fn handle_mouse_for(
+    state: &mut HowToPlay,
+    area: Rect,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
+    let scale = view::scale_in(area, size);
+    let geometry = geometry_for(area, size);
     let parts = view::parts(geometry.body);
-    state.set_view(parts.text.height);
+    let text_width = scale.how_to_play.text_width;
+    state.set_layout(parts.text.height, text_width);
     match mouse::wheel_action(event) {
         Some(Action::Up) => state.scroll_by(-WHEEL_LINES),
         Some(Action::Down) => state.scroll_by(WHEEL_LINES),
         _ => {}
     }
     let track = scrollbar::track_of(parts.text);
-    let metrics = state.metrics(track.height);
+    let metrics = state.metrics_for(track.height, text_width);
     if let Some(line) = scrollbar::handle_mouse(event, track, metrics, &mut state.drag) {
         state.scroll_to_line(line);
     }
@@ -76,7 +102,11 @@ pub fn handle_mouse(state: &mut HowToPlay, area: Rect, event: &MouseEvent) -> Op
     if dialog::button_at(&geometry, cell).is_some() {
         return Some(Effect::None);
     }
-    click_games(state, view::tabs(parts.game_tabs), cell);
+    click_games(
+        state,
+        view::tabs_for(parts.game_tabs, &scale.how_to_play),
+        cell,
+    );
     None
 }
 

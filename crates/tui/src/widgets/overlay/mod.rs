@@ -12,7 +12,7 @@ mod focus_tests;
 #[cfg(test)]
 mod footer_tests;
 mod graphics_check;
-mod guide_window;
+pub mod guide_window;
 mod help;
 #[cfg(test)]
 mod help_height_tests;
@@ -50,7 +50,7 @@ use ratatui::widgets::{Block, Clear};
 pub use self::command_line::CommandLine;
 use self::dialog::{Button, Geometry, Text};
 pub use self::graphics_check::GraphicsCheck;
-pub use self::guide_window::{GuideWindow, TEXT_WIDTH};
+pub use self::guide_window::GuideWindow;
 pub use self::help_keys::HelpKeys;
 pub use self::how_to_play::{HowToPlay, Rules};
 pub use self::moves_window::MovesWindow;
@@ -60,7 +60,7 @@ pub use self::win::PersonalBest;
 use crate::action::Action;
 use crate::app::{Modal, Screen, SearchCommand};
 use crate::i18n::t;
-use crate::layout::chrome;
+use crate::layout::{InterfaceSize, chrome};
 use crate::mouse;
 use crate::screens::board::BoardScreen;
 use crate::screens::focus::{step, tab_forward};
@@ -115,14 +115,25 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
     }
 }
 
+#[cfg(test)]
 fn geometry(area: Rect, modal: &Modal, board: &BoardScreen, now: Instant) -> Geometry {
+    geometry_for(area, modal, board, now, InterfaceSize::default())
+}
+
+fn geometry_for(
+    area: Rect,
+    modal: &Modal,
+    board: &BoardScreen,
+    now: Instant,
+    size: InterfaceSize,
+) -> Geometry {
     match (modal, text_of(modal, board, now)) {
-        (_, Some(text)) => text.geometry(area),
-        (Modal::HowToPlay(_), None) => how_to_play::geometry(area),
-        (Modal::Guide(_), None) => guide_window::geometry(area),
-        (Modal::Moves(state), None) => moves_window::geometry(area, state),
-        (Modal::Quick(state), None) => quick_options::geometry(area, state),
-        (_, None) => help::geometry(area),
+        (_, Some(text)) => text.geometry_for(area, size),
+        (Modal::HowToPlay(_), None) => how_to_play::geometry_for(area, size),
+        (Modal::Guide(_), None) => guide_window::geometry_for(area, size),
+        (Modal::Moves(state), None) => moves_window::geometry_for(area, state, size),
+        (Modal::Quick(state), None) => quick_options::geometry_for(area, state, size),
+        (_, None) => help::geometry_for(area, size),
     }
 }
 
@@ -142,7 +153,7 @@ pub fn draw(
     }
     match (modal, text_of(modal, board, ctx.now)) {
         (_, Some(text)) => {
-            let geometry = text.geometry(area);
+            let geometry = text.geometry_for(area, ctx.settings.interface_size);
             text.draw(frame, &geometry, ctx);
             FooterMap::default()
         }
@@ -224,9 +235,9 @@ fn press(modal: &Modal, index: usize) -> Effect {
     }
 }
 
-fn click_help_button(area: Rect, event: &MouseEvent) -> Option<Effect> {
+fn click_help_button(area: Rect, event: &MouseEvent, size: InterfaceSize) -> Option<Effect> {
     let cell = mouse::left_press(event)?;
-    dialog::button_at(&help::geometry(area), cell).map(|_| Effect::None)
+    dialog::button_at(&help::geometry_for(area, size), cell).map(|_| Effect::None)
 }
 
 /// The game the Rules tab opens on: the one on the board, Klondike without a game.
@@ -249,16 +260,29 @@ pub fn handle(modal: &mut Modal, key: &KeyEvent, action: Option<Action>) -> Opti
     )
 }
 
-/// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
-/// then applies `effect` (`Effect::None` just closes). `rules` is the game the Rules tab opens on
-/// and `area` is the whole screen, the same area [`draw`] received: the Help tabs scroll by the
-/// text rows that the box shows at this size.
+/// Handles a key while `modal` is open at the default scale.
+#[cfg(test)]
 pub fn handle_for(
     modal: &mut Modal,
     key: &KeyEvent,
     action: Option<Action>,
     rules: Rules,
     area: Rect,
+) -> Option<Effect> {
+    handle_for_size(modal, key, action, rules, area, InterfaceSize::default())
+}
+
+/// Handles a key while `modal` is open. `None` keeps the modal open; `Some(effect)` closes it and
+/// then applies `effect` (`Effect::None` just closes). `rules` is the game the Rules tab opens on
+/// and `area` is the whole screen, the same area [`draw`] received: the Help tabs scroll by the
+/// text rows that the box shows at this size and scale.
+pub fn handle_for_size(
+    modal: &mut Modal,
+    key: &KeyEvent,
+    action: Option<Action>,
+    rules: Rules,
+    area: Rect,
+    size: InterfaceSize,
 ) -> Option<Effect> {
     if let Modal::Guide(state) = modal {
         return guide_window::handle(state, key, action);
@@ -275,9 +299,9 @@ pub fn handle_for(
             return None;
         }
         return match modal {
-            Modal::HowToPlay(state) => how_to_play::handle(state, key, action, area),
-            Modal::CommandLine(state) => command_line::handle(state, key, action, area),
-            Modal::Help(state) => help_keys::handle_key(state, key, action, area),
+            Modal::HowToPlay(state) => how_to_play::handle_for(state, key, action, area, size),
+            Modal::CommandLine(state) => command_line::handle_for(state, key, action, area, size),
+            Modal::Help(state) => help_keys::handle_key_for(state, key, action, area, size),
             _ => nav::close_help(key, action),
         };
     }
@@ -304,8 +328,8 @@ pub fn handle_for(
     }
 }
 
-/// Handles a mouse event while `modal` is open: a click on a button presses it, any other event
-/// keeps the modal open. `area` is the whole screen, the same area [`draw`] received.
+/// Handles a mouse event at the default interface scale.
+#[cfg(test)]
 pub fn handle_mouse(
     modal: &mut Modal,
     area: Rect,
@@ -313,29 +337,42 @@ pub fn handle_mouse(
     now: Instant,
     event: &MouseEvent,
 ) -> Option<Effect> {
+    handle_mouse_for(modal, area, board, now, event, InterfaceSize::default())
+}
+
+/// Handles a mouse event while `modal` is open: a click on a button presses it, any other event
+/// keeps the modal open. `area` is the whole screen, the same area [`draw`] received.
+pub fn handle_mouse_for(
+    modal: &mut Modal,
+    area: Rect,
+    board: &BoardScreen,
+    now: Instant,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
     if let Modal::Guide(state) = modal {
-        return guide_window::handle_mouse(state, area, event);
+        return guide_window::handle_mouse_for(state, area, event, size);
     }
     if let Modal::Moves(state) = modal {
-        return moves_window::handle_mouse(state, area, event);
+        return moves_window::handle_mouse_for(state, area, event, size);
     }
     if let Modal::Quick(state) = modal {
-        return quick_options::handle_mouse(state, area, event);
+        return quick_options::handle_mouse_for(state, area, event, size);
     }
     if nav::tab_of(modal).is_some() {
-        let body = geometry(area, modal, board, now).body;
+        let body = geometry_for(area, modal, board, now, size).body;
         if let Some(target) = nav::clicked_tab(modal, body, event) {
             *modal = nav::modal_for(target, rules_of(board));
             return None;
         }
         return match modal {
-            Modal::HowToPlay(state) => how_to_play::handle_mouse(state, area, event),
-            Modal::CommandLine(state) => command_line::handle_mouse(state, area, event),
-            Modal::Help(state) => help_keys::handle_mouse(state, area, event),
-            _ => click_help_button(area, event),
+            Modal::HowToPlay(state) => how_to_play::handle_mouse_for(state, area, event, size),
+            Modal::CommandLine(state) => command_line::handle_mouse_for(state, area, event, size),
+            Modal::Help(state) => help_keys::handle_mouse_for(state, area, event, size),
+            _ => click_help_button(area, event, size),
         };
     }
     let cell = mouse::left_press(event)?;
-    let index = dialog::button_at(&geometry(area, modal, board, now), cell)?;
+    let index = dialog::button_at(&geometry_for(area, modal, board, now, size), cell)?;
     Some(press(modal, index))
 }

@@ -159,6 +159,7 @@ fn value_text_with(
         Field::FontFace | Field::FontSize => font_rows::value_text(field, settings),
         Field::Colors => t(color_key(settings.color_mode)).into_owned(),
         Field::CardSize => t(settings.card_size.label_key()).into_owned(),
+        Field::InterfaceSize => t(settings.interface_size.label_key()).into_owned(),
         Field::AuraColour => t(settings.aura_colour.label_key()).into_owned(),
         Field::AuraStyle => t(settings.aura_style.label_key()).into_owned(),
         Field::AuraSize => t(settings.aura_size.label_key()).into_owned(),
@@ -251,7 +252,7 @@ pub fn line_with_custom(
         value = format!("{value} ({})", t("settings.value.unavailable"));
     }
     if let Some(aid) = field.aid() {
-        value = aid.value_for(&settings.aids(), columns);
+        value = aid.value_for_size(&settings.aids(), columns, settings.interface_size);
     }
     let framed = match arrows {
         Some((left, right)) if !is_unavailable(field, audio_available, facts) => {

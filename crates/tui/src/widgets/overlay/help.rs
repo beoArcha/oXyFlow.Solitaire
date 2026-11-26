@@ -11,24 +11,17 @@ use ratatui::widgets::Paragraph;
 
 use super::dialog::{self, Button, Geometry};
 use super::help_keys::HelpKeys;
-use super::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs, help_footer_segments};
+use super::tabs::{self, HelpTab, draw_footer_buttons, draw_top_tabs, help_footer_segments};
 use crate::action::{Action, HelpGroup};
 use crate::i18n::{t, tf};
 use crate::input::{KEY_TABLE, KeySpec, primary_key};
+use crate::layout::{HelpScale, InterfaceSize, Scale};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::footer::FooterMap;
 use crate::widgets::scrollbar;
 
-const GAP: u16 = 4;
-const KEY_PADDING: usize = 2;
 const LEFT_TOPICS: usize = 2;
-const DIALOG_MIN_WIDTH: u16 = 80;
-/// The share of the terminal height the window takes, in percent. A share of 60 covers the logo,
-/// whose top row sits at about a quarter of the height, from above at every terminal height.
-const SHARE_PERCENT: u16 = 60;
-const MIN_FRAME_ROWS: u16 = 28;
-const MAX_FRAME_ROWS: u16 = 40;
 /// Rows of the box that are not text on the Keys tab: the borders, the tab row, the separator row,
 /// the footer row and the button row.
 const KEYS_CHROME_ROWS: u16 = 7;
@@ -39,16 +32,18 @@ pub(super) const VIEW_ROWS: usize = 21;
 const RULE_UNICODE: &str = "─";
 const RULE_ASCII: &str = "-";
 
-/// Rows of the box, borders and buttons included, in `area`. Every Help tab uses this height, so
-/// switching tabs does not move the window.
-pub(super) fn frame_rows(area: Rect) -> u16 {
-    let share = area.height.saturating_mul(SHARE_PERCENT) / 100;
-    share.clamp(MIN_FRAME_ROWS, MAX_FRAME_ROWS).min(area.height)
+/// Rows of the box, borders and buttons included, in `area` at `scale`.
+pub(super) fn frame_rows_for(area: Rect, scale: &HelpScale) -> u16 {
+    let share = area.height.saturating_mul(scale.share_percent) / 100;
+    share
+        .clamp(scale.min_frame_rows, scale.max_frame_rows)
+        .min(area.height)
 }
 
-/// Text rows of the Keys tab and the Command line tab in `area`.
-pub(super) fn view_rows(area: Rect) -> u16 {
-    frame_rows(area).saturating_sub(KEYS_CHROME_ROWS)
+/// Text rows of the Keys tab and the Command line tab in `area` at `size`.
+pub(super) fn view_rows_for(area: Rect, size: InterfaceSize) -> u16 {
+    let scale = scale_in(area, size);
+    frame_rows_for(area, &scale.help).saturating_sub(KEYS_CHROME_ROWS)
 }
 /// The top tab row, the text, the separator row and the footer row of the box body.
 pub(super) fn parts(body: Rect) -> (Rect, Rect, Rect, Rect) {
@@ -155,6 +150,10 @@ pub(super) struct Columns {
 
 impl Columns {
     pub(super) fn new() -> Self {
+        Self::new_for(InterfaceSize::default().scale().help.key_padding)
+    }
+
+    pub(super) fn new_for(key_padding: usize) -> Self {
         let mut sections = sections();
         let right = sections.split_off(LEFT_TOPICS.min(sections.len()));
         let key_width = sections
@@ -164,7 +163,7 @@ impl Columns {
             .map(|row| row.keys.chars().count())
             .max()
             .unwrap_or(0)
-            + KEY_PADDING;
+            + key_padding;
         Self {
             left: sections,
             right,
@@ -212,24 +211,50 @@ pub(crate) fn buttons() -> Vec<Button> {
     }]
 }
 
-/// The box of the help window, centered in `area`.
+fn width_for_scale(columns: &Columns, scale: &HelpScale) -> u16 {
+    (columns.width_of(&columns.left) + scale.gap + columns.width_of(&columns.right) + 4)
+        .max(scale.min_width)
+        .max(tabs::rules_footer_min_width())
+}
+
+/// The resolved scale step for the help window inside `area` (falls back if narrower than `area`).
+pub(super) fn scale_in(area: Rect, size: InterfaceSize) -> &'static Scale {
+    size.fit(|scale| {
+        if scale.help.min_width > area.width {
+            return false;
+        }
+        scale.size <= InterfaceSize::M
+            || width_for_scale(&Columns::new_for(scale.help.key_padding), &scale.help) <= area.width
+    })
+    .scale()
+}
+
+/// The box of the help window, centered in `area` at the default interface scale.
+#[cfg(test)]
 pub(super) fn geometry(area: Rect) -> Geometry {
-    let columns = Columns::new();
-    let width = (columns.width_of(&columns.left) + GAP + columns.width_of(&columns.right) + 4)
-        .max(DIALOG_MIN_WIDTH);
-    dialog::boxed(
+    geometry_for(area, InterfaceSize::default())
+}
+
+/// The box of the help window, centered in `area` at `size`.
+pub(super) fn geometry_for(area: Rect, size: InterfaceSize) -> Geometry {
+    let scale = scale_in(area, size);
+    let columns = Columns::new_for(scale.help.key_padding);
+    let width = width_for_scale(&columns, &scale.help);
+    dialog::boxed_for(
         area,
         width,
-        frame_rows(area).saturating_sub(BOX_CHROME_ROWS),
+        frame_rows_for(area, &scale.help).saturating_sub(BOX_CHROME_ROWS),
         &buttons(),
+        scale.size,
     )
 }
 
 /// Draws the help window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) -> FooterMap {
-    let geometry = geometry(area);
+    let scale = scale_in(area, ctx.settings.interface_size);
+    let geometry = geometry_for(area, ctx.settings.interface_size);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
-    let columns = Columns::new();
+    let columns = Columns::new_for(scale.help.key_padding);
     let (top_tab_row, text, rule, footer) = parts(geometry.body);
     draw_top_tabs(frame, top_tab_row, HelpTab::Keys, true, ctx);
     let body = Rect {
@@ -238,7 +263,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HelpKeys, ctx: &ViewCtx<'_>) 
     };
     let [left, _, right] = Layout::horizontal([
         Constraint::Length(columns.width_of(&columns.left)),
-        Constraint::Length(GAP),
+        Constraint::Length(scale.help.gap),
         Constraint::Fill(1),
     ])
     .areas(body);

@@ -24,7 +24,7 @@ pub use color_vision::ColorVision;
 pub use console_face::{CONSOLE_FONT_SIZES, ConsoleFace};
 pub use dock::DockSide;
 pub use full_screen::{Decision, FullScreen, TerminalKind, decide};
-pub use interface::{AuraColour, AuraSize, AuraStyle};
+pub use interface::{AuraColour, AuraSize, AuraStyle, InterfaceSize};
 pub use low_vision::{LOW_VISION_MIN_FONT_SIZE, LowVisionBackup};
 pub use priority::ProcessPriority;
 pub use table::{TableColour, TableFeel};
@@ -144,6 +144,9 @@ pub struct Settings {
     pub table_feel: TableFeel,
     /// The card size on the board. An older saved value without the field loads as `Auto`.
     pub card_size: CardSizeSetting,
+    /// The interface scale step (`S`, `M`, `L`, `XL`). An older saved value without the field
+    /// loads as `M`.
+    pub interface_size: InterfaceSize,
     /// The colour of the aura. An older saved value without the field loads as `Theme`.
     pub aura_colour: AuraColour,
     /// How the aura is drawn. An older saved value without the field loads as `Halo`.
@@ -201,6 +204,7 @@ impl Default for Settings {
             table_colour: TableColour::Theme,
             table_feel: TableFeel::Plain,
             card_size: CardSizeSetting::Auto,
+            interface_size: InterfaceSize::M,
             aura_colour: AuraColour::Theme,
             aura_style: AuraStyle::Halo,
             aura_size: AuraSize::Thin,

@@ -14,6 +14,7 @@ use super::help;
 use super::tabs::{HelpTab, draw_footer_buttons, draw_top_tabs, help_footer_segments};
 use crate::action::Action;
 use crate::i18n::t;
+use crate::layout::InterfaceSize;
 use crate::mouse;
 use crate::screens::{Effect, ViewCtx};
 use crate::widgets::footer::FooterMap;
@@ -97,13 +98,14 @@ pub(super) fn is_heading(line: &str) -> bool {
 }
 
 /// Handles a key while the tab is open. `None` keeps it open; `Some(effect)` closes it.
-pub fn handle(
+pub fn handle_for(
     state: &mut CommandLine,
     key: &KeyEvent,
     action: Option<Action>,
     area: Rect,
+    size: InterfaceSize,
 ) -> Option<Effect> {
-    state.set_view(help::view_rows(area));
+    state.set_view(help::view_rows_for(area, size));
     match key.code {
         KeyCode::PageUp => state.scroll_by(-PAGE_LINES),
         KeyCode::PageDown => state.scroll_by(PAGE_LINES),
@@ -121,8 +123,13 @@ pub fn handle(
 
 /// Handles a mouse event: the wheel scrolls, a click on Close closes the tab (`Some`). `area` is
 /// the whole screen.
-pub fn handle_mouse(state: &mut CommandLine, area: Rect, event: &MouseEvent) -> Option<Effect> {
-    let geometry = geometry(area);
+pub fn handle_mouse_for(
+    state: &mut CommandLine,
+    area: Rect,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
+    let geometry = geometry_for(area, size);
     let text = parts(geometry.body).text;
     state.set_view(text.height);
     match mouse::wheel_action(event) {
@@ -162,14 +169,14 @@ struct Parts {
     footer: Rect,
 }
 
-/// The box of the tab: the same as the other tabs, so switching does not move the window.
-pub fn geometry(area: Rect) -> Geometry {
-    help::geometry(area)
+/// The box of the tab at `size`: the same as the other tabs, so switching does not move it.
+pub fn geometry_for(area: Rect, size: InterfaceSize) -> Geometry {
+    help::geometry_for(area, size)
 }
 
 /// Draws the tab over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &CommandLine, ctx: &ViewCtx<'_>) -> FooterMap {
-    let geometry = geometry(area);
+    let geometry = geometry_for(area, ctx.settings.interface_size);
     dialog::draw_box(frame, &geometry, &t("common.dialog.help_title"), ctx);
     let Parts {
         tabs,

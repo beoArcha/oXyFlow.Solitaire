@@ -19,15 +19,15 @@ mod dock_tests;
 pub mod dock_view;
 #[cfg(test)]
 mod hint_tests;
-use crate::layout::BOARD_MIN_WIDTH;
+use crate::layout::{BOARD_MIN_WIDTH, InterfaceSize};
 use crate::mouse;
 use crate::screens::Effect;
 use crate::settings::DockSide;
 
-/// Narrowest docked window, the width of the guide panel.
-pub const MIN_WIDTH: u16 = 30;
-/// Widest docked window; wider screens leave the rest to the board.
-pub const MAX_WIDTH: u16 = 60;
+/// Narrowest docked window at the default scale, matching the guide panel width.
+pub const MIN_WIDTH: u16 = InterfaceSize::M.scale().dock.min_width;
+/// Widest docked window at the default scale; wider screens leave the rest to the board.
+pub const MAX_WIDTH: u16 = InterfaceSize::M.scale().dock.max_width;
 const WHEEL_LINES: i32 = 3;
 const ARROW_HIT: u16 = 2;
 
@@ -48,17 +48,31 @@ pub struct Parts {
     pub footer: Rect,
 }
 
-/// Columns of a docked window on a screen of `area`: the room beyond the board's minimum width,
-/// between [`MIN_WIDTH`] and [`MAX_WIDTH`]. `None` when the room is too small for the window.
-pub fn width_in(area: Rect) -> Option<u16> {
+/// Columns of a docked window on a screen of `area` at `size`: the room beyond the board's
+/// minimum width, between the scale's `min_width` and `max_width`. `None` when the room is too
+/// small for the window.
+pub fn width_in_for(area: Rect, size: InterfaceSize) -> Option<u16> {
+    let dock = size.scale().dock;
     let room = area.width.checked_sub(BOARD_MIN_WIDTH)?;
-    (room >= MIN_WIDTH).then_some(room.min(MAX_WIDTH))
+    (room >= dock.min_width).then_some(room.min(dock.max_width))
 }
 
-/// The docked window's rectangle and the rest of the screen beside it, for `side` on `area`.
-/// `None` when the window stays centred or the screen is too narrow to dock it.
+/// Columns of a docked window on a screen of `area` at the default scale.
+#[cfg(test)]
+pub fn width_in(area: Rect) -> Option<u16> {
+    width_in_for(area, InterfaceSize::default())
+}
+
+/// The docked window's rectangle and the rest of the screen beside it, for `side` on `area` at
+/// the default interface scale.
 pub fn split(area: Rect, side: DockSide) -> Option<(Rect, Rect)> {
-    let width = width_in(area)?;
+    split_for(area, side, InterfaceSize::default())
+}
+
+/// The docked window's rectangle and the rest of the screen beside it, for `side` on `area` at
+/// `size`. `None` when the window stays centred or the screen is too narrow to dock it.
+pub fn split_for(area: Rect, side: DockSide, size: InterfaceSize) -> Option<(Rect, Rect)> {
+    let width = width_in_for(area, size)?;
     let rest = area.width - width;
     match side {
         DockSide::Centre => None,

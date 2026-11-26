@@ -249,12 +249,12 @@ All sizes are terminal cells. There is no font size in the program (section 4.3)
 
 ### 3.1 Card size classes
 
-`SIZES` lists four card sizes, largest first (`layout/size.rs:10-16`). They are the only card size
-classes; "Compact/Standard/Wide" are screen classes (section 3.5). Derived values come from the formulas
-in `layout/size.rs`; the centre face comes from `widgets/card/face.rs:19-28` applied to the interior
-(card minus its border).
+`SIZES` lists four card sizes, largest first (`layout/size.rs`). They are the only card size classes;
+"Compact/Standard/Wide" are screen classes (section 3.4). `SCALES` (`layout/scale_table.rs`) sets the
+card cap (`card_cap`), fan deltas (`FanScale`), gaps (`GapsScale`), chrome (`ChromeScale`), and modal
+sizes per `InterfaceSize` step (`S`, `M`, `L`, `XL`). Table values below show the default `M` step:
 
-| Size W×H | Row gap (`size.rs:43-45`) | Up step (`:48-51`) | Down step (`:54-57`) | Pyramid step (`:60-62`) | Waste step (`:66-68`) | Centre face (derived from `face.rs:19-28`) | Changed by |
+| Size W×H | Row gap (`scale.rs`) | Up step (`scale.rs`) | Down step (`scale.rs`) | Pyramid step (`scale.rs`) | Waste step (`scale.rs`) | Centre face (`face.rs`) | Changed by |
 |---|---|---|---|---|---|---|---|
 | 13×11 | 2 | 5 | 2 | 5 | 7 | Large: text row + 7×4 suit (`art.rs:18-32`) | interface size (P6-18) |
 | 11×9 | 2 | 4 | 2 | 4 | 6 | Medium: text row + 5×3 suit | interface size (P6-18) |
@@ -265,83 +265,83 @@ Text row width: `face.rs:31-35` uses two spaces between rank and suit at interio
 one space otherwise. Corner labels (rank and suit) are always on the top border row (`widgets/card/rows.rs:31-33`)
 and the bottom row (`rows.rs:55-57`).
 
-**When a size is chosen.** `CardSize::largest_fit` picks the first size in `SIZES` that fits; if none
-fits, it takes 7×5 (`layout/size.rs:35-40`, `smallest` at `:30-32`).
-- Columns (Klondike, Spider, FreeCell): `layout/columns.rs:84`, with `fits` at `columns.rs:64-69`:
-  width = columns·W + (columns−1)·1 ≤ area width (`MIN_GAP = 1`, `columns.rs:11`), and
-  height = 2·H + row gap + `FAN_BUDGET` (14, `layout/size.rs:20`) ≤ area height.
-  Column count: `columns.rs:54-62`. Klondike Draw Three is the only variant that fans the waste
-  (`columns.rs:168`).
-- Pyramid: `layout/pyramid.rs:56` with `fits` at `pyramid.rs:17-19`: 7·W ≤ area width and
-  (7−1)·pyramid step + 2·H + row gap ≤ area height (`pyramid.rs:13-15`).
-- A card is drawn only if it is at least 3×2 (`widgets/card/mod.rs:110-112`); a back row needs 3×1
-  (`mod.rs:144`).
+**When a size is chosen.** `compute_for_scale` (`layout/mod.rs`) resolves the largest scale step that
+fits `area` (`InterfaceSize::fit`), caps card size at `scale.card_cap`, and `CardSize::largest_fit_within`
+picks the largest fitting size in `SIZES` (else `7×5`, `smallest` at `size.rs`).
+- Columns (Klondike, Spider, FreeCell, Yukon, Golf): `layout/columns.rs`, with `fits_bounds` using
+  `scale.gaps.min_gap`, `scale.gaps.group_gap`, and `scale.fan.row_gap` + `FAN_BUDGET` (14, `layout/size.rs`).
+  Klondike Draw Three is the only variant that fans the waste.
+- Pyramid and TriPeaks: `layout/pyramid.rs` and `layout/tripeaks.rs` using `scale.fan.pyramid_step` and
+  `scale.gaps.tripeaks_base_gap`.
+- A card is drawn only if it is at least 3×2 (`widgets/card/mod.rs`); a back row needs 3×1.
 
-### 3.2 Fan steps (`layout/fan.rs`)
+### 3.2 Fan steps (`layout/fan.rs`, `layout/scale.rs`)
 
-- Natural step of face-up cards: `up = max(H/2, 2)` (`size.rs:48-51`) → 5, 4, 3, 2 for the sizes above.
-- Natural step of face-down cards: `down = max(up/2, 1)` (`size.rs:54-57`) → 2, 2, 1, 1.
-- Growth: when rows are spare, the first plan uses `up + 1` (`fan.rs:78-82`; test `fan.rs:137-146`).
-- Shrinking order (`fan.rs:52-84`): face-down steps shrink first (`shrink_down`), then face-up steps
-  (`shrink_up`), then the leading face-down cards collapse into one counted row (`collapse`, used when
-  the column has ≥2 leading face-down cards and some face-up cards: `fan.rs:101-103`).
-- Last resort: one row per card, the newest ranks visible, older cards stack under each other
-  (`squeezed`, `fan.rs:86-98`).
-- Waste fan: covered waste cards show their left border and corner label; visible width 3 or 4
-  (`columns.rs:40-44`, `covered_width`). Three cards are fanned (`FAN_CARDS = 3`, `columns.rs:12`).
+- Natural step of face-up cards (`M`): `up = max(H/2, 2)` → 5, 4, 3, 2 (`S`/`L`/`XL` apply `FanScale::up_delta` `-1`/`+1`/`+2`).
+- Natural step of face-down cards (`M`): `down = max(up/2, 1)` → 2, 2, 1, 1 (`S`/`L`/`XL` apply `FanScale::down_delta` `-1`/`0`/`+1`).
+- Growth: when rows are spare, the first plan uses `up + 1` (`fan.rs`).
+- Shrinking order (`fan.rs`): face-down steps shrink first (`shrink_down`), then face-up steps
+  (`shrink_up`), then leading face-down cards collapse into one counted row (`collapse`, when ≥2 leading
+  face-down cards precede face-up cards).
+- Last resort: one row per card, the newest ranks visible, older cards stack under each other (`squeezed`).
+- Waste fan: covered waste cards show their left border and corner label; visible width 3 or 4 (`covered_width`).
+  Three cards are fanned (`FAN_CARDS = 3`, `columns.rs`).
 
 ### 3.3 Gaps and margins
 
-| Gap or margin | Value | Source | Changed by |
+| Gap or margin | Value (`M` default) | Source | Changed by |
 |---|---|---|---|
-| Column gap | from 1 up to `MAX_GAP` = 3, grows with the window; centred margin | `layout/size.rs:22` (MAX_GAP), `:73-80` (`spacing`) | interface size (P6-18) |
-| Minimum column gap in the fit test | 1 | `layout/columns.rs:11` | interface size (P6-18) |
-| Row gap above the tableau | 1 (H < 9) or 2 (H ≥ 9) | `layout/size.rs:43-45`, `columns.rs:87` | interface size (P6-18) |
-| Pyramid card pitch | W (cards touch) | `layout/pyramid.rs:62` | interface size (P6-18) |
-| Pyramid base row offset | one extra column between base slots | `layout/pyramid.rs:41` | interface size (P6-18) |
-| Card border | 1 cell on each side | `widgets/card/mod.rs:115` (interior); `widgets/card/face.rs:80` | fixed |
-| Face text band | `TEXT_BAND` = 3, `WIDE_INTERIOR` = 11 | `widgets/card/face.rs:15-16`; `art_offset` at `face.rs:44-47` | interface size (P6-18) |
-| Board header row | 1 row, only without the side panel | `layout/chrome.rs:163` | interface size (P6-18) |
-| Controls strip | 2 rows (`Now:` and `Do:`) under the board | `layout/chrome.rs:167-168` | fixed |
-| Guide panel padding | `SIDE` = 2 columns, `FRAME_ROWS` = 2 | `widgets/guide/mod.rs:25-27` | interface size (P6-18) |
-| Dialog chrome | `CHROME_COLUMNS` 4, `BORDER_ROWS` 2, `BUTTON_ROWS` 2, `BUTTON_GAP` 2, `MARKER_COLUMNS` 4 | `widgets/overlay/dialog.rs:39-43` | interface size (P6-18) |
-| Dialog text margin | 1 column each side | `widgets/overlay/dialog.rs:200` | interface size (P6-18) |
-| Help window | `GAP` 4, `KEY_PADDING` 2, `LEFT_TOPICS` 2 | `widgets/overlay/help.rs:20-22` | interface size (P6-18) |
-| Tabs | `TAB_GAP` 2 | `widgets/overlay/tabs.rs:15` | interface size (P6-18) |
-| Rules tabs | `TAB_PADDING` 2, `TAB_GAP` 1, `ARROW_COLUMNS` 3 | `widgets/overlay/how_to_play/view.rs:24-26` | interface size (P6-18) |
-| Key segments in the guide | `KEY_GAP` 2, `MARKER_WIDTH` 2 | `widgets/guide/keys.rs:18-19` | interface size (P6-18) |
-| Footer buttons | separated by the segments' own spaces (`"   "` between key groups) | `widgets/footer.rs:129-150`; test `footer.rs:183-187` | fixed |
-| Seed buttons, statistics buttons | `BUTTON_GAP` 3 | `screens/main_menu/seed.rs:21`; `screens/stats/view.rs:24` | interface size (P6-18) |
-| Menu list | label width + 2 columns, centred; marker is 1 column plus a space | `widgets/menu_list.rs:82-85`; `screens/focus.rs:36-38` | interface size (P6-18) |
+| Column gap | from `min_gap` (1) up to `max_gap` (3), grows with the window; centred margin | `layout/scale_table.rs` (`GapsScale`), `layout/size.rs` (`spacing_with`) | interface size (P6-18) |
+| Minimum column gap in the fit test | 1 (`S`/`M`/`L`), 2 (`XL`) | `layout/scale_table.rs` (`GapsScale::min_gap`) | interface size (P6-18) |
+| Row gap above the tableau | 1 (H < 9) or 2 (H ≥ 9) (`S`: 1/1, `XL`: 1/3) | `layout/scale_table.rs` (`FanScale::row_gap`), `columns.rs` | interface size (P6-18) |
+| Pyramid card pitch | W (cards touch) | `layout/pyramid.rs` | fixed |
+| Pyramid base row offset | one extra column between base slots | `layout/pyramid.rs` | fixed |
+| Card border | 1 cell on each side | `widgets/card/mod.rs` (interior); `widgets/card/face.rs` | fixed |
+| Face text band | `TEXT_BAND` = 3, `WIDE_INTERIOR` = 11 | `widgets/card/face.rs:15-16`; `art_offset` at `face.rs:44-47` | fixed |
+| Board header row | 1 row, only without the side panel | `layout/chrome.rs` | interface size (P6-18) |
+| Controls strip | 2 rows (`Now:` and `Do:`) under the board | `layout/chrome.rs` | fixed |
+| Guide panel padding | `SIDE` = 2 columns, `FRAME_ROWS` = 2 | `widgets/guide/mod.rs:25-27` | fixed |
+| Dialog chrome | `chrome_columns` 4, `BORDER_ROWS` 2, `BUTTON_ROWS` 2, `button_gap` 2, `marker_columns` 4 | `layout/scale_table.rs` (`DialogScale`), `widgets/overlay/dialog.rs` | interface size (P6-18) |
+| Dialog text margin | 1 column each side | `widgets/overlay/dialog.rs` | fixed |
+| Help window | `gap` 4, `key_padding` 2, `LEFT_TOPICS` 2 | `layout/scale_table.rs` (`HelpScale`), `widgets/overlay/help.rs` | interface size (P6-18) |
+| Tabs | `TAB_GAP` 2 | `widgets/overlay/tabs.rs:16` | fixed |
+| Rules tabs | `tab_padding` 2, `tab_gap` 1, `arrow_columns` 3 | `layout/scale_table.rs` (`HowToPlayScale`), `how_to_play/view.rs` | interface size (P6-18) |
+| Key segments in the guide | `KEY_GAP` 2, `MARKER_WIDTH` 2 | `widgets/guide/keys.rs` | fixed |
+| Footer buttons | separated by the segments' own spaces (`"   "` between key groups) | `widgets/footer.rs`; test `footer.rs` | fixed |
+| Seed buttons, statistics buttons | `BUTTON_GAP` 3 | `screens/main_menu/seed.rs`; `screens/stats/view.rs` | fixed |
+| Menu list | label width + 2 columns, centred; marker is 1 column plus a space | `widgets/menu_list.rs`; `screens/focus.rs` | fixed |
 
-### 3.4 Screen size classes and constants (`layout/chrome.rs`)
+### 3.4 Screen size classes and constants (`layout/chrome.rs`, `layout/scale_table.rs`)
 
-| Constant | Value | Source | Changed by |
+| Constant | Value (`M` default) | Source | Changed by |
 |---|---|---|---|
-| `BOARD_MIN_WIDTH` | 100 columns (board kept beside the panel) | `layout/chrome.rs:92` | fixed |
-| `STANDARD_MIN_WIDTH` | 130 columns (Standard from here) | `layout/chrome.rs:94` | interface size (P6-18) |
-| `WIDE_MIN_WIDTH` | 180 columns (Wide from here) | `layout/chrome.rs:96` | interface size (P6-18) |
-| `GUIDE_WIDTH` | 30 columns, panel of a Standard screen | `layout/chrome.rs:98` | interface size (P6-18) |
-| `GUIDE_WIDTH_WIDE` | 40 columns, panel of a Wide screen | `layout/chrome.rs:100` | interface size (P6-18) |
-| Class | Compact < 130; Standard 130–179; Wide ≥ 180 | `layout/chrome.rs:112-120` | interface size (P6-18) |
-| Panel width | Compact 0; Standard 30; Wide 40 | `layout/chrome.rs:123-129` | interface size (P6-18) |
-| Header row | present only when there is no panel | `layout/chrome.rs:163,173` | own setting (guide/moves panel) |
-| Minimum terminal | 100 × 30; below it the "too small" notice shows | `widgets/too_small.rs:13,15`; `is_too_small` at `:18-20`; checked in `app.rs:222` | fixed |
-| Board size before the first resize | 120 × 40 | `screens/board/mod.rs:45` (`DEFAULT_SCREEN`), set by `resize` at `:228` | fixed |
+| `BOARD_MIN_WIDTH` | 100 columns (board kept beside the panel) | `layout/chrome.rs` | fixed |
+| `STANDARD_MIN_WIDTH` | 130 columns (`S`: 126, `L`: 134, `XL`: 138) | `layout/scale_table.rs` (`ChromeScale`) | interface size (P6-18) |
+| `WIDE_MIN_WIDTH` | 180 columns (`S`: 174, `L`: 186, `XL`: 192) | `layout/scale_table.rs` (`ChromeScale`) | interface size (P6-18) |
+| `GUIDE_WIDTH` | 30 columns (`S`: 26, `L`: 34, `XL`: 38), panel of Standard screen | `layout/scale_table.rs` (`ChromeScale`) | interface size (P6-18) |
+| `GUIDE_WIDTH_WIDE` | 40 columns (`S`: 34, `L`: 46, `XL`: 52), panel of Wide screen | `layout/scale_table.rs` (`ChromeScale`) | interface size (P6-18) |
+| Class | Compact < `standard_min_width`; Standard ..< `wide_min_width`; Wide ≥ `wide_min_width` | `layout/chrome.rs` (`Class::of_for`) | interface size (P6-18) |
+| Panel width | Compact 0; Standard `guide_width`; Wide `guide_width_wide` | `layout/chrome.rs` (`Class::panel_width_for`) | interface size (P6-18) |
+| Header row | present only when there is no panel | `layout/chrome.rs` | own setting / interface size (P6-18) |
+| Minimum terminal | 100 × 30; below it the "too small" notice shows | `widgets/too_small.rs` | fixed |
+| Board size before the first resize | 120 × 40 | `screens/board/mod.rs` (`DEFAULT_SCREEN`), set by `resize` | fixed |
 
 ### 3.5 Modal and window sizes
 
-| Window | Size rule | Source | Changed by |
+| Window | Size rule (`M` default) | Source | Changed by |
 |---|---|---|---|
-| Text dialogs (confirm, pause, win, search; `overlay/mod.rs:47-70`) | width = max(longest line ≤ 64, buttons, title+2, 24) + 4; height = wrapped text rows + 2 border rows (+ 2 when there are buttons); centred and clamped to the area | `widgets/overlay/dialog.rs:39-45` (constants), `:146-165` (`geometry`), `:122-143` (`boxed`), `:72-81` (`centered`) | interface size (P6-18) |
-| Help window | width = max(left column + 4 + right column + 4, **80**); body **23** rows; centred | `widgets/overlay/help.rs:20-24`, `:150-155` | interface size (P6-18) |
-| Guide window (Compact screens, instead of the panel) | box **62** columns (fixed); text **58** columns; **17** text rows, then it scrolls; page 15; wheel 3 | `widgets/overlay/guide_window.rs:22-27`, `:69-71` | interface size (P6-18) |
-| Rules window (How to play) | width of the help window; **20** text rows (`VIEW_ROWS`); text **76** columns (`TEXT_WIDTH`); chrome 3 rows; page 19; wheel 3 | `widgets/overlay/how_to_play/content.rs:12,14`; `view.rs:23`, `:52-56`; `how_to_play/mod.rs:25-26` | interface size (P6-18) |
-| Command line | **21** text rows (`VIEW_ROWS`); page 20; wheel 3; rows 1 + fill + 1 | `widgets/overlay/command_line.rs:23,25-26,139-142` | interface size (P6-18) |
-| Pause | clears the board body; header stays | `widgets/overlay/mod.rs:96-102` | fixed |
-| Controls strip event | **40-column** limit (`EVENT_WIDTH`), and never more than half the row (`min(40, width/2)`); `Now:` gets the rest | `screens/board/controls.rs:19`, `:36` | interface size (P6-18) |
-| Seed entry field | text field **22** columns (`FIELD_WIDTH`), **32** characters (`MAX_LENGTH`) | `screens/main_menu/seed.rs:19-20`, `:143` | fixed |
-| Statistics list | `FIXED_ROWS` 8, `MIN_LIST_ROWS` 5 (history rows always shown), marker 4 columns | `screens/stats/view.rs:20-25` | interface size (P6-18) |
+| Text dialogs (confirm, pause, win, search; `overlay/mod.rs`) | width = max(longest line ≤ `max_text_columns`, buttons, title+2, `min_columns`) + 4; falls back via `InterfaceSize::fit` when wider than `area`; centred and clamped | `layout/scale_table.rs` (`DialogScale`), `widgets/overlay/dialog.rs` (`geometry_for`, `boxed_for`) | interface size (P6-18) |
+| Help window | width = max(left column + `gap` + right column + 4, `min_width` **80**, rules footer min); height share `share_percent`% clamped `[min_frame_rows, max_frame_rows]`; falls back when `L`/`XL` exceeds `area.width` | `layout/scale_table.rs` (`HelpScale`), `widgets/overlay/help.rs` (`geometry_for`) | interface size (P6-18) |
+| Guide window (Compact screens, instead of the panel) | box **62** columns (`S`: 60, `L`: 70, `XL`: 78); text **58** columns; **17** text rows, then scrolls; page 15; wheel 3 | `layout/scale_table.rs` (`GuideWindowScale`), `widgets/overlay/guide_window.rs` | interface size (P6-18) |
+| Rules window (How to play) | width of the help window; **20** text rows (`VIEW_ROWS` at 100×30); text **76** columns (`S`: 70, `L`: 84, `XL`: 92); page 19; wheel 3 | `layout/scale_table.rs` (`HowToPlayScale`), `widgets/overlay/how_to_play/{content,view}.rs` | interface size (P6-18) |
+| Moves window (`Modal::Moves`) | box **54** columns (`S`: 50, `L`: 62, `XL`: 70); height matches entry list | `layout/scale_table.rs` (`MovesWindowScale`), `widgets/overlay/moves_window.rs` | interface size (P6-18) |
+| Quick options (`Modal::Quick`) | box **76** columns (`S`: 74, `L`: 84, `XL`: 92) | `layout/scale_table.rs` (`QuickOptionsScale`), `widgets/overlay/quick_options.rs` | interface size (P6-18) |
+| Command line | **21** text rows at 100×30 (`VIEW_ROWS`); page 20; wheel 3; rows 1 + fill + 1 | `widgets/overlay/command_line.rs`, height from `help::view_rows_for` | interface size (P6-18) |
+| Docked help (`Modal::Help`/`HowToPlay`/`CommandLine`) | column beside board when room ≥ `dock.min_width` (`S`: 26, `M`: 30, `L`: 34, `XL`: 38), capped at `dock.max_width` (`S`: 52, `M`: 60, `L`: 68, `XL`: 76) | `layout/scale_table.rs` (`DockScale`), `widgets/overlay/dock.rs` (`split_for`) | interface size (P6-18) |
+| Pause | clears the board body; header stays | `widgets/overlay/mod.rs` | fixed |
+| Controls strip event | **40-column** limit (`EVENT_WIDTH`), and never more than half the row (`min(40, width/2)`); `Now:` gets the rest | `screens/board/controls.rs` | fixed |
+| Seed entry field | text field **22** columns (`FIELD_WIDTH`), **32** characters (`MAX_LENGTH`) | `screens/main_menu/seed.rs` | fixed |
+| Statistics list | `FIXED_ROWS` 8, `MIN_LIST_ROWS` 5 (history rows always shown), marker 4 columns | `screens/stats/view.rs` | fixed |
 | Settings list | one row per field (12) | `screens/settings.rs:91`; `screens/settings/options.rs:29-42` | fixed |
 | Logo | 5 rows (6 allowed by test), ≤ 60 columns | `widgets/logo.rs:3-17`; test `:30-40` | fixed |
 | Volume step | 10 percent | `screens/settings/options.rs:63` | fixed |

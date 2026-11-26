@@ -73,21 +73,23 @@ impl BoardScreen {
 
     pub(super) fn geometry(&self, piles: &[PileSnapshot]) -> Option<BoardGeometry> {
         let session = self.session.as_ref()?;
-        Some(layout::compute_with(
+        Some(layout::compute_for_scale(
             session.variant(),
             piles,
             self.chrome().body,
             self.card_size.size(),
             self.low_vision,
+            self.interface_size,
         ))
     }
 
     pub(super) fn chrome(&self) -> layout::Chrome {
-        layout::chrome_panels(
+        layout::chrome_panels_for(
             self.screen,
             self.guide_panel,
             self.moves_panel,
             self.field_edge,
+            self.interface_size,
         )
     }
 

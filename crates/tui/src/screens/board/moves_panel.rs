@@ -97,7 +97,8 @@ fn stock_label(session: &Session) -> &'static str {
 impl BoardScreen {
     /// Whether the side panel is drawn: the setting is on and the screen has room for it.
     pub(super) fn moves_shown(&self) -> bool {
-        self.moves_panel && Class::of(self.screen) != Class::Compact
+        self.moves_panel
+            && Class::of_for(self.screen, &self.interface_size.scale().chrome) != Class::Compact
     }
 
     /// Every board action as an entry, active when the guidance lists it as usable. Empty without

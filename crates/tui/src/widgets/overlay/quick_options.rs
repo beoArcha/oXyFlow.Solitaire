@@ -16,13 +16,13 @@ use super::dialog::{self, Button, Geometry};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
+use crate::layout::InterfaceSize;
 use crate::mouse::{self, contains};
 use crate::screens::focus::{marker, step, tab_forward};
 use crate::screens::{Effect, ViewCtx};
 use crate::settings::{Aid, Aids};
 use crate::theme::Token;
 
-const BOX_WIDTH: u16 = 76;
 const AID_ROWS: u16 = Aid::ALL.len() as u16;
 const DESCRIPTION_ROWS: u16 = 2;
 const BODY_ROWS: u16 = 1 + 1 + AID_ROWS + 1 + DESCRIPTION_ROWS + 1;
@@ -90,9 +90,16 @@ fn buttons(state: &QuickOptions) -> Vec<Button> {
     ]
 }
 
-/// The box of the dialog, centered in `area`.
-pub fn geometry(area: Rect, state: &QuickOptions) -> Geometry {
-    dialog::boxed(area, BOX_WIDTH, BODY_ROWS, &buttons(state))
+/// The box of the dialog, centered in `area` at `size`.
+pub fn geometry_for(area: Rect, state: &QuickOptions, size: InterfaceSize) -> Geometry {
+    let resolved = size.fit(|scale| scale.quick_options.box_width <= area.width);
+    dialog::boxed_for(
+        area,
+        resolved.scale().quick_options.box_width,
+        BODY_ROWS,
+        &buttons(state),
+        resolved,
+    )
 }
 
 struct Parts {
@@ -140,7 +147,7 @@ fn row_text(
 ) -> String {
     let name = t(aid.label_key()).into_owned();
     let leaders = ".".repeat(label_width().saturating_sub(name.chars().count()) + 2);
-    let value = aid.value_for(&state.aids, columns);
+    let value = aid.value_for_size(&state.aids, columns, ctx.settings.interface_size);
     format!("{} {name} {leaders} {value}", marker(ctx, focused))
 }
 
@@ -170,7 +177,7 @@ fn footer_text() -> String {
 
 /// Draws the dialog over `area`.
 pub fn draw(frame: &mut Frame, area: Rect, state: &QuickOptions, ctx: &ViewCtx<'_>) {
-    let geometry = geometry(area, state);
+    let geometry = geometry_for(area, state, ctx.settings.interface_size);
     dialog::draw_box(frame, &geometry, &t("board.options.title"), ctx);
     let parts = parts(geometry.body);
     let muted = ctx.theme.style(Token::TextMuted, Token::Surface);
@@ -220,9 +227,14 @@ pub fn handle(state: &mut QuickOptions, _key: &KeyEvent, action: Option<Action>)
 }
 
 /// Handles a mouse event: a click on a row focuses and switches it, a click on a button presses it.
-pub fn handle_mouse(state: &mut QuickOptions, area: Rect, event: &MouseEvent) -> Option<Effect> {
+pub fn handle_mouse_for(
+    state: &mut QuickOptions,
+    area: Rect,
+    event: &MouseEvent,
+    size: InterfaceSize,
+) -> Option<Effect> {
     let cell = mouse::left_press(event)?;
-    let geometry = geometry(area, state);
+    let geometry = geometry_for(area, state, size);
     if let Some(button) = dialog::button_at(&geometry, cell) {
         state.focus = SAVE + button;
         return state.press();

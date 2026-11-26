@@ -34,6 +34,7 @@ pub enum Field {
     FontFace,
     FontSize,
     CardSize,
+    InterfaceSize,
     AuraColour,
     AuraStyle,
     AuraSize,
@@ -51,7 +52,7 @@ pub enum Field {
 }
 
 /// Every setting, in canonical order (Audio & Visual, then Gameplay).
-pub const FIELDS: [Field; 33] = [
+pub const FIELDS: [Field; 34] = [
     Field::Colors,
     Field::FullScreen,
     Field::WindowSize,
@@ -70,6 +71,7 @@ pub const FIELDS: [Field; 33] = [
     Field::FontFace,
     Field::FontSize,
     Field::CardSize,
+    Field::InterfaceSize,
     Field::AuraColour,
     Field::AuraStyle,
     Field::AuraSize,
@@ -221,6 +223,7 @@ impl Field {
                 | Field::FontFace
                 | Field::FontSize
                 | Field::CardSize
+                | Field::InterfaceSize
                 | Field::AuraColour
                 | Field::AuraStyle
                 | Field::AuraSize
@@ -259,6 +262,7 @@ impl Field {
             Field::FontSize => "settings.row.font_size",
             Field::Colors => "settings.row.colors",
             Field::CardSize => "settings.row.card_size",
+            Field::InterfaceSize => "settings.row.interface_size",
             Field::AuraColour => "settings.row.aura_colour",
             Field::AuraStyle => "settings.row.aura_style",
             Field::AuraSize => "settings.row.aura_size",
@@ -307,6 +311,7 @@ impl Field {
             Field::FontSize => "settings.desc.font_size",
             Field::Colors => "settings.desc.colors",
             Field::CardSize => "settings.desc.card_size",
+            Field::InterfaceSize => "settings.desc.interface_size",
             Field::AuraColour => "settings.desc.aura_colour",
             Field::AuraStyle => "settings.desc.aura_style",
             Field::AuraSize => "settings.desc.aura_size",

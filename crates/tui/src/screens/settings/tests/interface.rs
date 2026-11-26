@@ -50,6 +50,7 @@ fn all_interface_rows_live_in_audio_and_visual_and_match_with_interface_of() {
         Field::FontFace,
         Field::FontSize,
         Field::CardSize,
+        Field::InterfaceSize,
         Field::AuraColour,
         Field::AuraStyle,
         Field::AuraSize,
@@ -292,4 +293,21 @@ fn every_row_stays_reachable_at_100_by_30_in_every_offered_language() {
         }
     }
     set_locale(Locale::EnUs);
+}
+
+#[test]
+fn interface_size_previews_at_once_and_reverts_when_declined() {
+    let mut h = open_settings();
+    focus(&mut h, Field::InterfaceSize);
+    h.press(KeyCode::Right);
+    assert_eq!(
+        h.app.settings().interface_size,
+        crate::layout::InterfaceSize::L
+    );
+    assert_eq!(saved(&h), None);
+    leave_and_answer(&mut h, false);
+    assert_eq!(
+        h.app.settings().interface_size,
+        crate::layout::InterfaceSize::M
+    );
 }

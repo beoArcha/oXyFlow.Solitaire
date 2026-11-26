@@ -71,6 +71,7 @@ pub struct HowToPlay {
     pub from_help: bool,
     pub(super) drag: Option<u16>,
     view: u16,
+    text_width: usize,
 }
 
 impl HowToPlay {
@@ -82,6 +83,7 @@ impl HowToPlay {
             from_help: false,
             drag: None,
             view: content::VIEW_ROWS as u16,
+            text_width: content::TEXT_WIDTH,
         }
     }
 
@@ -101,7 +103,14 @@ impl HowToPlay {
         }
     }
 
+    /// Takes the number of text rows and columns the box shows at the current size and scale.
+    pub fn set_layout(&mut self, rows: u16, text_width: usize) {
+        self.view = rows;
+        self.text_width = text_width;
+    }
+
     /// Takes the number of text rows the box shows at the current size.
+    #[cfg(test)]
     pub fn set_view(&mut self, rows: u16) {
         self.view = rows;
     }
@@ -126,13 +135,17 @@ impl HowToPlay {
     /// Shows `rules` from the top.
     pub fn show(&mut self, rules: Rules) {
         let from_help = self.from_help;
+        let view = self.view;
+        let text_width = self.text_width;
         *self = Self::new(rules);
         self.from_help = from_help;
+        self.view = view;
+        self.text_width = text_width;
     }
 
     /// The largest value of `scroll` for the current game: the last line sits on the last row.
     pub fn max_scroll(&self) -> u16 {
-        let lines = content::rows(self.rules).len();
+        let lines = content::rows_for(self.rules, self.text_width).len();
         u16::try_from(lines.saturating_sub(usize::from(self.view))).unwrap_or(u16::MAX)
     }
 
@@ -149,9 +162,15 @@ impl HowToPlay {
     }
 
     /// The scroll bar's view of the text: its lines, the `view` rows that show and the position.
+    #[cfg(test)]
     pub fn metrics(&self, view: u16) -> Metrics {
+        self.metrics_for(view, self.text_width)
+    }
+
+    /// The scroll bar's view of the text wrapped to `text_width` columns.
+    pub fn metrics_for(&self, view: u16, text_width: usize) -> Metrics {
         Metrics {
-            total: content::rows(self.rules).len(),
+            total: content::rows_for(self.rules, text_width).len(),
             view: usize::from(view),
             offset: usize::from(self.scroll),
         }

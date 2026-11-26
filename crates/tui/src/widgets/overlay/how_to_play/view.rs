@@ -12,6 +12,7 @@ use ratatui::widgets::Paragraph;
 use super::content::{self, Kind, Row};
 use super::state::{HowToPlay, Rules};
 use crate::i18n::t;
+use crate::layout::{HowToPlayScale, InterfaceSize, Scale};
 use crate::screens::ViewCtx;
 use crate::theme::Token;
 use crate::widgets::footer::FooterMap;
@@ -25,9 +26,6 @@ use crate::widgets::scrollbar;
 /// Rows of the window that are not text: the borders, the button row, the top tab row, the game
 /// tab row, the separator row and the footer row.
 const CHROME_ROWS: u16 = 8;
-const ARROW_COLUMNS: u16 = 3;
-const TAB_PADDING: u16 = 2;
-const TAB_GAP: u16 = 1;
 
 /// The five bands inside the box: top tabs, game tabs, text, separator and footer.
 pub struct Parts {
@@ -45,15 +43,27 @@ pub struct Tabs {
     pub games: Vec<(Rules, Rect)>,
 }
 
-/// The box of the window, centered in `area`: the same box as every other Help tab, so switching
-/// tabs does not move the window.
-pub fn geometry(area: Rect) -> Geometry {
-    help::geometry(area)
+/// The resolved scale step for the Rules tab in `area`.
+pub fn scale_in(area: Rect, size: InterfaceSize) -> &'static Scale {
+    help::scale_in(area, size)
 }
 
-/// Text rows the box shows at `area`: the box less the rows of the tabs and the footer.
-pub fn text_rows(area: Rect) -> u16 {
-    help::frame_rows(area).saturating_sub(CHROME_ROWS)
+/// The box of the window, centered in `area` at the default interface scale.
+#[cfg(test)]
+pub fn geometry(area: Rect) -> Geometry {
+    geometry_for(area, InterfaceSize::default())
+}
+
+/// The box of the window, centered in `area` at `size`: the same box as every other Help tab, so
+/// switching tabs does not move the window.
+pub fn geometry_for(area: Rect, size: InterfaceSize) -> Geometry {
+    help::geometry_for(area, size)
+}
+
+/// Text rows the box shows at `area` and `size`: the box less the rows of the tabs and the footer.
+pub fn text_rows_for(area: Rect, size: InterfaceSize) -> u16 {
+    let scale = scale_in(area, size);
+    help::frame_rows_for(area, &scale.help).saturating_sub(CHROME_ROWS)
 }
 
 /// Splits the box body into top tabs, game tabs, text rows, the separator row and the footer row.
@@ -79,28 +89,31 @@ fn columns_of(text: &str) -> u16 {
     u16::try_from(text.chars().count()).unwrap_or(u16::MAX)
 }
 
-fn tab_width(rules: Rules) -> u16 {
-    columns_of(&t(rules.name_key())).saturating_add(TAB_PADDING)
+fn tab_width(rules: Rules, scale: &HowToPlayScale) -> u16 {
+    columns_of(&t(rules.name_key())).saturating_add(scale.tab_padding)
 }
 
-/// Places the arrows and tabs centered in `row`.
-pub fn tabs(row: Rect) -> Tabs {
-    let widths: Vec<u16> = Rules::ALL.iter().map(|rules| tab_width(*rules)).collect();
-    let gaps = u16::try_from(widths.len() + 1).unwrap_or(0) * TAB_GAP;
-    let total = ARROW_COLUMNS * 2 + widths.iter().sum::<u16>() + gaps;
+/// Places the arrows and tabs centered in `row` using `scale`'s spacing.
+pub fn tabs_for(row: Rect, scale: &HowToPlayScale) -> Tabs {
+    let widths: Vec<u16> = Rules::ALL
+        .iter()
+        .map(|rules| tab_width(*rules, scale))
+        .collect();
+    let gaps = u16::try_from(widths.len() + 1).unwrap_or(0) * scale.tab_gap;
+    let total = scale.arrow_columns * 2 + widths.iter().sum::<u16>() + gaps;
     let mut x = row.x.saturating_add(row.width.saturating_sub(total) / 2);
     let mut place = |width: u16| {
         let rect = Rect::new(x, row.y, width, 1).intersection(row);
-        x = x.saturating_add(width).saturating_add(TAB_GAP);
+        x = x.saturating_add(width).saturating_add(scale.tab_gap);
         rect
     };
-    let previous = place(ARROW_COLUMNS);
+    let previous = place(scale.arrow_columns);
     let games = Rules::ALL
         .iter()
         .zip(&widths)
         .map(|(rules, width)| (*rules, place(*width)))
         .collect();
-    let next = place(ARROW_COLUMNS);
+    let next = place(scale.arrow_columns);
     Tabs {
         previous,
         next,
@@ -108,8 +121,14 @@ pub fn tabs(row: Rect) -> Tabs {
     }
 }
 
-fn draw_tabs(frame: &mut Frame, row: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) {
-    let placed = tabs(row);
+fn draw_tabs(
+    frame: &mut Frame,
+    row: Rect,
+    state: &HowToPlay,
+    scale: &HowToPlayScale,
+    ctx: &ViewCtx<'_>,
+) {
+    let placed = tabs_for(row, scale);
     let plain = ctx.theme.surface();
     let (left, right) = arrows(ctx);
     frame.render_widget(Paragraph::new(Line::styled(left, plain)), placed.previous);
@@ -145,12 +164,14 @@ fn line_of(row: &Row, ctx: &ViewCtx<'_>) -> Line<'static> {
 
 /// Draws the window over `area` and returns its footer buttons.
 pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>) -> FooterMap {
-    let geometry = geometry(area);
+    let size = ctx.settings.interface_size;
+    let scale = scale_in(area, size);
+    let geometry = geometry_for(area, size);
     dialog::draw_box(frame, &geometry, &t(state.title_key()), ctx);
     let parts = parts(geometry.body);
     draw_top_tabs(frame, parts.top_tabs, HelpTab::Rules, false, ctx);
-    draw_tabs(frame, parts.game_tabs, state, ctx);
-    let rows = content::rows(state.rules);
+    draw_tabs(frame, parts.game_tabs, state, &scale.how_to_play, ctx);
+    let rows = content::rows_for(state.rules, scale.how_to_play.text_width);
     let first = usize::from(state.scroll);
     let lines: Vec<Line> = rows
         .iter()
@@ -166,7 +187,7 @@ pub fn draw(frame: &mut Frame, area: Rect, state: &HowToPlay, ctx: &ViewCtx<'_>)
     scrollbar::draw(
         frame,
         scrollbar::track_of(parts.text),
-        state.metrics(parts.text.height),
+        state.metrics_for(parts.text.height, scale.how_to_play.text_width),
         ctx,
     );
     help::draw_rule(frame, parts.rule, ctx);

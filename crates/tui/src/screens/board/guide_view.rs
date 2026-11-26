@@ -9,7 +9,7 @@ use crate::layout::Class;
 use crate::screens::{Effect, ViewCtx};
 use crate::theme::Token;
 use crate::widgets::guide::{self, Guide};
-use crate::widgets::overlay::{GuideWindow, TEXT_WIDTH};
+use crate::widgets::overlay::{GuideWindow, guide_window};
 
 impl BoardScreen {
     /// Every line of the guide, laid out in `width` columns; empty without a game.
@@ -30,11 +30,15 @@ impl BoardScreen {
 
     /// Whether the screen is too narrow for the side panel, so the guide opens as a window.
     pub(super) fn panel_unavailable(&self) -> bool {
-        Class::of(self.screen) == Class::Compact
+        Class::of_for(self.screen, &self.interface_size.scale().chrome) == Class::Compact
     }
 
     pub(super) fn open_guide_window(&self, ctx: &ViewCtx<'_>) -> Effect {
-        let total = self.guide_lines(TEXT_WIDTH, ctx).len();
-        Effect::Open(Modal::Guide(GuideWindow::new(total)))
+        let size = ctx.settings.interface_size;
+        let text_width = guide_window::text_width_in(self.screen, size);
+        let total = self.guide_lines(text_width, ctx).len();
+        let mut window = GuideWindow::new(total);
+        window.set_view(guide_window::text_rows_in(self.screen, size));
+        Effect::Open(Modal::Guide(window))
     }
 }

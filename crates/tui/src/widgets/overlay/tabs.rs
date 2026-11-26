@@ -222,6 +222,20 @@ pub fn help_footer_segments(game_switch: bool) -> Vec<Segment> {
     segments
 }
 
+/// Minimum outer box width so the Rules footer hints and line counter fit without truncation.
+pub(super) fn rules_footer_min_width() -> u16 {
+    let hints: usize = help_footer_segments(true)
+        .iter()
+        .map(|segment| usize::from(columns_of(&segment.text)))
+        .sum();
+    let position = tf(
+        "help.rules.position",
+        &[("from", "1"), ("to", "20"), ("total", "99")],
+    );
+    let inner = hints + usize::from(columns_of(&position)) + 1;
+    u16::try_from(inner + 4).unwrap_or(u16::MAX)
+}
+
 /// Draws the footer of a scrolling tab: the segments on the left, and the visible range on the
 /// right whenever the text overflows.
 pub fn draw_footer_buttons(

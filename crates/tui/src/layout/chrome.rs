@@ -8,16 +8,18 @@
 
 use ratatui::layout::{Constraint, Layout, Margin, Rect};
 
+use super::scale::{ChromeScale, InterfaceSize};
+
 /// Columns the board keeps; the side panel never shrinks it below this.
 pub const BOARD_MIN_WIDTH: u16 = 100;
-/// Columns from which the screen is Standard.
-pub const STANDARD_MIN_WIDTH: u16 = 130;
-/// Columns from which the screen is Wide.
-pub const WIDE_MIN_WIDTH: u16 = 180;
-/// Columns of the side panel of a Standard screen, its frame included.
-pub const GUIDE_WIDTH: u16 = 30;
-/// Columns of the side panel of a Wide screen, its frame included.
-pub const GUIDE_WIDTH_WIDE: u16 = 40;
+/// Columns from which the screen is Standard at the default interface scale.
+pub const STANDARD_MIN_WIDTH: u16 = InterfaceSize::M.scale().chrome.standard_min_width;
+/// Columns from which the screen is Wide at the default interface scale.
+pub const WIDE_MIN_WIDTH: u16 = InterfaceSize::M.scale().chrome.wide_min_width;
+/// Columns of the side panel of a Standard screen at the default interface scale, frame included.
+pub const GUIDE_WIDTH: u16 = InterfaceSize::M.scale().chrome.guide_width;
+/// Columns of the side panel of a Wide screen at the default interface scale, frame included.
+pub const GUIDE_WIDTH_WIDE: u16 = InterfaceSize::M.scale().chrome.guide_width_wide;
 
 /// The size class of a terminal, decided from its size at every draw.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,23 +30,33 @@ pub enum Class {
 }
 
 impl Class {
-    /// The class of a screen of `area`'s size.
+    /// The class of a screen of `area`'s size at the default interface scale.
     pub const fn of(area: Rect) -> Self {
-        if area.width < STANDARD_MIN_WIDTH {
+        Self::of_for(area, &InterfaceSize::M.scale().chrome)
+    }
+
+    /// The class of a screen of `area`'s size using `scale`'s width thresholds.
+    pub const fn of_for(area: Rect, scale: &ChromeScale) -> Self {
+        if area.width < scale.standard_min_width {
             Self::Compact
-        } else if area.width < WIDE_MIN_WIDTH {
+        } else if area.width < scale.wide_min_width {
             Self::Standard
         } else {
             Self::Wide
         }
     }
 
-    /// Columns of the side panel in this class; none in a Compact screen.
+    /// Columns of the side panel in this class at the default interface scale; none in Compact.
     pub const fn panel_width(self) -> u16 {
+        self.panel_width_for(&InterfaceSize::M.scale().chrome)
+    }
+
+    /// Columns of the side panel in this class for `scale`; none in Compact.
+    pub const fn panel_width_for(self, scale: &ChromeScale) -> u16 {
         match self {
             Self::Compact => 0,
-            Self::Standard => GUIDE_WIDTH,
-            Self::Wide => GUIDE_WIDTH_WIDE,
+            Self::Standard => scale.guide_width,
+            Self::Wide => scale.guide_width_wide,
         }
     }
 }
@@ -52,14 +64,11 @@ impl Class {
 /// Cells the field frame takes on each side of the board when the theme draws one.
 pub const FRAME_INSET: u16 = 1;
 
-/// Rows of the possible moves panel when it shares the side column with the guide panel: every
-/// entry of the list plus the frame.
-pub const MOVES_ROWS: u16 = 12;
-/// Height of the side column from which the shared moves panel is tall enough to show a reason
-/// under each inactive entry.
-pub const MOVES_ROWS_WITH_REASONS_FROM: u16 = 56;
-/// Rows of the moves panel when the screen is tall enough for the reasons.
-pub const MOVES_ROWS_TALL: u16 = 22;
+/// Rows of the possible moves panel when it shares the side column with the guide panel at the
+/// default interface scale.
+pub const MOVES_ROWS: u16 = InterfaceSize::M.scale().chrome.moves_rows;
+/// Rows of the moves panel when the screen is tall enough for the reasons at the default scale.
+pub const MOVES_ROWS_TALL: u16 = InterfaceSize::M.scale().chrome.moves_rows_tall;
 
 /// The parts of the board screen. `header` is the game-information row, present exactly when
 /// there is no guide panel; `guide` is the framed guide panel and `moves` the framed possible
@@ -95,13 +104,18 @@ pub fn chrome_with(area: Rect, guide: bool, frame: bool) -> Chrome {
 
 /// Splits the side column between the panels that are on: one takes it all, two share it with
 /// the guide above and the moves panel below.
-fn stack(column: Rect, guide: bool, moves: bool) -> (Option<Rect>, Option<Rect>) {
+fn stack(
+    column: Rect,
+    guide: bool,
+    moves: bool,
+    scale: &ChromeScale,
+) -> (Option<Rect>, Option<Rect>) {
     match (guide, moves) {
         (true, true) => {
-            let wanted = if column.height >= MOVES_ROWS_WITH_REASONS_FROM {
-                MOVES_ROWS_TALL
+            let wanted = if column.height >= scale.moves_reasons_from {
+                scale.moves_rows_tall
             } else {
-                MOVES_ROWS
+                scale.moves_rows
             };
             let [top, bottom] = Layout::vertical([
                 Constraint::Fill(1),
@@ -118,8 +132,20 @@ fn stack(column: Rect, guide: bool, moves: bool) -> (Option<Rect>, Option<Rect>)
 
 /// Like [`chrome_with`], with the possible moves panel too when `moves` is set.
 pub fn chrome_panels(area: Rect, guide: bool, moves: bool, frame: bool) -> Chrome {
-    let class = Class::of(area);
-    let width = class.panel_width();
+    chrome_panels_for(area, guide, moves, frame, InterfaceSize::default())
+}
+
+/// Like [`chrome_panels`], scaled to `interface_size`.
+pub fn chrome_panels_for(
+    area: Rect,
+    guide: bool,
+    moves: bool,
+    frame: bool,
+    interface_size: InterfaceSize,
+) -> Chrome {
+    let chrome = &interface_size.scale().chrome;
+    let class = Class::of_for(area, chrome);
+    let width = class.panel_width_for(chrome);
     let (main, column) = if (guide || moves) && width > 0 {
         let [main, side] =
             Layout::horizontal([Constraint::Fill(1), Constraint::Length(width)]).areas(area);
@@ -127,7 +153,7 @@ pub fn chrome_panels(area: Rect, guide: bool, moves: bool, frame: bool) -> Chrom
     } else {
         (area, None)
     };
-    let (guide, moves) = column.map_or((None, None), |column| stack(column, guide, moves));
+    let (guide, moves) = column.map_or((None, None), |column| stack(column, guide, moves, chrome));
     let [header, field, now, possible] = Layout::vertical([
         Constraint::Length(u16::from(guide.is_none())),
         Constraint::Fill(1),

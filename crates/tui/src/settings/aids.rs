@@ -3,7 +3,7 @@
 
 use super::{AuraMode, Settings};
 use crate::i18n::{t, tf};
-use crate::layout::STANDARD_MIN_WIDTH;
+use crate::layout::InterfaceSize;
 
 /// The aids as one value: what the player may switch on the board and set as default in Settings.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -90,16 +90,28 @@ impl Aid {
         t(key).into_owned()
     }
 
-    /// The value for a screen of `columns`: a side panel that is on says which width it needs when
-    /// the screen is too narrow for it.
+    /// The value for a screen of `columns` at the default interface scale: a side panel that is
+    /// on says which width it needs when the screen is too narrow for it.
     pub fn value_for(self, aids: &Aids, columns: u16) -> String {
+        self.value_for_size(aids, columns, InterfaceSize::default())
+    }
+
+    /// The value for a screen of `columns` at `interface_size`: a side panel that is on says which
+    /// width it needs when the screen is too narrow for it.
+    pub fn value_for_size(
+        self,
+        aids: &Aids,
+        columns: u16,
+        interface_size: InterfaceSize,
+    ) -> String {
         let value = self.value_text(aids);
-        if self.is_panel() && self.is_on(aids) && columns < STANDARD_MIN_WIDTH {
+        let needed = interface_size.scale().chrome.standard_min_width;
+        if self.is_panel() && self.is_on(aids) && columns < needed {
             return tf(
                 "settings.value.needs_columns",
                 &[
                     ("value", value.as_str()),
-                    ("needed", &STANDARD_MIN_WIDTH.to_string()),
+                    ("needed", &needed.to_string()),
                     ("now", &columns.to_string()),
                 ],
             );

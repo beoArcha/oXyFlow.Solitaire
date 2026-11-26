@@ -22,6 +22,7 @@ use crate::action::Action;
 use crate::app::Modal;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
+use crate::layout::InterfaceSize;
 use crate::screens::ViewCtx;
 use crate::settings::DockSide;
 use crate::theme::Token;
@@ -314,7 +315,7 @@ pub fn draw_placement(
     side: DockSide,
     ctx: &ViewCtx<'_>,
 ) {
-    let Some(boxed) = centred_frame(modal, area) else {
+    let Some(boxed) = centred_frame_for(modal, area, ctx.settings.interface_size) else {
         return;
     };
     draw_button(frame, boxed, side, ctx);
@@ -331,12 +332,18 @@ pub const fn is_dockable(modal: &Modal) -> bool {
     )
 }
 
-/// The box of a dockable modal drawn centred in `area`; `None` for any other modal.
+/// The box of a dockable modal drawn centred in `area` at the default interface scale.
+#[cfg(test)]
 pub fn centred_frame(modal: &Modal, area: Rect) -> Option<Rect> {
+    centred_frame_for(modal, area, InterfaceSize::default())
+}
+
+/// The box of a dockable modal drawn centred in `area` at `size`; `None` for any other modal.
+pub fn centred_frame_for(modal: &Modal, area: Rect, size: InterfaceSize) -> Option<Rect> {
     match modal {
-        Modal::Help(_) => Some(help::geometry(area).frame),
-        Modal::HowToPlay(_) => Some(how_to_play::geometry(area).frame),
-        Modal::CommandLine(_) => Some(command_line::geometry(area).frame),
+        Modal::Help(_) => Some(help::geometry_for(area, size).frame),
+        Modal::HowToPlay(_) => Some(how_to_play::geometry_for(area, size).frame),
+        Modal::CommandLine(_) => Some(command_line::geometry_for(area, size).frame),
         _ => None,
     }
 }
