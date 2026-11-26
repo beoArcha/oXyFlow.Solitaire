@@ -3,6 +3,76 @@
 
 use std::time::{Duration, Instant};
 
+/// Source of the current [`Instant`]. The interactive loop uses [`SystemClock`]; tests and
+/// headless runs use [`VirtualClock`].
+pub trait Clock {
+    fn now(&self) -> Instant;
+}
+
+/// Real wall-clock time via [`Instant::now`].
+#[derive(Debug, Default, Clone, Copy)]
+pub struct SystemClock;
+
+impl Clock for SystemClock {
+    fn now(&self) -> Instant {
+        Instant::now()
+    }
+}
+
+/// A deterministic clock that holds a fixed base [`Instant`] plus an offset that advances only
+/// when stepped explicitly.
+#[cfg(any(test, feature = "dev"))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct VirtualClock {
+    base: Instant,
+    offset: Duration,
+}
+
+#[cfg(any(test, feature = "dev"))]
+impl Default for VirtualClock {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[cfg(any(test, feature = "dev"))]
+impl VirtualClock {
+    /// A virtual clock anchored at the current instant with zero elapsed offset.
+    pub fn new() -> Self {
+        Self::from_instant(Instant::now())
+    }
+
+    /// A virtual clock anchored at `base` with zero elapsed offset.
+    pub const fn from_instant(base: Instant) -> Self {
+        Self {
+            base,
+            offset: Duration::ZERO,
+        }
+    }
+
+    /// Advances the virtual clock by `duration`.
+    pub fn advance(&mut self, duration: Duration) {
+        self.offset = self.offset.saturating_add(duration);
+    }
+
+    /// Advances the virtual clock by `ms` milliseconds.
+    pub fn advance_ms(&mut self, ms: u64) {
+        self.advance(Duration::from_millis(ms));
+    }
+
+    /// Total time stepped since the base instant.
+    pub const fn elapsed(&self) -> Duration {
+        self.offset
+    }
+}
+
+#[cfg(any(test, feature = "dev"))]
+impl Clock for VirtualClock {
+    fn now(&self) -> Instant {
+        self.base + self.offset
+    }
+}
+
 /// Elapsed playing time that can be paused and resumed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GameClock {
@@ -112,5 +182,25 @@ mod tests {
         assert_eq!(format_elapsed(Duration::from_secs(0)), "0:00");
         assert_eq!(format_elapsed(Duration::from_secs(65)), "1:05");
         assert_eq!(format_elapsed(Duration::from_secs(3_725)), "1:02:05");
+    }
+
+    #[test]
+    fn virtual_clock_moves_only_when_stepped() {
+        let base = Instant::now();
+        let mut clock = VirtualClock::from_instant(base);
+        assert_eq!(clock.now(), base);
+        assert_eq!(clock.elapsed(), Duration::ZERO);
+
+        std::thread::sleep(Duration::from_millis(10));
+        assert_eq!(clock.now(), base);
+        assert_eq!(clock.elapsed(), Duration::ZERO);
+
+        clock.advance_ms(250);
+        assert_eq!(clock.elapsed(), Duration::from_millis(250));
+        assert_eq!(clock.now(), base + Duration::from_millis(250));
+
+        clock.advance(Duration::from_secs(2));
+        assert_eq!(clock.elapsed(), Duration::from_millis(2_250));
+        assert_eq!(clock.now(), base + Duration::from_millis(2_250));
     }
 }

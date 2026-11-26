@@ -373,6 +373,8 @@ mod priority;
 mod quick;
 mod records;
 mod search;
+#[cfg(feature = "dev")]
+pub mod snapshot;
 
 #[cfg(test)]
 mod card_font_tests;

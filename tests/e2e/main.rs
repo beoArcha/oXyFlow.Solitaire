@@ -115,6 +115,27 @@ fn an_unknown_argument_exits_with_two() {
     assert!(stderr.contains("--help"), "stderr was {stderr:?}");
 }
 
+#[cfg(not(feature = "dev-bridge"))]
+#[test]
+fn default_build_rejects_dev_bridge_and_hides_it_from_help() {
+    let home = tempfile::tempdir().ok();
+    let Some(home) = home else {
+        return;
+    };
+    let rejected = run_oxysol(&["--dev-bridge"], home.path(), &[]).expect("the binary should run");
+    assert_eq!(rejected.status.code(), Some(2));
+
+    let rejected_log = run_oxysol(&["--dev-log", "bridge.jsonl"], home.path(), &[])
+        .expect("the binary should run");
+    assert_eq!(rejected_log.status.code(), Some(2));
+
+    let help = run_oxysol(&["--help"], home.path(), &[]).expect("help should run");
+    assert!(help.status.success());
+    let stdout = String::from_utf8_lossy(&help.stdout);
+    assert!(!stdout.contains("dev-bridge"), "help was {stdout:?}");
+    assert!(!stdout.contains("dev-log"), "help was {stdout:?}");
+}
+
 #[test]
 fn a_panic_leaves_a_log_record_and_a_failing_exit_code() {
     let home = tempfile::tempdir().ok();

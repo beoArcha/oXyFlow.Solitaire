@@ -262,6 +262,32 @@ impl MainMenu {
         }
     }
 
+    #[cfg(feature = "dev")]
+    pub(crate) fn dev_state(
+        &self,
+        saved: bool,
+        favs: &[oxysol_core::Variant],
+    ) -> crate::app::snapshot::DevMainMenu {
+        use crate::app::snapshot::DevMainMenu;
+        match &self.stage {
+            Stage::Items => DevMainMenu::items(
+                (
+                    self.picker.is_open(),
+                    self.selector_focus,
+                    self.banner_focus.map(|b| b == BannerButton::Yes),
+                ),
+                self.list.focus(),
+                items(saved).get(self.list.focus()).map(|i| label_key(*i)),
+                self.picker.dev_tooltip_visible(self.selector_focus),
+            ),
+            Stage::Game(p) => DevMainMenu::game("new_game_from_seed_game", p.dev_state(favs)),
+            Stage::Variants { picker } => {
+                DevMainMenu::game("seed_variants", picker.dev_state(favs))
+            }
+            Stage::Seed(sc) => DevMainMenu::seed(sc.dev_state()),
+        }
+    }
+
     fn handle_items(&mut self, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
         let items = items(ctx.saved.is_some());
         let Some(action) = action else {

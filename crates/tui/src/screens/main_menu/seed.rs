@@ -97,6 +97,16 @@ impl SeedField {
         self.stop() == Stop::Field
     }
 
+    #[cfg(feature = "dev")]
+    pub(super) fn dev_focus(&self) -> (&'static str, Option<&'static str>) {
+        let target = match self.stop() {
+            Stop::Field => "field",
+            Stop::Button(Button::Continue) => "continue",
+            Stop::Button(Button::Back) => "back",
+        };
+        (target, self.error.map(SeedError::message_key))
+    }
+
     fn stop(&self) -> Stop {
         STOPS.get(self.focus).copied().unwrap_or(Stop::Field)
     }

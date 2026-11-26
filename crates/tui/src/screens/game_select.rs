@@ -78,6 +78,15 @@ pub struct GameSelect {
     footer: FooterMap,
 }
 
+#[cfg(feature = "dev")]
+#[derive(Debug, Clone)]
+pub(crate) struct DevGameSelect {
+    pub searching: bool,
+    pub focus_target: &'static str,
+    pub focus_index: Option<usize>,
+    pub variant: Option<Variant>,
+}
+
 /// The name of `variant` in the list. With winnable deals on, it also says when the search can
 /// take long.
 fn label_of(variant: Variant, winnable: bool) -> String {
@@ -322,6 +331,25 @@ impl GameSelect {
     /// The footer button under `cell`, if any.
     pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
         self.footer.action_at(cell)
+    }
+
+    #[cfg(feature = "dev")]
+    pub(crate) fn dev_state(&self, favourites: &[Variant]) -> DevGameSelect {
+        let (focus_target, focus_index, variant) = match self.focus {
+            TOGGLE => ("undo_toggle", None, None),
+            WINNABLE => ("winnable_toggle", None, None),
+            _ => {
+                let idx = self.list.focus();
+                let list = items(&rows::build(favourites, self.query()));
+                ("variant", Some(idx), list.get(idx).copied())
+            }
+        };
+        DevGameSelect {
+            searching: self.searching(),
+            focus_target,
+            focus_index,
+            variant,
+        }
     }
 }
 

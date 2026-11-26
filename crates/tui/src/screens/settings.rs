@@ -89,6 +89,16 @@ impl SettingsScreen {
         self.previewing = previewing;
     }
 
+    #[cfg(feature = "dev")]
+    pub(crate) fn dev_state(&self) -> (Tab, usize, Option<Field>, bool) {
+        (
+            self.tab,
+            self.focus_index(),
+            self.focused_field(),
+            self.previewing,
+        )
+    }
+
     fn active_fields(&self) -> &'static [Field] {
         self.tab.fields()
     }
