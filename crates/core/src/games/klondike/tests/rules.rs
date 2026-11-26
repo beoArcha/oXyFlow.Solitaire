@@ -212,3 +212,21 @@ fn a_won_game_accepts_no_moves() {
     assert_rejected(&game, king_back, MoveError::Unsupported);
     assert_rejected(&game, Move::Stock, MoveError::Unsupported);
 }
+
+#[test]
+fn any_card_on_empty_column_allows_non_kings_when_enabled() {
+    let options = crate::game::GameOptions {
+        klondike_any_empty: true,
+        ..Default::default()
+    };
+    let mut game = Klondike::empty_with(DrawCount::One, options);
+    game.columns[0] = column("", "KH QS");
+    game.columns[1] = column("", "QD");
+    game.waste = cards("7C");
+    assert_accepted(&mut game, transfer(tab(1), tab(3), 1));
+    assert_eq!(cards_of(&game, tab(3)), cards("QD"));
+    assert_accepted(&mut game, transfer(PileRef::Waste, tab(4), 1));
+    assert_eq!(cards_of(&game, tab(4)), cards("7C"));
+    assert_accepted(&mut game, transfer(tab(0), tab(5), 2));
+    assert_eq!(cards_of(&game, tab(5)), cards("KH QS"));
+}

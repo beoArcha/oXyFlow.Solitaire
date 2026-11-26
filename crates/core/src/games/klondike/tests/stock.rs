@@ -62,3 +62,42 @@ fn a_rejected_recycle_is_not_counted() {
     assert_rejected(&game, Move::Stock, MoveError::StockEmpty);
     assert_eq!(status(&game).recycles, 0);
 }
+
+#[test]
+fn three_passes_allows_two_recycles_then_refuses_with_passes_exhausted() {
+    let options = crate::game::GameOptions {
+        klondike_passes: crate::game::StockPasses::Three,
+        ..Default::default()
+    };
+    let mut game = Klondike::empty_with(DrawCount::One, options);
+    game.stock = cards("AS 2S");
+    assert_eq!(status(&game).recycles_left, Some(2));
+    draw_until_empty(&mut game);
+    assert!(game.legal_moves().contains(&Move::Stock));
+    assert_accepted(&mut game, Move::Stock);
+    assert_eq!(status(&game).recycles, 1);
+    assert_eq!(status(&game).recycles_left, Some(1));
+    draw_until_empty(&mut game);
+    assert_accepted(&mut game, Move::Stock);
+    assert_eq!(status(&game).recycles, 2);
+    assert_eq!(status(&game).recycles_left, Some(0));
+    draw_until_empty(&mut game);
+    assert!(!game.legal_moves().contains(&Move::Stock));
+    assert_rejected(&game, Move::Stock, MoveError::PassesExhausted);
+    assert_eq!(status(&game).recycles, 2);
+}
+
+#[test]
+fn one_pass_allows_no_recycles_and_refuses_once_stock_is_empty() {
+    let options = crate::game::GameOptions {
+        klondike_passes: crate::game::StockPasses::One,
+        ..Default::default()
+    };
+    let mut game = Klondike::empty_with(DrawCount::Three, options);
+    game.stock = cards("AS 2S 3S 4S");
+    assert_eq!(status(&game).recycles_left, Some(0));
+    draw_until_empty(&mut game);
+    assert!(!game.legal_moves().contains(&Move::Stock));
+    assert_rejected(&game, Move::Stock, MoveError::PassesExhausted);
+    assert_eq!(status(&game).recycles, 0);
+}

@@ -53,7 +53,7 @@ pub(super) fn at_forced_win(
 ) -> (Harness, usize, usize) {
     let moves = to_forced_win(variant, seed);
     let mut storage = MemoryStorage::new();
-    let id = match storage.start_game(variant, seed, true) {
+    let id = match storage.start_game(variant, seed, oxysol_core::GameOptions::DEFAULT, true) {
         Ok(id) => id,
         Err(error) => unreachable!("memory storage does not fail: {error}"),
     };

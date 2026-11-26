@@ -72,6 +72,77 @@ pub struct StockStatus {
     pub deals_left: Option<u32>,
 }
 
+/// Passes through the stock allowed in Klondike (first traversal plus recycles).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum StockPasses {
+    #[default]
+    Unlimited,
+    Three,
+    One,
+}
+
+/// Per-game rule options (`Default` keeps every rule as today). Each game reads only the fields
+/// that belong to it; missing JSON/TOML fields fall back to their defaults.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(default)]
+pub struct GameOptions {
+    /// Klondike: passes through the stock (`Unlimited`, `Three`, `One`).
+    pub klondike_passes: StockPasses,
+    /// Klondike: whether any card (or run) may go onto an empty column instead of a king only.
+    pub klondike_any_empty: bool,
+    /// Spider: whether a row may be dealt from the stock while a column is empty.
+    pub spider_deal_empty: bool,
+    /// Golf: whether a king and an ace are adjacent (wrap-around).
+    pub golf_wrap: bool,
+    /// Golf: whether a king on top of the waste ends the chain (nothing may be played onto a king).
+    pub golf_king_stops: bool,
+}
+
+impl GameOptions {
+    /// The default rules (every option as today).
+    pub const DEFAULT: Self = Self {
+        klondike_passes: StockPasses::Unlimited,
+        klondike_any_empty: false,
+        spider_deal_empty: false,
+        golf_wrap: false,
+        golf_king_stops: false,
+    };
+
+    /// Keeps only the options that apply to `variant`; resets every other field to its default.
+    pub const fn for_variant(self, variant: Variant) -> Self {
+        match variant {
+            Variant::Klondike(_) => Self {
+                klondike_passes: self.klondike_passes,
+                klondike_any_empty: self.klondike_any_empty,
+                ..Self::DEFAULT
+            },
+            Variant::Spider(_) => Self {
+                spider_deal_empty: self.spider_deal_empty,
+                ..Self::DEFAULT
+            },
+            Variant::Golf => Self {
+                golf_wrap: self.golf_wrap,
+                golf_king_stops: self.golf_king_stops,
+                ..Self::DEFAULT
+            },
+            Variant::FreeCell | Variant::Pyramid(_) | Variant::Yukon(_) | Variant::TriPeaks => {
+                Self::DEFAULT
+            }
+        }
+    }
+
+    /// Whether every field equals the default rules.
+    pub fn is_default(self) -> bool {
+        self == Self::DEFAULT
+    }
+
+    /// Whether every option that applies to `variant` equals the default rules.
+    pub fn is_default_for(self, variant: Variant) -> bool {
+        self.for_variant(variant).is_default()
+    }
+}
+
 /// A playable game with its options. Serialized with stable snake_case names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -152,15 +223,20 @@ pub trait Game {
     }
 }
 
-/// Deals `variant` from `seed`. The same pair always gives the same deal.
+/// Deals `variant` from `seed` with the default options. The same pair always gives the same deal.
 pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game> {
+    deal_with(variant, seed, GameOptions::DEFAULT)
+}
+
+/// Deals `variant` from `seed` under `options`. Each game reads only its own fields.
+pub fn deal_with(variant: Variant, seed: u64, options: GameOptions) -> Box<dyn Game> {
     match variant {
-        Variant::Klondike(draw) => Box::new(Klondike::deal(draw, seed)),
-        Variant::Spider(suits) => Box::new(Spider::deal(suits, seed)),
+        Variant::Klondike(draw) => Box::new(Klondike::deal_with(draw, seed, options)),
+        Variant::Spider(suits) => Box::new(Spider::deal_with(suits, seed, options)),
         Variant::FreeCell => Box::new(FreeCell::deal(seed)),
         Variant::Pyramid(rules) => Box::new(Pyramid::deal(rules, seed)),
         Variant::Yukon(rules) => Box::new(Yukon::deal(rules, seed)),
-        Variant::Golf => Box::new(Golf::deal(seed)),
+        Variant::Golf => Box::new(Golf::deal_with(seed, options)),
         Variant::TriPeaks => Box::new(TriPeaks::deal(seed)),
     }
 }
@@ -272,6 +348,71 @@ mod tests {
             let first = deal(variant, 42).piles();
             assert_eq!(first, deal(variant, 42).piles(), "{variant:?}");
             assert_ne!(first, deal(variant, 43).piles(), "{variant:?}");
+            assert_eq!(
+                first,
+                deal_with(variant, 42, GameOptions::DEFAULT).piles(),
+                "{variant:?}"
+            );
         }
+    }
+
+    #[test]
+    fn game_options_for_variant_keeps_only_that_variants_fields() {
+        let all = GameOptions {
+            klondike_passes: StockPasses::One,
+            klondike_any_empty: true,
+            spider_deal_empty: true,
+            golf_wrap: true,
+            golf_king_stops: true,
+        };
+        assert_eq!(
+            all.for_variant(Variant::Klondike(DrawCount::One)),
+            GameOptions {
+                klondike_passes: StockPasses::One,
+                klondike_any_empty: true,
+                ..GameOptions::DEFAULT
+            }
+        );
+        assert_eq!(
+            all.for_variant(Variant::Spider(SuitCount::Two)),
+            GameOptions {
+                spider_deal_empty: true,
+                ..GameOptions::DEFAULT
+            }
+        );
+        assert_eq!(
+            all.for_variant(Variant::Golf),
+            GameOptions {
+                golf_wrap: true,
+                golf_king_stops: true,
+                ..GameOptions::DEFAULT
+            }
+        );
+        for other in [
+            Variant::FreeCell,
+            Variant::Pyramid(PyramidRules::Relaxed),
+            Variant::Yukon(YukonRules::Classic),
+            Variant::TriPeaks,
+        ] {
+            assert!(all.is_default_for(other), "{other:?}");
+        }
+        assert!(!all.is_default_for(Variant::Klondike(DrawCount::Three)));
+        assert!(!all.is_default_for(Variant::Spider(SuitCount::One)));
+        assert!(!all.is_default_for(Variant::Golf));
+    }
+
+    #[test]
+    fn game_options_serde_defaults_missing_fields() {
+        let loaded = serde_json::from_str::<GameOptions>("{}").expect("empty object parses");
+        assert_eq!(loaded, GameOptions::DEFAULT);
+        let partial = serde_json::from_str::<GameOptions>(r#"{"golf_wrap":true}"#)
+            .expect("partial object parses");
+        assert_eq!(
+            partial,
+            GameOptions {
+                golf_wrap: true,
+                ..GameOptions::DEFAULT
+            }
+        );
     }
 }

@@ -70,21 +70,20 @@ impl Storage for SharedStorage {
         &mut self,
         variant: Variant,
         seed: u64,
-        undo_allowed: bool,
+        opts: oxysol_core::GameOptions,
+        undo: bool,
     ) -> Result<GameId, StorageError> {
-        self.0.borrow_mut().start_game(variant, seed, undo_allowed)
+        self.0.borrow_mut().start_game(variant, seed, opts, undo)
     }
 
     fn finish_game(
         &mut self,
         id: GameId,
         outcome: Outcome,
-        elapsed_ms: u64,
+        ms: u64,
         moves: u32,
     ) -> Result<(), StorageError> {
-        self.0
-            .borrow_mut()
-            .finish_game(id, outcome, elapsed_ms, moves)
+        self.0.borrow_mut().finish_game(id, outcome, ms, moves)
     }
 
     fn record_restart(&mut self, id: GameId) -> Result<(), StorageError> {

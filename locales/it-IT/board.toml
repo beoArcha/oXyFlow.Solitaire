@@ -258,3 +258,11 @@ no_finish = "Vittoria non ancora certa"
 [no_moves]
 title = "Nessuna mossa rimasta"
 body = "Nessuna mossa è possibile. Questa partita non può più essere vinta."
+
+[header.option]
+passes_three = "3 passaggi"
+passes_one = "1 passaggio"
+any_empty = "Qualsiasi carta su vuota"
+spider_deal = "Distribuzione con colonna vuota"
+golf_wrap = "Re–Asso vicini"
+golf_king_stops = "Niente su un Re"

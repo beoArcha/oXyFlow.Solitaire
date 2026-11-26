@@ -1,15 +1,15 @@
 //! The `Storage` implementation. Each operation is a private function returning the internal
 //! `Fault`; the trait methods convert it to `StorageError` at the boundary.
 
-use oxysol_core::{SessionRecord, Variant};
+use oxysol_core::{GameOptions, SessionRecord, Variant};
 use oxysol_tui::{
     AssistCounters, GameId, GameRecord, Outcome, Proof, SavedGame, Settings, Storage, StorageError,
 };
 use rusqlite::{OptionalExtension, params};
 
 use super::convert::{
-    count_to_column, millis_from_column, millis_to_column, now_millis, outcome_to_column,
-    proof_to_column, seed_to_column, variant_to_column,
+    count_to_column, millis_from_column, millis_to_column, now_millis, options_to_column,
+    outcome_to_column, proof_to_column, seed_to_column, variant_to_column,
 };
 use super::error::Fault;
 use super::{SqliteStorage, history};
@@ -93,17 +93,21 @@ impl SqliteStorage {
         &mut self,
         variant: Variant,
         seed: u64,
+        options: GameOptions,
         undo_allowed: bool,
     ) -> Result<GameId, Fault> {
         let variant = variant_to_column(variant)?;
+        let options = options_to_column(options)?;
         let tx = self.conn.transaction()?;
         tx.execute(
-            "INSERT INTO games (variant, seed, started_at, undo_allowed) VALUES (?1, ?2, ?3, ?4)",
+            "INSERT INTO games (variant, seed, started_at, undo_allowed, options)
+             VALUES (?1, ?2, ?3, ?4, ?5)",
             params![
                 variant,
                 seed_to_column(seed),
                 now_millis(),
-                i64::from(undo_allowed)
+                i64::from(undo_allowed),
+                options
             ],
         )?;
         let id = tx.last_insert_rowid();
@@ -213,9 +217,10 @@ impl Storage for SqliteStorage {
         &mut self,
         variant: Variant,
         seed: u64,
+        options: GameOptions,
         undo_allowed: bool,
     ) -> Result<GameId, StorageError> {
-        Ok(self.insert_game(variant, seed, undo_allowed)?)
+        Ok(self.insert_game(variant, seed, options.for_variant(variant), undo_allowed)?)
     }
 
     fn finish_game(

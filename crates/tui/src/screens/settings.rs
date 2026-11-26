@@ -5,6 +5,7 @@
 mod arrows;
 mod change;
 mod font_rows;
+mod game_option_rows;
 mod list;
 pub(crate) mod options;
 mod plan;

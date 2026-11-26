@@ -258,3 +258,11 @@ no_finish = "Victoire pas encore certaine"
 [no_moves]
 title = "Plus aucun coup"
 body = "Aucun coup n'est possible. Cette partie ne peut plus être gagnée."
+
+[header.option]
+passes_three = "3 passages"
+passes_one = "1 passage"
+any_empty = "Toute carte sur vide"
+spider_deal = "Donne avec colonne vide"
+golf_wrap = "Roi–As voisins"
+golf_king_stops = "Rien sur un Roi"

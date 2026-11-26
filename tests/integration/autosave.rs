@@ -278,9 +278,10 @@ impl Storage for FailingSaves {
         &mut self,
         variant: Variant,
         seed: u64,
+        options: oxysol_core::GameOptions,
         undo_allowed: bool,
     ) -> Result<GameId, StorageError> {
-        self.0.start_game(variant, seed, undo_allowed)
+        self.0.start_game(variant, seed, options, undo_allowed)
     }
 
     fn finish_game(

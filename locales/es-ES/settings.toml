@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike: pasadas del mazo"
+klondike_empty_column = "Klondike: columna vacía"
+spider_deal = "Spider: regla de reparto"
+golf_wrap = "Golf: Rey y As"
+golf_king_stops = "Golf: sobre un Rey"
 language = "Idioma"
 low_vision = "Baja visión"
 theme = "Tema"
@@ -52,6 +57,11 @@ swiss = "Suizo"
 italian = "Italiano"
 
 [desc]
+klondike_passes = "Cuántas veces se puede recorrer el mazo. Se aplica a la próxima partida de Klondike; solo Sin límite tiene la búsqueda de repartos ganables."
+klondike_empty_column = "Qué puede ir a una columna vacía. Se aplica a la próxima partida de Klondike; solo Solo Rey tiene la búsqueda de repartos ganables."
+spider_deal = "Si se puede repartir una fila con una columna vacía. Se aplica a la próxima partida de Spider; solo lo predeterminado tiene la búsqueda."
+golf_wrap = "Si el Rey y el As cuentan como contiguos. Se aplica a la próxima partida de Golf; solo lo predeterminado tiene la búsqueda."
+golf_king_stops = "Si se puede jugar una Dama sobre un Rey del descarte. Se aplica a la próxima partida de Golf; solo lo predeterminado tiene la búsqueda."
 language = "El idioma de todo el texto. Cambia al instante."
 low_vision_console = "Alto contraste (7:1), cartas máximas, aura gruesa, texto en negrita, abanicos anchos, fuente de consola 24+ px."
 low_vision_wt = "Alto contraste (7:1), cartas máximas, aura gruesa, texto en negrita, abanicos anchos. Agranda fuente: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopía"
 deuteranopia = "Deuteranopía"
 tritanopia = "Tritanopía"
 monochrome = "Monocromo"
+
+[game_option]
+passes_unlimited = "Sin límite"
+passes_three = "3"
+passes_one = "1"
+king_only = "Solo Rey"
+any_card = "Cualquier carta"
+columns_filled = "Primero llenar columnas"
+any_time = "También con columna vacía"
+not_adjacent = "No contiguos"
+adjacent = "Contiguos"
+queen_follows = "Dama permitida"
+nothing_follows = "Nada (más difícil)"

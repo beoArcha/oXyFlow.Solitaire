@@ -10,7 +10,7 @@ mod tests;
 
 use crate::card::Card;
 use crate::deck;
-use crate::game::{DrawCount, Game, StockStatus};
+use crate::game::{DrawCount, Game, GameOptions, StockPasses, StockStatus};
 use crate::games::progress::{self, HintProfile};
 use crate::games::{index_ref, snapshot};
 use crate::moves::{Move, MoveError};
@@ -29,10 +29,12 @@ struct Column {
 }
 
 /// A Klondike game. The top card of every pile is the last element of its vector. `recycles`
-/// counts the waste turned back into the stock; the stock itself has no pass limit.
+/// counts the waste turned back into the stock.
 #[derive(Debug, Clone)]
 pub(crate) struct Klondike {
     draw: DrawCount,
+    passes: StockPasses,
+    any_empty: bool,
     stock: Vec<Card>,
     waste: Vec<Card>,
     foundations: [Vec<Card>; FOUNDATIONS],
@@ -41,9 +43,16 @@ pub(crate) struct Klondike {
 }
 
 impl Klondike {
+    #[cfg(test)]
     fn empty(draw: DrawCount) -> Self {
+        Self::empty_with(draw, GameOptions::DEFAULT)
+    }
+
+    fn empty_with(draw: DrawCount, options: GameOptions) -> Self {
         Self {
             draw,
+            passes: options.klondike_passes,
+            any_empty: options.klondike_any_empty,
             stock: Vec::new(),
             waste: Vec::new(),
             foundations: Default::default(),
@@ -52,12 +61,18 @@ impl Klondike {
         }
     }
 
+    /// Deals a shuffled deck from `seed` with default options.
+    #[cfg(test)]
+    pub(crate) fn deal(draw: DrawCount, seed: u64) -> Self {
+        Self::deal_with(draw, seed, GameOptions::DEFAULT)
+    }
+
     /// Deals a shuffled deck from `seed`: column *i* gets *i*+1 cards with the last one face up,
     /// the remaining 24 form the stock.
-    pub(crate) fn deal(draw: DrawCount, seed: u64) -> Self {
+    pub(crate) fn deal_with(draw: DrawCount, seed: u64, options: GameOptions) -> Self {
         let mut cards = deck::standard();
         deck::shuffle_with_seed(&mut cards, seed);
-        let mut game = Self::empty(draw);
+        let mut game = Self::empty_with(draw, options);
         let mut rest = cards.into_iter();
         for (index, column) in game.columns.iter_mut().enumerate() {
             column.down = rest.by_ref().take(index + 1).collect();
@@ -65,6 +80,18 @@ impl Klondike {
         }
         game.stock = rest.collect();
         game
+    }
+
+    pub(super) fn recycles_left(&self) -> Option<u32> {
+        match self.passes {
+            StockPasses::Unlimited => None,
+            StockPasses::Three => Some(2_u32.saturating_sub(self.recycles)),
+            StockPasses::One => Some(0),
+        }
+    }
+
+    pub(super) fn recycle_allowed(&self) -> bool {
+        self.recycles_left().is_none_or(|left| left > 0)
     }
 }
 
@@ -117,7 +144,7 @@ impl Game for Klondike {
     fn stock_status(&self) -> Option<StockStatus> {
         Some(StockStatus {
             recycles: self.recycles,
-            recycles_left: None,
+            recycles_left: self.recycles_left(),
             deals_left: None,
         })
     }

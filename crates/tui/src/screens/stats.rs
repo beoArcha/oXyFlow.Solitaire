@@ -174,9 +174,10 @@ impl StatsScreen {
 
     fn replay(&self) -> Effect {
         self.selected()
-            .map_or(Effect::None, |record| Effect::Start {
+            .map_or(Effect::None, |record| Effect::Replay {
                 variant: record.variant,
-                seed: Some(record.seed),
+                seed: record.seed,
+                options: record.options,
                 undo_allowed: record.undo_allowed,
             })
     }

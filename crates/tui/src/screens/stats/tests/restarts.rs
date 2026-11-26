@@ -118,6 +118,7 @@ fn the_summary_and_the_history_show_restarts_at_100_by_30_in_both_locales() {
                 ..GameCounters::default()
             },
             seed: u64::MAX,
+            options: oxysol_core::GameOptions::DEFAULT,
             ..row(
                 30,
                 Variant::Pyramid(PyramidRules::Classic),
@@ -174,6 +175,7 @@ fn a_row_with_restarts_stays_as_wide_as_the_header_in_both_locales() {
         crate::i18n::set_locale(locale);
         let worst = GameRecord {
             seed: u64::MAX,
+            options: oxysol_core::GameOptions::DEFAULT,
             elapsed_ms: Some(35_999_000),
             moves: Some(99_999),
             variant: Variant::Pyramid(PyramidRules::Classic),

@@ -1,5 +1,6 @@
 //! Stepping a setting one option forward or back.
 
+use super::game_option_rows;
 use super::options::{
     AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FULL_SCREEN_MODES, Field,
     GLYPH_MODES, Step, WINDOW_SIZES, back_styles, front_styles, theme_options,
@@ -14,7 +15,7 @@ use crate::settings::{
 
 const VOLUME_STEP: u8 = 10;
 
-fn cycle<T: Copy + PartialEq>(options: &[T], current: T, step: Step) -> T {
+pub(super) fn cycle<T: Copy + PartialEq>(options: &[T], current: T, step: Step) -> T {
     let Some(position) = options.iter().position(|option| *option == current) else {
         return options.first().copied().unwrap_or(current);
     };
@@ -157,6 +158,13 @@ pub fn changed_for_facts(
         | Field::MovesPanel
         | Field::AutoFinish
         | Field::QuickMove => return toggled_aid(field, settings),
+        Field::KlondikePasses
+        | Field::KlondikeEmptyColumn
+        | Field::SpiderDeal
+        | Field::GolfWrap
+        | Field::GolfKingStops => {
+            next.game_options = game_option_rows::changed(field, settings.game_options, step);
+        }
     }
     next
 }

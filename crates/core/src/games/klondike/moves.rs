@@ -34,7 +34,7 @@ impl Klondike {
     /// count from every source onto every target.
     pub(super) fn enumerate_moves(&self) -> Vec<Move> {
         let mut moves = Vec::new();
-        if !self.stock.is_empty() || !self.waste.is_empty() {
+        if !self.stock.is_empty() || (!self.waste.is_empty() && self.recycle_allowed()) {
             moves.push(Move::Stock);
         }
         for from in sources() {

@@ -1,5 +1,6 @@
 //! The two toggles under the variants list and the hints that explain them.
 
+use oxysol_core::GameOptions;
 use ratatui::Frame;
 use ratatui::layout::{Alignment, Rect};
 use ratatui::style::Style;
@@ -58,12 +59,15 @@ pub(super) fn draw_winnable(
     draw_toggle(frame, area, label, focused, ctx)
 }
 
-fn winnable_hint(on: bool) -> String {
-    if on {
-        t("menu.winnable.on_hint").into_owned()
-    } else {
-        t("menu.winnable.off_hint").into_owned()
-    }
+/// The hint under the winnable toggle. With a rule option changed in the settings, the hint says
+/// that those games deal any deal: the solver models the default rules only (T-53).
+fn winnable_hint(on: bool, options: GameOptions) -> String {
+    let key = match (on, options.is_default()) {
+        (false, _) => "menu.winnable.off_hint",
+        (true, true) => "menu.winnable.on_hint",
+        (true, false) => "menu.winnable.options_hint",
+    };
+    t(key).into_owned()
 }
 
 pub(super) fn draw_hints(
@@ -80,7 +84,7 @@ pub(super) fn draw_hints(
         draw_centered(
             frame,
             area,
-            winnable_hint(ctx.settings.winnable_only),
+            winnable_hint(ctx.settings.winnable_only, ctx.settings.game_options),
             muted,
         );
     }

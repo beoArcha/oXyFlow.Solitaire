@@ -34,13 +34,14 @@ impl Spider {
         }
     }
 
-    /// Whether [`Move::Stock`] is allowed: the stock has cards and every column holds one. Errors:
-    /// an empty stock is `StockEmpty`, an empty column is `EmptyColumnBlocksDeal`.
+    /// Whether [`Move::Stock`] is allowed: the stock has cards and, unless `deal_empty` is on,
+    /// every column holds one. Errors: an empty stock is `StockEmpty`, an empty column is
+    /// `EmptyColumnBlocksDeal`.
     pub(super) fn check_deal(&self) -> Result<(), MoveError> {
         if self.stock.is_empty() {
             return Err(MoveError::StockEmpty);
         }
-        if self.columns.iter().any(|column| column.up.is_empty()) {
+        if !self.deal_empty && self.columns.iter().any(|column| column.up.is_empty()) {
             return Err(MoveError::EmptyColumnBlocksDeal);
         }
         Ok(())

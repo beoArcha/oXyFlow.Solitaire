@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike: Stapeldurchgänge"
+klondike_empty_column = "Klondike: leere Spalte"
+spider_deal = "Spider: Austeilregel"
+golf_wrap = "Golf: König und Ass"
+golf_king_stops = "Golf: auf einen König"
 language = "Sprache"
 low_vision = "Sehhilfemodus"
 theme = "Design"
@@ -52,6 +57,11 @@ swiss = "Schweizer"
 italian = "Italienisch"
 
 [desc]
+klondike_passes = "Wie oft der Stapel durchgegangen werden darf. Gilt für das nächste Klondike-Spiel; nur Unbegrenzt hat die Suche nach gewinnbaren Spielen."
+klondike_empty_column = "Was auf eine leere Spalte darf. Gilt für das nächste Klondike-Spiel; nur Nur König hat die Suche nach gewinnbaren Spielen."
+spider_deal = "Ob eine Reihe ausgeteilt werden darf, während eine Spalte leer ist. Gilt für das nächste Spider-Spiel; nur die Vorgabe hat die Suche."
+golf_wrap = "Ob König und Ass als benachbart gelten. Gilt für das nächste Golf-Spiel; nur die Vorgabe hat die Suche nach gewinnbaren Spielen."
+golf_king_stops = "Ob eine Dame auf einen König im Ablagestapel darf. Gilt für das nächste Golf-Spiel; nur die Vorgabe hat die Suche."
 language = "Die Sprache aller Texte. Ändert sich sofort."
 low_vision_console = "Hoher Kontrast (7:1), größte Karten, dickes Leuchten, fetter Text, breitere Fächer, Konsolenschrift 24+ px."
 low_vision_wt = "Hoher Kontrast (7:1), größte Karten, dickes Leuchten, fetter Text, breitere Fächer. Schrift vergrößern: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopie"
 deuteranopia = "Deuteranopie"
 tritanopia = "Tritanopie"
 monochrome = "Monochrom"
+
+[game_option]
+passes_unlimited = "Unbegrenzt"
+passes_three = "3"
+passes_one = "1"
+king_only = "Nur König"
+any_card = "Jede Karte"
+columns_filled = "Erst Spalten füllen"
+any_time = "Auch mit leerer Spalte"
+not_adjacent = "Nicht benachbart"
+adjacent = "Benachbart"
+queen_follows = "Dame erlaubt"
+nothing_follows = "Nichts (schwerer)"

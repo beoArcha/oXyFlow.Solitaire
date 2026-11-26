@@ -181,6 +181,9 @@ pub struct Settings {
     /// value without the field loads as `None`.
     pub low_vision_saved: Option<LowVisionBackup>,
     pub favourites: Vec<oxysol_core::Variant>,
+    /// The rule options of the next game (P6-06); each game reads only its own fields. An older
+    /// saved value without the field loads as the default rules.
+    pub game_options: oxysol_core::GameOptions,
     /// Which game-menu groups are folded. An older saved value without the field loads as empty
     /// (every family open).
     pub folded_families: Vec<GameGroup>,
@@ -230,6 +233,7 @@ impl Default for Settings {
             low_vision_offered: false,
             low_vision_saved: None,
             favourites: Vec::new(),
+            game_options: oxysol_core::GameOptions::DEFAULT,
             folded_families: Vec::new(),
         }
     }

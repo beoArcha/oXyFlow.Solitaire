@@ -10,12 +10,20 @@ use crate::screens::Effect;
 use crate::settings::{Aid, Settings};
 
 #[test]
-fn the_aid_rows_sit_in_the_gameplay_tab_in_this_order() {
+fn the_aid_rows_and_then_the_game_options_sit_in_the_gameplay_tab_in_this_order() {
     let gameplay = Tab::Gameplay.fields();
     let aids: Vec<Aid> = gameplay.iter().filter_map(|field| field.aid()).collect();
     assert_eq!(aids, Aid::ALL);
     assert_eq!(gameplay.first(), Some(&Field::Language));
-    assert_eq!(gameplay.last(), Some(&Field::QuickMove));
+    let game_options = [
+        Field::QuickMove,
+        Field::KlondikePasses,
+        Field::KlondikeEmptyColumn,
+        Field::SpiderDeal,
+        Field::GolfWrap,
+        Field::GolfKingStops,
+    ];
+    assert!(gameplay.ends_with(&game_options));
     assert!(
         Tab::AudioVisual
             .fields()

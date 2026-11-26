@@ -1,6 +1,11 @@
 # Strings of the settings area.
 
 [row]
+klondike_passes = "Klondike: przejścia talii"
+klondike_empty_column = "Klondike: pusta kolumna"
+spider_deal = "Spider: zasada rozdania"
+golf_wrap = "Golf: Król i As"
+golf_king_stops = "Golf: na Króla"
 language = "Język"
 low_vision = "Tryb słabowidzący"
 theme = "Motyw"
@@ -52,6 +57,11 @@ swiss = "Szwajcarski"
 italian = "Włoski"
 
 [desc]
+klondike_passes = "Ile razy można przejść przez talię. Dotyczy następnej gry Klondike; szukanie rozdań do wygrania tylko przy Bez limitu."
+klondike_empty_column = "Co można położyć na pustej kolumnie. Dotyczy następnej gry Klondike; szukanie rozdań do wygrania tylko przy Tylko Król."
+spider_deal = "Czy można rozdać rząd, gdy kolumna jest pusta. Dotyczy następnej gry Spider; szukanie rozdań do wygrania tylko domyślnie."
+golf_wrap = "Czy Król i As sąsiadują rangą. Dotyczy następnej gry Golf; szukanie rozdań do wygrania tylko przy ustawieniu domyślnym."
+golf_king_stops = "Czy na Króla na stosie można zagrać Damę. Dotyczy następnej gry Golf; szukanie rozdań do wygrania tylko domyślnie."
 language = "Język wszystkich tekstów. Zmienia się od razu."
 low_vision_console = "Wysoki kontrast (7:1), największe karty, gruba aura, pogrubiony tekst, szersze wachlarze, czcionka 24+ px."
 low_vision_wt = "Wysoki kontrast (7:1), największe karty, gruba aura, pogrubiony tekst, szersze wachlarze. Powiększ czcionkę: Ctrl+= / Ctrl+-."
@@ -263,3 +273,16 @@ protanopia = "Protanopia"
 deuteranopia = "Deuteranopia"
 tritanopia = "Tritanopia"
 monochrome = "Monochromatyczne"
+
+[game_option]
+passes_unlimited = "Bez limitu"
+passes_three = "3"
+passes_one = "1"
+king_only = "Tylko Król"
+any_card = "Dowolna karta"
+columns_filled = "Najpierw zapełnij kolumny"
+any_time = "Także przy pustej kolumnie"
+not_adjacent = "Nie sąsiadują"
+adjacent = "Sąsiadują"
+queen_follows = "Można zagrać Damę"
+nothing_follows = "Nic (trudniej)"

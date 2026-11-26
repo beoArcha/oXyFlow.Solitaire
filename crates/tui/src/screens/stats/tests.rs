@@ -32,6 +32,7 @@ pub fn record(
         id: GameId(id),
         variant,
         seed: u64::try_from(id).unwrap_or(0) * 11,
+        options: oxysol_core::GameOptions::DEFAULT,
         started_at_ms: 1_700_000_000_000 + id * 60_000,
         finished_at_ms: None,
         outcome,

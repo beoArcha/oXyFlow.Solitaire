@@ -258,3 +258,11 @@ no_finish = "Winst nog niet zeker"
 [no_moves]
 title = "Geen zetten meer"
 body = "Er is geen zet meer mogelijk. Dit spel kan niet meer worden gewonnen."
+
+[header.option]
+passes_three = "3 doorgangen"
+passes_one = "1 doorgang"
+any_empty = "Elke kaart op leeg"
+spider_deal = "Delen met lege kolom"
+golf_wrap = "Heer–Aas buren"
+golf_king_stops = "Niets op Heer"

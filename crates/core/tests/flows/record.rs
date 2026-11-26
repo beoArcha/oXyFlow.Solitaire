@@ -1,7 +1,9 @@
 //! The JSON of a `SessionRecord` is the save format (R-18, T-03). These tests pin its exact text:
 //! a change breaks every saved game and must be a deliberate, versioned decision.
 
-use oxysol_core::{DrawCount, Move, PileRef, Session, SessionRecord, Variant};
+use oxysol_core::{
+    DrawCount, GameOptions, Move, PileRef, Session, SessionRecord, StockPasses, Variant,
+};
 
 const SMALL_RECORD: &str = r#"{"variant":{"klondike":"three"},"seed":42,"moves":["stock",{"transfer":{"from":{"tableau":2},"to":{"foundation":0},"count":1}},"stock"],"cursor":2}"#;
 const LARGEST_SEED: &str =
@@ -11,6 +13,7 @@ fn small_record() -> SessionRecord {
     SessionRecord {
         variant: Variant::Klondike(DrawCount::Three),
         seed: 42,
+        options: GameOptions::DEFAULT,
         moves: vec![
             Move::Stock,
             Move::Transfer {
@@ -49,4 +52,19 @@ fn the_largest_seed_survives_json() {
     );
     let session = Session::restore(record).expect("an empty log replays");
     assert_eq!(session.seed(), u64::MAX);
+}
+
+#[test]
+fn non_default_options_round_trip_in_session_record() {
+    let options = GameOptions {
+        klondike_passes: StockPasses::One,
+        klondike_any_empty: true,
+        ..GameOptions::DEFAULT
+    };
+    let session = Session::with_options(Variant::Klondike(DrawCount::One), 7, options);
+    let json = serde_json::to_string(&session.record()).expect("record serializes");
+    assert!(json.contains("\"options\""), "{json}");
+    let parsed: SessionRecord = serde_json::from_str(&json).expect("record parses");
+    let restored = Session::restore(parsed).expect("restores with options");
+    assert_eq!(restored.options(), options);
 }

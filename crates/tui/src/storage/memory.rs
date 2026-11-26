@@ -1,6 +1,6 @@
 //! An in-memory [`Storage`]: the test double for the TUI and the fallback when no database opens.
 
-use oxysol_core::Variant;
+use oxysol_core::{GameOptions, Variant};
 
 use super::{
     AssistCounters, GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
@@ -14,6 +14,7 @@ pub struct HistoryRow {
     pub id: GameId,
     pub variant: Variant,
     pub seed: u64,
+    pub options: GameOptions,
     /// Unix milliseconds; the double has no clock, so a new row gets `id * 60_000`.
     pub started_at_ms: i64,
     pub undo_allowed: bool,
@@ -30,6 +31,7 @@ impl HistoryRow {
             id: GameId(id),
             variant,
             seed,
+            options: GameOptions::DEFAULT,
             started_at_ms: id * 60_000,
             undo_allowed: true,
             finished: None,
@@ -51,6 +53,7 @@ impl HistoryRow {
             id: GameId(id),
             variant,
             seed,
+            options: GameOptions::DEFAULT,
             started_at_ms: id * 60_000,
             undo_allowed: true,
             finished: Some((outcome, elapsed_ms)),
@@ -65,6 +68,7 @@ impl HistoryRow {
             id: self.id,
             variant: self.variant,
             seed: self.seed,
+            options: self.options,
             started_at_ms: self.started_at_ms,
             finished_at_ms: self
                 .finished
@@ -138,6 +142,7 @@ impl Storage for MemoryStorage {
         &mut self,
         variant: Variant,
         seed: u64,
+        options: GameOptions,
         undo_allowed: bool,
     ) -> Result<GameId, StorageError> {
         self.check()?;
@@ -146,6 +151,7 @@ impl Storage for MemoryStorage {
             id,
             variant,
             seed,
+            options: options.for_variant(variant),
             started_at_ms: id.0 * 60_000,
             undo_allowed,
             finished: None,
@@ -250,8 +256,18 @@ mod tests {
     #[test]
     fn history_rows_get_distinct_ids_and_close() {
         let mut storage = MemoryStorage::new();
-        let first = storage.start_game(Variant::FreeCell, 1, true);
-        let second = storage.start_game(Variant::FreeCell, 2, true);
+        let first = storage.start_game(
+            Variant::FreeCell,
+            1,
+            oxysol_core::GameOptions::DEFAULT,
+            true,
+        );
+        let second = storage.start_game(
+            Variant::FreeCell,
+            2,
+            oxysol_core::GameOptions::DEFAULT,
+            true,
+        );
         let (Ok(first), Ok(second)) = (first, second) else {
             panic!("start_game failed");
         };
@@ -276,7 +292,16 @@ mod tests {
         assert!(storage.save_settings(&Settings::default()).is_err());
         assert!(storage.load_game().is_err());
         assert!(storage.clear_game().is_err());
-        assert!(storage.start_game(Variant::FreeCell, 1, true).is_err());
+        assert!(
+            storage
+                .start_game(
+                    Variant::FreeCell,
+                    1,
+                    oxysol_core::GameOptions::DEFAULT,
+                    true
+                )
+                .is_err()
+        );
         assert!(storage.record_proof(GameId(1), Proof::Winnable).is_err());
         assert!(storage.record_restart(GameId(1)).is_err());
         assert!(
@@ -290,10 +315,24 @@ mod tests {
     #[test]
     fn history_lists_rows_oldest_first_with_their_results() {
         let mut storage = MemoryStorage::new();
-        let Ok(first) = storage.start_game(Variant::FreeCell, 1, true) else {
+        let Ok(first) = storage.start_game(
+            Variant::FreeCell,
+            1,
+            oxysol_core::GameOptions::DEFAULT,
+            true,
+        ) else {
             panic!("start_game failed");
         };
-        assert!(storage.start_game(Variant::FreeCell, 2, false).is_ok());
+        assert!(
+            storage
+                .start_game(
+                    Variant::FreeCell,
+                    2,
+                    oxysol_core::GameOptions::DEFAULT,
+                    false
+                )
+                .is_ok()
+        );
         assert!(storage.finish_game(first, Outcome::Won, 9, 40).is_ok());
         let Ok(records) = storage.history() else {
             panic!("history failed");
@@ -310,7 +349,12 @@ mod tests {
     #[test]
     fn a_recorded_proof_shows_in_the_history() {
         let mut storage = MemoryStorage::new();
-        let Ok(id) = storage.start_game(Variant::FreeCell, 1, true) else {
+        let Ok(id) = storage.start_game(
+            Variant::FreeCell,
+            1,
+            oxysol_core::GameOptions::DEFAULT,
+            true,
+        ) else {
             panic!("start_game failed");
         };
         assert!(storage.record_proof(id, Proof::Winnable).is_ok());
@@ -325,8 +369,18 @@ mod tests {
     fn recorded_assist_counters_replace_those_of_their_row_only() {
         let mut storage = MemoryStorage::new();
         let (Ok(first), Ok(_)) = (
-            storage.start_game(Variant::FreeCell, 1, true),
-            storage.start_game(Variant::FreeCell, 2, true),
+            storage.start_game(
+                Variant::FreeCell,
+                1,
+                oxysol_core::GameOptions::DEFAULT,
+                true,
+            ),
+            storage.start_game(
+                Variant::FreeCell,
+                2,
+                oxysol_core::GameOptions::DEFAULT,
+                true,
+            ),
         ) else {
             panic!("start_game failed");
         };
@@ -351,8 +405,18 @@ mod tests {
     fn a_recorded_restart_adds_to_the_count_of_its_row_only() {
         let mut storage = MemoryStorage::new();
         let (Ok(first), Ok(second)) = (
-            storage.start_game(Variant::FreeCell, 1, false),
-            storage.start_game(Variant::FreeCell, 2, false),
+            storage.start_game(
+                Variant::FreeCell,
+                1,
+                oxysol_core::GameOptions::DEFAULT,
+                false,
+            ),
+            storage.start_game(
+                Variant::FreeCell,
+                2,
+                oxysol_core::GameOptions::DEFAULT,
+                false,
+            ),
         ) else {
             panic!("start_game failed");
         };

@@ -62,14 +62,14 @@ impl Game for Counter {
     }
 }
 
-fn counter_deal(_: Variant, seed: u64) -> Box<dyn Game> {
+fn counter_deal(_: Variant, seed: u64, _: GameOptions) -> Box<dyn Game> {
     Box::new(Counter {
         count: u16::try_from(seed % 3).unwrap_or(0),
     })
 }
 
 fn session(seed: u64) -> Session {
-    Session::with_dealer(VARIANT, seed, counter_deal)
+    Session::with_dealer(VARIANT, seed, GameOptions::DEFAULT, counter_deal)
 }
 
 fn count(session: &Session) -> usize {
@@ -80,6 +80,7 @@ fn record(moves: usize, cursor: usize) -> SessionRecord {
     SessionRecord {
         variant: VARIANT,
         seed: 0,
+        options: GameOptions::DEFAULT,
         moves: vec![Move::Stock; moves],
         cursor,
     }
@@ -272,12 +273,47 @@ fn record_json_is_stable() {
     let record = SessionRecord {
         variant: Variant::Klondike(DrawCount::Three),
         seed: 7,
+        options: GameOptions::DEFAULT,
         moves: vec![Move::Stock],
         cursor: 1,
     };
     let json = r#"{"variant":{"klondike":"three"},"seed":7,"moves":["stock"],"cursor":1}"#;
     assert_eq!(serde_json::to_string(&record).unwrap(), json);
     assert_eq!(serde_json::from_str::<SessionRecord>(json).unwrap(), record);
+}
+
+#[test]
+fn session_keeps_options_through_undo_restart_and_restore() {
+    let options = GameOptions {
+        klondike_passes: crate::game::StockPasses::One,
+        klondike_any_empty: true,
+        golf_wrap: true,
+        ..GameOptions::DEFAULT
+    };
+    let mut session = Session::with_options(VARIANT, 9, options);
+    assert_eq!(session.options(), options.for_variant(VARIANT));
+    assert_eq!(session.apply(Move::Stock), Ok(()));
+    assert_eq!(
+        session.game().stock_status().and_then(|s| s.recycles_left),
+        Some(0)
+    );
+    assert!(session.undo());
+    assert_eq!(
+        session.game().stock_status().and_then(|s| s.recycles_left),
+        Some(0)
+    );
+    let restored = Session::restore(session.record()).expect("options record restores");
+    assert_eq!(restored.options(), options.for_variant(VARIANT));
+    assert_eq!(
+        restored.game().stock_status().and_then(|s| s.recycles_left),
+        Some(0)
+    );
+    session.restart();
+    assert_eq!(session.options(), options.for_variant(VARIANT));
+    assert_eq!(
+        session.game().stock_status().and_then(|s| s.recycles_left),
+        Some(0)
+    );
 }
 
 #[test]

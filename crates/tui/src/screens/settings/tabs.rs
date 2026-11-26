@@ -66,7 +66,7 @@ const POPULAR_FIELDS: [Field; 8] = [
     Field::AutoFinish,
 ];
 
-const GAMEPLAY_FIELDS: [Field; 7] = [
+const GAMEPLAY_FIELDS: [Field; 12] = [
     Field::Language,
     Field::Aura,
     Field::TargetMarks,
@@ -74,6 +74,11 @@ const GAMEPLAY_FIELDS: [Field; 7] = [
     Field::MovesPanel,
     Field::AutoFinish,
     Field::QuickMove,
+    Field::KlondikePasses,
+    Field::KlondikeEmptyColumn,
+    Field::SpiderDeal,
+    Field::GolfWrap,
+    Field::GolfKingStops,
 ];
 
 impl Tab {

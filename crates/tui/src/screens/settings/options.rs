@@ -49,10 +49,15 @@ pub enum Field {
     MovesPanel,
     AutoFinish,
     QuickMove,
+    KlondikePasses,
+    KlondikeEmptyColumn,
+    SpiderDeal,
+    GolfWrap,
+    GolfKingStops,
 }
 
 /// Every setting, in canonical order (Audio & Visual, then Gameplay).
-pub const FIELDS: [Field; 34] = [
+pub const FIELDS: [Field; 39] = [
     Field::Colors,
     Field::FullScreen,
     Field::WindowSize,
@@ -87,6 +92,11 @@ pub const FIELDS: [Field; 34] = [
     Field::MovesPanel,
     Field::AutoFinish,
     Field::QuickMove,
+    Field::KlondikePasses,
+    Field::KlondikeEmptyColumn,
+    Field::SpiderDeal,
+    Field::GolfWrap,
+    Field::GolfKingStops,
 ];
 
 /// Which way a change moves through the options.
@@ -272,6 +282,11 @@ impl Field {
             Field::SoundStyle => "settings.row.sound_style",
             Field::Cues => "settings.row.cues",
             Field::Music => "settings.row.music",
+            Field::KlondikePasses => "settings.row.klondike_passes",
+            Field::KlondikeEmptyColumn => "settings.row.klondike_empty_column",
+            Field::SpiderDeal => "settings.row.spider_deal",
+            Field::GolfWrap => "settings.row.golf_wrap",
+            Field::GolfKingStops => "settings.row.golf_king_stops",
             _ => "settings.row.volume",
         }
     }
@@ -321,6 +336,11 @@ impl Field {
             Field::SoundStyle => "settings.desc.sound_style",
             Field::Cues => "settings.desc.cues",
             Field::Music => "settings.desc.music",
+            Field::KlondikePasses => "settings.desc.klondike_passes",
+            Field::KlondikeEmptyColumn => "settings.desc.klondike_empty_column",
+            Field::SpiderDeal => "settings.desc.spider_deal",
+            Field::GolfWrap => "settings.desc.golf_wrap",
+            Field::GolfKingStops => "settings.desc.golf_king_stops",
             _ => "settings.desc.volume",
         }
     }

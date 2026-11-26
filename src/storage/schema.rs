@@ -45,6 +45,9 @@ pub(super) const MIGRATIONS: &[&str] = &[
     ALTER TABLE games ADD COLUMN failed_quick INTEGER NOT NULL DEFAULT 0;
     ALTER TABLE games ADD COLUMN quick_streak INTEGER NOT NULL DEFAULT 0;
 ",
+    "
+    ALTER TABLE games ADD COLUMN options TEXT NOT NULL DEFAULT '{}';
+",
 ];
 
 /// The schema version this build writes.

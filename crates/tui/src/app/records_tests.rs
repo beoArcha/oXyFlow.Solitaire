@@ -16,6 +16,7 @@ fn won(id: i64, variant: Variant, undo_allowed: bool, elapsed_ms: u64, moves: u3
         id: GameId(id),
         variant,
         seed: 1,
+        options: oxysol_core::GameOptions::DEFAULT,
         started_at_ms: id * 60_000,
         finished_at_ms: Some(id * 60_000 + i64::try_from(elapsed_ms).unwrap_or(0)),
         outcome: Some(Outcome::Won),

@@ -2,7 +2,7 @@
 //! of a deal the player chose (a typed seed, a replay, a resumed game). A seed the player chose is
 //! never replaced; the header only reports what the solver found out about it.
 
-use oxysol_core::Variant;
+use oxysol_core::{GameOptions, Variant};
 
 use super::search::{SEED_CAP, Search, SearchCommand, Step};
 use super::{App, Modal};
@@ -101,6 +101,7 @@ impl App {
                     self.begin_game(
                         variant,
                         seed,
+                        GameOptions::DEFAULT,
                         undo_allowed,
                         Origin::Searched(Proof::Unknown),
                     );
@@ -173,6 +174,7 @@ impl App {
                 self.begin_game(
                     variant,
                     seed,
+                    GameOptions::DEFAULT,
                     undo_allowed,
                     Origin::Searched(Proof::Winnable),
                 );
