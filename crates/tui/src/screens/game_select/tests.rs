@@ -21,13 +21,7 @@ fn select() -> Harness {
 fn the_hint_line_follows_the_focused_variant_and_names_its_difficulty() {
     let mut h = select();
     assert!(h.text().contains("Easy: Build the foundations"));
-    let spider_four = Variant::ALL
-        .iter()
-        .position(|variant| *variant == Variant::Spider(SuitCount::Four))
-        .unwrap_or_default();
-    for _ in 0..spider_four {
-        h.press(KeyCode::Down);
-    }
+    h.focus_game_variant(Variant::Spider(SuitCount::Four));
     assert!(
         h.text()
             .contains("Hard: Build eight runs from king down to ace")

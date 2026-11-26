@@ -14,6 +14,8 @@ select_seed = "Wybierz grę dla ziarna {seed}"
 favourites = "Ulubione"
 legend = "{star} popularne   {favourite} ulubione ({key})"
 no_match = "Żadna gra nie pasuje: {text}"
+family_folded = "{title} ({count})"
+heading_hint = "Enter, Spacja lub Lewo/Prawo zwija lub rozwija tę grupę"
 
 [difficulty]
 easy = "łatwy"
@@ -69,6 +71,10 @@ seed_options = "Opcje ziarna"
 language = "Język"
 favorite = "Ulubione"
 winnable = "Gry do wygrania"
+fold = "Zwiń"
+unfold = "Rozwiń"
+change = "Zmień"
+clear = "Wyczyść"
 
 [family]
 klondike = "Rodzina Klondike"

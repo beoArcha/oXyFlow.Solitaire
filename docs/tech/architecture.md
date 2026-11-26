@@ -349,7 +349,7 @@ pub struct NullClipboard;                                // every copy fails wit
 - **Focus (P3-17):** `Action::FocusNext` (Tab) and `Action::FocusPrevious` (Shift+Tab, `KeyCode::BackTab`) are
   rows of `KEY_TABLE` (group Navigation), so the help window lists them. Every screen and dialog owns a focus
   ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
-  Rings: main menu language selector, then its items (initial focus stays on the first item); New game from seed: its game list, then the seed options (type a seed, played seeds, random replay, difficulty levels); on the typing page the field, Continue, Back; game selection list, then the undo toggle; settings
+  Rings: main menu language selector, then its items (initial focus stays on the first item); New game from seed: its game list, then the seed options (type a seed, played seeds, random replay, difficulty levels); on the typing page the field, Continue, Back; game selection list (headings and variants), then the undo toggle and the winnable-deals toggle; settings
   rows (by Up/Down within the active tab; Tab and Shift+Tab switch settings tabs, O-103); statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
   Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, no moves, alert and pause
   (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
@@ -593,14 +593,22 @@ pub struct NullClipboard;                                // every copy fails wit
   choice; the game selection (also the first step of "New game from seed", and of `--seed`) shows `[ Undo: on|off ]`,
   switched by `Action::Undo` (`u`) or a click, through `Effect::Apply`. A new game from the board keeps
   the mode of the running game; "Play this seed again" in the statistics replays the row's own mode.
-  *Game menu (P4-09):* the game selection lists the variants under family headings in the fixed order of
+  *Game menu (P4-09, O-123):* the game selection lists the variants under family headings in the fixed order of
   `screens/game_select/catalog.rs` (`Family::ALL`, `Family::of`), the favourites group first; a favourite appears only
   there. A star (`Glyphs::star`, `*` in ASCII) marks the popular games (`is_popular`). `Settings::favourites` (a list of
   variants, an older value without the field loads as empty) is toggled by `Action::Finish` (`f`) or a click on the
-  marks, through `Effect::Apply`. `/` or a click on the field opens a search that filters by variant name while typing
-  (`GameSelect::captures_text`, so letters are text and not shortcuts); Esc closes it first and a second Esc goes back.
-  The list scrolls to keep the focused variant and its heading in view. A new game adds a `Family` arm or a variant
-  to an existing family; nothing else in the menu changes.
+  marks, through `Effect::Apply`. Headings also take the focus and carry `[-]` (open) or `[+]` (folded, with the game
+  count) in both Unicode and ASCII modes; Enter, Space or a click on a heading, and Left/Right on a heading or any
+  variant of it, fold and unfold the group (`Settings::folded_families`, empty by default; older settings open every
+  family). `/` or a click on the field opens a search that filters by variant name while typing
+  (`GameSelect::captures_text`, so letters are text and not shortcuts) and temporarily opens matching folded groups
+  without changing `folded_families`; Esc closes it first and a second Esc goes back. The list scrolls to keep the
+  focused row (and its heading when a variant is focused) in view; the mouse wheel scrolls by 3 rows without moving
+  focus off a visible row (moving focus to the nearest visible variant if it leaves the view), PageUp/PageDown move
+  focus by one page, Home/End jump to the first/last variant, and clicking the `↑`/`↓` (`^`/`v` in ASCII) edge marks
+  scrolls by one page. The footer names only the keys that act in the current focus (`Fold`/`Unfold` on a heading,
+  `Play`/`Seed options` on a variant, `Change` on a toggle, `Clear` and `F1 Help` while typing in search). A new game
+  adds a `Family` arm or a variant to an existing family; nothing else in the menu changes.
   *Restarts (P4-05):* Restart stays allowed without undo but is counted. `BoardScreen::restart` returns whether it
   counted (only when `undo_allowed` is false) and `App::restart_game` then calls `Storage::record_restart` at once, so
   a quit or a crash cannot lose it; a game with undo never counts one. The header shows `Restarts: N` (`Od nowa: N`)

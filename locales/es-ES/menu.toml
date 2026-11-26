@@ -14,6 +14,8 @@ variant_hint = "{level}: {description}"
 favourites = "Favoritos"
 legend = "{star} popular   {favourite} favorito ({key})"
 no_match = "Ningún juego coincide: {text}"
+family_folded = "{title} ({count})"
+heading_hint = "Enter, Espacio o Izquierda/Derecha pliega o despliega este grupo"
 
 [difficulty]
 easy = "Fácil"
@@ -69,6 +71,10 @@ seed_options = "Opciones de semilla"
 language = "Idioma"
 favorite = "Favorito"
 winnable = "Partidas ganables"
+fold = "Plegar"
+unfold = "Desplegar"
+change = "Cambiar"
+clear = "Borrar"
 
 [family]
 klondike = "Familia Klondike"

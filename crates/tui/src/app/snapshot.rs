@@ -468,7 +468,10 @@ fn game_select_data(area: &str, mode: &str, state: DevGameSelect) -> ScreenData 
             area: area.to_owned(),
             target: state.focus_target.to_owned(),
             index: state.focus_index,
-            label: state.variant.map(|v| t(variant_label_key(v)).into_owned()),
+            label: state
+                .variant
+                .map(|v| t(variant_label_key(v)).into_owned())
+                .or(state.label),
         }),
         tooltip_visible: false,
         status_line: None,

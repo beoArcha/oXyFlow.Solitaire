@@ -14,6 +14,8 @@ variant_hint = "{level}: {description}"
 favourites = "Favorieten"
 legend = "{star} populair   {favourite} favoriet ({key})"
 no_match = "Geen spel past: {text}"
+family_folded = "{title} ({count})"
+heading_hint = "Enter, Spatie of Links/Rechts vouwt deze groep in of uit"
 
 [difficulty]
 easy = "Makkelijk"
@@ -70,6 +72,10 @@ seed_options = "Seedopties"
 language = "Taal"
 favorite = "Favoriet"
 winnable = "Winbare spellen"
+fold = "Invouwen"
+unfold = "Uitvouwen"
+change = "Wijzigen"
+clear = "Wissen"
 
 [family]
 klondike = "Klondike-familie"

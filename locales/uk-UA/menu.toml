@@ -14,6 +14,8 @@ variant_hint = "{level}: {description}"
 favourites = "Улюблені"
 legend = "{star} популярні   {favourite} улюблена ({key})"
 no_match = "Жодна гра не підходить: {text}"
+family_folded = "{title} ({count})"
+heading_hint = "Enter, Пробіл або Вліво/Вправо згортає чи розгортає цю групу"
 
 [difficulty]
 easy = "легкий"
@@ -69,6 +71,10 @@ seed_options = "Опції зерна"
 language = "Мова"
 favorite = "Улюблене"
 winnable = "Виграшні роздачі"
+fold = "Згорнути"
+unfold = "Розгорнути"
+change = "Змінити"
+clear = "Очистити"
 
 [family]
 klondike = "Родина Klondike"

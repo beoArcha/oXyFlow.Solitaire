@@ -522,3 +522,23 @@ golf_wrap = true",
     assert!(changed.game_options.golf_wrap);
     assert!(!changed.game_options.spider_deal_empty);
 }
+
+#[test]
+fn folded_families_default_empty_for_old_saves_and_round_trip() {
+    assert!(Settings::default().folded_families.is_empty());
+    let old = toml::from_str::<Settings>("volume = 10");
+    assert!(matches!(old, Ok(ref s) if s.folded_families.is_empty()));
+
+    let settings = Settings {
+        folded_families: vec![
+            GameGroup::Favourites,
+            GameGroup::FreeCell,
+            GameGroup::TriPeaks,
+        ],
+        ..Settings::default()
+    };
+    let text = toml::to_string(&settings).unwrap_or_default();
+    assert!(text.contains("folded_families = ["));
+    let back = toml::from_str::<Settings>(&text);
+    assert!(matches!(back, Ok(ref s) if *s == settings));
+}

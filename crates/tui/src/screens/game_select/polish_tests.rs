@@ -106,14 +106,14 @@ fn an_empty_row_separates_the_favorites_from_the_first_family() {
     let lines = lines_of(&mut h);
     let heading = lines
         .iter()
-        .position(|line| line.trim() == t("menu.favourites"))
+        .position(|line| line.trim() == format!("[-] {}", t("menu.favourites")))
         .unwrap_or_default();
     assert!(heading > 0, "the favorites heading is not drawn: {lines:?}");
     assert!(!lines[heading + 1].trim().is_empty());
     assert!(lines[heading + 2].trim().is_empty(), "no empty row below");
     assert_eq!(
         lines[heading + 3].trim(),
-        t("menu.family.klondike"),
+        format!("[-] {}", t("menu.family.klondike")),
         "the first family does not follow the empty row"
     );
 }
