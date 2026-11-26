@@ -350,8 +350,12 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P6-15 | Yukon family and Pyramid Relaxed: best-first and complete pruning | Medium | P6-12, P6-14 | TODO |
 | P6-16 | Golf solver: a proof by rank groups, a packed key, a lower budget | Medium | P6-12 | TODO |
 | P6-17 | Spider 2 and 4 suits: a beam stratified by deals left | Medium | — | TODO |
-| O-116 | The `e` key in the possible moves and on the `Do:` row, after `a` and before `s` | Medium | O-110 | TODO |
+| O-116 | The bottom bar: `a`, `e` and `s` by preference, only the ones that are available | Medium | O-110 | TODO |
 | O-117 | A setting for `e`: off, semi-automatic (to the focused pile) or automatic | Medium | O-116 | TODO |
+| O-118 | Esc on the main menu asks whether to quit | Small | — | TODO |
+| O-119 | Quick options always offer New game, Restart and the winnable check | Medium | O-115, O-117 | TODO |
+| O-120 | Settings: clear game history and statistics (soft delete) | Medium | — | TODO |
+| O-121 | Achievements: a menu entry and the latest one in the top right corner | Medium | O-120 | DRAFT |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
