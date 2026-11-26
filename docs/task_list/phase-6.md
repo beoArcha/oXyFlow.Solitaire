@@ -4,11 +4,12 @@ Goal: themes and the interface size scale move to data files; the four-colour Fr
 
 Exit criteria:
 
-- P3-36, P6-04 and P6-05 are DONE;
+- P3-36, P6-18, P6-04 and P6-05 are DONE;
 - P6-06 is DONE for the options the owner chose (its DRAFT is finalized by Opus first);
 - the developer bridge P6-07, P6-08 and P6-09 is DONE (decision T-42).
 
-Order of work: the theme data first (P3-36), then the card style and the game, then the options.
+Order of work: the theme data first (P3-36, then P6-18), then the game, then the options. P6-04 is covered by P3-35 (see
+its card).
 
 ### P3-36 — Themes as data and the interface size scale
 
@@ -24,9 +25,42 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   (Dark, Light, High Contrast, Monokai, Dracula), validated by the contrast tests at build or test
   time. A user theme file in the data folder is loaded at start, checked with the same contrast rules
   and rejected with a readable message when it fails.
-- **Acceptance:** the built-in themes render exactly as before; a valid and an invalid user theme; the
-  size scale renders at 100 × 30, 130 × 40 and 200 × 60 per step; the inventory column filled; both
-  locales.
+- **Split (orchestrator, 2026-11-26):** this card is the themes as data, the user theme and the inventory column
+  (decision T-51). The interface size scale moved to **P6-18**, because it reaches far outside `layout/**` (the board,
+  the overlays and the Settings screen). Approved files added for the user theme: `crates/tui/src/settings/**`,
+  `crates/tui/src/app.rs`, `crates/tui/src/app/{deps,modal}.rs`, `crates/tui/src/widgets/overlay/mod.rs`,
+  `crates/tui/src/screens/settings/{values,change,options}.rs`, `crates/tui/src/test_support.rs`,
+  `tests/integration/{audio,autosave}.rs`, `locales/*/settings.toml`, `docs/tech/architecture.md`,
+  `docs/tech/decisions.md`. The user theme is `theme.toml` in the data folder, checked with the Dark contrast rules,
+  offered as a **Custom** theme in Settings when valid; a failure shows an alert with a static key and logs the details.
+- **Acceptance:** the built-in themes render exactly as before; a valid and an invalid user theme; the inventory column
+  filled (items the scale will set say "interface size (P6-18)"); every complete locale.
+
+### P6-18 — The interface size scale S / M / L / XL
+
+- **Owner:** Medium
+- **Priority:** P2. Split from P3-36 on 2026-11-26.
+- **Depends on:** P3-36
+- **Files:** `crates/tui/src/layout/**`, `crates/tui/src/settings.rs`, `crates/tui/src/settings/{interface,aids}.rs`,
+  `crates/tui/src/screens/settings/{options,tabs,values,change}.rs`,
+  `crates/tui/src/screens/board/{mod,view,commands,zoom,guide_view,moves_panel}.rs`,
+  `crates/tui/src/widgets/overlay/{mod,dialog,help,guide_window,moves_window,quick_options,command_line}.rs`,
+  `crates/tui/src/widgets/overlay/how_to_play/{content,view}.rs`, `locales/*/settings.toml`,
+  `docs/tech/ui-inventory.md`, `docs/tech/architecture.md` (layout contract), tests
+- **Problem:** the card size cap, fan steps, gaps, side panel and modal widths are separate constants spread over
+  `layout/**`, the board and the overlays; the player cannot make the whole interface larger or smaller in one step.
+- **Fix:**
+  - One setting **Interface size** with the steps S, M, L and XL (Settings, Display tab), building on P3-16's size
+    logic. Each step sets together: the card size cap, the fan steps, the gaps, the side panel width and the modal
+    widths, from one table in `layout/**`; the board and every overlay read their sizes from it instead of their own
+    constants.
+  - The step that renders exactly as today is the default; an old settings file loads as that step.
+  - A step that does not fit the terminal falls back to the largest that fits, as the card size does today; the
+    "needs N columns" text of the aids (`settings/aids.rs`) follows the side panel width of the step.
+  - The inventory column of P3-36 says "interface size" for every item the scale sets.
+- **Acceptance:** the default step renders exactly as before (the existing snapshot tests pass unchanged); every step
+  renders at 100 × 30, 130 × 40 and 200 × 60 without overflow; an old settings file loads as the default; every
+  complete locale fits.
 
 ### P6-04 — Card style: four-colour French
 
@@ -41,6 +75,10 @@ Order of work: the theme data first (P3-36), then the card style and the game, t
   - Colours come from the theme tokens of P3-35; no colour outside the tokens.
 - **Acceptance:** the four suits differ in monochrome and in ASCII; the four-colour option passes the contrast tests of
   P3-35 at every card size; snapshot tests; both locales.
+- **Status:** DONE, covered by P3-35 (owner decision 2026-11-26): the French style (`assets/cards/fronts/french`, court
+  labels V, D, R) together with the **Four-color deck** setting of P3-35, which applies to every style, already gives
+  this deck with the theme tokens and the contrast tests of P3-35. No separate style; the ASCII letters stay lowercase
+  as in every other style.
 
 ### P6-05 — Game: TriPeaks
 

@@ -252,7 +252,7 @@ fn every_button_of_the_board_does_what_its_key_does() {
 #[test]
 fn a_button_under_the_pointer_is_drawn_reversed_and_only_that_one() {
     let mut h = harness(Locale::EnUs, Vec::new());
-    let text = key_label((Action::Quit, "help.action.quit"));
+    let text = key_label((Action::Back, "help.action.quit"));
     let Some((column, row)) = h.find(&text) else {
         panic!("{text:?} is not drawn");
     };
