@@ -152,6 +152,10 @@ light = "Jasny"
 high_contrast = "Wysoki kontrast"
 monokai = "Monokai"
 dracula = "Dracula"
+custom = "Własny"
+user_unreadable = "Nie udało się wczytać pliku własnego motywu (theme.toml). Szczegóły w pliku oxysol.log."
+user_low_contrast = "Własny motyw (theme.toml) nie spełnia wymagań kontrastu. Szczegóły w pliku oxysol.log."
+user_missing = "Nie znaleziono zapisanego pliku własnego motywu (theme.toml). Użyto motywu domyślnego."
 
 [glyph]
 unicode = "Unicode"

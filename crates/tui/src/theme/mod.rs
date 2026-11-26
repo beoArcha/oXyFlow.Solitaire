@@ -3,13 +3,9 @@
 
 pub mod ansi;
 pub mod contrast;
-pub mod dark;
-pub mod dracula;
 pub mod face;
-pub mod high_contrast;
-pub mod light;
 pub mod low_vision;
-pub mod monokai;
+pub mod manifest;
 pub mod palette;
 pub mod table;
 pub mod table_feel;
@@ -19,12 +15,13 @@ use oxysol_core::{Color as SuitColor, Suit};
 use ratatui::style::{Color, Modifier, Style};
 use serde::{Deserialize, Serialize};
 
+pub use manifest::{ThemeError, UserTheme, parse_palette, validate_contrast};
 pub use palette::{GRAPHIC_PAIRS, MARK_PAIRS, Palette, Swatch, TEXT_PAIRS, Token};
 
 use crate::caps::ColorDepth;
 use crate::settings::{CardBack, CardFaceTint, ColorVision, TableColour};
 
-/// A built-in theme.
+/// A built-in theme, or the player's custom theme from `theme.toml`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ThemeId {
@@ -33,10 +30,11 @@ pub enum ThemeId {
     HighContrast,
     Monokai,
     Dracula,
+    Custom,
 }
 
 impl ThemeId {
-    /// Every theme, in the order of the settings screen.
+    /// Every built-in theme, in the order of the settings screen.
     pub const ALL: [ThemeId; 5] = [
         ThemeId::Dark,
         ThemeId::Light,
@@ -45,21 +43,29 @@ impl ThemeId {
         ThemeId::Dracula,
     ];
 
-    /// The palette of the theme.
+    /// Every theme including `Custom`, in the order of the settings screen.
+    pub const ALL_WITH_CUSTOM: [ThemeId; 6] = [
+        ThemeId::Dark,
+        ThemeId::Light,
+        ThemeId::HighContrast,
+        ThemeId::Monokai,
+        ThemeId::Dracula,
+        ThemeId::Custom,
+    ];
+
+    /// The palette of the built-in theme (`Custom` falls back to `Dark`).
     pub fn palette(self) -> Palette {
-        match self {
-            ThemeId::Dark => dark::palette(),
-            ThemeId::Light => light::palette(),
-            ThemeId::HighContrast => high_contrast::palette(),
-            ThemeId::Monokai => monokai::palette(),
-            ThemeId::Dracula => dracula::palette(),
-        }
+        manifest::builtin_palette(self)
     }
 
     /// The minimum WCAG contrast ratio of every pair in [`TEXT_PAIRS`].
     pub const fn contrast_target(self) -> f32 {
         match self {
-            ThemeId::Dark | ThemeId::Light | ThemeId::Monokai | ThemeId::Dracula => 4.5,
+            ThemeId::Dark
+            | ThemeId::Light
+            | ThemeId::Monokai
+            | ThemeId::Dracula
+            | ThemeId::Custom => 4.5,
             ThemeId::HighContrast => 7.0,
         }
     }
@@ -72,11 +78,13 @@ pub struct Theme {
     depth: ColorDepth,
     vision: ColorVision,
     low_vision: bool,
+    base: Palette,
     palette: Palette,
+    custom: Option<Palette>,
 }
 
-fn palette_for(id: ThemeId, vision: ColorVision, low_vision: bool) -> Palette {
-    let remapped = vision::remap(id, id.palette(), vision);
+fn palette_for(id: ThemeId, base: Palette, vision: ColorVision, low_vision: bool) -> Palette {
+    let remapped = vision::remap(id, base, vision);
     if low_vision {
         low_vision::remap(remapped)
     } else {
@@ -85,22 +93,59 @@ fn palette_for(id: ThemeId, vision: ColorVision, low_vision: bool) -> Palette {
 }
 
 impl Theme {
-    /// Resolves `id` for a terminal of the given color depth.
+    /// Resolves built-in `id` for a terminal of the given color depth.
     pub fn new(id: ThemeId, depth: ColorDepth) -> Self {
+        let base = id.palette();
         Self {
             id,
             depth,
             vision: ColorVision::Normal,
             low_vision: false,
-            palette: id.palette(),
+            base,
+            palette: base,
+            custom: None,
         }
+    }
+
+    /// Resolves `id` with an optional user-defined `custom` palette. Falls back to `Dark` when
+    /// `id` is `Custom` without a loaded palette.
+    pub fn for_settings(id: ThemeId, custom: Option<Palette>, depth: ColorDepth) -> Self {
+        let (effective_id, base) = match (id, custom) {
+            (ThemeId::Custom, Some(palette)) => (ThemeId::Custom, palette),
+            (ThemeId::Custom, None) => (ThemeId::Dark, ThemeId::Dark.palette()),
+            (other, _) => (other, other.palette()),
+        };
+        Self {
+            id: effective_id,
+            depth,
+            vision: ColorVision::Normal,
+            low_vision: false,
+            base,
+            palette: base,
+            custom,
+        }
+    }
+
+    /// Whether a valid user theme is loaded and offered as `Custom`.
+    pub const fn has_custom(&self) -> bool {
+        self.custom.is_some()
+    }
+
+    /// The loaded user palette, if any.
+    pub const fn custom_palette(&self) -> Option<&Palette> {
+        self.custom.as_ref()
+    }
+
+    /// The un-remapped base palette of the active theme.
+    pub const fn base_palette(&self) -> &Palette {
+        &self.base
     }
 
     /// This theme with its meaning tokens adapted for `vision`.
     pub fn with_color_vision(&self, vision: ColorVision) -> Self {
         Self {
             vision,
-            palette: palette_for(self.id, vision, self.low_vision),
+            palette: palette_for(self.id, self.base, vision, self.low_vision),
             ..*self
         }
     }
@@ -109,7 +154,7 @@ impl Theme {
     pub fn with_low_vision(&self, low_vision: bool) -> Self {
         Self {
             low_vision,
-            palette: palette_for(self.id, self.vision, low_vision),
+            palette: palette_for(self.id, self.base, self.vision, low_vision),
             ..*self
         }
     }
@@ -233,5 +278,7 @@ impl Theme {
     }
 }
 
+#[cfg(test)]
+mod manifest_tests;
 #[cfg(test)]
 mod tests;

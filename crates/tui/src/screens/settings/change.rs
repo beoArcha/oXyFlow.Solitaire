@@ -2,7 +2,7 @@
 
 use super::options::{
     AURA_COLOURS, AURA_SIZES, AURA_STYLES, CARD_BACKS, COLOR_MODES, FULL_SCREEN_MODES, Field,
-    GLYPH_MODES, Step, WINDOW_SIZES, back_styles, front_styles,
+    GLYPH_MODES, Step, WINDOW_SIZES, back_styles, front_styles, theme_options,
 };
 use crate::app::FontFacts;
 use crate::audio::StyleInfo;
@@ -11,7 +11,6 @@ use crate::settings::{
     CONSOLE_FONT_SIZES, CardFaceTint, CardSizeSetting, ColorVision, ConsoleFace, ProcessPriority,
     Settings, TableColour, TableFeel, TerminalKind,
 };
-use crate::theme::ThemeId;
 
 const VOLUME_STEP: u8 = 10;
 
@@ -54,17 +53,43 @@ pub fn changed(
     step: Step,
     sound_styles: &[StyleInfo],
 ) -> Settings {
-    changed_for_facts(field, settings, step, sound_styles, FontFacts::default())
+    changed_for_facts(
+        field,
+        settings,
+        step,
+        sound_styles,
+        FontFacts::default(),
+        false,
+    )
 }
 
-/// The settings after one step on `field`, taking terminal/console `facts` into account for
-/// low-vision console font sizing.
+/// The settings after one step on `field` with a loaded custom theme available.
+#[cfg(test)]
+pub fn changed_with_custom(
+    field: Field,
+    settings: &Settings,
+    step: Step,
+    sound_styles: &[StyleInfo],
+) -> Settings {
+    changed_for_facts(
+        field,
+        settings,
+        step,
+        sound_styles,
+        FontFacts::default(),
+        true,
+    )
+}
+
+/// The settings after one step on `field`, taking terminal/console `facts` and whether a custom
+/// theme is loaded into account.
 pub fn changed_for_facts(
     field: Field,
     settings: &Settings,
     step: Step,
     sound_styles: &[StyleInfo],
     facts: FontFacts,
+    has_custom_theme: bool,
 ) -> Settings {
     let mut next = settings.clone();
     match field {
@@ -73,7 +98,7 @@ pub fn changed_for_facts(
             let classic = facts.terminal == TerminalKind::ClassicConsole && facts.owns_window;
             return settings.with_low_vision(!settings.low_vision, classic);
         }
-        Field::Theme => next.theme = cycle(&ThemeId::ALL, settings.theme, step),
+        Field::Theme => next.theme = cycle(theme_options(has_custom_theme), settings.theme, step),
         Field::ColorVision => {
             next.color_vision = cycle(&ColorVision::ALL, settings.color_vision, step);
         }

@@ -28,7 +28,7 @@ use crate::screens::stats::StatsScreen;
 use crate::settings::{Aids, DEFAULT_SOUND_STYLE, Settings};
 use crate::solver::Solver;
 use crate::storage::{AssistCounters, GameId, SavedGame, Storage, StorageError};
-use crate::theme::Theme;
+use crate::theme::{Theme, ThemeId, UserTheme};
 use crate::widgets::footer::FooterMap;
 use crate::widgets::overlay;
 
@@ -86,6 +86,7 @@ pub struct App {
     next_query: u64,
     caps: TerminalCaps,
     sound_styles: Vec<StyleInfo>,
+    user_theme: UserTheme,
     settings: Settings,
     interface_baseline: Option<Settings>,
     quick: Aids,
@@ -125,6 +126,7 @@ impl App {
             seeds,
             start_seed,
             sound_styles,
+            user_theme,
             solver,
             display,
             version,
@@ -145,9 +147,14 @@ impl App {
             next_query: 0,
             caps,
             sound_styles,
-            theme: Theme::new(settings.theme, settings.color_depth(&caps))
-                .with_color_vision(settings.color_vision)
-                .with_low_vision(settings.low_vision),
+            theme: Theme::for_settings(
+                settings.theme,
+                user_theme.palette().copied(),
+                settings.color_depth(&caps),
+            )
+            .with_color_vision(settings.color_vision)
+            .with_low_vision(settings.low_vision),
+            user_theme,
             glyphs: Glyphs::styled(
                 settings.drawn_glyph_mode(false),
                 &settings.front_style,
@@ -177,6 +184,8 @@ impl App {
             quit: false,
         };
         app.load_stored_state();
+        app.check_user_theme();
+        app.fit_theme();
         app.refresh_menu_history();
         app.fit_sound_style();
         app.fit_card_styles();
@@ -241,10 +250,67 @@ impl App {
         }
     }
 
+    fn check_user_theme(&mut self) {
+        match &self.user_theme {
+            UserTheme::Missing => {
+                if self.settings.theme == ThemeId::Custom {
+                    tracing::warn!(
+                        "saved theme is custom, but theme.toml is missing; falling back to default theme"
+                    );
+                    self.modal
+                        .get_or_insert(Modal::alert("settings.theme.user_missing"));
+                }
+            }
+            UserTheme::Unreadable { path, detail } => {
+                tracing::warn!(%path, error = %detail, "user theme could not be loaded; ignoring it");
+                self.modal
+                    .get_or_insert(Modal::alert("settings.theme.user_unreadable"));
+            }
+            UserTheme::LowContrast {
+                path,
+                fg,
+                bg,
+                ratio,
+                required,
+            } => {
+                tracing::warn!(
+                    %path,
+                    fg = fg.name(),
+                    bg = bg.name(),
+                    ratio,
+                    required,
+                    "user theme failed contrast check; ignoring it"
+                );
+                self.modal
+                    .get_or_insert(Modal::alert("settings.theme.user_low_contrast"));
+            }
+            UserTheme::Valid(_) => {}
+        }
+    }
+
+    /// A saved `Custom` theme falls back to `Dark` when no valid user theme is loaded.
+    fn fit_theme(&mut self) {
+        if self.user_theme.palette().is_some() {
+            return;
+        }
+        if self.settings.theme == ThemeId::Custom {
+            self.settings.theme = ThemeId::Dark;
+        }
+        if let Some(ref mut backup) = self.settings.low_vision_saved
+            && backup.theme == ThemeId::Custom
+        {
+            backup.theme = ThemeId::Dark;
+        }
+    }
+
     fn refresh_view(&mut self) {
-        self.theme = Theme::new(self.settings.theme, self.settings.color_depth(&self.caps))
-            .with_color_vision(self.settings.color_vision)
-            .with_low_vision(self.settings.low_vision);
+        self.theme = Theme::for_settings(
+            self.settings.theme,
+            self.user_theme.palette().copied(),
+            self.settings.color_depth(&self.caps),
+        )
+        .with_color_vision(self.settings.color_vision)
+        .with_low_vision(self.settings.low_vision);
         self.glyphs = Glyphs::styled(
             self.settings
                 .drawn_glyph_mode(self.console_shows_card_font()),
@@ -278,6 +344,11 @@ impl App {
     #[cfg(test)]
     pub(crate) fn board_mut(&mut self) -> &mut BoardScreen {
         &mut self.board
+    }
+
+    #[cfg(test)]
+    pub(crate) fn user_theme_palette(&self) -> Option<crate::theme::Palette> {
+        self.user_theme.palette().copied()
     }
 
     /// Whether the player asked to quit; the event loop ends when this is true.
@@ -335,3 +406,6 @@ mod persist_tests;
 
 #[cfg(test)]
 mod dock_tests;
+
+#[cfg(test)]
+mod user_theme_tests;

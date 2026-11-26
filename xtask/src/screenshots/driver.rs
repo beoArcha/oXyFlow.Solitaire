@@ -7,7 +7,7 @@ use oxysol_tui::audio::{AudioStatus, NullAudio, StyleInfo};
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::storage::memory::MemoryStorage;
-use oxysol_tui::theme::{Theme, Token};
+use oxysol_tui::theme::{Theme, Token, UserTheme};
 use oxysol_tui::{App, Deps, Input, NullClipboard, NullSolver, SavedGame, Settings, Zone};
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
@@ -51,6 +51,7 @@ impl Driver {
             seeds: Box::new(move || seed),
             start_seed: None,
             sound_styles: sound_styles(),
+            user_theme: UserTheme::Missing,
             solver: Box::new(NullSolver::default()),
             display: DisplayDeps::none(),
             version: env!("CARGO_PKG_VERSION"),

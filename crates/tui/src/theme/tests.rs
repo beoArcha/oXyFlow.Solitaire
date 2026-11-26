@@ -113,7 +113,7 @@ fn focus_differs_from_plain_text_in_every_variant() {
 
 #[test]
 fn resolution_follows_the_color_depth() {
-    let swatch = dark::palette().accent;
+    let swatch = ThemeId::Dark.palette().accent;
     let [r, g, b] = swatch.rgb;
     assert_eq!(swatch.resolve(ColorDepth::TrueColor), Color::Rgb(r, g, b));
     assert_eq!(

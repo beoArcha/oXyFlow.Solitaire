@@ -15,3 +15,4 @@ pub mod priority;
 pub mod seed;
 pub mod solver;
 pub mod storage;
+pub mod theme;

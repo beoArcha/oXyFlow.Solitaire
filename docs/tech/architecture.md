@@ -38,6 +38,7 @@ locales/<lang>/          meta.toml common.toml menu.toml board.toml settings.tom
 assets/cards/fronts/<style>/   style.toml glyphs/*.svg
 assets/cards/backs/<style>/    style.toml glyphs/*.svg
 assets/cards/codepoints.toml   glyph → code point registry
+assets/themes/<id>.toml        embedded built-in themes (dark, light, high_contrast, monokai, dracula)
 assets/audio/<style>/          style.toml *.mid (optional scores/*.txt)
 xtask/src/               main.rs check.rs affected.rs version.rs version_scheme.rs sync_metadata.rs lint/ fonts.rs midi.rs
 tests/                   architecture/ integration/ e2e/   (each with main.rs)
@@ -237,6 +238,7 @@ pub struct Deps {
     pub start_seed: Option<u64>,          // `--seed`: the main menu opens on the games dealt from it
     pub version: &'static str,            // effective version (T-21), computed by the root `build.rs`
     pub sound_styles: Vec<StyleInfo>,     // every embedded sound style, in order (id + name from style.toml)
+    pub user_theme: UserTheme,            // optional `theme.toml` in `AppPaths::data_dir()`, loaded once at start
     pub solver: Box<dyn Solver>,          // checks deals off the UI thread (P3-20)
     pub display: DisplayDeps,             // console (O-16, P3-16): `Box<dyn ConsoleDisplay>`, `DisplayFacts { owns_window, kind, flag }`, `Box<dyn ConsoleFont>`
     pub zone: Zone,                       // statistics history (O-97): `Zone::Local { minutes }` = the system's offset from UTC, or `Zone::Utc` when it is unknown
@@ -727,11 +729,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   would stack face-up cards of a tableau column, the next smaller card size is taken (O-107), so the last card of the
   longest column always stays fully drawn above the status rows.
   Highlights are passed as `widgets::pile::Marks` (focus, selected run, targets, hints).
-- **Themes:** `ThemeId { Dark, Light, HighContrast, Monokai, Dracula }`; a `Palette` has a `Swatch { rgb, ansi16 }` for every
-  `Token`; `Theme::new(id, depth)` resolves it: true color emits the RGB, 256 colors use `rgb_to_ansi256`,
-  16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly.
-  `TEXT_PAIRS` lists the text/background token pairs drawn together; each must reach
-  `ThemeId::contrast_target()` (4.5, High Contrast 7.0). `Theme::with_low_vision(bool)` (chained next to `with_color_vision` in `App::new` and `App::refresh_view`) adjusts every theme to reach 7.0 on every pair in `TEXT_PAIRS` and maps `TextMuted` to `Text`.
+- **Themes:** `ThemeId { Dark, Light, HighContrast, Monokai, Dracula, Custom }`; the five built-in themes are embedded from `assets/themes/<id>.toml` (`include_str!`) and tested against `TEXT_PAIRS` (4.5, High Contrast 7.0), `GRAPHIC_PAIRS`, `MARK_PAIRS` and `field_edge_pair` (3.0); a broken built-in file fails tests without a runtime panic. A `Palette` has a `Swatch { rgb, ansi16 }` for every `Token` (named ANSI 16 colors only) and `field_edge`; `Theme::new(id, depth)` and `Theme::for_settings(id, custom, depth)` resolve it: true color emits the RGB, 256 colors use `rgb_to_ansi256`, 16 colors use the named ANSI color. Components ask `Theme` for tokens and never use colors directly. An optional user `theme.toml` in `AppPaths::data_dir()` is loaded once at start in `src/` and passed through `Deps::user_theme`: if it parses and passes the Dark contrast rules (4.5 text, 3.0 graphic/mark/field-edge), Settings offers **Custom** (`custom`) at the end of the theme choices without replacing the active theme; if it fails to read/parse or fails contrast, no Custom entry appears, `App` logs the path and failure details once at `warn` and shows a static-key `Modal::alert` (`settings.theme.user_unreadable` / `settings.theme.user_low_contrast`), and saved `custom` settings fall back to `Dark` (with `settings.theme.user_missing` when the file is missing). `Theme::with_low_vision(bool)` (chained next to `with_color_vision` in `App::new` and `App::refresh_view`) adjusts every theme to reach 7.0 on every pair in `TEXT_PAIRS` and maps `TextMuted` to `Text`.
 - **Low-vision mode (P3-34):** `Settings::low_vision` (default `false`; old settings load as `false`) toggles the preset (`Settings::with_low_vision(on, classic_console)`, saving the prior `theme`, `card_size`, `aura_size` and `console_font_size` in `Settings::low_vision_saved` so turning it off restores every value): `ThemeId::HighContrast`, `CardSizeSetting::Auto`, `AuraSize::Thick`, and (when in an owned classic Windows console) `console_font_size >= 24`; every part stays adjustable afterwards. Other terminals show the font-enlargement hint in the `Low vision` row's description. In low-vision mode `Theme::with_low_vision(true)` enforces 7:1 contrast and sets `TextMuted = Text`, card drawing omits `Modifier::DIM`, draws rank/suit/aura/borders in bold, doubles the focus marker where space permits, marks all four target corners and widens empty target slots (`+++`), and `layout::compute_with` widens tableau/waste/pyramid steps when room allows. On first start (`!Settings::low_vision_offered`, old settings load as `false`), `MainMenu` shows an inline one-time banner (`screens/main_menu/banner.rs`) with `Yes` / `Not now` buttons (keyboard `Left`/`Right` from the menu list, `Enter`/`Space`, and mouse); either choice sets `low_vision_offered = true` and saves.
 - **Readable card faces (P3-14, replaces the P3-13 pixel font):** `widgets/card/` is a module (`mod.rs` drawing,
   labels and the entry points `draw`, `draw_back_row`, `draw_fanned`, `draw_collapsed` and `draw_covered` (a

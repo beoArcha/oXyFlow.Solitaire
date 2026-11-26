@@ -63,7 +63,14 @@ fn change_field(field: Option<Field>, step: Step, ctx: &ViewCtx<'_>) -> Effect {
     if is_unavailable_field(field, ctx) {
         return Effect::None;
     }
-    let settings = changed_for_facts(field, ctx.settings, step, ctx.sound_styles, ctx.font);
+    let settings = changed_for_facts(
+        field,
+        ctx.settings,
+        step,
+        ctx.sound_styles,
+        ctx.font,
+        ctx.theme.has_custom(),
+    );
     if field.is_interface() {
         Effect::Preview(settings)
     } else {

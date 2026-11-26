@@ -152,6 +152,10 @@ light = "Licht"
 high_contrast = "Hoog contrast"
 monokai = "Monokai"
 dracula = "Dracula"
+custom = "Aangepast"
+user_unreadable = "Het aangepaste themabestand (theme.toml) kon niet worden gelezen. Zie oxysol.log voor details."
+user_low_contrast = "Het aangepaste thema (theme.toml) haalt de contrasttest niet. Zie oxysol.log voor details."
+user_missing = "Het opgeslagen aangepaste themabestand (theme.toml) is niet gevonden. Het standaardthema wordt gebruikt."
 
 [glyph]
 unicode = "Unicode"

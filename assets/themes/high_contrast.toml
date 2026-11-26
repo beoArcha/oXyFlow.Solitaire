@@ -1,0 +1,29 @@
+# The High Contrast theme: maximum separation on a pure black surface.
+# Text pairs must reach a contrast ratio of at least 7.0.
+
+field_edge = true
+
+background = { rgb = [0, 0, 0], ansi16 = "black" }
+surface = { rgb = [16, 16, 16], ansi16 = "black" }
+text = { rgb = [255, 255, 255], ansi16 = "white" }
+text_muted = { rgb = [255, 255, 255], ansi16 = "white" }
+accent = { rgb = [0, 255, 255], ansi16 = "cyan" }
+border = { rgb = [255, 255, 255], ansi16 = "white" }
+border_focus = { rgb = [255, 255, 0], ansi16 = "yellow" }
+focus_fg = { rgb = [0, 0, 0], ansi16 = "black" }
+focus_bg = { rgb = [255, 255, 0], ansi16 = "yellow" }
+error = { rgb = [255, 128, 128], ansi16 = "light_red" }
+success = { rgb = [0, 255, 0], ansi16 = "light_green" }
+table = { rgb = [0, 0, 0], ansi16 = "black" }
+table_text = { rgb = [255, 255, 255], ansi16 = "white" }
+slot = { rgb = [255, 255, 255], ansi16 = "white" }
+card_face = { rgb = [255, 255, 255], ansi16 = "white" }
+card_back = { rgb = [0, 160, 255], ansi16 = "light_blue" }
+card_back_mark = { rgb = [0, 0, 0], ansi16 = "black" }
+card_red = { rgb = [160, 0, 0], ansi16 = "red" }
+card_black = { rgb = [0, 0, 0], ansi16 = "black" }
+target = { rgb = [0, 255, 0], ansi16 = "light_green" }
+selection = { rgb = [0, 255, 255], ansi16 = "light_cyan" }
+hint = { rgb = [255, 255, 0], ansi16 = "light_yellow" }
+aura_focus = { rgb = [255, 255, 0], ansi16 = "yellow" }
+aura_carry = { rgb = [0, 255, 255], ansi16 = "light_cyan" }
