@@ -38,6 +38,59 @@ Order of work: the card style, then the game.
 - **Acceptance:** engine tests on scripted deals (legal and illegal moves, the face-down cards, the foundations); the
   same seed gives the same deal; the variant is stored and read back; the menu entry and the rules tab in both locales.
 
+### P7-10 — FreeCell family: Baker's Game and a choice of 1 to 4 cells
+
+- **Owner:** Medium
+- **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a cited public-domain rules source)
+- **Priority:** P2. Owner request 2026-11-26 (the FreeCell family has a single game).
+- **Depends on:** P6-05 (the pattern of a new variant), P6-12
+- **Files:** `crates/core/src/games/freecell/**` (the rules parameter), `crates/core/src/solver/freecell/**`, the
+  variant list of `oxysol-core`, `crates/tui/src/screens/game_select/catalog.rs`, `locales/*/{menu,rules}.toml`,
+  `docs/wiki/rules/freecell.md`, `docs/tech/architecture.md` (the games list), tests
+- **Scope:**
+  - **Baker's Game:** FreeCell with columns built down **in the same suit** (traditional, the ancestor of FreeCell); one
+    rules parameter of the FreeCell engine and solver, not a copy.
+  - **Cells:** a variant option for FreeCell and Baker's Game with 1, 2, 3 or 4 free cells (4 by default); the maximum
+    run that may be moved follows the number of free cells and empty columns as today.
+  - Rules tab, menu entry under the FreeCell family, curated seeds (P5-06) and the solver table for seeds 0-49 per
+    variant and cell count in the PR.
+- **Acceptance:** engine tests for same-suit building and for each cell count (including the run limit); the same seed
+  gives the same deal; the solver verdicts for seeds 0-49 recorded in T-29; menu and rules in every offered locale.
+
+### P7-11 — FreeCell family: Eight Off and Seahaven Towers
+
+- **Owner:** Medium
+- **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a cited public-domain rules source)
+- **Priority:** P2. Owner request 2026-11-26.
+- **Depends on:** P7-10
+- **Files:** as P7-10, plus `crates/tui/src/layout/columns.rs` (eight cells or ten columns), tests
+- **Scope:**
+  - **Eight Off:** eight columns of six cards, eight cells of which four start filled, columns built down in suit, only a
+    King on an empty column.
+  - **Seahaven Towers:** ten columns of five cards, four cells of which two start filled, columns built down in suit,
+    only a King on an empty column.
+  - Both on the FreeCell engine with its rules parameters (cells, columns, the starting cells, the empty-column rule);
+    layout of the extra cells or columns at 100 × 30 and wider.
+- **Acceptance:** engine tests for each rule above; deals by seed; layout without overflow at 100 × 30, 130 × 40 and
+  200 × 60; solver table for seeds 0-49; menu and rules in every offered locale.
+
+### P7-12 — TriPeaks family: no K–A wrap, and Four Peaks
+
+- **Owner:** Medium
+- **Status:** DRAFT (the rules text is confirmed by Opus before dispatch, from a cited public-domain rules source)
+- **Priority:** P2. Owner request 2026-11-26 (the TriPeaks family has a single game).
+- **Depends on:** P6-05
+- **Files:** `crates/core/src/games/tripeaks/**`, `crates/core/src/solver/tripeaks*`, the variant list of `oxysol-core`,
+  `crates/tui/src/layout/tripeaks.rs`, `crates/tui/src/screens/game_select/catalog.rs`, `locales/*/{menu,rules}.toml`,
+  `docs/wiki/rules/tripeaks.md`, tests
+- **Scope:**
+  - **No wrap:** a TriPeaks option where a King and an Ace are not adjacent (harder); the default stays as today.
+  - **Four Peaks:** four peaks dealt in the same pattern, with the stock and waste of TriPeaks; the layout fits at
+    100 × 30 with the card size falling back as today.
+  - One engine with a rules parameter (wrap, peak count), not a copy.
+- **Acceptance:** engine tests for the wrap rule and the four-peak deal; deals by seed; the solver table for seeds 0-49
+  per variant; layout without overflow at 100 × 30, 130 × 40 and 200 × 60; menu and rules in every offered locale.
+
 ## Developer testing infrastructure: screenshots and the batch regression runner
 
 Owner request 2026-11-21, built on the dev bridge of phase 6 (P6-07 to P6-09). The bridge writes real SVG and PNG

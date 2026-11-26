@@ -334,10 +334,10 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 
 | ID | Task | Owner | Depends on | Status |
 |---|---|---|---|---|
-| P3-36 | Themes as data and the interface size scale | Medium | P3-29, P3-30 | TODO |
-| P6-18 | The interface size scale S / M / L / XL | Medium | P3-36 | TODO |
+| P3-36 | Themes as data and the interface size scale | Medium | P3-29, P3-30 | DONE |
+| P6-18 | The interface size scale S / M / L / XL | Medium | P3-36 | DONE |
 | P6-04 | Card style: four-colour French | Small | P5-03, P3-35 | DONE |
-| P6-05 | Game: TriPeaks | Medium | P5-04 | TODO |
+| P6-05 | Game: TriPeaks | Medium | P5-04 | DONE |
 | P6-06 | More game options | Large (finalizes the scope), then Small | P4-09, P3-27 | DRAFT |
 | P6-07 | Dev bridge: headless driver, virtual clock and UI state snapshot | Medium | T-12, T-14 | TODO |
 | P6-08 | Dev bridge: `--dev-bridge` JSON-lines protocol | Medium | P6-07 | TODO |
@@ -345,7 +345,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-115 | Is it winnable? A check for the deal and for the current position | Medium | P5-05 (merged) | TODO |
 | P6-10 | Hint and in-play check knowledge: full, or the player's with a stock memory | Medium | P5-07, O-115, P6-11 | TODO |
 | P6-11 | Hints off the redraw path, and no repeated positions | Medium | P5-07 | TODO |
-| P6-12 | Solver: no heap allocation per node | Medium | — | TODO |
+| P6-12 | Solver: no heap allocation per node | Medium | — | DONE |
 | P6-13 | Winnable deals: a small thread pool, same seed as one thread | Medium | — | TODO |
 | P6-14 | Klondike solver: best-first, a canonical draw-1 talon, safe cards stay home | Medium | P6-12 | TODO |
 | P6-15 | Yukon family and Pyramid Relaxed: best-first and complete pruning | Medium | P6-12, P6-14 | TODO |
@@ -353,10 +353,12 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P6-17 | Spider 2 and 4 suits: a beam stratified by deals left | Medium | — | TODO |
 | O-116 | The bottom bar: `a`, `e` and `s` by preference, only the ones that are available | Medium | O-110 | TODO |
 | O-117 | A setting for `e`: off, semi-automatic (to the focused pile) or automatic | Medium | O-116 | TODO |
-| O-118 | Esc on the main menu asks whether to quit | Small | — | TODO |
+| O-118 | Esc on the main menu asks whether to quit | Small | — | DONE |
 | O-119 | Quick options always offer New game, Restart and the winnable check | Medium | O-115, O-117 | TODO |
 | O-120 | Settings: clear game history and statistics (soft delete) | Medium | — | TODO |
 | O-121 | Achievements: a menu entry and the latest one in the top right corner | Medium | O-120 | DRAFT |
+| O-122 | No moves left: a dialog that the game cannot be won, with Restart, New game and Menu | Medium | — | TODO |
+| O-123 | Game menu: scrolling by wheel and page keys, families that fold | Medium | — | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
@@ -368,6 +370,9 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 |---|---|---|---|---|
 | P7-04 | Card style: Hungarian suits (Unicode) | Small | P6-04 | TODO |
 | P7-05 | Game: Scorpion | Medium | P6-05 | DRAFT |
+| P7-10 | FreeCell family: Baker's Game and a choice of 1 to 4 cells | Medium | P6-05, P6-12 | DRAFT |
+| P7-11 | FreeCell family: Eight Off and Seahaven Towers | Medium | P7-10 | DRAFT |
+| P7-12 | TriPeaks family: no K–A wrap, and Four Peaks | Medium | P6-05 | DRAFT |
 | P7-06 | Screenshots: one SVG renderer for the dev bridge and the player site | Medium | P6-07 | TODO |
 | P7-07 | Screenshots: deterministic PNG and image paths in the bridge `snapshot` | Medium | P7-06, P6-08 | TODO |
 | P7-08 | Batch runner: `--dev-script` and `--dev-out` | Medium | P7-07, P6-09 | TODO |
