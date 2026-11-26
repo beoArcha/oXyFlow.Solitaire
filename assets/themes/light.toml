@@ -1,0 +1,29 @@
+# The Light theme: dark text on a light surface, green felt table.
+# Text pairs must reach a contrast ratio of at least 4.5.
+
+field_edge = false
+
+background = { rgb = [244, 246, 248], ansi16 = "white" }
+surface = { rgb = [255, 255, 255], ansi16 = "white" }
+text = { rgb = [24, 28, 36], ansi16 = "black" }
+text_muted = { rgb = [96, 104, 116], ansi16 = "dark_gray" }
+accent = { rgb = [18, 76, 160], ansi16 = "blue" }
+border = { rgb = [140, 146, 158], ansi16 = "gray" }
+border_focus = { rgb = [0, 12, 40], ansi16 = "black" }
+focus_fg = { rgb = [255, 255, 255], ansi16 = "white" }
+focus_bg = { rgb = [28, 92, 196], ansi16 = "blue" }
+error = { rgb = [180, 24, 24], ansi16 = "red" }
+success = { rgb = [20, 116, 48], ansi16 = "green" }
+table = { rgb = [32, 114, 70], ansi16 = "green" }
+table_text = { rgb = [245, 252, 248], ansi16 = "white" }
+slot = { rgb = [200, 230, 210], ansi16 = "white" }
+card_face = { rgb = [255, 255, 255], ansi16 = "white" }
+card_back = { rgb = [0, 14, 46], ansi16 = "black" }
+card_back_mark = { rgb = [230, 240, 255], ansi16 = "white" }
+card_red = { rgb = [176, 24, 24], ansi16 = "red" }
+card_black = { rgb = [20, 20, 24], ansi16 = "black" }
+target = { rgb = [255, 214, 102], ansi16 = "yellow" }
+selection = { rgb = [80, 200, 255], ansi16 = "light_cyan" }
+hint = { rgb = [255, 186, 70], ansi16 = "light_yellow" }
+aura_focus = { rgb = [255, 236, 140], ansi16 = "yellow" }
+aura_carry = { rgb = [172, 240, 255], ansi16 = "light_cyan" }

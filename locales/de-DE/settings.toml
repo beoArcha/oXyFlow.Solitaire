@@ -152,6 +152,10 @@ light = "Hell"
 high_contrast = "Hoher Kontrast"
 monokai = "Monokai"
 dracula = "Dracula"
+custom = "Benutzerdefiniert"
+user_unreadable = "Die benutzerdefinierte Designdatei (theme.toml) konnte nicht gelesen werden. Details stehen in oxysol.log."
+user_low_contrast = "Das benutzerdefinierte Design (theme.toml) hat die Kontrastprüfung nicht bestanden. Details stehen in oxysol.log."
+user_missing = "Die gespeicherte benutzerdefinierte Designdatei (theme.toml) wurde nicht gefunden. Das Standarddesign wird verwendet."
 
 [glyph]
 unicode = "Unicode"

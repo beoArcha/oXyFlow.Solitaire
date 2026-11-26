@@ -17,6 +17,7 @@ use oxysol::paths::AppPaths;
 use oxysol::priority::{Native, ProcessControl, SystemPriority};
 use oxysol::solver::ThreadSolver;
 use oxysol::storage::SqliteStorage;
+use oxysol::theme::load_user_theme;
 use oxysol::{logging, new_window, panic_hook, seed};
 use oxysol_tui::app::{ConsoleFont, DisplayDeps, DisplayFacts, NullConsoleFont, PriorityDeps};
 use oxysol_tui::caps::{self, ColorDepth, Platform, TerminalCaps};
@@ -108,6 +109,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         AppError::from(error)
     })?;
     let caps = terminal_caps(args);
+    let user_theme = load_user_theme(&paths);
     let native: Arc<dyn Native> = Arc::new(SystemPriority);
     let deps = Deps {
         storage: Box::new(storage),
@@ -117,6 +119,7 @@ fn start(args: &Cli) -> Result<(), AppError> {
         seeds: Box::new(seed::fresh),
         start_seed: args.seed,
         sound_styles: audio::bank::style_list(),
+        user_theme,
         solver: start_solver(Arc::clone(&native)),
         display: display_deps(args, native),
         version: env!("OXYSOL_VERSION"),

@@ -10,7 +10,7 @@ apply the WCAG 2 formula of `theme/contrast.rs:3-29` to the RGB values listed in
 produces them. Values for the 16-color fallbacks depend on the player's terminal palette and are
 **unknown** here.
 
-**Counts.** 24 color tokens (`theme/palette.rs:10-59`), 3 themes (`theme/mod.rs:21-29`), 4 card sizes
+**Counts.** 24 color tokens (`theme/palette.rs:10-59`), 5 built-in themes (`assets/themes/*.toml`, `theme/mod.rs`) plus optional user `Custom` (`theme.toml`), 4 card sizes
 (`layout/size.rs:11-16`), 3 screen size classes (`layout/chrome.rs:104-108`), 3 glyph modes
 (`settings.rs:14-21`), 4 color modes incl. Auto (`settings.rs:23-31`), 12 settings rows
 (`screens/settings/options.rs:29-42`).
@@ -33,8 +33,8 @@ produces them. Values for the 16-color fallbacks depend on the player's terminal
 - Helpers on `Theme`: `style(fg, bg)` (`theme/mod.rs:78-80`), `base()` = Text on Background
   (`theme/mod.rs:83-85`), `surface()` = Text on Surface (`theme/mod.rs:88-90`), `focus()` = FocusFg on
   FocusBg (`theme/mod.rs:93-95`).
-- Themes: `ThemeId::ALL = [Dark, Light, HighContrast]` (`theme/mod.rs:29`). No other theme exists.
-  `palette()` dispatch is at `theme/mod.rs:32-38`.
+- Themes: `ThemeId::ALL = [Dark, Light, HighContrast, Monokai, Dracula]` (`assets/themes/*.toml`, `theme/mod.rs`), plus `ThemeId::Custom` (`theme.toml` in `AppPaths::data_dir()`, when valid).
+  `palette()` dispatch is at `theme/mod.rs`.
 - Color depth: `Settings::color_depth` uses the forced `ColorMode` or the detected `caps.color`
   (`settings.rs:97-104`). Detection (`caps.rs:40-48`): **on Windows the depth is always TrueColor**
   (`caps.rs:41`). Elsewhere, `COLORTERM` truecolor/24bit gives TrueColor, `TERM` containing
@@ -49,32 +49,32 @@ Class: **Meaning** = the color tells a player something the glyphs also tell; **
 **Structure** = frames, panels, fills; **Highlight** = titles and button labels. Use-sites are
 `file:line` under `crates/tui/src/`.
 
-| # | Token | Purpose (palette doc, `theme/palette.rs`) | Class | Used in |
-|---|---|---|---|---|
-| 1 | `Background` | Screen background (`:11`) | Structure | `app.rs:393`; `theme/mod.rs:84`; `screens/board/view.rs:69`; `screens/focus.rs:42`; `screens/game_select.rs:192`; `screens/game_select/toggles.rs:64`; `screens/main_menu.rs:249`; `screens/main_menu/seed.rs:215,224,232`; `screens/settings.rs:46,99`; `screens/stats/view.rs:99,128,146,165,171,245`; `widgets/footer.rs:160`; `widgets/too_small.rs:36,53`; `widgets/overlay/mod.rs:106` |
-| 2 | `Surface` | Dialog and panel background (`:13`) | Structure | `theme/mod.rs:89`; `screens/board/controls.rs:44,49,61,75`; `screens/board/guide_view.rs:20`; `widgets/guide/keys.rs:133,137,151,173`; `widgets/guide/legend.rs:25`; `widgets/guide/mod.rs:79,178,182,185,190`; `widgets/overlay/dialog.rs:188-224`; `widgets/overlay/guide_window.rs:104`; `widgets/overlay/help.rs:126-199`; `widgets/overlay/how_to_play/view.rs:119-199`; `widgets/overlay/tabs.rs:120,157`; `widgets/overlay/command_line.rs:148` |
-| 3 | `Text` | Primary text on Background and Surface (`:15`) | Text | `theme/mod.rs:84,89`; `screens/board/view.rs:49`; `screens/board/controls.rs:44,61,75`; `screens/stats/view.rs:126`; `widgets/guide/keys.rs:151`; `widgets/guide/mod.rs:185`; `widgets/card/face.rs` (via `look.fill`) |
-| 4 | `TextMuted` | Secondary text (`:17`) | Text | `screens/settings.rs:46`; `screens/game_select/toggles.rs:64`; `screens/main_menu/seed.rs:232`; `screens/stats/view.rs:171`; `widgets/footer.rs:160` (every key line); `widgets/guide/keys.rs:137,173`; `widgets/overlay/tabs.rs:157` |
-| 5 | `Accent` | Titles and highlights (`:19`) | Highlight | `screens/board/view.rs:69` (game-facts row); `screens/focus.rs:42` (button labels, via `button_style` at `screens/focus.rs:41-46`); `screens/game_select.rs:192`; `screens/main_menu.rs:249`; `screens/main_menu/seed.rs:215`; `screens/settings.rs:99`; `screens/stats/view.rs:99,146,165,238`; `widgets/guide/mod.rs:79,182` (section headings); `widgets/overlay/dialog.rs:191` (dialog title); `widgets/overlay/help.rs:132`; `widgets/overlay/how_to_play/view.rs:147` |
-| 6 | `Border` | Border of an unfocused element (`:21`) | Structure | `widgets/guide/mod.rs:178,190` (side-panel frame only) |
-| 7 | `BorderFocus` | Border of the focused element (`:23`) | **Meaning** (focus) | `widgets/card/mark.rs:29` (focused card frame); `widgets/overlay/dialog.rs:188` (dialog frame) |
-| 8 | `FocusFg` | Text of the focused list item (`:25`) | **Meaning** (focus) | `theme/mod.rs:94` (`focus()`); `widgets/menu_list.rs:98`; `screens/main_menu/seed.rs:242`; `screens/stats/view.rs:184` |
-| 9 | `FocusBg` | Background of the focused list item (`:27`) | **Meaning** (focus) | as `FocusFg` |
-| 10 | `Error` | Error text on Surface (`:29`) | **Meaning** (error) | `screens/main_menu/seed.rs:224`; `screens/stats/view.rs:124,242`; `widgets/too_small.rs:36`; `screens/board/controls.rs:24` (event tone) |
-| 11 | `Success` | Success text on Surface (`:31`) | **Meaning** (success) | `screens/board/controls.rs:23` (event tone) |
-| 12 | `Table` | Playing-field background (`:33`) | **Meaning** (the field) | `screens/board/view.rs:73` (field fill); `widgets/card/mod.rs:87,90,92,122,135,175`; `widgets/aura.rs:93`; `widgets/card/mark.rs` via `widgets/card/mod.rs:89-91` |
-| 13 | `TableText` | Text on Table (`:35`) | Text | `screens/board/view.rs:73`; `widgets/card/mod.rs:175` (bottom row of a fanned card) |
-| 14 | `Slot` | Outline of an empty pile slot, on Table (`:37`) | **Meaning** (empty slot) | `widgets/card/mod.rs:87,92,135` |
-| 15 | `CardFace` | Face of a card (`:39`) | **Meaning** (card) | `widgets/card/mod.rs:85` (fill and frame of a face-up card; centre text on it) |
-| 16 | `CardBack` | Face-down card background (`:41`) | **Meaning** (card back) | `widgets/card/mod.rs:86,181` |
-| 17 | `CardBackMark` | Pattern on `CardBack` (`:43`) | **Meaning** (card back) | `widgets/card/mod.rs:86,181` |
-| 18 | `CardRed` | Rank and suit of red cards (`:45`) | **Meaning** (suit) | `widgets/card/mod.rs:72` (`color_token`) |
-| 19 | `CardBlack` | Rank and suit of black cards (`:47`) | **Meaning** (suit) | `widgets/card/mod.rs:73` |
-| 20 | `Target` | Legal move target on Table (`:49`) | **Meaning** (target) | `widgets/card/mark.rs:31`; `widgets/card/mod.rs:122` (target corners); `widgets/aura.rs:104` (target halo) |
-| 21 | `Selection` | Selected card on Table (`:51`) | **Meaning** (selection) | `widgets/card/mark.rs:27` |
-| 22 | `Hint` | Hinted card on Table (`:53`) | **Meaning** (hint) | `widgets/card/mark.rs:33` |
-| 23 | `AuraFocus` | Halo around the focused card or run (`:55`) | **Meaning** (focus halo) | `widgets/aura.rs:107` |
-| 24 | `AuraCarry` | Halo around the picked-up run (`:57`) | **Meaning** (carry halo) | `widgets/aura.rs:111` |
+| # | Token | Purpose (palette doc, `theme/palette.rs`) | Class | Used in | Changed by |
+|---|---|---|---|---|---|
+| 1 | `Background` | Screen background (`:11`) | Structure | `app.rs:393`; `theme/mod.rs:84`; `screens/board/view.rs:69`; `screens/focus.rs:42`; `screens/game_select.rs:192`; `screens/game_select/toggles.rs:64`; `screens/main_menu.rs:249`; `screens/main_menu/seed.rs:215,224,232`; `screens/settings.rs:46,99`; `screens/stats/view.rs:99,128,146,165,171,245`; `widgets/footer.rs:160`; `widgets/too_small.rs:36,53`; `widgets/overlay/mod.rs:106` | theme |
+| 2 | `Surface` | Dialog and panel background (`:13`) | Structure | `theme/mod.rs:89`; `screens/board/controls.rs:44,49,61,75`; `screens/board/guide_view.rs:20`; `widgets/guide/keys.rs:133,137,151,173`; `widgets/guide/legend.rs:25`; `widgets/guide/mod.rs:79,178,182,185,190`; `widgets/overlay/dialog.rs:188-224`; `widgets/overlay/guide_window.rs:104`; `widgets/overlay/help.rs:126-199`; `widgets/overlay/how_to_play/view.rs:119-199`; `widgets/overlay/tabs.rs:120,157`; `widgets/overlay/command_line.rs:148` | theme |
+| 3 | `Text` | Primary text on Background and Surface (`:15`) | Text | `theme/mod.rs:84,89`; `screens/board/view.rs:49`; `screens/board/controls.rs:44,61,75`; `screens/stats/view.rs:126`; `widgets/guide/keys.rs:151`; `widgets/guide/mod.rs:185`; `widgets/card/face.rs` (via `look.fill`) | theme |
+| 4 | `TextMuted` | Secondary text (`:17`) | Text | `screens/settings.rs:46`; `screens/game_select/toggles.rs:64`; `screens/main_menu/seed.rs:232`; `screens/stats/view.rs:171`; `widgets/footer.rs:160` (every key line); `widgets/guide/keys.rs:137,173`; `widgets/overlay/tabs.rs:157` | theme |
+| 5 | `Accent` | Titles and highlights (`:19`) | Highlight | `screens/board/view.rs:69` (game-facts row); `screens/focus.rs:42` (button labels, via `button_style` at `screens/focus.rs:41-46`); `screens/game_select.rs:192`; `screens/main_menu.rs:249`; `screens/main_menu/seed.rs:215`; `screens/settings.rs:99`; `screens/stats/view.rs:99,146,165,238`; `widgets/guide/mod.rs:79,182` (section headings); `widgets/overlay/dialog.rs:191` (dialog title); `widgets/overlay/help.rs:132`; `widgets/overlay/how_to_play/view.rs:147` | theme, color vision |
+| 6 | `Border` | Border of an unfocused element (`:21`) | Structure | `widgets/guide/mod.rs:178,190` (side-panel frame only) | theme |
+| 7 | `BorderFocus` | Border of the focused element (`:23`) | **Meaning** (focus) | `widgets/card/mark.rs:29` (focused card frame); `widgets/overlay/dialog.rs:188` (dialog frame) | theme, color vision |
+| 8 | `FocusFg` | Text of the focused list item (`:25`) | **Meaning** (focus) | `theme/mod.rs:94` (`focus()`); `widgets/menu_list.rs:98`; `screens/main_menu/seed.rs:242`; `screens/stats/view.rs:184` | theme, color vision |
+| 9 | `FocusBg` | Background of the focused list item (`:27`) | **Meaning** (focus) | as `FocusFg` | theme, color vision |
+| 10 | `Error` | Error text on Surface (`:29`) | **Meaning** (error) | `screens/main_menu/seed.rs:224`; `screens/stats/view.rs:124,242`; `widgets/too_small.rs:36`; `screens/board/controls.rs:24` (event tone) | theme, color vision |
+| 11 | `Success` | Success text on Surface (`:31`) | **Meaning** (success) | `screens/board/controls.rs:23` (event tone) | theme, color vision |
+| 12 | `Table` | Playing-field background (`:33`) | **Meaning** (the field) | `screens/board/view.rs:73` (field fill); `widgets/card/mod.rs:87,90,92,122,135,175`; `widgets/aura.rs:93`; `widgets/card/mark.rs` via `widgets/card/mod.rs:89-91` | theme, table |
+| 13 | `TableText` | Text on Table (`:35`) | Text | `screens/board/view.rs:73`; `widgets/card/mod.rs:175` (bottom row of a fanned card) | theme |
+| 14 | `Slot` | Outline of an empty pile slot, on Table (`:37`) | **Meaning** (empty slot) | `widgets/card/mod.rs:87,92,135` | theme |
+| 15 | `CardFace` | Face of a card (`:39`) | **Meaning** (card) | `widgets/card/mod.rs:85` (fill and frame of a face-up card; centre text on it) | theme, card face |
+| 16 | `CardBack` | Face-down card background (`:41`) | **Meaning** (card back) | `widgets/card/mod.rs:86,181` | theme, card back |
+| 17 | `CardBackMark` | Pattern on `CardBack` (`:43`) | **Meaning** (card back) | `widgets/card/mod.rs:86,181` | theme, card back |
+| 18 | `CardRed` | Rank and suit of red cards (`:45`) | **Meaning** (suit) | `widgets/card/mod.rs:72` (`color_token`) | theme, card face, color vision |
+| 19 | `CardBlack` | Rank and suit of black cards (`:47`) | **Meaning** (suit) | `widgets/card/mod.rs:73` | theme, card face |
+| 20 | `Target` | Legal move target on Table (`:49`) | **Meaning** (target) | `widgets/card/mark.rs:31`; `widgets/card/mod.rs:122` (target corners); `widgets/aura.rs:104` (target halo) | theme, color vision |
+| 21 | `Selection` | Selected card on Table (`:51`) | **Meaning** (selection) | `widgets/card/mark.rs:27` | theme, color vision |
+| 22 | `Hint` | Hinted card on Table (`:53`) | **Meaning** (hint) | `widgets/card/mark.rs:33` | theme, color vision |
+| 23 | `AuraFocus` | Halo around the focused card or run (`:55`) | **Meaning** (focus halo) | `widgets/aura.rs:107` | theme, aura, color vision |
+| 24 | `AuraCarry` | Halo around the picked-up run (`:57`) | **Meaning** (carry halo) | `widgets/aura.rs:111` | theme, aura, color vision |
 
 Notes from the use-sites:
 - The card border of a **marked** card is drawn with the mark token on `Table`, not on the card face:
@@ -126,7 +126,7 @@ Observations from the table (facts):
 - High Contrast: `BorderFocus`, `FocusBg`, `Hint` and `AuraFocus` are the **same** RGB (255,255,0)
   (`high_contrast.rs:87,89,102,103`). `Table` and `Background` are both (0,0,0) (`high_contrast.rs:81,92`).
 - Light: `Target` and `Hint`/`AuraFocus` are near-identical yellows and oranges (`light.rs:64,66,67`).
-- Only the three themes exist; there is no user-editable palette file or custom theme (`theme/mod.rs:21-29`).
+- Five built-in themes (`Dark`, `Light`, `HighContrast`, `Monokai`, `Dracula`) are embedded from `assets/themes/<id>.toml`, plus `Custom` when a valid `theme.toml` is loaded from `AppPaths::data_dir()`.
 
 ### 1.4 Contrast: what is computed and what the tests check
 
@@ -222,20 +222,20 @@ rows of the board: at 130×40 with the guide panel, Klondike cards are 11×9 the
 Source: `ratatui::style::Modifier` uses in non-test code. **No `DIM` and no `ITALIC` is used anywhere**
 in `crates/tui/src` (grep). Hover and focus are also shown by color and glyphs, listed here.
 
-| Modifier | Where | For what |
-|---|---|---|
-| **BOLD** | `widgets/card/face.rs:58` | Rank and suit row in the centre of a large face-up card (only where the scale is Large/Medium/Small with a text band; section 3.1) |
-| BOLD | `widgets/guide/mod.rs:80,183` | Section headings in the side panel (Accent on Surface) |
-| BOLD | `widgets/guide/keys.rs:134` | Key names in the panel |
-| BOLD | `widgets/overlay/help.rs:126` | Help heading |
-| BOLD | `widgets/overlay/how_to_play/view.rs:139` | Heading rows of the rules text |
-| BOLD | `widgets/overlay/command_line.rs:155` | Command-line text row |
-| BOLD \| REVERSED | `widgets/overlay/dialog.rs:221` | **Focused dialog button** |
-| BOLD \| REVERSED | `widgets/overlay/tabs.rs:126` | Active tab of the help window |
-| BOLD \| REVERSED | `widgets/overlay/how_to_play/view.rs:127` | Active tab of the rules window |
-| **REVERSED** | `screens/focus.rs:44` (`button_style`, used at `screens/game_select/toggles.rs:35`, `screens/main_menu/seed.rs:281`, `screens/stats/view.rs:222`) | **Focused button** of the game-selection toggles, the seed entry and the statistics |
-| **REVERSED** | `widgets/footer.rs:124,144` | **Mouse hover** on a footer key (pointer only; no keyboard equivalent) |
-| **UNDERLINED** | `screens/board/header.rs:142` (`spans`, `:133-146`) | **Seed link**: the seed in the header row and in the side-panel `Game` box. Clicking it copies the seed |
+| Modifier | Where | For what | Changed by |
+|---|---|---|---|
+| **BOLD** | `widgets/card/face.rs:58` | Rank and suit row in the centre of a large face-up card (only where the scale is Large/Medium/Small with a text band; section 3.1) | theme |
+| BOLD | `widgets/guide/mod.rs:80,183` | Section headings in the side panel (Accent on Surface) | theme |
+| BOLD | `widgets/guide/keys.rs:134` | Key names in the panel | theme |
+| BOLD | `widgets/overlay/help.rs:126` | Help heading | theme |
+| BOLD | `widgets/overlay/how_to_play/view.rs:139` | Heading rows of the rules text | theme |
+| BOLD | `widgets/overlay/command_line.rs:155` | Command-line text row | theme |
+| BOLD \| REVERSED | `widgets/overlay/dialog.rs:221` | **Focused dialog button** | theme |
+| BOLD \| REVERSED | `widgets/overlay/tabs.rs:126` | Active tab of the help window | theme |
+| BOLD \| REVERSED | `widgets/overlay/how_to_play/view.rs:127` | Active tab of the rules window | theme |
+| **REVERSED** | `screens/focus.rs:44` (`button_style`, used at `screens/game_select/toggles.rs:35`, `screens/main_menu/seed.rs:281`, `screens/stats/view.rs:222`) | **Focused button** of the game-selection toggles, the seed entry and the statistics | theme |
+| **REVERSED** | `widgets/footer.rs:124,144` | **Mouse hover** on a footer key (pointer only; no keyboard equivalent) | theme |
+| **UNDERLINED** | `screens/board/header.rs:142` (`spans`, `:133-146`) | **Seed link**: the seed in the header row and in the side-panel `Game` box. Clicking it copies the seed | theme |
 
 Focus without modifiers: list rows use `FocusFg` on `FocusBg` plus the marker `►` (`widgets/menu_list.rs:98`,
 `screens/focus.rs:36-38`). Board cards use a double-line frame and a `►` marker (`widgets/card/frame.rs:36-69`,
@@ -254,12 +254,12 @@ classes; "Compact/Standard/Wide" are screen classes (section 3.5). Derived value
 in `layout/size.rs`; the centre face comes from `widgets/card/face.rs:19-28` applied to the interior
 (card minus its border).
 
-| Size W×H | Row gap (`size.rs:43-45`) | Up step (`:48-51`) | Down step (`:54-57`) | Pyramid step (`:60-62`) | Waste step (`:66-68`) | Centre face (derived from `face.rs:19-28`) |
-|---|---|---|---|---|---|---|
-| 13×11 | 2 | 5 | 2 | 5 | 7 | Large: text row + 7×4 suit (`art.rs:18-32`) |
-| 11×9 | 2 | 4 | 2 | 4 | 6 | Medium: text row + 5×3 suit |
-| 9×7 | 1 | 3 | 1 | 3 | 5 | Small: text row + 5×2 suit |
-| 7×5 | 1 | 2 | 1 | 2 | 4 | Compact: one suit symbol (`face.rs:67-70`) |
+| Size W×H | Row gap (`size.rs:43-45`) | Up step (`:48-51`) | Down step (`:54-57`) | Pyramid step (`:60-62`) | Waste step (`:66-68`) | Centre face (derived from `face.rs:19-28`) | Changed by |
+|---|---|---|---|---|---|---|---|
+| 13×11 | 2 | 5 | 2 | 5 | 7 | Large: text row + 7×4 suit (`art.rs:18-32`) | interface size (P6-18) |
+| 11×9 | 2 | 4 | 2 | 4 | 6 | Medium: text row + 5×3 suit | interface size (P6-18) |
+| 9×7 | 1 | 3 | 1 | 3 | 5 | Small: text row + 5×2 suit | interface size (P6-18) |
+| 7×5 | 1 | 2 | 1 | 2 | 4 | Compact: one suit symbol (`face.rs:67-70`) | interface size (P6-18) |
 
 Text row width: `face.rs:31-35` uses two spaces between rank and suit at interior width ≥ 11 (`face.rs:16`),
 one space otherwise. Corner labels (rank and suit) are always on the top border row (`widgets/card/rows.rs:31-33`)
@@ -292,59 +292,59 @@ fits, it takes 7×5 (`layout/size.rs:35-40`, `smallest` at `:30-32`).
 
 ### 3.3 Gaps and margins
 
-| Gap or margin | Value | Source |
-|---|---|---|
-| Column gap | from 1 up to `MAX_GAP` = 3, grows with the window; centred margin | `layout/size.rs:22` (MAX_GAP), `:73-80` (`spacing`) |
-| Minimum column gap in the fit test | 1 | `layout/columns.rs:11` |
-| Row gap above the tableau | 1 (H < 9) or 2 (H ≥ 9) | `layout/size.rs:43-45`, `columns.rs:87` |
-| Pyramid card pitch | W (cards touch) | `layout/pyramid.rs:62` |
-| Pyramid base row offset | one extra column between base slots | `layout/pyramid.rs:41` |
-| Card border | 1 cell on each side | `widgets/card/mod.rs:115` (interior); `widgets/card/face.rs:80` |
-| Face text band | `TEXT_BAND` = 3, `WIDE_INTERIOR` = 11 | `widgets/card/face.rs:15-16`; `art_offset` at `face.rs:44-47` |
-| Board header row | 1 row, only without the side panel | `layout/chrome.rs:163` |
-| Controls strip | 2 rows (`Now:` and `Do:`) under the board | `layout/chrome.rs:167-168` |
-| Guide panel padding | `SIDE` = 2 columns, `FRAME_ROWS` = 2 | `widgets/guide/mod.rs:25-27` |
-| Dialog chrome | `CHROME_COLUMNS` 4, `BORDER_ROWS` 2, `BUTTON_ROWS` 2, `BUTTON_GAP` 2, `MARKER_COLUMNS` 4 | `widgets/overlay/dialog.rs:39-43` |
-| Dialog text margin | 1 column each side | `widgets/overlay/dialog.rs:200` |
-| Help window | `GAP` 4, `KEY_PADDING` 2, `LEFT_TOPICS` 2 | `widgets/overlay/help.rs:20-22` |
-| Tabs | `TAB_GAP` 2 | `widgets/overlay/tabs.rs:15` |
-| Rules tabs | `TAB_PADDING` 2, `TAB_GAP` 1, `ARROW_COLUMNS` 3 | `widgets/overlay/how_to_play/view.rs:24-26` |
-| Key segments in the guide | `KEY_GAP` 2, `MARKER_WIDTH` 2 | `widgets/guide/keys.rs:18-19` |
-| Footer buttons | separated by the segments' own spaces (`"   "` between key groups) | `widgets/footer.rs:129-150`; test `footer.rs:183-187` |
-| Seed buttons, statistics buttons | `BUTTON_GAP` 3 | `screens/main_menu/seed.rs:21`; `screens/stats/view.rs:24` |
-| Menu list | label width + 2 columns, centred; marker is 1 column plus a space | `widgets/menu_list.rs:82-85`; `screens/focus.rs:36-38` |
+| Gap or margin | Value | Source | Changed by |
+|---|---|---|---|
+| Column gap | from 1 up to `MAX_GAP` = 3, grows with the window; centred margin | `layout/size.rs:22` (MAX_GAP), `:73-80` (`spacing`) | interface size (P6-18) |
+| Minimum column gap in the fit test | 1 | `layout/columns.rs:11` | interface size (P6-18) |
+| Row gap above the tableau | 1 (H < 9) or 2 (H ≥ 9) | `layout/size.rs:43-45`, `columns.rs:87` | interface size (P6-18) |
+| Pyramid card pitch | W (cards touch) | `layout/pyramid.rs:62` | interface size (P6-18) |
+| Pyramid base row offset | one extra column between base slots | `layout/pyramid.rs:41` | interface size (P6-18) |
+| Card border | 1 cell on each side | `widgets/card/mod.rs:115` (interior); `widgets/card/face.rs:80` | fixed |
+| Face text band | `TEXT_BAND` = 3, `WIDE_INTERIOR` = 11 | `widgets/card/face.rs:15-16`; `art_offset` at `face.rs:44-47` | interface size (P6-18) |
+| Board header row | 1 row, only without the side panel | `layout/chrome.rs:163` | interface size (P6-18) |
+| Controls strip | 2 rows (`Now:` and `Do:`) under the board | `layout/chrome.rs:167-168` | fixed |
+| Guide panel padding | `SIDE` = 2 columns, `FRAME_ROWS` = 2 | `widgets/guide/mod.rs:25-27` | interface size (P6-18) |
+| Dialog chrome | `CHROME_COLUMNS` 4, `BORDER_ROWS` 2, `BUTTON_ROWS` 2, `BUTTON_GAP` 2, `MARKER_COLUMNS` 4 | `widgets/overlay/dialog.rs:39-43` | interface size (P6-18) |
+| Dialog text margin | 1 column each side | `widgets/overlay/dialog.rs:200` | interface size (P6-18) |
+| Help window | `GAP` 4, `KEY_PADDING` 2, `LEFT_TOPICS` 2 | `widgets/overlay/help.rs:20-22` | interface size (P6-18) |
+| Tabs | `TAB_GAP` 2 | `widgets/overlay/tabs.rs:15` | interface size (P6-18) |
+| Rules tabs | `TAB_PADDING` 2, `TAB_GAP` 1, `ARROW_COLUMNS` 3 | `widgets/overlay/how_to_play/view.rs:24-26` | interface size (P6-18) |
+| Key segments in the guide | `KEY_GAP` 2, `MARKER_WIDTH` 2 | `widgets/guide/keys.rs:18-19` | interface size (P6-18) |
+| Footer buttons | separated by the segments' own spaces (`"   "` between key groups) | `widgets/footer.rs:129-150`; test `footer.rs:183-187` | fixed |
+| Seed buttons, statistics buttons | `BUTTON_GAP` 3 | `screens/main_menu/seed.rs:21`; `screens/stats/view.rs:24` | interface size (P6-18) |
+| Menu list | label width + 2 columns, centred; marker is 1 column plus a space | `widgets/menu_list.rs:82-85`; `screens/focus.rs:36-38` | interface size (P6-18) |
 
 ### 3.4 Screen size classes and constants (`layout/chrome.rs`)
 
-| Constant | Value | Source |
-|---|---|---|
-| `BOARD_MIN_WIDTH` | 100 columns (board kept beside the panel) | `layout/chrome.rs:92` |
-| `STANDARD_MIN_WIDTH` | 130 columns (Standard from here) | `layout/chrome.rs:94` |
-| `WIDE_MIN_WIDTH` | 180 columns (Wide from here) | `layout/chrome.rs:96` |
-| `GUIDE_WIDTH` | 30 columns, panel of a Standard screen | `layout/chrome.rs:98` |
-| `GUIDE_WIDTH_WIDE` | 40 columns, panel of a Wide screen | `layout/chrome.rs:100` |
-| Class | Compact < 130; Standard 130–179; Wide ≥ 180 | `layout/chrome.rs:112-120` |
-| Panel width | Compact 0; Standard 30; Wide 40 | `layout/chrome.rs:123-129` |
-| Header row | present only when there is no panel | `layout/chrome.rs:163,173` |
-| Minimum terminal | 100 × 30; below it the "too small" notice shows | `widgets/too_small.rs:13,15`; `is_too_small` at `:18-20`; checked in `app.rs:222` |
-| Board size before the first resize | 120 × 40 | `screens/board/mod.rs:45` (`DEFAULT_SCREEN`), set by `resize` at `:228` |
+| Constant | Value | Source | Changed by |
+|---|---|---|---|
+| `BOARD_MIN_WIDTH` | 100 columns (board kept beside the panel) | `layout/chrome.rs:92` | fixed |
+| `STANDARD_MIN_WIDTH` | 130 columns (Standard from here) | `layout/chrome.rs:94` | interface size (P6-18) |
+| `WIDE_MIN_WIDTH` | 180 columns (Wide from here) | `layout/chrome.rs:96` | interface size (P6-18) |
+| `GUIDE_WIDTH` | 30 columns, panel of a Standard screen | `layout/chrome.rs:98` | interface size (P6-18) |
+| `GUIDE_WIDTH_WIDE` | 40 columns, panel of a Wide screen | `layout/chrome.rs:100` | interface size (P6-18) |
+| Class | Compact < 130; Standard 130–179; Wide ≥ 180 | `layout/chrome.rs:112-120` | interface size (P6-18) |
+| Panel width | Compact 0; Standard 30; Wide 40 | `layout/chrome.rs:123-129` | interface size (P6-18) |
+| Header row | present only when there is no panel | `layout/chrome.rs:163,173` | own setting (guide/moves panel) |
+| Minimum terminal | 100 × 30; below it the "too small" notice shows | `widgets/too_small.rs:13,15`; `is_too_small` at `:18-20`; checked in `app.rs:222` | fixed |
+| Board size before the first resize | 120 × 40 | `screens/board/mod.rs:45` (`DEFAULT_SCREEN`), set by `resize` at `:228` | fixed |
 
 ### 3.5 Modal and window sizes
 
-| Window | Size rule | Source |
-|---|---|---|
-| Text dialogs (confirm, pause, win, search; `overlay/mod.rs:47-70`) | width = max(longest line ≤ 64, buttons, title+2, 24) + 4; height = wrapped text rows + 2 border rows (+ 2 when there are buttons); centred and clamped to the area | `widgets/overlay/dialog.rs:39-45` (constants), `:146-165` (`geometry`), `:122-143` (`boxed`), `:72-81` (`centered`) |
-| Help window | width = max(left column + 4 + right column + 4, **80**); body **23** rows; centred | `widgets/overlay/help.rs:20-24`, `:150-155` |
-| Guide window (Compact screens, instead of the panel) | box **62** columns (fixed); text **58** columns; **17** text rows, then it scrolls; page 15; wheel 3 | `widgets/overlay/guide_window.rs:22-27`, `:69-71` |
-| Rules window (How to play) | width of the help window; **20** text rows (`VIEW_ROWS`); text **76** columns (`TEXT_WIDTH`); chrome 3 rows; page 19; wheel 3 | `widgets/overlay/how_to_play/content.rs:12,14`; `view.rs:23`, `:52-56`; `how_to_play/mod.rs:25-26` |
-| Command line | **21** text rows (`VIEW_ROWS`); page 20; wheel 3; rows 1 + fill + 1 | `widgets/overlay/command_line.rs:23,25-26,139-142` |
-| Pause | clears the board body; header stays | `widgets/overlay/mod.rs:96-102` |
-| Controls strip event | **40-column** limit (`EVENT_WIDTH`), and never more than half the row (`min(40, width/2)`); `Now:` gets the rest | `screens/board/controls.rs:19`, `:36` |
-| Seed entry field | text field **22** columns (`FIELD_WIDTH`), **32** characters (`MAX_LENGTH`) | `screens/main_menu/seed.rs:19-20`, `:143` |
-| Statistics list | `FIXED_ROWS` 8, `MIN_LIST_ROWS` 5 (history rows always shown), marker 4 columns | `screens/stats/view.rs:20-25` |
-| Settings list | one row per field (12) | `screens/settings.rs:91`; `screens/settings/options.rs:29-42` |
-| Logo | 5 rows (6 allowed by test), ≤ 60 columns | `widgets/logo.rs:3-17`; test `:30-40` |
-| Volume step | 10 percent | `screens/settings/options.rs:63` |
+| Window | Size rule | Source | Changed by |
+|---|---|---|---|
+| Text dialogs (confirm, pause, win, search; `overlay/mod.rs:47-70`) | width = max(longest line ≤ 64, buttons, title+2, 24) + 4; height = wrapped text rows + 2 border rows (+ 2 when there are buttons); centred and clamped to the area | `widgets/overlay/dialog.rs:39-45` (constants), `:146-165` (`geometry`), `:122-143` (`boxed`), `:72-81` (`centered`) | interface size (P6-18) |
+| Help window | width = max(left column + 4 + right column + 4, **80**); body **23** rows; centred | `widgets/overlay/help.rs:20-24`, `:150-155` | interface size (P6-18) |
+| Guide window (Compact screens, instead of the panel) | box **62** columns (fixed); text **58** columns; **17** text rows, then it scrolls; page 15; wheel 3 | `widgets/overlay/guide_window.rs:22-27`, `:69-71` | interface size (P6-18) |
+| Rules window (How to play) | width of the help window; **20** text rows (`VIEW_ROWS`); text **76** columns (`TEXT_WIDTH`); chrome 3 rows; page 19; wheel 3 | `widgets/overlay/how_to_play/content.rs:12,14`; `view.rs:23`, `:52-56`; `how_to_play/mod.rs:25-26` | interface size (P6-18) |
+| Command line | **21** text rows (`VIEW_ROWS`); page 20; wheel 3; rows 1 + fill + 1 | `widgets/overlay/command_line.rs:23,25-26,139-142` | interface size (P6-18) |
+| Pause | clears the board body; header stays | `widgets/overlay/mod.rs:96-102` | fixed |
+| Controls strip event | **40-column** limit (`EVENT_WIDTH`), and never more than half the row (`min(40, width/2)`); `Now:` gets the rest | `screens/board/controls.rs:19`, `:36` | interface size (P6-18) |
+| Seed entry field | text field **22** columns (`FIELD_WIDTH`), **32** characters (`MAX_LENGTH`) | `screens/main_menu/seed.rs:19-20`, `:143` | fixed |
+| Statistics list | `FIXED_ROWS` 8, `MIN_LIST_ROWS` 5 (history rows always shown), marker 4 columns | `screens/stats/view.rs:20-25` | interface size (P6-18) |
+| Settings list | one row per field (12) | `screens/settings.rs:91`; `screens/settings/options.rs:29-42` | fixed |
+| Logo | 5 rows (6 allowed by test), ≤ 60 columns | `widgets/logo.rs:3-17`; test `:30-40` | fixed |
+| Volume step | 10 percent | `screens/settings/options.rs:63` | fixed |
 
 Other numeric constants with a visual effect: `widgets/guide/mod.rs` (panel frame, above); card
 `MARGIN` = 2 in a test only (`widgets/card/tests/mod.rs:26`); `layout/hit_tests.rs:5` `LABEL_WIDTH` = 3
@@ -371,35 +371,35 @@ Other numeric constants with a visual effect: `widgets/guide/mod.rs` (panel fram
 Unicode set `glyphs.rs:43-60`, ASCII set `glyphs.rs:62-79`. Every Unicode field is WGL4 (`glyphs/wgl4.rs:4-91`,
 checked by `glyphs/wgl4.rs:142-176` and `glyphs.rs:105-126`).
 
-| Field | Unicode | ASCII | Drawn by |
-|---|---|---|---|
-| `suits` (♣ ♦ ♥ ♠) | U+2663, U+2666, U+2665, U+2660 (`wgl4.rs:81-84`) | `c d h s` (lowercase, `glyphs.rs:64`) | corner labels `widgets/card/mod.rs:66-68`; centre text `face.rs:30-42` |
-| `focus_left` ► | U+25BA | `>` | `widgets/card/mark.rs:48`; `screens/focus.rs:36-38` (menu marker) |
-| `focus_right` ◄ | U+25C4 | `<` | **defined only** (no rendering use found; `glyphs.rs:19,47,66`) |
-| `selected` ● | U+25CF | `*` | `widgets/card/mark.rs:47` |
-| Guide available mark • (not a `Glyphs` field) | U+2022 | `o` | `widgets/guide/mod.rs` `available_mark`; Keys section `widgets/guide/keys.rs`, Legend `widgets/guide/legend.rs` |
-| `target` + | `+` | `+` | corners `widgets/card/frame.rs:91-99`; empty slot `widgets/card/slot.rs:42` |
-| `hint_source` / `hint_target` | `?→` / `→?` (U+2192) | `?>` / `>?` | `widgets/card/mark.rs:42-45` |
-| `recycle` (empty stock, can turn) | ↑ (U+2191) | `^` | `widgets/card/slot.rs:28` |
-| `spent` (empty stock, no pass) | `x` | `x` | `widgets/card/slot.rs:29` |
-| `face_down` | ▒ (U+2592) | `#` | card back fill `widgets/card/mod.rs:118`; collapsed row `:183`; back row `widgets/card/frame.rs:102-115` |
-| `aura_focus` | ░ (U+2591) | `:` | `widgets/aura.rs:107` |
-| `aura_carry` | ▓ (U+2593) | `=` | `widgets/aura.rs:111` |
-| `aura_target` | · (U+00B7) | `.` | `widgets/aura.rs:104` |
-| `edge` │ | U+2502 | `\|` | **defined, never drawn** (grep: only `glyphs.rs:121` and `glyphs/wgl4.rs:170`) |
-| `border` | `BorderType::Plain` (`glyphs.rs:59,78`) | same | not used for cards (frames below) |
+| Field | Unicode | ASCII | Drawn by | Changed by |
+|---|---|---|---|---|
+| `suits` (♣ ♦ ♥ ♠) | U+2663, U+2666, U+2665, U+2660 (`wgl4.rs:81-84`) | `c d h s` (lowercase, `glyphs.rs:64`) | corner labels `widgets/card/mod.rs:66-68`; centre text `face.rs:30-42` | glyphs |
+| `focus_left` ► | U+25BA | `>` | `widgets/card/mark.rs:48`; `screens/focus.rs:36-38` (menu marker) | glyphs |
+| `focus_right` ◄ | U+25C4 | `<` | **defined only** (no rendering use found; `glyphs.rs:19,47,66`) | glyphs |
+| `selected` ● | U+25CF | `*` | `widgets/card/mark.rs:47` | glyphs |
+| Guide available mark • (not a `Glyphs` field) | U+2022 | `o` | `widgets/guide/mod.rs` `available_mark`; Keys section `widgets/guide/keys.rs`, Legend `widgets/guide/legend.rs` | glyphs |
+| `target` + | `+` | `+` | corners `widgets/card/frame.rs:91-99`; empty slot `widgets/card/slot.rs:42` | glyphs |
+| `hint_source` / `hint_target` | `?→` / `→?` (U+2192) | `?>` / `>?` | `widgets/card/mark.rs:42-45` | glyphs |
+| `recycle` (empty stock, can turn) | ↑ (U+2191) | `^` | `widgets/card/slot.rs:28` | glyphs |
+| `spent` (empty stock, no pass) | `x` | `x` | `widgets/card/slot.rs:29` | glyphs |
+| `face_down` | ▒ (U+2592) | `#` | card back fill `widgets/card/mod.rs:118`; collapsed row `:183`; back row `widgets/card/frame.rs:102-115` | glyphs, card back |
+| `aura_focus` | ░ (U+2591) | `:` | `widgets/aura.rs:107` | glyphs, aura |
+| `aura_carry` | ▓ (U+2593) | `=` | `widgets/aura.rs:111` | glyphs, aura |
+| `aura_target` | · (U+00B7) | `.` | `widgets/aura.rs:104` | glyphs, aura |
+| `edge` │ | U+2502 | `\|` | **defined, never drawn** (grep: only `glyphs.rs:121` and `glyphs/wgl4.rs:170`) | glyphs |
+| `border` | `BorderType::Plain` (`glyphs.rs:59,78`) | same | not used for cards (frames below) | glyphs |
 
 Frames and borders (the cell sets actually drawn):
 
-| Frame | Unicode | ASCII | Source |
-|---|---|---|---|
-| Card, normal | `┌ ┐ └ ┘` `─` `│` | `+` `-` `\|` | `widgets/card/frame.rs:37`, `:45`, chosen at `:52-69` |
-| Card, target | `┌ ┐ └ ┘` `─` `│` plus `+` in both top corners | corners `+`, edges `~` (horizontal) and `!` (vertical) | `widgets/card/frame.rs:40`, `:48`; corners `:91-99` |
-| Card, hint | `╓ ╖ ╙ ╜` `─` `║` | `+` corners, `.` horizontal, `:` vertical | `widgets/card/frame.rs:41`, `:49` |
-| Card, selected | `╒ ╕ ╘ ╛` `═` `│` | `*` | `widgets/card/frame.rs:38`, `:46` |
-| Card, focused | `╔ ╗ ╚ ╝` `═` `║` | `@` corners, `=` horizontal, `@` vertical | `widgets/card/frame.rs:39`, `:47` |
-| Dialog | `border::DOUBLE` | `+` `-` `\|` | `widgets/overlay/dialog.rs:242-247`, `ASCII_BORDER` `:47-56` |
-| Side panel | `border::PLAIN` | `+` `-` `\|` | `widgets/guide/mod.rs:29-37`, `:68-74` |
+| Frame | Unicode | ASCII | Source | Changed by |
+|---|---|---|---|---|
+| Card, normal | `┌ ┐ └ ┘` `─` `│` | `+` `-` `\|` | `widgets/card/frame.rs:37`, `:45`, chosen at `:52-69` | glyphs |
+| Card, target | `┌ ┐ └ ┘` `─` `│` plus `+` in both top corners | corners `+`, edges `~` (horizontal) and `!` (vertical) | `widgets/card/frame.rs:40`, `:48`; corners `:91-99` | glyphs |
+| Card, hint | `╓ ╖ ╙ ╜` `─` `║` | `+` corners, `.` horizontal, `:` vertical | `widgets/card/frame.rs:41`, `:49` | glyphs |
+| Card, selected | `╒ ╕ ╘ ╛` `═` `│` | `*` | `widgets/card/frame.rs:38`, `:46` | glyphs |
+| Card, focused | `╔ ╗ ╚ ╝` `═` `║` | `@` corners, `=` horizontal, `@` vertical | `widgets/card/frame.rs:39`, `:47` | glyphs |
+| Dialog | `border::DOUBLE` | `+` `-` `\|` | `widgets/overlay/dialog.rs:242-247`, `ASCII_BORDER` `:47-56` | glyphs |
+| Side panel | `border::PLAIN` | `+` `-` `\|` | `widgets/guide/mod.rs:29-37`, `:68-74` | glyphs |
 
 Suit pictograms (`widgets/card/art.rs`): Unicode rows use only block characters (▄ █ ▀ ▌ ▐ …); ASCII rows
 use `# / \ ^ v < >` and spaces (`art.rs:35-63`); Large (7×4), Medium (5×3), Small (5×2) (`art.rs:18-32`).
@@ -448,27 +448,27 @@ Logo: Unicode logo uses ▄ ▀ █ (`widgets/logo.rs:11-17`); ASCII logo (`:3-9
 Source: `screens/settings/options.rs:29-42` (rows), `settings.rs:33-80` (struct and defaults). A row
 changes with ←/→ or Enter; audio rows are locked when sound is unavailable (`screens/settings.rs:36-38`).
 
-| Row (`Field`) | Options | Default | Notes | Source |
-|---|---|---|---|---|
-| Language | en-US, pl-PL | en-US | `options.rs:93-98` | `settings.rs:64` |
-| Theme | Dark, Light, High Contrast | Dark | three compiled palettes | `options.rs:100-106`; `settings.rs:65` |
-| Front style | `international` (only one) | international | `options.rs:52` | `settings.rs:66` |
-| Back style | `default` (only one) | default | `options.rs:54` | `settings.rs:67` |
-| Glyphs | Font, Unicode, Ascii | Unicode | Font renders as Unicode today (`glyphs.rs:85`) | `options.rs:56,108-114`; `settings.rs:68` |
-| Colors | Auto, 16, 256, True color | Auto | Auto = detected; Windows detects TrueColor (`caps.rs:41`) | `options.rs:57-62,116-123`; `settings.rs:69` |
-| Sound style | list from the audio folders | default | | `settings.rs:70` |
-| Cues | on / off | on | | `settings.rs:71` |
-| Music | on / off | off | | `settings.rs:72` |
-| Volume | 0–100 in steps of 10 | 70 | `options.rs:63,218-220` | `settings.rs:73` |
-| Auto-finish | on / off | on | a forced win plays out | `settings.rs:77` |
-| Guide panel | on / off | on | beside the board when wide enough | `settings.rs:74` |
+| Row (`Field`) | Options | Default | Notes | Source | Changed by |
+|---|---|---|---|---|---|
+| Language | en-US, pl-PL | en-US | `options.rs:93-98` | `settings.rs:64` | own setting (language) |
+| Theme | Dark, Light, High Contrast, Monokai, Dracula, Custom (when `theme.toml` valid) | Dark | `assets/themes/*.toml` + optional `theme.toml` | `options.rs`, `settings.rs` | theme |
+| Front style | `international` (only one) | international | `options.rs:52` | `settings.rs:66` | card face |
+| Back style | `default` (only one) | default | `options.rs:54` | `settings.rs:67` | card back |
+| Glyphs | Font, Unicode, Ascii | Unicode | Font renders as Unicode today (`glyphs.rs:85`) | `options.rs:56,108-114`; `settings.rs:68` | glyphs |
+| Colors | Auto, 16, 256, True color | Auto | Auto = detected; Windows detects TrueColor (`caps.rs:41`) | `options.rs:57-62,116-123`; `settings.rs:69` | own setting (color mode) |
+| Sound style | list from the audio folders | default | | `settings.rs:70` | own setting (sound) |
+| Cues | on / off | on | | `settings.rs:71` | own setting (sound) |
+| Music | on / off | off | | `settings.rs:72` | own setting (sound) |
+| Volume | 0–100 in steps of 10 | 70 | `options.rs:63,218-220` | `settings.rs:73` | own setting (sound) |
+| Auto-finish | on / off | on | a forced win plays out | `settings.rs:77` | own setting (gameplay) |
+| Guide panel | on / off | on | beside the board when wide enough | `settings.rs:74` | own setting (guide panel) |
 
 Saved in `Settings` but not on this screen: `undo_allowed` (default on, `settings.rs:75`) and
 `winnable_only` (default off, `settings.rs:76`); the comments say they are offered in the game selection
 (`settings.rs:50-55`).
 
 **Not configurable (no setting or code path found):** card size (automatic, section 3.1), spacing and
-margins, fan steps, per-token colors or a custom theme file (themes are compiled in, section 1.3), the
+margins, fan steps, per-token colors in the UI (a user `theme.toml` in `AppPaths::data_dir()` supplies a Custom theme, section 1.1), the
 terminal font and font size (section 4.3), aura and frame glyphs, zoom (planned as P3-16 only).
 
 ---

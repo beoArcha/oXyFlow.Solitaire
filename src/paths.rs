@@ -21,6 +21,9 @@ pub const DATABASE_FILE: &str = "oxysol.db";
 /// File name of the plain-text log.
 pub const LOG_FILE: &str = "oxysol.log";
 
+/// File name of the optional user color theme.
+pub const THEME_FILE: &str = "theme.toml";
+
 /// The operating system offers no home directory to derive the data directory from.
 #[derive(Debug, Error)]
 #[error("no home directory is available to place the oXySol data directory in")]
@@ -74,6 +77,11 @@ impl AppPaths {
     /// The plain-text log file.
     pub fn log_file(&self) -> PathBuf {
         self.data_dir.join(LOG_FILE)
+    }
+
+    /// The optional user theme file.
+    pub fn theme_file(&self) -> PathBuf {
+        self.data_dir.join(THEME_FILE)
     }
 }
 

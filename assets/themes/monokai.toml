@@ -1,0 +1,29 @@
+# The Monokai theme: warm dark background with vivid accents.
+# Every text pair reaches a contrast ratio of at least 4.5.
+
+field_edge = false
+
+background = { rgb = [39, 40, 34], ansi16 = "black" }
+surface = { rgb = [46, 47, 39], ansi16 = "black" }
+text = { rgb = [248, 248, 242], ansi16 = "white" }
+text_muted = { rgb = [185, 182, 164], ansi16 = "gray" }
+accent = { rgb = [102, 217, 239], ansi16 = "light_cyan" }
+border = { rgb = [130, 126, 105], ansi16 = "gray" }
+border_focus = { rgb = [230, 219, 116], ansi16 = "light_yellow" }
+focus_fg = { rgb = [39, 40, 34], ansi16 = "black" }
+focus_bg = { rgb = [230, 219, 116], ansi16 = "light_yellow" }
+error = { rgb = [255, 110, 150], ansi16 = "light_red" }
+success = { rgb = [166, 226, 46], ansi16 = "light_green" }
+table = { rgb = [46, 128, 70], ansi16 = "green" }
+table_text = { rgb = [255, 255, 255], ansi16 = "white" }
+slot = { rgb = [166, 226, 46], ansi16 = "light_green" }
+card_face = { rgb = [248, 248, 242], ansi16 = "white" }
+card_back = { rgb = [30, 31, 26], ansi16 = "black" }
+card_back_mark = { rgb = [230, 219, 116], ansi16 = "light_yellow" }
+card_red = { rgb = [180, 24, 48], ansi16 = "red" }
+card_black = { rgb = [39, 40, 34], ansi16 = "black" }
+target = { rgb = [230, 219, 116], ansi16 = "light_yellow" }
+selection = { rgb = [118, 224, 244], ansi16 = "light_cyan" }
+hint = { rgb = [255, 198, 70], ansi16 = "light_yellow" }
+aura_focus = { rgb = [255, 255, 180], ansi16 = "light_yellow" }
+aura_carry = { rgb = [210, 255, 255], ansi16 = "light_cyan" }

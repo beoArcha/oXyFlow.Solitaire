@@ -152,6 +152,10 @@ light = "Claro"
 high_contrast = "Alto contraste"
 monokai = "Monokai"
 dracula = "Dracula"
+custom = "Personalizado"
+user_unreadable = "Não foi possível ler o arquivo de tema personalizado (theme.toml). Veja oxysol.log para detalhes."
+user_low_contrast = "O tema personalizado (theme.toml) falhou no teste de contraste. Veja oxysol.log para detalhes."
+user_missing = "O arquivo de tema personalizado salvo (theme.toml) não foi encontrado. O tema padrão está em uso."
 
 [glyph]
 unicode = "Unicode"

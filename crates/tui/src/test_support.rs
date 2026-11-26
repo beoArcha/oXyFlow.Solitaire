@@ -26,7 +26,7 @@ use crate::storage::memory::MemoryStorage;
 use crate::storage::{
     AssistCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,
 };
-use crate::theme::{Theme, Token};
+use crate::theme::{Theme, Token, UserTheme};
 
 /// The version string the test harness gives the menu.
 pub const TEST_VERSION: &str = "1.2.3-test";
@@ -260,16 +260,49 @@ impl Harness {
             Some(seed),
             None,
             Zone::Utc,
+            UserTheme::Missing,
         )
     }
 
     /// A harness whose application was given `display` for the full-screen switch.
     pub fn with_display(storage: MemoryStorage, display: DisplayDeps) -> Self {
-        Self::build(storage, TRUE_COLOR, 120, 40, None, Some(display), Zone::Utc)
+        Self::build(
+            storage,
+            TRUE_COLOR,
+            120,
+            40,
+            None,
+            Some(display),
+            Zone::Utc,
+            UserTheme::Missing,
+        )
+    }
+
+    /// A harness with a loaded (or failed) user theme.
+    pub fn with_user_theme(storage: MemoryStorage, user_theme: UserTheme) -> Self {
+        Self::build(
+            storage,
+            TRUE_COLOR,
+            120,
+            40,
+            None,
+            None,
+            Zone::Utc,
+            user_theme,
+        )
     }
 
     pub fn with(storage: MemoryStorage, caps: TerminalCaps, width: u16, height: u16) -> Self {
-        Self::build(storage, caps, width, height, None, None, Zone::Utc)
+        Self::build(
+            storage,
+            caps,
+            width,
+            height,
+            None,
+            None,
+            Zone::Utc,
+            UserTheme::Missing,
+        )
     }
 
     /// Like [`Harness::with`], with the statistics history shown in `zone`.
@@ -280,10 +313,23 @@ impl Harness {
         height: u16,
         zone: Zone,
     ) -> Self {
-        Self::build(storage, caps, width, height, None, None, zone)
+        Self::build(
+            storage,
+            caps,
+            width,
+            height,
+            None,
+            None,
+            zone,
+            UserTheme::Missing,
+        )
     }
 
-    fn build(
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "test harness builder keeps explicit fixtures"
+    )]
+    pub(crate) fn build(
         storage: MemoryStorage,
         caps: TerminalCaps,
         width: u16,
@@ -291,6 +337,7 @@ impl Harness {
         start_seed: Option<u64>,
         display: Option<DisplayDeps>,
         zone: Zone,
+        user_theme: UserTheme,
     ) -> Self {
         let storage = Rc::new(RefCell::new(storage));
         let audio = Rc::new(RefCell::new(AudioLog::default()));
@@ -308,6 +355,7 @@ impl Harness {
             }),
             start_seed,
             sound_styles: sound_styles(),
+            user_theme,
             solver: Box::new(StubSolver(Rc::clone(&solver))),
             display: display.unwrap_or_else(DisplayDeps::none),
             version: TEST_VERSION,
@@ -385,9 +433,13 @@ impl Harness {
         terminal
             .draw(|frame| app.draw(frame))
             .unwrap_or_else(|never| match never {});
-        let theme = Theme::new(app.settings().theme, app.settings().color_depth(caps))
-            .with_color_vision(app.settings().color_vision)
-            .with_low_vision(app.settings().low_vision);
+        let theme = Theme::for_settings(
+            app.settings().theme,
+            app.user_theme_palette(),
+            app.settings().color_depth(caps),
+        )
+        .with_color_vision(app.settings().color_vision)
+        .with_low_vision(app.settings().low_vision);
         lines_without_pane(terminal.backend().buffer(), &theme)
     }
 
@@ -402,9 +454,13 @@ impl Harness {
         terminal
             .draw(|frame| app.draw(frame))
             .unwrap_or_else(|never| match never {});
-        let theme = Theme::new(app.settings().theme, app.settings().color_depth(caps))
-            .with_color_vision(app.settings().color_vision)
-            .with_low_vision(app.settings().low_vision);
+        let theme = Theme::for_settings(
+            app.settings().theme,
+            app.user_theme_palette(),
+            app.settings().color_depth(caps),
+        )
+        .with_color_vision(app.settings().color_vision)
+        .with_low_vision(app.settings().low_vision);
         pane_cells(terminal.backend().buffer(), &theme)
     }
 

@@ -1,0 +1,29 @@
+# The Dracula theme: dark gothic background with pastel neon highlights.
+# Every text pair reaches a contrast ratio of at least 4.5.
+
+field_edge = false
+
+background = { rgb = [40, 42, 54], ansi16 = "black" }
+surface = { rgb = [68, 71, 90], ansi16 = "black" }
+text = { rgb = [248, 248, 242], ansi16 = "white" }
+text_muted = { rgb = [190, 195, 225], ansi16 = "gray" }
+accent = { rgb = [139, 233, 253], ansi16 = "light_cyan" }
+border = { rgb = [155, 165, 205], ansi16 = "gray" }
+border_focus = { rgb = [241, 250, 140], ansi16 = "light_yellow" }
+focus_fg = { rgb = [40, 42, 54], ansi16 = "black" }
+focus_bg = { rgb = [241, 250, 140], ansi16 = "light_yellow" }
+error = { rgb = [255, 155, 155], ansi16 = "light_red" }
+success = { rgb = [80, 250, 123], ansi16 = "light_green" }
+table = { rgb = [40, 130, 94], ansi16 = "green" }
+table_text = { rgb = [255, 255, 255], ansi16 = "white" }
+slot = { rgb = [140, 245, 180], ansi16 = "light_green" }
+card_face = { rgb = [248, 248, 242], ansi16 = "white" }
+card_back = { rgb = [30, 32, 42], ansi16 = "black" }
+card_back_mark = { rgb = [139, 233, 253], ansi16 = "light_cyan" }
+card_red = { rgb = [185, 25, 30], ansi16 = "red" }
+card_black = { rgb = [40, 42, 54], ansi16 = "black" }
+target = { rgb = [80, 250, 123], ansi16 = "light_green" }
+selection = { rgb = [139, 233, 253], ansi16 = "light_cyan" }
+hint = { rgb = [241, 250, 140], ansi16 = "light_yellow" }
+aura_focus = { rgb = [255, 255, 185], ansi16 = "light_yellow" }
+aura_carry = { rgb = [230, 255, 255], ansi16 = "light_cyan" }

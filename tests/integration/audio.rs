@@ -10,6 +10,7 @@ use oxysol_tui::app::DisplayDeps;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use oxysol_tui::storage::memory::MemoryStorage;
+use oxysol_tui::theme::UserTheme;
 use oxysol_tui::{App, Audio, AudioStatus, Deps, Input, NullClipboard, NullSolver, Zone};
 #[cfg(feature = "audio")]
 use oxysol_tui::{AudioSettings, SoundCue};
@@ -43,6 +44,7 @@ fn app_with(audio: Box<dyn Audio>) -> App {
         seeds: Box::new(|| 7),
         start_seed: None,
         sound_styles: Vec::new(),
+        user_theme: UserTheme::Missing,
         solver: Box::new(NullSolver::default()),
         display: DisplayDeps::none(),
         version: "0.0.0-test",

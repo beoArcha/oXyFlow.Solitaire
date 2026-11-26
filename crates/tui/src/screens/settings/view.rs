@@ -8,14 +8,14 @@ use ratatui::widgets::{Paragraph, Wrap};
 use super::FOOTER;
 use super::arrows::{Arrows, glyphs, locate};
 use super::options::Field;
-use super::values::{is_unavailable, line, unavailable_reason_key};
+use super::values::{is_unavailable, line_with_custom, unavailable_reason_key};
 use crate::action::Action;
 use crate::i18n::{t, tf};
 use crate::input::primary_key;
 use crate::screens::ViewCtx;
 use crate::screens::focus::marker;
-use crate::theme::Token;
-use crate::theme::table::{felt_for, hex};
+use crate::theme::table::{felt, felt_for, hex};
+use crate::theme::{ThemeId, Token};
 use crate::widgets::footer::{self, Segment};
 
 /// Rows of the screen outside the list band: title, gaps, tab bar, hidden-pane note, two lines of
@@ -36,13 +36,14 @@ fn text_width(text: &str) -> u16 {
 }
 
 fn row_text(field: Field, focused: bool, columns: u16, ctx: &ViewCtx<'_>) -> String {
-    let text = line(
+    let text = line_with_custom(
         field,
         ctx.settings,
         ctx.audio_status.is_ready(),
         ctx.sound_styles,
         (columns, ctx.font),
         focused.then(|| glyphs(ctx)),
+        ctx.theme.custom_palette(),
     );
     format!("{} {text}", marker(ctx, focused))
 }
@@ -165,9 +166,18 @@ fn table_note(focus: Option<Field>, ctx: &ViewCtx<'_>) -> Option<String> {
     if focus != Some(Field::TableColour) {
         return None;
     }
-    let felt = felt_for(ctx.settings.theme, ctx.settings.table_colour);
-    felt.shifted
-        .then(|| tf("settings.table.reason", &[("shade", &hex(felt.swatch.rgb))]))
+    let choice = match (ctx.settings.theme, ctx.theme.custom_palette()) {
+        (ThemeId::Custom, Some(palette)) => {
+            felt(ThemeId::Custom, palette, ctx.settings.table_colour)
+        }
+        _ => felt_for(ctx.settings.theme, ctx.settings.table_colour),
+    };
+    choice.shifted.then(|| {
+        tf(
+            "settings.table.reason",
+            &[("shade", &hex(choice.swatch.rgb))],
+        )
+    })
 }
 
 pub(super) fn footer_segments(ctx: &ViewCtx<'_>) -> Vec<Segment> {

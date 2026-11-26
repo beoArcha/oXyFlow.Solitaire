@@ -152,6 +152,10 @@ light = "Світла"
 high_contrast = "Високий контраст"
 monokai = "Monokai"
 dracula = "Dracula"
+custom = "Власна"
+user_unreadable = "Не вдалося прочитати файл власної теми (theme.toml). Подробиці дивіться у файлі oxysol.log."
+user_low_contrast = "Власна тема (theme.toml) не пройшла перевірку контрастності. Подробиці дивіться у файлі oxysol.log."
+user_missing = "Збережений файл власної теми (theme.toml) не знайдено. Використовується тема за замовчуванням."
 
 [glyph]
 unicode = "Unicode"

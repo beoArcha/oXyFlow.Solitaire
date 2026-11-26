@@ -5,6 +5,7 @@ mod card_back;
 mod card_face;
 mod card_size;
 mod console_font;
+mod custom_theme;
 mod focus;
 mod font_rows;
 mod footer;

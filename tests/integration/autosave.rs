@@ -10,6 +10,7 @@ use oxysol_core::{DrawCount, PileSnapshot, Session, Variant};
 use oxysol_tui::app::DisplayDeps;
 use oxysol_tui::caps::{ColorDepth, TerminalCaps};
 use oxysol_tui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use oxysol_tui::theme::UserTheme;
 use oxysol_tui::{
     App, AssistCounters, AudioStatus, Deps, GameId, GameRecord, Input, Modal, NullAudio,
     NullClipboard, NullSolver, Outcome, Proof, SavedGame, Screen, Settings, Storage, StorageError,
@@ -62,6 +63,7 @@ fn launch(storage: Box<dyn Storage>) -> Player {
         seeds: Box::new(|| SEED),
         start_seed: None,
         sound_styles: Vec::new(),
+        user_theme: UserTheme::Missing,
         solver: Box::new(NullSolver::default()),
         display: DisplayDeps::none(),
         version: "0.0.0-test",
@@ -352,4 +354,40 @@ fn a_restart_without_undo_is_stored_at_once_and_survives_quit_and_resume() {
     second.press(KeyCode::Enter);
     assert_eq!(second.app.board().restarts(), 1);
     assert!(!second.app.board().undo_allowed());
+}
+
+#[test]
+fn user_theme_file_in_data_dir_loads_into_app_and_invalid_alerts() {
+    let (_dir, paths) = temp_paths();
+    let valid = include_str!("../../assets/themes/dark.toml").replace(
+        "background = { rgb = [24, 28, 38], ansi16 = \"black\" }",
+        "background = { rgb = [16, 20, 30], ansi16 = \"black\" }",
+    );
+    assert!(std::fs::write(paths.theme_file(), valid).is_ok());
+    let mut storage = open(&paths);
+    assert!(
+        storage
+            .save_settings(&Settings {
+                theme: oxysol_tui::theme::ThemeId::Custom,
+                ..Settings::default()
+            })
+            .is_ok()
+    );
+    let user_theme = oxysol::theme::load_user_theme(&paths);
+    let app = App::new(Deps {
+        storage: Box::new(storage),
+        audio: Box::new(NullAudio::new(AudioStatus::NotBuilt)),
+        clipboard: Box::new(NullClipboard),
+        caps: CAPS,
+        seeds: Box::new(|| SEED),
+        start_seed: None,
+        sound_styles: Vec::new(),
+        user_theme,
+        solver: Box::new(NullSolver::default()),
+        display: DisplayDeps::none(),
+        version: "0.0.0-test",
+        zone: Zone::Utc,
+    });
+    assert!(app.modal().is_none());
+    assert_eq!(app.settings().theme, oxysol_tui::theme::ThemeId::Custom);
 }

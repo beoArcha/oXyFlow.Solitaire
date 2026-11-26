@@ -10,6 +10,7 @@ use crate::settings::{
     Aid, AuraColour, AuraSize, AuraStyle, CardBack, ColorMode, FullScreen, GlyphMode, TerminalKind,
     WindowSize,
 };
+use crate::theme::ThemeId;
 
 /// One setting row.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -129,6 +130,15 @@ pub(super) const COLOR_MODES: [ColorMode; 4] = [
 pub(super) const FULL_SCREEN_MODES: [FullScreen; 3] =
     [FullScreen::Auto, FullScreen::On, FullScreen::Off];
 pub(super) const WINDOW_SIZES: [WindowSize; 3] = WindowSize::ALL;
+
+/// The theme choices offered in Settings, with `Custom` appended when a valid user theme exists.
+pub(super) fn theme_options(has_custom: bool) -> &'static [ThemeId] {
+    if has_custom {
+        &ThemeId::ALL_WITH_CUSTOM
+    } else {
+        &ThemeId::ALL
+    }
+}
 
 fn window_size_key(facts: FontFacts) -> &'static str {
     if facts.terminal != TerminalKind::ClassicConsole {

@@ -1,8 +1,8 @@
 //! What a row of the settings screen shows and when it is unavailable.
 
-#[cfg(test)]
-pub use super::change::changed;
 pub use super::change::changed_for_facts;
+#[cfg(test)]
+pub use super::change::{changed, changed_with_custom};
 use super::font_rows;
 use super::options::{FIELDS, Field};
 use super::priority_row;
@@ -11,8 +11,8 @@ use crate::audio::{AudioStatus, StyleInfo};
 use crate::card_style::CardStyles;
 use crate::i18n::{t, tf};
 use crate::settings::{CardBack, ColorMode, FullScreen, GlyphMode, Settings, TerminalKind};
-use crate::theme::ThemeId;
-use crate::theme::table::felt_for;
+use crate::theme::table::{felt, felt_for};
+use crate::theme::{Palette, ThemeId};
 
 const fn theme_key(theme: ThemeId) -> &'static str {
     match theme {
@@ -21,6 +21,7 @@ const fn theme_key(theme: ThemeId) -> &'static str {
         ThemeId::HighContrast => "settings.theme.high_contrast",
         ThemeId::Monokai => "settings.theme.monokai",
         ThemeId::Dracula => "settings.theme.dracula",
+        ThemeId::Custom => "settings.theme.custom",
     }
 }
 
@@ -57,9 +58,13 @@ const fn full_screen_key(mode: FullScreen) -> &'static str {
     }
 }
 
-fn table_colour_text(settings: &Settings) -> String {
+fn table_colour_text(settings: &Settings, custom: Option<&Palette>) -> String {
     let name = t(settings.table_colour.label_key()).into_owned();
-    if felt_for(settings.theme, settings.table_colour).shifted {
+    let choice = match (settings.theme, custom) {
+        (ThemeId::Custom, Some(palette)) => felt(ThemeId::Custom, palette, settings.table_colour),
+        _ => felt_for(settings.theme, settings.table_colour),
+    };
+    if choice.shifted {
         tf("settings.table.low_contrast", &[("name", &name)])
     } else {
         name
@@ -126,7 +131,17 @@ fn aid_text(field: Field, settings: &Settings) -> String {
 }
 
 /// The value of a row as the player reads it.
+#[cfg(test)]
 pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo]) -> String {
+    value_text_with(field, settings, sound_styles, None)
+}
+
+fn value_text_with(
+    field: Field,
+    settings: &Settings,
+    sound_styles: &[StyleInfo],
+    custom: Option<&Palette>,
+) -> String {
     match field {
         Field::Language => settings.locale.own_name().to_owned(),
         Field::LowVision => switch_text(settings.low_vision),
@@ -135,7 +150,7 @@ pub fn value_text(field: Field, settings: &Settings, sound_styles: &[StyleInfo])
         Field::CardBack => t(card_back_key(settings.card_back)).into_owned(),
         Field::CardFace => t(settings.card_face.label_key()).into_owned(),
         Field::FourColorDeck => switch_text(settings.four_color_deck),
-        Field::TableColour => table_colour_text(settings),
+        Field::TableColour => table_colour_text(settings, custom),
         Field::TableFeel => t(settings.table_feel.label_key()).into_owned(),
         Field::FrontStyle => front_style_name(&settings.front_style),
         Field::BackStyle => back_style_name(&settings.back_style),
@@ -190,6 +205,7 @@ pub(super) fn is_unavailable(field: Field, audio_available: bool, facts: FontFac
 /// of `columns` is too narrow. `arrows` are the glyphs (left, right) that frame the value of the
 /// focused row; every other row keeps the two columns free, so the values line up, and an
 /// unavailable row takes no arrows at all.
+#[cfg(test)]
 pub fn line(
     field: Field,
     settings: &Settings,
@@ -198,7 +214,27 @@ pub fn line(
     (columns, facts): (u16, FontFacts),
     arrows: Option<(&str, &str)>,
 ) -> String {
-    let mut value = value_text(field, settings, sound_styles);
+    line_with_custom(
+        field,
+        settings,
+        audio_available,
+        sound_styles,
+        (columns, facts),
+        arrows,
+        None,
+    )
+}
+
+pub fn line_with_custom(
+    field: Field,
+    settings: &Settings,
+    audio_available: bool,
+    sound_styles: &[StyleInfo],
+    (columns, facts): (u16, FontFacts),
+    arrows: Option<(&str, &str)>,
+    custom: Option<&Palette>,
+) -> String {
+    let mut value = value_text_with(field, settings, sound_styles, custom);
     if field == Field::ConsoleFont {
         value = console_font_value(settings, facts);
     }
