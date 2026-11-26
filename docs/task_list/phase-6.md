@@ -253,8 +253,12 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
   `locales/*/rules.toml` for "one line per option in the rules tab".
 - **Depends on:** P6-06
 - **Decision:** T-53
-- **Files:** `crates/tui/src/widgets/overlay/how_to_play/{content,pages,state,mod}.rs`, `crates/tui/src/app/effects.rs`
-  (`open_how_to_play` only), `locales/*/rules.toml`, tests (`how_to_play/tests.rs`, `how_to_play/render_tests.rs`)
+- **Files:** `crates/tui/src/widgets/overlay/how_to_play/{content,pages,state,mod,view}.rs`, `crates/tui/src/app/effects.rs`
+  (`open_how_to_play` only), `locales/*/rules.toml`, tests (`how_to_play/tests.rs`, `how_to_play/render_tests.rs`).
+  Added 2026-11-27 (the implementer stopped correctly: the options must follow the rules wherever `Rules` travels):
+  `crates/tui/src/widgets/overlay/dock/dock_view.rs` (docked Rules tab), `crates/tui/src/widgets/overlay/{nav,mod,dock}.rs`
+  (switching to Rules from Help and the command line, centred and docked), `crates/tui/src/app/{dock,event}.rs` (the
+  calls only). Carry the options next to `Rules` (one small value, not a parameter per call site).
 - **Shared files:** `locales/en-US/rules.toml`, `locales/pl-PL/rules.toml`
 - **Problem:** the rules tab is built from the variant only (`effects.rs:155`, `HowToPlay::for_variant`). With a
   non-default option it states rules that are false for the game on the board:
