@@ -338,7 +338,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P6-18 | The interface size scale S / M / L / XL | Medium | P3-36 | DONE |
 | P6-04 | Card style: four-colour French | Small | P5-03, P3-35 | DONE |
 | P6-05 | Game: TriPeaks | Medium | P5-04 | DONE |
-| P6-06 | More game options | Large (finalizes the scope), then Small | P4-09, P3-27 | DRAFT |
+| P6-06 | More game options: Klondike passes and empty column, Spider deal, Golf wrap and King | Medium | P4-09, P3-27 | TODO |
 | P6-07 | Dev bridge: headless driver, virtual clock and UI state snapshot | Medium | T-12, T-14 | TODO |
 | P6-08 | Dev bridge: `--dev-bridge` JSON-lines protocol | Medium | P6-07 | TODO |
 | P6-09 | Dev bridge: `--dev-log` structured log and determinism tests | Medium | P6-08 | TODO |
