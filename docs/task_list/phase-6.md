@@ -386,6 +386,34 @@ its card).
   New game and Menu do what they say; Esc keeps the board and the bar part; it does not open again for the same
   position after Esc; every offered locale fits at 100 × 30.
 
+### O-123 — Game menu: scrolling by wheel and page keys, families that fold
+
+- **Owner:** Medium
+- **Priority:** P2. Owner request 2026-11-26.
+- **Depends on:** —
+- **Files:** `crates/tui/src/screens/game_select.rs`, `crates/tui/src/screens/game_select/**`, `crates/tui/src/settings.rs`
+  (the folded families), `crates/tui/src/settings/tests.rs`, `locales/*/menu.toml`, `docs/tech/ui-inventory.md`, tests
+- **Problem:** the game list scrolls only by following the focus with the arrow keys; the mouse wheel, Page Up / Page
+  Down and Home / End do nothing, the `↑` / `↓` marks at the edges cannot be clicked, and with fifteen games in seven
+  families the list is long while some families hold a single game.
+- **Fix:**
+  - **Scrolling:** the mouse wheel over the list scrolls it by three rows without moving the focus off a visible row
+    (when the focused row leaves the view, the focus moves to the nearest visible variant); Page Up / Page Down move the
+    focus by one page of rows, Home / End to the first / last variant; a click on the `↑` / `↓` mark scrolls by one
+    page. The scroll stays clamped as today.
+  - **Folding:** each family heading carries a sign `▾` (open) or `▸` (folded) (`v` / `>` without Unicode). Enter, Space
+    or a click on a heading, and Left / Right on a heading or on a variant of it, fold and unfold the family; a folded
+    family shows its heading only, with the number of its games. The focus can rest on a heading; Enter on a variant
+    still starts it. The folded families are remembered in the settings (`folded_families`, empty by default; an old
+    settings file loads with every family open).
+  - While a search is active every family with a match is shown open, without changing what is remembered; the
+    favourites group folds like a family.
+  - The footer names the keys that act in the current focus (fold on a heading, start on a variant) and nothing else.
+- **Acceptance:** tests: the wheel scrolls and the focus stays visible; Page Up / Page Down, Home / End; a click on the
+  edge marks; folding by key and by mouse, the sign and the game count; the folded set survives a restart; a search
+  shows matches in folded families and restores the folding when cleared; an old settings file opens every family;
+  every offered locale fits at 100 × 30.
+
 ## Order of the solver and hint cards
 
 Each step makes the next one cheaper to measure and needs no rework later:

@@ -358,6 +358,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-120 | Settings: clear game history and statistics (soft delete) | Medium | — | TODO |
 | O-121 | Achievements: a menu entry and the latest one in the top right corner | Medium | O-120 | DRAFT |
 | O-122 | No moves left: a dialog that the game cannot be won, with Restart, New game and Menu | Medium | — | TODO |
+| O-123 | Game menu: scrolling by wheel and page keys, families that fold | Medium | — | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
