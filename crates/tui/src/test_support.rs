@@ -472,6 +472,37 @@ impl Harness {
             Some((u16::try_from(column).ok()?, u16::try_from(row).ok()?))
         })
     }
+
+    /// Steps `Down` in the game selection list until `variant` has the focus.
+    pub fn focus_game_variant(&mut self, variant: Variant) {
+        let label = crate::i18n::t(crate::screens::variant_label_key(variant)).into_owned();
+        let max_steps = Variant::ALL.len() + 16;
+        for _ in 0..max_steps {
+            if self
+                .lines()
+                .iter()
+                .any(|line| is_focused_variant_line(line, &label))
+            {
+                return;
+            }
+            self.press(KeyCode::Down);
+        }
+        panic!("variant {label:?} was not focused within {max_steps} steps");
+    }
+}
+
+fn is_focused_variant_line(line: &str, label: &str) -> bool {
+    let Some(at) = line.find('►').or_else(|| line.find('>')) else {
+        return false;
+    };
+    let rest = line[at..].trim_start_matches(['►', '>', ' ']);
+    if rest.starts_with('[') {
+        return false;
+    }
+    rest.splitn(3, ' ').nth(2).is_some_and(|name| {
+        let name = name.trim();
+        name == label || name.starts_with(&format!("{label}  "))
+    })
 }
 
 fn find_pane_title(buffer: &Buffer) -> Option<(u16, u16, u16)> {

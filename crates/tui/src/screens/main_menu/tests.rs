@@ -117,12 +117,10 @@ fn resume_moves_the_other_items_down_by_one() {
 
 #[test]
 fn a_typed_seed_reaches_the_session_for_every_variant() {
-    for (index, variant) in Variant::ALL.into_iter().enumerate() {
+    for variant in Variant::ALL {
         let mut h = Harness::new();
         open_game_list(&mut h);
-        for _ in 0..index {
-            h.press(KeyCode::Down);
-        }
+        h.focus_game_variant(variant);
         h.press(KeyCode::Enter);
         assert!(h.text().contains("Type a seed"));
         h.press(KeyCode::Enter);

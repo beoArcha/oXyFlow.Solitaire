@@ -79,12 +79,10 @@ fn enter_on_a_game_opens_the_seed_options_of_that_game() {
 
 #[test]
 fn every_variant_is_reached_by_keyboard_and_deals_a_typed_seed() {
-    for (index, variant) in Variant::ALL.into_iter().enumerate() {
+    for variant in Variant::ALL {
         let mut h = Harness::new();
         open_game_list(&mut h);
-        for _ in 0..index {
-            h.press(KeyCode::Down);
-        }
+        h.focus_game_variant(variant);
         h.press(KeyCode::Enter);
         assert!(h.text().contains(&game_title(variant)), "{variant:?}");
         h.press(KeyCode::Enter);
@@ -169,13 +167,7 @@ fn levels_of_a_variant_without_curated_seeds_say_so_and_start_nothing() {
     };
     let mut h = Harness::new();
     open_game_list(&mut h);
-    for _ in 0..Variant::ALL
-        .iter()
-        .position(|v| *v == variant)
-        .unwrap_or_default()
-    {
-        h.press(KeyCode::Down);
-    }
+    h.focus_game_variant(variant);
     h.press(KeyCode::Enter);
     h.press(KeyCode::Down);
     h.press(KeyCode::Down);

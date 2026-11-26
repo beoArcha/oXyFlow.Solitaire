@@ -119,10 +119,7 @@ fn every_yukon_variant_searches_for_a_winnable_deal_and_deals_it_marked() {
         h.solver.borrow_mut().accept_nth = Some(2);
         h.press(KeyCode::Enter);
         let variant = Variant::Yukon(rules);
-        let index = Variant::ALL.iter().position(|v| *v == variant).unwrap_or(0);
-        for _ in 0..index {
-            h.press(KeyCode::Down);
-        }
+        h.focus_game_variant(variant);
         h.press(KeyCode::Enter);
         let submitted = h.solver.borrow().submitted.clone();
         assert!(!submitted.is_empty(), "{rules:?}");

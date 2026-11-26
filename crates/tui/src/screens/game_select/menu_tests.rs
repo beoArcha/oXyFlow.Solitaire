@@ -45,11 +45,14 @@ fn line_index(lines: &[String], needle: &str) -> Option<usize> {
 
 #[test]
 fn the_groups_follow_the_fixed_family_order() {
-    let rows = rows::build(&[], "");
+    let rows = rows::build(&[], &[], "");
     let headings: Vec<Family> = rows
         .iter()
         .filter_map(|row| match row {
-            Row::Heading(Heading::Family(family)) => Some(*family),
+            Row::Heading {
+                heading: Heading::Family(family),
+                ..
+            } => Some(*family),
             _ => None,
         })
         .collect();
@@ -63,12 +66,18 @@ fn the_groups_follow_the_fixed_family_order() {
 
 #[test]
 fn every_variant_sits_under_the_heading_of_its_family() {
-    let rows = rows::build(&[], "");
+    let rows = rows::build(&[], &[], "");
     let mut current = None;
     for row in rows {
         match row {
-            Row::Heading(Heading::Family(family)) => current = Some(family),
-            Row::Heading(Heading::Favourites) => panic!("no favourites were set"),
+            Row::Heading {
+                heading: Heading::Family(family),
+                ..
+            } => current = Some(family),
+            Row::Heading {
+                heading: Heading::Favourites,
+                ..
+            } => panic!("no favourites were set"),
             Row::Item(variant) => assert_eq!(current, Some(Family::of(variant))),
             Row::Gap => {}
         }
@@ -78,8 +87,15 @@ fn every_variant_sits_under_the_heading_of_its_family() {
 #[test]
 fn favourites_form_the_first_group_and_leave_their_family() {
     let last = Variant::ALL[Variant::ALL.len() - 1];
-    let rows = rows::build(&[last], "");
-    assert_eq!(rows[0], Row::Heading(Heading::Favourites));
+    let rows = rows::build(&[last], &[], "");
+    assert_eq!(
+        rows[0],
+        Row::Heading {
+            heading: Heading::Favourites,
+            folded: false,
+            count: 1,
+        }
+    );
     assert_eq!(rows[1], Row::Item(last));
     assert_eq!(items(&rows).len(), Variant::ALL.len());
     assert_eq!(items(&rows).iter().filter(|v| **v == last).count(), 1);

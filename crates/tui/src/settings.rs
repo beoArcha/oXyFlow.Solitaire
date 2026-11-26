@@ -67,6 +67,20 @@ pub enum AuraMode {
     FocusOnly,
 }
 
+/// A collapsible group in the game menu: the favourites group or a game family.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GameGroup {
+    Favourites,
+    Klondike,
+    Spider,
+    FreeCell,
+    Pyramid,
+    Yukon,
+    Golf,
+    TriPeaks,
+}
+
 /// Everything the player can change in the settings screen. Styles are folder ids.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
@@ -167,6 +181,9 @@ pub struct Settings {
     /// value without the field loads as `None`.
     pub low_vision_saved: Option<LowVisionBackup>,
     pub favourites: Vec<oxysol_core::Variant>,
+    /// Which game-menu groups are folded. An older saved value without the field loads as empty
+    /// (every family open).
+    pub folded_families: Vec<GameGroup>,
 }
 
 impl Default for Settings {
@@ -213,6 +230,7 @@ impl Default for Settings {
             low_vision_offered: false,
             low_vision_saved: None,
             favourites: Vec::new(),
+            folded_families: Vec::new(),
         }
     }
 }

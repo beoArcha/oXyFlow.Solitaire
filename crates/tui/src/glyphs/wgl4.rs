@@ -227,12 +227,10 @@ mod tests {
 
     #[test]
     fn board_screens_for_every_variant_are_all_wgl4() {
-        for (index, _) in Variant::ALL.into_iter().enumerate() {
+        for variant in Variant::ALL {
             let mut h = Harness::new();
             h.press(KeyCode::Enter);
-            for _ in 0..index {
-                h.press(KeyCode::Down);
-            }
+            h.focus_game_variant(variant);
             h.press(KeyCode::Enter);
             h.lines();
             assert_buffer_wgl4(h.terminal.backend().buffer());

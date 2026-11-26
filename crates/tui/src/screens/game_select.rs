@@ -1,11 +1,13 @@
 //! Game and variant selection. The games are grouped by family under headings, the favourites
 //! first; a star marks the popular games. Enter or a click starts the focused variant; with a seed
 //! (from "New game from seed") the variant is dealt from that seed. `f`, or a click on a variant's
-//! marks, puts it in the favourites (kept in the settings). `/` or a click on the search field
-//! opens a search that filters the list while the player types; Esc clears it first and a second
-//! Esc goes back. A toggle under the list switches the undo mode of the next game (`u` or a click)
-//! and a second one switches the search for winnable deals (`w` or a click); both choices are
-//! remembered in the settings. Tab moves the focus between the list and the two toggles.
+//! marks, puts it in the favourites (kept in the settings). Enter, Space or a click on a heading,
+//! and Left / Right on a heading or on a variant of it, fold and unfold the group (remembered in
+//! the settings). `/` or a click on the search field opens a search that filters the list while the
+//! player types and opens matching folded groups; Esc clears it first and a second Esc goes back.
+//! A toggle under the list switches the undo mode of the next game (`u` or a click) and a second
+//! one switches the search for winnable deals (`w` or a click). Tab moves the focus between the
+//! list and the two toggles.
 
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseEvent};
 use ratatui::layout::Rect;
@@ -16,7 +18,7 @@ use crate::action::Action;
 use crate::app::Screen;
 use crate::i18n::{t, tf};
 use crate::mouse::{contains, left_press};
-use crate::settings::Settings;
+use crate::settings::{GameGroup, Settings};
 use crate::solver::slow_to_prove;
 use crate::widgets::footer::{FooterMap, KeyHint};
 use oxysol_core::Variant;
@@ -29,8 +31,8 @@ mod rows;
 mod search;
 mod toggles;
 
-use list::ListView;
-use rows::items;
+use list::{ListView, MouseOutcome};
+use rows::{FocusItem, Heading, Row, items};
 
 pub(crate) const FOOTER: [KeyHint; 5] = [
     (Action::Select, "menu.footer.play"),
@@ -68,6 +70,7 @@ pub enum Purpose {
 #[derive(Debug, Default)]
 pub struct GameSelect {
     list: ListView,
+    folded: Vec<GameGroup>,
     seed: Option<u64>,
     purpose: Purpose,
     focus: usize,
@@ -85,6 +88,7 @@ pub(crate) struct DevGameSelect {
     pub focus_target: &'static str,
     pub focus_index: Option<usize>,
     pub variant: Option<Variant>,
+    pub label: Option<String>,
 }
 
 /// The name of `variant` in the list. With winnable deals on, it also says when the search can
@@ -151,8 +155,16 @@ impl GameSelect {
         self.search.as_deref().unwrap_or("")
     }
 
-    fn variants(&self, ctx: &ViewCtx<'_>) -> Vec<Variant> {
-        items(&rows::build(&ctx.settings.favourites, self.query()))
+    fn filtering(&self) -> bool {
+        !self.query().trim().is_empty()
+    }
+
+    fn rows(&self, ctx: &ViewCtx<'_>) -> Vec<Row> {
+        rows::build(
+            &ctx.settings.favourites,
+            &ctx.settings.folded_families,
+            self.query(),
+        )
     }
 
     fn start(&self, variant: Variant, ctx: &ViewCtx<'_>) -> Effect {
@@ -163,10 +175,23 @@ impl GameSelect {
         }
     }
 
-    fn start_at(&self, index: usize, ctx: &ViewCtx<'_>) -> Effect {
-        self.variants(ctx)
-            .get(index)
-            .map_or(Effect::None, |variant| self.start(*variant, ctx))
+    fn toggle_fold(&mut self, heading: Heading, ctx: &ViewCtx<'_>) -> Effect {
+        let group = heading.group();
+        let mut folded_families = ctx.settings.folded_families.clone();
+        if let Some(pos) = folded_families.iter().position(|saved| *saved == group) {
+            folded_families.remove(pos);
+        } else {
+            folded_families.push(group);
+            self.list.set_focus_item(FocusItem::Heading(heading));
+        }
+        self.folded = folded_families.clone();
+        let rows = rows::build(&ctx.settings.favourites, &folded_families, self.query());
+        self.list
+            .keep_resolved_in_view(&rows, &ctx.settings.favourites);
+        Effect::Apply(Settings {
+            folded_families,
+            ..ctx.settings.clone()
+        })
     }
 
     fn toggle_favourite(&mut self, variant: Variant, ctx: &ViewCtx<'_>) -> Effect {
@@ -177,10 +202,13 @@ impl GameSelect {
             }
             None => favourites.push(variant),
         }
-        let rows = rows::build(&favourites, self.query());
-        if let Some(index) = items(&rows).iter().position(|shown| *shown == variant) {
-            self.list.set_focus(index);
+        let rows = rows::build(&favourites, &ctx.settings.folded_families, self.query());
+        if items(&rows).contains(&variant) {
+            self.list.set_focus_item(FocusItem::Variant(variant));
+        } else {
+            self.list.set_focus_item(FocusItem::Heading(Heading::Favourites));
         }
+        self.list.keep_resolved_in_view(&rows, &favourites);
         Effect::Apply(Settings {
             favourites,
             ..ctx.settings.clone()
@@ -188,8 +216,12 @@ impl GameSelect {
     }
 
     fn toggle_focused_favourite(&mut self, ctx: &ViewCtx<'_>) -> Effect {
-        match self.variants(ctx).get(self.list.focus()).copied() {
-            Some(variant) if self.focus == LIST => self.toggle_favourite(variant, ctx),
+        if self.focus != LIST {
+            return Effect::None;
+        }
+        let rows = self.rows(ctx);
+        match self.list.focused_item(&rows, &ctx.settings.favourites) {
+            Some(FocusItem::Variant(variant)) => self.toggle_favourite(variant, ctx),
             _ => Effect::None,
         }
     }
@@ -222,15 +254,15 @@ impl GameSelect {
     }
 
     fn close_search(&mut self, ctx: &ViewCtx<'_>) {
-        let focused = self.variants(ctx).get(self.list.focus()).copied();
+        let open_rows = self.rows(ctx);
+        let focused = self.list.focused_item(&open_rows, &ctx.settings.favourites);
         self.search = None;
-        if let Some(index) = focused.and_then(|variant| {
-            self.variants(ctx)
-                .iter()
-                .position(|shown| *shown == variant)
-        }) {
-            self.list.set_focus(index);
+        if let Some(item) = focused {
+            self.list.set_focus_item(item);
         }
+        let restored_rows = self.rows(ctx);
+        self.list
+            .keep_resolved_in_view(&restored_rows, &ctx.settings.favourites);
     }
 
     fn type_key(&mut self, key: &KeyEvent) -> bool {
@@ -250,9 +282,10 @@ impl GameSelect {
 
     /// Handles a key press mapped to `action`. Esc closes the search, then goes back. While the
     /// search is open characters are typed into it; otherwise Enter starts the focused variant or
-    /// presses the focused toggle, Tab moves the focus, `f` switches the favourite, `/` opens the
-    /// search and `u` switches the undo mode.
+    /// folds the focused heading or presses the focused toggle, Tab moves the focus, `f` switches
+    /// the favourite, `/` opens the search, `u` switches undo and Left/Right fold the group.
     pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>, ctx: &ViewCtx<'_>) -> Effect {
+        self.folded = ctx.settings.folded_families.clone();
         if action == Some(Action::Back) {
             if self.search.is_none() {
                 return Effect::Goto(Screen::MainMenu);
@@ -274,6 +307,9 @@ impl GameSelect {
                 Effect::None
             };
         }
+        if self.focus == LIST && self.handle_list_page_key(key.code, ctx) {
+            return Effect::None;
+        }
         match action {
             Some(Action::Undo) => Self::toggle_undo(ctx),
             Some(Action::Finish) => self.toggle_focused_favourite(ctx),
@@ -282,27 +318,77 @@ impl GameSelect {
         }
     }
 
+    fn handle_list_page_key(&mut self, code: KeyCode, ctx: &ViewCtx<'_>) -> bool {
+        let rows = self.rows(ctx);
+        match code {
+            KeyCode::PageUp => self.list.page_by(true, &rows, &ctx.settings.favourites),
+            KeyCode::PageDown => self.list.page_by(false, &rows, &ctx.settings.favourites),
+            KeyCode::Home => self.list.home(&rows),
+            KeyCode::End => self.list.end(&rows),
+            _ => return false,
+        }
+        true
+    }
+
     fn handle_focused(&mut self, action: Action, ctx: &ViewCtx<'_>) -> Effect {
         if let Some(forward) = tab_forward(action) {
             self.focus = step(self.focus, self.ring_len(), forward);
             return Effect::None;
         }
+        let rows = self.rows(ctx);
         if self.focus != LIST {
             match action {
                 Action::Select | Action::Left | Action::Right => return self.press_toggle(ctx),
-                Action::Up | Action::Down => self.focus = LIST,
-                _ => return Effect::None,
+                Action::Up => {
+                    self.focus = LIST;
+                    self.list.focus_last(&rows);
+                }
+                Action::Down => {
+                    self.focus = LIST;
+                    self.list.focus_first(&rows);
+                }
+                _ => {}
             }
+            return Effect::None;
         }
-        let count = self.variants(ctx).len();
-        self.list
-            .on_action(action, count)
-            .map_or(Effect::None, |index| self.start_at(index, ctx))
+        match action {
+            Action::Up | Action::Down => {
+                self.list
+                    .step_action(action, &rows, &ctx.settings.favourites);
+                Effect::None
+            }
+            Action::Left | Action::Right => self.fold_current(&rows, ctx),
+            Action::Select => self.activate_current(&rows, ctx),
+            _ => Effect::None,
+        }
     }
 
-    /// Handles a mouse event: the wheel moves focus, a click starts a variant, toggles its
-    /// favourite mark, opens the search or presses a toggle.
+    fn fold_current(&mut self, rows: &[Row], ctx: &ViewCtx<'_>) -> Effect {
+        if self.filtering() {
+            return Effect::None;
+        }
+        match self.list.focused_item(rows, &ctx.settings.favourites) {
+            Some(FocusItem::Heading(heading)) => self.toggle_fold(heading, ctx),
+            Some(FocusItem::Variant(variant)) => {
+                let heading = Heading::of(variant, &ctx.settings.favourites);
+                self.toggle_fold(heading, ctx)
+            }
+            None => Effect::None,
+        }
+    }
+
+    fn activate_current(&mut self, rows: &[Row], ctx: &ViewCtx<'_>) -> Effect {
+        match self.list.focused_item(rows, &ctx.settings.favourites) {
+            Some(FocusItem::Variant(variant)) => self.start(variant, ctx),
+            Some(FocusItem::Heading(heading)) if !self.filtering() => self.toggle_fold(heading, ctx),
+            _ => Effect::None,
+        }
+    }
+
+    /// Handles a mouse event: the wheel scrolls the list, clicks on edge marks scroll by a page,
+    /// clicks on headings fold/unfold, and clicks on variants toggle favourites or start games.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
+        self.folded = ctx.settings.folded_families.clone();
         let pressed = left_press(event);
         if pressed.is_some_and(|cell| contains(self.toggle, cell)) {
             self.focus = TOGGLE;
@@ -316,15 +402,17 @@ impl GameSelect {
             self.open_search();
             return Effect::None;
         }
-        self.focus = LIST;
-        let count = self.variants(ctx).len();
-        let Some(click) = self.list.on_mouse(event, count) else {
+        let rows = self.rows(ctx);
+        let Some(outcome) = self.list.on_mouse(event, &rows, &ctx.settings.favourites) else {
             return Effect::None;
         };
-        match self.variants(ctx).get(click.index).copied() {
-            Some(variant) if click.on_mark => self.toggle_favourite(variant, ctx),
-            Some(variant) => self.start(variant, ctx),
-            None => Effect::None,
+        self.focus = LIST;
+        match outcome {
+            MouseOutcome::Handled => Effect::None,
+            MouseOutcome::Fold(heading) if !self.filtering() => self.toggle_fold(heading, ctx),
+            MouseOutcome::Fold(_) => Effect::None,
+            MouseOutcome::ToggleFavourite(variant) => self.toggle_favourite(variant, ctx),
+            MouseOutcome::Start(variant) => self.start(variant, ctx),
         }
     }
 
@@ -335,13 +423,32 @@ impl GameSelect {
 
     #[cfg(feature = "dev")]
     pub(crate) fn dev_state(&self, favourites: &[Variant]) -> DevGameSelect {
-        let (focus_target, focus_index, variant) = match self.focus {
-            TOGGLE => ("undo_toggle", None, None),
-            WINNABLE => ("winnable_toggle", None, None),
+        let (focus_target, focus_index, variant, label) = match self.focus {
+            TOGGLE => ("undo_toggle", None, None, None),
+            WINNABLE => ("winnable_toggle", None, None, None),
             _ => {
-                let idx = self.list.focus();
-                let list = items(&rows::build(favourites, self.query()));
-                ("variant", Some(idx), list.get(idx).copied())
+                let rows = rows::build(favourites, &self.folded, self.query());
+                let row_idx = self.list.focused_row(&rows, favourites);
+                let focusable_idx = row_idx.map(|pos| {
+                    rows[..=pos]
+                        .iter()
+                        .filter(|row| row.is_focusable())
+                        .count()
+                        .saturating_sub(1)
+                });
+                match self.list.focused_item(&rows, favourites) {
+                    Some(FocusItem::Heading(heading)) => (
+                        "heading",
+                        focusable_idx,
+                        None,
+                        Some(t(heading.title_key()).into_owned()),
+                    ),
+                    Some(FocusItem::Variant(v)) => {
+                        let var_idx = items(&rows).iter().position(|item| *item == v);
+                        ("variant", var_idx, Some(v), None)
+                    }
+                    None => ("variant", None, None, None),
+                }
             }
         };
         DevGameSelect {
@@ -349,12 +456,15 @@ impl GameSelect {
             focus_target,
             focus_index,
             variant,
+            label,
         }
     }
 }
 
 #[cfg(test)]
 mod focus_tests;
+#[cfg(test)]
+mod fold_scroll_tests;
 #[cfg(test)]
 mod menu_tests;
 #[cfg(test)]

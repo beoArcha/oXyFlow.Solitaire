@@ -14,6 +14,8 @@ variant_hint = "{level}: {description}"
 favourites = "Favorites"
 legend = "{star} popular   {favourite} favorite ({key})"
 no_match = "No game matches: {text}"
+family_folded = "{title} ({count})"
+heading_hint = "Enter, Space, or Left/Right folds or unfolds this group"
 
 [difficulty]
 easy = "Easy"
@@ -70,6 +72,10 @@ seed_options = "Seed options"
 language = "Language"
 favorite = "Favorite"
 winnable = "Winnable deals"
+fold = "Fold"
+unfold = "Unfold"
+change = "Change"
+clear = "Clear"
 
 [family]
 klondike = "Klondike family"
