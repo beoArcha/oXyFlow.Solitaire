@@ -359,6 +359,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | O-121 | Achievements: a menu entry and the latest one in the top right corner | Medium | O-120 | DRAFT |
 | O-122 | No moves left: a dialog that the game cannot be won, with Restart, New game and Menu | Medium | — | TODO |
 | O-123 | Game menu: scrolling by wheel and page keys, families that fold | Medium | — | TODO |
+| O-124 | Help, Keys tab: the keys of the game menu | Small | O-123 | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
@@ -373,6 +374,7 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P7-10 | FreeCell family: Baker's Game and a choice of 1 to 4 cells | Medium | P6-05, P6-12 | DRAFT |
 | P7-11 | FreeCell family: Eight Off and Seahaven Towers | Medium | P7-10 | DRAFT |
 | P7-12 | TriPeaks family: no K–A wrap, and Four Peaks | Medium | P6-05 | DRAFT |
+| P7-13 | Solver for the game options of P6-06 | Medium | P6-06, P6-14 | TODO |
 | P7-06 | Screenshots: one SVG renderer for the dev bridge and the player site | Medium | P6-07 | TODO |
 | P7-07 | Screenshots: deterministic PNG and image paths in the bridge `snapshot` | Medium | P7-06, P6-08 | TODO |
 | P7-08 | Batch runner: `--dev-script` and `--dev-out` | Medium | P7-07, P6-09 | TODO |
