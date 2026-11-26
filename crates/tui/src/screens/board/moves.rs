@@ -239,6 +239,11 @@ impl BoardScreen {
             self.cue(SoundCue::Win);
             return Effect::Open(Modal::win());
         }
+        if let Some(session) = self.session.as_ref()
+            && session.game().legal_moves().is_empty()
+        {
+            return Effect::Open(Modal::no_moves(self.undo_allowed && session.can_undo()));
+        }
         Effect::None
     }
 

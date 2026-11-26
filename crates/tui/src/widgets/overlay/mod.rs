@@ -24,6 +24,9 @@ mod how_to_play;
 mod modal_fixes_tests;
 mod moves_window;
 mod nav;
+mod no_moves;
+#[cfg(test)]
+mod no_moves_tests;
 mod pause;
 mod quick_options;
 #[cfg(test)]
@@ -86,6 +89,7 @@ fn text_of(modal: &Modal, board: &BoardScreen, now: Instant) -> Option<Text> {
             });
             Some(win::text(board.elapsed(now), moves, variant, *focus, *best))
         }
+        Modal::NoMoves { can_undo, focus } => Some(no_moves::text(*can_undo, *focus)),
         Modal::Confirm {
             prompt,
             yes_focused,
@@ -194,6 +198,10 @@ fn step_focus(modal: &mut Modal, forward: bool) -> bool {
             *focus = step(*focus, win::BUTTONS, forward);
             true
         }
+        Modal::NoMoves { can_undo, focus } => {
+            *focus = step(*focus, no_moves::button_count(*can_undo), forward);
+            true
+        }
         _ => false,
     }
 }
@@ -206,6 +214,7 @@ fn focused_index(modal: &Modal) -> usize {
         Modal::Confirm { yes_focused, .. } => usize::from(!yes_focused),
         Modal::GraphicsCheck(check) => usize::from(!check.yes_focused),
         Modal::Win { focus, .. } => *focus,
+        Modal::NoMoves { focus, .. } => *focus,
         Modal::Search(progress) => progress.focus,
         _ => 0,
     }
@@ -230,6 +239,7 @@ fn press(modal: &Modal, index: usize) -> Effect {
         Modal::Win { .. } if index == win::NEW_GAME => Effect::Goto(Screen::GameSelect),
         Modal::Win { .. } if index == win::SAME_SEED => Effect::SameSeed,
         Modal::Win { .. } if index == win::MENU => Effect::Goto(Screen::MainMenu),
+        Modal::NoMoves { can_undo, .. } => no_moves::effect_at(*can_undo, index),
         Modal::Search(progress) => Effect::SearchStep(search::command_at(progress, index)),
         _ => Effect::None,
     }
@@ -408,6 +418,16 @@ pub(crate) fn dev_focus(modal: &Modal) -> (&'static str, Option<usize>) {
                 .unwrap_or("menu"),
             Some(*focus),
         ),
+        Modal::NoMoves {
+            can_undo, focus, ..
+        } => {
+            let names: &[&str] = if *can_undo {
+                &["undo", "restart", "new_game", "menu"]
+            } else {
+                &["restart", "new_game", "menu"]
+            };
+            (names.get(*focus).copied().unwrap_or("menu"), Some(*focus))
+        }
     }
 }
 

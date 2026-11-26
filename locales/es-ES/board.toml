@@ -256,3 +256,7 @@ no_redo = "Nada que rehacer"
 undo_off = "Deshacer está desactivado"
 quick_off = "Jugada rápida desactivada"
 no_finish = "Victoria no asegurada aún"
+
+[no_moves]
+title = "Sin jugadas restantes"
+body = "No hay ninguna jugada posible. Esta partida ya no se puede ganar."

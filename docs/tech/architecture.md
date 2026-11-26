@@ -256,7 +256,7 @@ pub struct Deps {
 }
 pub enum Input { Key(KeyEvent), Mouse(MouseEvent), Resize(u16, u16), Tick }
 pub enum Screen { MainMenu, GameSelect, Board, Settings, Stats }
-pub enum Modal { Help, HowToPlay(HowToPlay), Quick(QuickOptions), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { focus, best: PersonalBest { time, moves } } }
+pub enum Modal { Help, HowToPlay(HowToPlay), Quick(QuickOptions), Pause, Confirm { prompt, on_yes: Box<Effect>, yes_focused }, Alert { message }, Win { focus, best: PersonalBest { time, moves } }, NoMoves { can_undo, focus } }
 
 impl App {
     pub fn new(deps: Deps) -> Self;                         // loads settings and the saved game from `Storage`
@@ -343,7 +343,7 @@ pub struct NullClipboard;                                // every copy fails wit
   ring in reading order that wraps at both ends; `screens/focus.rs` holds the shared step, marker and button style.
   Rings: main menu language selector, then its items (initial focus stays on the first item); New game from seed: its game list, then the seed options (type a seed, played seeds, random replay, difficulty levels); on the typing page the field, Continue, Back; game selection list, then the undo toggle; settings
   rows (by Up/Down within the active tab; Tab and Shift+Tab switch settings tabs, O-103); statistics list, Play this seed again, Copy seed, Back; the board's piles (Stock, Waste, Foundations,
-  Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, alert and pause
+  Cells, tableau columns, then pyramid rows; `cursor::cycle`); the buttons of confirm, win, no moves, alert and pause
   (Tab toggles the two-button dialogs). The help window walks its parts with Tab and Shift+Tab (see How to play). Enter and Space
   press the focused element; Up/Down (lists) and Left/Right (value or button row) keep their meaning. Typed
   digits reach the seed field only while it has the focus. The focused element carries the marker `►` (`>` in

@@ -4,6 +4,7 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use super::{handle, help};
+use crate::action::Action;
 use crate::app::{Modal, Screen};
 use crate::i18n::t;
 use crate::input::action_for_key;
@@ -180,4 +181,62 @@ fn the_help_window_lists_tab_and_shift_tab_under_navigation() {
     let previous = t("help.action.focus_previous").into_owned();
     assert!(rows.contains(&("Tab".to_owned(), next)));
     assert!(rows.contains(&("Shift+Tab".to_owned(), previous)));
+}
+
+#[test]
+fn tab_moves_no_moves_focus_with_and_without_undo_and_wraps() {
+    let mut with_undo = Modal::no_moves(true);
+    for expected in [1, 2, 3, 0] {
+        assert_eq!(tab(&mut with_undo), None);
+        assert_eq!(
+            with_undo,
+            Modal::NoMoves {
+                can_undo: true,
+                focus: expected
+            }
+        );
+    }
+    assert_eq!(back_tab(&mut with_undo), None);
+    assert_eq!(
+        with_undo,
+        Modal::NoMoves {
+            can_undo: true,
+            focus: 3
+        }
+    );
+
+    let mut without_undo = Modal::no_moves(false);
+    for expected in [1, 2, 0] {
+        assert_eq!(tab(&mut without_undo), None);
+        assert_eq!(
+            without_undo,
+            Modal::NoMoves {
+                can_undo: false,
+                focus: expected
+            }
+        );
+    }
+}
+
+#[test]
+fn enter_on_no_moves_buttons_returns_expected_effects() {
+    let mut modal = Modal::no_moves(true);
+    assert_eq!(enter(&mut modal), Some(Effect::Board(Action::Undo)));
+    let mut modal = Modal::no_moves(true);
+    tab(&mut modal);
+    assert_eq!(enter(&mut modal), Some(Effect::Restart));
+    let mut modal = Modal::no_moves(true);
+    tab(&mut modal);
+    tab(&mut modal);
+    assert_eq!(enter(&mut modal), Some(Effect::Goto(Screen::GameSelect)));
+    let mut modal = Modal::no_moves(true);
+    back_tab(&mut modal);
+    assert_eq!(enter(&mut modal), Some(Effect::Goto(Screen::MainMenu)));
+
+    let mut no_undo = Modal::no_moves(false);
+    assert_eq!(enter(&mut no_undo), Some(Effect::Restart));
+    tab(&mut no_undo);
+    assert_eq!(enter(&mut no_undo), Some(Effect::Goto(Screen::GameSelect)));
+    tab(&mut no_undo);
+    assert_eq!(enter(&mut no_undo), Some(Effect::Goto(Screen::MainMenu)));
 }
