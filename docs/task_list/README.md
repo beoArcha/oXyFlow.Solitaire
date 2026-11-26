@@ -1,7 +1,7 @@
 # oXySol task list (MVP)
 
 Started 2026-11-10. Revised 2026-11-20 for R-25: phases 4 to 9 are replanned, phases 0 to 3 are done.
-Statuses synced with `main` on 2026-11-25.
+Statuses synced with `main` on 2026-11-26.
 Contract behind the cards: `docs/tech/architecture.md`. Decisions: `docs/tech/decisions.md`.
 
 ## Phases
@@ -18,7 +18,7 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
 | 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | done | 59 | 0 |
-| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | planned | 4 | 18 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 4 | 18 |
 | 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
 | 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
@@ -79,7 +79,7 @@ Statuses: `DRAFT`, `READY`, `TODO`, `IN PROGRESS`, `DONE`, `BLOCKED (reason)`.
 Cards that share a file (their **Shared files** line, or the same **Files** entry) run one after another; the rest may run in
 parallel. Each phase ends with its gate; the next phase starts when the gate is green.
 
-1. Phase 4 (0.4, now), workflow first: O-50 (user setting) and O-51 … O-57 (P1), then O-58 … O-66 (P2), O-67 (P3). Small and Medium
+1. Phase 4 (0.4), workflow first: O-50 (user setting) and O-51 … O-57 (P1), then O-58 … O-66 (P2), O-67 (P3). Small and Medium
    in parallel where the files differ.
 2. Phase 4, fixes: O-37, O-38, O-39 (Small, micro), O-35 (Small).
 3. Phase 4, card style: P5-02 (Small) → O-34 (User + Medium) and U-02 (User; reviews M-19…M-24).
@@ -87,7 +87,7 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
    DRAFT is finalized by the orchestrator). **Milestone: 0.4 closed** (workflow closed, card style and game menu in place, Yukon).
 5. Phase 5 (0.5): P3-32 and P3-33 (Small) → P3-34 and P3-35 (Medium) → P5-03 (Small); P5-04 Golf (Medium) and P5-05 Spider solver
    (Medium) in parallel. **Milestone: 0.5.**
-6. Phase 6 (0.6): P3-36 (Medium) → P6-04 (Small) and P6-05 (Medium); P6-06 after the orchestrator finalizes its scope; the dev bridge
+6. Phase 6 (0.6, now): P3-36 (Medium) → P6-04 (Small) and P6-05 (Medium); P6-06 after the orchestrator finalizes its scope; the dev bridge
    P6-07 → P6-08 → P6-09 (Medium) in parallel, one PR at the end. **Milestone: 0.6.**
    Solver and hint cards, in this order (phase-6.md, "Order of the solver and hint cards"): P6-12 → P6-13; P6-14 → P6-15 →
    P6-16 → P6-17; P6-11 → O-115; P6-10.
