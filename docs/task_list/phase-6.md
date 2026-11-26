@@ -11,6 +11,10 @@ Exit criteria:
 Order of work: the theme data first (P3-36, then P6-18), then the game, then the options. P6-04 is covered by P3-35 (see
 its card).
 
+Phase 6 review (2026-11-26): the exit criteria are met. Before the gate: O-125, O-126 and O-124, which close the gaps
+P6-06 and O-123 left. The other open cards of this phase (the solver and hint cards O-115, P6-10, P6-11, P6-13 to P6-17,
+and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
+
 ### P3-36 — Themes as data and the interface size scale
 
 - **Owner:** Medium
@@ -146,145 +150,7 @@ its card).
   the migration test opens an old database and reads every row as the defaults; a game with options is recorded and a
   saved game resumes with them; the header shows non-default options; the winnable search is off for non-default
   options; every offered locale fits at 100 × 30.
-
-### O-115 — Is it winnable? A check for the deal and for the current position
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-25.
-- **Depends on:** P5-05 (merged); moved to phase 6 on 2026-11-25 (owner: new solver features go to the next phase)
-- **Decision:** T-47
-- **Files:** `crates/core/src/solver/mod.rs` and the per-game `Position::from_piles` paths it already uses (a new entry
-  point that solves the current position), `crates/tui/src/solver.rs`, `crates/tui/src/app/deals.rs` or a new
-  `crates/tui/src/app/winnable.rs`, `crates/tui/src/input/table.rs`, `crates/tui/src/widgets/guide/**`,
-  `crates/tui/src/screens/board/{guide_view,moves_panel}.rs`, `crates/tui/src/widgets/overlay/{guide_window,moves_window}.rs`,
-  `src/` (the worker that answers the new query), `docs/tech/architecture.md` (solver contract),
-  `docs/tech/decisions.md` (T-47), `locales/*/{board,help}.toml`, tests
-- **Shared files:** `crates/tui/src/input.rs` if the key table needs it, `locales/en-US/*.toml`, `docs/tech/decisions.md`
-- **Problem:** the player cannot ask whether the deal is winnable, nor whether the game can still be won from where they
-  are now.
-- **Fix:**
-  - One action **Check: winnable?** that answers two questions at once:
-    - **This deal:** the stored proof of the deal (T-30) when there is one, otherwise a fresh check from the start.
-    - **From here:** a check of the current position (core gets an entry point that solves from the current piles and
-      counters, with the same models, budgets and replay rule as T-29).
-  - Each answer is **winnable**, **not winnable** (only after an exhausted search) or **unknown** (budget reached), with a
-    sign as well as colour (`✓`, `✗`, `?` and ASCII forms).
-  - It runs in the background through the `Solver` trait and never blocks input; a move, undo or new game cancels the
-    check of the old position and clears the answer. A variant without a solver says the check is not available.
-  - Where: a button in the guide panel and window (`g`) and in the moves panel and window (`v`), and the key `w` on the
-    board. The button and the key are listed in the guide, the help keys and the footer hints where they fit.
-  - The text says that "winnable" means solvable with every card known (T-29), so it is not a promise for a player who
-    cannot see the face-down cards.
-- **Open question for the owner (before dispatch):** does using the check mark the game in statistics (like a hint), or
-  not at all?
-- **Plan (solver review 2026-11-25):** a core entry point `solve_from(variant, seed, played: &[Move], budget)`:
-  deal, replay `played`, build the model from `piles()` (plus `stock_status()` for the Pyramid recycles; nothing else is
-  missing: Klondike foundation slots and the talon order are in the piles), search, and verify by replaying `played`
-  and the line on a fresh deal; `solve` becomes `solve_from(.., &[], ..)`. This avoids cloning a `Box<dyn Game>`.
-  In-play queries use their own worker lane, so they never wait behind a winnable-deal batch.
-- **Shared core for P6-10 (review 2026-11-25):** split an internal search over a model built from `Piles`
-  (`search_from_piles(variant, &piles, stock_status, budget)`, which can also return the best first move found when a
-  best-first search runs out of budget) from the public `solve_from(...)`, which adds the replay of `played` and the final
-  verification on a fresh deal. P6-10 needs the internal one for synthetic (sampled) worlds that match no real seed.
-- **Acceptance:** core tests: the new entry point returns the same verdict as `solve` on a fresh deal, finds a won line
-  from a mid-game position and replays it on the engine, and returns unknown on a tiny budget; TUI tests: `w` and both
-  buttons start the check, the answer appears with its sign, a move clears it, an answer for an old position is ignored;
-  the input never waits for the solver; every complete locale.
-
-
-### P6-10 — Hint and in-play check knowledge: full, or the player's with a stock memory
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-25.
-- **Depends on:** P5-07 (hint profiles, `HintKnowledge`), O-115 (in-play winnable check)
-- **Decision:** the orchestrator assigns one at dispatch
-- **Files:** `crates/core/src/games/progress.rs`, `crates/core/src/game.rs` (a hint call that takes the knowledge),
-  `crates/core/src/solver/**` (only the in-play position check of O-115), `crates/tui/src/settings.rs`,
-  `crates/tui/src/screens/settings/**` (Gameplay section), `crates/tui/src/widgets/overlay/quick_options.rs`,
-  the board hint call, `locales/*/{settings,board}.toml`, `docs/tech/architecture.md`, `docs/tech/decisions.md`, tests
-- **Shared files:** `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/en-US/*.toml`
-- **Problem:** a hint in play (P5-07) always uses the player's knowledge with a fixed stock memory of 3; the owner wants
-  it to be a choice.
-- **Fix:**
-  - Judging a seed, before or after a game (winnable deals, statistics check, the "this deal" answer of O-115), always
-    uses full knowledge. Unchanged.
-  - In play (hints and the "from here" answer of O-115) a setting chooses: **full knowledge** (every card, stock order
-    included) or **the player's knowledge** with a **stock memory** of 1 to N cards (default 3): the hint may use the
-    identity of at most that many stock cards the player has already seen, and nothing else hidden.
-  - A stock with fewer cards than the memory, or no stock at all, is handled: the memory is capped by what was seen.
-  - The setting is in Settings (Gameplay) and Quick options; an old settings file reads as the player's knowledge, 3.
-- **Plan (solver review 2026-11-25):** depends also on P6-11. `Full` (and any position with nothing unknown, such
-  as FreeCell) asks `solve_from` with a small budget in the background and offers its first move.
-  `Player { stock_memory }`: the session keeps a FIFO of the last N stock cards the player saw (empty without a stock,
-  capped by a short stock); the hint samples K completions of the unknown cards with a deterministic PRNG seeded only by
-  a hash of the visible state (never the deal seed), solves each, and votes on the first move. Target: FreeCell hints
-  win most deals, Spider 2/4 above 0 %.
-- **Sampled worlds and stock memory (review 2026-11-25):**
-  - Each sampled world is searched with `search_from_piles` of O-115 on the determinised `Piles`; the voted first move is
-    checked against `game.legal_moves()` of the real game before it is offered.
-  - The session's `StockMemory` records, for each of the last N stock cards seen, its identity **and its position in the
-    talon**, so Klondike draw 3 keeps the phase of its triples when the unknown cards are sampled.
-  - Undo also rolls back `StockMemory` (a snapshot per move beside the position history), so undoing a stock draw never
-    leaves a card "from the future" in the memory; the no-leak test covers undo.
-- **Acceptance:** core tests: with the player's knowledge no hint depends on a face-down card or an unseen stock card
-  (two deals that differ only in hidden cards give the same hint); the memory of 1, 3 and N with a long, short and
-  empty stock; full knowledge may differ. TUI tests: the setting changes the hint; every complete locale. The hints-only
-  table of T-48 measured for both knowledge modes.
-
-### O-116 — The bottom bar: `a`, `e` and `s` by preference, only the ones that are available
-
-- **Owner:** Medium
-- **Priority:** P2. Owner report 2026-11-25 (follow-up of O-110); scope clarified by the owner 2026-11-26.
-- **Depends on:** O-110
-- **Files:** `crates/tui/src/screens/board/{moves_panel,guidance,guidance_parts,priority}.rs`, `locales/*/board.toml`
-  (only if a label is missing), tests
-- **Problem:** the `Do:` row has little room, and the quick move (`a`), the waste quick move (`e`, O-110) and the stock
-  (`s`) are three keys for the same kind of thing: "play the obvious move" in different situations. Today they compete
-  for the room by a fixed drop order (`QUICK = 9`, `STOCK = 10`, `WASTE_QUICK = 11`), so `e` is the first to go, and the
-  row can spend its room on a key that does nothing at the moment.
-- **Fix:**
-  - The `Do:` row does not reserve room for all three. It offers **only the ones that are available now**, in the order
-    of preference **`a` → `e` → `s`**, as many as fit after the other parts. A key that cannot do anything (no movable
-    card under the cursor for `a`, no waste card with a target for `e`, a stock that cannot be dealt or turned for `s`)
-    is not shown at all and leaves its room to the next one.
-  - Two keys that would make the same move are shown once, by the first in the preference: when the cursor is on the
-    waste, `a` already plays the waste card, so `e` is not shown.
-  - The drop order follows the preference: `QUICK`, then `WASTE_QUICK`, then `STOCK` (`s` goes first when the row is
-    narrow, then `e`, then `a`). The other numbers in `priority.rs` keep their relative order.
-  - Quick move off (O-114) hides `a` and `e`; `s` then stands alone.
-  - The possible moves panel and window (`v`) list the waste quick move with its key `e` when the waste card can move,
-    and show it unavailable with the existing reasons otherwise (no waste card, no target, quick move off).
-- **Acceptance:** tests for Klondike draw 1 and draw 3, Pyramid and Australian Patience: only available keys are shown;
-  with all three available the row at 130 × 40 shows `a`, `e`, `s` in that order; at 100 × 30 and narrower `s` drops
-  before `e` and `e` before `a`; with `a` not available, `e` and `s` take its room; with the cursor on the waste `e` is
-  not shown; a stock that cannot be dealt or turned hides `s`; quick move off hides `a` and `e`; the moves panel and
-  window list `e`; every offered locale fits.
-
-### O-117 — A setting for `e`: off, semi-automatic (to the focused pile) or automatic
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-25.
-- **Depends on:** O-116
-- **Files:** `crates/tui/src/settings.rs`, `crates/tui/src/settings/**` (the aids), `crates/tui/src/screens/settings/**`
-  (Gameplay tab), `crates/tui/src/widgets/overlay/quick_options.rs`, `crates/tui/src/screens/board/{moves,commands,choices}.rs`
-  and the guidance/moves panel files touched by O-116, `locales/*/{settings,board}.toml`, `docs/tech/architecture.md`,
-  tests
-- **Problem:** `e` always sends the waste card to the best target, like `a`. The owner also wants a way to take the waste
-  card and play it exactly where the player is pointing.
-- **Fix:** a setting **Waste key (`e`)** with three values, in the Gameplay tab and in Quick options (current game, with
-  "Save as default"):
-  - **Off**: `e` does nothing (refused with a status line, like quick move off), and its hints disappear.
-  - **Semi-automatic**: `e` takes the top card of the waste and drops it on the pile under the cursor (the focused
-    pile) when that move is legal; when it is not, nothing moves and the status line says why (no waste card, or the
-    focused pile does not accept it). The cursor does not move.
-  - **Automatic** (default, today's behaviour): `e` sends the waste card to its best target, like `a`.
-  - The labels in the `Do:` row, the guide, the moves panel/window and the help say what `e` does in the chosen mode
-    (for example `e: waste to here` in semi-automatic). The general **Quick move** setting off (O-114) still turns `e`
-    off whatever this setting says.
-- **Acceptance:** tests for each mode in Klondike draw 1 and draw 3, Pyramid and Australian Patience: Off refuses;
-  Semi-automatic plays onto a legal focused pile (column and foundation) and refuses an illegal one with the right
-  reason, without moving the cursor; Automatic equals today's result; the labels change with the mode; an old settings
-  file loads as Automatic; every offered locale fits at 100 × 30.
+- **Done:** #298. The rules tab lines went to O-125; the seed screen under options to O-126.
 
 ### O-118 — Esc on the main menu asks whether to quit
 
@@ -302,92 +168,6 @@ its card).
 - **Acceptance:** tests: Esc on the list opens the modal; confirm quits; cancel and Esc close it and keep the focus;
   Esc in the seed entry, the picker and the search still goes back; the key line fits at 100 × 30 in every offered
   locale.
-
-### O-119 — Quick options always offer New game, Restart and the winnable check
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-26.
-- **Depends on:** O-115 (the check), O-117 (it edits the same dialog first)
-- **Files:** `crates/tui/src/widgets/overlay/quick_options.rs` (237 LOC; split the buttons out if it passes 300),
-  `crates/tui/src/widgets/overlay/{dialog,render_tests,focus_tests}.rs`, `crates/tui/src/screens/board/commands.rs`,
-  `locales/*/board.toml`, tests
-- **Problem:** the `Do:` row drops Restart and New game when it is narrow, and the quick options dialog (`o`) offers
-  only the aids, "Save as default" and Close, so there is no one place where these are always reachable.
-- **Fix:** the quick options dialog always has, above "Save as default" and Close, a row of three action buttons:
-  - **New game (`n`)**: the same confirmation as `n` on the board.
-  - **Restart (`r`)**: the same confirmation as `r` on the board.
-  - **Winnable? (`w`)**: the check of O-115, both questions at once: **this deal** (can the seed be won) and **from
-    here** (can the current position still be won). The answers appear in the dialog with their signs (`✓`, `✗`, `?` and
-    the ASCII forms) and the wording of O-115; a variant without a solver says the check is not available. The check
-    runs in the background and the dialog stays responsive; closing the dialog does not cancel it, a move does.
-  - The buttons join the focus ring (Tab, arrows) and have mouse targets; the keys `n`, `r` and `w` work while the
-    dialog is open.
-- **Acceptance:** tests: the three buttons are always present, at 100 × 30 too, in every variant; each starts the same
-  effect as its board key; the winnable answers appear for the deal and for the position with their signs; a variant
-  without a solver shows "not available"; focus order and mouse targets; every offered locale fits.
-
-### O-120 — Settings: clear game history and statistics (soft delete)
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-26.
-- **Depends on:** —
-- **Files:** `src/storage/{schema,sqlite,history}.rs`, the storage trait in `crates/tui` it implements,
-  `crates/tui/src/screens/settings/**` (a row and its confirmation), `crates/tui/src/screens/stats.rs` (it reads only
-  rows that are not deleted), `locales/*/settings.toml`, `tests/integration/migration.rs`, tests
-- **Problem:** the player cannot clear the memory of played games and the statistics.
-- **Fix:**
-  - A **soft delete**, owner rule: no data migration. The `games` table gets one column
-    `is_deleted INTEGER NOT NULL DEFAULT 0`, added by a single `ALTER TABLE ... ADD COLUMN` appended to `MIGRATIONS`
-    (that list is the only way this schema adds a column). No row is rewritten, copied or removed, and nothing else in
-    the schema changes.
-  - **Clear history and statistics** sets `is_deleted = 1` on every game row in one statement. Every read of history,
-    statistics, the played-seed marks and the stored proofs ignores deleted rows; new games are written as before.
-  - The saved game in progress is not touched (Resume still works).
-  - In Settings (Gameplay tab) a row **Clear history and statistics** opens a confirmation modal that says what is
-    cleared and that the game cannot undo it; keyboard and mouse.
-- **Acceptance:** tests: an old database opens and gets the column with every row not deleted; clearing marks every
-  row; statistics, history, played-seed marks and proofs are empty afterwards and fill again with new games; the saved
-  game survives; the confirmation can be cancelled; every offered locale fits at 100 × 30.
-
-### O-121 — Achievements: a menu entry and the latest one in the top right corner
-
-- **Owner:** Medium
-- **Priority:** P2. Owner request 2026-11-26.
-- **Depends on:** O-120 (deleted games do not count)
-- **Decision:** T-50 (the implementer completes the row with the trait, the storage and the list)
-- **Files:** `crates/core/src/achievements/**` (new: the rules, pure, no clock or files), `src/storage/{schema,sqlite}.rs`
-  (a new table), `crates/tui/src/screens/achievements.rs` (new), `crates/tui/src/screens/{mod,main_menu}.rs` (the menu
-  entry), `crates/tui/src/screens/board/header.rs` and `crates/tui/src/screens/main_menu.rs` (the latest one in the top
-  right corner), `locales/*/achievements.toml` (new), `docs/tech/architecture.md`, `docs/tech/decisions.md` (T-50), tests
-- **Problem:** the game has no achievements.
-- **Fix:**
-  - **Design (SOLID):** one small trait per rule, for example
-    `trait Achievement { fn id(&self) -> AchievementId; fn earned(&self, event: &GameEvent, history: &HistoryView) -> bool; }`,
-    each achievement in its own type, and a registry that is a list of them. Adding an achievement means adding one type
-    and one entry in the list, without touching the other rules or the checker (single responsibility, open/closed). The
-    checker gets the events (game started, game won, game restarted, …) and a read-only view of the history; it knows
-    nothing of the terminal or the database (the application passes the storage in behind a trait).
-  - When a rule is met for the first time, the achievement is **stored** with its time in a new table
-    `achievements (id TEXT PRIMARY KEY, earned_at INTEGER NOT NULL)` and is never earned twice. Clearing the history
-    (O-120) does not remove earned achievements.
-  - **First list:**
-    - **First game:** the first game started.
-    - **First win:** the first game won.
-    - **Every game of a group won:** one achievement per game family (Klondike, Spider, FreeCell, Pyramid, the Yukon
-      family, Golf, …) for winning each of its variants at least once.
-    - **Every game started:** every variant started at least once.
-    - **Restart:** the first restarted game.
-  - **Menu:** an **Achievements** entry in the main menu opens a screen with every achievement: earned ones with the
-    date, the others with what is needed. Earned and not earned differ by a sign as well as colour.
-  - **Top right corner:** the latest earned achievement (sign and name) stands in the top right corner of the main menu
-    and the board header when there is room, and is the first thing dropped when there is not. A new one is also
-    announced once on the status line.
-- **Open questions for the owner (before dispatch):** the rest of the list (the last item of the request was left
-  blank); whether a game won with hints, the winnable check or undo counts as a win; whether clearing the history should
-  also clear achievements.
-- **Acceptance:** core tests per rule; adding a rule in a test needs no change to the checker; an achievement is stored
-  once and survives a restart of the app; the screen lists earned and not earned with signs; the corner shows the latest
-  and is dropped first at 100 × 30; every offered locale fits.
 
 ### O-122 — No moves left: a dialog that the game cannot be won
 
@@ -415,6 +195,7 @@ its card).
   the last move, not before and not on a won game; Undo appears only when it can act and closes the dialog; Restart,
   New game and Menu do what they say; Esc keeps the board and the bar part; it does not open again for the same
   position after Esc; every offered locale fits at 100 × 30.
+- **Done:** #294
 
 ### O-123 — Game menu: scrolling by wheel and page keys, families that fold
 
@@ -443,6 +224,7 @@ its card).
   edge marks; folding by key and by mouse, the sign and the game count; the folded set survives a restart; a search
   shows matches in folded families and restores the folding when cleared; an old settings file opens every family;
   every offered locale fits at 100 × 30.
+- **Done:** #296
 
 ### O-124 — Help, Keys tab: the keys of the game menu
 
@@ -456,40 +238,62 @@ its card).
   to key handling.
 - **Acceptance:** a test that every key the game menu handles appears in the Keys tab; every offered locale fits.
 
-## Order of the solver and hint cards
-
-Each step makes the next one cheaper to measure and needs no rework later:
-
-1. P6-12 → P6-13: speed without any change of behaviour; `solver/tests/api.rs` stays as it is.
-2. P6-14 → P6-15 → P6-16 → P6-17: the solver improvements, with one round of new baseline measurements.
-3. P6-11 → O-115: `guidance()` off the redraw path, the in-play worker lane, `search_from_piles` split from `solve_from`.
-4. P6-10: solver-backed hints in the background, `Full` / `Player` knowledge with a stock memory of 1..N.
-
-### P6-11 — Hints off the redraw path, and no repeated positions
+### O-125 — How to play: the rules tab follows the game's options
 
 - **Owner:** Medium
-- **Priority:** P2. Solver review 2026-11-25 (item 2).
-- **Depends on:** P5-07
-- **Files:** `crates/tui/src/screens/board/guidance.rs` (355 LOC, over the warning: split the hint part out),
-  `crates/tui/src/screens/board/{mod,commands}.rs`, `crates/core/src/session.rs` (205 LOC),
-  `crates/core/src/games/progress.rs` (270 LOC), tests
-- **Problem:** `Board::guidance()` runs on every redraw (`view.rs:119`) and calls `legal_moves()` and `hint()`
-  (`guidance.rs:246`, `:276`), so a hint must stay near a millisecond and can never use the solver. Following the hints
-  repeats positions (seeds 0-199: Klondike 103, FreeCell 113, Pyramid Relaxed 111 runs end in a repeat), mostly turning
-  the stock round with nothing to play.
+- **Priority:** P2. Found in the phase 6 review (2026-11-26): a gap left by P6-06, whose file list named
+  `locales/*/rules.toml` for "one line per option in the rules tab".
+- **Depends on:** P6-06
+- **Decision:** T-53
+- **Files:** `crates/tui/src/widgets/overlay/how_to_play/{content,pages,state,mod}.rs`, `crates/tui/src/app/effects.rs`
+  (`open_how_to_play` only), `locales/*/rules.toml`, tests (`how_to_play/tests.rs`, `how_to_play/render_tests.rs`)
+- **Shared files:** `locales/en-US/rules.toml`, `locales/pl-PL/rules.toml`
+- **Problem:** the rules tab is built from the variant only (`effects.rs:155`, `HowToPlay::for_variant`). With a
+  non-default option it states rules that are false for the game on the board:
+  - Klondike `moves_2`: "Only a king ... can go to an empty column", false with any card on an empty column;
+  - Klondike `moves_5`: "This can be repeated without limit", false with 3 or 1 passes;
+  - Spider `moves_5`: "It cannot be used while a column is empty", false when the deal with an empty column is allowed;
+  - Golf: the lines on what goes onto a King and on a King and an Ace not being adjacent, false with either Golf option.
 - **Fix:**
-  - The footer asks only whether a hint exists, cached per session revision (move count plus undo position); the hint
-    itself is computed when `h` is pressed or the revision changes, never per frame.
-  - `Session` keeps a short ring of recent position keys (the engine's `piles()` hashed), rolled back by undo;
-    `Game::hint` stays pure, and the session-level hint skips a move whose result is in the ring, falling back to the
-    next ranked move. A full stock cycle with no play in between counts as a repeat.
-- **Interface between `Game` and `Session` (review 2026-11-25):** `Game` stays stateless, but a single
-  `Option<Move>` is not enough: if `Session` rejects a looping move the player would get no hint although a second good
-  move exists. `Game` therefore offers its ranked candidates (`hint_candidates()`, best first; `hint()` is the first of
-  them), and `Session` takes the first candidate whose result is not in its ring of recent positions.
-- **Acceptance:** redraws call neither `hint()` nor `legal_moves()` more than once per revision (test with a counting
-  fake game); the hints-only benchmark (`crates/core/tests/hint_perf.rs`), driven through the `Session` hint with its filter (not `Game::hint` alone), shows repeats at most 5 of 200 per variant and
-  no variant wins fewer deals than in T-48; undo restores the ring.
+  - `HowToPlay` takes a `GameOptions` with the variant: the running game's options when How to play opens from a game,
+    otherwise the settings' options (`GameOptions::for_variant`) for every variant the overlay shows.
+  - Each rule line an option changes has one key per value in `rules.toml` (for example `moves_5_passes_3`,
+    `moves_5_passes_1`); the page shows the line for the options in force **in place of** the default line, so the page
+    never contradicts itself. A tip that only holds for the default rule (Klondike `tips_3`) is left out when the option
+    differs.
+  - With the default options the page is exactly as today (existing tests unchanged). No other game changes.
+  - All 9 locales.
+- **Acceptance:** for each option and each value, a test that the page shows the matching line and not the default one;
+  default options give today's rows; the page opened from a running game follows that game's options even when the
+  settings differ; every offered locale fits at 100 × 30.
+
+### O-126 — Seed screen: difficulty levels and played seeds under game options
+
+- **Owner:** Small
+- **Priority:** P2. Found in the phase 6 review (2026-11-26).
+- **Depends on:** P6-06
+- **Decision:** T-53
+- **Files:** `crates/tui/src/screens/main_menu/seed_screen.rs`, `crates/tui/src/screens/main_menu/seed_levels.rs`,
+  `crates/tui/src/screens/main_menu.rs` (passes the options to the seed screen; the file is near the size limit, add no
+  more than the call), `crates/tui/src/screens/mod.rs` (only if `Outcome::Start` needs the options),
+  `locales/*/menu.toml`, tests (`main_menu/seed_played_tests.rs` and the seed screen tests)
+- **Shared files:** `locales/en-US/menu.toml`, `locales/pl-PL/menu.toml`
+- **Problem:**
+  - The difficulty levels list curated seeds rated for the default rules (T-53: curated seeds stay for the default
+    options). With 1 stock pass a "Very easy" Klondike seed is no longer very easy, and the board then shows no mark, so
+    the player sees a level name that is not true.
+  - A played seed starts through `Outcome::Start` with the settings' options, not the options the game was played with
+    (the statistics replay already uses `Effect::Replay` with the row's options).
+- **Fix:**
+  - When the settings' options are not the default for the variant (`!options.is_default_for(variant)`), the
+    **Difficulty levels** entry is shown dimmed and not selectable, with one line saying that the levels are rated for
+    the standard rules; with the default options nothing changes.
+  - Replaying a played seed (the list and the random pick) deals with that game's stored options, the same way as the
+    statistics replay (`Effect::Replay`).
+  - All 9 locales.
+- **Acceptance:** tests: levels available with default options, dimmed with the reason line with any non-default option
+  of the variant, and an option of another game does not dim them; a played seed recorded with options replays with
+  those options while the settings hold others; every offered locale fits at 100 × 30.
 
 ### P6-12 — Solver: no heap allocation per node
 
@@ -507,86 +311,6 @@ Each step makes the next one cheaper to measure and needs no rework later:
 - **Acceptance:** `solver/tests/api.rs` node counts unchanged (same order); every model test passes; the T-29, T-41
   and T-45 tables re-measured (seeds 0-49, release): same verdicts, average time at least 20 % lower in Klondike, Yukon
   and FreeCell, numbers recorded in T-29.
-
-### P6-13 — Winnable deals: a small thread pool, same seed as one thread
-
-- **Owner:** Medium
-- **Priority:** P2. Solver review 2026-11-25 (item 4).
-- **Depends on:** —
-- **Files:** `src/solver.rs` (225), `crates/tui/src/app/deals.rs` (221), `crates/tui/src/solver.rs` (144), tests
-- **Problem:** one worker solves up to 40 seeds (`SEED_CAP`) one after another for "winnable deals only".
-- **Fix:** `ThreadSolver` runs `min(available_parallelism - 1, 4)` workers (at least one) on `std::thread`, sharing the
-  generation counter; answers carry their query id; the TUI accepts the first `Winnable` **in submission order**,
-  waiting for earlier queries still running, so the chosen seed is exactly the one-thread result. No change in
-  `crates/core`.
-- **Memory check (review 2026-11-25):** once P6-15 has made Australian Patience best-first, measure the peak memory
-  of four workers each running best-first at 300k positions; record it here and cap the pool if it is too high.
-- **Acceptance:** a test with a stub solver that answers out of order picks the same seed as in order; cancel drops
-  every worker's pending jobs; time to a proven deal for Spider 4 suits, Yukon and Australian Patience (20 searches
-  each) measured before and after.
-
-### P6-14 — Klondike solver: best-first, a canonical draw-1 talon, safe cards stay home
-
-- **Owner:** Medium
-- **Priority:** P2. Solver review 2026-11-25 (item 6, Klondike part).
-- **Depends on:** P6-12
-- **Files:** `crates/core/src/solver/klondike/{mod,position,steps}.rs` (161, 231, 184; add `heuristic.rs` rather than
-  grow `position.rs`), `crates/core/src/solver/mod.rs` (strategy choice), `solver/tests/api.rs`,
-  `docs/tech/decisions.md` (T-29), tests
-- **Fix:**
-  - `score()` (work left: cards not home, face-down cards weighted by depth, buried next-foundation cards) and
-    `Strategy::BestFirst` for Klondike. An exhausted best-first search is still complete, so `Unwinnable` stays a proof.
-  - Draw 1 (unlimited passes): the talon key is the **set** of talon cards, not the stock/waste split, because every
-    talon card stays reachable and a play does not reorder the others. Draw 3 keeps the full order.
-  - No `Down` step for a card that `is_safe` (nothing can need it as a base).
-- **Check while implementing (review 2026-11-25):** confirm that Klondike draw 1 has no hidden limit on passes
-  through the stock (today `stock_status().recycles_left` is `None`, so unlimited); the talon key as a set of cards is
-  only correct under that condition.
-- **Acceptance:** seeds 0-199 draw 1 and draw 3: no verdict flips between `Winnable` and `Unwinnable`; Unknown falls
-  (target on seeds 0-49 at 100k: draw 1 below 15 %, draw 3 below 18 %); every `Winnable` replays; pinned node counts
-  updated knowingly; best-first memory at 100k nodes reported.
-
-### P6-15 — Yukon family and Pyramid Relaxed: best-first and complete pruning
-
-- **Owner:** Medium
-- **Priority:** P2. Solver review 2026-11-25 (item 6, Yukon and Pyramid part).
-- **Depends on:** P6-12, P6-14 (same approach)
-- **Files:** `crates/core/src/solver/yukon/{mod,position,steps}.rs` (153, 264, 180; new `heuristic.rs`),
-  `crates/core/src/solver/pyramid/{mod,steps}.rs` (99, 137), `crates/core/src/solver/mod.rs`, `solver/tests/api.rs`,
-  `docs/tech/decisions.md` (T-29, T-41), tests
-- **Fix:** `score()` and `BestFirst` where it lowers Unknown; drop the `Down` step in the same-suit-down variants
-  (Russian Solitaire, Australian Patience: a card moved back could only take the lower card of its suit, which is
-  already home); keep `Down` in Yukon, Alaska and Moosehide, where a group can build onto it.
-- **Acceptance:** seeds 0-199: no verdict flips; Unknown on seeds 0-49 lower for Yukon (32 %), Australian Patience
-  (34 %) and Pyramid Relaxed (22 %); T-29 and T-41 tables replaced.
-
-### P6-16 — Golf solver: a proof by rank groups, a packed key, a lower budget
-
-- **Owner:** Medium
-- **Priority:** P3. Solver review 2026-11-25 (item 7, Golf part).
-- **Depends on:** P6-12
-- **Files:** `crates/core/src/solver/golf/{mod,position,steps}.rs` (69, 117, 65), `crates/core/src/solver/mod.rs`
-  (`DEFAULT_GOLF_NODES`), `docs/tech/decisions.md` (T-45), tests
-- **Fix:** a position is dead when the remaining tableau ranks form more contiguous rank groups than chains can still
-  start (`groups > stock_len + can_start_now`, where `can_start_now` is 1 when the current waste rank is adjacent to some
-  rank still on the table, else 0): a chain plays ranks one apart, so it stays inside one group, and each chain starts
-  from the waste or a stock card. Rank groups follow the engine's `games::golf::ranks_adjacent`: in oXySol a king and an
-  ace are **not** adjacent (T-45), so groups do not wrap from king to ace. Pack the key (seven heights, stock size, waste rank) into one `u64`.
-- **Acceptance:** the dead test checked against an exhaustive engine search on 50 small constructed positions; seeds
-  0-999 give the same verdicts as today with fewer nodes; the default budget lowered so seeds 0-49 stay at 0 % Unknown.
-
-### P6-17 — Spider 2 and 4 suits: a beam stratified by deals left
-
-- **Owner:** Medium
-- **Priority:** P3. Solver review 2026-11-25 (item 7, Spider part).
-- **Depends on:** —
-- **Files:** `crates/core/src/solver/spider/multi.rs` (306 LOC, already over the warning: move the beam into
-  `spider/beam.rs`), `crates/core/src/solver/spider/multi_moves.rs` (178), `solver/tests/api.rs`,
-  `docs/tech/decisions.md` (T-29), tests
-- **Fix:** the beam keeps its width per stratum of deals left (`stock_len / 10`), so positions that dealt early do not
-  crowd out ones that still hold the stock. Spider 2/4 still never answers `Unwinnable`.
-- **Acceptance:** seeds 0-49 at 150k: Spider 4 suits Winnable up from 80 % (target about 90 %), Spider 2 stays 100 %,
-  average time not higher than today; pinned node counts updated knowingly.
 
 ## Developer testing infrastructure: headless backend and JSON-lines dev bridge
 
@@ -713,6 +437,7 @@ The cards reuse that pipeline; they do not copy input handling, state updates or
   - A test reads the log back and finds the command, transition, focus, move and error entries.
   - `cargo build` and `cargo build --no-default-features` pass without the feature.
   - `cargo xtask check --quick` passes.
+- **Done:** #291 (P6-07, P6-08 and P6-09 in one PR)
 
 ## Done before the 2026-11 replan
 

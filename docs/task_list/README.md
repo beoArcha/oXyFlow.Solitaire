@@ -18,8 +18,8 @@ DRAFT). Micro cards in `micro.md` are not counted here; the Index lists the open
 | 3 | 0.3.x | Terminal interface | Menus, board, settings, mouse, overlays, accessibility and polish | done | 51 | 0 |
 | 4 | 0.4.x | Workflow, fixes, first card style and game | Harden the workflow first, close the fixes, add the card-style setting, the game menu, Swiss cards and Yukon | done | 51 | 0 |
 | 5 | 0.5.x | Themes, colour vision, Spanish cards, Golf | Table and card-face settings, low vision, colour-vision modes, Spanish cards, Golf, Spider solver | done | 59 | 0 |
-| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 5 | 18 |
-| 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner | planned | 1 | 6 |
+| 6 | 0.6.x | Themes as data, four-colour French, TriPeaks | Themes as data and the interface size scale, four-colour French cards, TriPeaks, game options, developer bridge | in progress (now) | 16 | 3 |
+| 7 | 0.7.x | Hungarian cards, Scorpion | Hungarian suits and the Scorpion game, dev screenshots and batch runner; the solver, hint and interface cards moved from phase 6 | planned | 1 | 23 |
 | 8 | 0.8.x | Player documentation, Russian cards, Canfield | Wiki and player site, release procedure, Russian suits, Canfield, dev layout linter and MCP wrapper | planned | 0 | 7 |
 | 9 | 0.9.x | Final tests and the stable release | UI/UX test plan and journeys, fit and accessibility audits, terminal matrix, Portuguese cards, La Belle Lucie, new themes, polish, review and the stable 0.9 release that ends the plan | planned | 0 | 13 |
 
@@ -87,12 +87,13 @@ parallel. Each phase ends with its gate; the next phase starts when the gate is 
    DRAFT is finalized by the orchestrator). **Milestone: 0.4 closed** (workflow closed, card style and game menu in place, Yukon).
 5. Phase 5 (0.5): P3-32 and P3-33 (Small) → P3-34 and P3-35 (Medium) → P5-03 (Small); P5-04 Golf (Medium) and P5-05 Spider solver
    (Medium) in parallel. **Milestone: 0.5.**
-6. Phase 6 (0.6, now): P3-36 (Medium) → P6-18 (Medium) and P6-05 (Medium); P6-04 is covered by P3-35; P6-06 after the orchestrator finalizes its scope; the dev bridge
-   P6-07 → P6-08 → P6-09 (Medium) in parallel, one PR at the end. **Milestone: 0.6.**
-   Solver and hint cards, in this order (phase-6.md, "Order of the solver and hint cards"): P6-12 → P6-13; P6-14 → P6-15 →
-   P6-16 → P6-17; P6-11 → O-115; P6-10.
+6. Phase 6 (0.6, now): done except the review follow-ups O-125 (Medium), O-126 (Small) and O-124 (Small), in
+   parallel (no shared files), then the gate. **Milestone: 0.6.** The other open phase 6 cards moved to phase 7
+   (review 2026-11-26).
 7. Phase 7 (0.7): P7-04 (Small) → P7-05 (Medium, after its DRAFT is final); the dev screenshots P7-06 → P7-07 →
-   P7-08 → P7-09 (Medium). **Milestone: 0.7.**
+   P7-08 → P7-09 (Medium). **Milestone: 0.7.** Alongside, the cards moved from phase 6, in this order (phase-7.md,
+   "Moved from phase 6"): O-116 → O-117; O-120 → O-121; P6-14 → P6-16 → P7-13, with P6-13, P6-15 and P6-17;
+   P6-11 → O-115 → O-119; P6-10.
 8. Phase 8 (0.8): P7-02 and P7-03 (Small) with the micro cards M-30…M-33 alongside; P8-04 (Small) → P8-05 (Medium, after its DRAFT is
    final); the layout linter P8-06 (Medium) → P8-07 (Small), and the MCP wrapper P8-08 (Medium). **Milestone: 0.8.**
 9. Phase 9 (0.9): P9-01 test plan (Medium) → P7-01 (Small) → P9-02 (Medium) with P9-03 (Small) and P9-04 (Medium) → U-03 (User) →
@@ -338,28 +339,17 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P6-18 | The interface size scale S / M / L / XL | Medium | P3-36 | DONE |
 | P6-04 | Card style: four-colour French | Small | P5-03, P3-35 | DONE |
 | P6-05 | Game: TriPeaks | Medium | P5-04 | DONE |
-| P6-06 | More game options: Klondike passes and empty column, Spider deal, Golf wrap and King | Medium | P4-09, P3-27 | TODO |
-| P6-07 | Dev bridge: headless driver, virtual clock and UI state snapshot | Medium | T-12, T-14 | TODO |
-| P6-08 | Dev bridge: `--dev-bridge` JSON-lines protocol | Medium | P6-07 | TODO |
-| P6-09 | Dev bridge: `--dev-log` structured log and determinism tests | Medium | P6-08 | TODO |
-| O-115 | Is it winnable? A check for the deal and for the current position | Medium | P5-05 (merged) | TODO |
-| P6-10 | Hint and in-play check knowledge: full, or the player's with a stock memory | Medium | P5-07, O-115, P6-11 | TODO |
-| P6-11 | Hints off the redraw path, and no repeated positions | Medium | P5-07 | TODO |
+| P6-06 | More game options: Klondike passes and empty column, Spider deal, Golf wrap and King | Medium | P4-09, P3-27 | DONE |
+| P6-07 | Dev bridge: headless driver, virtual clock and UI state snapshot | Medium | T-12, T-14 | DONE |
+| P6-08 | Dev bridge: `--dev-bridge` JSON-lines protocol | Medium | P6-07 | DONE |
+| P6-09 | Dev bridge: `--dev-log` structured log and determinism tests | Medium | P6-08 | DONE |
 | P6-12 | Solver: no heap allocation per node | Medium | — | DONE |
-| P6-13 | Winnable deals: a small thread pool, same seed as one thread | Medium | — | TODO |
-| P6-14 | Klondike solver: best-first, a canonical draw-1 talon, safe cards stay home | Medium | P6-12 | TODO |
-| P6-15 | Yukon family and Pyramid Relaxed: best-first and complete pruning | Medium | P6-12, P6-14 | TODO |
-| P6-16 | Golf solver: a proof by rank groups, a packed key, a lower budget | Medium | P6-12 | TODO |
-| P6-17 | Spider 2 and 4 suits: a beam stratified by deals left | Medium | — | TODO |
-| O-116 | The bottom bar: `a`, `e` and `s` by preference, only the ones that are available | Medium | O-110 | TODO |
-| O-117 | A setting for `e`: off, semi-automatic (to the focused pile) or automatic | Medium | O-116 | TODO |
 | O-118 | Esc on the main menu asks whether to quit | Small | — | DONE |
-| O-119 | Quick options always offer New game, Restart and the winnable check | Medium | O-115, O-117 | TODO |
-| O-120 | Settings: clear game history and statistics (soft delete) | Medium | — | TODO |
-| O-121 | Achievements: a menu entry and the latest one in the top right corner | Medium | O-120 | DRAFT |
-| O-122 | No moves left: a dialog that the game cannot be won, with Restart, New game and Menu | Medium | — | TODO |
-| O-123 | Game menu: scrolling by wheel and page keys, families that fold | Medium | — | TODO |
+| O-122 | No moves left: a dialog that the game cannot be won, with Restart, New game and Menu | Medium | — | DONE |
+| O-123 | Game menu: scrolling by wheel and page keys, families that fold | Medium | — | DONE |
 | O-124 | Help, Keys tab: the keys of the game menu | Small | O-123 | TODO |
+| O-125 | How to play: the rules tab follows the game's options | Medium | P6-06 | TODO |
+| O-126 | Seed screen: difficulty levels and played seeds under game options | Small | P6-06 | TODO |
 | P6-01 | MIDI sequencer and synthesizer | Sonnet | P3-01 | DONE |
 | P6-02 | Audio output and settings | Haiku | P6-01, P3-05 | DONE |
 | P6-03 | Score-to-MIDI tool | Haiku | P0-01 | DONE |
@@ -375,6 +365,19 @@ Status: DONE, TODO, or DRAFT (a card the orchestrator finalizes before dispatch)
 | P7-11 | FreeCell family: Eight Off and Seahaven Towers | Medium | P7-10 | DRAFT |
 | P7-12 | TriPeaks family: no K–A wrap, and Four Peaks | Medium | P6-05 | DRAFT |
 | P7-13 | Solver for the game options of P6-06 | Medium | P6-06, P6-14 | TODO |
+| O-116 | The bottom bar: `a`, `e` and `s` by preference, only the ones that are available | Medium | O-110 | TODO |
+| O-117 | A setting for `e`: off, semi-automatic (to the focused pile) or automatic | Medium | O-116 | TODO |
+| O-120 | Settings: clear game history and statistics (soft delete) | Medium | — | TODO |
+| O-121 | Achievements: a menu entry and the latest one in the top right corner | Medium | O-120 | DRAFT |
+| P6-14 | Klondike solver: best-first, a canonical draw-1 talon, safe cards stay home | Medium | P6-12 | TODO |
+| P6-16 | Golf solver: a proof by rank groups, a packed key, a lower budget | Medium | P6-12 | TODO |
+| P6-13 | Winnable deals: a small thread pool, same seed as one thread | Medium | — | TODO |
+| P6-15 | Yukon family and Pyramid Relaxed: best-first and complete pruning | Medium | P6-12, P6-14 | TODO |
+| P6-17 | Spider 2 and 4 suits: a beam stratified by deals left | Medium | — | TODO |
+| P6-11 | Hints off the redraw path, and no repeated positions | Medium | P5-07 | TODO |
+| O-115 | Is it winnable? A check for the deal and for the current position | Medium | P5-05 (merged) | TODO |
+| O-119 | Quick options always offer New game, Restart and the winnable check | Medium | O-115, O-117 | TODO |
+| P6-10 | Hint and in-play check knowledge: full, or the player's with a stock memory | Medium | P5-07, O-115, P6-11 | TODO |
 | P7-06 | Screenshots: one SVG renderer for the dev bridge and the player site | Medium | P6-07 | TODO |
 | P7-07 | Screenshots: deterministic PNG and image paths in the bridge `snapshot` | Medium | P7-06, P6-08 | TODO |
 | P7-08 | Batch runner: `--dev-script` and `--dev-out` | Medium | P7-07, P6-09 | TODO |
