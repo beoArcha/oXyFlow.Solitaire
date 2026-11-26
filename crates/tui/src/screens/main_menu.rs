@@ -70,12 +70,11 @@ fn items(has_saved_game: bool) -> Vec<Item> {
     items
 }
 
-/// The key line of the item list. Esc is not shown: in the list it does nothing (it leaves the seed
-/// entry and the games of a seed, which have their own key line).
+/// The key line of the item list. Esc asks whether to quit; `q` still quits at once.
 pub(crate) const FOOTER: [KeyHint; 4] = [
     (Action::Select, "menu.footer.open"),
     (Action::FocusNext, "menu.footer.language"),
-    (Action::Quit, "help.action.quit"),
+    (Action::Back, "help.action.quit"),
     (Action::Help, "help.action.help"),
 ];
 
@@ -274,6 +273,9 @@ impl MainMenu {
         }
         if action == Action::Quit {
             return Effect::Quit;
+        }
+        if action == Action::Back {
+            return Effect::Open(Modal::confirm("board.confirm.quit", Effect::Quit));
         }
         if ctx.settings.low_vision_offered {
             self.banner_focus = None;

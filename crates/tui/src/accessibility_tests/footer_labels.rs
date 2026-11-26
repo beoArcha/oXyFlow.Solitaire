@@ -4,7 +4,7 @@
 use oxysol_core::{DrawCount, Variant};
 use ratatui::crossterm::event::KeyCode;
 
-use crate::accessibility_tests::footer::{each_locale, harness, observed, sized};
+use crate::accessibility_tests::footer::{each_locale, harness, sized};
 use crate::action::Action;
 use crate::app::Screen;
 use crate::i18n::{Locale, t, tf};
@@ -39,22 +39,24 @@ fn the_main_menu_names_only_the_keys_that_work_there() {
     each_locale(|locale| {
         let mut h = harness(locale, Vec::new());
         let open = hint(Action::Select, "menu.footer.open");
-        let quit = hint(Action::Quit, "help.action.quit");
+        let quit = hint(Action::Back, "help.action.quit");
         let help = hint(Action::Help, "help.action.help");
         expect_drawn(&mut h, &[&open, &quit, &help]);
-        assert!(
-            !names_key(&h.text(), "Esc"),
-            "{locale:?}: Esc is drawn in the item list"
-        );
+        assert!(names_key(&h.text(), "Esc"), "{locale:?}: Esc is missing");
     });
 }
 
 #[test]
-fn esc_in_the_main_menu_item_list_does_nothing() {
+fn esc_in_the_main_menu_item_list_opens_quit_confirmation() {
     let mut h = harness(Locale::EnUs, Vec::new());
-    let before = observed(&mut h);
     h.press(KeyCode::Esc);
-    assert_eq!(observed(&mut h), before);
+    assert!(matches!(
+        h.app.modal(),
+        Some(crate::app::Modal::Confirm {
+            prompt: "board.confirm.quit",
+            ..
+        })
+    ));
 }
 
 #[test]
