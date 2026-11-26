@@ -254,3 +254,7 @@ no_redo = "Nulla da ripetere"
 undo_off = "Annullo disattivato"
 quick_off = "Mossa rapida disattivata"
 no_finish = "Vittoria non ancora certa"
+
+[no_moves]
+title = "Nessuna mossa rimasta"
+body = "Nessuna mossa è possibile. Questa partita non può più essere vinta."

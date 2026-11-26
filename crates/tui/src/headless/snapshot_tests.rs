@@ -55,6 +55,8 @@ fn overlay_rect_matches_drawn_border_for_every_modal() {
             focus: 0,
         }),
         Modal::win(),
+        Modal::no_moves(true),
+        Modal::no_moves(false),
     ];
 
     for modal in &modals {

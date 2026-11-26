@@ -255,3 +255,7 @@ no_redo = "Nic do ponowienia"
 undo_off = "Cofanie wyłączone"
 quick_off = "Szybki ruch wyłączony"
 no_finish = "Wygrana jeszcze nie pewna"
+
+[no_moves]
+title = "Nie ma już ruchów"
+body = "Żaden ruch nie jest możliwy. Tej gry nie można już wygrać."
