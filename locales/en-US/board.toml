@@ -254,3 +254,7 @@ no_redo = "Nothing to redo"
 undo_off = "Undo is off"
 quick_off = "Quick move is off"
 no_finish = "No certain win yet"
+
+[no_moves]
+title = "No moves left"
+body = "No move is possible. This game can no longer be won."

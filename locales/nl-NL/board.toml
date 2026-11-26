@@ -254,3 +254,7 @@ no_redo = "Niets om opnieuw te doen"
 undo_off = "Ongedaan maken staat uit"
 quick_off = "Snelle zet staat uit"
 no_finish = "Winst nog niet zeker"
+
+[no_moves]
+title = "Geen zetten meer"
+body = "Er is geen zet meer mogelijk. Dit spel kan niet meer worden gewonnen."

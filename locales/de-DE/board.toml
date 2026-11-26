@@ -254,3 +254,7 @@ no_redo = "Nichts zum Wiederholen"
 undo_off = "Rückgängig ist deaktiviert"
 quick_off = "Schneller Zug ist deaktiviert"
 no_finish = "Gewinn noch nicht sicher"
+
+[no_moves]
+title = "Keine Züge mehr"
+body = "Es ist kein Zug mehr möglich. Dieses Spiel ist nicht mehr zu gewinnen."
