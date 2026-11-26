@@ -376,3 +376,58 @@ pub fn handle_mouse_for(
     let index = dialog::button_at(&geometry_for(area, modal, board, now, size), cell)?;
     Some(press(modal, index))
 }
+
+/// Focused element target and optional index inside `modal`.
+#[cfg(feature = "dev")]
+pub(crate) fn dev_focus(modal: &Modal) -> (&'static str, Option<usize>) {
+    match modal {
+        Modal::Help(_) => ("help_keys", None),
+        Modal::HowToPlay(_) => ("help_rules", None),
+        Modal::CommandLine(_) => ("help_command_line", None),
+        Modal::Guide(_) => ("close", None),
+        Modal::Moves(s) => ("moves_entry", Some(s.focus)),
+        Modal::Quick(s) => ("quick_option", Some(s.focus)),
+        Modal::Pause {
+            restart_focused, ..
+        } => (
+            if *restart_focused {
+                "restart"
+            } else {
+                "continue"
+            },
+            None,
+        ),
+        Modal::Confirm { yes_focused, .. } => (if *yes_focused { "yes" } else { "no" }, None),
+        Modal::GraphicsCheck(c) => (if c.yes_focused { "yes" } else { "no" }, None),
+        Modal::Alert { .. } => ("ok", None),
+        Modal::Search(p) => ("search_button", Some(p.focus)),
+        Modal::Win { focus, .. } => (
+            ["new_game", "same_seed", "menu"]
+                .get(*focus)
+                .copied()
+                .unwrap_or("menu"),
+            Some(*focus),
+        ),
+    }
+}
+
+/// Outer frame rectangle of `modal` in `area` using the exact layout functions drawing uses.
+#[cfg(feature = "dev")]
+pub(crate) fn rect_for(
+    area: Rect,
+    modal: &Modal,
+    board: &BoardScreen,
+    now: Instant,
+    dock_side: crate::settings::DockSide,
+    size: InterfaceSize,
+) -> Option<Rect> {
+    if crate::widgets::too_small::is_too_small(area) {
+        return None;
+    }
+    if dock::dock_view::is_dockable(modal)
+        && let Some((rect, _)) = dock::split_for(area, dock_side, size)
+    {
+        return Some(rect);
+    }
+    Some(geometry_for(area, modal, board, now, size).frame)
+}

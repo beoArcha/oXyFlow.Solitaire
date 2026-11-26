@@ -376,4 +376,27 @@ impl BoardScreen {
     pub fn footer_action_at(&self, cell: (u16, u16)) -> Option<Action> {
         self.buttons.action_at(cell)
     }
+
+    #[cfg(feature = "dev")]
+    pub(crate) fn dev_state(&self) -> DevBoard {
+        DevBoard {
+            now: self.guidance().map(|guidance| guidance.now),
+            event: self
+                .event()
+                .map(|(text, tone)| (text, matches!(tone, status::Tone::Error))),
+            panel_focus: self.panel_focus,
+            covered: self.covered,
+            finishing: self.finishing.is_some(),
+        }
+    }
+}
+
+#[cfg(feature = "dev")]
+#[derive(Debug, Clone)]
+pub(crate) struct DevBoard {
+    pub now: Option<String>,
+    pub event: Option<(String, bool)>,
+    pub panel_focus: Option<usize>,
+    pub covered: bool,
+    pub finishing: bool,
 }

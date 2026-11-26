@@ -111,6 +111,45 @@ impl SeedScreen {
         matches!(&self.page, Page::Typing(field) if field.captures_text())
     }
 
+    #[cfg(feature = "dev")]
+    pub(super) fn dev_state(
+        &self,
+    ) -> (
+        &'static str,
+        &'static str,
+        Option<usize>,
+        Option<&'static str>,
+        Option<&'static str>,
+    ) {
+        match &self.page {
+            Page::Options => (
+                "seed_options",
+                "seed_choice",
+                Some(self.list.focus()),
+                self.notice,
+                None,
+            ),
+            Page::Typing(field) => {
+                let (focus, err) = field.dev_focus();
+                ("seed_typing", focus, None, self.notice, err)
+            }
+            Page::Played => (
+                "seed_played",
+                "played_seed",
+                Some(self.list.focus()),
+                self.notice,
+                None,
+            ),
+            Page::Levels(_) => (
+                "seed_levels",
+                "level_seed",
+                Some(self.list.focus()),
+                self.notice,
+                None,
+            ),
+        }
+    }
+
     fn show(&mut self, page: Page) {
         self.page = page;
         self.list = MenuList::new();

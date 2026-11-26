@@ -9,6 +9,8 @@ pub mod card_style;
 pub mod clipboard;
 pub mod clock;
 pub mod glyphs;
+#[cfg(feature = "dev")]
+pub mod headless;
 pub mod i18n;
 pub mod input;
 pub mod layout;
@@ -26,13 +28,25 @@ mod accessibility_tests;
 #[cfg(test)]
 mod test_support;
 
+#[cfg(feature = "dev")]
+pub use app::snapshot::{
+    CellPos, DockSnapshot, FocusSnapshot, GameStats, LegalAction, OverlayKind, RectSnapshot,
+    ScreenKind, UiSnapshot,
+};
 pub use app::{App, Deps, Modal, Screen, SearchCommand, SearchProgress, Zone};
 pub use audio::{Audio, AudioSettings, AudioStatus, NullAudio, SoundCue, StyleInfo};
 pub use clipboard::{Clipboard, ClipboardError, NullClipboard};
+#[cfg(feature = "dev")]
+pub use clock::VirtualClock;
+pub use clock::{Clock, SystemClock};
+#[cfg(feature = "dev")]
+pub use headless::{Headless, HeadlessConfig};
 pub use input::Input;
 /// The terminal event types of [`Input`], so that callers can build input without their own dependency.
 pub use ratatui::crossterm;
 pub use settings::Settings;
+#[cfg(feature = "dev")]
+pub use solver::SyncSolver;
 pub use solver::{Answer, DealCheck, NullSolver, Proof, Query, Solver};
 pub use storage::{
     AssistCounters, GameCounters, GameId, GameRecord, Outcome, SavedGame, Storage, StorageError,

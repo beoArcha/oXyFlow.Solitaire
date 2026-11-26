@@ -84,6 +84,15 @@ impl LanguagePicker {
         self.pointer = None;
     }
 
+    #[cfg(feature = "dev")]
+    pub(crate) fn dev_tooltip_visible(&self, focused: bool) -> bool {
+        self.open.is_none()
+            && (focused
+                || self
+                    .pointer
+                    .is_some_and(|cell| contains(self.spots.body, cell)))
+    }
+
     fn open_at(&mut self, current: Locale) {
         self.open = Some(index_of(current));
     }

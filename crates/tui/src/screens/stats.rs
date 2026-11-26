@@ -82,6 +82,15 @@ pub struct StatsScreen {
     zone: Zone,
 }
 
+#[cfg(feature = "dev")]
+#[derive(Debug, Clone)]
+pub(crate) struct DevStats {
+    pub focus_target: &'static str,
+    pub focus_index: Option<usize>,
+    pub status_line: Option<String>,
+    pub last_error: Option<String>,
+}
+
 impl StatsScreen {
     /// An empty screen showing its times in `zone`; `App` fills it with [`StatsScreen::show`] when
     /// it opens.
@@ -125,6 +134,42 @@ impl StatsScreen {
     /// The selected game, `None` while the history is empty.
     pub fn selected(&self) -> Option<&GameRecord> {
         self.records.get(self.list.selected())
+    }
+
+    #[cfg(feature = "dev")]
+    pub(crate) fn dev_state(&self) -> DevStats {
+        use crate::i18n::{t, tf};
+
+        let (focus_target, focus_index) = match self.stop {
+            Stop::List => ("history_list", Some(self.list.selected())),
+            Stop::Button(Button::Replay) => ("button_replay", None),
+            Stop::Button(Button::Copy) => ("button_copy", None),
+            Stop::Button(Button::Check) => ("button_check", None),
+            Stop::Button(Button::CheckAll) => ("button_check_all", None),
+            Stop::Button(Button::Back) => ("button_back", None),
+        };
+        let last_error = if self.load_failed {
+            Some(t("stats.load_failed").into_owned())
+        } else if let Some(Notice::CopyFailed(seed)) = self.notice {
+            Some(tf("stats.copy_failed", &[("seed", &seed.to_string())]))
+        } else {
+            None
+        };
+        let status_line = self.progress_text().or_else(|| match self.notice {
+            Some(Notice::Copied(seed)) => Some(tf("stats.copied", &[("seed", &seed.to_string())])),
+            Some(Notice::AlreadyChecked) => Some(t("stats.check.already").into_owned()),
+            Some(Notice::NothingToCheck) => Some(t("stats.check.nothing").into_owned()),
+            Some(Notice::Finished(total)) => {
+                Some(tf("stats.check.finished", &[("total", &total.to_string())]))
+            }
+            Some(Notice::CopyFailed(_)) | None => None,
+        });
+        DevStats {
+            focus_target,
+            focus_index,
+            status_line,
+            last_error,
+        }
     }
 
     fn replay(&self) -> Effect {

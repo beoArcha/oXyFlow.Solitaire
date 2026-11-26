@@ -30,8 +30,8 @@ crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
 crates/tui/build.rs      embeds assets/cards/{fronts,backs}/*/style.toml and codepoints.toml (reruns only on assets/cards)
-crates/tui/src/          lib.rs terminal.rs app.rs action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs card_style.rs (+ card_style/manifest.rs)
-                         i18n.rs (+ i18n/locale.rs i18n/plural.rs i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
+crates/tui/src/          lib.rs terminal.rs app.rs (snapshot.rs under feature `dev`) action.rs input.rs mouse.rs caps.rs clock.rs glyphs.rs card_style.rs (+ card_style/manifest.rs)
+                         headless/ (under feature `dev`) i18n.rs (+ i18n/locale.rs i18n/plural.rs i18n/flags.rs) settings.rs solver.rs storage.rs (+ storage/memory.rs) audio.rs clipboard.rs announce.rs
                          theme/ layout/ widgets/ screens/
 locales/<lang>/          meta.toml common.toml menu.toml board.toml settings.toml help.toml cards.toml cli.toml
                          audio.toml rules.toml stats.toml
@@ -263,8 +263,11 @@ impl App {
     pub fn handle(&mut self, input: Input, now: Instant);
     pub fn draw(&mut self, frame: &mut Frame);
     pub fn should_quit(&self) -> bool;
+    #[cfg(feature = "dev")]
+    pub fn snapshot(&self) -> UiSnapshot;                    // read-only, serializable UI state snapshot (T-42)
 }
-pub fn run(deps: Deps) -> Result<(), TuiError>;   // terminal.rs: raw mode, alternate screen, mouse, event loop
+pub trait Clock { fn now(&self) -> Instant; }                // `SystemClock` in every build; `VirtualClock` under `dev`
+pub fn run(deps: Deps) -> Result<(), TuiError>;   // terminal.rs: raw mode, alternate screen, mouse, event loop with `SystemClock`
 pub fn restore_terminal();                        // best effort; a Drop guard calls it on every exit path of `run`
 pub enum TuiError { Io(std::io::Error) }
 
@@ -826,7 +829,7 @@ without a restart, `-` for the undo rows; only finished games count, an abandone
   `announce` supplies the localized names. The `Unicode` glyph set
   uses only WGL4 symbols (no `▶ ◀`, rounded, heavy, dashed or dotted lines). Sound cues duplicate,
   never replace, visible feedback.
-- **Clock:** `GameClock` computes elapsed time from a passed-in `Instant`; pause and modals stop it.
+- **Clock:** `GameClock` computes elapsed time from a passed-in `Instant`; pause and modals stop it. `Clock` abstracts the time source: `SystemClock` runs in every build (`terminal::run` passes it to `terminal::drive`); under feature `dev`, `VirtualClock` holds a fixed base `Instant` plus an offset that advances only when stepped, and `Headless` (`crates/tui/src/headless/`, single-threaded over `TestBackend`, `MemoryStorage`, `NullAudio`, a recording clipboard, a sequential seed counter and `SyncSolver`) shares `terminal::step` with `terminal::drive` (decision T-42).
 
 - **Autosave (P4-03):** `app/persist.rs`. A new game calls `Storage::start_game` and logs the deal at
   `info`. After every session change, when leaving the board and on quit, `App` writes

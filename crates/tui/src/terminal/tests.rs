@@ -42,6 +42,7 @@ fn the_loop_draws_every_input_until_the_player_quits() {
     let mut frames = 0;
     let result = drive(
         &mut app,
+        &SystemClock,
         |app| {
             frames += 1;
             if frames > 20 {
@@ -67,6 +68,7 @@ fn the_loop_never_draws_after_quit_and_stops_on_an_io_error() {
     let mut draws = 0;
     let failed = drive(
         &mut app,
+        &SystemClock,
         |_| {
             draws += 1;
             Ok(())
@@ -83,6 +85,7 @@ fn a_draw_failure_stops_the_loop() {
     let Harness { mut app, .. } = Harness::new();
     let failed = drive(
         &mut app,
+        &SystemClock,
         |_| Err(io::Error::other("terminal gone")),
         || Ok(Input::Tick),
     );

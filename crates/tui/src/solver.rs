@@ -3,6 +3,8 @@
 //! tests a stub) and the application collects the [`Answer`]s on every input and tick.
 
 use oxysol_core::{PyramidRules, Variant, YukonRules};
+#[cfg(feature = "dev")]
+use oxysol_core::{SolveBudget, Verdict, solve};
 use serde::{Deserialize, Serialize};
 
 /// What is known about one deal.
@@ -88,6 +90,41 @@ impl Solver for NullSolver {
     }
 }
 
+/// A synchronous solver that runs [`oxysol_core::solve`] on submission with no threads.
+#[cfg(feature = "dev")]
+#[derive(Debug, Default)]
+pub struct SyncSolver {
+    answers: Vec<Answer>,
+}
+
+#[cfg(feature = "dev")]
+impl Solver for SyncSolver {
+    fn submit(&mut self, query: Query) {
+        let verdict = solve(
+            query.variant,
+            query.seed,
+            SolveBudget::default_for(query.variant),
+        );
+        let proof = match verdict {
+            Verdict::Winnable { .. } => Proof::Winnable,
+            Verdict::Unwinnable => Proof::Unwinnable,
+            Verdict::Unknown => Proof::Unknown,
+        };
+        self.answers.push(Answer {
+            id: query.id,
+            proof,
+        });
+    }
+
+    fn cancel(&mut self) {
+        self.answers.clear();
+    }
+
+    fn poll(&mut self) -> Vec<Answer> {
+        std::mem::take(&mut self.answers)
+    }
+}
+
 /// Variants of which the solver proves only a small share of the deals winnable (decision T-29:
 /// Pyramid Classic; T-41: Russian Solitaire), so a search for a winnable deal can take long.
 /// Spider with 2 and 4 suits left the list with its own search (P5-05).
@@ -137,6 +174,25 @@ mod tests {
                 proof: Proof::Unknown
             }]
         );
+        solver.submit(query);
+        solver.cancel();
+        assert!(solver.poll().is_empty());
+    }
+
+    #[cfg(feature = "dev")]
+    #[test]
+    fn the_sync_solver_solves_synchronously_and_clears_on_cancel() {
+        let mut solver = SyncSolver::default();
+        let query = Query {
+            id: 1,
+            variant: Variant::Klondike(DrawCount::One),
+            seed: 0,
+        };
+        solver.submit(query);
+        let answers = solver.poll();
+        assert_eq!(answers.len(), 1);
+        assert_eq!(answers[0].id, 1);
+        assert_eq!(answers[0].proof, Proof::Winnable);
         solver.submit(query);
         solver.cancel();
         assert!(solver.poll().is_empty());

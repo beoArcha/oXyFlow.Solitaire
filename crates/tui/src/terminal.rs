@@ -1,7 +1,7 @@
 //! Terminal setup, the event loop and restoring the terminal on every exit path.
 
 use std::io;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use ratatui::Terminal;
 use ratatui::backend::CrosstermBackend;
@@ -14,6 +14,7 @@ use ratatui::crossterm::terminal::{
 use thiserror::Error;
 
 use crate::app::{App, Deps};
+use crate::clock::{Clock, SystemClock};
 use crate::input::Input;
 
 /// How long the loop waits for input before it sends a tick (and redraws the clock).
@@ -81,16 +82,34 @@ fn read_input(timeout: Duration) -> io::Result<Input> {
     }
 }
 
+/// Handles one `input` at `clock.now()`, then draws while the application stays open.
+/// Shared by [`drive`] and the headless driver.
+pub(crate) fn step(
+    app: &mut App,
+    clock: &impl Clock,
+    input: Input,
+    draw: &mut impl FnMut(&mut App) -> io::Result<()>,
+) -> io::Result<()> {
+    app.handle(input, clock.now());
+    if !app.should_quit() {
+        draw(app)?;
+    }
+    Ok(())
+}
+
 /// The loop: draw, wait for one input, handle it, until the application wants to quit.
 pub(crate) fn drive(
     app: &mut App,
+    clock: &impl Clock,
     mut draw: impl FnMut(&mut App) -> io::Result<()>,
     mut next: impl FnMut() -> io::Result<Input>,
 ) -> io::Result<()> {
-    while !app.should_quit() {
+    if !app.should_quit() {
         draw(app)?;
+    }
+    while !app.should_quit() {
         let input = next()?;
-        app.handle(input, Instant::now());
+        step(app, clock, input, &mut draw)?;
     }
     Ok(())
 }
@@ -102,6 +121,7 @@ pub fn run(deps: Deps) -> Result<(), TuiError> {
     let mut terminal = Terminal::new(CrosstermBackend::new(io::stdout()))?;
     drive(
         &mut app,
+        &SystemClock,
         |app| terminal.draw(|frame| app.draw(frame)).map(|_| ()),
         || read_input(TICK),
     )?;
