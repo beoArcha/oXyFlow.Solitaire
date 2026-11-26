@@ -101,21 +101,50 @@ its card).
 
 ### P6-06 — More game options
 
-- **Owner:** Large (finalizes the scope), then Small
-- **Status:** DRAFT (the owner chooses the options; Opus writes the final scope before dispatch)
+- **Owner:** Medium
+- **Status:** scope finalized by Opus 2026-11-26 from the owner's choice (FreeCell cells moved to P7-10)
 - **Depends on:** P4-09, P3-27
-- **Files:** `crates/core/src/games/**` (only the options of the games named), `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/*/settings.toml`, `locales/*/menu.toml`, tests
-- **Shared files:** `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/en-US/settings.toml`, `locales/pl-PL/settings.toml`
-- **Scope:** owner request: more options for the existing games. Candidates to choose from, not yet decided:
-  - Klondike: a limit on the number of passes through the stock (today the passes are unlimited, see the assumed defaults
-    in `decisions.md`);
-  - FreeCell: the number of free cells;
-  - any other option the owner names.
-  An option that changes the rules is off by default, is shown in the game information, and is part of the seed's
-  record in the history.
-- **Acceptance:** the options chosen by the owner, each with engine tests for both values, the setting remembered, the
-  history records the option, both locales; the winnable-deals option (P3-20) is either correct for the option or turned
-  off for it, and the PR says which.
+- **Decision:** T-53 (the implementer completes the row with `GameOptions`, the storage column and the solver rule)
+- **Files:** `crates/core/src/game.rs` (`GameOptions`, `deal`), `crates/core/src/games/{klondike,spider,golf}/**` (only
+  these options), `crates/core/src/lib.rs` (the export), `crates/tui/src/settings.rs`, `crates/tui/src/settings/tests.rs`,
+  `crates/tui/src/screens/settings/**`, `crates/tui/src/screens/board/header.rs` (the game information),
+  `crates/tui/src/app/{persist,deals}.rs`, `crates/tui/src/storage.rs`, `crates/tui/src/storage/memory.rs`,
+  `src/storage/{schema,sqlite,history,convert}.rs`, `tests/integration/migration.rs`, `locales/*/settings.toml`,
+  `locales/*/board.toml`, `locales/*/rules.toml` (one line per option in the rules tab), `docs/tech/architecture.md`,
+  `docs/tech/decisions.md` (T-53), tests
+- **Shared files:** `crates/tui/src/settings.rs`, `crates/tui/src/screens/settings/**`, `locales/en-US/settings.toml`,
+  `locales/pl-PL/settings.toml`
+- **Options (owner's choice, 2026-11-26).** Every option keeps today's rule as its default:
+  - **Klondike, passes through the stock:** unlimited (default), 3, 1. When the passes are used up the stock cannot be
+    turned again (the bottom bar and O-122 follow `legal_moves()` as they are).
+  - **Klondike, empty column:** King only (default), or any card.
+  - **Spider, deal with an empty column:** not allowed (default), or allowed.
+  - **Golf, King to Ace:** a King and an Ace are not adjacent (default), or they are (wrap).
+  - **Golf, play on a King:** a King ends the waste (default), or a Queen may be played on it.
+- **Design:**
+  - One `GameOptions` value in `oxysol-core` (`Serialize`, `Deserialize`, `Default` = every rule as today, missing
+    fields default), passed to `deal(variant, seed, options)`; the games read only their own fields. No per-option
+    branches outside the game that owns the option.
+  - **Settings**, Gameplay tab: one row per option, grouped under its game's name; the choice applies to the **next**
+    game, as the undo mode does.
+  - **Game information** in the board header shows every option that differs from the default, as words, not only a
+    mark; with all defaults nothing is added.
+  - **History and saved game:** the options are part of the game's record. One column
+    `options TEXT NOT NULL DEFAULT '{}'` (JSON of `GameOptions`) appended to `MIGRATIONS` by a single
+    `ALTER TABLE ... ADD COLUMN`, no rewrite of rows; an old row reads as the defaults. The saved game in progress
+    stores and restores its options; an old save loads with the defaults. Restart and "same seed" keep the options of the
+    game.
+  - **Solver (owner rule: new solver features go to the next phase):** the solver, the winnable-deals search, the
+    curated seeds and the hint search stay for the default options only. A game started with any non-default option
+    deals without the winnable search, shows no curated-seed or winnable mark, and the game choice says that the
+    winnable search is off for the chosen options. Solver support for the options is a card for phase 7, which this PR
+    names.
+- **Acceptance:** engine tests for both values of every option (passes counted and enforced; any card on an empty
+  column; a Spider deal with an empty column accepted or refused; Golf wrap and play on a King); the default options
+  deal exactly as today (existing tests unchanged); settings remembered and an old settings file loads the defaults;
+  the migration test opens an old database and reads every row as the defaults; a game with options is recorded and a
+  saved game resumes with them; the header shows non-default options; the winnable search is off for non-default
+  options; every offered locale fits at 100 × 30.
 
 ### O-115 — Is it winnable? A check for the deal and for the current position
 
