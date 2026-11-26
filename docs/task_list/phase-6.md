@@ -443,6 +443,18 @@ its card).
   shows matches in folded families and restores the folding when cleared; an old settings file opens every family;
   every offered locale fits at 100 × 30.
 
+### O-124 — Help, Keys tab: the keys of the game menu
+
+- **Owner:** Small
+- **Priority:** P3. Found in the review of O-123 (2026-11-26).
+- **Depends on:** O-123
+- **Files:** `crates/tui/src/input/table.rs` (`KEY_TABLE`), `locales/*/help.toml` (only if a label is missing), tests
+- **Problem:** the Keys tab of Help does not list the keys that act only in the game menu: Page Up / Page Down,
+  Home / End, `/` (search), `w` (winnable deals) and Left / Right (fold a family).
+- **Fix:** add them to `KEY_TABLE` in the game-menu group, with the labels the game menu footer already uses; no change
+  to key handling.
+- **Acceptance:** a test that every key the game menu handles appears in the Keys tab; every offered locale fits.
+
 ## Order of the solver and hint cards
 
 Each step makes the next one cheaper to measure and needs no rework later:

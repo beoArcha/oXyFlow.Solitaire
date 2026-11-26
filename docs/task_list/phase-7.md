@@ -91,6 +91,21 @@ Order of work: the card style, then the game.
 - **Acceptance:** engine tests for the wrap rule and the four-peak deal; deals by seed; the solver table for seeds 0-49
   per variant; layout without overflow at 100 × 30, 130 × 40 and 200 × 60; menu and rules in every offered locale.
 
+### P7-13 — Solver for the game options of P6-06
+
+- **Owner:** Medium
+- **Priority:** P2. Follow-up of P6-06 (owner rule 2026-11-25: new solver features go to the next phase).
+- **Depends on:** P6-06, P6-14
+- **Files:** `crates/core/src/solver/{klondike,spider,golf}/**`, `crates/core/src/solver/mod.rs` (the entry with
+  options), `crates/tui/src/app/deals.rs`, `crates/tui/src/screens/game_select/**` (the "winnable search is off" note
+  goes away for options the solver covers), `crates/core/tests/solver_perf.rs`, `docs/tech/decisions.md` (T-29), tests
+- **Scope:** the solver models every option of `GameOptions` (Klondike passes through the stock and any card on an
+  empty column, Spider deal with an empty column, Golf King-to-Ace wrap and a Queen on a King), so the winnable-deals
+  search, the winnable check and the solver hints work for non-default options too. Curated seeds stay for the default
+  options only.
+- **Acceptance:** model tests against the engine move by move for every option; the solver table for seeds 0-49 per
+  option recorded in T-29; the game choice offers the winnable search for every option the solver covers.
+
 ## Developer testing infrastructure: screenshots and the batch regression runner
 
 Owner request 2026-11-21, built on the dev bridge of phase 6 (P6-07 to P6-09). The bridge writes real SVG and PNG
