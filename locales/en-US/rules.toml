@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Pyramid"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Goal"
@@ -116,4 +117,16 @@ moves_3 = "Every card you play becomes the new top of the waste, so a run can go
 moves_4 = "When no column card fits, turn the next stock card onto the waste. With the stock empty and no card that fits, you are stuck."
 tips_1 = "Look for the longest run you can play before you turn a stock card."
 tips_2 = "A run that switches between columns keeps the chain going, so plan which column to empty first."
+tips_3 = "Stuck? Press {hint} for a hint, or {undo} to take a move back."
+
+[tripeaks]
+goal = "Clear all 28 cards from the three peaks by playing them onto the waste."
+layout_1 = "28 cards form three overlapping peaks in rows of 3, 6, 9 and 10. Only the bottom row starts face up; a covered card turns face up when both cards covering it are gone."
+layout_2 = "One card starts the waste; the other 23 form the stock. There is no foundation and no redeal."
+moves_1 = "Play an uncovered face-up peak card onto the waste when its rank is one higher or one lower than the waste top, in any suit: a 7 goes onto a 6 or an 8."
+moves_2 = "King and ace wrap around: a king plays onto an ace, and an ace plays onto a king."
+moves_3 = "Every card you play becomes the new top of the waste, so a run can go up, down, or change direction."
+moves_4 = "When no peak card fits, turn the next stock card onto the waste. With the stock empty and no card that fits, you are stuck."
+tips_1 = "Look for long chains that uncover face-down cards in the peaks."
+tips_2 = "Use king-ace wrap-arounds to bridge high and low runs before turning the stock."
 tips_3 = "Stuck? Press {hint} for a hint, or {undo} to take a move back."

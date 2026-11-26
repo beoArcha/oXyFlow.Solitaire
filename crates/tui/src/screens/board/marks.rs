@@ -11,9 +11,11 @@ pub(super) fn completion(variant: Variant) -> Completion {
     match variant {
         Variant::Spider(_) => Completion::King,
         Variant::Pyramid(_) => Completion::Thirteen,
-        Variant::Klondike(_) | Variant::FreeCell | Variant::Yukon(_) | Variant::Golf => {
-            Completion::Ace
-        }
+        Variant::Klondike(_)
+        | Variant::FreeCell
+        | Variant::Yukon(_)
+        | Variant::Golf
+        | Variant::TriPeaks => Completion::Ace,
     }
 }
 

@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Pirámide"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Objetivo"
@@ -116,4 +117,16 @@ moves_3 = "Cada carta jugada pasa a ser la nueva superior del descarte, así que
 moves_4 = "Cuando ninguna carta de columna encaje, pon la siguiente carta del mazo en el descarte. Con el mazo vacío y sin ninguna carta que encaje, no hay salida."
 tips_1 = "Busca la racha más larga que puedas jugar antes de dar vuelta una carta del mazo."
 tips_2 = "Una racha que cambia de columna mantiene la cadena, así que planea qué columna vaciar primero."
+tips_3 = "¿Atascado? Pulsa {hint} para una pista o {undo} para deshacer un movimiento."
+
+[tripeaks]
+goal = "Despeja las 28 cartas de los tres picos jugándolas al descarte."
+layout_1 = "28 cartas forman tres picos superpuestos en filas de 3, 6, 9 y 10. Solo la fila inferior empieza boca arriba; una carta tapada se voltea cuando se van las dos cartas que la cubren."
+layout_2 = "Una carta inicia el descarte; las otras 23 forman el mazo. No hay fundaciones ni nueva repartición."
+moves_1 = "Juega una carta descubierta y boca arriba de un pico al descarte cuando su rango sea uno mayor o uno menor que la superior del descarte, de cualquier palo: un 7 va sobre un 6 o un 8."
+moves_2 = "El rey y el as enlazan entre sí: un rey puede ir sobre un as y un as sobre un rey."
+moves_3 = "Cada carta jugada pasa a ser la nueva superior del descarte, así que una racha puede subir, bajar o cambiar de sentido."
+moves_4 = "Cuando ninguna carta de los picos encaje, pon la siguiente carta del mazo en el descarte. Con el mazo vacío y sin ninguna carta que encaje, no hay salida."
+tips_1 = "Busca rachas largas que descubran cartas boca abajo en los picos."
+tips_2 = "Usa los enlaces entre rey y as para unir series altas y bajas antes de voltear el mazo."
 tips_3 = "¿Atascado? Pulsa {hint} para una pista o {undo} para deshacer un movimiento."

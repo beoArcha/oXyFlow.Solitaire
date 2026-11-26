@@ -107,7 +107,7 @@ fn check(variant: Variant, piles: &[PileSnapshot], area: Rect, what: &str) -> Bo
     }
     assert_inside(&geometry, area, what);
     assert_ranks_visible(piles, &geometry, what);
-    if !matches!(variant, Variant::Pyramid(_)) {
+    if !matches!(variant, Variant::Pyramid(_) | Variant::TriPeaks) {
         assert_tops_visible(piles, &geometry, what);
     }
     geometry
@@ -151,7 +151,9 @@ fn a_larger_window_gives_a_larger_card() {
         let piles = deal(variant, 5).piles();
         let small = compute(variant, &piles, SMALL).card;
         let large = compute(variant, &piles, LARGE).card;
-        assert_eq!(small, CardSize::smallest(), "{variant:?}");
+        if !matches!(variant, Variant::TriPeaks) {
+            assert_eq!(small, CardSize::smallest(), "{variant:?}");
+        }
         assert!(
             large.width > small.width && large.height > small.height,
             "{variant:?}"

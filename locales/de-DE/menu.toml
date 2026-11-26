@@ -27,6 +27,7 @@ freecell = "Alle Karten liegen offen; vier freie Zellen schaffen Bewegungsspielr
 pyramid = "Kartenpaare mit Summe 13 abräumen; Könige zählen einzeln."
 yukon = "Jede offene Karte bewegt sich mit allen Karten darauf; es gibt keinen Talon."
 golf = "Spiele Spaltenkarten auf den Ablagestapel, wenn sie einen Rang höher oder niedriger sind."
+tripeaks = "Räume die drei Gipfel auf den Ablagestapel ab, jeweils einen Rang höher oder tiefer (K-A verbindet)."
 
 [seed]
 title_game = "Neues Spiel mit Seed: {game}"
@@ -76,6 +77,7 @@ free_cell = "FreeCell-Familie"
 pyramid = "Pyramide-Familie"
 yukon = "Yukon-Familie"
 golf = "Golf-Familie"
+tri_peaks = "TriPeaks-Familie"
 
 [search]
 label = "Suchen"

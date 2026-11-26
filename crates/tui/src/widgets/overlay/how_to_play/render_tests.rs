@@ -136,9 +136,12 @@ fn left_and_right_switch_between_the_games() {
     assert!(h.text().contains("[Golf]"));
     assert!(h.text().contains("no foundation"));
     h.press(KeyCode::Right);
+    assert!(h.text().contains("[TriPeaks]"));
+    assert!(h.text().contains("three overlapping peaks"));
+    h.press(KeyCode::Right);
     assert!(h.text().contains("[Klondike]"));
     h.press(KeyCode::Left);
-    assert!(h.text().contains("[Golf]"));
+    assert!(h.text().contains("[TriPeaks]"));
 }
 
 #[test]

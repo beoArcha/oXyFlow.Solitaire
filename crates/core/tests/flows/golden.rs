@@ -262,3 +262,39 @@ Tableau 6: 10H JS 4C 6S 7S";
 fn golf_deal_is_pinned() {
     assert_golden(Variant::Golf, GOLF);
 }
+
+const TRIPEAKS: &str = "Stock: 3D* 10H* JS* 4C* 6S* 7S* 3S* 8D* QD* 9S* KH* 5H* 6C* QS* 9D* JD* QC* 3C* 9H* QH* 9C* JC* 10C*
+Waste: 4H
+Pyramid 0.0: 7C*
+Pyramid 0.1: 3H*
+Pyramid 0.2: KC*
+Pyramid 1.0: AS*
+Pyramid 1.1: 2S*
+Pyramid 1.2: AC*
+Pyramid 1.3: AH*
+Pyramid 1.4: KD*
+Pyramid 1.5: 10D*
+Pyramid 2.0: 5C*
+Pyramid 2.1: 8S*
+Pyramid 2.2: JH*
+Pyramid 2.3: 2H*
+Pyramid 2.4: 4S*
+Pyramid 2.5: 6H*
+Pyramid 2.6: 5D*
+Pyramid 2.7: 2D*
+Pyramid 2.8: 5S*
+Pyramid 3.0: 6D
+Pyramid 3.1: AD
+Pyramid 3.2: 7D
+Pyramid 3.3: 2C
+Pyramid 3.4: 8H
+Pyramid 3.5: 8C
+Pyramid 3.6: 4D
+Pyramid 3.7: 7H
+Pyramid 3.8: KS
+Pyramid 3.9: 10S";
+
+#[test]
+fn tripeaks_deal_is_pinned() {
+    assert_golden(Variant::TriPeaks, TRIPEAKS);
+}

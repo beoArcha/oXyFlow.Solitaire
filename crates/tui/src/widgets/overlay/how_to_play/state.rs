@@ -14,17 +14,19 @@ pub enum Rules {
     Pyramid,
     Yukon,
     Golf,
+    TriPeaks,
 }
 
 impl Rules {
     /// Every game, in tab order.
-    pub const ALL: [Rules; 6] = [
+    pub const ALL: [Rules; 7] = [
         Rules::Klondike,
         Rules::Spider,
         Rules::FreeCell,
         Rules::Pyramid,
         Rules::Yukon,
         Rules::Golf,
+        Rules::TriPeaks,
     ];
 
     /// The game a variant belongs to.
@@ -36,6 +38,7 @@ impl Rules {
             Variant::Pyramid(_) => Rules::Pyramid,
             Variant::Yukon(_) => Rules::Yukon,
             Variant::Golf => Rules::Golf,
+            Variant::TriPeaks => Rules::TriPeaks,
         }
     }
 
@@ -48,6 +51,7 @@ impl Rules {
             Rules::Pyramid => "rules.game.pyramid",
             Rules::Yukon => "rules.game.yukon",
             Rules::Golf => "rules.game.golf",
+            Rules::TriPeaks => "rules.game.tripeaks",
         }
     }
 

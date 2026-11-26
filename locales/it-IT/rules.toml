@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Piramide"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Scopo"
@@ -116,4 +117,16 @@ moves_3 = "Ogni carta giocata diventa la nuova carta in cima agli scarti, così 
 moves_4 = "Quando nessuna carta di colonna si adatta, gira la carta successiva del mazzo sugli scarti. A mazzo vuoto e senza carte giocabili, sei bloccato."
 tips_1 = "Cerca la serie più lunga che puoi giocare prima di girare una carta del mazzo."
 tips_2 = "Una serie che passa da una colonna all'altra mantiene la catena, quindi pianifica quale colonna svuotare per prima."
+tips_3 = "Bloccato? Premi {hint} per un suggerimento o {undo} per annullare una mossa."
+
+[tripeaks]
+goal = "Elimina tutte le 28 carte dei tre picchi giocandole sugli scarti."
+layout_1 = "28 carte formano tre picchi sovrapposti su file da 3, 6, 9 e 10. Solo la fila inferiore parte scoperta; una carta coperta si scopre quando entrambe le carte che la coprono sono state tolte."
+layout_2 = "Una carta inizia gli scarti; le altre 23 formano il mazzo. Non ci sono fondazioni né nuova distribuzione."
+moves_1 = "Gioca una carta scoperta e libera di un picco sugli scarti quando il suo grado è di uno più alto o più basso della carta in cima agli scarti, di qualsiasi seme: un 7 va su un 6 o su un 8."
+moves_2 = "Re e asso si collegano a giro: un re va su un asso e un asso va su un re."
+moves_3 = "Ogni carta giocata diventa la nuova carta in cima agli scarti, così una serie può salire, scendere o cambiare direzione."
+moves_4 = "Quando nessuna carta dei picchi si adatta, gira la carta successiva del mazzo sugli scarti. A mazzo vuoto e senza carte giocabili, sei bloccato."
+tips_1 = "Cerca serie lunghe che scoprano le carte coperte nei picchi."
+tips_2 = "Usa i collegamenti tra re e asso per unire serie alte e basse prima di girare il mazzo."
 tips_3 = "Bloccato? Premi {hint} per un suggerimento o {undo} per annullare una mossa."

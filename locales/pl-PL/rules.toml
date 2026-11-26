@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Piramida"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Cel"
@@ -116,4 +117,16 @@ moves_3 = "Każda zagrana karta staje się nową wierzchnią kartą stosu odrzuc
 moves_4 = "Gdy żadna karta z kolumny nie pasuje, odkryj następną kartę z talii. Gdy talia jest pusta i nic nie pasuje, utknąłeś."
 tips_1 = "Szukaj najdłuższego ciągu, który możesz zagrać, zanim odkryjesz kartę z talii."
 tips_2 = "Ciąg przechodzący między kolumnami podtrzymuje serię, więc zaplanuj, którą kolumnę opróżnić najpierw."
+tips_3 = "Utknąłeś? Naciśnij {hint}, aby zobaczyć podpowiedź, lub {undo}, aby cofnąć ruch."
+
+[tripeaks]
+goal = "Usuń wszystkie 28 kart z trzech szczytów, zagrywając je na stos odrzuconych."
+layout_1 = "28 kart tworzy trzy zachodzące na siebie szczyty w rzędach po 3, 6, 9 i 10 kart. Tylko dolny rząd jest od razu odkryty; zakryta karta odwraca się, gdy znikną obie zasłaniające ją karty."
+layout_2 = "Jedna karta zaczyna stos odrzuconych; pozostałe 23 tworzą talię. Nie ma stosów bazowych ani ponownego rozdania."
+moves_1 = "Zagraj wolną odkrytą kartę ze szczytu na stos odrzuconych, gdy jej ranga jest o jeden wyższa lub niższa od wierzchniej karty stosu, w dowolnym kolorze: siódemka pasuje do szóstki i ósemki."
+moves_2 = "Król i as łączą się ze sobą: króla możesz zagrać na asa, a asa na króla."
+moves_3 = "Każda zagrana karta staje się nową wierzchnią kartą stosu odrzuconych, więc ciąg może iść w górę, w dół albo zmienić kierunek."
+moves_4 = "Gdy żadna karta ze szczytów nie pasuje, odkryj następną kartę z talii. Gdy talia jest pusta i nic nie pasuje, utknąłeś."
+tips_1 = "Szukaj długich ciągów, które odsłaniają zakryte karty w szczytach."
+tips_2 = "Wykorzystuj przejście między królem i asem, aby połączyć wysokie i niskie serie przed odkryciem karty z talii."
 tips_3 = "Utknąłeś? Naciśnij {hint}, aby zobaczyć podpowiedź, lub {undo}, aby cofnąć ruch."

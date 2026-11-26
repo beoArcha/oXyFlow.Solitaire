@@ -13,16 +13,18 @@ pub(super) enum Family {
     Pyramid,
     Yukon,
     Golf,
+    TriPeaks,
 }
 
 impl Family {
-    pub(super) const ALL: [Family; 6] = [
+    pub(super) const ALL: [Family; 7] = [
         Family::Klondike,
         Family::Spider,
         Family::FreeCell,
         Family::Pyramid,
         Family::Yukon,
         Family::Golf,
+        Family::TriPeaks,
     ];
 
     pub(super) const fn of(variant: Variant) -> Family {
@@ -33,6 +35,7 @@ impl Family {
             Variant::Pyramid(_) => Family::Pyramid,
             Variant::Yukon(_) => Family::Yukon,
             Variant::Golf => Family::Golf,
+            Variant::TriPeaks => Family::TriPeaks,
         }
     }
 
@@ -44,6 +47,7 @@ impl Family {
             Family::Pyramid => "menu.family.pyramid",
             Family::Yukon => "menu.family.yukon",
             Family::Golf => "menu.family.golf",
+            Family::TriPeaks => "menu.family.tri_peaks",
         }
     }
 }

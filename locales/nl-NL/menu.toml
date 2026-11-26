@@ -27,6 +27,7 @@ freecell = "Alle kaarten liggen open; vier vrije cellen helpen bij het verplaats
 pyramid = "Verwijder paren die samen 13 vormen; een koning telt alleen."
 yukon = "Elke open kaart verhuist met alle kaarten erop; er is geen stapel."
 golf = "Speel kaarten van de kolommen op de aflegstapel als ze één rang hoger of lager zijn."
+tripeaks = "Ruim de drie pieken op de aflegstapel op met kaarten één rang hoger of lager (H-A verbindt)."
 
 
 [seed]
@@ -77,6 +78,7 @@ free_cell = "FreeCell-familie"
 pyramid = "Piramide-familie"
 yukon = "Yukon-familie"
 golf = "Golf-familie"
+tri_peaks = "TriPeaks-familie"
 
 [search]
 label = "Zoeken"

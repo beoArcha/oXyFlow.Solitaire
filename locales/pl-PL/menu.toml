@@ -27,6 +27,7 @@ freecell = "Wszystkie karty są odkryte; cztery wolne komórki ułatwiają ruchy
 pyramid = "Usuwaj pary o sumie 13; króla usuwaj samego."
 yukon = "Przenoś dowolną odkrytą kartę razem z kartami na niej; nie ma talii."
 golf = "Zagrywaj karty z kolumn na stos odrzuconych, gdy są o rangę wyższe lub niższe."
+tripeaks = "Opróżnij trzy szczyty na stos odrzuconych kartami o jedną rangę wyższymi lub niższymi (K-A łączy się)."
 
 [seed]
 title_game = "Nowa gra z ziarna: {game}"
@@ -76,6 +77,7 @@ free_cell = "Rodzina FreeCell"
 pyramid = "Rodzina Piramidy"
 yukon = "Rodzina Yukon"
 golf = "Rodzina Golfa"
+tri_peaks = "Rodzina TriPeaks"
 
 [search]
 label = "Szukaj"

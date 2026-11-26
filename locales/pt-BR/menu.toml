@@ -27,6 +27,7 @@ freecell = "Todas as cartas ficam abertas; quatro células livres ajudam a movê
 pyramid = "Remova pares que somam 13; o rei é removido sozinho."
 yukon = "Qualquer carta aberta se move com as cartas sobre ela; não há monte."
 golf = "Jogue cartas das colunas no descarte quando forem um valor acima ou abaixo."
+tripeaks = "Limpe os três picos no descarte jogando cartas um valor acima ou abaixo (K-A conecta)."
 
 [seed]
 title_game = "Novo jogo com semente: {game}"
@@ -76,6 +77,7 @@ free_cell = "Família FreeCell"
 pyramid = "Família Pirâmide"
 yukon = "Família Yukon"
 golf = "Família Golf"
+tri_peaks = "Família TriPeaks"
 
 [search]
 label = "Buscar"

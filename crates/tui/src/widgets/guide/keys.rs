@@ -40,6 +40,7 @@ const fn has_waste_moves(variant: Variant) -> bool {
 
 fn entries(variant: Variant, undo_allowed: bool, quick_move: bool) -> Vec<Entry> {
     let pyramid = matches!(variant, Variant::Pyramid(_));
+    let no_runs = matches!(variant, Variant::Pyramid(_) | Variant::TriPeaks);
     let mut rows = vec![
         entry(
             &[Action::Up, Action::Down, Action::Left, Action::Right],
@@ -65,7 +66,7 @@ fn entries(variant: Variant, undo_allowed: bool, quick_move: bool) -> Vec<Entry>
             rows.push(entry(&[Action::QuickMove], "board.guide.quick"));
         }
     }
-    if !pyramid {
+    if !no_runs {
         rows.push(entry(
             &[Action::RunMore, Action::RunLess],
             "board.guide.run",
@@ -111,6 +112,7 @@ const fn goal_key(variant: Variant) -> &'static str {
         Variant::FreeCell | Variant::Yukon(_) => "board.guide.goal.freecell",
         Variant::Pyramid(_) => "board.guide.goal.pyramid",
         Variant::Golf => "rules.golf.goal",
+        Variant::TriPeaks => "rules.tripeaks.goal",
     }
 }
 

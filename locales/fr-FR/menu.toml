@@ -27,6 +27,7 @@ freecell = "Toutes les cartes sont visibles ; quatre cellules libres aident aux 
 pyramid = "Retire les paires dont la somme vaut 13 ; le roi se retire seul."
 yukon = "Toute carte visible se déplace avec les cartes posées dessus ; il n'y a pas de pioche."
 golf = "Joue les cartes des colonnes sur la défausse quand elles sont d'un rang plus haut ou plus bas."
+tripeaks = "Vide les trois pics sur la défausse en jouant des cartes d'un rang plus haut ou plus bas (R-A boucle)."
 
 [seed]
 title_game = "Nouvelle partie avec graine : {game}"
@@ -76,6 +77,7 @@ free_cell = "Famille FreeCell"
 pyramid = "Famille Pyramide"
 yukon = "Famille Yukon"
 golf = "Famille Golf"
+tri_peaks = "Famille TriPeaks"
 
 [search]
 label = "Chercher"

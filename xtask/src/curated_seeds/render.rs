@@ -43,6 +43,7 @@ fn variant_expr(variant: Variant) -> String {
         Variant::Pyramid(rules) => format!("Variant::Pyramid(PyramidRules::{rules:?})"),
         Variant::Yukon(rules) => format!("Variant::Yukon(YukonRules::{rules:?})"),
         Variant::Golf => "Variant::Golf".to_owned(),
+        Variant::TriPeaks => "Variant::TriPeaks".to_owned(),
     }
 }
 
