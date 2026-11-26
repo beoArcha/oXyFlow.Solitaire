@@ -7,6 +7,7 @@ pub(crate) mod klondike;
 pub(crate) mod progress;
 pub(crate) mod pyramid;
 pub(crate) mod spider;
+pub(crate) mod tripeaks;
 pub(crate) mod yukon;
 
 use crate::card::Card;

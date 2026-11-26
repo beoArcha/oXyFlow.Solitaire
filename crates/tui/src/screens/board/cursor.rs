@@ -58,7 +58,11 @@ pub(super) fn max_depth(snapshot: &PileSnapshot) -> usize {
 impl Cursor {
     /// Where the cursor starts: the first column, the bottom-left of a pyramid, else the first pile.
     pub(super) fn initial(piles: &[PileSnapshot]) -> Self {
-        let preferred = [PileRef::Tableau(0), PileRef::Pyramid { row: 6, index: 0 }];
+        let preferred = [
+            PileRef::Tableau(0),
+            PileRef::Pyramid { row: 6, index: 0 },
+            PileRef::Pyramid { row: 3, index: 0 },
+        ];
         let pile = preferred
             .into_iter()
             .find(|wanted| piles.iter().any(|snapshot| snapshot.pile == *wanted))

@@ -22,6 +22,7 @@ mod search;
 mod spider;
 #[cfg(test)]
 mod tests;
+mod tripeaks;
 mod yukon;
 
 use crate::game::{SuitCount, Variant, YukonRules, deal};
@@ -61,6 +62,7 @@ impl SolveBudget {
             Variant::Yukon(YukonRules::Australian) => DEFAULT_AUSTRALIAN_NODES,
             Variant::Yukon(_) => DEFAULT_YUKON_NODES,
             Variant::Golf => DEFAULT_GOLF_NODES,
+            Variant::TriPeaks => DEFAULT_TRIPEAKS_NODES,
         })
     }
 }
@@ -74,7 +76,8 @@ pub const fn has_model(variant: Variant) -> bool {
         | Variant::Spider(_)
         | Variant::Pyramid(_)
         | Variant::Yukon(_)
-        | Variant::Golf => true,
+        | Variant::Golf
+        | Variant::TriPeaks => true,
     }
 }
 
@@ -86,6 +89,7 @@ pub const DEFAULT_PYRAMID_NODES: u64 = 500_000;
 pub const DEFAULT_YUKON_NODES: u64 = 100_000;
 pub const DEFAULT_AUSTRALIAN_NODES: u64 = 300_000;
 pub const DEFAULT_GOLF_NODES: u64 = 2_000_000;
+pub const DEFAULT_TRIPEAKS_NODES: u64 = 2_000_000;
 
 /// A verdict together with the positions it cost.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -155,6 +159,10 @@ fn search_deal(variant: Variant, seed: u64, budget: SolveBudget) -> Searched {
             None => unknown(),
         },
         Variant::Golf => match golf::Position::from_piles(&piles) {
+            Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
+            None => unknown(),
+        },
+        Variant::TriPeaks => match tripeaks::Position::from_piles(&piles) {
             Some(start) => search::run(Strategy::DepthFirst, &start, budget.nodes, &finish),
             None => unknown(),
         },

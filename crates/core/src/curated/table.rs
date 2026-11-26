@@ -148,6 +148,16 @@ const TABLE: &[(Variant, Levels)] = &[
             [30, 33, 66],
         ],
     ),
+    (
+        Variant::TriPeaks,
+        [
+            [0, 29, 45],
+            [17, 18, 31],
+            [27, 37, 41],
+            [19, 32, 39],
+            [1, 8, 44],
+        ],
+    ),
 ];
 
 /// The levels of `variant`, when the table has them.

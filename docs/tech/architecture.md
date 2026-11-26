@@ -22,10 +22,10 @@ metadata.toml            canonical metadata (name, version, license, URL)
 about.toml about.hbs     cargo-about configuration and template for THIRD-PARTY-LICENSES.md (release time only, T-31)
 src/                     main.rs lib.rs about.rs cli.rs new_window.rs console.rs console/display.rs paths.rs storage/ logging.rs panic_hook.rs error.rs clipboard.rs solver.rs audio/
 crates/core/src/         card.rs deck.rs rng.rs pile.rs moves.rs rules.rs game.rs session.rs
-crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/ yukon/ golf/
+crates/core/src/games/   mod.rs (helpers shared by the games) klondike/ spider/ freecell/ pyramid/ yukon/ golf/ tripeaks/
                          (each: mod.rs rules.rs moves.rs tests.rs and tests/; yukon/ adds setup.rs)
 crates/core/src/solver/  mod.rs (API) face.rs hash.rs search/ (depth-first, best-first) klondike/ spider/
-                         freecell/ pyramid/ yukon/ golf/ (each: mod.rs position.rs steps.rs tests.rs) tests/
+                         freecell/ pyramid/ yukon/ golf/ tripeaks/ (each: mod.rs position.rs steps.rs tests.rs) tests/
 crates/core/tests/       playout.rs (random playouts over Variant::ALL)
                          solver_perf.rs (ignored benchmark: 50 seeds per variant)
                          flows/ (per-variant Session scenarios, golden deals, pinned save JSON)
@@ -75,9 +75,9 @@ impl Move { pub fn source(&self) -> Option<PileRef>; pub fn target(&self) -> Opt
 pub enum MoveError { /* rejection reasons: Unsupported, NoSuchPile, EmptySource, FaceDown,
                         InvalidSequence, TargetRejects, StockEmpty, EmptyColumnBlocksDeal, … */ }
 
-pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules), Yukon(YukonRules), Golf }
+pub enum Variant { Klondike(DrawCount), Spider(SuitCount), FreeCell, Pyramid(PyramidRules), Yukon(YukonRules), Golf, TriPeaks }
 impl Variant {
-    pub const ALL: [Variant; 14];                            // every concrete variant, menu order
+    pub const ALL: [Variant; 15];                            // every concrete variant, menu order
     pub const fn has_stock(self) -> bool;                   // false for FreeCell and Yukon except Australian Patience
 }
 pub enum DrawCount { One, Three }
@@ -117,7 +117,7 @@ Rules of the `Game` contract:
 - `Game` has no supertraits (no `Send`, no `Debug`): the TUI is single-threaded. A bound can be added later.
 - `stock_status` is read-only and derived from the game state, so undo, redo, restart and restore
   report the counters of the rebuilt game. Its shape is not serialized: no save format changes.
-- `is_covered` (O-105) is read-only and answers whether the card at a pyramid position is covered by a card still on the table, the same rule `legal_moves` uses. Every other game and every non-pyramid or empty pile answers `false`. The TUI uses it only to draw covered cards differently; it never decides a move from it.
+- `is_covered` (O-105) is read-only and answers whether the card at a pyramid or TriPeaks position is covered by a card still on the table, the same rule `legal_moves` uses. Every other game and every non-pyramid or empty pile answers `false`. The TUI uses it only to draw covered cards differently; it never decides a move from it.
 - `forced_finish` (P2-07) is pure, deterministic and cheap: it returns the moves that finish the game
   when the rest is a certain win and `None` otherwise (also for a won game). Applied in order through
   `apply` they are all legal and end in `is_won()`; each sequence is replayed on a clone before it is
@@ -128,6 +128,7 @@ Rules of the `Game` contract:
   onto the run they continue; Pyramid — a depth-first search over removals only (no draw, no recycle)
   with a budget of 5000 positions; Yukon — no face-down card, then the closure of foundation moves from
   the column tops empties the table; Golf — the same kind of search over column plays only (no stock
+  turn), budget 5000 positions; TriPeaks — the same kind of search over peak plays only (no stock
   turn), budget 5000 positions. `Session::forced_finish` delegates; nothing is applied until the
   caller plays the moves through `Session::apply`.
 - **The Yukon family (P4-10a):** `games/yukon/` plays every rule set with one move code. A rule set is a
@@ -160,6 +161,15 @@ Rules of the `Game` contract:
   `recycles_left: Some(0)`. Cards never leave the waste. The game is won when every column is empty,
   whatever is left in the stock. The hint is the play from the tallest column (the lowest on a tie),
   else the stock turn.
+- **TriPeaks (P6-05):** `games/tripeaks/`. 28 cards dealt into three overlapping peaks (`PileRef::Pyramid { row, index }`,
+  rows of 3, 6, 9 and 10; only row 3 starts face up, a card flips face up once both cards covering it
+  are gone), a stock of 23 and one waste started with 1 card (`PileRef::Stock`, `PileRef::Waste`), no
+  foundation. `Move::Transfer { from: Pyramid { .. }, to: Waste, count: 1 }` is legal when the
+  uncovered peak card is one rank higher or lower than the waste top in any suit, with King–Ace
+  wrapping (`games::tripeaks::KING_ACE_ADJACENT = true`). `Move::Stock` turns one card onto the
+  waste with no redeal (`recycles_left: Some(0)`). Cards never leave the waste. Won when all 28 peak
+  cards are cleared. The hint prefers a play that uncovers a parent card or opens follow-up plays,
+  else the stock turn.
 - The solver (P2-08, `crate::solver`, decision T-29) answers for one deal whether it can be won:
 
   ```rust
@@ -178,7 +188,8 @@ Rules of the `Game` contract:
   in the search for completeness. Golf (P5-04, decision T-45) is a depth-first model whose position is
   the column heights, the stock size and the rank of the waste top; no move is safe to make at once, so
   every play and the stock turn are steps, plays first, and the space is small enough that most deals
-  are exhausted.
+  are exhausted. TriPeaks (P6-05) is a depth-first model whose position is the 28-bit peak mask, the
+  stock size and the rank of the waste top, with a circular rank-group dead-position check.
 
   Pure and deterministic: the same input gives the same verdict, moves and node count. `Winnable`
   moves are replayed on a fresh `deal` and must end in `is_won()`, otherwise the answer is `Unknown`.
@@ -191,7 +202,7 @@ Rules of the `Game` contract:
   128-bit canonical keys (column and cell order ignored). Spider with 2 and 4 suits mostly answers
   `Unknown`. `SolveBudget::default_for` is tuned to about half a second per deal in a release build.
 - Serialized names are snake_case: `{"klondike":"three"}`, `"free_cell"`, `{"pyramid":"classic"}`,
-  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`, `{"yukon":"australian"}`, `"golf"`.
+  `{"yukon":"classic"}`, `{"yukon":"russian"}`, `{"yukon":"alaska"}`, `{"yukon":"moosehide"}`, `{"yukon":"australian"}`, `"golf"`, `"tri_peaks"`.
 
 The session implements history by replaying the move log from the seed (decision T-03):
 
@@ -387,7 +398,7 @@ pub struct NullClipboard;                                // every copy fails wit
   Tab / Shift+Tab (all tabs, wrapping), Left-Right (Keys and Command line), `?` and `i` and mouse clicks.
   The Command line tab (`overlay/command_line.rs`) shows the `cli.help` text, the same key `--help` prints, so
   the two cannot differ; it scrolls by Up/Down/PgUp/PgDn/Home/End and the wheel inside the box of the Keys tab. The rules tab (`widgets/overlay/how_to_play/`)
-  provides tabs for Klondike, Spider, FreeCell, Pyramid, Yukon and Golf, sections Goal, Layout, Moves, Controls and Tips from
+  provides tabs for Klondike, Spider, FreeCell, Pyramid, Yukon, Golf and TriPeaks, sections Goal, Layout, Moves, Controls and Tips from
   `locales/*/rules.toml`, scrolling its text inside the dialog box. The Controls keys are read from `KEY_TABLE`;
   texts name keys through placeholders such as `{hint}`. It opens through `Effect::HowToPlay` (main-menu item
   "How to play", and `Action::Rules`, key `i`, handled by `App` on every screen like `Action::Help`); `App`
@@ -928,7 +939,7 @@ feature they fail with that hint. `cargo xtask check` builds and tests `xtask` w
 (a unit test) still runs in every gate. `fonts` needs only Python and stays light.
 
 Curated deals (P5-06, decision T-49): `oxysol_core::curated` reads `crates/core/src/curated/table.rs`, three seeds per
-difficulty level (very easy to very hard) for each of the 14 variants, and `cargo xtask-art curated-seeds` writes that
+difficulty level (very easy to very hard) for each of the 15 variants, and `cargo xtask-art curated-seeds` writes that
 table and `docs/tech/curated-seeds.md` (E, L, H and D of every chosen seed). The generator scans seeds from 0 with
 `solve_report` at `SolveBudget::default_for`, plays `Game::hint()` alone, scores the pool by rank percentiles, cuts it
 into five quintiles, and replays every chosen seed before writing. Run it in a release build:

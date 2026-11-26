@@ -31,6 +31,7 @@ mod quick_off;
 mod recycle;
 mod restarts;
 mod run_wrap;
+mod tripeaks;
 mod waste_quick;
 mod waste_quick_hints;
 mod yukon_hints;

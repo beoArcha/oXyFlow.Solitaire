@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Pirâmide"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Objetivo"
@@ -116,4 +117,16 @@ moves_3 = "Cada carta jogada passa a ser a nova carta do topo do descarte, entã
 moves_4 = "Quando nenhuma carta de coluna servir, vire a próxima carta do monte no descarte. Com o monte vazio e nenhuma carta que sirva, você está sem saída."
 tips_1 = "Procure a sequência mais longa que você pode jogar antes de virar uma carta do monte."
 tips_2 = "Uma sequência que alterna entre colunas mantém a cadeia, então planeje qual coluna esvaziar primeiro."
+tips_3 = "Preso? Pressione {hint} para uma dica ou {undo} para desfazer uma jogada."
+
+[tripeaks]
+goal = "Limpe todas as 28 cartas dos três picos jogando-as no descarte."
+layout_1 = "28 cartas formam três picos sobrepostos em fileiras de 3, 6, 9 e 10. Só a fileira inferior começa aberta; uma carta oculta vira para cima quando as duas cartas sobre ela saem."
+layout_2 = "Uma carta inicia o descarte; as outras 23 formam o monte. Não há fundações nem nova distribuição."
+moves_1 = "Jogue uma carta aberta e livre de um pico no descarte quando seu valor for um acima ou um abaixo do topo do descarte, de qualquer naipe: um 7 vai sobre um 6 ou um 8."
+moves_2 = "Rei e ás se conectam: um rei pode ser jogado sobre um ás, e um ás sobre um rei."
+moves_3 = "Cada carta jogada passa a ser o novo topo do descarte, então uma sequência pode subir, descer ou mudar de sentido."
+moves_4 = "Quando nenhuma carta dos picos servir, vire a próxima carta do monte no descarte. Com o monte vazio e nenhuma carta que sirva, você está sem saída."
+tips_1 = "Procure sequências longas que revelem cartas ocultas nos picos."
+tips_2 = "Use as conexões entre rei e ás para ligar sequências altas e baixas antes de virar o monte."
 tips_3 = "Preso? Pressione {hint} para uma dica ou {undo} para desfazer uma jogada."

@@ -222,6 +222,24 @@ const GOLF: Page = Page {
     ],
 };
 
+const TRIPEAKS: Page = Page {
+    goal: &["rules.tripeaks.goal"],
+    layout: &["rules.tripeaks.layout_1", "rules.tripeaks.layout_2"],
+    moves: &[
+        "rules.tripeaks.moves_1",
+        "rules.tripeaks.moves_2",
+        "rules.tripeaks.moves_3",
+        "rules.tripeaks.moves_4",
+    ],
+    controls: &[NAVIGATE, SELECT, BACK, STOCK, QUICK_MOVE, UNDO, HINT],
+    controls_note: "rules.control.mouse",
+    tips: &[
+        "rules.tripeaks.tips_1",
+        "rules.tripeaks.tips_2",
+        "rules.tripeaks.tips_3",
+    ],
+};
+
 /// The page of `rules`.
 pub const fn page(rules: Rules) -> Page {
     match rules {
@@ -231,5 +249,6 @@ pub const fn page(rules: Rules) -> Page {
         Rules::Pyramid => PYRAMID,
         Rules::Yukon => YUKON,
         Rules::Golf => GOLF,
+        Rules::TriPeaks => TRIPEAKS,
     }
 }

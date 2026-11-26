@@ -8,7 +8,8 @@ fn difficulty_key(variant: Variant) -> &'static str {
     match variant {
         Variant::Klondike(DrawCount::One)
         | Variant::Spider(SuitCount::One)
-        | Variant::Pyramid(PyramidRules::Relaxed) => "menu.difficulty.easy",
+        | Variant::Pyramid(PyramidRules::Relaxed)
+        | Variant::TriPeaks => "menu.difficulty.easy",
         Variant::Klondike(DrawCount::Three)
         | Variant::Spider(SuitCount::Two)
         | Variant::FreeCell
@@ -28,6 +29,7 @@ const fn game_hint_key(variant: Variant) -> &'static str {
         Variant::Pyramid(_) => "menu.game_hint.pyramid",
         Variant::Yukon(_) => "menu.game_hint.yukon",
         Variant::Golf => "menu.game_hint.golf",
+        Variant::TriPeaks => "menu.game_hint.tripeaks",
     }
 }
 

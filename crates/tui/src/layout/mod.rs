@@ -19,6 +19,7 @@ mod render_tests;
 mod size;
 #[cfg(test)]
 mod tests;
+mod tripeaks;
 #[cfg(test)]
 mod zoom_tests;
 
@@ -130,6 +131,7 @@ pub fn compute_with(
 ) -> BoardGeometry {
     let mut geometry = match variant {
         Variant::Pyramid(_) => pyramid::compute(piles, area, limit, wider_fan),
+        Variant::TriPeaks => tripeaks::compute(piles, area, limit, wider_fan),
         _ => columns::compute(variant, piles, area, limit, wider_fan),
     };
     geometry.clamp(area);

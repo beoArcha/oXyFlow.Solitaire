@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Pyramide"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Ziel"
@@ -116,4 +117,16 @@ moves_3 = "Jede gespielte Karte wird zur neuen obersten Karte des Ablagestapels,
 moves_4 = "Passt keine Spaltenkarte, decke die nächste Karte des Talons auf. Ist der Talon leer und nichts passt, steckst du fest."
 tips_1 = "Suche die längste Folge, die du spielen kannst, bevor du eine Talonkarte aufdeckst."
 tips_2 = "Eine Folge, die zwischen Spalten wechselt, hält die Kette am Laufen; plane also, welche Spalte du zuerst leerst."
+tips_3 = "Steckst du fest? Drücke {hint} für einen Tipp oder {undo}, um einen Zug zurückzunehmen."
+
+[tripeaks]
+goal = "Räume alle 28 Karten der drei Gipfel ab, indem du sie auf den Ablagestapel spielst."
+layout_1 = "28 Karten bilden drei überlappende Gipfel in Reihen zu 3, 6, 9 und 10 Karten. Nur die unterste Reihe liegt anfangs offen; eine verdeckte Karte wird aufgedeckt, sobald beide Karten auf ihr fort sind."
+layout_2 = "Eine Karte beginnt den Ablagestapel; die übrigen 23 bilden den Talon. Es gibt kein Fundament und kein erneutes Austeilen."
+moves_1 = "Spiele eine freie offene Gipfelkarte auf den Ablagestapel, wenn ihr Rang einen höher oder niedriger ist als die oberste Ablagekarte, in beliebiger Farbe: eine 7 passt auf eine 6 oder eine 8."
+moves_2 = "König und Ass gehen ineinander über: Ein König passt auf ein Ass und ein Ass auf einen König."
+moves_3 = "Jede gespielte Karte wird zur neuen obersten Karte des Ablagestapels, sodass eine Folge aufwärts, abwärts oder in wechselnder Richtung laufen kann."
+moves_4 = "Passt keine Gipfelkarte, decke die nächste Karte des Talons auf. Ist der Talon leer und nichts passt, steckst du fest."
+tips_1 = "Suche lange Folgen, die verdeckte Karten in den Gipfeln freilegen."
+tips_2 = "Nutze den Übergang zwischen König und Ass, um hohe und niedrige Reihen zu verbinden, bevor du vom Talon ziehst."
 tips_3 = "Steckst du fest? Drücke {hint} für einen Tipp oder {undo}, um einen Zug zurückzunehmen."

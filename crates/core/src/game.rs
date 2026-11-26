@@ -6,6 +6,7 @@ use crate::games::golf::Golf;
 use crate::games::klondike::Klondike;
 use crate::games::pyramid::Pyramid;
 use crate::games::spider::Spider;
+use crate::games::tripeaks::TriPeaks;
 use crate::games::yukon::Yukon;
 use crate::moves::{Move, MoveError};
 use crate::pile::{PileRef, PileSnapshot};
@@ -81,11 +82,12 @@ pub enum Variant {
     Pyramid(PyramidRules),
     Yukon(YukonRules),
     Golf,
+    TriPeaks,
 }
 
 impl Variant {
     /// Every concrete variant the menu can offer.
-    pub const ALL: [Variant; 14] = [
+    pub const ALL: [Variant; 15] = [
         Variant::Klondike(DrawCount::One),
         Variant::Klondike(DrawCount::Three),
         Variant::Spider(SuitCount::One),
@@ -100,6 +102,7 @@ impl Variant {
         Variant::Yukon(YukonRules::Moosehide),
         Variant::Yukon(YukonRules::Australian),
         Variant::Golf,
+        Variant::TriPeaks,
     ];
 
     /// Whether the variant deals part of the deck to a stock: every game except FreeCell and the
@@ -142,8 +145,8 @@ pub trait Game {
     fn forced_finish(&self) -> Option<Vec<Move>>;
 
     /// Whether the card at `pile` is covered by a card still on the table, so that it may not leave
-    /// yet. Read-only. Only Pyramid has covered cards; every other game, and every pile that is not
-    /// a pyramid position or is empty, answers `false`.
+    /// yet. Read-only. Only Pyramid and TriPeaks have covered cards; every other game, and every
+    /// pile that is not a peak/pyramid position or is empty, answers `false`.
     fn is_covered(&self, _pile: PileRef) -> bool {
         false
     }
@@ -158,6 +161,7 @@ pub fn deal(variant: Variant, seed: u64) -> Box<dyn Game> {
         Variant::Pyramid(rules) => Box::new(Pyramid::deal(rules, seed)),
         Variant::Yukon(rules) => Box::new(Yukon::deal(rules, seed)),
         Variant::Golf => Box::new(Golf::deal(seed)),
+        Variant::TriPeaks => Box::new(TriPeaks::deal(seed)),
     }
 }
 
@@ -177,22 +181,22 @@ mod tests {
     }
 
     #[test]
-    fn only_pyramid_reports_covered_cards_on_a_fresh_deal() {
+    fn only_pyramid_and_tripeaks_report_covered_cards_on_a_fresh_deal() {
         for variant in Variant::ALL {
             let game = deal(variant, 7);
             let any_covered = game.piles().iter().any(|pile| game.is_covered(pile.pile));
             assert_eq!(
                 any_covered,
-                matches!(variant, Variant::Pyramid(_)),
+                matches!(variant, Variant::Pyramid(_) | Variant::TriPeaks),
                 "{variant:?}"
             );
         }
     }
 
     #[test]
-    fn all_lists_fourteen_distinct_variants() {
+    fn all_lists_fifteen_distinct_variants() {
         let unique: HashSet<_> = Variant::ALL.iter().collect();
-        assert_eq!(unique.len(), 14);
+        assert_eq!(unique.len(), 15);
     }
 
     #[test]
@@ -233,6 +237,7 @@ mod tests {
                 r#"{"yukon":"australian"}"#,
             ),
             (Variant::Golf, r#""golf""#),
+            (Variant::TriPeaks, r#""tri_peaks""#),
         ];
         assert_eq!(cases.len(), Variant::ALL.len());
         for (variant, json) in cases {

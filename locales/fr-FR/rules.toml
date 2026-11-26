@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Pyramide"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Objectif"
@@ -116,4 +117,16 @@ moves_3 = "Chaque carte jouée devient la nouvelle carte du dessus de la défaus
 moves_4 = "Quand aucune carte de colonne ne convient, retourne la carte suivante de la pioche sur la défausse. Pioche vide et aucune carte jouable : tu es bloqué."
 tips_1 = "Cherche la plus longue suite que tu peux jouer avant de retourner une carte de la pioche."
 tips_2 = "Une suite qui passe d'une colonne à l'autre prolonge la chaîne ; prévois donc quelle colonne vider en premier."
+tips_3 = "Bloqué ? Appuie sur {hint} pour un conseil, ou sur {undo} pour annuler un coup."
+
+[tripeaks]
+goal = "Retire les 28 cartes des trois pics en les jouant sur la défausse."
+layout_1 = "28 cartes forment trois pics qui se chevauchent en rangées de 3, 6, 9 et 10. Seule la rangée du bas commence face visible ; une carte cachée est retournée dès que les deux cartes qui la recouvrent sont retirées."
+layout_2 = "Une carte commence la défausse ; les 23 autres forment la pioche. Il n'y a ni fondation ni nouvelle donne."
+moves_1 = "Joue une carte visible et dégagée d'un pic sur la défausse quand son rang est d'un cran plus haut ou plus bas que la carte du dessus de la défausse, dans n'importe quelle couleur : un 7 va sur un 6 ou un 8."
+moves_2 = "Le roi et l'as bouclent entre eux : un roi va sur un as et un as va sur un roi."
+moves_3 = "Chaque carte jouée devient la nouvelle carte du dessus de la défausse : une suite peut monter, descendre ou changer de sens."
+moves_4 = "Quand aucune carte des pics ne convient, retourne la carte suivante de la pioche sur la défausse. Pioche vide et aucune carte jouable : tu es bloqué."
+tips_1 = "Cherche de longues suites qui découvrent des cartes face cachée dans les pics."
+tips_2 = "Utilise les boucles entre roi et as pour relier les séries hautes et basses avant de piocher."
 tips_3 = "Bloqué ? Appuie sur {hint} pour un conseil, ou sur {undo} pour annuler un coup."

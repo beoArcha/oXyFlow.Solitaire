@@ -7,3 +7,4 @@ mod golf;
 mod record;
 mod scenario;
 mod stock;
+mod tripeaks;

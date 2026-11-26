@@ -10,7 +10,7 @@ build: `cargo run --release -p xtask --features art -- curated-seeds`.
 - D = 0.6 · pct(E) + 0.4 · pct(L) − 0.3 · H, where pct is the rank percentile within the pool.
 - Levels: the pool sorted by D, cut into five equal quintiles (very easy first); in each, the three seeds
   nearest the quintile's median D.
-- Run time of this generation: 214 s.
+- Run time of this generation: 164 s.
 
 ## Klondike(One)
 
@@ -319,4 +319,26 @@ Pool: 60 winnable seeds; scanned seeds 0 to 134.
 | very hard | 30 | 484763 | 51 | 0 | 0.7864 |
 | very hard | 33 | 478842 | 51 | 0 | 0.7661 |
 | very hard | 66 | 479659 | 51 | 0 | 0.7763 |
+
+## TriPeaks
+
+Pool: 60 winnable seeds; scanned seeds 0 to 62.
+
+| Level | Seed | E | L | H | D |
+| --- | --- | --- | --- | --- | --- |
+| very easy | 0 | 46 | 45 | 1 | -0.1695 |
+| very easy | 29 | 48 | 47 | 1 | -0.0780 |
+| very easy | 45 | 48 | 47 | 1 | -0.0780 |
+| easy | 17 | 51 | 50 | 1 | 0.1746 |
+| easy | 18 | 51 | 50 | 1 | 0.1746 |
+| easy | 31 | 51 | 50 | 1 | 0.1746 |
+| medium | 27 | 200 | 48 | 0 | 0.4644 |
+| medium | 37 | 142 | 49 | 0 | 0.4949 |
+| medium | 41 | 51 | 50 | 0 | 0.4746 |
+| hard | 19 | 8437 | 47 | 0 | 0.6034 |
+| hard | 32 | 1428 | 49 | 0 | 0.6068 |
+| hard | 39 | 1492 | 49 | 0 | 0.6271 |
+| very hard | 1 | 12917 | 50 | 0 | 0.8102 |
+| very hard | 8 | 3824 | 51 | 0 | 0.8136 |
+| very hard | 44 | 21528 | 50 | 0 | 0.8305 |
 

@@ -8,6 +8,7 @@ freecell = "FreeCell"
 pyramid = "Piramide"
 yukon = "Yukon"
 golf = "Golf"
+tripeaks = "TriPeaks"
 
 [section]
 goal = "Doel"
@@ -116,4 +117,16 @@ moves_3 = "Elke gespeelde kaart wordt de nieuwe bovenste kaart van de aflegstape
 moves_4 = "Past er geen kolomkaart, draai dan de volgende kaart van de stapel om. Met een lege stapel en geen passende kaart zit je vast."
 tips_1 = "Zoek de langste reeks die je kunt spelen voordat je een kaart van de stapel omdraait."
 tips_2 = "Een reeks die tussen kolommen wisselt houdt de keten gaande, dus plan welke kolom je eerst leegmaakt."
+tips_3 = "Zit je vast? Druk op {hint} voor een hint of op {undo} om een zet terug te nemen."
+
+[tripeaks]
+goal = "Ruim alle 28 kaarten van de drie pieken op door ze op de aflegstapel te spelen."
+layout_1 = "28 kaarten vormen drie overlappende pieken in rijen van 3, 6, 9 en 10. Alleen de onderste rij ligt open; een dichte kaart wordt omgedraaid zodra beide kaarten erop weg zijn."
+layout_2 = "Eén kaart begint de aflegstapel; de overige 23 vormen de stapel. Er is geen fundering en geen nieuwe deling."
+moves_1 = "Speel een vrije open piekkaart op de aflegstapel als zijn rang één hoger of lager is dan de bovenste aflegkaart, in elke kleur: een 7 gaat op een 6 of een 8."
+moves_2 = "Heer en aas lopen door: een heer past op een aas en een aas op een heer."
+moves_3 = "Elke gespeelde kaart wordt de nieuwe bovenste kaart van de aflegstapel, dus een reeks kan omhoog, omlaag of van richting wisselen."
+moves_4 = "Past er geen piekkaart, draai dan de volgende kaart van de stapel om. Met een lege stapel en geen passende kaart zit je vast."
+tips_1 = "Zoek lange reeksen waarmee je dichte kaarten in de pieken vrijmaakt."
+tips_2 = "Gebruik de overgang tussen heer en aas om hoge en lage reeksen te verbinden voordat je een kaart van de stapel draait."
 tips_3 = "Zit je vast? Druk op {hint} voor een hint of op {undo} om een zet terug te nemen."

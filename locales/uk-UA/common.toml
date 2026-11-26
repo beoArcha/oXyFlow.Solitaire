@@ -33,6 +33,7 @@ yukon_alaska = "Аляска"
 yukon_moosehide = "Moosehide"
 yukon_australian = "Австралійський"
 golf = "Гольф"
+tri_peaks = "TriPeaks"
 
 [settings]
 title = "Налаштування"
