@@ -5,6 +5,7 @@ display = "Display"
 game = "Game"
 general = "App"
 mouse = "Mouse"
+game_menu = "Game menu"
 
 [action]
 up = "Up"
@@ -45,6 +46,22 @@ dock_focus = "Focus the docked window"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Terminal zoom (Mac: Cmd)"
+
+[game_menu_keys]
+page = "PgUp / PgDn"
+home_end = "Home / End"
+search = "/"
+winnable = "w"
+fold = "Left / Right"
+fold_heading = "Enter / Space"
+
+[game_menu]
+page = "One page up or down the list"
+home_end = "First / last game"
+search = "Search games by name"
+winnable = "Winnable deals on or off"
+fold = "Fold or unfold the family"
+fold_heading = "Fold or unfold a heading"
 
 [mouse_keys]
 click_card = "Click a card"

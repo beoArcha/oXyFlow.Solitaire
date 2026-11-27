@@ -5,6 +5,7 @@ display = "Pantalla"
 game = "Juego"
 general = "Aplicación"
 mouse = "Ratón"
+game_menu = "Menú de juego"
 
 [action]
 up = "Arriba"
@@ -45,6 +46,22 @@ dock_focus = "Foco en la ventana anclada"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Zoom del terminal (Mac: Cmd)"
+
+[game_menu_keys]
+page = "Re Pág / Av Pág"
+home_end = "Inicio / Fin"
+search = "/"
+winnable = "w"
+fold = "Izq. / Der."
+fold_heading = "Enter/Espacio"
+
+[game_menu]
+page = "Una página arriba o abajo"
+home_end = "Primer / último juego"
+search = "Buscar juegos por nombre"
+winnable = "Partidas ganables sí/no"
+fold = "Plegar o desplegar familia"
+fold_heading = "Plegar o desplegar cabecera"
 
 [mouse_keys]
 click_card = "Clic en una carta"

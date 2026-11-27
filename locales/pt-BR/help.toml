@@ -5,6 +5,7 @@ display = "Vídeo"
 game = "Jogo"
 general = "Aplicativo"
 mouse = "Mouse"
+game_menu = "Menu de jogo"
 
 [action]
 up = "Cima"
@@ -45,6 +46,22 @@ dock_focus = "Focar a janela ancorada"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Zoom do terminal (Mac: Cmd)"
+
+[game_menu_keys]
+page = "Pg Up / Pg Dn"
+home_end = "Home / End"
+search = "/"
+winnable = "w"
+fold = "Esquerda / Direita"
+fold_heading = "Enter / Espaço"
+
+[game_menu]
+page = "Uma página para cima/baixo"
+home_end = "Primeiro / último jogo"
+search = "Buscar jogos pelo nome"
+winnable = "Jogos vencíveis lig./desl."
+fold = "Recolher/expandir a família"
+fold_heading = "Recolher/expandir o título"
 
 [mouse_keys]
 click_card = "Clicar na carta"

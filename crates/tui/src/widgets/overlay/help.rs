@@ -1,7 +1,7 @@
-//! The help window: every binding of the key table grouped by topic, then the mouse gestures. It is
-//! generated from [`KEY_TABLE`], so a new binding appears here without further work. The topics
-//! sit in two columns, one under the other without blank rows (the bold heading separates them), so
-//! the whole list fits a 100 × 30 terminal.
+//! The help window: every binding of the key table grouped by topic, then the game menu keys and
+//! the mouse gestures. It is generated from [`KEY_TABLE`], so a new binding appears here without
+//! further work. The topics sit in two columns, one under the other without blank rows (the bold
+//! heading separates them), so the whole list fits a 100 × 30 terminal.
 
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
@@ -74,6 +74,7 @@ pub(super) fn draw_rule(frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
     );
 }
 
+mod game_menu;
 const GESTURES: [(&str, &str); 5] = [
     ("help.mouse_keys.click_card", "help.mouse.click_card"),
     ("help.mouse_keys.click_stock", "help.mouse.click_stock"),
@@ -106,7 +107,7 @@ fn terminal_zoom(group: HelpGroup) -> Option<Row> {
     })
 }
 
-/// Every topic: the key table grouped by [`HelpGroup`], then the mouse gestures.
+/// Every topic: the key table grouped by [`HelpGroup`], then the game menu keys and the mouse gestures.
 pub fn sections() -> Vec<Section> {
     let mut sections: Vec<Section> = HelpGroup::ALL
         .into_iter()
@@ -128,6 +129,7 @@ pub fn sections() -> Vec<Section> {
                 .collect(),
         })
         .collect();
+    sections.push(game_menu::section());
     sections.push(Section {
         title: t("help.group.mouse").into_owned(),
         rows: GESTURES
