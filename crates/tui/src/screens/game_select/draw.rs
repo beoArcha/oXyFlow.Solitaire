@@ -151,6 +151,7 @@ impl GameSelect {
 
     fn draw_list(&mut self, frame: &mut Frame, area: Rect, rows: &[Row], ctx: &ViewCtx<'_>) {
         if rows.is_empty() {
+            self.list.clear_layout();
             search::draw_no_match(frame, area, self.query(), ctx);
             return;
         }

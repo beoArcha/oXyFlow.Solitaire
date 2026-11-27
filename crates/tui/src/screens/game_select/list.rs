@@ -1,7 +1,7 @@
 //! The scrolling list of the game menu: headings and variants, one row each. Both headings and
 //! variants take the focus. The focused row has a marker before it and reverse video; a variant's
 //! marks (the favourite sign and the popularity star) are drawn before its name, and a click on
-//! them toggles the favourite. Wheel and edge-mark clicks scroll without moving focus off a
+//! them toggles the favourite. Wheel and scroll-bar clicks/drags scroll without moving focus off a
 //! visible row; keyboard navigation keeps the focused row and its heading in view.
 
 use oxysol_core::Variant;
@@ -19,6 +19,7 @@ use crate::mouse::{contains, left_press, wheel_action};
 use crate::screens::ViewCtx;
 use crate::screens::focus::marker;
 use crate::theme::Token;
+use crate::widgets::scrollbar::{self, Metrics};
 
 const MARKS_WIDTH: usize = 6;
 const MARKS_OFFSET: u16 = 2;
@@ -53,15 +54,15 @@ pub(super) struct Content<'a> {
     pub label_of: &'a dyn Fn(Variant) -> String,
 }
 
-/// The focus, the scroll position and the rectangles of the rows and edge marks drawn last.
+/// The focus, the scroll position and the rectangles of the rows and scroll bar drawn last.
 #[derive(Debug, Default)]
 pub(super) struct ListView {
     focused: Option<FocusItem>,
     scroll: usize,
     area: Rect,
     view_height: usize,
-    up_mark: Option<Rect>,
-    down_mark: Option<Rect>,
+    track: Rect,
+    drag: Option<u16>,
     hits: Vec<Hit>,
 }
 
@@ -208,6 +209,14 @@ impl ListView {
         self.view_height.max(1)
     }
 
+    fn metrics(&self, total: usize) -> Metrics {
+        Metrics {
+            total,
+            view: self.page_size(),
+            offset: self.scroll,
+        }
+    }
+
     pub(super) fn focused_row(&self, rows: &[Row], favourites: &[Variant]) -> Option<usize> {
         resolve_position(rows, self.focused, favourites)
     }
@@ -221,9 +230,16 @@ impl ListView {
         self.focused = Some(item);
     }
 
+    pub(super) fn clear_layout(&mut self) {
+        self.hits.clear();
+        self.track = Rect::default();
+        self.drag = None;
+    }
+
     pub(super) fn reset(&mut self) {
         self.focused = None;
         self.scroll = 0;
+        self.clear_layout();
     }
 
     pub(super) fn focus_first(&mut self, rows: &[Row]) {
@@ -284,15 +300,19 @@ impl ListView {
         }
     }
 
-    pub(super) fn scroll_by(&mut self, delta: isize, rows: &[Row], favourites: &[Variant]) {
+    pub(super) fn scroll_to(&mut self, offset: usize, rows: &[Row], favourites: &[Variant]) {
         let height = self.page_size();
         let max_scroll = rows.len().saturating_sub(height);
-        self.scroll = self.scroll.saturating_add_signed(delta).min(max_scroll);
+        self.scroll = offset.min(max_scroll);
         if let Some(pos) = self.focused_row(rows, favourites)
             && let Some(next) = nearest_visible_target(rows, self.scroll, height, pos)
         {
             self.focused = rows[next].focus_item();
         }
+    }
+
+    pub(super) fn scroll_by(&mut self, delta: isize, rows: &[Row], favourites: &[Variant]) {
+        self.scroll_to(self.scroll.saturating_add_signed(delta), rows, favourites);
     }
 
     pub(super) fn keep_resolved_in_view(&mut self, rows: &[Row], favourites: &[Variant]) {
@@ -303,7 +323,7 @@ impl ListView {
         }
     }
 
-    /// Handles the wheel over the list, edge-mark clicks, and row clicks.
+    /// Handles the wheel over the list, scroll-bar paging and dragging, and row clicks.
     pub(super) fn on_mouse(
         &mut self,
         event: &MouseEvent,
@@ -322,16 +342,19 @@ impl ListView {
             self.scroll_by(delta, rows, favourites);
             return Some(MouseOutcome::Handled);
         }
+        let metrics = self.metrics(rows.len());
+        if !metrics.scrolls() {
+            self.drag = None;
+        }
+        let was_dragging = self.drag.is_some();
+        if let Some(offset) = scrollbar::handle_mouse(event, self.track, metrics, &mut self.drag) {
+            self.scroll_to(offset, rows, favourites);
+            return Some(MouseOutcome::Handled);
+        }
+        if !was_dragging && self.drag.is_some() {
+            return Some(MouseOutcome::Handled);
+        }
         let cell = left_press(event)?;
-        let page = isize::try_from(self.page_size()).unwrap_or(isize::MAX);
-        if self.up_mark.is_some_and(|mark| contains(mark, cell)) {
-            self.scroll_by(-page, rows, favourites);
-            return Some(MouseOutcome::Handled);
-        }
-        if self.down_mark.is_some_and(|mark| contains(mark, cell)) {
-            self.scroll_by(page, rows, favourites);
-            return Some(MouseOutcome::Handled);
-        }
         let hit = self.hits.iter().find(|hit| contains(hit.row, cell))?;
         match hit.target {
             HitTarget::Heading(heading) => {
@@ -380,7 +403,7 @@ impl ListView {
         }
     }
 
-    /// Draws the visible rows in `area` and remembers where they and the edge marks are.
+    /// Draws the visible rows in `area` and the scroll bar when the list scrolls.
     pub(super) fn draw(
         &mut self,
         frame: &mut Frame,
@@ -393,13 +416,26 @@ impl ListView {
         let height = usize::from(area.height).max(1);
         self.view_height = height;
         self.hits.clear();
-        self.up_mark = None;
-        self.down_mark = None;
         let rows = content.rows;
         self.clamp_in_view(rows, height, content.favourites);
+        let metrics = self.metrics(rows.len());
+        let scrolls = metrics.scrolls();
+        if !scrolls {
+            self.drag = None;
+        }
         let focus_pos = self.focused_row(rows, content.favourites);
         let width = block_width(content).min(area.width);
+        let row_width = if scrolls {
+            width.saturating_sub(1)
+        } else {
+            width
+        };
         let x = area.x + (area.width - width) / 2;
+        self.track = if scrolls && width > 0 && area.height > 0 {
+            Rect::new(x + width.saturating_sub(1), area.y, 1, area.height)
+        } else {
+            Rect::default()
+        };
         for (offset, (row_idx, row)) in rows
             .iter()
             .enumerate()
@@ -410,7 +446,7 @@ impl ListView {
             let Ok(offset) = u16::try_from(offset) else {
                 break;
             };
-            let line = Rect::new(x, area.y + offset, width, 1);
+            let line = Rect::new(x, area.y + offset, row_width, 1);
             let focused = active && focus_pos == Some(row_idx);
             match row {
                 Row::Heading {
@@ -437,33 +473,7 @@ impl ListView {
                 }
             }
         }
-        self.draw_edges(frame, area, rows.len(), x + width.saturating_sub(1), ctx);
-    }
-
-    fn draw_edges(
-        &mut self,
-        frame: &mut Frame,
-        area: Rect,
-        total: usize,
-        x: u16,
-        ctx: &ViewCtx<'_>,
-    ) {
-        let (up, down) = if ctx.glyphs.unicode {
-            ("↑", "↓")
-        } else {
-            ("^", "v")
-        };
-        let muted = ctx.theme.style(Token::TextMuted, Token::Background);
-        if self.scroll > 0 {
-            let cell = Rect::new(x, area.y, 1, 1);
-            frame.render_widget(Paragraph::new(Line::styled(up, muted)), cell);
-            self.up_mark = Some(cell);
-        }
-        if self.scroll + usize::from(area.height) < total && area.height > 0 {
-            let cell = Rect::new(x, area.y + area.height - 1, 1, 1);
-            frame.render_widget(Paragraph::new(Line::styled(down, muted)), cell);
-            self.down_mark = Some(cell);
-        }
+        scrollbar::draw(frame, self.track, metrics, ctx);
     }
 }
 

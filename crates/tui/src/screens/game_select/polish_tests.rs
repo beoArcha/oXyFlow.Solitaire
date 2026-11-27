@@ -103,16 +103,25 @@ fn the_description_has_an_empty_row_above_it() {
 fn an_empty_row_separates_the_favorites_from_the_first_family() {
     let mut h = select(Locale::EnUs);
     h.type_char('f');
+    fn row_text(line: &str) -> &str {
+        let trimmed = line.trim();
+        trimmed
+            .strip_suffix(['█', '░', '#', ':'])
+            .map_or(trimmed, str::trim_end)
+    }
     let lines = lines_of(&mut h);
     let heading = lines
         .iter()
-        .position(|line| line.trim() == format!("[-] {}", t("menu.favourites")))
+        .position(|line| row_text(line) == format!("[-] {}", t("menu.favourites")))
         .unwrap_or_default();
     assert!(heading > 0, "the favorites heading is not drawn: {lines:?}");
-    assert!(!lines[heading + 1].trim().is_empty());
-    assert!(lines[heading + 2].trim().is_empty(), "no empty row below");
+    assert!(!row_text(&lines[heading + 1]).is_empty());
+    assert!(
+        row_text(&lines[heading + 2]).is_empty(),
+        "no empty row below"
+    );
     assert_eq!(
-        lines[heading + 3].trim(),
+        row_text(&lines[heading + 3]),
         format!("[-] {}", t("menu.family.klondike")),
         "the first family does not follow the empty row"
     );

@@ -480,13 +480,11 @@ fn is_focused_variant_line(line: &str, label: &str) -> bool {
     let Some(at) = line.find('►').or_else(|| line.find('>')) else {
         return false;
     };
-    let rest = line[at..].trim_start_matches(['►', '>', ' ']);
-    !rest.starts_with('[')
-        && rest
-            .splitn(3, ' ')
-            .nth(2)
-            .map(str::trim)
-            .is_some_and(|n| n == label || n.starts_with(&format!("{label}  ")))
+    let s = line[at..].trim_end();
+    let s = s.strip_suffix(['█', '░', '#', ':']).unwrap_or(s).trim_end();
+    let r = s.trim_start_matches(['►', '>', ' ']);
+    let name = r.splitn(3, ' ').nth(2).map(str::trim);
+    !r.starts_with('[') && name.is_some_and(|n| n == label || n.starts_with(&format!("{label}  ")))
 }
 
 fn find_pane_title(buffer: &Buffer) -> Option<(u16, u16, u16)> {

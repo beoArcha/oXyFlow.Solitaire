@@ -605,8 +605,9 @@ pub struct NullClipboard;                                // every copy fails wit
   without changing `folded_families`; Esc closes it first and a second Esc goes back. The list scrolls to keep the
   focused row (and its heading when a variant is focused) in view; the mouse wheel scrolls by 3 rows without moving
   focus off a visible row (moving focus to the nearest visible variant if it leaves the view), PageUp/PageDown move
-  focus by one page, Home/End jump to the first/last variant, and clicking the `↑`/`↓` (`^`/`v` in ASCII) edge marks
-  scrolls by one page. The footer names only the keys that act in the current focus (`Fold`/`Unfold` on a heading,
+  focus by one page, Home/End jump to the first/last variant, and when the list is longer than its view it draws the
+  shared vertical scroll bar (`widgets/scrollbar`) at its right edge (a click on the track pages, dragging the thumb
+  scrolls). The footer names only the keys that act in the current focus (`Fold`/`Unfold` on a heading,
   `Play`/`Seed options` on a variant, `Change` on a toggle, `Clear` and `F1 Help` while typing in search). A new game
   adds a `Family` arm or a variant to an existing family; nothing else in the menu changes.
   *Restarts (P4-05):* Restart stays allowed without undo but is counted. `BoardScreen::restart` returns whether it

@@ -17,6 +17,7 @@ use crate::screens::focus::marker;
 use crate::theme::table::{felt, felt_for, hex};
 use crate::theme::{ThemeId, Token};
 use crate::widgets::footer::{self, Segment};
+use crate::widgets::scrollbar::{self, Metrics};
 
 /// Rows of the screen outside the list band: title, gaps, tab bar, hidden-pane note, two lines of
 /// description, reason line and footer.
@@ -25,6 +26,7 @@ pub(super) const CHROME_ROWS: u16 = 10;
 pub(super) struct DrawnList {
     pub rows: Vec<(usize, Rect)>,
     pub arrows: Option<Arrows>,
+    pub track: Rect,
 }
 
 pub(super) fn is_unavailable_field(field: Field, ctx: &ViewCtx<'_>) -> bool {
@@ -90,9 +92,26 @@ pub(super) fn draw_list(
     columns: u16,
     ctx: &ViewCtx<'_>,
 ) -> DrawnList {
+    let metrics = Metrics {
+        total: fields.len(),
+        view: usize::from(area.height),
+        offset: first_shown,
+    };
+    let scrolls = metrics.scrolls();
+    let row_width = if scrolls {
+        area.width.saturating_sub(1)
+    } else {
+        area.width
+    };
+    let track = if scrolls && area.width > 0 && area.height > 0 {
+        Rect::new(area.right().saturating_sub(1), area.y, 1, area.height)
+    } else {
+        Rect::default()
+    };
     let mut drawn = DrawnList {
         rows: Vec::new(),
         arrows: None,
+        track,
     };
     let visible = fields.get(first_shown..).unwrap_or_default();
     for (offset, field) in visible.iter().copied().enumerate() {
@@ -105,7 +124,7 @@ pub(super) fn draw_list(
         let index = first_shown + offset;
         let focused = index == focus;
         let text = row_text(field, focused, columns, ctx);
-        let cell = Rect::new(area.x, area.y + dy, area.width, 1);
+        let cell = Rect::new(area.x, area.y + dy, row_width, 1);
         let style = if focused {
             ctx.theme.focus()
         } else if is_unavailable_field(field, ctx) {
@@ -119,6 +138,7 @@ pub(super) fn draw_list(
         drawn.rows.push((index, cell));
         frame.render_widget(Paragraph::new(Line::styled(text, style)), cell);
     }
+    scrollbar::draw(frame, track, metrics, ctx);
     drawn
 }
 

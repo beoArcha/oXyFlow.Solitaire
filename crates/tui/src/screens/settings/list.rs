@@ -17,6 +17,17 @@ pub(super) fn first_shown(total: usize, focus: usize, height: usize, current: us
     start.min(last_start)
 }
 
+/// The row index inside the visible window at `offset` nearest to `current`.
+pub(super) fn nearest_visible(total: usize, offset: usize, height: usize, current: usize) -> usize {
+    if total == 0 || height == 0 {
+        return 0;
+    }
+    let last_start = total.saturating_sub(height);
+    let start = offset.min(last_start);
+    let end = (start + height).min(total);
+    current.clamp(start, end.saturating_sub(1))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

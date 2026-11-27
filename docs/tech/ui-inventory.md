@@ -342,7 +342,7 @@ picks the largest fitting size in `SIZES` (else `7×5`, `smallest` at `size.rs`)
 | Controls strip event | **40-column** limit (`EVENT_WIDTH`), and never more than half the row (`min(40, width/2)`); `Now:` gets the rest | `screens/board/controls.rs` | fixed |
 | Seed entry field | text field **22** columns (`FIELD_WIDTH`), **32** characters (`MAX_LENGTH`) | `screens/main_menu/seed.rs` | fixed |
 | Statistics list | `FIXED_ROWS` 8, `MIN_LIST_ROWS` 5 (history rows always shown), marker 4 columns | `screens/stats/view.rs` | fixed |
-| Settings list | one row per field (12) | `screens/settings.rs:91`; `screens/settings/options.rs:29-42` | fixed |
+| Settings list | one row per field (12); draws `widgets/scrollbar` at the right edge when longer than the view | `screens/settings.rs`; `screens/settings/{view,plan,list}.rs`; `screens/settings/options.rs:29-42` | fixed |
 | Logo | 5 rows (6 allowed by test), ≤ 60 columns | `widgets/logo.rs:3-17`; test `:30-40` | fixed |
 | Volume step | 10 percent | `screens/settings/options.rs:63` | fixed |
 
@@ -467,8 +467,10 @@ Saved in `Settings` but not on this screen: `undo_allowed` (default on, `setting
 `winnable_only` (default off, `settings.rs:76`), and `folded_families` (default empty — every
 family open, `settings.rs`); they are offered in the game selection, where group headings carry
 `[-]` (open) or `[+]` (folded, with game count) in both Unicode and ASCII modes, and the list
-scrolls by mouse wheel (3 rows), `PageUp`/`PageDown`, `Home`/`End`, and clickable `↑`/`↓`
-(`^`/`v` in ASCII) edge marks.
+scrolls by mouse wheel (3 rows), `PageUp`/`PageDown`, `Home`/`End`, and the shared vertical
+scroll bar (`widgets/scrollbar`, Unicode `█`/`░`, ASCII `#`/`:`, track click pages, thumb drag
+scrolls) at its right edge whenever the list is longer than the view. The Settings list uses the
+same shared scroll bar at its right edge whenever the active tab is longer than the view.
 
 **Not configurable (no setting or code path found):** card size (automatic, section 3.1), spacing and
 margins, fan steps, per-token colors in the UI (a user `theme.toml` in `AppPaths::data_dir()` supplies a Custom theme, section 1.1), the
