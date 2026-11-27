@@ -22,9 +22,9 @@ use ratatui::crossterm::event::{KeyEvent, MouseEvent};
 use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 
 use self::arrows::Arrows;
-use self::list::first_shown;
+use self::list::{first_shown, nearest_visible};
 use self::options::{Field, Step};
-use self::plan::{Pane, Places, plan};
+use self::plan::{Pane, Places, list_box_width, plan};
 use self::tabs::{Tab, TabBar, draw_tabs};
 use self::values::changed_for_facts;
 use self::view::{
@@ -37,6 +37,7 @@ use crate::action::Action;
 use crate::app::Screen;
 use crate::mouse::{contains, left_press, wheel_action};
 use crate::widgets::footer::{self, FooterMap, KeyHint};
+use crate::widgets::scrollbar::{self, Metrics};
 
 pub(crate) const FOOTER: [KeyHint; 3] = [
     (Action::Select, "settings.footer.change"),
@@ -54,6 +55,8 @@ pub struct SettingsScreen {
     tab_bar: Option<TabBar>,
     rows: Vec<(usize, Rect)>,
     arrows: Option<Arrows>,
+    track: Rect,
+    drag: Option<u16>,
     footer: FooterMap,
 }
 
@@ -116,6 +119,8 @@ impl SettingsScreen {
     fn switch_tab(&mut self, tab: Tab) {
         self.tab = tab;
         self.arrows = None;
+        self.track = Rect::default();
+        self.drag = None;
     }
 
     fn move_focus(&mut self, forward: bool) {
@@ -159,11 +164,38 @@ impl SettingsScreen {
         self.footer.action_at(cell)
     }
 
-    /// Handles a mouse event: wheel moves row focus, clicks on tab labels or arrows switch tabs,
-    /// clicks on row arrows step back or forward, and clicks on a row step forward.
+    fn scroll_with_mouse(&mut self, event: &MouseEvent) -> bool {
+        let tab_index = self.tab.index();
+        let total = self.active_fields().len();
+        let view = usize::from(self.track.height);
+        let metrics = Metrics {
+            total,
+            view,
+            offset: self.first_shown[tab_index],
+        };
+        if !metrics.scrolls() {
+            self.drag = None;
+            return false;
+        }
+        let was_dragging = self.drag.is_some();
+        if let Some(offset) = scrollbar::handle_mouse(event, self.track, metrics, &mut self.drag) {
+            self.first_shown[tab_index] = offset.min(total.saturating_sub(view));
+            self.focus[tab_index] =
+                nearest_visible(total, self.first_shown[tab_index], view, self.focus_index());
+            return true;
+        }
+        !was_dragging && self.drag.is_some()
+    }
+
+    /// Handles a mouse event: wheel moves row focus, scroll bar clicks page and drags scroll,
+    /// clicks on tab labels or arrows switch tabs, clicks on row arrows step back or forward, and
+    /// clicks on a row step forward.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         if let Some(action) = wheel_action(event) {
             self.move_focus(action == Action::Down);
+            return Effect::None;
+        }
+        if self.scroll_with_mouse(event) {
             return Effect::None;
         }
         let Some(cell) = left_press(event) else {
@@ -203,9 +235,9 @@ impl SettingsScreen {
     /// description, the status/preview note, and the key hints.
     pub fn draw(&mut self, frame: &mut Frame, area: Rect, ctx: &ViewCtx<'_>) {
         let fields = self.active_fields();
-        let list_width = list_width(fields, area.width, ctx);
+        let content_width = list_width(fields, area.width, ctx);
         let body_rows = area.height.saturating_sub(CHROME_ROWS);
-        let plan = plan(area.width, body_rows, list_width, fields.len());
+        let plan = plan(area.width, body_rows, content_width, fields.len());
         let (band_rows, below_rows) = match plan.pane {
             Pane::Side { rows, .. } => (plan.list_rows.max(rows), 0),
             Pane::Below { rows, .. } => (plan.list_rows, rows),
@@ -257,10 +289,14 @@ impl SettingsScreen {
         );
         self.tab_bar = Some(draw_tabs(frame, tab_area, self.tab, ctx));
 
-        let places = Places::new(plan.pane, list_width, (list_area, below_area));
+        let list_box = list_box_width(content_width, area.width, shown < fields.len());
+        let places = Places::new(plan.pane, list_box, (list_area, below_area));
         let drawn = draw_list(
             frame,
-            places.list,
+            Rect {
+                height: plan.list_rows.min(places.list.height),
+                ..places.list
+            },
             fields,
             focus,
             self.first_shown[tab_index],
@@ -269,6 +305,10 @@ impl SettingsScreen {
         );
         self.rows = drawn.rows;
         self.arrows = drawn.arrows;
+        self.track = drawn.track;
+        if self.track.width == 0 {
+            self.drag = None;
+        }
 
         match places.pane {
             Some(pane) => preview::draw(frame, pane, ctx),

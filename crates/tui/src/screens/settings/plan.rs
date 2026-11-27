@@ -9,6 +9,19 @@ use crate::layout::{CardSize, SIZES};
 /// Columns between the list and a pane beside it.
 pub(super) const GAP: u16 = 2;
 
+/// Columns reserved at the right edge of a scrolling list: one gap column and the scroll bar.
+pub(super) const BAR_COLUMNS: u16 = 2;
+
+/// Width of the list block for `content_width` row columns, adding room for the scroll bar when
+/// the list scrolls, never wider than `screen_width`.
+pub(super) fn list_box_width(content_width: u16, screen_width: u16, scrolls: bool) -> u16 {
+    if scrolls {
+        content_width.saturating_add(BAR_COLUMNS).min(screen_width)
+    } else {
+        content_width.min(screen_width)
+    }
+}
+
 /// The fewest list rows kept when the pane goes under a long list.
 const MIN_LIST_ROWS: u16 = 12;
 
@@ -67,7 +80,8 @@ pub(super) fn plan(screen_width: u16, body_rows: u16, list_width: u16, entries: 
     );
     let entries = u16::try_from(entries).unwrap_or(u16::MAX);
     let shown = entries.min(body_rows);
-    let beside = screen_width.saturating_sub(list_width + GAP);
+    let side_list = list_box_width(list_width, screen_width, entries > body_rows);
+    let beside = screen_width.saturating_sub(side_list + GAP);
     if beside >= min_width && body_rows >= min_rows {
         return Plan {
             list_rows: shown,
@@ -166,6 +180,16 @@ mod tests {
         let plan = plan(60, 20, 49, 24);
         assert_eq!(plan.list_rows, 20);
         assert_eq!(plan.pane, Pane::Hidden);
+    }
+
+    #[test]
+    fn a_wide_window_with_scrolling_reserves_bar_columns_beside_the_list() {
+        let p = plan(130, 20, 49, 27);
+        assert_eq!(p.list_rows, 20);
+        assert!(matches!(
+            p.pane,
+            Pane::Side { width, .. } if 49 + BAR_COLUMNS + GAP + width <= 130
+        ));
     }
 
     #[test]

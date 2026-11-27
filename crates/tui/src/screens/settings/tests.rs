@@ -18,6 +18,7 @@ mod language;
 mod low_vision;
 mod preview;
 mod screen;
+mod scrollbar;
 mod styles;
 mod table;
 mod tabs;
@@ -61,10 +62,14 @@ pub(super) fn line_of(h: &mut Harness, label: &str) -> String {
         .unwrap_or_default()
 }
 
-/// A row's text without the arrows that frame the value of the focused row, so that its end is the
-/// value.
+/// A row's text without the scroll bar or the arrows that frame the value of the focused row, so
+/// that its end is the value.
 pub(super) fn bare(line: &str) -> &str {
-    line.trim_end().trim_end_matches(['►', '>']).trim_end()
+    line.trim_end()
+        .trim_end_matches(['█', '░', '#', ':'])
+        .trim_end()
+        .trim_end_matches(['►', '>'])
+        .trim_end()
 }
 
 /// The most main menu rows that are looked through for the Settings item.

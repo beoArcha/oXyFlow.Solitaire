@@ -391,8 +391,9 @@ impl GameSelect {
         }
     }
 
-    /// Handles a mouse event: the wheel scrolls the list, clicks on edge marks scroll by a page,
-    /// clicks on headings fold/unfold, and clicks on variants toggle favourites or start games.
+    /// Handles a mouse event: the wheel scrolls the list, the scroll bar pages on track clicks
+    /// and scrolls while dragging the thumb, clicks on headings fold/unfold, and clicks on
+    /// variants toggle favourites or start games.
     pub fn handle_mouse(&mut self, event: &MouseEvent, ctx: &ViewCtx<'_>) -> Effect {
         self.folded = ctx.settings.folded_families.clone();
         let pressed = left_press(event);
