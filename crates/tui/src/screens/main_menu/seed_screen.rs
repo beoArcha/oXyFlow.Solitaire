@@ -12,10 +12,12 @@ use super::seed::{SeedField, Step};
 use super::seed_levels::{self, LevelSeed, Lookup};
 use super::seed_played::Played;
 use crate::action::Action;
+use crate::i18n::t;
+use crate::storage::GameRecord;
 use crate::widgets::footer::{FooterMap, KeyHint};
 use crate::widgets::menu_list::MenuList;
-use oxysol_core::Variant;
 use oxysol_core::curated;
+use oxysol_core::{GameOptions, Variant};
 
 /// What the seed screen asks the menu to do after an event.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -27,6 +29,13 @@ pub enum Outcome {
     Start {
         variant: Variant,
         seed: u64,
+    },
+    /// Deal a played game again, with the options and the undo mode it was played with.
+    Replay {
+        variant: Variant,
+        seed: u64,
+        options: GameOptions,
+        undo_allowed: bool,
     },
 }
 
@@ -51,7 +60,23 @@ const LIST_FOOTER: [KeyHint; 2] = [
 ];
 
 const NO_PLAYED_KEY: &str = "menu.seed.played_none";
+const LEVELS_STANDARD_KEY: &str = "menu.seed.levels_standard_only";
 const UNREADABLE_KEY: &str = "menu.seed.history_unreadable";
+
+/// The replay of a played game, as the statistics replay deals it.
+const fn replay_of(game: &GameRecord) -> Outcome {
+    Outcome::Replay {
+        variant: game.variant,
+        seed: game.seed,
+        options: game.options,
+        undo_allowed: game.undo_allowed,
+    }
+}
+
+/// Whether the curated levels, rated for the standard rules, apply to `variant` under `options`.
+pub(super) fn levels_offered(variant: Variant, options: GameOptions) -> bool {
+    options.is_default_for(variant)
+}
 
 impl Choice {
     const fn label_key(self) -> &'static str {
@@ -167,8 +192,14 @@ impl SeedScreen {
         }
     }
 
-    /// Handles a key press mapped to `action` on the current page.
-    pub fn handle(&mut self, key: &KeyEvent, action: Option<Action>) -> Outcome {
+    /// Handles a key press mapped to `action` on the current page. `options` are the game options of
+    /// the settings, which decide whether the levels are offered.
+    pub fn handle(
+        &mut self,
+        key: &KeyEvent,
+        action: Option<Action>,
+        options: GameOptions,
+    ) -> Outcome {
         self.notice = None;
         match &mut self.page {
             Page::Typing(field) => {
@@ -180,7 +211,7 @@ impl SeedScreen {
                     return Outcome::Stay;
                 };
                 match self.list.on_action(action, CHOICES.len()) {
-                    Some(index) => self.choose(index),
+                    Some(index) => self.choose(index, options),
                     None => Outcome::Stay,
                 }
             }
@@ -206,7 +237,7 @@ impl SeedScreen {
     }
 
     /// Handles a mouse event: a click on a row chooses it, a click on a button presses it.
-    pub fn handle_mouse(&mut self, event: &MouseEvent) -> Outcome {
+    pub fn handle_mouse(&mut self, event: &MouseEvent, options: GameOptions) -> Outcome {
         self.notice = None;
         match &mut self.page {
             Page::Typing(field) => {
@@ -214,7 +245,7 @@ impl SeedScreen {
                 self.after_field(step)
             }
             Page::Options => match self.list.on_mouse(event, CHOICES.len()) {
-                Some(index) => self.choose(index),
+                Some(index) => self.choose(index, options),
                 None => Outcome::Stay,
             },
             Page::Played => match self.list.on_mouse(event, self.played.len()) {
@@ -239,18 +270,28 @@ impl SeedScreen {
         }
     }
 
-    fn choose(&mut self, index: usize) -> Outcome {
+    fn choose(&mut self, index: usize, options: GameOptions) -> Outcome {
         match CHOICES.get(index) {
             Some(Choice::Type) => self.show(Page::Typing(SeedField::default())),
             Some(Choice::Played) => self.show_played(),
             Some(Choice::Random) => return self.random_replay(),
-            Some(Choice::Levels) => {
+            Some(Choice::Levels) if levels_offered(self.variant, options) => {
                 let entries = seed_levels::entries(self.variant, self.lookup);
                 self.show(Page::Levels(entries));
             }
-            None => {}
+            Some(Choice::Levels) | None => {}
         }
         Outcome::Stay
+    }
+
+    /// The message under the options: a notice of the last key, or the reason why the levels are
+    /// not offered under the game options of the settings.
+    fn options_notice(&self, options: GameOptions) -> String {
+        match self.notice {
+            Some(key) => t(key).into_owned(),
+            None if !levels_offered(self.variant, options) => t(LEVELS_STANDARD_KEY).into_owned(),
+            None => String::new(),
+        }
     }
 
     /// The message for a game list or random replay that has no game to offer.
@@ -271,11 +312,8 @@ impl SeedScreen {
     }
 
     fn random_replay(&mut self) -> Outcome {
-        match self.played.random_seed() {
-            Some(seed) => Outcome::Start {
-                variant: self.variant,
-                seed,
-            },
+        match self.played.random_game() {
+            Some(game) => replay_of(game),
             None => {
                 self.notice = Some(self.empty_notice());
                 Outcome::Stay
@@ -284,12 +322,7 @@ impl SeedScreen {
     }
 
     fn start_played(&self, index: usize) -> Outcome {
-        self.played
-            .seed_at(index)
-            .map_or(Outcome::Stay, |seed| Outcome::Start {
-                variant: self.variant,
-                seed,
-            })
+        self.played.game_at(index).map_or(Outcome::Stay, replay_of)
     }
 
     fn start_level(&self, index: usize) -> Outcome {

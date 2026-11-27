@@ -12,16 +12,42 @@ use crate::settings::Settings;
 use crate::storage::memory::MemoryStorage;
 use crate::test_support::{Harness, PLAIN};
 use oxysol_core::curated::{self, Difficulty};
-use oxysol_core::{Variant, YukonRules};
+use oxysol_core::{GameOptions, StockPasses, Variant, YukonRules};
 
-fn locale_storage(locale: Locale) -> MemoryStorage {
+/// Golf with the wrap rule: options of the variant, so the levels are not offered.
+const GOLF_WRAP: GameOptions = GameOptions {
+    golf_wrap: true,
+    ..GameOptions::DEFAULT
+};
+
+/// Klondike with one stock pass: options of another game, so the Golf levels stay offered.
+const KLONDIKE_ONE_PASS: GameOptions = GameOptions {
+    klondike_passes: StockPasses::One,
+    ..GameOptions::DEFAULT
+};
+
+fn storage_with_options(locale: Locale, options: GameOptions) -> MemoryStorage {
     MemoryStorage {
         settings: Some(Settings {
             locale,
+            game_options: options,
             ..Settings::for_caps(&PLAIN)
         }),
         ..MemoryStorage::new()
     }
+}
+
+fn locale_storage(locale: Locale) -> MemoryStorage {
+    storage_with_options(locale, GameOptions::DEFAULT)
+}
+
+/// The seed options of `variant` under `options`, at 100 × 30 without colour.
+fn seed_options_under(variant: Variant, options: GameOptions) -> Harness {
+    let mut h = Harness::with(storage_with_options(Locale::EnUs, options), PLAIN, 100, 30);
+    open_game_list(&mut h);
+    h.focus_game_variant(variant);
+    h.press(KeyCode::Enter);
+    h
 }
 
 fn game_title(variant: Variant) -> String {
@@ -234,5 +260,73 @@ fn every_seed_page_fits_in_every_locale_at_100_by_30_and_100_by_60() {
             );
             set_locale(Locale::EnUs);
         }
+    }
+}
+
+#[test]
+fn options_changed_for_the_variant_dim_the_levels_and_say_why() {
+    let mut h = seed_options_under(Variant::Golf, GOLF_WRAP);
+    let text = h.text();
+    assert!(text.contains(&t("menu.seed.levels").into_owned()), "{text}");
+    assert!(
+        text.contains(&t("menu.seed.levels_standard_only").into_owned()),
+        "{text}"
+    );
+}
+
+#[test]
+fn default_options_and_options_of_another_game_show_no_reason() {
+    let reason = t("menu.seed.levels_standard_only").into_owned();
+    let mut h = seed_options_under(Variant::Golf, GameOptions::DEFAULT);
+    assert!(!h.text().contains(&reason), "{}", h.text());
+    let mut h = seed_options_under(Variant::Golf, KLONDIKE_ONE_PASS);
+    assert!(!h.text().contains(&reason), "{}", h.text());
+}
+
+#[test]
+fn dimmed_levels_open_neither_by_keyboard_nor_by_mouse() {
+    let levels_prompt = t("menu.seed.levels_prompt").into_owned();
+    let mut h = seed_options_under(Variant::Golf, GOLF_WRAP);
+    for _ in 0..3 {
+        h.press(KeyCode::Down);
+    }
+    h.press(KeyCode::Enter);
+    assert!(!h.text().contains(&levels_prompt), "{}", h.text());
+    let (column, row) = h.find(&t("menu.seed.levels")).unwrap_or_default();
+    h.click(column, row);
+    let text = h.text();
+    assert!(!text.contains(&levels_prompt), "{text}");
+    assert!(
+        text.contains(&t("menu.seed.type_seed").into_owned()),
+        "{text}"
+    );
+    assert_eq!(h.app.screen(), Screen::MainMenu);
+    assert!(h.app.board().session().is_none());
+}
+
+#[test]
+fn the_levels_of_another_game_still_open_under_changed_options() {
+    let mut h = seed_options_under(Variant::Golf, KLONDIKE_ONE_PASS);
+    for _ in 0..3 {
+        h.press(KeyCode::Down);
+    }
+    h.press(KeyCode::Enter);
+    assert!(
+        h.text()
+            .contains(&t("menu.seed.levels_prompt").into_owned())
+    );
+}
+
+#[test]
+fn the_reason_line_fits_in_every_locale_at_100_by_30() {
+    for locale in Locale::offered() {
+        let mut h = Harness::with(storage_with_options(locale, GOLF_WRAP), PLAIN, 100, 30);
+        open_game_list(&mut h);
+        h.focus_game_variant(Variant::Golf);
+        h.press(KeyCode::Enter);
+        let reason = t("menu.seed.levels_standard_only").into_owned();
+        let text = h.text();
+        assert!(text.contains(&reason), "{locale:?}\n{text}");
+        set_locale(Locale::EnUs);
     }
 }
