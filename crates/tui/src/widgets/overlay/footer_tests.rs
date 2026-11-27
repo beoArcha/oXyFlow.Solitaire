@@ -121,8 +121,8 @@ fn keys_tab_shows_line_counter_only_when_overflowing_and_updates_on_scroll() {
     let row = footer_line(&mut h, 100, 30);
     assert!(row.contains("2-22 / "), "{row:?}");
 
-    let mut tall = open(HelpTab::Keys, Locale::EnUs, 100, 60);
-    let tall_row = footer_line(&mut tall, 100, 60);
+    let mut tall = open(HelpTab::Keys, Locale::EnUs, 100, 70);
+    let tall_row = footer_line(&mut tall, 100, 70);
     assert!(
         !tall_row.contains(" / "),
         "non-overflowing Keys tab should not show line counter: {tall_row:?}"

@@ -5,6 +5,7 @@ display = "Вигляд"
 game = "Гра"
 general = "Програма"
 mouse = "Миша"
+game_menu = "Меню ігор"
 
 [action]
 up = "Вгору"
@@ -45,6 +46,22 @@ dock_focus = "Фокус на прикріплене вікно"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Масштаб термінала (Mac: Cmd)"
+
+[game_menu_keys]
+page = "PgUp / PgDn"
+home_end = "Home / End"
+search = "/"
+winnable = "w"
+fold = "Вліво / Вправо"
+fold_heading = "Enter / Пробіл"
+
+[game_menu]
+page = "Сторінка вгору або вниз"
+home_end = "Перша / остання гра"
+search = "Пошук ігор за назвою"
+winnable = "Виграшні роздачі: увімк./вимк."
+fold = "Згорнути/розгорнути родину"
+fold_heading = "Згорнути/розгорнути групу"
 
 [mouse_keys]
 click_card = "Клік по карті"

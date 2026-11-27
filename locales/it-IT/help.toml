@@ -5,6 +5,7 @@ display = "Visualizzazione"
 game = "Partita"
 general = "App"
 mouse = "Mouse"
+game_menu = "Menu partite"
 
 [action]
 up = "Su"
@@ -45,6 +46,22 @@ dock_focus = "Attiva finestra ancorata"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Zoom terminale (Mac: Cmd)"
+
+[game_menu_keys]
+page = "Pag Su / Pag Giù"
+home_end = "Inizio / Fine"
+search = "/"
+winnable = "w"
+fold = "Sinistra / Destra"
+fold_heading = "Invio / Spazio"
+
+[game_menu]
+page = "Una pagina su o giù"
+home_end = "Primo / ultimo gioco"
+search = "Cerca un gioco per nome"
+winnable = "Risolvibili sì/no"
+fold = "Chiudi o apri la famiglia"
+fold_heading = "Chiudi o apri il titolo"
 
 [mouse_keys]
 click_card = "Clic su carta"
