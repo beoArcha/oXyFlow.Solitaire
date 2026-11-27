@@ -11,7 +11,7 @@ Exit criteria:
 Order of work: the theme data first (P3-36, then P6-18), then the game, then the options. P6-04 is covered by P3-35 (see
 its card).
 
-Phase 6 review (2026-11-26): the exit criteria are met. Before the gate: O-125, O-126 and O-124, which close the gaps
+Phase 6 gate (2026-11-27): every card of this phase is done. Phase 6 review (2026-11-26): the exit criteria are met. Before the gate: O-125, O-126 and O-124, which close the gaps
 P6-06 and O-123 left, and O-127 (owner request 2026-11-27). The other open cards of this phase (the solver and hint cards O-115, P6-10, P6-11, P6-13 to P6-17,
 and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 
@@ -245,6 +245,7 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
   (read `crates/tui/src/screens/game_select.rs` and its submodules); new `help.*` keys in every locale under `locales/`.
 - **Acceptance:** a test that each key the game menu handles itself (the page keys, `/`, `w`, and the fold keys) has a
   row in the Game menu section; the two-column Keys tab still fits at 100 × 30 in every offered locale.
+- **Done:** #303 (scope extended: rows in a new `help/game_menu.rs` submodule; the help topic and footer tests updated for the new section; the English page keys read `PgUp / PgDn` to fit 100 columns)
 
 ### O-125 — How to play: the rules tab follows the game's options
 
@@ -278,6 +279,7 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 - **Acceptance:** for each option and each value, a test that the page shows the matching line and not the default one;
   default options give today's rows; the page opened from a running game follows that game's options even when the
   settings differ; every offered locale fits at 100 × 30.
+- **Done:** #302
 
 ### O-126 — Seed screen: difficulty levels and played seeds under game options
 
@@ -306,6 +308,7 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
 - **Acceptance:** tests: levels available with default options, dimmed with the reason line with any non-default option
   of the variant, and an option of another game does not dim them; a played seed recorded with options replays with
   those options while the settings hold others; every offered locale fits at 100 × 30.
+- **Done:** #301
 
 ### O-127 — A scroll bar on the game menu and the Settings list
 
@@ -338,6 +341,7 @@ and O-116, O-117, O-119, O-120, O-121) moved to phase 7 with their IDs.
   tall window; its thumb moves with the keys and the wheel; a click on the track pages and a drag scrolls, in Unicode
   and ASCII; the old edge-mark tests are replaced by bar tests; no row text is cut by the bar in any offered locale;
   `docs/tech/ui-inventory.md` describes the bar instead of the edge marks.
+- **Done:** #304 (scope extended, approved by the orchestrator: `polish_tests.rs` and `test_support.rs` ignore the bar column, `architecture.md` contract text describes the bar)
 
 ### P6-12 — Solver: no heap allocation per node
 
