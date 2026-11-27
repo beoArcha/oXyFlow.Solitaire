@@ -173,9 +173,13 @@ fn help_sections_list_every_binding_of_the_key_table_once() {
         .into_iter()
         .flat_map(|section| section.rows)
         .collect();
+    let game_menu = 6;
     let gestures = 5;
     let terminal_zoom = 1;
-    assert_eq!(rows.len(), KEY_TABLE.len() + gestures + terminal_zoom);
+    assert_eq!(
+        rows.len(),
+        KEY_TABLE.len() + game_menu + gestures + terminal_zoom
+    );
     for binding in KEY_TABLE.iter() {
         let keys = binding
             .keys
@@ -193,7 +197,7 @@ fn help_sections_list_every_binding_of_the_key_table_once() {
 }
 
 #[test]
-fn help_topics_follow_the_help_groups_and_end_with_the_mouse() {
+fn help_topics_follow_the_help_groups_then_the_game_menu_and_the_mouse() {
     let titles: Vec<String> = help::sections()
         .into_iter()
         .map(|section| section.title)
@@ -202,6 +206,7 @@ fn help_topics_follow_the_help_groups_and_end_with_the_mouse() {
         .iter()
         .map(|group| t(group.title_key()).into_owned())
         .collect();
+    expected.push(t("help.group.game_menu").into_owned());
     expected.push(t("help.group.mouse").into_owned());
     assert_eq!(titles, expected);
 }

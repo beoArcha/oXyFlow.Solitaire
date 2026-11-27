@@ -5,6 +5,7 @@ display = "Affichage"
 game = "Jeu"
 general = "App"
 mouse = "Souris"
+game_menu = "Menu de jeu"
 
 [action]
 up = "Haut"
@@ -45,6 +46,22 @@ dock_focus = "Focus sur l'aide"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Zoom (Mac: Cmd)"
+
+[game_menu_keys]
+page = "PgUp / PgDn"
+home_end = "Début / Fin"
+search = "/"
+winnable = "w"
+fold = "Gauche / Droite"
+fold_heading = "Entrée / Espace"
+
+[game_menu]
+page = "Page haut/bas"
+home_end = "Premier / dernier"
+search = "Chercher par nom"
+winnable = "Gagnables oui/non"
+fold = "Replier/déplier"
+fold_heading = "Plier/déplier titre"
 
 [mouse_keys]
 click_card = "Cliquer sur une carte"

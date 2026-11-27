@@ -5,6 +5,7 @@ display = "Widok"
 game = "Gra"
 general = "Aplikacja"
 mouse = "Mysz"
+game_menu = "Menu gry"
 
 [action]
 up = "Góra"
@@ -45,6 +46,22 @@ dock_focus = "Przejdź do dokowanego okna"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Powiększ terminal (Mac: Cmd)"
+
+[game_menu_keys]
+page = "PgUp / PgDn"
+home_end = "Home / End"
+search = "/"
+winnable = "w"
+fold = "Lewo / Prawo"
+fold_heading = "Enter / Spacja"
+
+[game_menu]
+page = "Strona w górę lub w dół"
+home_end = "Pierwsza / ostatnia gra"
+search = "Szukaj gry po nazwie"
+winnable = "Gry do wygrania wł./wył."
+fold = "Zwiń lub rozwiń rodzinę"
+fold_heading = "Zwiń lub rozwiń nagłówek"
 
 [mouse_keys]
 click_card = "Kliknięcie karty"

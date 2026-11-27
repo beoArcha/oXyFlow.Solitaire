@@ -5,6 +5,7 @@ display = "Weergave"
 game = "Spel"
 general = "Programma"
 mouse = "Muis"
+game_menu = "Spelmenu"
 
 [action]
 up = "Omhoog"
@@ -45,6 +46,22 @@ dock_focus = "Focus op vastgezet venster"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Terminalzoom (Mac: Cmd)"
+
+[game_menu_keys]
+page = "Pg Up / Pg Dn"
+home_end = "Home / End"
+search = "/"
+winnable = "w"
+fold = "Links / Rechts"
+fold_heading = "Enter / Spatie"
+
+[game_menu]
+page = "Een pagina omhoog of omlaag"
+home_end = "Eerste / laatste spel"
+search = "Zoek spellen op naam"
+winnable = "Winbare spellen aan/uit"
+fold = "Familie in- of uitklappen"
+fold_heading = "Familiekop in- of uitklappen"
 
 [mouse_keys]
 click_card = "Klik op kaart"

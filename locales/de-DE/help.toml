@@ -5,6 +5,7 @@ display = "Anzeige"
 game = "Spiel"
 general = "Programm"
 mouse = "Maus"
+game_menu = "Spielmenü"
 
 [action]
 up = "Hoch"
@@ -45,6 +46,22 @@ dock_focus = "Fokus auf angedocktes Fenster"
 [display]
 terminal_keys = "Ctrl +/-/0"
 terminal_text = "Terminal-Zoom (Mac: Cmd)"
+
+[game_menu_keys]
+page = "Bild ↑ / Bild ↓"
+home_end = "Pos1 / Ende"
+search = "/"
+winnable = "w"
+fold = "Links / Rechts"
+fold_heading = "Enter / Leertaste"
+
+[game_menu]
+page = "Eine Seite hoch oder runter"
+home_end = "Erstes / letztes Spiel"
+search = "Spiele nach Namen suchen"
+winnable = "Lösbare Spiele an/aus"
+fold = "Familie ein-/ausklappen"
+fold_heading = "Familienkopf ein-/ausklappen"
 
 [mouse_keys]
 click_card = "Klick auf Karte"
